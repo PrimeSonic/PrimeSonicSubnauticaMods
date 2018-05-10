@@ -1,0 +1,11 @@
+{
+  "Id": "VehicleUpgradeInCyclops",
+  "DisplayName": "VehicleUpgradeInCyclops",
+  "Author": "PrimeSonic",
+  "Version": "1.0.0",
+  "Requires": [ ],
+  "Enable": true,
+  "AssemblyName": "VehicleUpgradeInCyclops.dll",
+  "EntryMethod": "VehicleUpgradeInCyclops.QPatch.Patch",
+  "Config": {}
+}
