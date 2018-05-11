@@ -1,7 +1,6 @@
 ﻿namespace VehicleUpgradesInCyclops
-{
-    using SMLHelper; // https://github.com/ahk1221/SMLHelper/
-    using SMLHelper.Patchers;
+{    
+    using SMLHelper.Patchers; // https://github.com/ahk1221/SMLHelper/
 
     public class QPatch
     {
@@ -11,23 +10,23 @@
             CraftTreePatcher.nodesToRemove.AddRange(CraftingNodeLists.OriginalCyclopsModuleCraftingNodes);
 
             // New Cyclops Upgrades Tab (This will keep things more organized and prevent the icons from being rendered off screen when there's too many)
-            CraftTreePatcher.customTabs.Add(new CustomCraftTab("CyclopsModules", "Cyclops Modules", CraftScheme.CyclopsFabricator, SpriteManager.Get(SpriteManager.Group.Category, "Constructor_Vehicles")));
+            CraftTreePatcher.customTabs.Add(CraftingNodeLists.CyclopsTab);
             CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.CyclopsModuleCraftingNodes);
 
             // Common Modules
-            CraftTreePatcher.customTabs.Add(new CustomCraftTab("CommonModules", "Common Modules", CraftScheme.CyclopsFabricator, SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules")));
+            CraftTreePatcher.customTabs.Add(CraftingNodeLists.CommonModuleTab);
             CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.CommonVehicleModuleCraftingNodes);
 
             // Seamoth Modules
-            CraftTreePatcher.customTabs.Add(new CustomCraftTab("SeamothModules", "Seamoth Modules", CraftScheme.CyclopsFabricator, SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules")));
+            CraftTreePatcher.customTabs.Add(CraftingNodeLists.SeamothModuleTab);
             CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.SeamothModuleCraftingNodes);
 
             // Prawn Suit Modules
-            CraftTreePatcher.customTabs.Add(new CustomCraftTab("ExosuitModules", "Prawn Suit Modules", CraftScheme.CyclopsFabricator, SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules")));
+            CraftTreePatcher.customTabs.Add(CraftingNodeLists.ExosuitModuleTab);
             CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.ExosuitModuleCraftingNodes);
 
             // Torpedoes
-            CraftTreePatcher.customTabs.Add(new CustomCraftTab("Torpedoes", "Torpedoes", CraftScheme.CyclopsFabricator, SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes")));
+            CraftTreePatcher.customTabs.Add(CraftingNodeLists.TorpedoTab);
             CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.TorpedoCraftingNodes);
         }
     }
