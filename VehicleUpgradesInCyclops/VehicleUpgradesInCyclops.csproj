@@ -34,7 +34,7 @@
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper">
-      <HintPath>..\..\SMLHelper\SMLHelper\bin\Debug\SMLHelper.dll</HintPath>
+      <HintPath>..\..\SMLHelper\SMLHelper\bin\Release\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CraftingNodeLists.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
   </ItemGroup>

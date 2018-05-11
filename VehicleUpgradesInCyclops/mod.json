@@ -2,7 +2,7 @@
   "Id": "VehicleUpgradesInCyclops",
   "DisplayName": "VehicleUpgradesInCyclops",
   "Author": "PrimeSonic",
-  "Version": "1.0.0",
+  "Version": "1.1.0",
   "Requires": [ ],
   "Enable": true,
   "AssemblyName": "VehicleUpgradesInCyclops.dll",
