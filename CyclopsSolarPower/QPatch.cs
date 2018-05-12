@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Harmony;
-    using SMLHelper;
+    using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
     using SMLHelper.Patchers;
     using UnityEngine;
     using Object = UnityEngine.Object;
@@ -19,11 +19,11 @@
 
             HarmonyInstance harmony = HarmonyInstance.Create("com.CyclopsSolarPower.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-        }        
+        }
 
         private static void CreateCyclopsSolarCharger()
         {
-            CySolarChargerTechType = TechTypePatcher.AddTechType("CyclopsSolarCharger", "Cyclops Solar Charger", "Recharges the Cyclops' power cells while in sunlight.", true);
+            CySolarChargerTechType = TechTypePatcher.AddTechType("CyclopsSolarCharger", "Cyclops Solar Charger", "Recharges the Cyclops' power cells while in sunlight. Stack multiple for even faster charging!", true);
 
             var cySolarChargerRecipe = new TechDataHelper()
             {
@@ -37,11 +37,10 @@
 
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab("CyclopsSolarCharger", "WorldEntities/Tools/CyclopsSolarCharger", CySolarChargerTechType, GetSolarChargerObject));
 
-            // TODO Create a custom sprite so as to not be confusing with the Seamoth Solar Charger module
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(CySolarChargerTechType, SpriteManager.Get(TechType.SeamothSolarCharge)));
+            CustomSpriteHandler.customSprites.Add(GetCySolarIcon());
 
             CraftTreePatcher.customNodes.Add(new CustomCraftNode(CySolarChargerTechType, CraftScheme.Workbench, "CyclopsMenu/CyclopsSolarCharger"));
-            CraftDataPatcher.customTechData[CySolarChargerTechType] = cySolarChargerRecipe;            
+            CraftDataPatcher.customTechData[CySolarChargerTechType] = cySolarChargerRecipe;
             CraftDataPatcher.customEquipmentTypes[CySolarChargerTechType] = EquipmentType.CyclopsModule;
         }
 
@@ -51,7 +50,7 @@
         }
 
         private static GameObject GetUpgradeObject(TechType techType, string id, string resourcePath)
-        {            
+        {
             GameObject prefab = Resources.Load<GameObject>(resourcePath);
             GameObject obj = Object.Instantiate(prefab);
 
@@ -59,6 +58,32 @@
             obj.GetComponent<TechTag>().type = techType;
 
             return obj;
+        }
+
+        private static CustomSprite GetCySolarIcon()
+        {
+            var fallbackSprite = SpriteManager.Get(TechType.SolarPanel);
+
+            return new CustomSprite(CySolarChargerTechType, fallbackSprite);
+            // For some reason, the custom sprite code is causing access violation errors and crashing the game during starup
+            // TODO - Find a fix for this and include the proper custom icon.
+
+            //try
+            //{
+            //    var assetBundle = AssetBundle.LoadFromFile(@"./QMods/CyclopsSolarPower/Assets/cysolar.assets");
+            //    var sprite = assetBundle.LoadAsset<Sprite>("CySolarIcon");
+
+            //    return new CustomSprite(CySolarChargerTechType, sprite);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Logger.Error(ex.ToString());
+            //    Logger.Error(ex.StackTrace);
+            //    // In the event of any error, fallback to the SolarPanel blueprint sprite
+            //    var fallbackSprite = SpriteManager.Get(TechType.SolarPanel);
+
+            //    return new CustomSprite(CySolarChargerTechType, fallbackSprite);
+            //}
         }
     }
 }

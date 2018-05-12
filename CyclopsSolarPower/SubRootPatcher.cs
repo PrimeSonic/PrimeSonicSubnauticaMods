@@ -7,7 +7,7 @@
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRootPatcher
     {
-        const float baseSolarChargingFactor = 0.001f;
+        const float baseSolarChargingFactor = 0.01f;
 
         // This is a replication of the private dictionary in SubRoot
         private static readonly string[] SlotNames = new string[]
@@ -22,15 +22,13 @@
 
         public static void Postfix(ref SubRoot __instance)
         {
-            if (__instance.upgradeConsole == null)// && __instance.live.IsAlive())
+            if (__instance.upgradeConsole == null)// && __instance.live.IsAlive()) // unable to access private variable live from here
             {
-                return; // mimicing conditions from SetCyclopsUpgrades() method in SubRoot
-            }
+                return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
+            }            
 
-            bool isSolarChargerEquipped = false;
-
-            Equipment modules = __instance.upgradeConsole.modules;            
-
+            Equipment modules = __instance.upgradeConsole.modules;
+            int numberOfSolarChargers = 0;
             for (int i = 0; i < 6; i++)
             {
                 string slot = SlotNames[i];
@@ -38,25 +36,24 @@
 
                 if (techTypeInSlot == QPatch.CySolarChargerTechType)
                 {
-                    isSolarChargerEquipped = true;
-                    break;
+                    numberOfSolarChargers++; // Yes, they stack!
                 }
             }
 
-            // The code here mostly replicates the UpdateSolarRecharge() method from the SeaMoth class,
-            // with consessions made for the differences between the Seamoth and Cyclops upgrade modules.
-            DayNightCycle main = DayNightCycle.main;
-            if (main == null)
+            if (numberOfSolarChargers > 0)
             {
-                return; // This was probably put here for safety
-            }
+                // The code here mostly replicates the UpdateSolarRecharge() method from the SeaMoth class,
+                // with consessions made for the differences between the Seamoth and Cyclops upgrade modules.
+                DayNightCycle main = DayNightCycle.main;
+                if (main == null)
+                {
+                    return; // This was probably put here for safety
+                }
 
-            if (isSolarChargerEquipped)
-            {
                 float proximityToSurface = Mathf.Clamp01((200f + __instance.transform.position.y) / 200f);
                 float localLightScalar = main.GetLocalLightScalar();                
 
-                float chargeAmt = baseSolarChargingFactor * localLightScalar * proximityToSurface;
+                float chargeAmt = baseSolarChargingFactor * localLightScalar * proximityToSurface * numberOfSolarChargers;
                 __instance.powerRelay.AddEnergy(chargeAmt, out float amtStored);
             }
         }
