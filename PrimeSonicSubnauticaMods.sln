@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleUpgradesInCyclops", "VehicleUpgradesInCyclops\VehicleUpgradesInCyclops.csproj", "{4186CF53-C9F3-4635-A108-84CF60A2ED0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSolarPower", "CyclopsSolarPower\CyclopsSolarPower.csproj", "{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,6 +2,7 @@
 {    
     using SMLHelper.Patchers; // https://github.com/ahk1221/SMLHelper/
 
+    // QMods by qwiso https://github.com/Qwiso/QModManager
     public class QPatch
     {
         public static void Patch()
