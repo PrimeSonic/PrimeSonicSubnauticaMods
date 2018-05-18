@@ -1,0 +1,11 @@
+{
+  "Id": "CustomFabricator",
+  "DisplayName": "CustomFabricator",
+  "Author": "PrimeSonic",
+  "Version": "0.0.1",
+  "Requires": [ ],
+  "Enable": true,
+  "AssemblyName": "CustomFabricator.dll",
+  "EntryMethod": "CustomFabricator.QPatch.Patch",
+  "Config": {}
+}

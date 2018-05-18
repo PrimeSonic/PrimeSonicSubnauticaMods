@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleUpgradesInCyclops", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSolarPower", "CyclopsSolarPower\CyclopsSolarPower.csproj", "{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModUtilities", "ModUtilities\ModUtilities.csproj", "{DFB3144F-6A66-4882-AB7E-2F577CAC56D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomFabricator", "CustomFabricator\CustomFabricator.csproj", "{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFB3144F-6A66-4882-AB7E-2F577CAC56D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFB3144F-6A66-4882-AB7E-2F577CAC56D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFB3144F-6A66-4882-AB7E-2F577CAC56D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFB3144F-6A66-4882-AB7E-2F577CAC56D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
