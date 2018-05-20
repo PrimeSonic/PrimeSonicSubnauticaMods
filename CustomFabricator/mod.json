@@ -2,7 +2,7 @@
   "Id": "CustomFabricator",
   "DisplayName": "CustomFabricator",
   "Author": "PrimeSonic",
-  "Version": "0.0.1",
+  "Version": "0.1.0",
   "Requires": [ ],
   "Enable": true,
   "AssemblyName": "CustomFabricator.dll",
