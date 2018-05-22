@@ -25,37 +25,6 @@
             // Create a new TechType for new fabricator
             CustomFabTechType = TechTypePatcher.AddTechType(CustomFabID, FriendlyName, "A Vehicle Upgrade Console for your Cyclops.", true);
 
-            //var old = new CraftNode("Root", TreeAction.None, TechType.None).AddNode(new CraftNode[]
-            //{
-            //    new CraftNode("CommonModules", TreeAction.Expand, TechType.None).AddNode(
-            //        new CraftNode("VehiclePowerUpgradeModule", TreeAction.Craft, TechType.VehiclePowerUpgradeModule),
-            //        new CraftNode("VehicleStorageModule", TreeAction.Craft, TechType.VehicleStorageModule)
-            //    ),
-            //    new CraftNode("SeamothModules", TreeAction.Expand, TechType.None).AddNode(
-            //        new CraftNode("VehicleHullModule1", TreeAction.Craft, TechType.VehicleHullModule1),
-            //        new CraftNode("SeamothSolarCharge", TreeAction.Craft, TechType.SeamothSolarCharge),
-            //        new CraftNode("SeamothElectricalDefense", TreeAction.Craft, TechType.SeamothElectricalDefense),
-            //        new CraftNode("SeamothSonarModule", TreeAction.Craft, TechType.SeamothSonarModule)
-            //    ),
-            //    new CraftNode("ExosuitModules", TreeAction.Expand, TechType.None).AddNode(
-            //        new CraftNode("ExoHullModule1", TreeAction.Craft, TechType.ExoHullModule1),
-            //        new CraftNode("ExosuitThermalReactorModule", TreeAction.Craft, TechType.ExosuitThermalReactorModule),
-            //        new CraftNode("ExosuitJetUpgradeModule", TreeAction.Craft, TechType.ExosuitJetUpgradeModule),
-            //        new CraftNode("ExosuitGrapplingArmModule", TreeAction.Craft, TechType.ExosuitGrapplingArmModule),
-            //        new CraftNode("ExosuitDrillArmModule", TreeAction.Craft, TechType.ExosuitDrillArmModule)
-            //    ),
-            //    new CraftNode("CyclopsModules", TreeAction.Expand, TechType.None).AddNode(
-            //        new CraftNode("CyclopsHullModule1", TreeAction.Craft, TechType.CyclopsHullModule1),
-            //        new CraftNode("PowerUpgradeModule", TreeAction.Craft, TechType.PowerUpgradeModule),
-            //        new CraftNode("CyclopsShieldModule", TreeAction.Craft, TechType.CyclopsShieldModule),
-            //        new CraftNode("CyclopsSonarModule", TreeAction.Craft, TechType.CyclopsSonarModule),
-            //        new CraftNode("CyclopsSeamothRepairModule", TreeAction.Craft, TechType.CyclopsSeamothRepairModule),
-            //        new CraftNode("CyclopsFireSuppressionModule", TreeAction.Craft, TechType.CyclopsFireSuppressionModule),
-            //        new CraftNode("CyclopsDecoyModule", TreeAction.Craft, TechType.CyclopsDecoyModule),
-            //        new CraftNode("CyclopsThermalReactorModule", TreeAction.Craft, TechType.CyclopsThermalReactorModule)
-            //    ),
-            //});
-
             var customCraftTree = new CustomCraftTreeRoot(CustomTreeType, new CustomCraftTreeNode[]
                 {
                     new CustomCraftTreeTab(CustomTreeType, "CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"), new CustomCraftTreeNode[]
@@ -78,7 +47,7 @@
                         new CustomCraftTreeCraft(CustomTreeType, TechType.ExoHullModule2),
                         new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitThermalReactorModule),
                         new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitJetUpgradeModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitGrapplingArmModule),                       
+                        new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitGrapplingArmModule),
                     }),
                     new CustomCraftTreeTab(CustomTreeType, "CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Constructor_Vehicles"), new CustomCraftTreeNode[]
                     {
@@ -118,18 +87,6 @@
 
             CustomSpriteHandler.customSprites.Add(new CustomSprite(CustomFabTechType, SpriteManager.Get(TechType.BaseUpgradeConsole)));
 
-            //CustomSpriteHandler.customSprites.Add(new CustomSprite(SpriteManager.Group.Category, GetTabSpriteID("CommonModules"), SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules")));
-            //LanguagePatcher.customLines[GetTabLanguageID("CommonModules")] = "Common Modules";
-
-            //CustomSpriteHandler.customSprites.Add(new CustomSprite(SpriteManager.Group.Category, GetTabSpriteID("SeamothModules"), SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules")));
-            //LanguagePatcher.customLines[GetTabLanguageID("SeamothModules")] = "Seamoth Modules";
-
-            //CustomSpriteHandler.customSprites.Add(new CustomSprite(SpriteManager.Group.Category, GetTabSpriteID("ExosuitModules"), SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules")));
-            //LanguagePatcher.customLines[GetTabLanguageID("ExosuitModules")] = "Prawn Suit Modules";
-
-            //CustomSpriteHandler.customSprites.Add(new CustomSprite(SpriteManager.Group.Category, GetTabSpriteID("CyclopsModules"), SpriteManager.Get(SpriteManager.Group.Category, "Constructor_Vehicles")));
-            //LanguagePatcher.customLines[GetTabLanguageID("CyclopsModules")] = "Cyclops Modules";
-
             CraftDataPatcher.customTechData[CustomFabTechType] = customFabRecipe;
         }
 
@@ -145,27 +102,20 @@
             var fabricator = prefab.GetComponent<Fabricator>();
             fabricator.craftTree = CustomTreeType;
             fabricator.handOverText = $"Use {FriendlyName}";
-            
 
-            var constructible = prefab.GetComponent<Constructable>();
+            var constructible = prefab.AddComponent<Constructable>();
             constructible.allowedInBase = true;
             constructible.allowedInSub = true;
+            constructible.allowedOutside = false;
+            constructible.allowedOnCeiling = false;
+            constructible.allowedOnGround = false;
+            constructible.allowedOnConstructables = false;            
 
-            // This is just to make the model look different.
-            // There has to be a better way.
-            var skyApp = prefab.GetComponent<SkyApplier>();
-            skyApp.dynamic = true;
-            skyApp.anchorSky = Skies.ExplorableWreck;
-            skyApp.renderers = skyApp.GetAllComponentsInChildren<MeshRenderer>();
+            var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
 
-            // Why doesn't this code do anything?
-            var meshRenderers = prefab.GetComponentsInChildren<MeshRenderer>();
-            foreach (var meshRenderer in meshRenderers)
-            {
-                meshRenderer.material.color = new Color(0, 0, 1);
-            }
+            skinnedMeshRenderer.material.color = Color.blue;
 
-            // TODO Figure out what this error in the logs is about "Error: CustomFabricator.GhostCrafter() should have a power relay in parent."
+            var powerRelay = prefab.AddComponent<PowerRelay>();
 
             return prefab;
         }
