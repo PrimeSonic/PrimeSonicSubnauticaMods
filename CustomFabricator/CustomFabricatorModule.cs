@@ -58,14 +58,12 @@
 
             var customCraftTree = new CustomCraftTreeRoot(CustomTreeType, new CustomCraftTreeNode[]
                 {
-                    new CustomCraftTreeTab(CustomTreeType, "CommonModules", "Common Modules", 
-                    new CustomSprite(SpriteManager.Group.Category, "CommonModules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules")), new CustomCraftTreeNode[]
+                    new CustomCraftTreeTab(CustomTreeType, "CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"), new CustomCraftTreeNode[]
                     {
                         new CustomCraftTreeCraft(CustomTreeType, TechType.VehiclePowerUpgradeModule),
                         new CustomCraftTreeCraft(CustomTreeType, TechType.VehicleStorageModule)
                     }),
-                    new CustomCraftTreeTab(CustomTreeType, "SeamothModules", "Seamoth Modules",
-                    new CustomSprite(SpriteManager.Group.Category, "SeamothModules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules")), new CustomCraftTreeNode[]
+                    new CustomCraftTreeTab(CustomTreeType, "SeamothModules", "Seamoth Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules"), new CustomCraftTreeNode[]
                     {
                         new CustomCraftTreeCraft(CustomTreeType, TechType.VehicleHullModule1),
                         new CustomCraftTreeCraft(CustomTreeType, TechType.VehicleHullModule2),
@@ -74,8 +72,7 @@
                         new CustomCraftTreeCraft(CustomTreeType, TechType.SeamothElectricalDefense),
                         new CustomCraftTreeCraft(CustomTreeType, TechType.SeamothSonarModule)
                     }),
-                    new CustomCraftTreeTab(CustomTreeType, "ExosuitModules", "Prawn Suit Modules",
-                    new CustomSprite(SpriteManager.Group.Category, "ExosuitModules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules")), new CustomCraftTreeNode[]
+                    new CustomCraftTreeTab(CustomTreeType, "ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"), new CustomCraftTreeNode[]
                     {
                         new CustomCraftTreeCraft(CustomTreeType, TechType.ExoHullModule1),
                         new CustomCraftTreeCraft(CustomTreeType, TechType.ExoHullModule2),
@@ -83,8 +80,7 @@
                         new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitJetUpgradeModule),
                         new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitGrapplingArmModule),                       
                     }),
-                    new CustomCraftTreeTab(CustomTreeType, "CyclopsModules", "Cyclops Modules", 
-                    new CustomSprite(SpriteManager.Group.Category, "CyclopsModules", SpriteManager.Get(SpriteManager.Group.Category, "Constructor_Vehicles")), new CustomCraftTreeNode[]
+                    new CustomCraftTreeTab(CustomTreeType, "CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Constructor_Vehicles"), new CustomCraftTreeNode[]
                     {
                         new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsHullModule1),
                         new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsHullModule2),
