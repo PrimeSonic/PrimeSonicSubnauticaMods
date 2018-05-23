@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSolarPower", "Cyclop
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModUtilities", "ModUtilities\ModUtilities.csproj", "{DFB3144F-6A66-4882-AB7E-2F577CAC56D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomFabricator", "CustomFabricator\CustomFabricator.csproj", "{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VModFabricator", "CustomFabricator\VModFabricator.csproj", "{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

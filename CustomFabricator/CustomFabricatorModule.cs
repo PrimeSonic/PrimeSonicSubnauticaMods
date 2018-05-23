@@ -1,93 +1,109 @@
-﻿namespace CustomFabricator
+﻿namespace VModFabricator
 {
     using System.Collections.Generic;
     using SMLHelper;
     using SMLHelper.Patchers;
     using UnityEngine;
-    using Object = UnityEngine.Object;
-    using Harmony;
-    using System.Reflection;
-    using Logger = Utilites.Logger.Logger;
 
-    public class CustomFabricatorModule
+    public class VModFabricatorModule
     {
-        public static CraftTree.Type CustomTreeType { get; private set; }
-        public static TechType CustomFabTechType { get; private set; }
+        public static CraftTree.Type VModTreeType { get; private set; }
+        public static TechType VModFabTechType { get; private set; }
 
-        public const string CustomFabID = "CustomFabricator";
+        public const string CustomFabID = "VModFabricator";
         public const string FriendlyName = "Vehicle Module Fabricator";
+
+        private static AssetBundle Assets = AssetBundle.LoadFromFile(@"./QMods/VModFabricator/Assets/vmodfabricator.assets");
 
         public static void Patch()
         {
             // Create new Craft Tree Type
-            CustomTreeType = CraftTreeTypePatcher.AddCraftTreeType(CustomFabID);
+            VModTreeType = CraftTreeTypePatcher.AddCraftTreeType(CustomFabID);
 
             // Create a new TechType for new fabricator
-            CustomFabTechType = TechTypePatcher.AddTechType(CustomFabID, FriendlyName, "A Vehicle Upgrade Console for your Cyclops.", true);
+            VModFabTechType = TechTypePatcher.AddTechType(CustomFabID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", true);
 
-            var customCraftTree = new CustomCraftTreeRoot(CustomTreeType, new CustomCraftTreeNode[]
-                {
-                    new CustomCraftTreeTab(CustomTreeType, "CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"), new CustomCraftTreeNode[]
-                    {
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.VehiclePowerUpgradeModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.VehicleStorageModule)
-                    }),
-                    new CustomCraftTreeTab(CustomTreeType, "SeamothModules", "Seamoth Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules"), new CustomCraftTreeNode[]
-                    {
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.VehicleHullModule1),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.VehicleHullModule2),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.VehicleHullModule3),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.SeamothSolarCharge),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.SeamothElectricalDefense),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.SeamothSonarModule)
-                    }),
-                    new CustomCraftTreeTab(CustomTreeType, "ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"), new CustomCraftTreeNode[]
-                    {
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.ExoHullModule1),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.ExoHullModule2),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitThermalReactorModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitJetUpgradeModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.ExosuitGrapplingArmModule),
-                    }),
-                    new CustomCraftTreeTab(CustomTreeType, "CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Constructor_Vehicles"), new CustomCraftTreeNode[]
-                    {
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsHullModule1),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsHullModule2),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsHullModule3),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.PowerUpgradeModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsShieldModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsSonarModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsSeamothRepairModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsFireSuppressionModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsDecoyModule),
-                        new CustomCraftTreeCraft(CustomTreeType, TechType.CyclopsThermalReactorModule)
-                    })
-                });
+            var customCraftTree = GetCraftingTree();
 
             // Add the new Craft Tree
-            CraftTreePatcher.CustomTrees[CustomTreeType] = customCraftTree;
+            CraftTreePatcher.CustomTrees[VModTreeType] = customCraftTree;
 
             // Create a new Recipie
             var customFabRecipe = new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
                              {
-                                 new IngredientHelper(TechType.Titanium, 1),
+                                 new IngredientHelper(TechType.Titanium, 2),
                                  new IngredientHelper(TechType.ComputerChip, 1),
-                                 new IngredientHelper(TechType.CopperWire, 1),
+                                 new IngredientHelper(TechType.Diamond, 1),
+                                 new IngredientHelper(TechType.Lead, 1),
                              }),
-                _techType = CustomFabTechType
+                _techType = VModFabTechType
             };
 
-            CraftDataPatcher.customBuildables.Add(CustomFabTechType);
+            CraftDataPatcher.customBuildables.Add(VModFabTechType);
 
-            CraftDataPatcher.AddToCustomGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, CustomFabTechType);
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(CustomFabID, $"Submarine/Build/{CustomFabID}", CustomFabTechType, GetPrefab));
+            CraftDataPatcher.AddToCustomGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, VModFabTechType);
+            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(CustomFabID, $"Submarine/Build/{CustomFabID}", VModFabTechType, GetPrefab));
 
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(CustomFabTechType, SpriteManager.Get(TechType.BaseUpgradeConsole)));
+            //CustomSpriteHandler.customSprites.Add(new CustomSprite(CustomFabTechType, SpriteManager.Get(TechType.BaseUpgradeConsole)));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(VModFabTechType, Assets.LoadAsset<Sprite>("fabricator_icon_blue")));
 
-            CraftDataPatcher.customTechData[CustomFabTechType] = customFabRecipe;
+            CraftDataPatcher.customTechData[VModFabTechType] = customFabRecipe;
+        }
+
+        private static CustomCraftTreeRoot GetCraftingTree()
+        {
+            return new CustomCraftTreeRoot(VModTreeType, new CustomCraftTreeNode[]
+                {
+                    new CustomCraftTreeTab(VModTreeType, "CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"), new CustomCraftTreeNode[]
+                    {
+                        new CustomCraftTreeTab(VModTreeType, "CyclopsDepthModules", "Depth Modules", SpriteManager.Get(TechType.CyclopsHullModule1), new CustomCraftTreeNode[]
+                        {
+                            new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsHullModule1),
+                            new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsHullModule2),
+                            new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsHullModule3)
+                        }),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.PowerUpgradeModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsShieldModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsSonarModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsSeamothRepairModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsFireSuppressionModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsDecoyModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.CyclopsThermalReactorModule)
+                    }),
+                    new CustomCraftTreeTab(VModTreeType, "ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"), new CustomCraftTreeNode[]
+                    {
+                        new CustomCraftTreeTab(VModTreeType, "ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1), new CustomCraftTreeNode[]
+                        {
+                            new CustomCraftTreeCraft(VModTreeType, TechType.ExoHullModule1),
+                            new CustomCraftTreeCraft(VModTreeType, TechType.ExoHullModule2)
+                        }),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.ExosuitThermalReactorModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.ExosuitJetUpgradeModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.ExosuitGrapplingArmModule),
+                    }),
+                    new CustomCraftTreeTab(VModTreeType, "SeamothModules", "Seamoth Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules"), new CustomCraftTreeNode[]
+                    {
+                        new CustomCraftTreeTab(VModTreeType, "SeamothDepthModules", "Depth Modules", SpriteManager.Get(TechType.VehicleHullModule1), new CustomCraftTreeNode[]
+                        {
+                            new CustomCraftTreeCraft(VModTreeType, TechType.VehicleHullModule1),
+                            new CustomCraftTreeCraft(VModTreeType, TechType.VehicleHullModule2),
+                            new CustomCraftTreeCraft(VModTreeType, TechType.VehicleHullModule3)
+                        }),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.SeamothSolarCharge),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.SeamothElectricalDefense),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.SeamothSonarModule)
+                    }),
+                    new CustomCraftTreeTab(VModTreeType, "CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"), new CustomCraftTreeNode[]
+                    {
+                        new CustomCraftTreeCraft(VModTreeType, TechType.VehicleArmorPlating),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.VehiclePowerUpgradeModule),
+                        new CustomCraftTreeCraft(VModTreeType, TechType.VehicleStorageModule)
+                    }),
+
+                });
         }
 
         public static GameObject GetPrefab()
@@ -96,38 +112,49 @@
             GameObject prefab = GameObject.Instantiate(originalPrefab);
 
             prefab.name = CustomFabID;
-            prefab.GetComponent<PrefabIdentifier>().ClassId = CustomFabID;
-            prefab.GetComponent<TechTag>().type = CustomFabTechType;
+            var prefabId = prefab.GetComponent<PrefabIdentifier>();
+            prefabId.ClassId = CustomFabID;
+            prefabId.name = FriendlyName;
+
+            var techTag = prefab.GetComponent<TechTag>();
+            techTag.type = VModFabTechType;
 
             var fabricator = prefab.GetComponent<Fabricator>();
-            fabricator.craftTree = CustomTreeType;
-            fabricator.handOverText = $"Use {FriendlyName}";
+            fabricator.craftTree = VModTreeType;
 
-            var constructible = prefab.AddComponent<Constructable>();
+            // TODO - fix this so the fabricator can draw power normally
+            //var powerRelay = prefab.AddComponent<PowerRelay>();
+
+            //var fieldInfo = typeof(GhostCrafter).GetField("powerRelay", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            //fieldInfo.SetValue(fabricator, powerRelay);
+
+            var constructible = prefab.GetComponent<Constructable>();
             constructible.allowedInBase = true;
             constructible.allowedInSub = true;
             constructible.allowedOutside = false;
             constructible.allowedOnCeiling = false;
             constructible.allowedOnGround = false;
-            constructible.allowedOnConstructables = false;            
+            constructible.allowedOnConstructables = false;
+            constructible.controlModelState = true;
+            constructible.techType = VModFabTechType;
+
+            var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_blue");
 
             var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
-
-            skinnedMeshRenderer.material.color = Color.blue;
-
-            var powerRelay = prefab.AddComponent<PowerRelay>();
+            skinnedMeshRenderer.material.mainTexture = blueTexture;
+            skinnedMeshRenderer.material.color = new Color(0.8f, 0.8f, 0.9f); // slight blue tint            
 
             return prefab;
         }
 
         public static string GetTabLanguageID(string tabName)
         {
-            return $"{CustomTreeType}Menu_{System.IO.Path.GetFileName(tabName)}";
+            return $"{VModTreeType}Menu_{tabName}";
         }
 
         public static string GetTabSpriteID(string tabName)
         {
-            return $"{CustomTreeType}_{System.IO.Path.GetFileName(tabName)}";
+            return $"{VModTreeType}_{tabName}";
         }
     }
 }

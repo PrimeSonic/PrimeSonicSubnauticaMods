@@ -7,8 +7,8 @@
     <ProjectGuid>{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomFabricator</RootNamespace>
-    <AssemblyName>CustomFabricator</AssemblyName>
+    <RootNamespace>VModFabricator</RootNamespace>
+    <AssemblyName>VModFabricator</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,18 +30,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=1.0.9.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SMLHelper\SMLHelper\bin\Release\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\SMLHelper\SMLHelper\bin\Release\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\SMLHelper\SMLHelper\bin\Release\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="SMLHelper">
+    <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\SMLHelper\SMLHelper\bin\Release\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -59,12 +61,12 @@
     <Compile Include="QPatch.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModUtilities\ModUtilities.csproj">
-      <Project>{dfb3144f-6a66-4882-ab7e-2f577cac56d7}</Project>
-      <Name>ModUtilities</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Assets\vmodfabricator.assets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\vmodfabricator.manifest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

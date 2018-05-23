@@ -1,4 +1,4 @@
-﻿namespace CustomFabricator
+﻿namespace VModFabricator
 {
     using System.Reflection;
     using Harmony;
@@ -7,9 +7,9 @@
     {
         public static void Patch()
         {
-            CustomFabricatorModule.Patch();
+            VModFabricatorModule.Patch();
 
-            //HarmonyInstance harmony = HarmonyInstance.Create("com.CustomFabricator.psmod");
+            //HarmonyInstance harmony = HarmonyInstance.Create("com.VModFabricator.psmod");
             //harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }
