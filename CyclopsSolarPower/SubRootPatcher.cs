@@ -8,7 +8,7 @@
     internal class SubRootPatcher
     {
         // This may seem like little, but it can actually keep a Cyclops in shallow water topped up even without the Eficiency module.
-        const float baseSolarChargingFactor = 0.01f;
+        const float baseSolarChargingFactor = 0.02f;
 
         // This is a copy of the private dictionary in SubRoot used to access the module slots.
         private static readonly string[] SlotNames = new string[]

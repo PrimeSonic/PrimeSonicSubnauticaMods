@@ -27,7 +27,7 @@
             }
         }
 
-        internal static CustomCraftTab CyclopsTab => new CyclopsCraftTab(CyclopsModules, "Cyclops Modules", "Constructor_Vehicles");
+        internal static CustomCraftTab CyclopsTab => new CyclopsCraftTab(CyclopsModules, "Cyclops Modules", "Workbench_CyclopsMenu");
         internal static CustomCraftTab CommonModuleTab => new CyclopsCraftTab(CommonModules, "Common Modules", "SeamothUpgrades_CommonModules");
         internal static CustomCraftTab SeamothModuleTab => new CyclopsCraftTab(SeamothModules, "Seamoth Modules", "SeamothUpgrades_SeamothModules");
         internal static CustomCraftTab ExosuitModuleTab => new CyclopsCraftTab(ExosuitModules, "Prawn Suit Modules", "SeamothUpgrades_ExosuitModules");
