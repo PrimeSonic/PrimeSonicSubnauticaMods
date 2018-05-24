@@ -10,6 +10,8 @@
         // This may seem like little, but it can actually keep a Cyclops in shallow water topped up even without the Eficiency module.
         const float baseSolarChargingFactor = 0.02f;
 
+        internal static float UserChargeRate { get; set; } = 1f;
+
         // This is a copy of the private dictionary in SubRoot used to access the module slots.
         private static readonly string[] SlotNames = new string[]
         {
@@ -39,7 +41,7 @@
             for (int i = 0; i < 6; i++)
             {
                 string slot = SlotNames[i];
-                TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);                
+                TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);
 
                 if (techTypeInSlot == QPatch.CySolarChargerTechType)
                 {
@@ -60,8 +62,8 @@
                 // This is 1-to-1 the same way the Seamoth calculates its solar charging rate.
                 float proximityToSurface = Mathf.Clamp01((200f + __instance.transform.position.y) / 200f);
                 float localLightScalar = main.GetLocalLightScalar();
-                                
-                float chargeAmt = baseSolarChargingFactor * localLightScalar * proximityToSurface * numberOfSolarChargers;
+
+                float chargeAmt = baseSolarChargingFactor * localLightScalar * proximityToSurface * numberOfSolarChargers * UserChargeRate;
                 // Yes, the charge rate does scale linearly with the number of solar chargers.
                 // I figure, you'd be giving up a lot of slots for good upgrades to do it so you might as well get the benefit.
                 // So no need to bother with coding in dimishing returns.
