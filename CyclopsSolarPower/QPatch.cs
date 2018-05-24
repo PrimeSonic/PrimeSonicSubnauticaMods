@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Reflection;
+    using Common;
     using Harmony;
     using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
     using SMLHelper.Patchers;
@@ -11,11 +12,22 @@
     // QMods by qwiso https://github.com/Qwiso/QModManager
     public class QPatch
     {
-        public static TechType CySolarChargerTechType { get; private set; }        
+        internal const string ModFolder = @"./QMods/CyclopsSolarPower";
+
+        public static TechType CySolarChargerTechType { get; private set; }
+
+        internal static CySolarConfig ChargeRateConfig { get; private set; }
 
         public static void Patch()
         {
             CreateCyclopsSolarCharger();
+
+            LoadConfig();
+
+            if (ChargeRateConfig.SolarChargeRate > 0)
+            {
+                SubRootPatcher.UserChargeRate = ChargeRateConfig.SolarChargeRate;
+            }
 
             HarmonyInstance harmony = HarmonyInstance.Create("com.CyclopsSolarPower.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -42,7 +54,7 @@
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab("CyclopsSolarCharger", "WorldEntities/Tools/CyclopsSolarCharger", CySolarChargerTechType, GetSolarChargerObject));
 
             // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(CySolarChargerTechType, AssetBundle.LoadFromFile(@"./QMods/CyclopsSolarPower/Assets/cysolar.assets").LoadAsset<Sprite>("CySolarIcon")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(CySolarChargerTechType, AssetBundle.LoadFromFile($"{ModFolder}/Assets/cysolar.assets").LoadAsset<Sprite>("CySolarIcon")));
 
             // Add the new recipe to the Modification Station crafting tree
             CraftTreePatcher.customNodes.Add(new CustomCraftNode(CySolarChargerTechType, CraftScheme.Workbench, "CyclopsMenu/CyclopsSolarCharger"));
@@ -52,6 +64,21 @@
 
             // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
             CraftDataPatcher.customEquipmentTypes[CySolarChargerTechType] = EquipmentType.CyclopsModule;
+        }
+
+        private static void LoadConfig()
+        {
+            var cfgMgr = new ConfigManager<CySolarConfig>("CyclopsSolarPower", $"{ModFolder}/config.json");
+
+            bool fileLoaded = cfgMgr.GetConfig(out CySolarConfig config);
+
+            if (!fileLoaded)
+            {
+                // No file found or file corrupted. Save the default config.
+                bool savedDefault = cfgMgr.SaveConfig(config);
+            }
+
+            ChargeRateConfig = config;
         }
 
         public static GameObject GetSolarChargerObject()

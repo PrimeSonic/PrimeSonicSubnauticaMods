@@ -1,0 +1,11 @@
+{
+  "Id": "VModFabricator",
+  "DisplayName": "VModFabricator",
+  "Author": "PrimeSonic",
+  "Version": "0.1.0",
+  "Requires": [ ],
+  "Enable": true,
+  "AssemblyName": "VModFabricator.dll",
+  "EntryMethod": "VModFabricator.QPatch.Patch",
+  "Config": {}
+}
