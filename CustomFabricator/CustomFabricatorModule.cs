@@ -4,6 +4,7 @@
     using SMLHelper;
     using SMLHelper.Patchers;
     using UnityEngine;
+    using System.Reflection;
 
     public class VModFabricatorModule
     {
@@ -122,11 +123,12 @@
             var fabricator = prefab.GetComponent<Fabricator>();
             fabricator.craftTree = VModTreeType;
 
-            // TODO - fix this so the fabricator can draw power normally
-            //var powerRelay = prefab.AddComponent<PowerRelay>();
+            var ghost = fabricator.GetComponent<GhostCrafter>();
+            var crafter = ghost.GetComponent<Crafter>();
+            var powerRelay = new PowerRelay();
 
-            //var fieldInfo = typeof(GhostCrafter).GetField("powerRelay", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            //fieldInfo.SetValue(fabricator, powerRelay);
+            FieldInfo fieldInfo = typeof(GhostCrafter).GetField("powerRelay", BindingFlags.NonPublic | BindingFlags.Instance);
+            fieldInfo.SetValue(ghost, powerRelay);
 
             var constructible = prefab.GetComponent<Constructable>();
             constructible.allowedInBase = true;
