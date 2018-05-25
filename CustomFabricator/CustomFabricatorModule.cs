@@ -11,9 +11,12 @@
         public static CraftTree.Type VModTreeType { get; private set; }
         public static TechType VModFabTechType { get; private set; }
 
+        // This name will be used as both the new TechType of the buildable fabricator and the CraftTree Type for the custom crafting tree.
         public const string CustomFabID = "VModFabricator";
+
         public const string FriendlyName = "Vehicle Module Fabricator";
 
+        // AssetBundles must only be loaded once
         private static AssetBundle Assets = AssetBundle.LoadFromFile(@"./QMods/VModFabricator/Assets/vmodfabricator.assets");
 
         public static void Patch()
@@ -26,10 +29,10 @@
 
             var customCraftTree = GetCraftingTree();
 
-            // Add the new Craft Tree
+            // Add the new Craft Tree and link it to the new CraftTree Type
             CraftTreePatcher.CustomTrees[VModTreeType] = customCraftTree;
 
-            // Create a new Recipie
+            // Create a Recipie for the new TechType
             var customFabRecipe = new TechDataHelper()
             {
                 _craftAmount = 1,
@@ -43,14 +46,19 @@
                 _techType = VModFabTechType
             };
 
+            // Add the new TechType to the buildables
             CraftDataPatcher.customBuildables.Add(VModFabTechType);
 
+            // Add the new TechType to the group of Interior Module buildables
             CraftDataPatcher.AddToCustomGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, VModFabTechType);
+
+            // Set the buildable prefab
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(CustomFabID, $"Submarine/Build/{CustomFabID}", VModFabTechType, GetPrefab));
 
-            //CustomSpriteHandler.customSprites.Add(new CustomSprite(CustomFabTechType, SpriteManager.Get(TechType.BaseUpgradeConsole)));
+            // Set the custom sprite for the Habitat Builder Tool menu
             CustomSpriteHandler.customSprites.Add(new CustomSprite(VModFabTechType, Assets.LoadAsset<Sprite>("fabricator_icon_blue")));
 
+            // Associate the recipie to the new TechType
             CraftDataPatcher.customTechData[VModFabTechType] = customFabRecipe;
         }
 
@@ -103,16 +111,17 @@
                         new CustomCraftTreeCraft(VModTreeType, TechType.VehiclePowerUpgradeModule),
                         new CustomCraftTreeCraft(VModTreeType, TechType.VehicleStorageModule)
                     }),
-
                 });
         }
 
         public static GameObject GetPrefab()
         {
+            // The standard Fabricator is the base to this new item
             GameObject originalPrefab = Resources.Load<GameObject>("Submarine/Build/Fabricator");
             GameObject prefab = GameObject.Instantiate(originalPrefab);
 
             prefab.name = CustomFabID;
+
             var prefabId = prefab.GetComponent<PrefabIdentifier>();
             prefabId.ClassId = CustomFabID;
             prefabId.name = FriendlyName;
@@ -121,8 +130,9 @@
             techTag.type = VModFabTechType;
 
             var fabricator = prefab.GetComponent<Fabricator>();
-            fabricator.craftTree = VModTreeType;
+            fabricator.craftTree = VModTreeType; // This is how the custom craft tree is associated to the fabricator
 
+            // All this was necessary because the PowerRelay wasn't being instantiated
             var ghost = fabricator.GetComponent<GhostCrafter>();
             var crafter = ghost.GetComponent<Crafter>();
             var powerRelay = new PowerRelay();
@@ -130,33 +140,27 @@
             FieldInfo fieldInfo = typeof(GhostCrafter).GetField("powerRelay", BindingFlags.NonPublic | BindingFlags.Instance);
             fieldInfo.SetValue(ghost, powerRelay);
 
+            // Set where this can be built
             var constructible = prefab.GetComponent<Constructable>();
             constructible.allowedInBase = true;
-            constructible.allowedInSub = true;
+            constructible.allowedInSub = true; // This is the important one
             constructible.allowedOutside = false;
             constructible.allowedOnCeiling = false;
             constructible.allowedOnGround = false;
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
-            constructible.techType = VModFabTechType;
+            constructible.techType = VModFabTechType; // This was necessary to correctly associate the recipe at building time
 
+            // Set the custom texture
             var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_blue");
 
             var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.material.mainTexture = blueTexture;
-            skinnedMeshRenderer.material.color = new Color(0.8f, 0.8f, 0.9f); // slight blue tint            
+
+            // Add a slight blue tint to the material for added effect
+            skinnedMeshRenderer.material.color = new Color(0.8f, 0.8f, 0.95f);
 
             return prefab;
-        }
-
-        public static string GetTabLanguageID(string tabName)
-        {
-            return $"{VModTreeType}Menu_{tabName}";
-        }
-
-        public static string GetTabSpriteID(string tabName)
-        {
-            return $"{VModTreeType}_{tabName}";
         }
     }
 }
