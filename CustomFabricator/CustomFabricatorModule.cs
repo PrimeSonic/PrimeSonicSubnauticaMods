@@ -26,11 +26,8 @@
             VModTreeType = craftType;
 
             // Create a new TechType for new fabricator
-            VModFabTechType = TechTypePatcher.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", true);            
-
-            // Add the new Craft Tree and link it to the new CraftTree Type
-            CraftTreePatcher.CustomTrees[VModTreeType] = customTreeRootNode;
-
+            VModFabTechType = TechTypePatcher.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", true);
+            
             // Create a Recipie for the new TechType
             var customFabRecipe = new TechDataHelper()
             {
@@ -63,7 +60,7 @@
 
         private static CustomCraftTreeRoot CreateCustomTree(out CraftTree.Type craftType)
         {
-            var rootNode = CraftTreeTypePatcher.AddCraftTreeType(CustomFabAndTreeID, out craftType);            
+            var rootNode = CraftTreeTypePatcher.CreateCustomCraftTreeAndType(CustomFabAndTreeID, out craftType);
 
             var cyclopsTab = rootNode.AddTabNode("CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"));
             var cyclopsDepthTab = cyclopsTab.AddTabNode("CyclopsDepthModules", "Depth Modules", SpriteManager.Get(TechType.CyclopsHullModule1));
@@ -95,7 +92,7 @@
             var commonTab = rootNode.AddTabNode("CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"));
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
                                       TechType.VehiclePowerUpgradeModule,
-                                      TechType.VehicleStorageModule);            
+                                      TechType.VehicleStorageModule);
             return rootNode;
         }
 
@@ -119,7 +116,6 @@
 
             // All this was necessary because the PowerRelay wasn't being instantiated
             var ghost = fabricator.GetComponent<GhostCrafter>();
-            var crafter = ghost.GetComponent<Crafter>();
             var powerRelay = new PowerRelay();
 
             FieldInfo fieldInfo = typeof(GhostCrafter).GetField("powerRelay", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -138,7 +134,6 @@
 
             // Set the custom texture
             var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_blue");
-
             var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.material.mainTexture = blueTexture;
 
