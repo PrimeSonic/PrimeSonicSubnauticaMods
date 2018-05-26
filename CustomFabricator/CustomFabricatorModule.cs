@@ -74,7 +74,8 @@
                                        TechType.CyclopsFireSuppressionModule,
                                        TechType.CyclopsDecoyModule,
                                        TechType.CyclopsThermalReactorModule);
-            var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
+            cyclopsTab.AddModdedCraftingNode("CyclopsSolarCharger");
+var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
             exosuitDepthTab.AddCraftingNode(TechType.ExoHullModule1,
                                             TechType.ExoHullModule2);
