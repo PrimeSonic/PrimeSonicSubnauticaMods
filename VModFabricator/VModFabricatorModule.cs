@@ -14,6 +14,7 @@
         // This name will be used as both the new TechType of the buildable fabricator and the CraftTree Type for the custom crafting tree.
         public const string CustomFabAndTreeID = "VModFabricator";
 
+        // The text you'll see in-game when you mouseover over it.
         public const string FriendlyName = "Vehicle Module Fabricator";
 
         // AssetBundles must only be loaded once
@@ -27,7 +28,7 @@
 
             // Create a new TechType for new fabricator
             VModFabTechType = TechTypePatcher.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", true);
-            
+
             // Create a Recipie for the new TechType
             var customFabRecipe = new TechDataHelper()
             {
@@ -74,8 +75,8 @@
                                        TechType.CyclopsFireSuppressionModule,
                                        TechType.CyclopsDecoyModule,
                                        TechType.CyclopsThermalReactorModule);
-            cyclopsTab.AddModdedCraftingNode("CyclopsSolarCharger");
-var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
+            cyclopsTab.AddModdedCraftingNode("CyclopsSolarCharger"); // Compatible with the CyclopsSolarCharger mod whether you have it or not!
+            var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
             exosuitDepthTab.AddCraftingNode(TechType.ExoHullModule1,
                                             TechType.ExoHullModule2);
@@ -139,7 +140,7 @@ var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", Spr
             skinnedMeshRenderer.material.mainTexture = blueTexture;
 
             // Add a slight blue tint to the material for added effect
-            skinnedMeshRenderer.material.color = new Color(0.85f, 0.85f, 1);
+            skinnedMeshRenderer.material.color = new Color(0.80f, 0.80f, 1);
 
             return prefab;
         }

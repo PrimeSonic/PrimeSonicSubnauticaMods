@@ -5,6 +5,8 @@
     // QMods by qwiso https://github.com/Qwiso/QModManager
     public class QPatch
     {
+        // This mod is intended to be replaced by the VModFabricator
+
         public static void Patch()
         {
             // Remove all original Cyclops fabricator nodes

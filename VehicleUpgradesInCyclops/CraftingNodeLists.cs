@@ -14,7 +14,7 @@
         private class CyclopsCraftNode : CustomCraftNode
         {
             public CyclopsCraftNode(TechType techType, string root) :
-                base(techType, CraftScheme.CyclopsFabricator, $"{root}/{techType}")
+                base(techType, CraftTree.Type.CyclopsFabricator, $"{root}/{techType}")
             {
             }
         }
@@ -22,7 +22,7 @@
         private class CyclopsCraftTab : CustomCraftTab
         {
             public CyclopsCraftTab(string root, string tabName, string categorySpriteName) : 
-                base(root, tabName, CraftScheme.CyclopsFabricator, SpriteManager.Get(SpriteManager.Group.Category, categorySpriteName))
+                base(root, tabName, CraftTree.Type.CyclopsFabricator, SpriteManager.Get(SpriteManager.Group.Category, categorySpriteName))
             {
             }
         }
@@ -35,14 +35,14 @@
 
         internal static IEnumerable<CraftNodeToScrub> OriginalCyclopsModuleCraftingNodes => new CraftNodeToScrub[8]
             {
-                new CraftNodeToScrub(CraftScheme.CyclopsFabricator, "CyclopsHullModule1"),
-                new CraftNodeToScrub(CraftScheme.CyclopsFabricator, "PowerUpgradeModule"),
-                new CraftNodeToScrub(CraftScheme.CyclopsFabricator, "CyclopsShieldModule"),
-                new CraftNodeToScrub(CraftScheme.CyclopsFabricator, "CyclopsSonarModule"),
-                new CraftNodeToScrub(CraftScheme.CyclopsFabricator, "CyclopsSeamothRepairModule"),
-                new CraftNodeToScrub(CraftScheme.CyclopsFabricator, "CyclopsFireSuppressionModule"),
-                new CraftNodeToScrub(CraftScheme.CyclopsFabricator, "CyclopsDecoyModule"),
-                new CraftNodeToScrub(CraftScheme.CyclopsFabricator, "CyclopsThermalReactorModule")
+                new CraftNodeToScrub(CraftTree.Type.CyclopsFabricator, "CyclopsHullModule1"),
+                new CraftNodeToScrub(CraftTree.Type.CyclopsFabricator, "PowerUpgradeModule"),
+                new CraftNodeToScrub(CraftTree.Type.CyclopsFabricator, "CyclopsShieldModule"),
+                new CraftNodeToScrub(CraftTree.Type.CyclopsFabricator, "CyclopsSonarModule"),
+                new CraftNodeToScrub(CraftTree.Type.CyclopsFabricator, "CyclopsSeamothRepairModule"),
+                new CraftNodeToScrub(CraftTree.Type.CyclopsFabricator, "CyclopsFireSuppressionModule"),
+                new CraftNodeToScrub(CraftTree.Type.CyclopsFabricator, "CyclopsDecoyModule"),
+                new CraftNodeToScrub(CraftTree.Type.CyclopsFabricator, "CyclopsThermalReactorModule")
             };
 
         internal static IEnumerable<CustomCraftNode> CyclopsModuleCraftingNodes => new CustomCraftNode[8]
