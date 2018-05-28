@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleUpgradesInCyclops", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSolarPower", "CyclopsSolarPower\CyclopsSolarPower.csproj", "{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VModFabricator", "CustomFabricator\VModFabricator.csproj", "{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VModFabricator", "VModFabricator\VModFabricator.csproj", "{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Utilities\Common.shproj", "{91D8D243-2590-4911-A827-C4C929E0AB69}"
 EndProject
