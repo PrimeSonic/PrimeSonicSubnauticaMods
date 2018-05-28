@@ -139,7 +139,7 @@ var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", Spr
             skinnedMeshRenderer.material.mainTexture = blueTexture;
 
             // Add a slight blue tint to the material for added effect
-            skinnedMeshRenderer.material.color = new Color(0.8f, 0.8f, 0.95f);
+            skinnedMeshRenderer.material.color = new Color(0.85f, 0.85f, 1);
 
             return prefab;
         }
