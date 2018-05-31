@@ -119,9 +119,11 @@
             // All this was necessary because the PowerRelay wasn't being instantiated
             var ghost = fabricator.GetComponent<GhostCrafter>();
             var powerRelay = new PowerRelay();
+            // Ignore any errors you see about this fabricator not having a power relay in its parent. It does and it works.
 
-            FieldInfo fieldInfo = typeof(GhostCrafter).GetField("powerRelay", BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo.SetValue(ghost, powerRelay);
+
+            FieldInfo fieldInfo = typeof(GhostCrafter).GetField("powerRelay", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            fieldInfo.SetValue(fabricator, powerRelay);
 
             // Set where this can be built
             var constructible = prefab.GetComponent<Constructable>();
@@ -138,9 +140,7 @@
             var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_blue");
             var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.material.mainTexture = blueTexture;
-
-            // Add a slight blue tint to the material for added effect
-            skinnedMeshRenderer.material.color = new Color(0.80f, 0.80f, 1);
+            skinnedMeshRenderer.material.color = Color.white;
 
             return prefab;
         }
