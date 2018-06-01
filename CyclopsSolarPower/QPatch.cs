@@ -16,6 +16,8 @@
 
         public static TechType CySolarChargerTechType { get; private set; }
 
+        public const string NameID = "CyclopsSolarCharger";
+
         internal static CySolarConfig ChargeRateConfig { get; private set; }
 
         public static void Patch()
@@ -36,7 +38,7 @@
         private static void CreateCyclopsSolarCharger()
         {
             // Create a new TechType
-            CySolarChargerTechType = TechTypePatcher.AddTechType("CyclopsSolarCharger", "Cyclops Solar Charger", "Recharges the Cyclops' power cells while in sunlight. Stack multiple for even faster charging!", true);
+            CySolarChargerTechType = TechTypePatcher.AddTechType(NameID, "Cyclops Solar Charger", "Recharges the Cyclops' power cells while in sunlight. Stack multiple for even faster charging!", true);
 
             // Create a new Recipie
             var cySolarChargerRecipe = new TechDataHelper()
@@ -51,13 +53,13 @@
             KnownTechPatcher.unlockedAtStart.Add(CySolarChargerTechType);
 
             // Create the in-game item that will behave like any other Cyclops upgrade module
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab("CyclopsSolarCharger", "WorldEntities/Tools/CyclopsSolarCharger", CySolarChargerTechType, GetSolarChargerObject));
+            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", CySolarChargerTechType, GetSolarChargerObject));
 
             // Get the custom icon from the Unity assets bundle
             CustomSpriteHandler.customSprites.Add(new CustomSprite(CySolarChargerTechType, AssetBundle.LoadFromFile($"{ModFolder}/Assets/cysolar.assets").LoadAsset<Sprite>("CySolarIcon")));
 
             // Add the new recipe to the Modification Station crafting tree
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(CySolarChargerTechType, CraftScheme.Workbench, "CyclopsMenu/CyclopsSolarCharger"));
+            CraftTreePatcher.customNodes.Add(new CustomCraftNode(CySolarChargerTechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
 
             // Pair the new recipie with the new TechType
             CraftDataPatcher.customTechData[CySolarChargerTechType] = cySolarChargerRecipe;
@@ -83,7 +85,7 @@
 
         public static GameObject GetSolarChargerObject()
         {
-            return GetCyclopsSolareObject(CySolarChargerTechType, "CyclopsSolarCharger", "WorldEntities/Tools/CyclopsThermalReactorModule");
+            return GetCyclopsSolareObject(CySolarChargerTechType, NameID, "WorldEntities/Tools/CyclopsThermalReactorModule");
         }
 
         private static GameObject GetCyclopsSolareObject(TechType techType, string id, string resourcePath)

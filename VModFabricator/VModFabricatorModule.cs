@@ -75,7 +75,8 @@
                                        TechType.CyclopsFireSuppressionModule,
                                        TechType.CyclopsDecoyModule,
                                        TechType.CyclopsThermalReactorModule);
-            cyclopsTab.AddModdedCraftingNode("CyclopsSolarCharger"); // Compatible with the CyclopsSolarCharger mod whether you have it or not!
+            cyclopsTab.AddModdedCraftingNode("CyclopsSolarCharger"); // Compatible with the CyclopsSolarPower mod whether you have it or not!
+            cyclopsTab.AddModdedCraftingNode("CyclopsNuclearModule"); // Compatible with the CyclopsNuclearPower mod whether you have it or not!
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
             exosuitDepthTab.AddCraftingNode(TechType.ExoHullModule1,
