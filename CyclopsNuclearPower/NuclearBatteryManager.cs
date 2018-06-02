@@ -26,7 +26,7 @@
         private const float NoCharge = 0f;        
         private const float ChargeRate = 0.15f; // This is pretty damn fast but it makes sense for what it is.
 
-        internal const float MaxCharge = 6000f; // Less than the normal 20k for balance
+        internal const float MaxCharge = 12000f; // Less than the normal 20k for balance
 
         // This is a copy of the private dictionary in SubRoot used to access the module slots.
         private static readonly string[] SlotNames = new string[SlotCount]
