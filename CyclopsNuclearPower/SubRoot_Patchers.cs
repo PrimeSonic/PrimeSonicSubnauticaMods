@@ -31,7 +31,7 @@
 
     [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
-    internal class SubRoot_UpdateThermalReactorCharge_Patcher2
+    internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
         // This is a copy of the private dictionary in SubRoot used to access the module slots.
         internal static readonly string[] SlotNames = new string[]
