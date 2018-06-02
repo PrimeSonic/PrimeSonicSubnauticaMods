@@ -26,7 +26,7 @@
         // The method UpdateThermalReactorCharge() is called on every Update() call, regardless of whether or not a ThermalReactor module is equipped or not.        
         public static void Postfix(ref SubRoot __instance)
         {
-            if (__instance.upgradeConsole == null)// && __instance.live.IsAlive()) // unable to access private variable live from here, live with it
+            if (__instance.upgradeConsole == null)
             {
                 return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
             }

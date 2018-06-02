@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 141098664
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 726f02b12b29f402640af57e37e8dd82
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 21f0dc8ebad690f009368069428e0a1a
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/CyNukIcon.png
+Dependencies: []

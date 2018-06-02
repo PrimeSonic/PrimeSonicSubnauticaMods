@@ -75,14 +75,20 @@
                                        TechType.CyclopsFireSuppressionModule,
                                        TechType.CyclopsDecoyModule,
                                        TechType.CyclopsThermalReactorModule);
-            cyclopsTab.AddModdedCraftingNode("CyclopsSolarCharger"); // Compatible with the CyclopsSolarCharger mod whether you have it or not!
+            cyclopsTab.AddModdedCraftingNode("CyclopsSolarCharger"); // Compatible with the CyclopsSolarPower mod whether you have it or not!
+            cyclopsTab.AddModdedCraftingNode("CyclopsNuclearModule"); // Compatible with the CyclopsNuclearPower mod whether you have it or not!
+
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
             exosuitDepthTab.AddCraftingNode(TechType.ExoHullModule1,
                                             TechType.ExoHullModule2);
             exosuitTab.AddCraftingNode(TechType.ExosuitThermalReactorModule,
                                        TechType.ExosuitJetUpgradeModule,
-                                       TechType.ExosuitGrapplingArmModule);
+                                       TechType.ExosuitPropulsionArmModule,
+                                       TechType.ExosuitGrapplingArmModule,
+                                       TechType.ExosuitDrillArmModule,
+                                       TechType.ExosuitTorpedoArmModule);
+
             var seamothTab = rootNode.AddTabNode("SeamothModules", "Seamoth Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules"));
             var seamothDepthTab = seamothTab.AddTabNode("SeamothDepthModules", "Depth Modules", SpriteManager.Get(TechType.VehicleHullModule1));
             seamothDepthTab.AddCraftingNode(TechType.VehicleHullModule1,
@@ -91,10 +97,15 @@
             seamothTab.AddCraftingNode(TechType.SeamothSolarCharge,
                                        TechType.SeamothElectricalDefense,
                                        TechType.SeamothSonarModule);
+
             var commonTab = rootNode.AddTabNode("CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"));
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
                                       TechType.VehiclePowerUpgradeModule,
                                       TechType.VehicleStorageModule);
+
+            var torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
+            torpedoesTab.AddCraftingNode(TechType.WhirlpoolTorpedo,
+                                         TechType.GasTorpedo);
             return rootNode;
         }
 

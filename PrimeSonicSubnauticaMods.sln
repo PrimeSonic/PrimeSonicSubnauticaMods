@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VModFabricator", "VModFabri
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Utilities\Common.shproj", "{91D8D243-2590-4911-A827-C4C929E0AB69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsNuclearPower", "CyclopsNuclearPower\CyclopsNuclearPower.csproj", "{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{8edf3e3a-9334-4fef-be5c-a799189a97fc}*SharedItemsImports = 4
@@ -33,6 +35,10 @@ Global
 		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

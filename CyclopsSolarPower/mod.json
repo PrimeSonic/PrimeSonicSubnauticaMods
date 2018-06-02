@@ -2,7 +2,7 @@
   "Id": "CyclopsSolarPower",
   "DisplayName": "CyclopsSolarPower",
   "Author": "PrimeSonic",
-  "Version": "1.1.0",
+  "Version": "1.1.1",
   "Requires": [ ],
   "Enable": true,
   "AssemblyName": "CyclopsSolarPower.dll",

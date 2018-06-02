@@ -1,0 +1,11 @@
+{
+  "Id": "CyclopsNuclearPower",
+  "DisplayName": "CyclopsNuclearPower",
+  "Author": "PrimeSonic",
+  "Version": "1.0.0",
+  "Requires": [ ],
+  "Enable": true,
+  "AssemblyName": "CyclopsNuclearPower.dll",
+  "EntryMethod": "CyclopsNuclearPower.QPatch.Patch",
+  "Config": {}
+}
