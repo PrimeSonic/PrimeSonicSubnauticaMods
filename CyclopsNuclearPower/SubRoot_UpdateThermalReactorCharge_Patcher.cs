@@ -28,8 +28,5 @@
 
             NuclearBatteryManager.UpdateNuclearBatteryCharges(ref __instance);
         }
-
-
     }
-
 }

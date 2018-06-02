@@ -24,7 +24,7 @@
 
         private const int SlotCount = 6;
         private const float NoCharge = 0f;        
-        private const float ChargeRate = 0.1f; // This is pretty damn fast but it makes sense for what it is.
+        private const float ChargeRate = 0.15f; // This is pretty damn fast but it makes sense for what it is.
 
         internal const float MaxCharge = 6000f; // Less than the normal 20k for balance
 
@@ -42,6 +42,9 @@
         // Just in case someone decides to use this mod with more than one Cyclops in the game.
         private static readonly Dictionary<int, NuclearBatterySlots> CyclopsConsoles = new Dictionary<int, NuclearBatterySlots>();
 
+        /// <summary>
+        /// Keeps track of the nuclear batteries so they can be easily updated as they charge the Cyclops.
+        /// </summary>        
         public static void SetNuclearBatterySlots(ref SubRoot __instance)
         {
             int cyclopsId = __instance.GetInstanceID();
@@ -65,7 +68,7 @@
                     // Remove nuclear battery from slot
                     CyclopsConsoles[cyclopsId][slot] = null;
                 }
-                else if (typeInSlot == QPatch.CyReactorRodType && // Slot now has a Cyclops Nuclear Module
+                else if (typeInSlot == QPatch.CyNukBatteryType && // Slot now has a Cyclops Nuclear Module
                     CyclopsConsoles[cyclopsId][slot] == null) // There was no nuclear battery on this slot
                 {
                     // Add nuclear battery to slot
@@ -74,6 +77,9 @@
             }
         }
 
+        /// <summary>
+        /// Updates the nuclear battery charges and replaces them with Depleted Reactor Rods when they fully drain.
+        /// </summary>
         public static void UpdateNuclearBatteryCharges(ref SubRoot __instance)
         {
             int cyclopsId = __instance.GetInstanceID();
@@ -94,7 +100,7 @@
                 var batteryInSlot = CyclopsConsoles[cyclopsId][slot];
 
                 if (batteryInSlot == null || batteryInSlot.charge == NoCharge)
-                    continue; // No nuclear battery in this slot or its empty
+                    continue; // No nuclear battery in this slot or its out of charge
 
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
 
@@ -117,7 +123,7 @@
                         batteryInSlot.charge = NoCharge;
                     }
 
-                    powerDeficit -= chargeAmt;
+                    powerDeficit -= chargeAmt; // This is to prevent draining more than needed when topping up the batteries mid-cycle
 
                     __instance.powerRelay.AddEnergy(chargeAmt, out float amtStored);
                 }

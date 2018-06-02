@@ -19,5 +19,4 @@
             NuclearBatteryManager.SetNuclearBatterySlots(ref __instance);
         }        
     }
-
 }

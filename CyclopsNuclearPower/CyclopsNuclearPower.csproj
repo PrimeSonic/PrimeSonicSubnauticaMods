@@ -57,6 +57,12 @@
     <Compile Include="SubRoot_UpdateThermalReactorCharge_Patcher.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\cyclopsnuclearpower.assets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\cyclopsnuclearpower.manifest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
