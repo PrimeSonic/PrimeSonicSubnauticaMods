@@ -2,9 +2,11 @@
 {
     using UnityEngine;
 
+    /// <summary>
+    /// This class handles the solar power charging.
+    /// </summary>
     internal static class SolarChargingManager
     {
-        // This may seem like little, but it can actually keep a Cyclops in shallow water topped up even without the Eficiency module.
         const float baseSolarChargingFactor = 0.03f;
 
         internal static float UserChargeRate { get; set; } = 1f;

@@ -1,13 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using Common;
     using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
     using SMLHelper.Patchers;
     using UnityEngine;
     using Object = UnityEngine.Object;
 
-    // QMods by qwiso https://github.com/Qwiso/QModManager
     public class SolarCharger
     {
         internal const string ModFolder = @"./QMods/MoreCyclopsUpgrades";
@@ -16,21 +14,7 @@
 
         public const string NameID = "CyclopsSolarCharger";
 
-        internal static CySolarConfig ChargeRateConfig { get; private set; }
-
         public static void Patch()
-        {
-            CreateCyclopsSolarCharger();
-
-            LoadConfig();
-
-            if (ChargeRateConfig.SolarChargeRate > 0)
-            {
-                SolarChargingManager.UserChargeRate = ChargeRateConfig.SolarChargeRate;
-            }            
-        }
-
-        private static void CreateCyclopsSolarCharger()
         {
             // Create a new TechType
             CySolarChargerTechType = TechTypePatcher.AddTechType(NameID, "Cyclops Solar Charger", "Recharges the Cyclops' power cells while in sunlight. Stack multiple for even faster charging!", true);
@@ -63,33 +47,13 @@
             CraftDataPatcher.customEquipmentTypes[CySolarChargerTechType] = EquipmentType.CyclopsModule;
         }
 
-        private static void LoadConfig()
-        {
-            var cfgMgr = new ConfigManager<CySolarConfig>("CyclopsSolarPower", $"{ModFolder}/config.json");
-
-            bool fileLoaded = cfgMgr.GetConfig(out CySolarConfig config);
-
-            if (!fileLoaded)
-            {
-                // No file found or file corrupted. Save the default config.
-                bool savedDefault = cfgMgr.SaveConfig(config);
-            }
-
-            ChargeRateConfig = config;
-        }
-
         public static GameObject GetSolarChargerObject()
         {
-            return GetCyclopsSolareObject(CySolarChargerTechType, NameID, "WorldEntities/Tools/CyclopsThermalReactorModule");
-        }
-
-        private static GameObject GetCyclopsSolareObject(TechType techType, string id, string resourcePath)
-        {
-            GameObject prefab = Resources.Load<GameObject>(resourcePath);
+            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/CyclopsThermalReactorModule");
             GameObject obj = Object.Instantiate(prefab);
 
-            obj.GetComponent<PrefabIdentifier>().ClassId = id;
-            obj.GetComponent<TechTag>().type = techType;
+            obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
+            obj.GetComponent<TechTag>().type = CySolarChargerTechType;
 
             return obj;
         }

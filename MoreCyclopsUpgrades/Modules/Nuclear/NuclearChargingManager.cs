@@ -7,7 +7,7 @@
     /// <summary>
     /// This class handles keeping track of the nuclear batteries.
     /// </summary>
-    internal static class NuclearBatteryManager
+    internal static class NuclearChargingManager
     {
         private class NuclearBatterySlots : Dictionary<int, Battery>
         {
@@ -84,6 +84,8 @@
             for (int slot = 0; slot < SlotHelper.SlotCount; slot++)
             {
                 string slotName = SlotHelper.SlotNames[slot];
+
+                var bat = modules.GetItemInSlot(slotName);
 
                 var batteryInSlot = CyclopsConsoles[cyclopsId][slot];
 

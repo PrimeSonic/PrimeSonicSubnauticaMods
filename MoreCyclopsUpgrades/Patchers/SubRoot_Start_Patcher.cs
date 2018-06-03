@@ -18,7 +18,7 @@
                 return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
             }
 
-            NuclearBatteryManager.SetNuclearBatterySlots(ref __instance);
+            NuclearChargingManager.SetNuclearBatterySlots(ref __instance);
         }
     }
 }

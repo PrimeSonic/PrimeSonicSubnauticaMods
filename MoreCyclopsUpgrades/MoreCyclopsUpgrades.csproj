@@ -51,14 +51,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\Nuclear\NuclearBatteryManager.cs" />
     <Compile Include="Modules\Nuclear\NuclearCharger.cs" />
+    <Compile Include="Modules\Nuclear\NuclearChargingManager.cs" />
     <Compile Include="Modules\SlotHelper.cs" />
-    <Compile Include="Modules\Solar\CySolarConfig.cs" />
     <Compile Include="Modules\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Solar\SolarChargingManager.cs" />
-    <Compile Include="Patchers\Cyclops_Start_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_SetCyclopsUpgrades_Patcher.cs" />
+    <Compile Include="Patchers\SubRoot_Start_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_UpdateThermalReactorCharge_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />

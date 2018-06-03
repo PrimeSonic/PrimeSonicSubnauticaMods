@@ -5,20 +5,14 @@
     using SMLHelper.Patchers;
     using UnityEngine;
     using Object = UnityEngine.Object;
-
-    // QMods by qwiso https://github.com/Qwiso/QModManager
+    
     public class NuclearCharger
     {
         public static TechType CyNukBatteryType { get; private set; }
         public const string NameId = "CyclopsNuclearModule";
-        public const string FriendlyName = "Cyclops Nuclear Battery Module";
+        public const string FriendlyName = "Cyclops Nuclear Charger";
 
         public static void Patch()
-        {
-            CreateItem();
-        }
-
-        private static void CreateItem()
         {
             // Create a new TechType
             CyNukBatteryType = TechTypePatcher.AddTechType(NameId, FriendlyName, "Portable nuclear power for your Cyclops. The days of running out of power are over.", unlockOnGameStart: true);
@@ -69,8 +63,8 @@
             // The battery component makes it easy to track the charge and saving the data is automatic.
             var pCell = obj.AddComponent<Battery>();
             pCell.name = FriendlyName;
-            pCell._capacity = NuclearBatteryManager.MaxCharge;
-            pCell._charge = NuclearBatteryManager.MaxCharge;
+            pCell._capacity = NuclearChargingManager.MaxCharge;
+            pCell._charge = NuclearChargingManager.MaxCharge;
 
             return obj;
         }

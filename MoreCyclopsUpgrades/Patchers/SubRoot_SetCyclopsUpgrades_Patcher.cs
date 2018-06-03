@@ -7,7 +7,7 @@
     internal class SubRoot_SetCyclopsUpgrades_Patcher
     {
         /// <summary>
-        /// This patch method handles shuffling the nuclear batteries into and out of the <see cref="NuclearBatteryManager"/>.
+        /// This patch method handles shuffling the nuclear batteries into and out of the <see cref="NuclearChargingManager"/>.
         /// </summary>        
         public static void Postfix(ref SubRoot __instance)
         {
@@ -16,7 +16,7 @@
                 return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
             }
 
-            NuclearBatteryManager.SetNuclearBatterySlots(ref __instance);
+            NuclearChargingManager.SetNuclearBatterySlots(ref __instance);
         }        
     }
 }
