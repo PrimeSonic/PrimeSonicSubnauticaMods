@@ -11,7 +11,7 @@
     {
         private class NuclearBatterySlots : Dictionary<int, Battery>
         {
-            public NuclearBatterySlots() : base(SlotCount)
+            public NuclearBatterySlots() : base(SlotHelper.SlotCount)
             {
                 this[0] = null;
                 this[1] = null;
@@ -22,22 +22,10 @@
             }
         }
 
-        private const int SlotCount = 6;
         private const float NoCharge = 0f;        
         private const float ChargeRate = 0.15f; // This is pretty damn fast but it makes sense for what it is.
 
         internal const float MaxCharge = 12000f; // Less than the normal 20k for balance
-
-        // This is a copy of the private dictionary in SubRoot used to access the module slots.
-        private static readonly string[] SlotNames = new string[SlotCount]
-        {
-                "Module1",
-                "Module2",
-                "Module3",
-                "Module4",
-                "Module5",
-                "Module6"
-        };
 
         // Just in case someone decides to use this mod with more than one Cyclops in the game.
         private static readonly Dictionary<int, NuclearBatterySlots> CyclopsConsoles = new Dictionary<int, NuclearBatterySlots>();
@@ -54,9 +42,9 @@
 
             Equipment modules = __instance.upgradeConsole.modules;
 
-            for (int slot = 0; slot < SlotCount; slot++)
+            for (int slot = 0; slot < SlotHelper.SlotCount; slot++)
             {
-                string slotName = SlotNames[slot];
+                string slotName = SlotHelper.SlotNames[slot];
 
                 TechType typeInSlot = modules.GetTechTypeInSlot(slotName);
 
@@ -93,9 +81,9 @@
 
             Equipment modules = __instance.upgradeConsole.modules;
 
-            for (int slot = 0; slot < SlotCount; slot++)
+            for (int slot = 0; slot < SlotHelper.SlotCount; slot++)
             {
-                string slotName = SlotNames[slot];
+                string slotName = SlotHelper.SlotNames[slot];
 
                 var batteryInSlot = CyclopsConsoles[cyclopsId][slot];
 

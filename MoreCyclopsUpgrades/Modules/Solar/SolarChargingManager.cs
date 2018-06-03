@@ -5,29 +5,18 @@
     internal static class SolarChargingManager
     {
         // This may seem like little, but it can actually keep a Cyclops in shallow water topped up even without the Eficiency module.
-        const float baseSolarChargingFactor = 0.02f;
+        const float baseSolarChargingFactor = 0.03f;
 
         internal static float UserChargeRate { get; set; } = 1f;
-
-        // This is a copy of the private dictionary in SubRoot used to access the module slots.
-        private static readonly string[] SlotNames = new string[]
-        {
-                "Module1",
-                "Module2",
-                "Module3",
-                "Module4",
-                "Module5",
-                "Module6"
-        };
 
         public static void UpdateSolarCharger(ref SubRoot __instance)
         {
             Equipment modules = __instance.upgradeConsole.modules;
             int numberOfSolarChargers = 0; // Yes, they stack!
 
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < SlotHelper.SlotCount; i++)
             {
-                string slot = SlotNames[i];
+                string slot = SlotHelper.SlotNames[i];
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);
 
                 if (techTypeInSlot == SolarCharger.CySolarChargerTechType)

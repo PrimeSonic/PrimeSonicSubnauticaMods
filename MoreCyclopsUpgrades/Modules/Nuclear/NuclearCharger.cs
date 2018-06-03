@@ -1,8 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using System.Reflection;
-    using Harmony;
     using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
     using SMLHelper.Patchers;
     using UnityEngine;
@@ -18,9 +16,6 @@
         public static void Patch()
         {
             CreateItem();
-
-            HarmonyInstance harmony = HarmonyInstance.Create("com.CyclopsNuclearPower.psmod");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         private static void CreateItem()

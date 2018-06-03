@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Modules\Nuclear\NuclearBatteryManager.cs" />
     <Compile Include="Modules\Nuclear\NuclearCharger.cs" />
+    <Compile Include="Modules\SlotHelper.cs" />
     <Compile Include="Modules\Solar\CySolarConfig.cs" />
     <Compile Include="Modules\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Solar\SolarChargingManager.cs" />

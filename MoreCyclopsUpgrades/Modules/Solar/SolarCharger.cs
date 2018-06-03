@@ -1,9 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using System.Reflection;
     using Common;
-    using Harmony;
     using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
     using SMLHelper.Patchers;
     using UnityEngine;
@@ -12,7 +10,7 @@
     // QMods by qwiso https://github.com/Qwiso/QModManager
     public class SolarCharger
     {
-        internal const string ModFolder = @"./QMods/CyclopsSolarPower";
+        internal const string ModFolder = @"./QMods/MoreCyclopsUpgrades";
 
         public static TechType CySolarChargerTechType { get; private set; }
 
@@ -29,10 +27,7 @@
             if (ChargeRateConfig.SolarChargeRate > 0)
             {
                 SolarChargingManager.UserChargeRate = ChargeRateConfig.SolarChargeRate;
-            }
-
-            HarmonyInstance harmony = HarmonyInstance.Create("com.CyclopsSolarPower.psmod");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            }            
         }
 
         private static void CreateCyclopsSolarCharger()
