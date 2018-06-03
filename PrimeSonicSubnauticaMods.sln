@@ -5,18 +5,16 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleUpgradesInCyclops", "VehicleUpgradesInCyclops\VehicleUpgradesInCyclops.csproj", "{4186CF53-C9F3-4635-A108-84CF60A2ED0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSolarPower", "CyclopsSolarPower\CyclopsSolarPower.csproj", "{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VModFabricator", "VModFabricator\VModFabricator.csproj", "{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Utilities\Common.shproj", "{91D8D243-2590-4911-A827-C4C929E0AB69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsNuclearPower", "CyclopsNuclearPower\CyclopsNuclearPower.csproj", "{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreCyclopsUpgrades", "MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj", "{FC87AF94-413D-482E-AB0D-501E120E6E2D}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Utilities\Utilities.projitems*{8edf3e3a-9334-4fef-be5c-a799189a97fc}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
+		Utilities\Utilities.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,18 +25,14 @@ Global
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EDF3E3A-9334-4FEF-BE5C-A799189A97FC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

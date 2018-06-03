@@ -69,10 +69,13 @@
                                             TechType.CyclopsHullModule2,
                                             TechType.CyclopsHullModule3);
             var cyclopsPowerTab = cyclopsTab.AddTabNode("CyclopsPowerModules", "Power Modules", SpriteManager.Get(TechType.PowerUpgradeModule));
-            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule,
-                                            TechType.CyclopsThermalReactorModule);
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarCharger"); // Compatible with the CyclopsSolarPower mod whether you have it or not!
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule"); // Compatible with the CyclopsNuclearPower mod whether you have it or not!
+            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule);
+            // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
+            cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk2");
+            cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk3");
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarCharger"); 
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule"); 
+            cyclopsPowerTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
             cyclopsTab.AddCraftingNode(TechType.CyclopsShieldModule,
                                        TechType.CyclopsSonarModule,
                                        TechType.CyclopsSeamothRepairModule,

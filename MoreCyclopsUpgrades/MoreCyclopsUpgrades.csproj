@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1F861B67-1CDE-43D5-8A4B-1E9C8D254BE6}</ProjectGuid>
+    <ProjectGuid>{FC87AF94-413D-482E-AB0D-501E120E6E2D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CyclopsNuclearPower</RootNamespace>
-    <AssemblyName>CyclopsNuclearPower</AssemblyName>
+    <RootNamespace>MoreCyclopsUpgrades</RootNamespace>
+    <AssemblyName>MoreCyclopsUpgrades</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,33 +39,43 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SMLHelper">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cyclops_Start_Patcher.cs" />
-    <Compile Include="NuclearBatteryManager.cs" />
+    <Compile Include="Modules\Nuclear\NuclearCharger.cs" />
+    <Compile Include="Modules\Nuclear\NuclearChargingManager.cs" />
+    <Compile Include="Modules\PowerUpgrade\PowerIndexManager.cs" />
+    <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
+    <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
+    <Compile Include="Modules\SlotHelper.cs" />
+    <Compile Include="Modules\Solar\SolarCharger.cs" />
+    <Compile Include="Modules\Solar\SolarChargingManager.cs" />
+    <Compile Include="Patchers\SubRoot_UpdatePowerRating_Patcher.cs" />
+    <Compile Include="Patchers\SubRoot_UpdateThermalReactorCharge_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
-    <Compile Include="SubRoot_SetCyclopsUpgrades_Patcher.cs" />
-    <Compile Include="SubRoot_UpdateThermalReactorCharge_Patcher.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <None Include="Assets\cyclopsnuclearpower.assets">
+    <None Include="Assets\morecyclopsupgrades.assets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\cyclopsnuclearpower.manifest">
+    <None Include="Assets\morecyclopsupgrades.manifest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
