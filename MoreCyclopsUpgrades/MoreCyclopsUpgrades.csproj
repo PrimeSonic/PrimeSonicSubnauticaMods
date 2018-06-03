@@ -55,8 +55,8 @@
     <Compile Include="Modules\Nuclear\NuclearCharger.cs" />
     <Compile Include="Modules\Solar\CySolarConfig.cs" />
     <Compile Include="Modules\Solar\SolarCharger.cs" />
+    <Compile Include="Modules\Solar\SolarChargingManager.cs" />
     <Compile Include="Patchers\Cyclops_Start_Patcher.cs" />
-    <Compile Include="Patchers\SubRootPatcher.cs" />
     <Compile Include="Patchers\SubRoot_SetCyclopsUpgrades_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_UpdateThermalReactorCharge_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

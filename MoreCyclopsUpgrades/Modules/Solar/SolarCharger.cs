@@ -28,7 +28,7 @@
 
             if (ChargeRateConfig.SolarChargeRate > 0)
             {
-                SubRootPatcher.UserChargeRate = ChargeRateConfig.SolarChargeRate;
+                SolarChargingManager.UserChargeRate = ChargeRateConfig.SolarChargeRate;
             }
 
             HarmonyInstance harmony = HarmonyInstance.Create("com.CyclopsSolarPower.psmod");

@@ -26,6 +26,8 @@
                 return;
             }
 
+            SolarChargingManager.UpdateSolarCharger(ref __instance);
+
             NuclearBatteryManager.UpdateNuclearBatteryCharges(ref __instance);
         }
     }

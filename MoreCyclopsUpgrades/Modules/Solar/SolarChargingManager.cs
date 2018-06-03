@@ -1,11 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using Harmony;
     using UnityEngine;
 
-    [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("UpdateThermalReactorCharge")]
-    internal class SubRootPatcher
+    internal static class SolarChargingManager
     {
         // This may seem like little, but it can actually keep a Cyclops in shallow water topped up even without the Eficiency module.
         const float baseSolarChargingFactor = 0.02f;
@@ -23,18 +20,8 @@
                 "Module6"
         };
 
-        // The method UpdateThermalReactorCharge() is called on every Update() call, regardless of whether or not a ThermalReactor module is equipped or not.        
-        public static void Postfix(ref SubRoot __instance)
+        public static void UpdateSolarCharger(ref SubRoot __instance)
         {
-            if (__instance.upgradeConsole == null)
-            {
-                return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
-            }
-
-            // Normally, the Cyclops SetCyclopsUpgrades() method sets simple bool field for each equipped item.
-            // Since it doesn't look like we have the option to inject our own private fields into the class to look at later, this is the next best thing.
-            // This is the same way the SubRoot class inspects what upgrades it has equipped.
-
             Equipment modules = __instance.upgradeConsole.modules;
             int numberOfSolarChargers = 0; // Yes, they stack!
 
