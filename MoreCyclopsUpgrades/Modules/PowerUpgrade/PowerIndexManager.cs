@@ -65,11 +65,11 @@
             __instance.shieldPowerCost = ShieldPowerCosts[powerIndex];
 
             float nextPowerRating = EnginePowerRatings[powerIndex];
-
             
             if (originalRating != nextPowerRating)
             {
                 SetCyclopsPowerRating(ref __instance, nextPowerRating);
+                // Inform the new power rating just like the original method would.
                 string format = Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating);
                 ErrorMessage.AddMessage(format);
             }

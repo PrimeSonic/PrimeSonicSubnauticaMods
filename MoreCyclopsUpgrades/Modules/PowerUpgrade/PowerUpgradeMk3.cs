@@ -43,7 +43,7 @@
                 _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
                              {
                                  new IngredientHelper(PowerUpgradeMk2.Power2TechType, 1),
-                                 new IngredientHelper(TechType.Kyanite, 2),
+                                 new IngredientHelper(TechType.Kyanite, 2), // More uses for Kyanite!
                                  new IngredientHelper(TechType.AdvancedWiringKit, 1)
                              }),
                 _techType = Power3TechType

@@ -5,12 +5,12 @@
     using SMLHelper.Patchers;
     using UnityEngine;
     using Object = UnityEngine.Object;
-    
+
     public class NuclearCharger
     {
         public static TechType CyNukBatteryType { get; private set; }
         public const string NameId = "CyclopsNuclearModule";
-        public const string FriendlyName = "Cyclops Nuclear Charger";
+        public const string FriendlyName = "Cyclops Nuclear Reactor Module";
         public const string Description = "Portable nuclear power for your Cyclops. The days of running out of power are over.";
 
         public static void Patch(AssetBundle assetBundle)
@@ -39,11 +39,9 @@
             return new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[6]
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[5]
                              {
-                                 // This is to validate that the player has access to nuclear power already
-                                 new IngredientHelper(TechType.ReactorRod, 1),
-                                 new IngredientHelper(TechType.Lubricant, 1),
+                                 new IngredientHelper(TechType.ReactorRod, 1), // This is to validate that the player has access to nuclear power already
                                  new IngredientHelper(TechType.EnameledGlass, 1),
                                  new IngredientHelper(TechType.ComputerChip, 1),
                                  new IngredientHelper(TechType.WiringKit, 1),

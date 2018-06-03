@@ -9,6 +9,7 @@
     {
         public static void Patch()
         {
+            // Asset Bundles don't like being loaded more than once. So we load it only once and pass it around.
             var assetBundle = AssetBundle.LoadFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/morecyclopsupgrades.assets");
 
             SolarCharger.Patch(assetBundle);
