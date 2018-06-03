@@ -39,9 +39,10 @@
             return new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[5]
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[6]
                              {
                                  new IngredientHelper(TechType.ReactorRod, 1), // This is to validate that the player has access to nuclear power already
+                                 new IngredientHelper(TechType.Benzene, 1), // And this is the validate that they've gone a little further down
                                  new IngredientHelper(TechType.EnameledGlass, 1),
                                  new IngredientHelper(TechType.ComputerChip, 1),
                                  new IngredientHelper(TechType.WiringKit, 1),
