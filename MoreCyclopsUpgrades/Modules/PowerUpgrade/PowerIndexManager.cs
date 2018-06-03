@@ -42,28 +42,35 @@
             35f  // Power Index 3: 30% cost reduction
         };
 
-        public static void UpdatePowerIndex(ref SubRoot __instance)
+        internal static float GetCyclopsPowerRating(ref SubRoot __instance)
+        {
+            FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (float)fieldInfo.GetValue(__instance);
+        }
+
+        internal static void SetCyclopsPowerRating(ref SubRoot __instance, float rating)
+        {
+            FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
+            fieldInfo.SetValue(__instance, rating);
+        }
+
+        internal static void UpdatePowerIndex(ref SubRoot __instance, float originalRating)
         {
             Equipment modules = __instance.upgradeConsole.modules;
 
             int powerIndex = GetPowerIndex(modules);
 
             __instance.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
-
             __instance.sonarPowerCost = SonarPowerCosts[powerIndex];
-
             __instance.shieldPowerCost = ShieldPowerCosts[powerIndex];
 
-            FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
+            float nextPowerRating = EnginePowerRatings[powerIndex];
 
-            var originalRating = fieldInfo.GetValue(__instance);
-            var currentRating = EnginePowerRatings[powerIndex];
-
-            fieldInfo.SetValue(__instance, currentRating);
-
-            if ((float)originalRating != currentRating)
+            
+            if (originalRating != nextPowerRating)
             {
-                string format = Language.main.GetFormat("PowerRatingNowFormat", currentRating);
+                SetCyclopsPowerRating(ref __instance, nextPowerRating);
+                string format = Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating);
                 ErrorMessage.AddMessage(format);
             }
         }
