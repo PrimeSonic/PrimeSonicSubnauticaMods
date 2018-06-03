@@ -53,7 +53,7 @@
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(CustomFabAndTreeID, $"Submarine/Build/{CustomFabAndTreeID}", VModFabTechType, GetPrefab));
 
             // Set the custom sprite for the Habitat Builder Tool menu
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(VModFabTechType, Assets.LoadAsset<Sprite>("fabricator_icon_blue")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(VModFabTechType, Assets.LoadAsset<Sprite>("fabricator_icon_cyan")));
 
             // Associate the recipie to the new TechType
             CraftDataPatcher.customTechData[VModFabTechType] = customFabRecipe;
@@ -68,15 +68,16 @@
             cyclopsDepthTab.AddCraftingNode(TechType.CyclopsHullModule1,
                                             TechType.CyclopsHullModule2,
                                             TechType.CyclopsHullModule3);
-            cyclopsTab.AddCraftingNode(TechType.PowerUpgradeModule,
-                                       TechType.CyclopsShieldModule,
+            var cyclopsPowerTab = cyclopsTab.AddTabNode("CyclopsPowerModules", "Power Modules", SpriteManager.Get(TechType.PowerUpgradeModule));
+            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule,
+                                            TechType.CyclopsThermalReactorModule);
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarCharger"); // Compatible with the CyclopsSolarPower mod whether you have it or not!
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule"); // Compatible with the CyclopsNuclearPower mod whether you have it or not!
+            cyclopsTab.AddCraftingNode(TechType.CyclopsShieldModule,
                                        TechType.CyclopsSonarModule,
                                        TechType.CyclopsSeamothRepairModule,
                                        TechType.CyclopsFireSuppressionModule,
-                                       TechType.CyclopsDecoyModule,
-                                       TechType.CyclopsThermalReactorModule);
-            cyclopsTab.AddModdedCraftingNode("CyclopsSolarCharger"); // Compatible with the CyclopsSolarPower mod whether you have it or not!
-            cyclopsTab.AddModdedCraftingNode("CyclopsNuclearModule"); // Compatible with the CyclopsNuclearPower mod whether you have it or not!
+                                       TechType.CyclopsDecoyModule);
 
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
@@ -94,11 +95,12 @@
             seamothDepthTab.AddCraftingNode(TechType.VehicleHullModule1,
                                             TechType.VehicleHullModule2,
                                             TechType.VehicleHullModule3);
-            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule4");
-            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5");
+            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule4"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
+            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!           
             seamothTab.AddCraftingNode(TechType.SeamothSolarCharge,
                                        TechType.SeamothElectricalDefense,
                                        TechType.SeamothSonarModule);
+            seamothTab.AddModdedCraftingNode("SeamothThermalModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
 
             var commonTab = rootNode.AddTabNode("CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"));
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
@@ -150,10 +152,11 @@
             constructible.techType = VModFabTechType; // This was necessary to correctly associate the recipe at building time
 
             // Set the custom texture
-            var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_blue");
+            var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_cyan");
             var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.material.mainTexture = blueTexture;
-            skinnedMeshRenderer.material.color = Color.white;
+
+            //skinnedMeshRenderer.material.color = Color.white;
 
             return prefab;
         }

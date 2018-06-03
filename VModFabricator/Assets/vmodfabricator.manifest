@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1502673801
+CRC: 3540453627
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 1bba0a5dc0d24a741dd9565d1d020235
+    Hash: b3a0dbc5f9a7fbfc78eee35458319d90
   TypeTreeHash:
     serializedVersion: 2
     Hash: 21f0dc8ebad690f009368069428e0a1a
@@ -14,6 +14,6 @@ ClassTypes:
 - Class: 213
   Script: {instanceID: 0}
 Assets:
-- Assets/fabricator_icon_blue.png
-- Assets/submarine_fabricator_blue.png
+- Assets/fabricator_icon_cyan.png
+- Assets/submarine_fabricator_cyan.png
 Dependencies: []
