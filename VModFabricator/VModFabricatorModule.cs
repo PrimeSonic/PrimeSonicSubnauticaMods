@@ -94,6 +94,8 @@
             seamothDepthTab.AddCraftingNode(TechType.VehicleHullModule1,
                                             TechType.VehicleHullModule2,
                                             TechType.VehicleHullModule3);
+            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule4");
+            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5");
             seamothTab.AddCraftingNode(TechType.SeamothSolarCharge,
                                        TechType.SeamothElectricalDefense,
                                        TechType.SeamothSonarModule);

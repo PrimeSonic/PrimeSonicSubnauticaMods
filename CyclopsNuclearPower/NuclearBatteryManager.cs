@@ -99,14 +99,16 @@
 
                 var batteryInSlot = CyclopsConsoles[cyclopsId][slot];
 
-                if (batteryInSlot == null || batteryInSlot.charge == NoCharge)
-                    continue; // No nuclear battery in this slot or its out of charge
-
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
+
+                if (batteryInSlot == null || // No known battery reference
+                    techTypeInSlot != QPatch.CyNukBatteryType || // Type is equipment slot is not a nuclear battery module
+                    batteryInSlot.charge == NoCharge) // The battery module is empty
+                    continue; // Skip this slot
 
                 if (powerDeficit > 0) // There is still power left to charge                    
                 {
-                    float chargeAmt = ChargeRate;
+                    float chargeAmt = Mathf.Min(powerDeficit, ChargeRate);
 
                     if (batteryInSlot.charge > chargeAmt)
                     {

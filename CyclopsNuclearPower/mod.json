@@ -2,7 +2,7 @@
   "Id": "CyclopsNuclearPower",
   "DisplayName": "CyclopsNuclearPower",
   "Author": "PrimeSonic",
-  "Version": "1.0.1",
+  "Version": "1.0.2",
   "Requires": [ ],
   "Enable": true,
   "AssemblyName": "CyclopsNuclearPower.dll",
