@@ -13,7 +13,7 @@
                 return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
             }
 
-            PowerIndexManager.UpdatePowerIndex(ref __instance);
+           PowerIndexManager.UpdatePowerIndex(ref __instance);           
         }
     }
 }

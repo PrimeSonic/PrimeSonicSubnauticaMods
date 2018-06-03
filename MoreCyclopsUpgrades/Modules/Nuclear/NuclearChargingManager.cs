@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades
 {
+    using System;
     using UnityEngine;
     using Object = UnityEngine.Object;
 
@@ -25,40 +26,51 @@
             }
 
             Equipment modules = __instance.upgradeConsole.modules;
-            if (powerDeficit > 0) // There is still power left to charge                    
+            try
             {
-                foreach (string slotName in SlotHelper.SlotNames)
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[NuclearChargingManager] - " + ex.ToString());
+            }
+            foreach (string slotName in SlotHelper.SlotNames)
+            {
+                if (powerDeficit <= 0f) // No power deficit left to charge
+                    break;
+
+                TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
+
+                if (techTypeInSlot != NuclearCharger.CyNukBatteryType)
+                    continue; // Type in equipment slot is not a nuclear battery module.
+
+                InventoryItem item = modules.GetItemInSlot(slotName);
+                
+                Battery batteryInSlot = item.item.GetComponent<Battery>();
+
+                if (batteryInSlot.charge == NoCharge) // The battery module is empty
+                    continue; // Empty battery.
+
+                float chargeAmt = Mathf.Min(powerDeficit, ChargeRate);
+
+                if (batteryInSlot.charge > chargeAmt)
                 {
-                    TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
-
-                    if (techTypeInSlot != NuclearCharger.CyNukBatteryType)
-                        continue; // Type in equipment slot is not a nuclear battery module. Skip.
-
-                    Battery batteryInSlot = modules.GetItemInSlot(slotName).item.GetComponent<Battery>();
-
-                    if (batteryInSlot.charge == NoCharge) // The battery module is empty
-                        continue; // Empty battery. Skip.
-
-                    float chargeAmt = Mathf.Min(powerDeficit, ChargeRate);
-
-                    if (batteryInSlot.charge > chargeAmt)
-                    {
-                        batteryInSlot.charge -= chargeAmt;
-                    }
-                    else // Similar to how the Nuclear Reactor handles depleated reactor rods
-                    {
-                        chargeAmt = batteryInSlot.charge;
-                        batteryInSlot.charge = NoCharge; // Just in case something goes wrong below
-
-                        InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
-                        Object.Destroy(inventoryItem.item.gameObject);
-                        modules.AddItem(slotName, SpawnDepletedRod(), true);
-                    }
-
-                    powerDeficit -= chargeAmt; // This is to prevent draining more than needed when topping up the batteries mid-cycle
-
-                    __instance.powerRelay.AddEnergy(chargeAmt, out float amtStored);
+                    batteryInSlot.charge -= chargeAmt;
                 }
+                else // Similar to how the Nuclear Reactor handles depleated reactor rods
+                {
+                    chargeAmt = batteryInSlot.charge;
+                    batteryInSlot.charge = NoCharge; // Just in case something goes wrong below
+
+                    InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
+                    Object.Destroy(inventoryItem.item.gameObject);
+                    modules.AddItem(slotName, SpawnDepletedRod(), true);
+                }
+
+                powerDeficit -= chargeAmt; // This is to prevent draining more than needed when topping up the batteries mid-cycle
+
+                __instance.powerRelay.AddEnergy(chargeAmt, out float amtStored);
+
             }
         }
 

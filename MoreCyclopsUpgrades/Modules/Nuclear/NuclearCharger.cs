@@ -43,8 +43,8 @@
                              {
                                  // This is to validate that the player has access to nuclear power already
                                  new IngredientHelper(TechType.ReactorRod, 1),
-                                 new IngredientHelper(TechType.Lubricant, 2),
-                                 new IngredientHelper(TechType.EnameledGlass, 2),
+                                 new IngredientHelper(TechType.Lubricant, 1),
+                                 new IngredientHelper(TechType.EnameledGlass, 1),
                                  new IngredientHelper(TechType.ComputerChip, 1),
                                  new IngredientHelper(TechType.WiringKit, 1),
                                  new IngredientHelper(TechType.PlasteelIngot, 1)

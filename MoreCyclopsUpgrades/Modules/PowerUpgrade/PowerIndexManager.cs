@@ -56,7 +56,16 @@
 
             FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            fieldInfo.SetValue(__instance, EnginePowerRatings[powerIndex]);
+            var originalRating = fieldInfo.GetValue(__instance);
+            var currentRating = EnginePowerRatings[powerIndex];
+
+            fieldInfo.SetValue(__instance, currentRating);
+
+            if ((float)originalRating != currentRating)
+            {
+                string format = Language.main.GetFormat("PowerRatingNowFormat", currentRating);
+                ErrorMessage.AddMessage(format);
+            }
         }
 
         private static int GetPowerIndex(Equipment modules)
