@@ -17,6 +17,7 @@
                 return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
             }
 
+            // Solar charging is safe even if batteries are fully drained
             SolarChargingManager.UpdateSolarCharger(ref __instance);
 
             bool cyclopsHasPowerCells = __instance.powerRelay.GetPowerStatus() == PowerSystem.Status.Normal;
@@ -28,6 +29,7 @@
                 return;
             }            
 
+            // Just to be safe, we won't drain the nuclear batteries if it's possible that all powercells were removed
             NuclearChargingManager.UpdateNuclearBatteryCharges(ref __instance);
         }
     }

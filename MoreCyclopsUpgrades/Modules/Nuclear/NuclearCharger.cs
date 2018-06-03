@@ -11,17 +11,18 @@
         public static TechType CyNukBatteryType { get; private set; }
         public const string NameId = "CyclopsNuclearModule";
         public const string FriendlyName = "Cyclops Nuclear Charger";
+        public const string Description = "Portable nuclear power for your Cyclops. The days of running out of power are over.";
 
-        public static void Patch()
+        public static void Patch(AssetBundle assetBundle)
         {
             // Create a new TechType
-            CyNukBatteryType = TechTypePatcher.AddTechType(NameId, FriendlyName, "Portable nuclear power for your Cyclops. The days of running out of power are over.", unlockOnGameStart: true);
+            CyNukBatteryType = TechTypePatcher.AddTechType(NameId, FriendlyName, Description, unlockOnGameStart: true);
 
             // Create the in-game item that will behave like any other Cyclops upgrade module
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameId, $"WorldEntities/Tools/{NameId}", CyNukBatteryType, GetGameObject));
 
             // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(CyNukBatteryType, AssetBundle.LoadFromFile(@"./QMods/CyclopsNuclearPower/Assets/cyclopsnuclearpower.assets").LoadAsset<Sprite>("CyNukIcon")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(CyNukBatteryType, assetBundle.LoadAsset<Sprite>("CyNukIcon")));
 
             // Add the new recipe to the Modification Station crafting tree
             CraftTreePatcher.customNodes.Add(new CustomCraftNode(CyNukBatteryType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameId}"));

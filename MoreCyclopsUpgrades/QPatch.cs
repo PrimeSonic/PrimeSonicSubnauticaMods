@@ -2,17 +2,22 @@
 {
     using System.Reflection;
     using Harmony;
+    using UnityEngine;
 
     // QMods by qwiso https://github.com/Qwiso/QModManager
     public class QPatch
     {
+        private const string ModName = "MoreCyclopsUpgrades";
+
         public static void Patch()
         {
-            SolarCharger.Patch();
+            var assetBundle = AssetBundle.LoadFromFile($"./QMods/{ModName}/Assets/{ModName.ToLower()}.assets");
 
-            NuclearCharger.Patch();
+            SolarCharger.Patch(assetBundle);
 
-            HarmonyInstance harmony = HarmonyInstance.Create("com.MoreCyclopsUpgrades.psmod");
+            NuclearCharger.Patch(assetBundle);
+
+            HarmonyInstance harmony = HarmonyInstance.Create($"com.{ModName}.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }
