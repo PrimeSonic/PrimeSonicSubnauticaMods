@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System.Collections.Generic;
     using UnityEngine;
     using Object = UnityEngine.Object;
 
@@ -9,61 +8,9 @@
     /// </summary>
     internal static class NuclearChargingManager
     {
-        private class NuclearBatterySlots : Dictionary<int, Battery>
-        {
-            public NuclearBatterySlots() : base(SlotHelper.SlotCount)
-            {
-                this[0] = null;
-                this[1] = null;
-                this[2] = null;
-                this[3] = null;
-                this[4] = null;
-                this[5] = null;
-            }
-        }
-
-        private const float NoCharge = 0f;        
+        private const float NoCharge = 0f;
         private const float ChargeRate = 0.15f; // This is pretty damn fast but it makes sense for what it is.
-
         internal const float MaxCharge = 12000f; // Less than the normal 20k for balance
-
-        // Just in case someone decides to use this mod with more than one Cyclops in the game.
-        private static readonly Dictionary<int, NuclearBatterySlots> CyclopsConsoles = new Dictionary<int, NuclearBatterySlots>();
-
-        /// <summary>
-        /// Keeps track of the nuclear batteries so they can be easily updated as they charge the Cyclops.
-        /// </summary>        
-        public static void SetNuclearBatterySlots(ref SubRoot __instance)
-        {
-            int cyclopsId = __instance.GetInstanceID();
-
-            if (!CyclopsConsoles.ContainsKey(cyclopsId))
-                CyclopsConsoles[cyclopsId] = new NuclearBatterySlots();
-
-            Equipment modules = __instance.upgradeConsole.modules;
-
-            for (int slot = 0; slot < SlotHelper.SlotCount; slot++)
-            {
-                string slotName = SlotHelper.SlotNames[slot];
-
-                TechType typeInSlot = modules.GetTechTypeInSlot(slotName);
-
-                var item = modules.GetItemInSlot(slotName);
-
-                if (typeInSlot == TechType.None && // Slot is now empty
-                    CyclopsConsoles[cyclopsId][slot] != null) // Nuclear battery for this slot was not empty
-                {
-                    // Remove nuclear battery from slot
-                    CyclopsConsoles[cyclopsId][slot] = null;
-                }
-                else if (typeInSlot == NuclearCharger.CyNukBatteryType && // Slot now has a Cyclops Nuclear Module
-                    CyclopsConsoles[cyclopsId][slot] == null) // There was no nuclear battery on this slot
-                {
-                    // Add nuclear battery to slot
-                    CyclopsConsoles[cyclopsId][slot] = item.item.GetComponent<Battery>();
-                }
-            }
-        }
 
         /// <summary>
         /// Updates the nuclear battery charges and replaces them with Depleted Reactor Rods when they fully drain.
@@ -80,24 +27,21 @@
             }
 
             Equipment modules = __instance.upgradeConsole.modules;
-
-            for (int slot = 0; slot < SlotHelper.SlotCount; slot++)
+            if (powerDeficit > 0) // There is still power left to charge                    
             {
-                string slotName = SlotHelper.SlotNames[slot];
 
-                var bat = modules.GetItemInSlot(slotName);
-
-                var batteryInSlot = CyclopsConsoles[cyclopsId][slot];
-
-                TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
-
-                if (batteryInSlot == null || // No known battery reference
-                    techTypeInSlot != NuclearCharger.CyNukBatteryType || // Type is equipment slot is not a nuclear battery module
-                    batteryInSlot.charge == NoCharge) // The battery module is empty
-                    continue; // Skip this slot
-
-                if (powerDeficit > 0) // There is still power left to charge                    
+                foreach (string slotName in SlotHelper.SlotNames)
                 {
+                    TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
+
+                    if (techTypeInSlot != NuclearCharger.CyNukBatteryType)
+                        continue; // Type in equipment slot is not a nuclear battery module. Skip.
+
+                    Battery batteryInSlot = modules.GetItemInSlot(slotName).item.GetComponent<Battery>();
+
+                    if (batteryInSlot.charge == NoCharge) // The battery module is empty
+                        continue; // Empty battery. Skip.
+
                     float chargeAmt = Mathf.Min(powerDeficit, ChargeRate);
 
                     if (batteryInSlot.charge > chargeAmt)
