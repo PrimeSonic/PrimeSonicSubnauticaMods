@@ -14,10 +14,12 @@
 
         public const string NameID = "CyclopsSolarCharger";
 
+        public const string FriendlyName = "Cyclops Solar Charger";
+
         public static void Patch()
         {
             // Create a new TechType
-            CySolarChargerTechType = TechTypePatcher.AddTechType(NameID, "Cyclops Solar Charger", "Recharges the Cyclops' power cells while in sunlight. Stack multiple for even faster charging!", true);
+            CySolarChargerTechType = TechTypePatcher.AddTechType(NameID, FriendlyName, "Recharges the Cyclops' power cells while in sunlight. Stack multiple for even faster charging!", true);
 
             // Create a new Recipie
             var cySolarChargerRecipe = new TechDataHelper()

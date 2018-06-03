@@ -17,8 +17,6 @@
         /// </summary>
         public static void UpdateNuclearBatteryCharges(ref SubRoot __instance)
         {
-            int cyclopsId = __instance.GetInstanceID();
-
             float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();
 
             if (powerDeficit == 0f)
@@ -29,7 +27,6 @@
             Equipment modules = __instance.upgradeConsole.modules;
             if (powerDeficit > 0) // There is still power left to charge                    
             {
-
                 foreach (string slotName in SlotHelper.SlotNames)
                 {
                     TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
@@ -51,12 +48,11 @@
                     else // Similar to how the Nuclear Reactor handles depleated reactor rods
                     {
                         chargeAmt = batteryInSlot.charge;
+                        batteryInSlot.charge = NoCharge; // Just in case something goes wrong below
 
                         InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
                         Object.Destroy(inventoryItem.item.gameObject);
                         modules.AddItem(slotName, SpawnDepletedRod(), true);
-
-                        batteryInSlot.charge = NoCharge;
                     }
 
                     powerDeficit -= chargeAmt; // This is to prevent draining more than needed when topping up the batteries mid-cycle
