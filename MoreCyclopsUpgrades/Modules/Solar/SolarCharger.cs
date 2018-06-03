@@ -11,9 +11,7 @@
         public static TechType CySolarChargerTechType { get; private set; }
 
         public const string NameID = "CyclopsSolarCharger";
-
         public const string FriendlyName = "Cyclops Solar Charger";
-
         public const string Description = "Recharges the Cyclops' power cells while in sunlight. Stack multiple for even faster charging!";
 
         public static void Patch(AssetBundle assetBundle)

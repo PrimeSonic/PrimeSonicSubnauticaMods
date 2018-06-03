@@ -5,11 +5,7 @@
     [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
-    {
-        /// <summary>
-        /// This patch method handles actually providing charge to the Cyclops 
-        /// while the <see cref="NuclearChargingManager"/> tracks the nuclear battery charge.
-        /// </summary>        
+    {               
         public static void Postfix(ref SubRoot __instance)
         {
             if (__instance.upgradeConsole == null)
