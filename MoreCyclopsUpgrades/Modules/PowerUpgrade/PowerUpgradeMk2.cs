@@ -43,8 +43,8 @@
                 _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
                              {
                                  new IngredientHelper(TechType.PowerUpgradeModule, 1),
-                                 new IngredientHelper(TechType.Sulphur, 2),
-                                 new IngredientHelper(TechType.Aerogel, 2)                                 
+                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 1),
+                                 new IngredientHelper(TechType.Sulphur, 2)                                 
                              }),
                 _techType = Power2TechType
             };

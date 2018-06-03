@@ -8,6 +8,11 @@
     {
         public static void Postfix(ref SubRoot __instance)
         {
+            if (__instance.upgradeConsole == null)
+            {
+                return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
+            }
+
             PowerIndexManager.UpdatePowerIndex(ref __instance);
         }
     }

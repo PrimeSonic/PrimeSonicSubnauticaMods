@@ -44,22 +44,19 @@
 
         public static void UpdatePowerIndex(ref SubRoot __instance)
         {
-            if (__instance.upgradeConsole != null)
-            {
-                Equipment modules = __instance.upgradeConsole.modules;
+            Equipment modules = __instance.upgradeConsole.modules;
 
-                int powerIndex = GetPowerIndex(modules);
+            int powerIndex = GetPowerIndex(modules);
 
-                __instance.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+            __instance.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
 
-                __instance.sonarPowerCost = SonarPowerCosts[powerIndex];
+            __instance.sonarPowerCost = SonarPowerCosts[powerIndex];
 
-                __instance.shieldPowerCost = ShieldPowerCosts[powerIndex];
+            __instance.shieldPowerCost = ShieldPowerCosts[powerIndex];
 
-                FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                fieldInfo.SetValue(__instance, EnginePowerRatings[powerIndex]);
-            }
+            fieldInfo.SetValue(__instance, EnginePowerRatings[powerIndex]);
         }
 
         private static int GetPowerIndex(Equipment modules)

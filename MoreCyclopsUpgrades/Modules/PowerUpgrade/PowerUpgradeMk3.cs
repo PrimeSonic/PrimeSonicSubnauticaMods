@@ -10,7 +10,7 @@
     {
         public static TechType Power3TechType { get; private set; }
 
-        public const string NameID = "PowerUpgradeModuleMk2";
+        public const string NameID = "PowerUpgradeModuleMk3";
         public const string FriendlyName = "Cyclops Engine Efficiency Module MK3";
         public const string Description = "Maximum engine efficiency. Silent running, Sonar, and Shield greatly optimized.  Does not stack.";
 
