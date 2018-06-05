@@ -13,6 +13,7 @@
             var assetBundle = AssetBundle.LoadFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/morecyclopsupgrades.assets");
 
             SolarCharger.Patch(assetBundle);
+            SolarChargerMk2.Patch(assetBundle);
             NuclearCharger.Patch(assetBundle);
             PowerUpgradeMk2.Patch(assetBundle);
             PowerUpgradeMk3.Patch(assetBundle);
