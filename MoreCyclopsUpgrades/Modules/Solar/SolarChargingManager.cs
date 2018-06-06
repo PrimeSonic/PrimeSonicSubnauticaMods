@@ -9,6 +9,7 @@
     {
         private const float BaseChargingFactor = 0.03f;
         private const float Mk2ChargeRateModifier = 1.3f;
+        private const float BaseDrainRate = 0.01f;
         private const float maxDepth = 200f;
         public const float MaxMk2Charge = 100f;
         private const float NoCharge = 0f;
@@ -26,7 +27,7 @@
         {   
             if (solarChargeAmount <= 0)
             {
-                BatteryChargeManager.DrainBattery(ref cyclops, modules, slotName, BaseChargingFactor, ref powerDeficit);
+                BatteryChargeManager.DrainBattery(ref cyclops, modules, slotName, BaseDrainRate, ref powerDeficit);
             }
             else
             {

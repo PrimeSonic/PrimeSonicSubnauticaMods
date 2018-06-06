@@ -8,7 +8,7 @@
     /// </summary>
     internal static class NuclearChargingManager
     {        
-        private const float BaseChargeRate = 0.15f;        
+        private const float BaseDrainRate = 0.15f;        
         internal const float MaxCharge = 12000f; // Less than the normal 20k for balance
 
         /// <summary>
@@ -16,7 +16,7 @@
         /// </summary>
         public static void ChargeFromNuclear(ref SubRoot cyclops, Equipment modules, string slotName, ref float powerDeficit)
         {
-            BatteryState batteryState = BatteryChargeManager.DrainBattery(ref cyclops, modules, slotName, BaseChargeRate, ref powerDeficit);
+            BatteryState batteryState = BatteryChargeManager.DrainBattery(ref cyclops, modules, slotName, BaseDrainRate, ref powerDeficit);
 
             if (batteryState == BatteryState.Empty) // Drained nuclear batteries are handled just like how the Nuclear Reactor handles depleated reactor rods
             {                

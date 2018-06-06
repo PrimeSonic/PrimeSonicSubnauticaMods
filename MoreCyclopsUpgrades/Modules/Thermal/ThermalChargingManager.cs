@@ -6,7 +6,8 @@
     {
         public const float MaxMk2Charge = 100f;
         private const float NoCharge = 0f;
-        private const float BaseChargingFactor = 1.5f;
+        private const float BaseChargingFactor = 1.25f;
+        private const float BaseDrainRate = 0.01f;
 
         public static float GetThermalChargeAmount(ref SubRoot cyclops)
         {
@@ -25,12 +26,10 @@
         {
             if (thermalChargeAmount <= 0)
             {
-                BatteryChargeManager.DrainBattery(ref cyclops, modules, slotName, BaseChargingFactor, ref powerDeficit);
+                BatteryChargeManager.DrainBattery(ref cyclops, modules, slotName, BaseDrainRate, ref powerDeficit);
             }
             else
             {
-                thermalChargeAmount *= BaseChargingFactor; // The Mk2 Solar Charger gets a bonus to it's charge rate
-
                 cyclops.powerRelay.AddEnergy(thermalChargeAmount, out float amtStored);
                 powerDeficit = Mathf.Max(0f, powerDeficit - thermalChargeAmount);
 
