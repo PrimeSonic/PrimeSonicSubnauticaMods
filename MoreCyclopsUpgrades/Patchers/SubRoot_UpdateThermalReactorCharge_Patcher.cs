@@ -29,7 +29,7 @@
                 {
                     SolarChargingManager.ChargeFromSolar(ref __instance, solarChargeAmount, ref powerDeficit);
                 }
-                else if (techTypeInSlot == SolarChargerMk2.CySolarMk2TechType)
+                else if (techTypeInSlot == SolarChargerMk2.SolarMk2TechType)
                 {
                     SolarChargingManager.ChargeFromSolarMk2(ref __instance, modules, solarChargeAmount, slotName, ref powerDeficit);                    
                 }

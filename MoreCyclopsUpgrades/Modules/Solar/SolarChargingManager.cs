@@ -30,7 +30,7 @@
             }
             else
             {
-                solarChargeAmount *= Mk2ChargeRateModifier;
+                solarChargeAmount *= Mk2ChargeRateModifier; // The Mk2 Solar Charger gets a bonus to it's charge rate
 
                 cyclops.powerRelay.AddEnergy(solarChargeAmount, out float amtStored);
                 powerDeficit = Mathf.Max(0f, powerDeficit - solarChargeAmount);
@@ -83,10 +83,10 @@
             {
                 batteryInSlot.charge -= chargeAmt;
             }
-            else
+            else // Battery about to be fully drained
             {
-                chargeAmt = batteryInSlot.charge;
-                batteryInSlot.charge = NoCharge;
+                chargeAmt = batteryInSlot.charge; // Take what's left
+                batteryInSlot.charge = NoCharge; // Set battery to empty
             }
 
             powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop

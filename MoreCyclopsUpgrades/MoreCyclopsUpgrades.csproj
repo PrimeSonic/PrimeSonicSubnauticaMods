@@ -60,6 +60,8 @@
     <Compile Include="Modules\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Solar\SolarChargerMk2.cs" />
     <Compile Include="Modules\Solar\SolarChargingManager.cs" />
+    <Compile Include="Modules\Thermal\ThermalChargerMk2.cs" />
+    <Compile Include="Modules\Thermal\ThermalChargingManager.cs" />
     <Compile Include="Patchers\SubRoot_UpdatePowerRating_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_UpdateThermalReactorCharge_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
