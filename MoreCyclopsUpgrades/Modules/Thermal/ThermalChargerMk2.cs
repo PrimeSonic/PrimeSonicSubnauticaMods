@@ -61,7 +61,7 @@
             var pCell = obj.AddComponent<Battery>();
             pCell.name = FriendlyName;
             pCell._capacity = ThermalChargingManager.MaxMk2Charge;
-            pCell._charge = ThermalChargingManager.MaxMk2Charge;
+            pCell._charge = 0f;
 
             return obj;
         }

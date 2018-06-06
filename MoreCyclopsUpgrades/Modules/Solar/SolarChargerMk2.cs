@@ -62,7 +62,7 @@
             var pCell = obj.AddComponent<Battery>();
             pCell.name = FriendlyName;
             pCell._capacity = SolarChargingManager.MaxMk2Charge;
-            pCell._charge = SolarChargingManager.MaxMk2Charge;
+            pCell._charge = 0f;
 
             return obj;
         }

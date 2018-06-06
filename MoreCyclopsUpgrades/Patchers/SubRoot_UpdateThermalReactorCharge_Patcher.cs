@@ -21,6 +21,8 @@
 
             float solarChargeAmount = SolarChargingManager.GetSolarChargeAmount(ref __instance);
 
+            float thermalChargeAmount = ThermalChargingManager.GetThermalChargeAmount(ref __instance);
+
             foreach (string slotName in SlotHelper.SlotNames)
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
@@ -33,10 +35,14 @@
                 {
                     SolarChargingManager.ChargeFromSolarMk2(ref __instance, modules, solarChargeAmount, slotName, ref powerDeficit);                    
                 }
+                else if (techTypeInSlot == ThermalChargerMk2.ThermalMk2TechType)
+                {
+                    ThermalChargingManager.ChargeFromThermalMk2(ref __instance, modules, solarChargeAmount, slotName, ref powerDeficit);
+                }
                 else if (techTypeInSlot == NuclearCharger.CyNukBatteryType)
                 {
-                    if (!cyclopsHasPowerCells) // Just to be safe, we won't drain the nuclear batteries if there's a chance that all powercells were removed
-                        continue;
+                    if (!cyclopsHasPowerCells) // Just to be safe, we won't drain the nuclear batteries if there's a chance that all powercells were removed.
+                        continue; // Nuclear power cells don't recharge.
 
                     NuclearChargingManager.ChargeFromNuclear(ref __instance, modules, slotName, ref powerDeficit);
                 }
