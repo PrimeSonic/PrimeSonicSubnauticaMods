@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System.Collections.Generic;
     using UnityEngine;
     using Object = UnityEngine.Object;
 
@@ -16,7 +15,7 @@
         /// <summary>
         /// Updates the nuclear battery charges and replaces them with Depleted Reactor Rods when they fully drain.
         /// </summary>
-        public static void DrainNuclearBatteries(ref SubRoot cyclops, Equipment modules, string slotName, ref float powerDeficit)
+        public static void ChargeFromNuclear(ref SubRoot cyclops, Equipment modules, string slotName, ref float powerDeficit)
         {
             if (powerDeficit <= 0f) // No power deficit left to charge
                 return; // Exit

@@ -23,7 +23,7 @@
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", Power3TechType, GetObject));
 
             // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(Power3TechType, assetBundle.LoadAsset<Sprite>("CyPower3Icon")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(Power3TechType, assetBundle.LoadAsset<Sprite>("CyPowerMk3")));
 
             // Add the new recipe to the Modification Station crafting tree
             CraftTreePatcher.customNodes.Add(new CustomCraftNode(Power3TechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));

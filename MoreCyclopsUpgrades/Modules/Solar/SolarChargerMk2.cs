@@ -45,7 +45,7 @@
                                  new IngredientHelper(SolarCharger.CySolarChargerTechType, 1),
                                  new IngredientHelper(TechType.Battery, 2),
                                  new IngredientHelper(TechType.Lithium, 2),
-                                 new IngredientHelper(TechType.Titanium, 1),
+                                 new IngredientHelper(TechType.Titanium, 2),
                              }),
                 _techType = CySolarMk2TechType
             };

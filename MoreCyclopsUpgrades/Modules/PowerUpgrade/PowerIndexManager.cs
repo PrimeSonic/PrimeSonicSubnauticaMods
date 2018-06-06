@@ -42,33 +42,35 @@
             35f  // Power Index 3: 30% cost reduction
         };
 
-        internal static float GetCyclopsPowerRating(ref SubRoot __instance)
+        private static float GetCyclopsPowerRating(ref SubRoot cyclops)
         {
             FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (float)fieldInfo.GetValue(__instance);
+            return (float)fieldInfo.GetValue(cyclops);
         }
 
-        internal static void SetCyclopsPowerRating(ref SubRoot __instance, float rating)
+        private static void SetCyclopsPowerRating(ref SubRoot cyclops, float rating)
         {
             FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo.SetValue(__instance, rating);
+            fieldInfo.SetValue(cyclops, rating);
         }
 
-        internal static void UpdatePowerIndex(ref SubRoot __instance, float originalRating)
+        internal static void UpdatePowerIndex(ref SubRoot cyclops)
         {
-            Equipment modules = __instance.upgradeConsole.modules;
+            float originalRating = GetCyclopsPowerRating(ref cyclops);
+
+            Equipment modules = cyclops.upgradeConsole.modules;
 
             int powerIndex = GetPowerIndex(modules);
 
-            __instance.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
-            __instance.sonarPowerCost = SonarPowerCosts[powerIndex];
-            __instance.shieldPowerCost = ShieldPowerCosts[powerIndex];
+            cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+            cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
+            cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
 
             float nextPowerRating = EnginePowerRatings[powerIndex];
             
             if (originalRating != nextPowerRating)
             {
-                SetCyclopsPowerRating(ref __instance, nextPowerRating);
+                SetCyclopsPowerRating(ref cyclops, nextPowerRating);
                 // Inform the new power rating just like the original method would.
                 string format = Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating);
                 ErrorMessage.AddMessage(format);

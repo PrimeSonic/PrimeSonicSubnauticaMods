@@ -27,19 +27,18 @@
 
                 if (techTypeInSlot == SolarCharger.CySolarChargerTechType)
                 {
-                    SolarChargingManager.AddSolarCharge(ref __instance, solarChargeAmount, ref powerDeficit);
+                    SolarChargingManager.ChargeFromSolar(ref __instance, solarChargeAmount, ref powerDeficit);
                 }
                 else if (techTypeInSlot == SolarChargerMk2.CySolarMk2TechType)
                 {
-                    SolarChargingManager.AddSolarChargeMk2(ref __instance, solarChargeAmount, ref powerDeficit);
-                    SolarChargingManager.ChargeSolarBattery(modules, slotName, solarChargeAmount);
+                    SolarChargingManager.ChargeFromSolarMk2(ref __instance, modules, solarChargeAmount, slotName, ref powerDeficit);                    
                 }
                 else if (techTypeInSlot == NuclearCharger.CyNukBatteryType)
                 {
                     if (!cyclopsHasPowerCells) // Just to be safe, we won't drain the nuclear batteries if there's a chance that all powercells were removed
                         continue;
 
-                    NuclearChargingManager.DrainNuclearBatteries(ref __instance, modules, slotName, ref powerDeficit);
+                    NuclearChargingManager.ChargeFromNuclear(ref __instance, modules, slotName, ref powerDeficit);
                 }
             }
         }
