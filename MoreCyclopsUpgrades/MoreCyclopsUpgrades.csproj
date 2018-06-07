@@ -51,20 +51,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\Nuclear\NuclearCharger.cs" />
-    <Compile Include="Modules\Nuclear\NuclearChargingManager.cs" />
+    <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
+    <Compile Include="Modules\Recharging\Nuclear\NuclearChargingManager.cs" />
+    <Compile Include="Modules\Recharging\PowerChargingManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerIndexManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
     <Compile Include="Modules\SlotHelper.cs" />
-    <Compile Include="Modules\Solar\SolarCharger.cs" />
-    <Compile Include="Modules\Solar\SolarChargingManager.cs" />
+    <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
+    <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />
+    <Compile Include="Modules\Recharging\Solar\SolarChargingManager.cs" />
+    <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
+    <Compile Include="Modules\Recharging\Thermal\ThermalChargingManager.cs" />
     <Compile Include="Patchers\SubRoot_UpdatePowerRating_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_UpdateThermalReactorCharge_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Assets\CyNukIcon.png" />
+    <Content Include="Assets\CyPowerMk2.png" />
+    <Content Include="Assets\CyPowerMk3.png" />
+    <Content Include="Assets\CySolarIcon.png" />
+    <Content Include="Assets\CySolarIconMk2.png" />
+    <Content Include="Assets\ThermalMk2.png" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Assets\morecyclopsupgrades.assets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

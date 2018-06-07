@@ -23,7 +23,7 @@
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", Power3TechType, GetObject));
 
             // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(Power3TechType, assetBundle.LoadAsset<Sprite>("CyPower3Icon")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(Power3TechType, assetBundle.LoadAsset<Sprite>("CyPowerMk3")));
 
             // Add the new recipe to the Modification Station crafting tree
             CraftTreePatcher.customNodes.Add(new CustomCraftNode(Power3TechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
@@ -40,11 +40,12 @@
             return new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
                              {
                                  new IngredientHelper(PowerUpgradeMk2.Power2TechType, 1),
                                  new IngredientHelper(TechType.Kyanite, 2), // More uses for Kyanite!
-                                 new IngredientHelper(TechType.AdvancedWiringKit, 1)
+                                 new IngredientHelper(TechType.Diamond, 1),
+                                 new IngredientHelper(TechType.WiringKit, 1)
                              }),
                 _techType = Power3TechType
             };

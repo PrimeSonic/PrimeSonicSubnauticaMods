@@ -23,7 +23,7 @@
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", Power2TechType, GetObject));
 
             // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(Power2TechType, assetBundle.LoadAsset<Sprite>("CyPower2Icon")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(Power2TechType, assetBundle.LoadAsset<Sprite>("CyPowerMk2")));
 
             // Add the new recipe to the Modification Station crafting tree
             CraftTreePatcher.customNodes.Add(new CustomCraftNode(Power2TechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
@@ -43,7 +43,7 @@
                 _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
                              {
                                  new IngredientHelper(TechType.PowerUpgradeModule, 1),
-                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 1),
+                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 1), // Do you have a Vehicle Upgrade Console?
                                  new IngredientHelper(TechType.Sulphur, 2) // Did you make it to the Lost River yet?
                              }),
                 _techType = Power2TechType

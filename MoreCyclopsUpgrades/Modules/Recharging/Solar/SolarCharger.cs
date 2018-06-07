@@ -12,7 +12,7 @@
 
         public const string NameID = "CyclopsSolarCharger";
         public const string FriendlyName = "Cyclops Solar Charger";
-        public const string Description = "Recharge your Cyclops with the power of the sun itself. Stack multiple for even faster charging.";
+        public const string Description = "Recharge your Cyclops with the power of the sun itself.";
 
         public static void Patch(AssetBundle assetBundle)
         {
@@ -40,8 +40,13 @@
             return new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[1]
-                             { new IngredientHelper(TechType.SeamothSolarCharge, 2) }),
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
+                             {
+                                 new IngredientHelper(TechType.SeamothSolarCharge, 1), // This is to make sure the player has access to vehicle solar charging
+                                 new IngredientHelper(TechType.Quartz, 3),
+                                 new IngredientHelper(TechType.Titanium, 3),
+                                 new IngredientHelper(TechType.CopperWire, 1),
+                             }),
                 _techType = CySolarChargerTechType
             };
         }

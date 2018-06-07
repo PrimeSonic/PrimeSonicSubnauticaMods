@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1625306880
+CRC: 2519364540
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c7b0fb6102dcc5e557d064365cefebd2
+    Hash: d19fe5a74419467707d620f5bd75459f
   TypeTreeHash:
     serializedVersion: 2
     Hash: 21f0dc8ebad690f009368069428e0a1a
@@ -14,8 +14,10 @@ ClassTypes:
 - Class: 213
   Script: {instanceID: 0}
 Assets:
-- Assets/CyPower2Icon.png
-- Assets/CySolarIcon.png
+- Assets/CyPowerMk3.png
 - Assets/CyNukIcon.png
-- Assets/CyPower3Icon.png
+- Assets/CySolarIcon.png
+- Assets/CySolarIconMk2.png
+- Assets/ThermalMk2.png
+- Assets/CyPowerMk2.png
 Dependencies: []

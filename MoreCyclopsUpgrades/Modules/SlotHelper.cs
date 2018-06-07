@@ -3,7 +3,7 @@
     internal static class SlotHelper
     {
         // This is a copy of the private dictionary in SubRoot used to access the module slots.
-        internal static readonly string[] SlotNames = new string[]
+        internal static readonly string[] SlotNames = new string[6]
         {
                 "Module1",
                 "Module2",
