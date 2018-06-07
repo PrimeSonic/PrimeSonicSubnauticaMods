@@ -7,19 +7,25 @@
         Undetermined,
         Empty,
         Charged,
-        Full        
+        Full
     }
 
-    internal static class BatteryChargeManager
+    internal static class PowerChargingManager
     {
+        private const float Mk2ChargeRateModifier = 1.15f;
         internal const float NoCharge = 0f;
+        internal const float MaxMk2Charge = 100f;
 
-        internal static BatteryState ChargeBattery(Equipment modules, string slotName, float addedCharge)
+        internal static Battery GetBatteryInSlot(Equipment modules, string slotName)
         {
             // Get the battery component
             InventoryItem item = modules.GetItemInSlot(slotName);
             Battery batteryInSlot = item.item.GetComponent<Battery>();
+            return batteryInSlot;
+        }
 
+        internal static BatteryState ChargeBattery(Battery batteryInSlot, float addedCharge)
+        {
             batteryInSlot.charge = Mathf.Min(batteryInSlot.capacity, batteryInSlot.charge + addedCharge);
 
             if (batteryInSlot.charge == batteryInSlot.capacity)
@@ -28,14 +34,10 @@
                 return BatteryState.Charged;
         }
 
-        internal static BatteryState DrainBattery(ref SubRoot cyclops, Equipment modules, string slotName, float drainingRate, ref float powerDeficit)
+        internal static BatteryState DrainBattery(ref SubRoot cyclops, Battery batteryInSlot, float drainingRate, ref float powerDeficit)
         {
             if (powerDeficit <= 0f) // No power deficit left to charge
                 return BatteryState.Undetermined; // Exit
-
-            // Get the battery component
-            InventoryItem item = modules.GetItemInSlot(slotName);
-            Battery batteryInSlot = item.item.GetComponent<Battery>();
 
             if (batteryInSlot.charge <= NoCharge) // The battery has no charge left
                 return BatteryState.Empty; // Skip this battery
@@ -62,6 +64,32 @@
             cyclops.powerRelay.AddEnergy(chargeAmt, out float amtStored);
 
             return batteryState;
+        }
+
+        public static void ChargeFromModule(ref SubRoot cyclops, float chargeAmount, ref float powerDeficit)
+        {
+            if (chargeAmount <= 0 || powerDeficit <= 0)
+                return;
+
+            cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
+            powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
+        }
+
+        public static BatteryState ChargeFromModulelMk2(ref SubRoot cyclops, Battery batteryInSlot, float thermalChargeAmount, float batteryDrainRate, ref float powerDeficit)
+        {
+            if (thermalChargeAmount <= 0)
+            {
+                return DrainBattery(ref cyclops, batteryInSlot, batteryDrainRate, ref powerDeficit);
+            }
+            else
+            {
+                thermalChargeAmount *= Mk2ChargeRateModifier;
+
+                cyclops.powerRelay.AddEnergy(thermalChargeAmount, out float amtStored);
+                powerDeficit = Mathf.Max(0f, powerDeficit - thermalChargeAmount);
+
+                return ChargeBattery(batteryInSlot, thermalChargeAmount);
+            }
         }
     }
 }

@@ -43,7 +43,7 @@
                 _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
                              {
                                  new IngredientHelper(TechType.PowerUpgradeModule, 1),
-                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 1),
+                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 1), // Do you have a Vehicle Upgrade Console?
                                  new IngredientHelper(TechType.Sulphur, 2) // Did you make it to the Lost River yet?
                              }),
                 _techType = Power2TechType

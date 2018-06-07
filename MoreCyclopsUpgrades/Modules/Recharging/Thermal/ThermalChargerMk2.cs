@@ -39,11 +39,13 @@
             return new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[6]
                              {
                                  new IngredientHelper(TechType.CyclopsThermalReactorModule, 1),
                                  new IngredientHelper(TechType.Battery, 2),
-                                 new IngredientHelper(TechType.Kyanite, 2),
+                                 new IngredientHelper(TechType.Sulphur, 1),
+                                 new IngredientHelper(TechType.Kyanite, 1),
+                                 new IngredientHelper(TechType.WiringKit, 1),
                                  new IngredientHelper(TechType.CopperWire, 1),
                              }),
                 _techType = ThermalMk2TechType
@@ -60,8 +62,8 @@
 
             var pCell = obj.AddComponent<Battery>();
             pCell.name = FriendlyName;
-            pCell._capacity = ThermalChargingManager.MaxMk2Charge;
-            pCell._charge = 0f;
+            pCell._capacity = PowerChargingManager.MaxMk2Charge;
+            pCell._charge = 0f; // Battery starts empty
 
             return obj;
         }

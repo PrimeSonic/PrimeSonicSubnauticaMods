@@ -6,11 +6,11 @@
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
-        public static void Postfix(ref SubRoot __instance)
+        public static bool Prefix(ref SubRoot __instance)
         {
             if (__instance.upgradeConsole == null)
             {
-                return; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
+                return true;
             }
 
             bool cyclopsHasPowerCells = __instance.powerRelay.GetPowerStatus() == PowerSystem.Status.Normal;
@@ -27,26 +27,36 @@
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
 
-                if (techTypeInSlot == SolarCharger.CySolarChargerTechType)
+                if (techTypeInSlot == SolarCharger.CySolarChargerTechType) // Solar
                 {
-                    SolarChargingManager.ChargeFromSolar(ref __instance, solarChargeAmount, ref powerDeficit);
+                    PowerChargingManager.ChargeFromModule(ref __instance, solarChargeAmount, ref powerDeficit);
                 }
-                else if (techTypeInSlot == SolarChargerMk2.SolarMk2TechType)
+                else if (techTypeInSlot == SolarChargerMk2.SolarMk2TechType) // Solar Mk2
                 {
-                    SolarChargingManager.ChargeFromSolarMk2(ref __instance, modules, solarChargeAmount, slotName, ref powerDeficit);                    
+                    Battery battery = PowerChargingManager.GetBatteryInSlot(modules, slotName);
+                    PowerChargingManager.ChargeFromModulelMk2(ref __instance, battery, solarChargeAmount, SolarChargingManager.BatteryDrainRate, ref powerDeficit);                    
                 }
-                else if (techTypeInSlot == ThermalChargerMk2.ThermalMk2TechType)
+                else if(techTypeInSlot == TechType.CyclopsThermalReactorModule) // Thermal
                 {
-                    ThermalChargingManager.ChargeFromThermalMk2(ref __instance, modules, solarChargeAmount, slotName, ref powerDeficit);
+                    PowerChargingManager.ChargeFromModule(ref __instance, solarChargeAmount, ref powerDeficit);
                 }
-                else if (techTypeInSlot == NuclearCharger.CyNukBatteryType)
+                else if (techTypeInSlot == ThermalChargerMk2.ThermalMk2TechType) // Thermal Mk2
+                {
+                    Battery battery = PowerChargingManager.GetBatteryInSlot(modules, slotName);
+                    PowerChargingManager.ChargeFromModulelMk2(ref __instance, battery, solarChargeAmount, ThermalChargingManager.BatteryDrainRate, ref powerDeficit);
+                }
+                else if (techTypeInSlot == NuclearCharger.CyNukBatteryType) // Nuclear
                 {
                     if (!cyclopsHasPowerCells) // Just to be safe, we won't drain the nuclear batteries if there's a chance that all powercells were removed.
                         continue; // Nuclear power cells don't recharge.
 
-                    NuclearChargingManager.ChargeFromNuclear(ref __instance, modules, slotName, ref powerDeficit);
+                    Battery battery = PowerChargingManager.GetBatteryInSlot(modules, slotName);
+                    BatteryState batteryState = PowerChargingManager.DrainBattery(ref __instance, battery, NuclearChargingManager.BatteryDrainRate, ref powerDeficit);
+                    NuclearChargingManager.HandleDepletedBattery(modules, slotName, batteryState);
                 }
             }
+
+            return false; // No need to execute original method anymore
         }
     }
 }

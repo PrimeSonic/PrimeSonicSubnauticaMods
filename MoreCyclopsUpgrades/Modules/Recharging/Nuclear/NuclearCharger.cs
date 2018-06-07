@@ -46,7 +46,7 @@
                                  new IngredientHelper(TechType.EnameledGlass, 1),
                                  new IngredientHelper(TechType.ComputerChip, 1),
                                  new IngredientHelper(TechType.WiringKit, 1),
-                                 new IngredientHelper(TechType.PlasteelIngot, 1)
+                                 new IngredientHelper(TechType.Nickel, 1)
                              }),
                 _techType = CyNukBatteryType
             };

@@ -31,7 +31,7 @@
             10f, // Power Index 0: Base Value
             10f, // Power Index 1: Base Value
             8f,  // Power Index 2: 20% cost reduction
-            6f   // Power Index 3: 40% cost reduction
+            7f   // Power Index 3: 30% cost reduction
         };
 
         private static readonly float[] ShieldPowerCosts = new[]
@@ -39,7 +39,7 @@
             50f, // Power Index 0: Base Value
             50f, // Power Index 1: Base Value
             42f, // Power Index 2: 16% cost reduction
-            35f  // Power Index 3: 30% cost reduction
+            34f  // Power Index 3: 32% cost reduction
         };
 
         private static float GetCyclopsPowerRating(ref SubRoot cyclops)
