@@ -9,14 +9,14 @@
     internal static class NuclearChargingManager
     {
         internal const float BatteryDrainRate = 0.15f;        
-        internal const float MaxCharge = 12000f; // Less than the normal 20k for balance
+        internal const float MaxCharge = 6000f; // Less than the normal 20k for balance
 
         /// <summary>
         /// Updates the nuclear battery charges and replaces them with Depleted Reactor Rods when they fully drain.
         /// </summary>
-        public static void HandleDepletedBattery(Equipment modules, string slotName, BatteryState batteryState)
+        public static void HandleBatteryDepletion(Equipment modules, string slotName, Battery nuclearBattery)
         {            
-            if (batteryState == BatteryState.Empty) // Drained nuclear batteries are handled just like how the Nuclear Reactor handles depleated reactor rods
+            if (nuclearBattery.charge <= 0f) // Drained nuclear batteries are handled just like how the Nuclear Reactor handles depleated reactor rods
             {                
                 InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
                 Object.Destroy(inventoryItem.item.gameObject);

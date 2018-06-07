@@ -64,6 +64,11 @@
             var rootNode = CraftTreeTypePatcher.CreateCustomCraftTreeAndType(CustomFabAndTreeID, out craftType);
 
             var cyclopsTab = rootNode.AddTabNode("CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"));
+            cyclopsTab.AddCraftingNode(TechType.CyclopsShieldModule,
+                           TechType.CyclopsSonarModule,
+                           TechType.CyclopsSeamothRepairModule,
+                           TechType.CyclopsFireSuppressionModule,
+                           TechType.CyclopsDecoyModule);
             var cyclopsDepthTab = cyclopsTab.AddTabNode("CyclopsDepthModules", "Depth Modules", SpriteManager.Get(TechType.CyclopsHullModule1));
             cyclopsDepthTab.AddCraftingNode(TechType.CyclopsHullModule1,
                                             TechType.CyclopsHullModule2,
@@ -73,14 +78,11 @@
             // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk2");
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk3");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarCharger"); 
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule"); 
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarCharger");
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
             cyclopsPowerTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
-            cyclopsTab.AddCraftingNode(TechType.CyclopsShieldModule,
-                                       TechType.CyclopsSonarModule,
-                                       TechType.CyclopsSeamothRepairModule,
-                                       TechType.CyclopsFireSuppressionModule,
-                                       TechType.CyclopsDecoyModule);
 
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));

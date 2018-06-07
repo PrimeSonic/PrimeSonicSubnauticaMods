@@ -63,8 +63,7 @@
 
             var pCell = obj.AddComponent<Battery>();
             pCell.name = FriendlyName;
-            pCell._capacity = PowerChargingManager.MaxMk2Charge;
-            pCell._charge = 0f; // Battery starts empty
+            pCell._capacity = PowerCharging.MaxMk2Charge;
 
             return obj;
         }

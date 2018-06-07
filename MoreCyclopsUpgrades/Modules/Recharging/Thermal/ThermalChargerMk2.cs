@@ -10,7 +10,7 @@
         public static TechType ThermalMk2TechType { get; private set; }
 
         public const string NameID = "CyclopsThermalChargerMk2";
-        public const string FriendlyName = "Cyclops Thermal Charger Mk2";
+        public const string FriendlyName = "Cyclops Thermal Reactor Mk2";
         public const string Description = "Improved thermal charging and with integrated batteries to store a little extra power for when it get cold.";
 
         public static void Patch(AssetBundle assetBundle)
@@ -62,8 +62,7 @@
 
             var pCell = obj.AddComponent<Battery>();
             pCell.name = FriendlyName;
-            pCell._capacity = PowerChargingManager.MaxMk2Charge;
-            pCell._charge = 0f; // Battery starts empty
+            pCell._capacity = PowerCharging.MaxMk2Charge;
 
             return obj;
         }

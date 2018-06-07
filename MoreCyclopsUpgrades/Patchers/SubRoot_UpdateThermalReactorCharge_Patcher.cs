@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using Harmony;
+    using UnityEngine;
 
     [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
@@ -19,9 +20,14 @@
 
             float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();
 
-            float solarChargeAmount = SolarChargingManager.GetSolarChargeAmount(ref __instance);
+            float availableSolarEnergy = SolarChargingManager.GetSolarChargeAmount(ref __instance);
 
-            float thermalChargeAmount = ThermalChargingManager.GetThermalChargeAmount(ref __instance);
+            float availableThermalEnergy = ThermalChargingManager.GetThermalChargeAmount(ref __instance);
+
+            float surplusPower = 0f;
+            Battery lastBatteryToCharge = null;
+
+            //float powerSurplus = Mathf.
 
             foreach (string slotName in SlotHelper.SlotNames)
             {
@@ -29,31 +35,41 @@
 
                 if (techTypeInSlot == SolarCharger.CySolarChargerTechType) // Solar
                 {
-                    PowerChargingManager.ChargeFromModule(ref __instance, solarChargeAmount, ref powerDeficit);
+                    surplusPower += PowerCharging.ChargeFromModule(ref __instance, availableSolarEnergy, ref powerDeficit);
                 }
                 else if (techTypeInSlot == SolarChargerMk2.SolarMk2TechType) // Solar Mk2
                 {
-                    Battery battery = PowerChargingManager.GetBatteryInSlot(modules, slotName);
-                    PowerChargingManager.ChargeFromModulelMk2(ref __instance, battery, solarChargeAmount, SolarChargingManager.BatteryDrainRate, ref powerDeficit);                    
+                    Battery battery = PowerCharging.GetBatteryInSlot(modules, slotName);
+                    surplusPower += PowerCharging.ChargeFromModulelMk2(ref __instance, battery, availableSolarEnergy, SolarChargingManager.BatteryDrainRate, ref powerDeficit);
+                    if (battery.charge < battery.capacity)
+                        lastBatteryToCharge = battery;
                 }
-                else if(techTypeInSlot == TechType.CyclopsThermalReactorModule) // Thermal
+                else if (techTypeInSlot == TechType.CyclopsThermalReactorModule) // Thermal
                 {
-                    PowerChargingManager.ChargeFromModule(ref __instance, solarChargeAmount, ref powerDeficit);
+                    surplusPower += PowerCharging.ChargeFromModule(ref __instance, availableThermalEnergy, ref powerDeficit);
                 }
                 else if (techTypeInSlot == ThermalChargerMk2.ThermalMk2TechType) // Thermal Mk2
                 {
-                    Battery battery = PowerChargingManager.GetBatteryInSlot(modules, slotName);
-                    PowerChargingManager.ChargeFromModulelMk2(ref __instance, battery, solarChargeAmount, ThermalChargingManager.BatteryDrainRate, ref powerDeficit);
+                    Battery battery = PowerCharging.GetBatteryInSlot(modules, slotName);
+                    surplusPower += PowerCharging.ChargeFromModulelMk2(ref __instance, battery, availableThermalEnergy, ThermalChargingManager.BatteryDrainRate, ref powerDeficit);
+                    if (battery.charge < battery.capacity)
+                        lastBatteryToCharge = battery;
                 }
                 else if (techTypeInSlot == NuclearCharger.CyNukBatteryType) // Nuclear
                 {
                     if (!cyclopsHasPowerCells) // Just to be safe, we won't drain the nuclear batteries if there's a chance that all powercells were removed.
                         continue; // Nuclear power cells don't recharge.
 
-                    Battery battery = PowerChargingManager.GetBatteryInSlot(modules, slotName);
-                    BatteryState batteryState = PowerChargingManager.DrainBattery(ref __instance, battery, NuclearChargingManager.BatteryDrainRate, ref powerDeficit);
-                    NuclearChargingManager.HandleDepletedBattery(modules, slotName, batteryState);
+                    Battery battery = PowerCharging.GetBatteryInSlot(modules, slotName);
+                    PowerCharging.ChargeCyclopsFromBattery(ref __instance, battery, NuclearChargingManager.BatteryDrainRate, ref powerDeficit);
+                    NuclearChargingManager.HandleBatteryDepletion(modules, slotName, battery);
                 }
+            }
+
+            if (powerDeficit <= 0f && surplusPower > 0f && lastBatteryToCharge != null)
+            {
+                // Recycle surplus power back into the batteries that need it
+                lastBatteryToCharge.charge = Mathf.Min(lastBatteryToCharge.capacity, lastBatteryToCharge.charge + surplusPower);
             }
 
             return false; // No need to execute original method anymore
