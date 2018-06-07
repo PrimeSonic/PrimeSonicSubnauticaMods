@@ -12,7 +12,7 @@
 
         public const string NameID = "CyclopsSolarCharger";
         public const string FriendlyName = "Cyclops Solar Charger";
-        public const string Description = "Recharge your Cyclops with the power of the sun itself. Stack multiple for even faster charging.";
+        public const string Description = "Recharge your Cyclops with the power of the sun itself.";
 
         public static void Patch(AssetBundle assetBundle)
         {
