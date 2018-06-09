@@ -15,7 +15,7 @@
         internal const float NoCharge = 0f;
         internal const float MaxMk2Charge = 100f;
 
-        internal static float GetTotalReservePower(Equipment modules)
+        internal static int GetTotalReservePower(Equipment modules)
         {
             float availableReservePower = 0f;
 
@@ -32,7 +32,7 @@
                 }
             }
 
-            return availableReservePower;
+            return Mathf.FloorToInt(availableReservePower);
         }
 
         internal static int GetLastPowerPercentage(ref CyclopsHelmHUDManager cyclopsHUD)

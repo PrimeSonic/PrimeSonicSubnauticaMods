@@ -14,7 +14,7 @@
             if (upgradeConsole == null)
                 return; // safety check
 
-            float currentReservePower = PowerCharging.GetTotalReservePower(upgradeConsole.modules);
+            int currentReservePower = PowerCharging.GetTotalReservePower(upgradeConsole.modules);
 
             float currentBatteryPower = __instance.subRoot.powerRelay.GetPower();
 
