@@ -1,12 +1,45 @@
 ﻿namespace MoreCyclopsUpgrades
 {
+    using System.Reflection;
     using UnityEngine;
+
+    internal struct ReservePower
+    {
+        internal int Current;
+        internal int Capacity;
+    }
 
     internal static class PowerCharging
     {
         private const float Mk2ChargeRateModifier = 1.15f;
         internal const float NoCharge = 0f;
         internal const float MaxMk2Charge = 100f;
+
+        internal static float GetTotalReservePower(Equipment modules)
+        {
+            float availableReservePower = 0f;
+
+            foreach (string slotName in SlotHelper.SlotNames)
+            {
+                TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
+
+                if (techTypeInSlot == SolarChargerMk2.SolarMk2TechType ||
+                    techTypeInSlot == ThermalChargerMk2.ThermalMk2TechType ||
+                    techTypeInSlot == NuclearCharger.CyNukBatteryType)
+                {
+                    Battery battery = GetBatteryInSlot(modules, slotName);
+                    availableReservePower += battery.charge;                    
+                }
+            }
+
+            return availableReservePower;
+        }
+
+        internal static int GetLastPowerPercentage(ref CyclopsHelmHUDManager cyclopsHUD)
+        {
+            FieldInfo fieldInfo = typeof(CyclopsHelmHUDManager).GetField("lastPowerPctUsedForString", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (int)fieldInfo.GetValue(cyclopsHUD);
+        }
 
         internal static Battery GetBatteryInSlot(Equipment modules, string slotName)
         {

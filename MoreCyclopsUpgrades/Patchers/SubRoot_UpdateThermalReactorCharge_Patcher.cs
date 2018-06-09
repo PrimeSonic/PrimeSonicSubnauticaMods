@@ -7,6 +7,7 @@
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
+
         public static bool Prefix(ref SubRoot __instance)
         {
             if (__instance.upgradeConsole == null)
@@ -26,8 +27,6 @@
 
             float surplusPower = 0f;
             Battery lastBatteryToCharge = null;
-
-            //float powerSurplus = Mathf.
 
             foreach (string slotName in SlotHelper.SlotNames)
             {
