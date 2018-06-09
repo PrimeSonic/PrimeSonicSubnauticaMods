@@ -5,6 +5,7 @@
     using SMLHelper.Patchers;
     using UnityEngine;
     using System.Reflection;
+    using Common;
 
     public class VModFabricatorModule
     {
@@ -141,9 +142,7 @@
             var powerRelay = new PowerRelay();
             // Ignore any errors you see about this fabricator not having a power relay in its parent. It does and it works.
 
-
-            FieldInfo fieldInfo = typeof(GhostCrafter).GetField("powerRelay", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-            fieldInfo.SetValue(fabricator, powerRelay);
+            fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
 
             // Set where this can be built
             var constructible = prefab.GetComponent<Constructable>();

@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System.Reflection;
+    using Common;
 
     /// <summary>
     /// Power Index 0: No efficiency modules equipped.
@@ -10,6 +10,8 @@
     /// </summary>    
     internal static class PowerIndexManager
     {
+        private const string currentPowerRatingField = "currPowerRating";
+
         private static readonly float[] EnginePowerRatings = new[]
         {
             1f, // Power Index 0: Base Value
@@ -42,21 +44,9 @@
             34f  // Power Index 3: 32% cost reduction
         };
 
-        private static float GetCyclopsPowerRating(ref SubRoot cyclops)
-        {
-            FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (float)fieldInfo.GetValue(cyclops);
-        }
-
-        private static void SetCyclopsPowerRating(ref SubRoot cyclops, float rating)
-        {
-            FieldInfo fieldInfo = typeof(SubRoot).GetField("currPowerRating", BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo.SetValue(cyclops, rating);
-        }
-
         internal static void UpdatePowerIndex(ref SubRoot cyclops)
         {
-            float originalRating = GetCyclopsPowerRating(ref cyclops);
+            float originalRating = (float)cyclops.GetPrivateField(currentPowerRatingField);
 
             Equipment modules = cyclops.upgradeConsole.modules;
 
@@ -70,7 +60,7 @@
             
             if (originalRating != nextPowerRating)
             {
-                SetCyclopsPowerRating(ref cyclops, nextPowerRating);
+                cyclops.SetPrivateField(currentPowerRatingField, nextPowerRating);
                 // Inform the new power rating just like the original method would.
                 string format = Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating);
                 ErrorMessage.AddMessage(format);

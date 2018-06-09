@@ -53,4 +53,7 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetPath)" "D:\SteamApps\steamapps\common\Subnautica\QMods\VehicleUpgradesInCyclops\" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

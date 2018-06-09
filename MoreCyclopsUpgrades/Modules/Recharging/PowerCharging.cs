@@ -1,13 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System.Reflection;
+    using Common;
     using UnityEngine;
-
-    internal struct ReservePower
-    {
-        internal int Current;
-        internal int Capacity;
-    }
 
     internal static class PowerCharging
     {
@@ -28,7 +22,7 @@
                     techTypeInSlot == NuclearCharger.CyNukBatteryType)
                 {
                     Battery battery = GetBatteryInSlot(modules, slotName);
-                    availableReservePower += battery.charge;                    
+                    availableReservePower += battery.charge;
                 }
             }
 
@@ -37,8 +31,7 @@
 
         internal static int GetLastPowerPercentage(ref CyclopsHelmHUDManager cyclopsHUD)
         {
-            FieldInfo fieldInfo = typeof(CyclopsHelmHUDManager).GetField("lastPowerPctUsedForString", BindingFlags.NonPublic | BindingFlags.Instance);
-            return (int)fieldInfo.GetValue(cyclopsHUD);
+            return (int)cyclopsHUD.GetPrivateField("lastPowerPctUsedForString");
         }
 
         internal static Battery GetBatteryInSlot(Equipment modules, string slotName)
@@ -62,7 +55,7 @@
 
             if (batteryInSlot.charge > chargeAmt)
             {
-                batteryInSlot.charge -= chargeAmt;                
+                batteryInSlot.charge -= chargeAmt;
             }
             else // Battery about to be fully drained
             {
@@ -85,7 +78,7 @@
 
             cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
-                        
+
             return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
         }
 
@@ -108,7 +101,7 @@
 
             cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
-            
+
             batteryInSlot.charge = Mathf.Min(batteryInSlot.capacity, batteryInSlot.charge + chargeAmount);
 
             return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power

@@ -95,4 +95,9 @@
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(TargetPath)" "D:\SteamApps\steamapps\common\Subnautica\QMods\MoreCyclopsUpgrades\" /Y
+xcopy "$(TargetDir)Assets\morecyclopsupgrades.assets" "D:\SteamApps\steamapps\common\Subnautica\QMods\MoreCyclopsUpgrades\Assets\" /Y
+xcopy "$(TargetDir)Assets\morecyclopsupgrades.manifest" "D:\SteamApps\steamapps\common\Subnautica\QMods\MoreCyclopsUpgrades\Assets" /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ConfigManagement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimpleLogger.cs" />
   </ItemGroup>
 </Project>
