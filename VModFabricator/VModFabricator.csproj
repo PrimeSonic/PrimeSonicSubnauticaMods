@@ -79,6 +79,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetPath)" "D:\SteamApps\steamapps\common\Subnautica\QMods\VModFabricator\" /Y
+xcopy "$(TargetDir)\mod.json" "D:\SteamApps\steamapps\common\Subnautica\QMods\VModFabricator\" /Y
 xcopy "$(TargetDir)Assets\vmodfabricator.assets" "D:\SteamApps\steamapps\common\Subnautica\QMods\VModFabricator\Assets\" /Y
 xcopy "$(TargetDir)Assets\vmodfabricator.manifest" "D:\SteamApps\steamapps\common\Subnautica\QMods\VModFabricator\Assets" /Y</PostBuildEvent>
   </PropertyGroup>
