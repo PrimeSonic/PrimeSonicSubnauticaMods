@@ -6,81 +6,38 @@
     using System.IO;
     using System.Text.RegularExpressions;
     using Oculus.Newtonsoft.Json;
+    using SMLHelper.Patchers;
 
-    internal class ModifiedSize
+    internal class ModifiedSize : SerialDefinition
     {
-        private static readonly Regex ModSizeRegex = new Regex(@"\(\s?TechType:\s?([a-zA-Z]+);\s?Width:\s?(\d);\s?Height:\s?(\d)\s?\)", RegexOptions.Compiled);
-
-        internal TechType InventoryItem { get; set; }
-        internal int Width { get; set; }
-        internal int Height { get; set; }
-
-        internal static IList<ModifiedSize> Parse(string[] serializedStrings)
+        internal TechType ItemID
         {
-            var list = new List<ModifiedSize>(serializedStrings.Length);
-
-            foreach (string item in serializedStrings)
-            {
-                var modSize = Parse(item);
-
-                if (modSize != null)
-                    list.Add(modSize);
-            }
-
-            if (list.Count > 0)
-                return list;
-
-            return null;
+            get => (Properties["ItemID"] as TechTypeValue).GetTypedValue1();
+            set => (Properties["ItemID"] as TechTypeValue).Value1 = value.ToString();
         }
 
-        internal static ModifiedSize Parse(string serialized)
+        internal int AmountCrafted
         {
-            Match match = ModSizeRegex.Match(serialized);
-
-            if (match.Success)
-            {
-                if (match.Groups.Count < 4)
-                {
-                    Logger.Log($"Error parsing Modified size string: {serialized}");
-                    return null;
-                }
-
-                string techTypeGroup = match.Groups[1].Value;
-                string widthGroup = match.Groups[2].Value;
-                string heightGroup = match.Groups[3].Value;
-
-                TechType techType;
-                int width;
-                int height;
-
-                try
-                {
-                    techType = (TechType)Enum.Parse(typeof(TechType), techTypeGroup);
-                    width = int.Parse(widthGroup);
-                    height = int.Parse(heightGroup);
-
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log($"Error parsing Modified size string: {serialized}", ex.ToString());
-                    return null;
-                }
-
-                return new ModifiedSize
-                {
-                    InventoryItem = techType,
-                    Width = width,
-                    Height = height
-                };
-            }
-
-            Logger.Log($"Error parsing Modified size string: {serialized}", "");
-            return null;
+            get => (Properties["AmountCrafted"] as SingleValue<int>).GetTypedValue1();
+            set => (Properties["AmountCrafted"] as SingleValue<int>).Value1 = value.ToString();
         }
 
-        public override string ToString()
+        internal List<IngredientHelper> Ingredients
         {
-            return $"(TechType:{InventoryItem};Width:{Width};Height:{Height})";
+            get;
+            set;
+        }
+
+        internal ModifiedSize()
+            : base("Size", new Dictionary<string, ValueType>()
+            {
+                { "ItemID", new TechTypeValue() },
+                { "AmountCrafted", new SingleValue<int>() },
+                { "Ingredients", new DoubleList<string,int>() },
+                { "LinkedItemIDs", new SingleList<string>() },
+            })
+        {
+
         }
     }
 }

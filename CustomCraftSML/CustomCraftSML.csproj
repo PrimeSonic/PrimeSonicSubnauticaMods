@@ -54,6 +54,7 @@
     <Compile Include="PublicAPI\PathHelper.cs" />
     <Compile Include="Serialization\ModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedSize.cs" />
+    <Compile Include="Serialization\PropertyNode.cs" />
     <Compile Include="Serialization\UserFileManager.cs" />
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
