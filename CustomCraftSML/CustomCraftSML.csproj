@@ -52,9 +52,9 @@
     <Compile Include="PublicAPI\CraftingPath.cs" />
     <Compile Include="PublicAPI\CustomCraft.cs" />
     <Compile Include="PublicAPI\PathHelper.cs" />
-    <Compile Include="Serialization\ModifiedRecipe.cs" />
-    <Compile Include="Serialization\ModifiedSize.cs" />
-    <Compile Include="Serialization\PropertyNode.cs" />
+    <Compile Include="Serialization\EasyMarkup\DoubleQueue.cs" />
+    <Compile Include="Serialization\EasyMarkup\EasyMarkupFamily.cs" />
+    <Compile Include="Serialization\EasyMarkup\StringBuffer.cs" />
     <Compile Include="Serialization\UserFileManager.cs" />
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
