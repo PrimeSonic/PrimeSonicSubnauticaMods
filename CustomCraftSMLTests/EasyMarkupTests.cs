@@ -337,11 +337,60 @@
 
             Assert.AreEqual(2, compList.Collections.Count);
 
-            Assert.AreEqual("Val1", ((EmProperty<string>)compList.Collections[0]["Nstring"]).Value);
-            Assert.AreEqual(2, ((EmProperty<int>)compList.Collections[0]["Nint"]).Value);
+            Assert.AreEqual("Val1", ((EmProperty<string>)compList[0]["Nstring"]).Value);
+            Assert.AreEqual(2, ((EmProperty<int>)compList[0]["Nint"]).Value);
 
-            Assert.AreEqual("Val3", ((EmProperty<string>)compList.Collections[1]["Nstring"]).Value);
-            Assert.AreEqual(4, ((EmProperty<int>)compList.Collections[1]["Nint"]).Value);
+            Assert.AreEqual("Val3", ((EmProperty<string>)compList[1]["Nstring"]).Value);
+            Assert.AreEqual(4, ((EmProperty<int>)compList[1]["Nint"]).Value);
+        }
+
+        [Test]
+        public void EmPropertyCollection_WithNestedCollection_PrettyPrint_GetExpected()
+        {
+            const string testValue = "TestKey:" +
+                                     "(" +
+                                         "String:Val;" +
+                                         "Int:12;" +
+                                         "FloatList:1,2.1,3.2;" +
+                                         "Nested:" +
+                                         "(" +
+                                             "Nstring:Nval;" +
+                                             "Nint:10;" +
+                                         ");" +
+                                     ");";
+
+            const string expectedValue = "TestKey:\r\n" + 
+                                         "(\r\n" +
+                                         "    String:Val;\r\n" +
+                                         "    Int:12;\r\n" +
+                                         "    FloatList:1,2.1,3.2;\r\n" +
+                                         "    Nested:\r\n" +
+                                         "    (\r\n" +
+                                         "        Nstring:Nval;\r\n" +
+                                         "        Nint:10;\r\n" +
+                                         "    );\r\n" +
+                                         ");\r\n";
+
+            var nestedComplex = new EmPropertyCollection("Nested", new List<EmProperty>
+            {
+                new EmProperty<string>("Nstring"),
+                new EmProperty<int>("Nint"),
+            });
+
+            var properties = new List<EmProperty>
+            {
+                new EmProperty<string>("String"),
+                new EmProperty<int>("Int"),
+                new EmPropertyList<float>("FloatList"),
+                nestedComplex
+            };
+
+            var testProp = new EmPropertyCollection("TestKey", properties);
+            testProp.FromString(testValue);
+
+            var actualValue = testProp.PrintyPrint();
+
+            Assert.AreEqual(expectedValue, actualValue);
         }
     }
 }
