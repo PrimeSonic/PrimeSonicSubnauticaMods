@@ -36,9 +36,9 @@
         {
             var key = new StringBuffer();
             while (fullString.Count > 0 && fullString.PeekStart() != ':')
-                key.AddFromEnd(fullString.RemoveFromStart());
+                key.PushToEnd(fullString.PopFromStart());
 
-            fullString.RemoveFromStart(); // Skip : separator
+            fullString.PopFromStart(); // Skip : separator
 
             return key.ToString();
         }
@@ -47,9 +47,9 @@
         {
             var value = new StringBuffer();
             while (fullString.Count > 0 && fullString.PeekStart() != ';')
-                value.AddFromEnd(fullString.RemoveFromStart());
+                value.PushToEnd(fullString.PopFromStart());
 
-            fullString.RemoveFromStart(); // Skip ; separator
+            fullString.PopFromStart(); // Skip ; separator
 
             return value.ToString();
         }
@@ -70,26 +70,26 @@
                 switch (originalString.PeekStart())
                 {
                     case '(':
-                        prettyString.AddFromEnd('\r', '\n');
-                        prettyString.Append(' ', indentLevel * indentSize);
+                        prettyString.PushToEnd('\r', '\n');
+                        prettyString.PushToEnd(' ', indentLevel * indentSize);
                         indentLevel++;
-                        prettyString.AddFromEnd(originalString.RemoveFromStart());
-                        prettyString.AddFromEnd('\r', '\n');
-                        prettyString.Append(' ', indentLevel * indentSize);
-                        prettyString.AddFromEnd(originalString.RemoveFromStart());
+                        prettyString.PushToEnd(originalString.PopFromStart());
+                        prettyString.PushToEnd('\r', '\n');
+                        prettyString.PushToEnd(' ', indentLevel * indentSize);
+                        prettyString.PushToEnd(originalString.PopFromStart());
                         break;
                     case ';':
-                        prettyString.AddFromEnd(originalString.RemoveFromStart());
+                        prettyString.PushToEnd(originalString.PopFromStart());
 
                         if (originalString.IsEmpty || originalString.PeekStart() == ')')
                             indentLevel--;
 
-                        prettyString.AddFromEnd('\r', '\n');
-                        prettyString.Append(' ', indentLevel * indentSize);
+                        prettyString.PushToEnd('\r', '\n');
+                        prettyString.PushToEnd(' ', indentLevel * indentSize);
                         
                         break;
                     default:
-                        prettyString.AddFromEnd(originalString.RemoveFromStart());
+                        prettyString.PushToEnd(originalString.PopFromStart());
                         break;
                 }
 

@@ -57,15 +57,15 @@
                         exit = true;
                         goto default;
                     case ';' when openParens == 1 && subKey != null: // End of a nested property belonging to this collection
-                        buffer.AddFromEnd(fullString.RemoveFromStart());                        
+                        buffer.PushToEnd(fullString.PopFromStart());                        
                         Properties[subKey].FromString(buffer.ToString());
                         buffer.Clear();
                         serialValues += Properties[subKey].ToString();
                         subKey = null;
                         goto default;
                     case ':' when openParens == 1: // Key to a nested property belonging to this collection
-                        buffer.RemoveFromStart('(');
-                        buffer.RemoveFromStart(',');
+                        buffer.PopFromStartIfEquals('(');
+                        buffer.PopFromStartIfEquals(',');
                         subKey = buffer.ToString();
                         goto default;
                     case '(':
@@ -76,7 +76,7 @@
                         goto default;
                     default:
 
-                        buffer.AddFromEnd(fullString.RemoveFromStart());
+                        buffer.PushToEnd(fullString.PopFromStart());
                         break;
                 }
 

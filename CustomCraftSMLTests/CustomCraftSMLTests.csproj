@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="EasyMarkupTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringBufferTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

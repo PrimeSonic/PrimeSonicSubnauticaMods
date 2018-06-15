@@ -48,7 +48,7 @@
             {
                 while (fullString.Count > 0 && fullString.PeekStart() != ',' && fullString.PeekStart() != ';') // separator
                 {
-                    value.AddFromEnd(fullString.RemoveFromStart());
+                    value.PushToEnd(fullString.PopFromStart());
                 }
 
                 var serialValue = value.ToString();
@@ -57,7 +57,7 @@
 
                 serialValues += serialValue + ",";
 
-                fullString.RemoveFromStart(); // Skip , separator
+                fullString.PopFromStart(); // Skip , separator
 
                 value.Clear();
 

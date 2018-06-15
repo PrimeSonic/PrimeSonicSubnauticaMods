@@ -45,7 +45,7 @@
                                  new IngredientHelper(TechType.Benzene, 1), // And this is the validate that they've gone a little further down
                                  new IngredientHelper(TechType.Lead, 1),
                                  new IngredientHelper(TechType.AdvancedWiringKit, 1),
-                                 new IngredientHelper(TechType.WiringKit, 1)
+                                 new IngredientHelper(TechType.PlasteelIngot, 1)
                              }),
                 _techType = CyNukBatteryType
             };

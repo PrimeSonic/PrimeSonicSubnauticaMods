@@ -56,7 +56,7 @@
                 {
                     case ';' when openParens == 0: // End of ComplexList                        
                     case ',' when openParens == 0 && fullString.Count > 0: // End of a nested property belonging to this collection
-                        fullString.RemoveFromStart();
+                        fullString.PopFromStart();
 
                         var collection = (EmPropertyCollection)Definitions.Copy();
                         collection.FromString($"{Key}:{buffer.ToString()};");
@@ -72,7 +72,7 @@
                         goto default;
                     default:
 
-                        buffer.AddFromEnd(fullString.RemoveFromStart());
+                        buffer.PushToEnd(fullString.PopFromStart());
                         break;
                 }
             } while (fullString.Count > 0);
