@@ -38,7 +38,7 @@
             new EmTechTypeList("LinkedItemIDs")
         };
 
-        public CustomRecipe() : base("CustomRecipe", RecipeProperties)
+        public CustomRecipe() : base("ModifiedRecipe", RecipeProperties)
         {
             emTechType = (EmTechType)Properties["ItemID"];
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
@@ -46,7 +46,7 @@
             linkedItems = (EmTechTypeList)Properties["LinkedItemIDs"];
         }
 
-        protected CustomRecipe(ICollection<EmProperty> definitions) : base("CustomRecipe", definitions)
+        protected CustomRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             emTechType = (EmTechType)Properties["ItemID"];
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
@@ -56,9 +56,12 @@
 
         protected override void OnValueExtracted()
         {
-            foreach (EmIngredient ingredient in ingredients.Collections)
+            foreach (EmPropertyCollection ingredient in ingredients.Collections)
             {
-                Ingredients.Add(new Ingredient(ingredient.ItemID, ingredient.Required));
+                TechType itemID = (ingredient["ItemID"] as EmTechType).Value;
+                short required = (ingredient["Required"] as EmProperty<short>).Value;
+
+                Ingredients.Add(new Ingredient(itemID, required));
             }
         }
     }

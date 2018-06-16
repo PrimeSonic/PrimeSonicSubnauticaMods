@@ -3,7 +3,7 @@
     using System;
     using System.Globalization;
 
-    public class EmProperty<T> : EmProperty, IStandardTyped<T> where T : IConvertible
+    public class EmProperty<T> : EmProperty where T : IConvertible
     {
         protected T ObjValue;
 

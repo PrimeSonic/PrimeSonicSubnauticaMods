@@ -14,7 +14,7 @@
             new EmProperty<string>("Path")
         };
 
-        public CustomRecipeWithPath() : base(RecipeWithPathProperties)
+        public CustomRecipeWithPath() : base("AddedRecipe", RecipeWithPathProperties)
         {
             path = (EmProperty<string>)Properties["Path"];
         }

@@ -13,12 +13,12 @@
 
         public EmTechTypeList(string key, ICollection<TechType> values) : base(key, values)
         {
-        }
+        }        
 
         public override TechType ConvertFromSerial(string value)
         {
             TechType val = (TechType)Enum.Parse(typeof(TechType), value.WithFirstUpper());
-
+            
             return val;
         }
     }

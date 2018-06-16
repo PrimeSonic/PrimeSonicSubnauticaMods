@@ -4,7 +4,7 @@
     using System;
     using System.Collections.Generic;
 
-    public class EmPropertyList<T> : EmProperty, IStandardTyped<T> where T : IConvertible
+    public class EmPropertyList<T> : EmProperty where T : IConvertible
     {
         public List<T> Values;
 
