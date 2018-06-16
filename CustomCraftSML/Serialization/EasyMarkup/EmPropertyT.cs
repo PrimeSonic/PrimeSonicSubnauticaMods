@@ -36,9 +36,14 @@
             return serialValue;
         }
 
-        public virtual T ConvertFromSerial(string value)
+        public T ConvertFromSerial(string value)
         {
-            return (T)Convert.ChangeType(value, typeof(T));
+            var type = typeof(T);
+
+            if (type.IsEnum)
+                return (T)Enum.Parse(type, value);
+            else
+                return (T)Convert.ChangeType(value, typeof(T));
         }
 
         internal override EmProperty Copy() => new EmProperty<T>(Key);

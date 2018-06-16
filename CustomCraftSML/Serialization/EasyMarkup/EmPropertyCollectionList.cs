@@ -1,24 +1,28 @@
 ﻿namespace CustomCraftSML.Serialization.EasyMarkup
 {
-
     using System.Collections.Generic;
 
     public class EmPropertyCollectionList : EmProperty
     {
-        protected EmPropertyCollection Definitions;
+        protected EmPropertyCollection Template;
 
-        public EmPropertyCollection this[int index] => Collections[index];
+        public EmPropertyCollection this[int index] => Collections[index];        
 
         public List<EmPropertyCollection> Collections;
 
         public EmPropertyCollectionList(string key, ICollection<EmProperty> definitions)
         {
             Key = key;
-
-            Definitions = new EmPropertyCollection(key, definitions);
+            Template = new EmPropertyCollection(key, definitions);
 
             foreach (EmProperty property in definitions)
-                Definitions[property.Key] = property;
+                Template[property.Key] = property;
+        }
+
+        public EmPropertyCollectionList(string key, EmPropertyCollection template)
+        {
+            Key = key;
+            Template = template;
         }
 
         public override string ToString()
@@ -56,9 +60,9 @@
                 {
                     case SpChar_ValueDelimiter when openParens == 0: // End of ComplexList                        
                     case SpChar_ListItemSplitter when openParens == 0 && fullString.Count > 0: // End of a nested property belonging to this collection
-                        fullString.PopFromStart();
+                        fullString.PopFromStart(); // Skip delimiter
 
-                        var collection = (EmPropertyCollection)Definitions.Copy();
+                        var collection = (EmPropertyCollection)Template.Copy();
                         collection.FromString($"{Key}{SpChar_KeyDelimiter}{buffer.ToString()}{SpChar_ValueDelimiter}");
                         Collections.Add(collection);
                         buffer.Clear();
@@ -71,7 +75,6 @@
                         openParens--;
                         goto default;
                     default:
-
                         buffer.PushToEnd(fullString.PopFromStart());
                         break;
                 }
@@ -82,8 +85,8 @@
 
         internal override EmProperty Copy()
         {
-            var definitions = new List<EmProperty>(Definitions.Keys.Count);
-            foreach (EmProperty item in Definitions.Values)
+            var definitions = new List<EmProperty>(Template.Keys.Count);
+            foreach (EmProperty item in Template.Values)
                 definitions.Add(item.Copy());
 
             return new EmPropertyCollectionList(Key, definitions);

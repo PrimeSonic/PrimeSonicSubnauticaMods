@@ -3,18 +3,18 @@
     using System.Collections.Generic;
     using EasyMarkup;
 
-    public class CustomRecipeWithPath : CustomRecipe
+    public class AddedRecipe : ModifiedRecipe
     {
         private readonly EmProperty<string> path;
 
         public string Path => path.Value;
 
-        protected static List<EmProperty> RecipeWithPathProperties => new List<EmProperty>(RecipeProperties)
+        protected static List<EmProperty> AddedRecipeProperties => new List<EmProperty>(ModifiedRecipeProperties)
         {          
             new EmProperty<string>("Path")
         };
 
-        public CustomRecipeWithPath() : base("AddedRecipe", RecipeWithPathProperties)
+        public AddedRecipe() : base("AddedRecipe", AddedRecipeProperties)
         {
             path = (EmProperty<string>)Properties["Path"];
         }

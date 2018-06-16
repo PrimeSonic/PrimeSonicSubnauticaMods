@@ -1,6 +1,5 @@
 ﻿namespace CustomCraftSML.Serialization.EasyMarkup
 {
-
     using System.Collections.Generic;
 
     public class EmPropertyCollection : EmProperty
@@ -16,10 +15,12 @@
         public Dictionary<string, EmProperty>.KeyCollection Keys => Properties.Keys;
         public Dictionary<string, EmProperty>.ValueCollection Values => Properties.Values;
 
+        public readonly ICollection<EmProperty> Definitions;
+
         public EmPropertyCollection(string key, ICollection<EmProperty> definitions)
         {
             Key = key;
-
+            Definitions = definitions;
             Properties = new Dictionary<string, EmProperty>(definitions.Count);
 
             foreach (EmProperty property in definitions)
@@ -57,7 +58,7 @@
                         exit = true;
                         goto default;
                     case SpChar_ValueDelimiter when openParens == 1 && subKey != null: // End of a nested property belonging to this collection
-                        buffer.PushToEnd(fullString.PopFromStart());                        
+                        buffer.PushToEnd(fullString.PopFromStart());
                         Properties[subKey].FromString(buffer.ToString());
                         buffer.Clear();
                         serialValues += Properties[subKey].ToString();
@@ -75,7 +76,6 @@
                         openParens--;
                         goto default;
                     default:
-
                         buffer.PushToEnd(fullString.PopFromStart());
                         break;
                 }
@@ -85,13 +85,18 @@
             return serialValues + SpChar_FinishComplexValue;
         }
 
-        internal override EmProperty Copy()
-        {
-            var definitions = new List<EmProperty>(Properties.Count);
-            foreach (EmProperty item in Properties.Values)
-                definitions.Add(item.Copy());
+        internal override EmProperty Copy() => new EmPropertyCollection(Key, CopyDefinitions);
 
-            return new EmPropertyCollection(Key, definitions);
+        protected ICollection<EmProperty> CopyDefinitions
+        {
+            get
+            {
+                var definitions = new List<EmProperty>(Properties.Count);
+                foreach (EmProperty item in Properties.Values)
+                    definitions.Add(item.Copy());
+
+                return definitions;
+            }
         }
     }
 

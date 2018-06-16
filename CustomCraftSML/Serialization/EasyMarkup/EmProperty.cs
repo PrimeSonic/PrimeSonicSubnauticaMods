@@ -13,6 +13,9 @@
 
         protected static readonly Regex WhiteSpace = new Regex(@"[\s\r\n\t]+", RegexOptions.Compiled | RegexOptions.Multiline);
 
+        protected delegate void OnValueExtracted();
+        protected OnValueExtracted OnValueExtractedEvent;
+
         public string Key;
         internal string SerializedValue;
 
@@ -34,9 +37,9 @@
                 Key = key;
             else
                 Assert.AreEqual(Key, key);
-                        
+
             SerializedValue = ExtractValue(fullString);
-            OnValueExtracted();
+            OnValueExtractedEvent?.Invoke();
         }
 
         protected virtual string ExtractKey(StringBuffer fullString)
@@ -93,7 +96,7 @@
 
                         prettyString.PushToEnd('\r', '\n');
                         prettyString.PushToEnd(' ', indentLevel * indentSize);
-                        
+
                         break;
                     default:
                         prettyString.PushToEnd(originalString.PopFromStart());
@@ -104,8 +107,9 @@
 
             return prettyString.ToString();
         }
-        
-        protected virtual void OnValueExtracted() { }
+
+
+
     }
 
 }
