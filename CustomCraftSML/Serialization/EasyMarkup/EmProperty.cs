@@ -34,8 +34,9 @@
                 Key = key;
             else
                 Assert.AreEqual(Key, key);
-
+                        
             SerializedValue = ExtractValue(fullString);
+            OnValueExtracted();
         }
 
         protected virtual string ExtractKey(StringBuffer fullString)
@@ -103,6 +104,8 @@
 
             return prettyString.ToString();
         }
+        
+        protected virtual void OnValueExtracted() { }
     }
 
 }

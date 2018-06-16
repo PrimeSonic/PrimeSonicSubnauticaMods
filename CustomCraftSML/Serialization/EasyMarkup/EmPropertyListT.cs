@@ -4,7 +4,7 @@
     using System;
     using System.Collections.Generic;
 
-    public class EmPropertyList<T> : EmProperty where T : IConvertible
+    public class EmPropertyList<T> : EmProperty, IStandardTyped<T> where T : IConvertible
     {
         public List<T> Values;
 
@@ -53,7 +53,7 @@
 
                 var serialValue = value.ToString();
 
-                Values.Add(EmProperty<T>.ConvertFromSerial(serialValue));
+                Values.Add(ConvertFromSerial(serialValue));
 
                 serialValues += serialValue + SpChar_ListItemSplitter;
 
@@ -67,6 +67,11 @@
         }
 
         internal override EmProperty Copy() => new EmPropertyList<T>(Key);
+
+        public virtual T ConvertFromSerial(string value)
+        {
+            return (T)Convert.ChangeType(value, typeof(T));
+        }
     }
 
 }

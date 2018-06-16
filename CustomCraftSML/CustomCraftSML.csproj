@@ -60,12 +60,20 @@
     <Compile Include="PublicAPI\CraftingPath.cs" />
     <Compile Include="PublicAPI\CustomCraft.cs" />
     <Compile Include="PublicAPI\PathHelper.cs" />
+    <Compile Include="Serialization\CustomRecipe.cs" />
+    <Compile Include="Serialization\CustomRecipeWithPath.cs" />
+    <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\EasyMarkup\EmProperty.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyCollection.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyCollectionList.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyListT.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyT.cs" />
+    <Compile Include="Serialization\EasyMarkup\IStandardTyped.cs" />
     <Compile Include="Serialization\EasyMarkup\StringBuffer.cs" />
+    <Compile Include="Serialization\EmIngredient.cs" />
+    <Compile Include="Serialization\EmTechType.cs" />
+    <Compile Include="Serialization\EmTechTypeList.cs" />
+    <Compile Include="Serialization\Ingredient.cs" />
     <Compile Include="Serialization\UserFileManager.cs" />
   </ItemGroup>
   <ItemGroup>

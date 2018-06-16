@@ -3,7 +3,7 @@
     using System;
     using System.Globalization;
 
-    public class EmProperty<T> : EmProperty where T : IConvertible
+    public class EmProperty<T> : EmProperty, IStandardTyped<T> where T : IConvertible
     {
         protected T ObjValue;
 
@@ -36,7 +36,7 @@
             return serialValue;
         }
 
-        internal static T ConvertFromSerial(string value)
+        public virtual T ConvertFromSerial(string value)
         {
             return (T)Convert.ChangeType(value, typeof(T));
         }
