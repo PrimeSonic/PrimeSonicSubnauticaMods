@@ -28,18 +28,18 @@
 
         public override string ToString()
         {
-            var val = $"{Key}:(";
+            var val = $"{Key}{SpChar_KeyDelimiter}{SpChar_BeginComplexValue}";
             foreach (string key in Properties.Keys)
             {
                 val += $"{Properties[key]}";
             }
 
-            return val + ");";
+            return val + $"{SpChar_FinishComplexValue}{SpChar_ValueDelimiter}";
         }
 
         protected override string ExtractValue(StringBuffer fullString)
         {
-            string serialValues = "(";
+            string serialValues = $"{SpChar_BeginComplexValue}";
 
             int openParens = 0;
 
@@ -53,25 +53,25 @@
             {
                 switch (fullString.PeekStart())
                 {
-                    case ';' when openParens == 0 && buffer.PeekEnd() == ')' && fullString.Count == 1: // End of ComplexList
+                    case SpChar_ValueDelimiter when openParens == 0 && buffer.PeekEnd() == SpChar_FinishComplexValue && fullString.Count == 1: // End of ComplexList
                         exit = true;
                         goto default;
-                    case ';' when openParens == 1 && subKey != null: // End of a nested property belonging to this collection
+                    case SpChar_ValueDelimiter when openParens == 1 && subKey != null: // End of a nested property belonging to this collection
                         buffer.PushToEnd(fullString.PopFromStart());                        
                         Properties[subKey].FromString(buffer.ToString());
                         buffer.Clear();
                         serialValues += Properties[subKey].ToString();
                         subKey = null;
                         goto default;
-                    case ':' when openParens == 1: // Key to a nested property belonging to this collection
-                        buffer.PopFromStartIfEquals('(');
-                        buffer.PopFromStartIfEquals(',');
+                    case SpChar_KeyDelimiter when openParens == 1: // Key to a nested property belonging to this collection
+                        buffer.PopFromStartIfEquals(SpChar_BeginComplexValue);
+                        buffer.PopFromStartIfEquals(SpChar_ListItemSplitter);
                         subKey = buffer.ToString();
                         goto default;
-                    case '(':
+                    case SpChar_BeginComplexValue:
                         openParens++;
                         goto default;
-                    case ')':
+                    case SpChar_FinishComplexValue:
                         openParens--;
                         goto default;
                     default:
@@ -82,7 +82,7 @@
 
             } while (fullString.Count > 0 && !exit);
 
-            return serialValues + ")";
+            return serialValues + SpChar_FinishComplexValue;
         }
 
         internal override EmProperty Copy()

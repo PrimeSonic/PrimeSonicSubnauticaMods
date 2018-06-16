@@ -25,15 +25,15 @@
 
         public override string ToString()
         {
-            var val = $"{Key}:";
+            var val = $"{Key}{SpChar_KeyDelimiter}";
             foreach (T value in Values)
             {
-                val += $"{value},";
+                val += $"{value}{SpChar_ListItemSplitter}";
             }
 
-            val = val.TrimEnd(',');
+            val = val.TrimEnd(SpChar_ListItemSplitter);
 
-            return val + ';';
+            return val + SpChar_ValueDelimiter;
         }
 
         protected override string ExtractValue(StringBuffer fullString)
@@ -42,11 +42,11 @@
                 Values = new List<T>();
 
             var value = new StringBuffer();
-            string serialValues = "";
+            string serialValues = string.Empty;
 
             do
             {
-                while (fullString.Count > 0 && fullString.PeekStart() != ',' && fullString.PeekStart() != ';') // separator
+                while (fullString.Count > 0 && fullString.PeekStart() != SpChar_ListItemSplitter && fullString.PeekStart() != SpChar_ValueDelimiter) // separator
                 {
                     value.PushToEnd(fullString.PopFromStart());
                 }
@@ -55,15 +55,15 @@
 
                 Values.Add(EmProperty<T>.ConvertFromSerial(serialValue));
 
-                serialValues += serialValue + ",";
+                serialValues += serialValue + SpChar_ListItemSplitter;
 
                 fullString.PopFromStart(); // Skip , separator
 
                 value.Clear();
 
-            } while (fullString.Count > 0 && fullString.PeekStart() != ';');
+            } while (fullString.Count > 0 && fullString.PeekStart() != SpChar_ValueDelimiter);
 
-            return serialValues.TrimEnd(',');
+            return serialValues.TrimEnd(SpChar_ListItemSplitter);
         }
 
         internal override EmProperty Copy() => new EmPropertyList<T>(Key);

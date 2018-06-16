@@ -5,6 +5,12 @@
 
     public abstract class EmProperty
     {
+        protected const char SpChar_KeyDelimiter = ':';
+        protected const char SpChar_ValueDelimiter = ';';
+        protected const char SpChar_BeginComplexValue = '(';
+        protected const char SpChar_FinishComplexValue = ')';
+        protected const char SpChar_ListItemSplitter = ',';
+
         protected static readonly Regex WhiteSpace = new Regex(@"[\s\r\n\t]+", RegexOptions.Compiled | RegexOptions.Multiline);
 
         public string Key;
@@ -12,7 +18,7 @@
 
         public override string ToString()
         {
-            return $"{Key}:{SerializedValue};";
+            return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter}";
         }
 
         public void FromString(string rawValue)

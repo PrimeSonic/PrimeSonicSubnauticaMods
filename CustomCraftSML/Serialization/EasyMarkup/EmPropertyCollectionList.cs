@@ -23,20 +23,20 @@
 
         public override string ToString()
         {
-            var val = $"{Key}:";
+            var val = $"{Key}{SpChar_KeyDelimiter}";
             foreach (EmPropertyCollection collection in Collections)
             {
-                val += "(";
+                val += SpChar_BeginComplexValue;
 
                 foreach (var key in collection.Keys)
                 {
                     val += $"{collection[key]}";
                 }
 
-                val += "),";
+                val += $"{SpChar_FinishComplexValue}{SpChar_ListItemSplitter}";
             }
 
-            return val.TrimEnd(',') + ";";
+            return val.TrimEnd(SpChar_ListItemSplitter) + SpChar_ValueDelimiter;
         }
 
         protected override string ExtractValue(StringBuffer fullString)
@@ -44,7 +44,7 @@
             if (Collections == null)
                 Collections = new List<EmPropertyCollection>();
 
-            string serialValues = "(";
+            string serialValues = $"{SpChar_BeginComplexValue}";
 
             int openParens = 0;
 
@@ -54,20 +54,20 @@
             {
                 switch (fullString.PeekStart())
                 {
-                    case ';' when openParens == 0: // End of ComplexList                        
-                    case ',' when openParens == 0 && fullString.Count > 0: // End of a nested property belonging to this collection
+                    case SpChar_ValueDelimiter when openParens == 0: // End of ComplexList                        
+                    case SpChar_ListItemSplitter when openParens == 0 && fullString.Count > 0: // End of a nested property belonging to this collection
                         fullString.PopFromStart();
 
                         var collection = (EmPropertyCollection)Definitions.Copy();
-                        collection.FromString($"{Key}:{buffer.ToString()};");
+                        collection.FromString($"{Key}{SpChar_KeyDelimiter}{buffer.ToString()}{SpChar_ValueDelimiter}");
                         Collections.Add(collection);
                         buffer.Clear();
-                        serialValues += $"{collection.SerializedValue},";
+                        serialValues += $"{collection.SerializedValue}{SpChar_ListItemSplitter}";
                         break;
-                    case '(':
+                    case SpChar_BeginComplexValue:
                         openParens++;
                         goto default;
-                    case ')':
+                    case SpChar_FinishComplexValue:
                         openParens--;
                         goto default;
                     default:
@@ -77,7 +77,7 @@
                 }
             } while (fullString.Count > 0);
 
-            return serialValues.TrimEnd(',') + ")";
+            return serialValues.TrimEnd(SpChar_ListItemSplitter) + SpChar_FinishComplexValue;
         }
 
         internal override EmProperty Copy()
