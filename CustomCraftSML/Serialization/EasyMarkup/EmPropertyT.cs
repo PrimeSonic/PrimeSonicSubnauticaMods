@@ -46,7 +46,13 @@
                 return (T)Convert.ChangeType(value, typeof(T));
         }
 
-        internal override EmProperty Copy() => new EmProperty<T>(Key);
+        internal override EmProperty Copy()
+        {
+            if (ObjValue == null)
+                return new EmProperty<T>(Key);
+            else
+                return new EmProperty<T>(Key, ObjValue);
+        }
     }
 
 }

@@ -33,8 +33,8 @@
         public static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(4)
         {
             new EmProperty<TechType>("ItemID"),
-            new EmProperty<short>("AmountCrafted"),
-            new EmPropertyCollectionList("Ingredients", EmIngredient.IngredientProperties),
+            new EmProperty<short>("AmountCrafted", 1),
+            new EmPropertyCollectionList("Ingredients", new EmIngredient()),
             new EmPropertyList<TechType>("LinkedItemIDs")
         };
 
@@ -58,7 +58,7 @@
 
         private void ValueExtracted()
         {
-            foreach (EmPropertyCollection ingredient in ingredients.Collections)
+            foreach (var ingredient in ingredients.Collections)
             {
                 TechType itemID = (ingredient["ItemID"] as EmProperty<TechType>).Value;
                 short required = (ingredient["Required"] as EmProperty<short>).Value;

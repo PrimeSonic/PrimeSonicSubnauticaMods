@@ -27,13 +27,15 @@
         public static List<EmProperty> IngredientProperties => new List<EmProperty>(2)
         {
             new EmProperty<TechType>("ItemID"),
-            new EmProperty<short>("Required"),
+            new EmProperty<short>("Required", 1),
         };
 
-        public EmIngredient() : base("Ingredient", IngredientProperties)
+        public EmIngredient() : base("Ingredients", IngredientProperties)
         {
             emTechType = (EmProperty<TechType>)Properties["ItemID"];
             required = (EmProperty<short>)Properties["Required"];
         }
+
+        internal override EmProperty Copy() => new EmIngredient();
     }
 }

@@ -12,7 +12,7 @@
             const string serialized = "AddedRecipe:" + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:Aerogel;" + "\r\n" +
-                                      "    AmountCrafted:1;" + "\r\n" +
+                                      "    AmountCrafted:5;" + "\r\n" +
                                       "    Ingredients:" + "\r\n" +
                                       "        (" + "\r\n" +
                                       "            ItemID:Titanium;" + "\r\n" +
@@ -31,7 +31,7 @@
             recipe.FromString(serialized);
 
             Assert.AreEqual(TechType.Aerogel, recipe.ItemID);
-            Assert.AreEqual(1, recipe.AmountCrafted);
+            Assert.AreEqual(5, recipe.AmountCrafted);
 
             Assert.AreEqual(2, recipe.Ingredients.Count);
             Assert.AreEqual(TechType.Titanium, recipe.Ingredients[0].ItemID);
@@ -52,7 +52,7 @@
             const string serialized = "ModifiedRecipe:" + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:Aerogel;" + "\r\n" +
-                                      "    AmountCrafted:1;" + "\r\n" +
+                                      "    AmountCrafted:4;" + "\r\n" +
                                       "    Ingredients:" + "\r\n" +
                                       "        (" + "\r\n" +
                                       "            ItemID:Titanium;" + "\r\n" +
@@ -70,7 +70,7 @@
             recipe.FromString(serialized);
 
             Assert.AreEqual(TechType.Aerogel, recipe.ItemID);
-            Assert.AreEqual(1, recipe.AmountCrafted);
+            Assert.AreEqual(4, recipe.AmountCrafted);
 
             Assert.AreEqual(2, recipe.Ingredients.Count);
             Assert.AreEqual(TechType.Titanium, recipe.Ingredients[0].ItemID);
@@ -226,6 +226,128 @@
             Assert.AreEqual(0, recipe.LinkedItems.Count);
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe.Path);
+        }
+        
+        [Test]
+        public void Deserialize_AddedRecipe_NoAmounts_DefaultTo1()
+        {
+            const string serialized = "AddedRecipe:" + "\r\n" +
+                                      "(" + "\r\n" +
+                                      "    ItemID:Aerogel;" + "\r\n" +
+                                      "    Ingredients:" + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Titanium;" + "\r\n" +
+                                      "        )," + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Copper;" + "\r\n" +
+                                      "        );" + "\r\n" +
+                                      "    Path:Fabricator/Resources/BasicMaterials;" + "\r\n" +
+                                      ");" + "\r\n";
+
+            var recipe = new AddedRecipe();
+
+            recipe.FromString(serialized);
+
+            Assert.AreEqual(TechType.Aerogel, recipe.ItemID);
+            Assert.AreEqual(1, recipe.AmountCrafted);
+
+            Assert.AreEqual(2, recipe.Ingredients.Count);
+            Assert.AreEqual(TechType.Titanium, recipe.Ingredients[0].ItemID);
+            Assert.AreEqual(1, recipe.Ingredients[0].Required);
+            Assert.AreEqual(TechType.Copper, recipe.Ingredients[1].ItemID);
+            Assert.AreEqual(1, recipe.Ingredients[1].Required);
+
+            Assert.AreEqual(0, recipe.LinkedItems.Count);
+
+            Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe.Path);
+        }
+
+        [Test]
+        public void Deserialize_ModifiedRecipesList_NoAmounts_DefaultTo1()
+        {
+            const string serialized = "ModifiedRecipes:" + "\r\n" +
+                                      "(" + "\r\n" +
+                                      "    ItemID:Aerogel;" + "\r\n" +
+                                      "    Ingredients:" + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Titanium;" + "\r\n" +
+                                      "        )," + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Copper;" + "\r\n" +
+                                      "        );" + "\r\n" +
+                                      ")," + "\r\n" +
+                                      "(" + "\r\n" +
+                                      "    ItemID:Aerogel;" + "\r\n" +
+                                      "    Ingredients:" + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Titanium;" + "\r\n" +
+                                      "        )," + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Copper;" + "\r\n" +
+                                      "        );" + "\r\n" +
+                                      ");" + "\r\n";
+
+
+            var recipe = new ModifiedRecipeList();
+
+            recipe.FromString(serialized);
+
+            Assert.AreEqual(TechType.Aerogel, recipe[0].ItemID);
+            Assert.AreEqual(1, recipe[0].AmountCrafted);
+
+            Assert.AreEqual(2, recipe[0].Ingredients.Count);
+            Assert.AreEqual(TechType.Titanium, recipe[0].Ingredients[0].ItemID);
+            Assert.AreEqual(1, recipe[0].Ingredients[0].Required);
+            Assert.AreEqual(TechType.Copper, recipe[0].Ingredients[1].ItemID);
+            Assert.AreEqual(1, recipe[0].Ingredients[1].Required);
+
+            Assert.AreEqual(0, recipe[0].LinkedItems.Count);
+        }
+
+        [Test]
+        public void Deserialize_AddedRecipesList_NoAmounts_DefaultTo1()
+        {
+            const string serialized = "AddedRecipes:" + "\r\n" +
+                                      "(" + "\r\n" +
+                                      "    ItemID:Aerogel;" + "\r\n" +
+                                      "    Ingredients:" + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Titanium;" + "\r\n" +
+                                      "        )," + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Copper;" + "\r\n" +
+                                      "        );" + "\r\n" +
+                                      "    Path:Fabricator/Resources/BasicMaterials;" +
+                                      ")," + "\r\n" +
+                                      "(" + "\r\n" +
+                                      "    ItemID:Aerogel;" + "\r\n" +
+                                      "    Ingredients:" + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Titanium;" + "\r\n" +
+                                      "        )," + "\r\n" +
+                                      "        (" + "\r\n" +
+                                      "            ItemID:Copper;" + "\r\n" +
+                                      "        );" + "\r\n" +
+                                      "    Path:Fabricator/Resources/BasicMaterials;" +
+                                      ");" + "\r\n";
+
+
+            var recipe = new AddedRecipeList();
+
+            recipe.FromString(serialized);
+
+            Assert.AreEqual(TechType.Aerogel, recipe[0].ItemID);
+            Assert.AreEqual(1, recipe[0].AmountCrafted);
+
+            Assert.AreEqual(2, recipe[0].Ingredients.Count);
+            Assert.AreEqual(TechType.Titanium, recipe[0].Ingredients[0].ItemID);
+            Assert.AreEqual(1, recipe[0].Ingredients[0].Required);
+            Assert.AreEqual(TechType.Copper, recipe[0].Ingredients[1].ItemID);
+            Assert.AreEqual(1, recipe[0].Ingredients[1].Required);
+
+            Assert.AreEqual(0, recipe[0].LinkedItems.Count);
+
+            Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe[0].Path);
         }
     }
 }

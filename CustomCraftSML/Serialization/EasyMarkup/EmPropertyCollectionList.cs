@@ -8,7 +8,7 @@
 
         public EmPropertyCollection this[int index] => Collections[index];        
 
-        public List<EmPropertyCollection> Collections;
+        public readonly List<EmPropertyCollection> Collections = new List<EmPropertyCollection>();
 
         public EmPropertyCollectionList(string key, ICollection<EmProperty> definitions)
         {
@@ -45,9 +45,6 @@
 
         protected override string ExtractValue(StringBuffer fullString)
         {
-            if (Collections == null)
-                Collections = new List<EmPropertyCollection>();
-
             string serialValues = $"{SpChar_BeginComplexValue}";
 
             int openParens = 0;
