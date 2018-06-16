@@ -9,9 +9,7 @@
         protected const char SpChar_ValueDelimiter = ';';
         protected const char SpChar_BeginComplexValue = '(';
         protected const char SpChar_FinishComplexValue = ')';
-        protected const char SpChar_ListItemSplitter = ',';
-
-        protected static readonly Regex WhiteSpace = new Regex(@"[\s\r\n\t]+", RegexOptions.Compiled | RegexOptions.Multiline);
+        protected const char SpChar_ListItemSplitter = ',';        
 
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
@@ -25,20 +23,16 @@
         }
 
         public void FromString(string rawValue)
-        {
-            string flatValue = WhiteSpace.Replace(rawValue, string.Empty);
+        {            
+            var cleanValue = CleanValue(new StringBuffer(rawValue));
 
-            char[] cleanValue = flatValue.ToCharArray();
-
-            var fullString = new StringBuffer(cleanValue);
-
-            var key = ExtractKey(fullString);
+            var key = ExtractKey(cleanValue);
             if (string.IsNullOrEmpty(Key))
                 Key = key;
             else
                 Assert.AreEqual(Key, key);
 
-            SerializedValue = ExtractValue(fullString);
+            SerializedValue = ExtractValue(cleanValue);
             OnValueExtractedEvent?.Invoke();
         }
 
@@ -109,7 +103,28 @@
         }
 
 
+        private StringBuffer CleanValue(StringBuffer rawValue)
+        {
+            var cleanValue = new StringBuffer();
 
+            while (!rawValue.IsEmpty)
+            {
+                switch (rawValue.PeekStart())
+                {
+                    case ' ':
+                        rawValue.TrimStart(' ');                        
+                        break;
+                    case '\r':
+                        rawValue.TrimStart('\r', '\n');
+                        break;
+                    default:
+                        cleanValue.PushToEnd(rawValue.PopFromStart());
+                        break;
+                }
+            }
+
+            return cleanValue;
+        }
     }
 
 }

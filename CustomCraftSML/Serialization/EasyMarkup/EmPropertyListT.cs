@@ -6,7 +6,7 @@
 
     public class EmPropertyList<T> : EmProperty where T : IConvertible
     {
-        public List<T> Values;
+        public readonly List<T> Values = new List<T>();
 
         public EmPropertyList(string key)
         {
@@ -38,9 +38,6 @@
 
         protected override string ExtractValue(StringBuffer fullString)
         {
-            if (Values == null)
-                Values = new List<T>();
-
             var value = new StringBuffer();
             string serialValues = string.Empty;
 

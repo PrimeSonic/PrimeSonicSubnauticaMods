@@ -14,9 +14,19 @@
             new EmProperty<string>("Path")
         };
 
-        public AddedRecipe() : base("AddedRecipe", AddedRecipeProperties)
+        public AddedRecipe() : this("AddedRecipe", AddedRecipeProperties)
+        {            
+        }
+
+        public AddedRecipe(string key) : this(key, AddedRecipeProperties)
+        {
+        }
+
+        protected AddedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             path = (EmProperty<string>)Properties["Path"];
         }
+
+        internal override EmProperty Copy() => new AddedRecipe(Key, CopyDefinitions);
     }
 }

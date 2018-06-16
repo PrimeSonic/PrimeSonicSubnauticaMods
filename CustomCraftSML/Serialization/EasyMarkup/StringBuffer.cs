@@ -158,17 +158,11 @@
             return new string(array);
         }
 
-        public override int GetHashCode()
-        {
-            return RuntimeHelpers.GetHashCode(this);
-        }
+        public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
         // Equality Checks
 
-        public bool Equals(string other)
-        {
-            return ToString() == other;
-        }
+        public bool Equals(string other) => ToString() == other;
 
         public bool Equals(StringBuffer other)
         {
@@ -218,10 +212,7 @@
             return a.Equals(b);
         }
 
-        public static bool operator !=(StringBuffer a, StringBuffer b)
-        {
-            return !BuffersAreEqual(a, b);
-        }
+        public static bool operator !=(StringBuffer a, StringBuffer b) => !BuffersAreEqual(a, b);
 
         public static bool operator ==(StringBuffer a, string b)
         {
@@ -231,10 +222,7 @@
             return a.Equals(b);
         }
 
-        public static bool operator !=(StringBuffer a, string b)
-        {
-            return !BufferEqualToString(a, b);
-        }
+        public static bool operator !=(StringBuffer a, string b) => !BufferEqualToString(a, b);
 
         public static bool operator ==(string a, StringBuffer b)
         {
@@ -244,14 +232,11 @@
             return b.Equals(a);
         }
 
-        public static bool operator !=(string a, StringBuffer b)
-        {
-            return !BufferEqualToString(b, a);
-        }
+        public static bool operator !=(string a, StringBuffer b) => !BufferEqualToString(b, a);
 
         private static bool BuffersAreEqual(StringBuffer a, StringBuffer b)
         {
-            if (ReferenceEquals(null, b))
+            if (b is null)
                 return false;
 
             if (ReferenceEquals(a, b))
@@ -314,7 +299,7 @@
 
         public bool PopFromStartIfEquals(char value)
         {
-            if (((object)First.Value).Equals(value))
+            if (!IsEmpty && First.Value.Equals(value))
             {
                 RemoveFirst();
                 return true;
@@ -347,7 +332,7 @@
 
         public bool PopFromEndIfEquals(char value)
         {
-            if (((object)Last.Value).Equals(value))
+            if (!IsEmpty && Last.Value.Equals(value))
             {
                 RemoveLast();
                 return true;
@@ -401,10 +386,7 @@
 
         // Starts With Methods
 
-        public bool StartsWith(char value)
-        {
-            return !IsEmpty && ((object)First.Value).Equals(value);
-        }
+        public bool StartsWith(char value) => !IsEmpty && First.Value.Equals(value);
 
         public bool StartsWith(params char[] values)
         {
@@ -429,17 +411,11 @@
 
         public bool StartsWith(string value) => StartsWith(value.ToCharArray());
 
-        public bool StartsWithAny(params char[] values)
-        {
-            return !IsEmpty && values.Contains(First.Value);
-        }
+        public bool StartsWithAny(params char[] values) => !IsEmpty && values.Contains(First.Value);
 
         // Ends With Methods
 
-        public bool EndsWith(char value)
-        {
-            return !IsEmpty && ((object)Last.Value).Equals(value);
-        }
+        public bool EndsWith(char value) => !IsEmpty && Last.Value.Equals(value);
 
         public bool EndsWith(params char[] values)
         {
@@ -464,10 +440,7 @@
 
         public bool EndsWith(string value) => EndsWith(value.ToCharArray());
 
-        public bool EndsWithAny(params char[] values)
-        {
-            return !IsEmpty && values.Contains(Last.Value);
-        }
+        public bool EndsWithAny(params char[] values) => !IsEmpty && values.Contains(Last.Value);
 
         // Push to Start Methods
 
@@ -535,9 +508,21 @@
             return this;
         }
 
+        public StringBuffer TrimStart(params char[] values)
+        {
+            PopAllFromStartIfEquals(values);
+            return this;
+        }
+
         public StringBuffer TrimEnd(char value)
         {
             PopAllFromEndIfEquals(value);
+            return this;
+        }
+
+        public StringBuffer TrimEnd(params char[] values)
+        {
+            PopAllFromEndIfEquals(values);
             return this;
         }
 
@@ -545,6 +530,13 @@
         {
             PopAllFromStartIfEquals(value);
             PopAllFromEndIfEquals(value);
+            return this;
+        }
+
+        public StringBuffer Trim(params char[] values)
+        {
+            PopAllFromStartIfEquals(values);
+            PopAllFromEndIfEquals(values);
             return this;
         }
 
