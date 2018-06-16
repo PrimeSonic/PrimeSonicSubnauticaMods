@@ -38,15 +38,22 @@
         public static List<EmProperty> SizeProperties => new List<EmProperty>(3)
         {
             new EmProperty<TechType>("ItemID"),
-            new EmProperty<short>("Width"),
-            new EmProperty<short>("Height")
+            new EmProperty<short>("Width", 1),
+            new EmProperty<short>("Height", 1)
         };
 
-        public CustomSize() : base("CustomSize", SizeProperties)
+        public CustomSize() : this("CustomSize")
+        {
+
+        }
+
+        public CustomSize(string key) : base(key, SizeProperties)
         {
             emTechType = (EmProperty<TechType>)Properties["ItemID"];
             width = (EmProperty<short>)Properties["Width"];
             height = (EmProperty<short>)Properties["Height"];
         }
+
+        internal override EmProperty Copy() => new CustomSize(Key);
     }
 }

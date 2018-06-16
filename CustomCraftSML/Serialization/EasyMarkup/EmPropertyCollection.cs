@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public class EmPropertyCollection : EmProperty
+    public abstract class EmPropertyCollection : EmProperty
     {
         public EmProperty this[string key]
         {
@@ -83,9 +83,7 @@
             } while (fullString.Count > 0 && !exit);
 
             return serialValues + SpChar_FinishComplexValue;
-        }
-
-        internal override EmProperty Copy() => new EmPropertyCollection(Key, CopyDefinitions);
+        }        
 
         protected ICollection<EmProperty> CopyDefinitions
         {

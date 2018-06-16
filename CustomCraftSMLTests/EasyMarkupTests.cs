@@ -154,7 +154,7 @@
                 new EmPropertyList<float>("FloatList", new List<float>{ 1.0f, 2.1f, 3.2f }),
             };
 
-            var testProp = new EmPropertyCollection("TestKey", properties);
+            var testProp = new TestSimpleCollection("TestKey", properties);
 
             const string expectedValue = "TestKey:" +
                                          "(" +
@@ -182,7 +182,7 @@
                 new EmPropertyList<float>("FloatList"),
             };
 
-            var testProp = new EmPropertyCollection("TestKey", properties);
+            var testProp = new TestSimpleCollection("TestKey", properties);
             testProp.FromString(testValue);
 
             Assert.AreEqual("Val", ((EmProperty<string>)testProp["String"]).Value);
@@ -197,7 +197,7 @@
         [Test]
         public void EmPropertyCollection_WithNestedCollection_ToString_GetExpected()
         {
-            var nestedComplex = new EmPropertyCollection("Nested", new List<EmProperty>
+            var nestedComplex = new TestSimpleCollection("Nested", new List<EmProperty>
             {
                 new EmProperty<string>("Nstring", "Nval"),
                 new EmProperty<int>("Nint", 10),
@@ -212,7 +212,7 @@
             };
 
 
-            var testProp = new EmPropertyCollection("TestKey", properties);
+            var testProp = new TestSimpleCollection("TestKey", properties);
 
             const string expectedValue = "TestKey:" +
                                          "(" +
@@ -244,7 +244,7 @@
                                                  ");" +
                                          ");";
 
-            var nestedComplex = new EmPropertyCollection("Nested", new List<EmProperty>
+            var nestedComplex = new TestSimpleCollection("Nested", new List<EmProperty>
             {
                 new EmProperty<int>("Nint"),
                 new EmProperty<string>("Nstring"),
@@ -258,7 +258,7 @@
                 nestedComplex
             };
 
-            var testProp = new EmPropertyCollection("TestKey", properties);
+            var testProp = new TestSimpleCollection("TestKey", properties);
             testProp.FromString(testValue);
 
             Assert.AreEqual("Val", ((EmProperty<string>)testProp["String"]).Value);
@@ -276,7 +276,7 @@
         [Test]
         public void EmPropertyCollection_WithNestedCollection_ToAndFromString_DataPreserved()
         {
-            var nestedComplexOrig = new EmPropertyCollection("Nested", new List<EmProperty>
+            var nestedComplexOrig = new TestSimpleCollection("Nested", new List<EmProperty>
             {
                 new EmProperty<string>("Nstring", "Nval"),
                 new EmProperty<int>("Nint", 10),
@@ -290,9 +290,9 @@
                 nestedComplexOrig
             };
 
-            var orig = new EmPropertyCollection("TestKey", propertiesOrig);
+            var orig = new TestSimpleCollection("TestKey", propertiesOrig);
 
-            var nestedComplex = new EmPropertyCollection("Nested", new List<EmProperty>
+            var nestedComplex = new TestSimpleCollection("Nested", new List<EmProperty>
             {
                 new EmProperty<string>("Nstring"),
                 new EmProperty<int>("Nint"),
@@ -306,7 +306,7 @@
                 nestedComplex
             };
 
-            var deserialized = new EmPropertyCollection("TestKey", properties);
+            var deserialized = new TestSimpleCollection("TestKey", properties);
 
             string originalSerialized = orig.ToString();
             deserialized.FromString(originalSerialized);
@@ -388,7 +388,7 @@
                                          "    );\r\n" +
                                          ");\r\n";
 
-            var nestedComplex = new EmPropertyCollection("Nested", new List<EmProperty>
+            var nestedComplex = new TestSimpleCollection("Nested", new List<EmProperty>
             {
                 new EmProperty<string>("Nstring"),
                 new EmProperty<int>("Nint"),
@@ -402,7 +402,7 @@
                 nestedComplex
             };
 
-            var testProp = new EmPropertyCollection("TestKey", properties);
+            var testProp = new TestSimpleCollection("TestKey", properties);
             testProp.FromString(testValue);
 
             var actualValue = testProp.PrintyPrint();

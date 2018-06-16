@@ -63,6 +63,7 @@
     <Compile Include="Serialization\AddedRecipe.cs" />
     <Compile Include="Serialization\AddedRecipeList.cs" />
     <Compile Include="Serialization\CustomSize.cs" />
+    <Compile Include="Serialization\CustomSizeList.cs" />
     <Compile Include="Serialization\EasyMarkup\EmProperty.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyCollection.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyCollectionList.cs" />
