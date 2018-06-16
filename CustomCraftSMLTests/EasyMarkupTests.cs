@@ -30,6 +30,20 @@
             }
         }
 
+        private class TestSimpleCollection : EmPropertyCollection
+        {
+            public TestSimpleCollection(string key, ICollection<EmProperty> definitions) : base(key, definitions)
+            {
+            }
+
+            internal override EmProperty Copy()
+            {
+                return new TestSimpleCollection(Key, CopyDefinitions);
+            }
+        }
+
+
+
         [Test]
         public void EmProperty_ToString_GetExpected()
         {
@@ -332,7 +346,10 @@
                 new EmProperty<int>("Nint"),
             };
 
-            var compList = new EmPropertyCollectionList("NestedComplexList", complexStructure);
+            var twoKeyCollection = new TestSimpleCollection("NestedComplexList", complexStructure);
+
+            var compList = new EmPropertyCollectionList<TestSimpleCollection>("NestedComplexList", twoKeyCollection);
+
             compList.FromString(testValue);
 
             Assert.AreEqual(2, compList.Collections.Count);

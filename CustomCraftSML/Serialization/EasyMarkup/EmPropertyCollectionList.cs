@@ -2,24 +2,15 @@
 {
     using System.Collections.Generic;
 
-    public class EmPropertyCollectionList : EmProperty
+    public class EmPropertyCollectionList<T> : EmProperty where T : EmPropertyCollection
     {
         protected EmPropertyCollection Template;
 
-        public EmPropertyCollection this[int index] => Collections[index];        
+        public EmPropertyCollection this[int index] => Collections[index];
 
         public readonly List<EmPropertyCollection> Collections = new List<EmPropertyCollection>();
 
-        public EmPropertyCollectionList(string key, ICollection<EmProperty> definitions)
-        {
-            Key = key;
-            Template = new EmPropertyCollection(key, definitions);
-
-            foreach (EmProperty property in definitions)
-                Template[property.Key] = property;
-        }
-
-        public EmPropertyCollectionList(string key, EmPropertyCollection template)
+        public EmPropertyCollectionList(string key, T template)
         {
             Key = key;
             Template = template;
@@ -82,11 +73,7 @@
 
         internal override EmProperty Copy()
         {
-            var definitions = new List<EmProperty>(Template.Keys.Count);
-            foreach (EmProperty item in Template.Values)
-                definitions.Add(item.Copy());
-
-            return new EmPropertyCollectionList(Key, definitions);
+            return new EmPropertyCollectionList<T>(Key, (T)Template.Copy());
         }
     }
 

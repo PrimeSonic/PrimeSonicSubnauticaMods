@@ -2,7 +2,7 @@
 {
     using EasyMarkup;
 
-    public class ModifiedRecipeList : EmPropertyCollectionList
+    public class ModifiedRecipeList : EmPropertyCollectionList<ModifiedRecipe>
     {
         private const string KeyName = "ModifiedRecipes";
 

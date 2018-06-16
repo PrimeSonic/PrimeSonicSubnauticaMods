@@ -11,7 +11,7 @@
 
         protected readonly EmProperty<TechType> emTechType;
         protected readonly EmProperty<short> amountCrafted;
-        protected readonly EmPropertyCollectionList ingredients;
+        protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
         protected readonly EmPropertyList<TechType> linkedItems;
 
         public TechType ItemID => emTechType.Value;
@@ -34,7 +34,7 @@
         {
             new EmProperty<TechType>("ItemID"),
             new EmProperty<short>("AmountCrafted", 1),
-            new EmPropertyCollectionList("Ingredients", new EmIngredient()),
+            new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()),
             new EmPropertyList<TechType>("LinkedItemIDs")
         };
 
@@ -50,7 +50,7 @@
         {
             emTechType = (EmProperty<TechType>)Properties["ItemID"];
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
-            ingredients = (EmPropertyCollectionList)Properties["Ingredients"];
+            ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
             linkedItems = (EmPropertyList<TechType>)Properties["LinkedItemIDs"];
                         
             OnValueExtractedEvent += ValueExtracted;
