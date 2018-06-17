@@ -3,7 +3,7 @@
     using System.Text.RegularExpressions;
     using NUnit.Framework;
 
-    public abstract class EmProperty
+    public abstract class EmProperty : IEmProperty
     {
         protected const char SpChar_KeyDelimiter = ':';
         protected const char SpChar_ValueDelimiter = ';';
@@ -14,7 +14,8 @@
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
 
-        public string Key;
+        public string Key { get; protected set; }
+
         internal string SerializedValue;
 
         public override string ToString()

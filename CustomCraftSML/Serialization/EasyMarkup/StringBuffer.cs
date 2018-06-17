@@ -5,6 +5,15 @@
     using System.Linq;
     using System.Runtime.CompilerServices;
 
+    /// <summary>
+    /// A double-ended-queue style data structure that represents string data.
+    /// </summary>
+    /// <seealso cref="System.Collections.Generic.LinkedList{System.Char}" />
+    /// <seealso cref="IComparable" />
+    /// <seealso cref="IConvertible" />
+    /// <seealso cref="System.IEquatable{StringBuffer}" />
+    /// <seealso cref="System.IEquatable{System.String}" />
+    /// <seealso cref="ICloneable" />
     public class StringBuffer : LinkedList<char>,
         IComparable, IConvertible, IEquatable<StringBuffer>, IEquatable<string>, ICloneable
     {

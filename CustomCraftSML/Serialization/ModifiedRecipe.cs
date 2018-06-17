@@ -2,9 +2,10 @@
 {
     using System.Collections.Generic;
     using EasyMarkup;
+    using SMLHelper.Patchers;
     using UnityEngine.Assertions;
 
-    public class ModifiedRecipe : EmPropertyCollection
+    public class ModifiedRecipe : EmPropertyCollection, IModifiedRecipe
     {
         public const short Max = 25;
         public const short Min = 1;
@@ -68,5 +69,23 @@
         }
 
         internal override EmProperty Copy() => new ModifiedRecipe(Key, CopyDefinitions);
+
+        public virtual TechDataHelper SmlHelperRecipe()
+        {
+            var ingredientsList = new List<IngredientHelper>(Ingredients.Count);
+
+            foreach (Ingredient item in Ingredients)
+            {
+                ingredientsList.Add(new IngredientHelper(item.ItemID, item.Required));
+            }
+
+            return new TechDataHelper()
+            {
+                _techType = ItemID,
+                _craftAmount = AmountCrafted,
+                _linkedItems = LinkedItems,
+                _ingredients = ingredientsList
+            };
+        }
     }
 }

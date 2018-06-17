@@ -4,7 +4,7 @@
     using EasyMarkup;
     using UnityEngine.Assertions;
 
-    public class CustomSize : EmPropertyCollection
+    public class CustomSize : EmPropertyCollection, ICustomSize
     {
         public const short Max = 6;
         public const short Min = 1;

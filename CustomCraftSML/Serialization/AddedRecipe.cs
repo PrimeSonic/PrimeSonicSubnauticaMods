@@ -2,8 +2,9 @@
 {
     using System.Collections.Generic;
     using EasyMarkup;
+    using SMLHelper.Patchers;
 
-    public class AddedRecipe : ModifiedRecipe
+    public class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
         private readonly EmProperty<string> path;
 
@@ -28,5 +29,6 @@
         }
 
         internal override EmProperty Copy() => new AddedRecipe(Key, CopyDefinitions);
+
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace CustomCraft.PublicAPI
+﻿using System;
+
+namespace CustomCraft.PublicAPI
 {
     public class CraftingPath
     {
@@ -9,6 +11,15 @@
         {
             Scheme = scheme;
             Path = path;
+        }
+
+        internal CraftingPath(string path)
+        {
+            Path = path;
+
+            string schemeString = path.Substring(0, path.IndexOf('/'));
+
+            Scheme = (CraftTree.Type)Enum.Parse(typeof(CraftTree.Type), schemeString);
         }
     }
 }

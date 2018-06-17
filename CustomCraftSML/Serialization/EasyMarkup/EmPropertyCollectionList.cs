@@ -8,6 +8,8 @@
 
         public EmPropertyCollection this[int index] => Collections[index];
 
+        public int Count => Collections.Count;
+
         public readonly List<EmPropertyCollection> Collections = new List<EmPropertyCollection>();
 
         public EmPropertyCollectionList(string key, T template)
