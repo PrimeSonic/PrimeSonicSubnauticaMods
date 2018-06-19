@@ -11,7 +11,7 @@
         public static TechType CyNukBatteryType { get; private set; }
         public const string NameId = "CyclopsNuclearModule";
         public const string FriendlyName = "Cyclops Nuclear Reactor Module";
-        public const string Description = "Recharge your Cyclops using this portable nuclear reactor.";
+        public const string Description = "Recharge your Cyclops using this portable nuclear reactor. Intelligently provides power only when you need it.";
 
         public static void Patch(AssetBundle assetBundle)
         {
@@ -43,9 +43,9 @@
                              {
                                  new IngredientHelper(TechType.ReactorRod, 1), // This is to validate that the player has access to nuclear power already
                                  new IngredientHelper(TechType.Benzene, 1), // And this is the validate that they've gone a little further down
-                                 new IngredientHelper(TechType.Lead, 1),
-                                 new IngredientHelper(TechType.AdvancedWiringKit, 1),
-                                 new IngredientHelper(TechType.WiringKit, 1)
+                                 new IngredientHelper(TechType.Lead, 2), // Extra insulation
+                                 new IngredientHelper(TechType.AdvancedWiringKit, 1), // All the smarts
+                                 new IngredientHelper(TechType.PlasteelIngot, 1) // Housing
                              }),
                 _techType = CyNukBatteryType
             };
