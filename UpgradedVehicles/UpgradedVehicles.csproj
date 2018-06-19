@@ -56,8 +56,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
     <Compile Include="SeaMothMk2.cs" />
-    <Compile Include="SeaMothUpgrader.cs" />
+    <Compile Include="SeaMothStorageDeluxe.cs" />
     <Compile Include="SeaMoth_Patcher.cs" />
+    <Compile Include="VehicleUpgrader.cs" />
+    <Compile Include="Vehicle_Patcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json">
