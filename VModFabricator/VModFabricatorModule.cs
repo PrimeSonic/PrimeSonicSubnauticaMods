@@ -6,9 +6,13 @@
     using UnityEngine;
     using System.Reflection;
     using Common;
+    using System;
 
     public class VModFabricatorModule
     {
+        // This will contain the original prefab of CyclopsFabricator.
+        public static GameObject originalCyclopsFabricatorPrefab = null;
+
         public static CraftTree.Type VModTreeType { get; private set; }
         public static TechType VModFabTechType { get; private set; }
 
@@ -23,6 +27,9 @@
 
         public static void Patch()
         {
+            // Retrieve original CyclopsFabricator prefab. This must be done once (not everytime we call GetPrefab).
+            originalCyclopsFabricatorPrefab = Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator");
+
             // Create new Craft Tree Type
             CustomCraftTreeRoot customTreeRootNode = CreateCustomTree(out CraftTree.Type craftType);
             VModTreeType = craftType;
@@ -121,48 +128,69 @@
 
         public static GameObject GetPrefab()
         {
-            // The standard Fabricator is the base to this new item
-            GameObject originalPrefab = Resources.Load<GameObject>("Submarine/Build/Fabricator");
-            GameObject prefab = GameObject.Instantiate(originalPrefab);
+            // Retrieve game objects
+            GameObject cyclopsFabPrefab = GameObject.Instantiate(originalCyclopsFabricatorPrefab);
+            GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
+            GameObject cyclopsFabModel = cyclopsFabPrefab.FindChild("submarine_fabricator_03");
+            GameObject cyclopsFabGeo = cyclopsFabModel.FindChild("submarine_fabricator_03_geo");
 
-            prefab.name = CustomFabAndTreeID;
+            // Update prefab name
+            cyclopsFabPrefab.name = CustomFabAndTreeID;
 
-            var prefabId = prefab.GetComponent<PrefabIdentifier>();
+            // Add prefab ID
+            var prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
             prefabId.ClassId = CustomFabAndTreeID;
             prefabId.name = FriendlyName;
 
-            var techTag = prefab.GetComponent<TechTag>();
+            // Add tech tag
+            var techTag = cyclopsFabPrefab.AddComponent<TechTag>();
             techTag.type = VModFabTechType;
 
-            var fabricator = prefab.GetComponent<Fabricator>();
+            // Translate CyclopsFabricator model and light
+            cyclopsFabModel.transform.localPosition = new Vector3(cyclopsFabModel.transform.localPosition.x, cyclopsFabModel.transform.localPosition.y - 0.8f, cyclopsFabModel.transform.localPosition.z);
+            cyclopsFabLight.transform.localPosition = new Vector3(cyclopsFabLight.transform.localPosition.x, cyclopsFabLight.transform.localPosition.y - 0.8f, cyclopsFabLight.transform.localPosition.z);
+
+            // Update sky applier
+            var skyApplier = cyclopsFabPrefab.GetComponent<SkyApplier>();
+            skyApplier.renderers = cyclopsFabPrefab.GetComponentsInChildren<Renderer>();
+            skyApplier.anchorSky = Skies.Auto;
+
+            var fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
             fabricator.craftTree = VModTreeType; // This is how the custom craft tree is associated to the fabricator
 
             // All this was necessary because the PowerRelay wasn't being instantiated
             var ghost = fabricator.GetComponent<GhostCrafter>();
             var powerRelay = new PowerRelay();
             // Ignore any errors you see about this fabricator not having a power relay in its parent. It does and it works.
-
             fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
 
-            // Set where this can be built
-            var constructible = prefab.GetComponent<Constructable>();
+            // Rotate constructible model
+            //cyclopsFabGeo.transform.localEulerAngles = new Vector3(cyclopsFabGeo.transform.localEulerAngles.x, cyclopsFabGeo.transform.localEulerAngles.y + 90.0f, cyclopsFabGeo.transform.localEulerAngles.z);
+            // Translate constructible model
+            //cyclopsFabGeo.transform.localPosition = new Vector3(cyclopsFabGeo.transform.localPosition.x, cyclopsFabGeo.transform.localPosition.y - 0.8f, cyclopsFabGeo.transform.localPosition.z);
+
+            // Add constructable
+            var constructible = cyclopsFabPrefab.AddComponent<Constructable>();
             constructible.allowedInBase = true;
             constructible.allowedInSub = true; // This is the important one
             constructible.allowedOutside = false;
             constructible.allowedOnCeiling = false;
             constructible.allowedOnGround = false;
+            constructible.allowedOnWall = true;
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
             constructible.techType = VModFabTechType; // This was necessary to correctly associate the recipe at building time
+            constructible.rotationEnabled = false;
+            constructible.model = cyclopsFabModel; // cyclopsFabGeo;
 
             // Set the custom texture
-            var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_cyan");
-            var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
-            skinnedMeshRenderer.material.mainTexture = blueTexture;
+            //var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_cyan");
+            //var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
+            //skinnedMeshRenderer.material.mainTexture = blueTexture;
 
             //skinnedMeshRenderer.material.color = Color.white;
 
-            return prefab;
+            return cyclopsFabPrefab;
         }
     }
 }
