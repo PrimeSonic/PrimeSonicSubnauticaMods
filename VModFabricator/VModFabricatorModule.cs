@@ -1,14 +1,17 @@
 ﻿namespace VModFabricator
 {
     using System.Collections.Generic;
+    using System.Reflection;
+    using Common;
     using SMLHelper;
     using SMLHelper.Patchers;
     using UnityEngine;
-    using System.Reflection;
-    using Common;
 
     public class VModFabricatorModule
     {
+        // This will contain the original prefab of CyclopsFabricator.
+        public static GameObject originalCyclopsFabricatorPrefab = null;
+
         public static CraftTree.Type VModTreeType { get; private set; }
         public static TechType VModFabTechType { get; private set; }
 
@@ -23,6 +26,9 @@
 
         public static void Patch()
         {
+            // Retrieve original CyclopsFabricator prefab. This must be done once (not everytime we call GetPrefab).
+            originalCyclopsFabricatorPrefab = Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator");
+
             // Create new Craft Tree Type
             CustomCraftTreeRoot customTreeRootNode = CreateCustomTree(out CraftTree.Type craftType);
             VModTreeType = craftType;
@@ -54,7 +60,7 @@
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(CustomFabAndTreeID, $"Submarine/Build/{CustomFabAndTreeID}", VModFabTechType, GetPrefab));
 
             // Set the custom sprite for the Habitat Builder Tool menu
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(VModFabTechType, Assets.LoadAsset<Sprite>("fabricator_icon_cyan")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(VModFabTechType, Assets.LoadAsset<Sprite>("CyFabIcon")));
 
             // Associate the recipie to the new TechType
             CraftDataPatcher.customTechData[VModFabTechType] = customFabRecipe;
@@ -121,48 +127,65 @@
 
         public static GameObject GetPrefab()
         {
-            // The standard Fabricator is the base to this new item
-            GameObject originalPrefab = Resources.Load<GameObject>("Submarine/Build/Fabricator");
-            GameObject prefab = GameObject.Instantiate(originalPrefab);
+            // Instantiate CyclopsFabricator object
+            GameObject cyclopsFabPrefab = GameObject.Instantiate(originalCyclopsFabricatorPrefab);
 
-            prefab.name = CustomFabAndTreeID;
+            // Retrieve sub game objects
+            GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
+            GameObject cyclopsFabModel = cyclopsFabPrefab.FindChild("submarine_fabricator_03");
 
-            var prefabId = prefab.GetComponent<PrefabIdentifier>();
+            // Update prefab name
+            cyclopsFabPrefab.name = CustomFabAndTreeID;
+
+            // Add prefab ID
+            var prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
             prefabId.ClassId = CustomFabAndTreeID;
             prefabId.name = FriendlyName;
 
-            var techTag = prefab.GetComponent<TechTag>();
+            // Add tech tag
+            var techTag = cyclopsFabPrefab.AddComponent<TechTag>();
             techTag.type = VModFabTechType;
 
-            var fabricator = prefab.GetComponent<Fabricator>();
-            fabricator.craftTree = VModTreeType; // This is how the custom craft tree is associated to the fabricator
+            // Translate CyclopsFabricator model and light
+            cyclopsFabModel.transform.localPosition = new Vector3(
+                                                        cyclopsFabModel.transform.localPosition.x, // Same X position
+                                                        cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                        cyclopsFabModel.transform.localPosition.z); // Same Z position
+            cyclopsFabLight.transform.localPosition = new Vector3(
+                                                        cyclopsFabLight.transform.localPosition.x, // Same X position
+                                                        cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                        cyclopsFabLight.transform.localPosition.z); // Same Z position
 
-            // All this was necessary because the PowerRelay wasn't being instantiated
+            // Update sky applier
+            var skyApplier = cyclopsFabPrefab.GetComponent<SkyApplier>();
+            skyApplier.renderers = cyclopsFabPrefab.GetComponentsInChildren<Renderer>();
+            skyApplier.anchorSky = Skies.Auto;
+
+            // Associate custom craft tree to the fabricator
+            var fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
+            fabricator.craftTree = VModTreeType;
+
+            // Associate power relay
             var ghost = fabricator.GetComponent<GhostCrafter>();
-            var powerRelay = new PowerRelay();
-            // Ignore any errors you see about this fabricator not having a power relay in its parent. It does and it works.
+            var powerRelay = new PowerRelay();            
 
             fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
 
-            // Set where this can be built
-            var constructible = prefab.GetComponent<Constructable>();
+            // Add constructable
+            var constructible = cyclopsFabPrefab.AddComponent<Constructable>();
             constructible.allowedInBase = true;
-            constructible.allowedInSub = true; // This is the important one
+            constructible.allowedInSub = true;
             constructible.allowedOutside = false;
             constructible.allowedOnCeiling = false;
             constructible.allowedOnGround = false;
+            constructible.allowedOnWall = true;
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
+            constructible.rotationEnabled = false;
             constructible.techType = VModFabTechType; // This was necessary to correctly associate the recipe at building time
+            constructible.model = cyclopsFabModel;
 
-            // Set the custom texture
-            var blueTexture = Assets.LoadAsset<Texture2D>("submarine_fabricator_cyan");
-            var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
-            skinnedMeshRenderer.material.mainTexture = blueTexture;
-
-            //skinnedMeshRenderer.material.color = Color.white;
-
-            return prefab;
+            return cyclopsFabPrefab;
         }
     }
 }

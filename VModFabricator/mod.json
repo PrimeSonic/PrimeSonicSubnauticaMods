@@ -2,7 +2,7 @@
   "Id": "VModFabricator",
   "DisplayName": "VModFabricator",
   "Author": "PrimeSonic",
-  "Version": "1.0.7",
+  "Version": "1.0.8",
   "Requires": [ ],
   "Enable": true,
   "AssemblyName": "VModFabricator.dll",
