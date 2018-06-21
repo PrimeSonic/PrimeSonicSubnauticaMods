@@ -1,4 +1,4 @@
-﻿namespace UpgradedVehicles
+﻿namespace UpgradedVehicles.Patchers
 {
     using Harmony;
 
@@ -6,7 +6,7 @@
     [HarmonyPatch("OnUpgradeModuleChange")]
     internal class SeaMoth_OnUpgradeModuleChange_Patcher
     {
-        public static void Postfix(SeaMoth __instance)
+        public static void Postfix(ref SeaMoth __instance)
         {
             VehicleUpgrader.UpgradeSeaMoth(__instance);
         }
@@ -16,7 +16,7 @@
     [HarmonyPatch("Awake")]
     internal class SeaMoth_Awake_Patcher
     {
-        public static void Postfix(SeaMoth __instance)
+        public static void Postfix(ref SeaMoth __instance)
         {
             VehicleUpgrader.UpgradeSeaMoth(__instance);
             VehicleUpgrader.UpgradeVehicle(__instance);

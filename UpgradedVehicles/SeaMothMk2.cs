@@ -1,6 +1,7 @@
 ﻿namespace UpgradedVehicles
 {
     using System.Collections.Generic;
+    using Common;
     using SMLHelper;
     using SMLHelper.Patchers;
     using UnityEngine;
@@ -17,15 +18,13 @@
         {
             TechTypeID = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
 
-
-
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", TechTypeID, GetGameObject));
 
             CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, SpriteManager.Get(TechType.Seamoth)));
             //assetBundle.LoadAsset<Sprite>("ICON")));
 
             CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.Constructor, $"Vehicles/{NameID}"));
-            
+
             CraftDataPatcher.customTechData[TechTypeID] = GetRecipe();
         }
 
@@ -63,8 +62,13 @@
             var seamoth = obj.GetComponent<SeaMoth>();
 
             var life = seamoth.GetComponent<LiveMixin>();
-            life.data.maxHealth = VehicleUpgrader.SeaMothMk2HP; // Double the normal health but still less than the ExoSuit's 600
-            life.health = VehicleUpgrader.SeaMothMk2HP;
+
+            var lifeData = new LiveMixinData();
+
+            life.data.CloneFieldsInto(lifeData);
+            lifeData.maxHealth = VehicleUpgrader.SeaMothMk2HP; // Double the normal health but still less than the ExoSuit's 600
+            life.data = lifeData;
+            life.health = life.data.maxHealth;
 
             var deluxeStorage = obj.AddComponent<SeaMothStorageDeluxe>();
 

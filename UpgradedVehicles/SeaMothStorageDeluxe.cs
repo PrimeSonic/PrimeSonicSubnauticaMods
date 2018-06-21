@@ -12,11 +12,13 @@
 
         public SeaMothStorageDeluxe()
         {
-            
+
         }
 
         void Start()
         {
+            Storages = new SeamothStorageContainer[4];
+
             var holder = new GameObject("StorageHolder");
             holder.transform.parent = transform;
             holder.transform.localPosition = Vector3.one;
@@ -27,7 +29,7 @@
                 storage.transform.parent = holder.transform;
                 storage.transform.localPosition = Vector3.one;
 
-                storage.AddComponent<SeamothStorageContainer>();
+                Storages[i] = storage.AddComponent<SeamothStorageContainer>();
             }
         }
 
