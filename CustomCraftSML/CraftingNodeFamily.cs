@@ -6,6 +6,7 @@
 
     internal abstract class CraftingNode
     {
+        internal const char Splitter = '/';
         internal readonly CraftingNode Parent = null;
 
         protected CraftingNode(CraftingNode parent)
@@ -29,13 +30,13 @@
                 node = node.Parent;
             }
 
-            string path = "";
+            string path = string.Empty;
             while (steps.Count > 0)
             {
-                path += steps.Pop() + "/";
+                path += steps.Pop() + Splitter;
             }
 
-            path.TrimEnd('/');
+            path.TrimEnd(Splitter);
 
             return path;
         }

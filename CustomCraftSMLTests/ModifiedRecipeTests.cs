@@ -33,10 +33,10 @@
             Assert.AreEqual(4, recipe.AmountCrafted);
 
             Assert.AreEqual(2, recipe.Ingredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe.Ingredients[0].ItemID);
-            Assert.AreEqual(2, recipe.Ingredients[0].Required);
-            Assert.AreEqual(TechType.Copper, recipe.Ingredients[1].ItemID);
-            Assert.AreEqual(3, recipe.Ingredients[1].Required);
+            Assert.AreEqual(TechType.Titanium, recipe.Ingredients[0].techType);
+            Assert.AreEqual(2, recipe.Ingredients[0].amount);
+            Assert.AreEqual(TechType.Copper, recipe.Ingredients[1].techType);
+            Assert.AreEqual(3, recipe.Ingredients[1].amount);
 
             Assert.AreEqual(2, recipe.LinkedItems.Count);
             Assert.AreEqual(TechType.Silver, recipe.LinkedItems[0]);
@@ -85,10 +85,10 @@
             Assert.AreEqual(1, recipe[0].AmountCrafted);
 
             Assert.AreEqual(2, recipe[0].Ingredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe[0].Ingredients[0].ItemID);
-            Assert.AreEqual(2, recipe[0].Ingredients[0].Required);
-            Assert.AreEqual(TechType.Copper, recipe[0].Ingredients[1].ItemID);
-            Assert.AreEqual(3, recipe[0].Ingredients[1].Required);
+            Assert.AreEqual(TechType.Titanium, recipe[0].Ingredients[0].techType);
+            Assert.AreEqual(2, recipe[0].Ingredients[0].amount);
+            Assert.AreEqual(TechType.Copper, recipe[0].Ingredients[1].techType);
+            Assert.AreEqual(3, recipe[0].Ingredients[1].amount);
 
             Assert.AreEqual(2, recipe[0].LinkedItems.Count);
             Assert.AreEqual(TechType.Silver, recipe[0].LinkedItems[0]);
@@ -129,10 +129,10 @@
             Assert.AreEqual(1, recipe[0].AmountCrafted);
 
             Assert.AreEqual(2, recipe[0].Ingredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe[0].Ingredients[0].ItemID);
-            Assert.AreEqual(1, recipe[0].Ingredients[0].Required);
-            Assert.AreEqual(TechType.Copper, recipe[0].Ingredients[1].ItemID);
-            Assert.AreEqual(1, recipe[0].Ingredients[1].Required);
+            Assert.AreEqual(TechType.Titanium, recipe[0].Ingredients[0].techType);
+            Assert.AreEqual(1, recipe[0].Ingredients[0].amount);
+            Assert.AreEqual(TechType.Copper, recipe[0].Ingredients[1].techType);
+            Assert.AreEqual(1, recipe[0].Ingredients[1].amount);
 
             Assert.AreEqual(0, recipe[0].LinkedItems.Count);
         }

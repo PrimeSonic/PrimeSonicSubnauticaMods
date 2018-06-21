@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using EasyMarkup;
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Crafting;
     using UnityEngine.Assertions;
 
     public class ModifiedRecipe : EmPropertyCollection, IModifiedRecipe
@@ -53,7 +53,7 @@
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
             ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
             linkedItems = (EmPropertyList<TechType>)Properties["LinkedItemIDs"];
-                        
+
             OnValueExtractedEvent += ValueExtracted;
         }
 
@@ -70,21 +70,19 @@
 
         internal override EmProperty Copy() => new ModifiedRecipe(Key, CopyDefinitions);
 
-        public virtual TechDataHelper SmlHelperRecipe()
+        public virtual TechData SmlHelperRecipe()
         {
-            var ingredientsList = new List<IngredientHelper>(Ingredients.Count);
+            var ingredientsList = new List<Ingredient>(Ingredients.Count);
 
             foreach (Ingredient item in Ingredients)
             {
-                ingredientsList.Add(new IngredientHelper(item.ItemID, item.Required));
+                ingredientsList.Add(new Ingredient(item.techType, item.amount));
             }
 
-            return new TechDataHelper()
+            return new TechData(ingredientsList)
             {
-                _techType = ItemID,
-                _craftAmount = AmountCrafted,
-                _linkedItems = LinkedItems,
-                _ingredients = ingredientsList
+                craftAmount = AmountCrafted,
+                LinkedItems = LinkedItems
             };
         }
     }

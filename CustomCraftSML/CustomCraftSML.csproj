@@ -45,7 +45,7 @@
       <HintPath>..\packages\NUnit.3.10.1\lib\net35\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>..\..\SMLHelper\SMLHelper\bin\Debug\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,7 +78,6 @@
     <Compile Include="Serialization\IAddedRecipe.cs" />
     <Compile Include="Serialization\ICustomSize.cs" />
     <Compile Include="Serialization\IModifiedRecipe.cs" />
-    <Compile Include="Serialization\Ingredient.cs" />
     <Compile Include="Serialization\ModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipeList.cs" />
     <Compile Include="Serialization\UserFileManager.cs" />
