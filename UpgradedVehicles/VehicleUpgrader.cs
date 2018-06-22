@@ -10,13 +10,12 @@
         internal const float SeaMothNormalHP = 200f;
         internal const float SeaMothMk2HP = 400f;
 
-
-
         internal static void UpgradeSeaMoth(SeaMoth seamoth)
         {
-            if (seamoth.GetComponent<PrefabIdentifier>().ClassId != SeaMothMk2.NameID)
+            string classId = seamoth.GetComponent<PrefabIdentifier>().ClassId;
+            if (classId != SeaMothMk2.NameID)
             {
-                Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Skipped");
+                Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Skipped {classId}");
 
                 return; // This is a normal Seamoth. Do not upgrade.
             }
@@ -31,18 +30,21 @@
 
             seamoth.crushDamage.SetExtraCrushDepth(extraCrush);
 
-            var deluxeStorage = seamoth.GetComponent<SeaMothStorageDeluxe>();
-            Console.WriteLine($"[UpgradedVehicles] DeluxeStorage : {deluxeStorage}");
+            var deluxeStorage = seamoth.gameObject.GetComponent<SeaMothStorageDeluxe>();
+            Console.WriteLine($"[UpgradedVehicles] DeluxeStorage : Start");
+
+            if (deluxeStorage.Storages == null || deluxeStorage.Storages[0] == null)
+            {
+                Console.WriteLine($"[UpgradedVehicles] deluxeStorage.Storages : null");
+                deluxeStorage.Init();
+            }
 
             // All four storage modules always on
             for (int i = 0; i < 4; i++)
             {
                 SeamothStorageInput seamothStorageInput = seamoth.storageInputs[i];
+                seamothStorageInput.seamoth = seamoth;                
                 seamothStorageInput.SetEnabled(true);
-
-                if (deluxeStorage.Storages[i] == null)
-                    deluxeStorage.Storages[i] = new SeamothStorageContainer();
-
                 deluxeStorage.Storages[i].enabled = true;
             }
 

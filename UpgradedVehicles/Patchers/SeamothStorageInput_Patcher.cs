@@ -1,55 +1,62 @@
-﻿namespace UpgradedVehicles.Patchers
-{
-    using Common;
-    using Harmony;
-    using UnityEngine;
+﻿//namespace UpgradedVehicles.Patchers
+//{
+//    using System;
+//    using Common;
+//    using Harmony;
+//    using UnityEngine;
 
-    [HarmonyPatch(typeof(SeamothStorageInput))]
-    [HarmonyPatch("OpenPDA")]
-    internal class SeamothStorageInput_OpenPDA_Patcher
-    {
-        internal static bool Prefix(SeamothStorageInput __instance)
-        {
-            SeaMoth seamoth = __instance.seamoth;
+//    [HarmonyPatch(typeof(SeamothStorageInput))]
+//    [HarmonyPatch("OpenPDA")]
+//    internal class SeamothStorageInput_OpenPDA_Patcher
+//    {
+//        internal static bool Prefix(SeamothStorageInput __instance)
+//        {
+//            Console.WriteLine($"[UpgradedVehicles] SeamothStorageInput.OpenPDA : Start");
 
-            var storageDeluxe = seamoth.GetComponent<SeaMothStorageDeluxe>();
+//            SeaMoth seamoth = __instance.seamoth;
 
-            if (storageDeluxe == null)
-                return true;
+//            var storageDeluxe = seamoth.GetComponent<SeaMothStorageDeluxe>();
 
-            ItemsContainer storageInSlot = storageDeluxe.GetStorageInSlot(__instance.slotID);
-            if (storageInSlot != null)
-            {
-                PDA pda = Player.main.GetPDA();
-                Inventory.main.SetUsedStorage(storageInSlot, false);
+//            if (storageDeluxe == null)
+//                return true;
 
-                Transform tr = (Transform)__instance.GetPrivateField("tr");
+//            ItemsContainer storageInSlot = storageDeluxe.GetStorageInSlot(__instance.slotID);
 
-                PDA.OnClose onClosePDA = delegate (PDA p) 
-                {
-                    OnClosePDA(__instance, p);
-                };
+//            Console.WriteLine($"[UpgradedVehicles] SeamothStorageInput.OpenPDA : storageInSlot slotID:{__instance.slotID} IsNull:{storageInSlot == null}");
 
-                if (!pda.Open(PDATab.Inventory, tr, new PDA.OnClose(onClosePDA), -1f))
-                {
-                    OnClosePDA(__instance, pda);
-                }
-            }
-            else
-            {
-                OnClosePDA(__instance, null);
-            }
+//            if (storageInSlot != null)
+//            {
+//                PDA pda = Player.main.GetPDA();
+//                Inventory.main.SetUsedStorage(storageInSlot, false);
 
-            return false;
-        }
+//                Transform tr = (Transform)__instance.GetPrivateField("tr");
 
-        internal static void OnClosePDA(SeamothStorageInput instance, PDA pda)
-        {
-            Sequence sequence = (Sequence)instance.GetPrivateField("sequence");
+//                PDA.OnClose onClosePDA = delegate (PDA p)
+//                {
+//                    OnClosePDA(__instance, p);
+//                };
 
-            sequence.Set(instance.timeClose, false, null);
-            Utils.PlayFMODAsset(instance.closeSound, instance.transform, 1f);
-        }
+//                if (!pda.Open(PDATab.Inventory, tr, new PDA.OnClose(onClosePDA), -1f))
+//                {
+//                    OnClosePDA(__instance, pda);
+//                }
+//            }
+//            else
+//            {
+//                OnClosePDA(__instance, null);
+//            }
 
-    }
-}
+//            Console.WriteLine($"[UpgradedVehicles] SeamothStorageInput.OpenPDA : End");
+//            return false;
+//        }
+
+//        internal static void OnClosePDA(SeamothStorageInput instance, PDA pda)
+//        {
+//            Sequence sequence = (Sequence)instance.GetPrivateField("sequence");
+
+//            sequence.Set(instance.timeClose, false, null);
+//            Utils.PlayFMODAsset(instance.closeSound, instance.transform, 1f);
+//        }
+
+//    }
+//}

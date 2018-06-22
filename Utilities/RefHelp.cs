@@ -22,8 +22,18 @@
 
             foreach (FieldInfo fieldInfo in fieldsInfo)
             {
-                var value = fieldInfo.GetValue(original);
-                fieldInfo.SetValue(copy, value);
+                if (fieldInfo.GetType().IsClass)
+                {
+                    var origValue = fieldInfo.GetValue(original);
+                    var copyValue = fieldInfo.GetValue(copy);
+
+                    origValue.CloneFieldsInto(copyValue);                    
+                }
+                else
+                {
+                    var value = fieldInfo.GetValue(original);
+                    fieldInfo.SetValue(copy, value);
+                }                
             }
         }
     }

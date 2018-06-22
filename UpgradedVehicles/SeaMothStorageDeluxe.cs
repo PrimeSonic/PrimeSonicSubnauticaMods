@@ -8,16 +8,16 @@
 
     public class SeaMothStorageDeluxe : MonoBehaviour
     {
-        public SeamothStorageContainer[] Storages;
+        public readonly SeamothStorageContainer[] Storages = new SeamothStorageContainer[4];
 
         public SeaMothStorageDeluxe()
         {
 
         }
 
-        void Start()
+        public void Init()
         {
-            Storages = new SeamothStorageContainer[4];
+            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/SeamothStorageModule");
 
             var holder = new GameObject("StorageHolder");
             holder.transform.parent = transform;
@@ -25,11 +25,11 @@
 
             for (int i = 0; i < 4; i++)
             {
-                var storage = new GameObject("Storage");
+                var storage = GameObject.Instantiate(prefab);
                 storage.transform.parent = holder.transform;
                 storage.transform.localPosition = Vector3.one;
 
-                Storages[i] = storage.AddComponent<SeamothStorageContainer>();
+                Storages[i] = storage.GetComponent<SeamothStorageContainer>();
             }
         }
 

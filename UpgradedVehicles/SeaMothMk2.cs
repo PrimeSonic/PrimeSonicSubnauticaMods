@@ -40,7 +40,9 @@
                                  new IngredientHelper(TechType.EnameledGlass, 2), // Stronger than glass
                                  new IngredientHelper(TechType.Lead, 1), // Same
                                  new IngredientHelper(TechType.Benzene, 1), // More oily than lubricant
+                                 
                                  new IngredientHelper(TechType.VehicleHullModule3, 1), // Minimum crush depth of 900 without upgrades
+
                                  new IngredientHelper(TechType.VehiclePowerUpgradeModule, 2), // Minimum of +2 to engine eficiency
                                  new IngredientHelper(TechType.VehicleArmorPlating, 2), // Minimum of +2 to armor                                 
                                  new IngredientHelper(TechType.VehicleStorageModule, 4), // All four storage modules always on
@@ -63,14 +65,14 @@
 
             var life = seamoth.GetComponent<LiveMixin>();
 
-            var lifeData = new LiveMixinData();
+            LiveMixinData lifeData = (LiveMixinData)ScriptableObject.CreateInstance(typeof(LiveMixinData));
 
             life.data.CloneFieldsInto(lifeData);
             lifeData.maxHealth = VehicleUpgrader.SeaMothMk2HP; // Double the normal health but still less than the ExoSuit's 600
             life.data = lifeData;
-            life.health = life.data.maxHealth;
+            life.health = life.data.maxHealth;            
 
-            var deluxeStorage = obj.AddComponent<SeaMothStorageDeluxe>();
+            var deluxeStorage = seamoth.gameObject.AddComponent<SeaMothStorageDeluxe>();
 
             // Always on upgrades handled in OnUpgradeModuleChange patch
 
