@@ -21,7 +21,8 @@
     {
         internal static void Postfix(ref SeaMoth __instance)
         {
-            VehicleUpgrader.UpgradeSeaMoth(__instance);
+            bool isMk2 = VehicleUpgrader.UpgradeSeaMoth(__instance);
+            VehicleUpgrader.SetSeamothSpeed(__instance, isMk2 ? 1 : 0);
             VehicleUpgrader.UpgradeVehicle(__instance);
         }
     }

@@ -9,15 +9,19 @@
     {
         internal const float SeaMothNormalHP = 200f;
         internal const float SeaMothMk2HP = 400f;
+        
+        private static readonly float[] ForwardForces = { 13f, 16.5f };
+        private static readonly float[] BackwardForces = { 5f, 6.5f };
+        private static readonly float[] SidewardForces = { 11.5f, 14.5f  };
 
-        internal static void UpgradeSeaMoth(SeaMoth seamoth)
+        internal static bool UpgradeSeaMoth(SeaMoth seamoth)
         {
             string classId = seamoth.GetComponent<PrefabIdentifier>().ClassId;
             if (classId != SeaMothMk2.NameID)
             {
                 Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Skipped {classId}");
 
-                return; // This is a normal Seamoth. Do not upgrade.
+                return false; // This is a normal Seamoth. Do not upgrade.
             }
 
             Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Start");
@@ -49,6 +53,8 @@
             }
 
             Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Finish");
+
+            return true;
         }
 
         internal static void UpgradeVehicle(Vehicle vehicle)
@@ -73,6 +79,13 @@
             armorModuleCount += 2;
             float powerRating = 1f + 1f * armorModuleCount;
             vehicle.SetPrivateField("enginePowerRating", powerRating);
+        }
+
+        internal static void SetSeamothSpeed(SeaMoth seamoth, int speedFactor)
+        {
+            seamoth.forwardForce = ForwardForces[speedFactor];
+            seamoth.backwardForce = BackwardForces[speedFactor];
+            seamoth.sidewardForce = SidewardForces[speedFactor];
         }
     }
 }
