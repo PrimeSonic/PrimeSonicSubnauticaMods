@@ -1,8 +1,9 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Assets;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers; // by ahk1221 https://github.com/ahk1221/SMLHelper/    
     using UnityEngine;
     using Object = UnityEngine.Object;
 
@@ -16,48 +17,56 @@
 
         public static void Patch(AssetBundle assetBundle)
         {
+            // Get the custom icon from the Unity assets bundle
+            Sprite cySolarSprite = assetBundle.LoadAsset<Sprite>("CySolarIcon");
+
             // Create a new TechType
-            CySolarChargerTechType = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
+            CySolarChargerTechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, cySolarSprite);
 
             // Create the in-game item that will behave like any other Cyclops upgrade module
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", CySolarChargerTechType, GetSolarChargerObject));
+            PrefabHandler.RegisterPrefab(new CySolarPreFab());
 
-            // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(CySolarChargerTechType, assetBundle.LoadAsset<Sprite>("CySolarIcon")));
+            // Pair the new item with its crafting recipe
+            CraftDataHandler.EditTechData(CySolarChargerTechType, GetRecipe());
 
-            // Add the new recipe to the Modification Station crafting tree
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(CySolarChargerTechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
-
-            // Create a new Recipie and pair the new recipie with the new TechType
-            CraftDataPatcher.customTechData[CySolarChargerTechType] = GetRecipe();
+            // Add the new item to the Modification Station crafting tree
+            var craftTree = CraftTreeHandler.GetExistingTree(CraftTree.Type.Workbench);
+            craftTree.GetTabNode("CyclopsMenu").AddCraftingNode(CySolarChargerTechType);
 
             // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
-            CraftDataPatcher.customEquipmentTypes[CySolarChargerTechType] = EquipmentType.CyclopsModule;
+            CraftDataHandler.EditEquipmentType(CySolarChargerTechType, EquipmentType.CyclopsModule);
         }
 
-        private static TechDataHelper GetRecipe()
+        private static TechData GetRecipe()
         {
-            return new TechDataHelper()
+            return new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[4]
                              {
-                                 new IngredientHelper(TechType.SeamothSolarCharge, 1), // This is to make sure the player has access to vehicle solar charging
-                                 new IngredientHelper(TechType.Quartz, 3),
-                                 new IngredientHelper(TechType.Titanium, 3),
-                                 new IngredientHelper(TechType.CopperWire, 1),
-                             }),
-                _techType = CySolarChargerTechType
+                                 new Ingredient(TechType.SeamothSolarCharge, 1), // This is to make sure the player has access to vehicle solar charging
+                                 new Ingredient(TechType.Quartz, 3),
+                                 new Ingredient(TechType.Titanium, 3),
+                                 new Ingredient(TechType.CopperWire, 1),
+                             })
             };
         }
+    }
 
-        public static GameObject GetSolarChargerObject()
+    public class CySolarPreFab : ModPrefab
+    {
+        public CySolarPreFab() :
+            base(SolarCharger.NameID, SolarCharger.NameID + "Pf", SolarCharger.CySolarChargerTechType)
+        {
+        }
+
+        public override GameObject GetGameObject()
         {
             GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/CyclopsThermalReactorModule");
             GameObject obj = Object.Instantiate(prefab);
 
-            obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
-            obj.GetComponent<TechTag>().type = CySolarChargerTechType;
+            obj.GetComponent<PrefabIdentifier>().ClassId = SolarCharger.NameID;
+            obj.GetComponent<TechTag>().type = SolarCharger.CySolarChargerTechType;
 
             return obj;
         }
