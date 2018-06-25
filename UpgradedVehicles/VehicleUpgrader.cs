@@ -19,27 +19,23 @@
             string classId = seamoth.GetComponent<PrefabIdentifier>().ClassId;
             if (classId != SeaMothMk2.NameID)
             {
+#if DEBUG
                 Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Skipped {classId}");
-
+#endif
                 return false; // This is a normal Seamoth. Do not upgrade.
             }
-
+#if DEBUG
             Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Start");
-
+#endif
             // Minimum crush depth of 900 without upgrades
             float extraCrush = seamoth.crushDamage.extraCrushDepth;
 
-            if (extraCrush < 700f)
-                extraCrush = 700f;
+            seamoth.crushDamage.SetExtraCrushDepth(Mathf.Max(700f, extraCrush));
 
-            seamoth.crushDamage.SetExtraCrushDepth(extraCrush);
-
-            var deluxeStorage = seamoth.gameObject.GetComponent<SeaMothStorageDeluxe>();
-            Console.WriteLine($"[UpgradedVehicles] DeluxeStorage : Start");
+            var deluxeStorage = seamoth.gameObject.GetComponent<SeaMothStorageDeluxe>();            
 
             if (deluxeStorage.Storages == null || deluxeStorage.Storages[0] == null)
-            {
-                Console.WriteLine($"[UpgradedVehicles] deluxeStorage.Storages : null");
+            {                
                 deluxeStorage.Init();
             }
 
@@ -51,9 +47,9 @@
                 seamothStorageInput.SetEnabled(true);
                 deluxeStorage.Storages[i].enabled = true;
             }
-
+#if DEBUG
             Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Finish");
-
+#endif
             return true;
         }
 
@@ -63,8 +59,9 @@
 
             if (nameID != SeaMothMk2.NameID) //  ExoSuitMk2
             {
+#if DEBUG
                 Console.WriteLine($"[UpgradedVehicles] UpgradeVehicle : Skipped");
-
+#endif
                 return; // This is a normal Seamoth. Do not upgrade.
             }
 
