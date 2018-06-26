@@ -7,6 +7,7 @@
     [HarmonyPatch("OnUpgradeModuleChange")]
     internal class Vehicle_OnUpgradeModuleChange_Patcher
     {
+        [HarmonyPostfix]
         public static void Postfix(Vehicle __instance)
         {
             VehicleUpgrader.UpgradeVehicle(__instance);

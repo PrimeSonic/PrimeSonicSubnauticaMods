@@ -11,16 +11,15 @@
 #if DEBUG
             try
             {
-                Console.WriteLine($"[UpgradedVehicles] Start patching");
+                Console.WriteLine($"[UpgradedVehicles] Start patching ******");
 #endif
 
                 SeaMothMk2.Patch();
 
-
                 HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 #if DEBUG
-                Console.WriteLine($"[UpgradedVehicles] Finish patching");
+                Console.WriteLine($"[UpgradedVehicles] Finish patching ******");
             }
             catch (Exception ex)
             {

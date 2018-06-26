@@ -10,18 +10,18 @@
 
     [HarmonyPatch(typeof(ConstructorInput))]
     [HarmonyPatch("Craft")]
-    internal static class ConstructorInput_Patcher
+    internal class ConstructorInput_Patcher
     {
-        // WHY WON'T THIS PATCH?!?!?!
 
-        internal static bool Prefix(ref ConstructorInput __instance, ref TechType techType, ref float duration)
+        [HarmonyPrefix]
+        internal static bool Prefix(ref ConstructorInput __instance, TechType techType, float duration)
         {
             Console.WriteLine($" [UpgradedVehicles] Craft, Start with TechType:{techType}");
 
             Vector3 zero = Vector3.zero;
             Quaternion identity = Quaternion.identity;
-            __instance.GetCraftTransform(techType, ref zero, ref identity);
-            if (techType == TechType.Cyclops && !__instance.ReturnValidCraftingPosition(zero))
+            GetCraftTransform(__instance, techType, ref zero, ref identity);
+            if (techType == TechType.Cyclops && !ReturnValidCraftingPosition(__instance, zero))
             {
                 Console.WriteLine($" [UpgradedVehicles] Craft, Invalid with TechType:{techType}");
                 __instance.invalidNotification.Play();
@@ -46,24 +46,24 @@
                     break;
             }
             Console.WriteLine($" [UpgradedVehicles] Craft, started crafting TechType:{techType}");
-            __instance.BaseCraft(techType, duration);
+            BaseCraft(__instance, techType, duration);
 
             return false;
         }
 
-        internal static void BaseCraft(this Crafter cft, TechType techType, float duration)
+        internal static void BaseCraft(Crafter cft, TechType techType, float duration)
         {
             CrafterLogic _logic = (CrafterLogic)cft.GetPrivateField("_logic");
 
             if (_logic != null && _logic.Craft(techType, duration))
             {
                 cft.SetPrivateField("state", true);
-                cft.OnCraftingBegin(techType, duration);
+                OnCraftingBegin(cft, techType, duration);
             }
 
         }
 
-        internal static void OnCraftingBegin(this Crafter cft, TechType techType, float duration)
+        internal static void OnCraftingBegin(Crafter cft, TechType techType, float duration)
         {
             if (!GameInput.GetButtonHeld(GameInput.Button.Sprint))
             {
@@ -78,7 +78,7 @@
             }
         }
 
-        internal static bool ReturnValidCraftingPosition(this ConstructorInput cft, Vector3 pollPosition)
+        internal static bool ReturnValidCraftingPosition(ConstructorInput cft, Vector3 pollPosition)
         {
             float num = Mathf.Clamp01((pollPosition.x + 2048f) / 4096f);
             float num2 = Mathf.Clamp01((pollPosition.z + 2048f) / 4096f);
@@ -87,7 +87,7 @@
             return cft.validCraftPositionMap.GetPixel(x, y).g > 0.5f;
         }
 
-        internal static void GetCraftTransform(this ConstructorInput cft, TechType techType, ref Vector3 position, ref Quaternion rotation)
+        internal static void GetCraftTransform(ConstructorInput cft, TechType techType, ref Vector3 position, ref Quaternion rotation)
         {
             Transform itemSpawnPoint = cft.constructor.GetItemSpawnPoint(techType);
             position = itemSpawnPoint.position;

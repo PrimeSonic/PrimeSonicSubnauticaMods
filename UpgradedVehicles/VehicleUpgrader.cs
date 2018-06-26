@@ -20,7 +20,7 @@
             if (classId != SeaMothMk2.NameID)
             {
 #if DEBUG
-                Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Skipped {classId}");
+                //Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Skipped {classId}");
 #endif
                 SetSeamothSpeed(seamoth, 0);
                 return; // This is a normal Seamoth. Do not upgrade.
@@ -62,7 +62,7 @@
             if (nameID != SeaMothMk2.NameID) //  ExoSuitMk2
             {
 #if DEBUG
-                Console.WriteLine($"[UpgradedVehicles] UpgradeVehicle : Skipped");
+                //Console.WriteLine($"[UpgradedVehicles] UpgradeVehicle : Skipped");
 #endif
                 return; // This is a normal Seamoth. Do not upgrade.
             }

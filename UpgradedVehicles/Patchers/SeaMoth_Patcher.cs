@@ -10,6 +10,7 @@
     [HarmonyPatch("OnUpgradeModuleChange")]
     internal class SeaMoth_OnUpgradeModuleChange_Patcher
     {
+        [HarmonyPostfix]
         internal static void Postfix(ref SeaMoth __instance)
         {
             VehicleUpgrader.UpgradeSeaMoth(__instance);
@@ -20,6 +21,7 @@
     [HarmonyPatch("Awake")]
     internal class SeaMoth_Awake_Patcher
     {
+        [HarmonyPostfix]
         internal static void Postfix(ref SeaMoth __instance)
         {
             VehicleUpgrader.UpgradeSeaMoth(__instance);
@@ -31,6 +33,7 @@
     [HarmonyPatch("Start")]
     internal class SeaMoth_Start_Patcher
     {
+        [HarmonyPostfix]
         internal static void Postfix(ref SeaMoth __instance)
         {
             VehicleUpgrader.UpgradeSeaMoth(__instance);
@@ -42,6 +45,7 @@
     [HarmonyPatch("vehicleDefaultName", PropertyMethod.Getter)]
     internal class SeaMoth_vehicleDefaultName_Patcher
     {
+        [HarmonyPrefix]
         internal static bool Prefix(ref SeaMoth __instance, ref string __result)
         {
             bool isSeamothMk2 = __instance.GetComponentInChildren<PrefabIdentifier>().ClassId == SeaMothMk2.NameID;
@@ -63,6 +67,7 @@
     [HarmonyPatch("vehicleDefaultColors", PropertyMethod.Getter)]
     internal class SeaMoth_vehicleDefaultColors_Patcher
     {
+        [HarmonyPrefix]
         internal static bool Prefix(ref SeaMoth __instance, ref Vector3[] __result)
         {
             bool isSeamothMk2 = __instance.GetComponentInChildren<PrefabIdentifier>().ClassId == SeaMothMk2.NameID;
