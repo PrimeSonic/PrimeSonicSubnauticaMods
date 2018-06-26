@@ -70,9 +70,9 @@
             life.data.CloneFieldsInto(lifeData);
             lifeData.maxHealth = VehicleUpgrader.SeaMothMk2HP; // Double the normal health but still less than the ExoSuit's 600
             life.data = lifeData;
-            life.health = life.data.maxHealth;            
+            life.health = life.data.maxHealth;
 
-            var deluxeStorage = seamoth.gameObject.AddComponent<SeaMothStorageDeluxe>();
+            //var deluxeStorage = seamoth.gameObject.AddComponent<SeaMothStorageDeluxe>();
 
             // Always on upgrades handled in OnUpgradeModuleChange patch
 

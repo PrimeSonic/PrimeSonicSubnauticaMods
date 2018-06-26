@@ -1,9 +1,5 @@
 ﻿namespace UpgradedVehicles
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using UnityEngine;
 
     public class SeaMothStorageDeluxe : MonoBehaviour
@@ -40,8 +36,7 @@
                 store.OnProtoSerialize(serializer);
             }
         }
-
-        // Token: 0x060028DA RID: 10458 RVA: 0x000F59B0 File Offset: 0x000F3BB0
+        
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
             this.Init();
