@@ -54,6 +54,7 @@
     <Compile Include="QPatch.cs" />
     <Compile Include="SeaMothMk2.cs" />
     <Compile Include="Patchers\SeaMoth_Patcher.cs" />
+    <Compile Include="SeaMothStorageDeluxe.cs" />
     <Compile Include="VehicleUpgrader.cs" />
     <Compile Include="Patchers\Vehicle_Patcher.cs" />
   </ItemGroup>

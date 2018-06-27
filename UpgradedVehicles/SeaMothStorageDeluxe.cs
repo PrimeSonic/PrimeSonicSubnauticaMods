@@ -1,9 +1,14 @@
 ﻿namespace UpgradedVehicles
 {
+    using System;
     using UnityEngine;
 
     public class SeaMothStorageDeluxe : MonoBehaviour
     {
+        public bool Initialized { get; internal set; } = false;
+
+        public SeaMoth ParentSeamoth;
+
         public readonly SeamothStorageContainer[] Storages = new SeamothStorageContainer[4];
 
         public SeaMothStorageDeluxe()
@@ -11,57 +16,47 @@
 
         }
 
+        public void Init(SeaMoth parent)
+        {
+            ParentSeamoth = parent;
+            Init();
+        }
+
         public void Init()
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/SeamothStorageModule");
+            //GameObject storagePrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeamothStorageModule");
 
-            var holder = new GameObject("StorageHolder");
-            holder.transform.parent = transform;
+            if (Initialized)
+                return;
+
+            var holder = ParentSeamoth.modulesRoot;
+            holder.transform.parent = this.transform;
             holder.transform.localPosition = Vector3.one;
 
-            for (int i = 0; i < 4; i++)
-            {
-                var storage = GameObject.Instantiate(prefab);
-                storage.transform.parent = holder.transform;
-                storage.transform.localPosition = Vector3.one;
+            SeamothStorageContainer[] storages = holder.GetAllComponentsInChildren<SeamothStorageContainer>();
+            Console.WriteLine($"[UpgradedVehicles] SeaMothStorageDeluxe : Awake Storages:Length {storages.Length}");
 
-                Storages[i] = storage.GetComponent<SeamothStorageContainer>();
-            }
-        }
-
-        public void OnProtoSerialize(ProtobufSerializer serializer)
-        {
-            foreach (SeamothStorageContainer store in Storages)
+            // This is weird but each storage component shows up twice with this call
+            for (int outerIndex = 0; outerIndex < 8; outerIndex += 2)
             {
-                store.OnProtoSerialize(serializer);
+                int index = outerIndex / 2;
+                
+                //var storage = GameObject.Instantiate(storagePrefab);
+                storages[outerIndex].transform.parent = holder.transform;
+                storages[outerIndex].transform.localPosition = Vector3.one;
+
+                Storages[index] = storages[outerIndex];
+
+                SeamothStorageInput seamothStorageInput = ParentSeamoth.storageInputs[index];
+                seamothStorageInput.seamoth = ParentSeamoth;
+                seamothStorageInput.SetEnabled(true);
+                Storages[index].enabled = true;
             }
+
+            Initialized = true;
+            Console.WriteLine($"[UpgradedVehicles] SeaMothStorageDeluxe : Initialized");
         }
         
-        public void OnProtoDeserialize(ProtobufSerializer serializer)
-        {
-            this.Init();
-            foreach (SeamothStorageContainer store in Storages)
-            {
-                store.OnProtoDeserialize(serializer);
-            }
-        }
-
-        public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
-        {
-            foreach (SeamothStorageContainer store in Storages)
-            {
-                store.OnProtoSerializeObjectTree(serializer);
-            }
-        }
-
-        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
-        {
-            foreach (SeamothStorageContainer store in Storages)
-            {
-                store.OnProtoDeserializeObjectTree(serializer);
-            }           
-        }
-
         public ItemsContainer GetStorageInSlot(int slotID)
         {
             return Storages[slotID].container;

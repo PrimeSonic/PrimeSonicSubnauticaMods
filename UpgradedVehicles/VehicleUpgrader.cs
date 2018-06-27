@@ -19,35 +19,23 @@
             string classId = seamoth.GetComponent<PrefabIdentifier>().ClassId;
             if (classId != SeaMothMk2.NameID)
             {
-#if DEBUG
-                //Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Skipped {classId}");
-#endif
                 SetSeamothSpeed(seamoth, 0);
                 return; // This is a normal Seamoth. Do not upgrade.
             }
-#if DEBUG
-            Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Start");
-#endif
+
             // Minimum crush depth of 900 without upgrades
             float extraCrush = seamoth.crushDamage.extraCrushDepth;
 
             seamoth.crushDamage.SetExtraCrushDepth(Mathf.Max(700f, extraCrush));
 
-            //var deluxeStorage = seamoth.gameObject.GetComponent<SeaMothStorageDeluxe>();            
+            var deluxeStorage = seamoth.gameObject.GetComponent<SeaMothStorageDeluxe>();
 
-            //if (deluxeStorage.Storages == null || deluxeStorage.Storages[0] == null)
-            //{                
-            //    deluxeStorage.Init();
-            //}
-
-            // All four storage modules always on
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    SeamothStorageInput seamothStorageInput = seamoth.storageInputs[i];
-            //    seamothStorageInput.seamoth = seamoth;                
-            //    seamothStorageInput.SetEnabled(true);
-            //    deluxeStorage.Storages[i].enabled = true;
-            //}
+            if (!deluxeStorage.Initialized)
+            {
+                Console.WriteLine($"[UpgradedVehicles] SeaMothStorageDeluxe : Forced initialize");
+                deluxeStorage.Init(seamoth);
+                deluxeStorage.Initialized = true;
+            }
 
             SetSeamothSpeed(seamoth, 1);
 #if DEBUG
@@ -55,21 +43,16 @@
 #endif            
         }
 
+
+
         internal static void UpgradeVehicle(Vehicle vehicle)
         {
             var nameID = vehicle.GetComponent<PrefabIdentifier>().ClassId;
 
-            if (nameID != SeaMothMk2.NameID) //  ExoSuitMk2
+            if (nameID != SeaMothMk2.NameID) // TODO ExoSuitMk2
             {
-#if DEBUG
-                //Console.WriteLine($"[UpgradedVehicles] UpgradeVehicle : Skipped");
-#endif
                 return; // This is a normal Seamoth. Do not upgrade.
             }
-
-#if DEBUG
-            Console.WriteLine($"[UpgradedVehicles] UpgradeVehicle : Start");
-#endif
 
             // Minimum of +2 to engine eficiency
             int powerModuleCount = vehicle.modules.GetCount(TechType.VehiclePowerUpgradeModule);

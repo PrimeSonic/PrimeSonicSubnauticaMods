@@ -1,5 +1,6 @@
 ﻿namespace UpgradedVehicles
 {
+    using System;
     using System.Collections.Generic;
     using Common;
     using SMLHelper;
@@ -53,8 +54,8 @@
 
         private static GameObject GetGameObject()
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/SeaMoth");
-            GameObject obj = GameObject.Instantiate(prefab);
+            GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeaMoth");
+            GameObject obj = GameObject.Instantiate(seamothPrefab);
 
             obj.name = NameID;
 
@@ -72,7 +73,19 @@
             life.data = lifeData;
             life.health = life.data.maxHealth;
 
-            //var deluxeStorage = seamoth.gameObject.AddComponent<SeaMothStorageDeluxe>();
+            var deluxeStorage = seamoth.gameObject.AddComponent<SeaMothStorageDeluxe>();
+            deluxeStorage.ParentSeamoth = seamoth;
+
+            GameObject storagePrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeamothStorageModule");
+
+            for (int i = 0; i < 4; i++)
+            {                
+                var storage = GameObject.Instantiate(storagePrefab).GetComponent<SeamothStorageContainer>();
+                storage.transform.parent = seamoth.modulesRoot.transform;
+                storage.transform.localPosition = Vector3.one;                
+
+                deluxeStorage.Storages[i] = storage;
+            }
 
             // Always on upgrades handled in OnUpgradeModuleChange patch
 
