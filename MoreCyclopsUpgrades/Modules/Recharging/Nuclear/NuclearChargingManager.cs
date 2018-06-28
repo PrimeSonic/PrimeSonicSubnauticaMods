@@ -23,15 +23,7 @@
                 modules.AddItem(slotName, SpawnDepletedModule(), true);
             }
         }
-
-        private static InventoryItem SpawnDepletedRod()
-        {
-            GameObject prefabForTechType = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod, true);
-            GameObject gameObject = Object.Instantiate(prefabForTechType);
-            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
-            return new InventoryItem(pickupable);
-        }
-
+ 
         private static InventoryItem SpawnDepletedModule()
         {
             GameObject prefab = Resources.Load<GameObject>("WorldEntities/Natural/DepletedCyclopsNuclearModule");
