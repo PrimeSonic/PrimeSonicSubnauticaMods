@@ -21,6 +21,7 @@
                 SolarChargerMk2.Patch(assetBundle);
                 ThermalChargerMk2.Patch(assetBundle);
                 NuclearCharger.Patch(assetBundle);
+                DepletedNuclearModule.Patch();
                 PowerUpgradeMk2.Patch(assetBundle);
                 PowerUpgradeMk3.Patch(assetBundle);
 

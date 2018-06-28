@@ -32,8 +32,6 @@
 
             // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
             CraftDataPatcher.customEquipmentTypes[CyNukBatteryType] = EquipmentType.CyclopsModule;
-
-            DepletedNuclearModule.Patch();
         }
 
         private static TechDataHelper GetRecipe()
