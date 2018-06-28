@@ -34,9 +34,8 @@
 
         private static InventoryItem SpawnDepletedModule()
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Natural/DepletedReactorRod");
+            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Natural/DepletedCyclopsNuclearModule");
             GameObject obj = Object.Instantiate(prefab);
-            obj.GetComponent<PrefabIdentifier>().ClassId = "DepletedCyclopsNuclearModule";
             Pickupable pickupable = obj.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
         }
