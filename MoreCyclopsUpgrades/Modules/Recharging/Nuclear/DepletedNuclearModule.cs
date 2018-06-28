@@ -45,12 +45,12 @@ namespace MoreCyclopsUpgrades
         public static GameObject DepletedGameObject()
         {
             GameObject prefab = Resources.Load<GameObject>("WorldEntities/Natural/DepletedReactorRod");
-            GameObject obj = UnityEngine.Object.Instantiate(prefab);
+            GameObject gameObject = UnityEngine.Object.Instantiate(prefab);
 
-            obj.GetComponent<PrefabIdentifier>().ClassId = "DepletedCyclopsNuclearModule";
-            obj.AddComponent<TechTag>().type = DepletedTechType;
+            gameObject.GetComponent<PrefabIdentifier>().ClassId = "DepletedCyclopsNuclearModule";
+            gameObject.AddComponent<TechTag>().type = DepletedTechType;
 
-            return obj;
+            return gameObject;
         }
     }
 }
