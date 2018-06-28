@@ -73,19 +73,19 @@
             life.data = lifeData;
             life.health = life.data.maxHealth;
 
-            var deluxeStorage = seamoth.gameObject.AddComponent<SeaMothStorageDeluxe>();
-            deluxeStorage.ParentSeamoth = seamoth;
+            //var deluxeStorage = seamoth.gameObject.AddComponent<SeaMothStorageDeluxe>();
+            //deluxeStorage.ParentSeamoth = seamoth;
 
-            GameObject storagePrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeamothStorageModule");
+            //GameObject storagePrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeamothStorageModule");
 
-            for (int i = 0; i < 4; i++)
-            {                
-                var storage = GameObject.Instantiate(storagePrefab).GetComponent<SeamothStorageContainer>();
-                storage.transform.parent = seamoth.modulesRoot.transform;
-                storage.transform.localPosition = Vector3.one;                
+            //for (int i = 0; i < 4; i++)
+            //{                
+            //    var storage = GameObject.Instantiate(storagePrefab).GetComponent<SeamothStorageContainer>();
+            //    storage.transform.parent = seamoth.modulesRoot.transform;
+            //    storage.transform.localPosition = Vector3.one;                
 
-                deluxeStorage.Storages[i] = storage;
-            }
+            //    deluxeStorage.Storages[i] = storage;
+            //}
 
             // Always on upgrades handled in OnUpgradeModuleChange patch
 

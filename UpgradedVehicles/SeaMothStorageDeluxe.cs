@@ -3,6 +3,7 @@
     using System;
     using UnityEngine;
 
+    [Obsolete("Not to be used. Not compatible with saving.", true)]
     public class SeaMothStorageDeluxe : MonoBehaviour
     {
         public bool Initialized { get; internal set; } = false;

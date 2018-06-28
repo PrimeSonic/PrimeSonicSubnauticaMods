@@ -9,17 +9,18 @@
     {
         internal const float SeaMothNormalHP = 200f;
         internal const float SeaMothMk2HP = 400f;
-        
-        private static readonly float[] ForwardForces = { 13f, 17f };
-        private static readonly float[] BackwardForces = { 5f, 7f };
-        private static readonly float[] SidewardForces = { 11.5f, 15f  };
+
+        private const float ForwardForces = 13f;
+        private const float BackwardForces = 5f;
+        private const float SidewardForces = 11.5f;
+        private const float BonusSpeed = 1.25f;
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth)
         {
             string classId = seamoth.GetComponent<PrefabIdentifier>().ClassId;
             if (classId != SeaMothMk2.NameID)
             {
-                SetSeamothSpeed(seamoth, 0);
+                ResetSetSeamothSpeed(seamoth);
                 return; // This is a normal Seamoth. Do not upgrade.
             }
 
@@ -28,22 +29,20 @@
 
             seamoth.crushDamage.SetExtraCrushDepth(Mathf.Max(700f, extraCrush));
 
-            var deluxeStorage = seamoth.gameObject.GetComponent<SeaMothStorageDeluxe>();
+            //var deluxeStorage = seamoth.gameObject.GetComponent<SeaMothStorageDeluxe>();
 
-            if (!deluxeStorage.Initialized)
-            {
-                Console.WriteLine($"[UpgradedVehicles] SeaMothStorageDeluxe : Forced initialize");
-                deluxeStorage.Init(seamoth);
-                deluxeStorage.Initialized = true;
-            }
+            //if (!deluxeStorage.Initialized)
+            //{
+            //    Console.WriteLine($"[UpgradedVehicles] SeaMothStorageDeluxe : Forced initialize");
+            //    deluxeStorage.Init(seamoth);
+            //    deluxeStorage.Initialized = true;
+            //}
 
-            SetSeamothSpeed(seamoth, 1);
+            SetSeamothSpeed(seamoth, 2);
 #if DEBUG
             Console.WriteLine($"[UpgradedVehicles] UpgradeSeaMoth : Finish");
 #endif            
         }
-
-
 
         internal static void UpgradeVehicle(Vehicle vehicle)
         {
@@ -71,11 +70,20 @@
 #endif
         }
 
-        internal static void SetSeamothSpeed(SeaMoth seamoth, int speedFactor)
+        internal static void ResetSetSeamothSpeed(SeaMoth seamoth)
         {
-            seamoth.forwardForce = ForwardForces[speedFactor];
-            seamoth.backwardForce = BackwardForces[speedFactor];
-            seamoth.sidewardForce = SidewardForces[speedFactor];
+            seamoth.forwardForce = ForwardForces;
+            seamoth.backwardForce = BackwardForces;
+            seamoth.sidewardForce = SidewardForces;
+        }
+
+        internal static void SetSeamothSpeed(SeaMoth seamoth, float speedFactor)
+        {
+            float speedMultiplier = speedFactor * BonusSpeed;
+
+            seamoth.forwardForce = speedMultiplier * ForwardForces;
+            seamoth.backwardForce = speedMultiplier * BackwardForces;
+            seamoth.sidewardForce = speedMultiplier * SidewardForces;
         }
     }
 }
