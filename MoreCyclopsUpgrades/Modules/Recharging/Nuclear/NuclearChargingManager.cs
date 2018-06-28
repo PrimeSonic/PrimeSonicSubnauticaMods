@@ -20,14 +20,18 @@
             {
                 InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
                 Object.Destroy(inventoryItem.item.gameObject);
-                modules.AddItem(slotName, SpawnDepletedRod(), true);
+                modules.AddItem(slotName, SpawnDepletedModule(), true);
             }
         }
-
-        private static InventoryItem SpawnDepletedRod()
+ 
+        private static InventoryItem SpawnDepletedModule()
         {
-            GameObject prefabForTechType = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod, true);
-            GameObject gameObject = Object.Instantiate(prefabForTechType);
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
+            GameObject gameObject = Object.Instantiate(prefab);
+
+            gameObject.GetComponent<PrefabIdentifier>().ClassId = "DepletedCyclopsNuclearModule";
+            gameObject.AddComponent<TechTag>().type = DepletedNuclearModule.DepletedTechType;
+
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
         }
