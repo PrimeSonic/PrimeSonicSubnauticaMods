@@ -10,11 +10,11 @@ namespace MoreCyclopsUpgrades
 {
     public class DepletedNuclearModule
     {
-        public static TechType DepletedCYNUKM { get; protected set; }
+        public static TechType DepletedTechType { get; protected set; }
 
         public static void Patch()
         {
-            DepletedCYNUKM = TechTypePatcher.AddTechType("DepletedCyclopsNuclearModule", "Depleted Cyclops Nuclear Module", "A depleted Cyclops Nuclear Module");
+            DepletedTechType = TechTypePatcher.AddTechType("DepletedCyclopsNuclearModule", "Depleted Cyclops Nuclear Module", "A depleted Cyclops Nuclear Module");
             TechType dummy = TechTypePatcher.AddTechType("CyclopsNuclearModuleRefil", "Reload Cyclops Nuclear Module", "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod");
             Atlas.Sprite sprite = SpriteManager.Get(TechType.DepletedReactorRod);
             CustomSprite customSprite = new CustomSprite(dummy, sprite);
@@ -24,7 +24,7 @@ namespace MoreCyclopsUpgrades
                 _craftAmount = 0,
                 _ingredients = new List<IngredientHelper>()
                 {
-                    new IngredientHelper(DepletedCYNUKM, 1),
+                    new IngredientHelper(DepletedTechType, 1),
                     new IngredientHelper(TechType.ReactorRod, 1)
                 },
                 _linkedItems = new List<TechType>()
@@ -48,6 +48,7 @@ namespace MoreCyclopsUpgrades
             GameObject obj = UnityEngine.Object.Instantiate(prefab);
 
             obj.GetComponent<PrefabIdentifier>().ClassId = "DepletedCyclopsNuclearModule";
+            obj.AddComponent<TechTag>().type = DepletedTechType;
 
             return obj;
         }
