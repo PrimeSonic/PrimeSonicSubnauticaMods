@@ -15,7 +15,7 @@ namespace MoreCyclopsUpgrades
         public static void Patch()
         {
             DepletedCYNUKM = TechTypePatcher.AddTechType("DepletedCyclopsNuclearModule", "Depleted Cyclops Nuclear Module", "A depleted Cyclops Nuclear Module");
-            TechType dummy = TechTypePatcher.AddTechType("CyclopsNuclearModuleRefil", "Recharge Cyclops Nuclear Module", "Recharge a Depleted Cyclops Nuclear Module with a Reactor Rod");
+            TechType dummy = TechTypePatcher.AddTechType("CyclopsNuclearModuleRefil", "Reload Cyclops Nuclear Module", "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod");
             Atlas.Sprite sprite = SpriteManager.Get(TechType.DepletedReactorRod);
             CustomSprite customSprite = new CustomSprite(dummy, sprite);
             CustomCraftNode customCraftNode = new CustomCraftNode(dummy, CraftTree.Type.Workbench, "CyclopsMenu/DepletedCyclopsNuclearModule");
