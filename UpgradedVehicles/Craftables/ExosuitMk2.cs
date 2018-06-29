@@ -6,14 +6,13 @@
     using SMLHelper;
     using SMLHelper.Patchers;
     using UnityEngine;
-    using UpgradedVehicles.Modules;
 
     internal class ExosuitMk2
     {
         public static TechType TechTypeID { get; private set; }
         public const string NameID = "ExosuitMk2";
         public const string FriendlyName = "Prawn Suit Mk2";
-        public const string Description = "An upgraded Prawn Suit built to take on anything.";
+        public const string Description = "An upgraded Prawn Suit built even tougher to take on anything.";
 
         public static void Patch()
         {
@@ -34,22 +33,15 @@
             return new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[]
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[6]
                              {
-                                 new IngredientHelper(TechType.PlasteelIngot, 2), // Same
-                                 new IngredientHelper(TechType.PowerCell, 2), // Should have been here
+                                 new IngredientHelper(TechType.PlasteelIngot, 2),                                 
                                  new IngredientHelper(TechType.Kyanite, 4), // Better than Aerogel
-                                 new IngredientHelper(TechType.EnameledGlass, 1), // Same
-                                 new IngredientHelper(TechType.Lead, 2), // Same
-                                 new IngredientHelper(TechType.Diamond, 2), // Same
-                                 new IngredientHelper(TechType.Nickel, 1), // In addition to diamond
+                                 new IngredientHelper(TechType.EnameledGlass, 1),
+                                 new IngredientHelper(TechType.Diamond, 2),
                                  
                                  new IngredientHelper(TechType.ExoHullModule2, 1), // Minimum crush depth of 1700 without upgrades
-
-                                 // This will be replaced with a single component
-                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 2), // Permanent +2 to engine eficiency
-                                 new IngredientHelper(TechType.VehicleArmorPlating, 2), // Permanent +2 to armor                                 
-                                 new IngredientHelper(SpeedBooster.TechTypeID, 2), // Permanent speed boost
+                                 new IngredientHelper(VehiclePowerCore.TechTypeID, 1),  // +2 to armor + speed without engine efficiency penalty
                              }),
                 _techType = TechTypeID
             };
@@ -62,7 +54,6 @@
 
             obj.name = NameID;
             
-            obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
             obj.GetComponent<TechTag>().type = TechTypeID;
 
             var exosuit = obj.GetComponent<Exosuit>();

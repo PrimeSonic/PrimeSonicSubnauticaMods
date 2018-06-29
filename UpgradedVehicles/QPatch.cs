@@ -3,7 +3,6 @@
     using System;
     using System.Reflection;
     using Harmony;
-    using UpgradedVehicles.Modules;
 
     public class QPatch
     {
@@ -15,6 +14,7 @@
                 Console.WriteLine($"[UpgradedVehicles] Start patching");
 #endif
                 SpeedBooster.Patch();
+                VehiclePowerCore.Patch();
                 SeaMothMk2.Patch();
                 ExosuitMk2.Patch();
 

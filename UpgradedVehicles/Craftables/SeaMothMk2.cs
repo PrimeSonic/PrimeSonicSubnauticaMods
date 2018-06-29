@@ -6,7 +6,6 @@
     using SMLHelper;
     using SMLHelper.Patchers;
     using UnityEngine;
-    using UpgradedVehicles.Modules;
 
     internal class SeaMothMk2
     {
@@ -34,21 +33,14 @@
             return new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[]
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[5]
                              {
-                                 new IngredientHelper(TechType.PlasteelIngot, 1), // Stronger than titanium ingot
-                                 new IngredientHelper(TechType.PowerCell, 1), // Same
+                                 new IngredientHelper(TechType.PlasteelIngot, 1), // Stronger than titanium ingot                                 
                                  new IngredientHelper(TechType.EnameledGlass, 2), // Stronger than glass
-                                 new IngredientHelper(TechType.Lead, 1), // Same
-                                 new IngredientHelper(TechType.Lubricant, 1), // Same
-                                 new IngredientHelper(TechType.Benzene, 1), // In addition to lubricant                                 
+                                 new IngredientHelper(TechType.Lead, 1),
 
                                  new IngredientHelper(TechType.VehicleHullModule3, 1), // Minimum crush depth of 900 without upgrades
-
-                                 // This will be replaced with a single component
-                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 2), // Permanent +2 to engine eficiency
-                                 new IngredientHelper(TechType.VehicleArmorPlating, 2), // Permanent +2 to armor                                 
-                                 new IngredientHelper(SpeedBooster.TechTypeID, 2), // Permanent speed boost
+                                 new IngredientHelper(VehiclePowerCore.TechTypeID, 1), // +2 to armor + speed without engine efficiency penalty
                              }),
                 _techType = TechTypeID
             };
@@ -61,7 +53,6 @@
 
             obj.name = NameID;
 
-            obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
             obj.GetComponent<TechTag>().type = TechTypeID;
 
             var seamoth = obj.GetComponent<SeaMoth>();

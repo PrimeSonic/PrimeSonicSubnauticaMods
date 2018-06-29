@@ -1,4 +1,4 @@
-﻿namespace UpgradedVehicles.Modules
+﻿namespace UpgradedVehicles
 {    
     using System.Collections.Generic;
     using SMLHelper;
@@ -33,9 +33,9 @@
                 _craftAmount = 1,
                 _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
                              {
-                                 new IngredientHelper(TechType.AluminumOxide, 1),
-                                 new IngredientHelper(TechType.Polyaniline, 1),
-                                 new IngredientHelper(TechType.ComputerChip, 1)
+                                 new IngredientHelper(TechType.Aerogel, 1),                                 
+                                 new IngredientHelper(TechType.Magnetite, 1),
+                                 new IngredientHelper(TechType.ComputerChip, 1),
                              }),
                 _techType = TechTypeID
             };
@@ -46,7 +46,6 @@
             GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/VehiclePowerUpgradeModule");
             GameObject obj = GameObject.Instantiate(prefab);
 
-            obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
             obj.GetComponent<TechTag>().type = TechTypeID;
 
             return obj;

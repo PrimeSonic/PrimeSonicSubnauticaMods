@@ -2,18 +2,10 @@
 {
     using UnityEngine;
     using Common;
-    using UpgradedVehicles.Modules;
-    using System.Collections.Generic;
 
     internal class VehicleUpgrader
     {
-        private static readonly IList<TechType> SeamothDepthModules = new List<TechType>(5)
-        {
-            TechType.VehicleHullModule1,
-            TechType.VehicleHullModule2,
-            TechType.VehicleHullModule3
-        };
-
+        // Original values from the Vehicle class
         private const float ForwardForces = 13f;
         private const float BackwardForces = 5f;
         private const float SidewardForces = 11.5f;
@@ -21,7 +13,7 @@
         private const float VerticalForce = 11f;
         private const float OnGroundForceMultiplier = 1f;
 
-        private const float BonusSpeed = 1.25f;
+        private const float BonusSpeed = 1.25f; //25% bonus
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth, TechType techType)
         {
@@ -30,10 +22,12 @@
             if (!isUpgradedSeamoth)
                 return; // This is a normal Seamoth. Do not upgrade.
 
-            if (!SeamothDepthModules.Contains(techType))
+            if (techType != TechType.VehicleHullModule1 &&
+                techType != TechType.VehicleHullModule2 &&
+                techType != TechType.VehicleHullModule3)
                 return; // Not a depth module. No need to update anything here.
 
-            UpgradeSeamothCrushDepth(seamoth, 700f);
+            UpgradeCrushDepth(seamoth, 700f);
         }
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth)
@@ -43,14 +37,38 @@
             if (!isUpgradedSeamoth)
                 return; // This is a normal Seamoth. Do not upgrade.
 
-            UpgradeSeamothCrushDepth(seamoth, 700f);
+            UpgradeCrushDepth(seamoth, 700f);
         }
 
-        private static void UpgradeSeamothCrushDepth(SeaMoth seamoth, float minimumBonus = 0f)
+        internal static void UpgradeExosuit(Exosuit exosuit, TechType techType)
+        {
+            bool isUpgradedExosuit = exosuit.GetComponent<TechTag>().type == ExosuitMk2.TechTypeID;
+
+            if (!isUpgradedExosuit)
+                return; // This is a normal Prawn Suit. Do not upgrade.
+
+            if (techType != TechType.ExoHullModule1 &&
+                techType != TechType.ExoHullModule2)
+                return; // Not a depth module. No need to update anything here.
+
+            UpgradeCrushDepth(exosuit, 800f);
+        }
+
+        internal static void UpgradeExosuit(Exosuit exosuit)
+        {
+            bool isUpgradedExosuit = exosuit.GetComponent<TechTag>().type == ExosuitMk2.TechTypeID;
+
+            if (!isUpgradedExosuit)
+                return; // This is a normal Prawn Suit. Do not upgrade.
+
+            UpgradeCrushDepth(exosuit, 800f);
+        }
+
+        private static void UpgradeCrushDepth(Vehicle vehicle, float minimumBonus = 0f)
         {
             // Minimum crush depth of 900 without upgrades            
-            float bonusCrushDepth = Mathf.Max(minimumBonus, seamoth.crushDamage.extraCrushDepth);
-            seamoth.crushDamage.SetExtraCrushDepth(bonusCrushDepth);
+            float bonusCrushDepth = Mathf.Max(minimumBonus, vehicle.crushDamage.extraCrushDepth);
+            vehicle.crushDamage.SetExtraCrushDepth(bonusCrushDepth);
         }
 
         internal static void UpgradeVehicle(Vehicle vehicle, TechType techType)
