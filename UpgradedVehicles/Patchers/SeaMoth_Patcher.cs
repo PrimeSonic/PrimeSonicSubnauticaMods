@@ -1,8 +1,5 @@
 ﻿namespace UpgradedVehicles.Patchers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection.Emit;
     using Harmony;
     using UnityEngine;
 
@@ -11,9 +8,9 @@
     internal class SeaMoth_OnUpgradeModuleChange_Patcher
     {
         [HarmonyPostfix]
-        internal static void Postfix(ref SeaMoth __instance)
+        internal static void Postfix(ref SeaMoth __instance, TechType techType)
         {
-            VehicleUpgrader.UpgradeSeaMoth(__instance);
+            VehicleUpgrader.UpgradeSeaMoth(__instance, techType);
         }
     }
 
@@ -24,7 +21,6 @@
         [HarmonyPostfix]
         internal static void Postfix(ref SeaMoth __instance)
         {
-            Console.WriteLine($"[UpgradedVehicles] SeaMoth : Awake");
             VehicleUpgrader.UpgradeSeaMoth(__instance);
             VehicleUpgrader.UpgradeVehicle(__instance);
         }
@@ -37,9 +33,9 @@
         [HarmonyPrefix]
         internal static bool Prefix(ref SeaMoth __instance, ref string __result)
         {
-            bool isSeamothMk2 = __instance.GetComponentInChildren<PrefabIdentifier>().ClassId == SeaMothMk2.NameID;
+            bool isUpgradedSeamoth = __instance.GetComponent<TechTag>().type == SeaMothMk2.TechTypeID;
 
-            if (isSeamothMk2)
+            if (isUpgradedSeamoth)
             {
                 __result = "SEAMOTH MK2";
                 return false;
@@ -57,9 +53,9 @@
         [HarmonyPrefix]
         internal static bool Prefix(ref SeaMoth __instance, ref Vector3[] __result)
         {
-            bool isSeamothMk2 = __instance.GetComponentInChildren<PrefabIdentifier>().ClassId == SeaMothMk2.NameID;
-            
-            if (isSeamothMk2)
+            bool isUpgradedSeamoth = __instance.GetComponent<TechTag>().type == SeaMothMk2.TechTypeID;
+
+            if (isUpgradedSeamoth)
             {
                 __result = new Vector3[]
                             {

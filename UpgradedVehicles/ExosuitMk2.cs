@@ -8,12 +8,12 @@
     using UnityEngine;
     using UpgradedVehicles.Modules;
 
-    internal class SeaMothMk2
+    internal class ExosuitMk2
     {
         public static TechType TechTypeID { get; private set; }
-        public const string NameID = "SeaMothMk2";
-        public const string FriendlyName = "Seamoth Mk2";
-        public const string Description = "An upgraded SeaMoth ready to take you anywhere.";
+        public const string NameID = "ExosuitMk2";
+        public const string FriendlyName = "Prawn Suit Mk2";
+        public const string Description = "An upgraded Prawn Suit built to take on anything.";
 
         public static void Patch()
         {
@@ -22,7 +22,7 @@
             CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", TechTypeID, GetGameObject));
 
             // TODO Icon
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, SpriteManager.Get(TechType.Seamoth)));            
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, SpriteManager.Get(TechType.Exosuit)));
 
             CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.Constructor, $"Vehicles/{NameID}"));
 
@@ -36,14 +36,15 @@
                 _craftAmount = 1,
                 _ingredients = new List<IngredientHelper>(new IngredientHelper[]
                              {
-                                 new IngredientHelper(TechType.PlasteelIngot, 1), // Stronger than titanium ingot
-                                 new IngredientHelper(TechType.PowerCell, 1), // Same
-                                 new IngredientHelper(TechType.EnameledGlass, 2), // Stronger than glass
-                                 new IngredientHelper(TechType.Lead, 1), // Same
-                                 new IngredientHelper(TechType.Lubricant, 1), // Same
-                                 new IngredientHelper(TechType.Benzene, 1), // In addition to lubricant                                 
-
-                                 new IngredientHelper(TechType.VehicleHullModule3, 1), // Minimum crush depth of 900 without upgrades
+                                 new IngredientHelper(TechType.PlasteelIngot, 2), // Same
+                                 new IngredientHelper(TechType.PowerCell, 2), // Should have been here
+                                 new IngredientHelper(TechType.Kyanite, 4), // Better than Aerogel
+                                 new IngredientHelper(TechType.EnameledGlass, 1), // Same
+                                 new IngredientHelper(TechType.Lead, 2), // Same
+                                 new IngredientHelper(TechType.Diamond, 2), // Same
+                                 new IngredientHelper(TechType.Nickel, 1), // In addition to diamond
+                                 
+                                 new IngredientHelper(TechType.ExoHullModule2, 1), // Minimum crush depth of 1700 without upgrades
 
                                  // This will be replaced with a single component
                                  new IngredientHelper(TechType.VehiclePowerUpgradeModule, 2), // Permanent +2 to engine eficiency
@@ -56,22 +57,22 @@
 
         private static GameObject GetGameObject()
         {
-            GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeaMoth");
+            GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Exosuit");
             GameObject obj = GameObject.Instantiate(seamothPrefab);
 
             obj.name = NameID;
-
+            
             obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
             obj.GetComponent<TechTag>().type = TechTypeID;
 
-            var seamoth = obj.GetComponent<SeaMoth>();
+            var exosuit = obj.GetComponent<Exosuit>();
 
-            var life = seamoth.GetComponent<LiveMixin>();
+            var life = exosuit.GetComponent<LiveMixin>();
 
             LiveMixinData lifeData = (LiveMixinData)ScriptableObject.CreateInstance(typeof(LiveMixinData));
 
             life.data.CloneFieldsInto(lifeData);
-            lifeData.maxHealth = life.maxHealth * 2; // 100% more HP
+            lifeData.maxHealth = life.maxHealth * 1.5f; // 50% more HP
 
             life.data = lifeData;
             life.health = life.data.maxHealth;

@@ -8,9 +8,9 @@
     internal class Vehicle_OnUpgradeModuleChange_Patcher
     {
         [HarmonyPostfix]
-        public static void Postfix(Vehicle __instance)
+        public static void Postfix(Vehicle __instance, TechType techType)
         {
-            VehicleUpgrader.UpgradeVehicle(__instance);
+            VehicleUpgrader.UpgradeVehicle(__instance, techType);
         }
     }
 

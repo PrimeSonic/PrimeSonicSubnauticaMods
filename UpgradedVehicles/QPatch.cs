@@ -3,6 +3,7 @@
     using System;
     using System.Reflection;
     using Harmony;
+    using UpgradedVehicles.Modules;
 
     public class QPatch
     {
@@ -11,19 +12,20 @@
 #if DEBUG
             try
             {
-                Console.WriteLine($"[UpgradedVehicles] Start patching ******");
+                Console.WriteLine($"[UpgradedVehicles] Start patching");
 #endif
-
+                SpeedBooster.Patch();
                 SeaMothMk2.Patch();
+                ExosuitMk2.Patch();
 
                 HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 #if DEBUG
-                Console.WriteLine($"[UpgradedVehicles] Finish patching ******");
+                Console.WriteLine($"[UpgradedVehicles] Finish patching");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[UpgradedVehicles] ERROR: " + ex.ToString());
+                Console.WriteLine("[UpgradedVehicles] EXCEPTION on Patch: " + ex.ToString());
             }
 #endif
         }
