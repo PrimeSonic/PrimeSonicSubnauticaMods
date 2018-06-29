@@ -8,7 +8,7 @@
 
     public class SolarChargerMk2
     {
-        public static TechType SolarMk2TechType { get; private set; }
+        public static TechType TechTypeID { get; private set; }
 
         public const string NameID = "CyclopsSolarChargerMk2";
         public const string FriendlyName = "Cyclops Solar Charger Mk2";
@@ -17,22 +17,22 @@
         public static void Patch(AssetBundle assetBundle)
         {
             // Create a new TechType
-            SolarMk2TechType = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
+            TechTypeID = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
 
             // Create the in-game item that will behave like any other Cyclops upgrade module
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", SolarMk2TechType, GetSolarChargerObject));
+            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", TechTypeID, GetSolarChargerObject));
 
             // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(SolarMk2TechType, assetBundle.LoadAsset<Sprite>("CySolarIconMk2")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, assetBundle.LoadAsset<Sprite>("CySolarIconMk2")));
 
             // Add the new recipe to the Modification Station crafting tree
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(SolarMk2TechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
+            CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
 
             // Create a new Recipie and pair the new recipie with the new TechType
-            CraftDataPatcher.customTechData[SolarMk2TechType] = GetRecipe();
+            CraftDataPatcher.customTechData[TechTypeID] = GetRecipe();
 
             // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
-            CraftDataPatcher.customEquipmentTypes[SolarMk2TechType] = EquipmentType.CyclopsModule;
+            CraftDataPatcher.customEquipmentTypes[TechTypeID] = EquipmentType.CyclopsModule;
         }
 
         private static TechDataHelper GetRecipe()
@@ -42,14 +42,14 @@
                 _craftAmount = 1,
                 _ingredients = new List<IngredientHelper>(new IngredientHelper[6]
                              {
-                                 new IngredientHelper(SolarCharger.CySolarChargerTechType, 1),
+                                 new IngredientHelper(SolarCharger.TechTypeID, 1),
                                  new IngredientHelper(TechType.Battery, 2),
                                  new IngredientHelper(TechType.Sulphur, 1),
                                  new IngredientHelper(TechType.Kyanite, 1),
                                  new IngredientHelper(TechType.WiringKit, 1),
                                  new IngredientHelper(TechType.CopperWire, 1),
                              }),
-                _techType = SolarMk2TechType
+                _techType = TechTypeID
             };
         }
 
@@ -59,7 +59,7 @@
             GameObject obj = Object.Instantiate(prefab);
 
             obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
-            obj.GetComponent<TechTag>().type = SolarMk2TechType;
+            obj.GetComponent<TechTag>().type = TechTypeID;
 
             var pCell = obj.AddComponent<Battery>();
             pCell.name = FriendlyName;

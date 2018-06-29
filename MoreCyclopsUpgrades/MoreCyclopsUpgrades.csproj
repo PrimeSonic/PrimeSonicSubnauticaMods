@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearChargingManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerIndexManager.cs" />

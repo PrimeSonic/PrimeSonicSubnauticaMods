@@ -37,12 +37,12 @@
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
 
-                if (techTypeInSlot == SolarCharger.CySolarChargerTechType) // Solar
+                if (techTypeInSlot == SolarCharger.TechTypeID) // Solar
                 {
                     surplusPower += PowerCharging.ChargeFromModule(ref __instance, availableSolarEnergy, ref powerDeficit);
                     renewablePowerAvailable |= availableSolarEnergy > 0f;
                 }
-                else if (techTypeInSlot == SolarChargerMk2.SolarMk2TechType) // Solar Mk2
+                else if (techTypeInSlot == SolarChargerMk2.TechTypeID) // Solar Mk2
                 {
                     Battery battery = PowerCharging.GetBatteryInSlot(modules, slotName);
                     surplusPower += PowerCharging.ChargeFromModulelMk2(ref __instance, battery, availableSolarEnergy, SolarChargingManager.BatteryDrainRate, ref powerDeficit);
@@ -56,7 +56,7 @@
                     surplusPower += PowerCharging.ChargeFromModule(ref __instance, availableThermalEnergy, ref powerDeficit);
                     renewablePowerAvailable |= availableThermalEnergy > 0f;
                 }
-                else if (techTypeInSlot == ThermalChargerMk2.ThermalMk2TechType) // Thermal Mk2
+                else if (techTypeInSlot == ThermalChargerMk2.TechTypeID) // Thermal Mk2
                 {
                     Battery battery = PowerCharging.GetBatteryInSlot(modules, slotName);
                     surplusPower += PowerCharging.ChargeFromModulelMk2(ref __instance, battery, availableThermalEnergy, ThermalChargingManager.BatteryDrainRate, ref powerDeficit);
@@ -65,7 +65,7 @@
                     if (battery.charge < battery.capacity)
                         lastBatteryToCharge = battery;
                 }
-                else if (techTypeInSlot == NuclearCharger.CyNukBatteryType) // Nuclear
+                else if (techTypeInSlot == NuclearCharger.TechTypeID) // Nuclear
                 {
                     Battery battery = PowerCharging.GetBatteryInSlot(modules, slotName);
                     nuclearCells.Add(battery);

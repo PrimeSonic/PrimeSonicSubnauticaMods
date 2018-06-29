@@ -40,12 +40,11 @@
             return new TechDataHelper()
             {
                 _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
+                _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
                              {
                                  new IngredientHelper(PowerUpgradeMk2.Power2TechType, 1),
-                                 new IngredientHelper(TechType.Kyanite, 2), // More uses for Kyanite!
+                                 new IngredientHelper(TechType.Kyanite, 1), // More uses for Kyanite!
                                  new IngredientHelper(TechType.Diamond, 1),
-                                 new IngredientHelper(TechType.WiringKit, 1)
                              }),
                 _techType = Power3TechType
             };

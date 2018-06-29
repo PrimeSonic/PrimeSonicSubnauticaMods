@@ -7,7 +7,7 @@
 
     internal class ThermalChargerMk2
     {
-        public static TechType ThermalMk2TechType { get; private set; }
+        public static TechType TechTypeID { get; private set; }
 
         public const string NameID = "CyclopsThermalChargerMk2";
         public const string FriendlyName = "Cyclops Thermal Reactor Mk2";
@@ -16,22 +16,22 @@
         public static void Patch(AssetBundle assetBundle)
         {
             // Create a new TechType
-            ThermalMk2TechType = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
+            TechTypeID = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
 
             // Create the in-game item that will behave like any other Cyclops upgrade module
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", ThermalMk2TechType, GetThermalChargerObject));
+            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", TechTypeID, GetThermalChargerObject));
 
             // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(ThermalMk2TechType, assetBundle.LoadAsset<Sprite>("ThermalMk2")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, assetBundle.LoadAsset<Sprite>("ThermalMk2")));
 
             // Add the new recipe to the Modification Station crafting tree
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(ThermalMk2TechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
+            CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
 
             // Create a new Recipie and pair the new recipie with the new TechType
-            CraftDataPatcher.customTechData[ThermalMk2TechType] = GetRecipe();
+            CraftDataPatcher.customTechData[TechTypeID] = GetRecipe();
 
             // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
-            CraftDataPatcher.customEquipmentTypes[ThermalMk2TechType] = EquipmentType.CyclopsModule;
+            CraftDataPatcher.customEquipmentTypes[TechTypeID] = EquipmentType.CyclopsModule;
         }
 
         private static TechDataHelper GetRecipe()
@@ -48,7 +48,7 @@
                                  new IngredientHelper(TechType.WiringKit, 1),
                                  new IngredientHelper(TechType.CopperWire, 1),
                              }),
-                _techType = ThermalMk2TechType
+                _techType = TechTypeID
             };
         }
 
@@ -58,7 +58,7 @@
             GameObject obj = Object.Instantiate(prefab);
 
             obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
-            obj.GetComponent<TechTag>().type = ThermalMk2TechType;
+            obj.GetComponent<TechTag>().type = TechTypeID;
 
             var pCell = obj.AddComponent<Battery>();
             pCell.name = FriendlyName;

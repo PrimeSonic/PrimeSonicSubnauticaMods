@@ -17,9 +17,9 @@
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
 
-                if (techTypeInSlot == SolarChargerMk2.SolarMk2TechType ||
-                    techTypeInSlot == ThermalChargerMk2.ThermalMk2TechType ||
-                    techTypeInSlot == NuclearCharger.CyNukBatteryType)
+                if (techTypeInSlot == SolarChargerMk2.TechTypeID ||
+                    techTypeInSlot == ThermalChargerMk2.TechTypeID ||
+                    techTypeInSlot == NuclearCharger.TechTypeID)
                 {
                     Battery battery = GetBatteryInSlot(modules, slotName);
                     availableReservePower += battery.charge;

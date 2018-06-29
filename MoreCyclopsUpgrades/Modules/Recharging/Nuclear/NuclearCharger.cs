@@ -4,11 +4,10 @@
     using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
     using SMLHelper.Patchers;
     using UnityEngine;
-    using Object = UnityEngine.Object;
 
     public class NuclearCharger
     {
-        public static TechType CyNukBatteryType { get; private set; }
+        public static TechType TechTypeID { get; private set; }
         public const string NameId = "CyclopsNuclearModule";
         public const string FriendlyName = "Cyclops Nuclear Reactor Module";
         public const string Description = "Recharge your Cyclops using this portable nuclear reactor. Intelligently provides power only when you need it.";
@@ -16,22 +15,22 @@
         public static void Patch(AssetBundle assetBundle)
         {
             // Create a new TechType
-            CyNukBatteryType = TechTypePatcher.AddTechType(NameId, FriendlyName, Description, unlockOnGameStart: true);
+            TechTypeID = TechTypePatcher.AddTechType(NameId, FriendlyName, Description, unlockOnGameStart: true);
 
             // Create the in-game item that will behave like any other Cyclops upgrade module
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameId, $"WorldEntities/Tools/{NameId}", CyNukBatteryType, GetGameObject));
+            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameId, $"WorldEntities/Tools/{NameId}", TechTypeID, GetGameObject));
 
             // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(CyNukBatteryType, assetBundle.LoadAsset<Sprite>("CyNukIcon")));
+            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, assetBundle.LoadAsset<Sprite>("CyNukIcon")));
 
             // Add the new recipe to the Modification Station crafting tree
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(CyNukBatteryType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameId}"));
+            CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.Workbench, $"CyclopsMenu/{NameId}"));
 
             // Pair the new recipie with the new TechType
-            CraftDataPatcher.customTechData[CyNukBatteryType] = GetRecipe();
+            CraftDataPatcher.customTechData[TechTypeID] = GetRecipe();
 
             // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
-            CraftDataPatcher.customEquipmentTypes[CyNukBatteryType] = EquipmentType.CyclopsModule;
+            CraftDataPatcher.customEquipmentTypes[TechTypeID] = EquipmentType.CyclopsModule;
         }
 
         private static TechDataHelper GetRecipe()
@@ -47,17 +46,17 @@
                                  new IngredientHelper(TechType.AdvancedWiringKit, 1), // All the smarts
                                  new IngredientHelper(TechType.PlasteelIngot, 1) // Housing
                              }),
-                _techType = CyNukBatteryType
+                _techType = TechTypeID
             };
         }
 
         private static GameObject GetGameObject()
         {
             GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/CyclopsThermalReactorModule");
-            GameObject obj = Object.Instantiate(prefab);
+            GameObject obj = GameObject.Instantiate(prefab);
 
             obj.GetComponent<PrefabIdentifier>().ClassId = NameId;
-            obj.GetComponent<TechTag>().type = CyNukBatteryType;
+            obj.GetComponent<TechTag>().type = TechTypeID;
 
             // The battery component makes it easy to track the charge and saving the data is automatic.
             var pCell = obj.AddComponent<Battery>();

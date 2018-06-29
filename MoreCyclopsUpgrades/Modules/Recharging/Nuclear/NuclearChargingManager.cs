@@ -30,7 +30,7 @@
             GameObject gameObject = Object.Instantiate(prefab);
 
             gameObject.GetComponent<PrefabIdentifier>().ClassId = "DepletedCyclopsNuclearModule";
-            gameObject.AddComponent<TechTag>().type = DepletedNuclearModule.DepletedTechType;
+            gameObject.AddComponent<TechTag>().type = DepletedNuclearModule.TechTypeID;
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
