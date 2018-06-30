@@ -20,16 +20,16 @@
             //CraftTreeHandler.customNodes.Add(new CustomCraftNode(craftedItem, craftTree, path));
             CraftDataHandler.AddToBuildableList(craftedItem);
             CraftDataHandler.EditTechData(craftedItem, recipe);
-            CustomCraftTreeRoot craftTreeRoot = CraftTreeHandler.GetExistingTree(craftTree);
+            ModCraftTreeRoot craftTreeRoot = CraftTreeHandler.GetExistingTree(craftTree);
 
             var steps = path.Split(CraftingNode.Splitter);
 
-            CustomCraftTreeNode node = craftTreeRoot;
+            ModCraftTreeNode node = craftTreeRoot;
             foreach (var step in steps)
             {
-                node = (node as CustomCraftTreeLinkingNode).GetTabNode(step);
+                node = (node as ModCraftTreeLinkingNode).GetTabNode(step);
             }
-            (node as CustomCraftTreeLinkingNode).AddCraftingNode(craftedItem);
+            (node as ModCraftTreeLinkingNode).AddCraftingNode(craftedItem);
         }
 
         public static void ModifyRecipe(TechType craftedItem, TechData recipe)

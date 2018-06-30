@@ -6,15 +6,15 @@
     using System.Runtime.CompilerServices;
 
     /// <summary>
-    /// A double-ended-queue style data structure that represents string data.
+    /// A double-ended-queue style data structure that represents mutable string data.
     /// </summary>
-    /// <seealso cref="System.Collections.Generic.LinkedList{System.Char}" />
+    /// <seealso cref="char" />
     /// <seealso cref="IComparable" />
     /// <seealso cref="IConvertible" />
     /// <seealso cref="System.IEquatable{StringBuffer}" />
-    /// <seealso cref="System.IEquatable{System.String}" />
+    /// <seealso cref="string" />
     /// <seealso cref="ICloneable" />
-    public class StringBuffer : LinkedList<char>,
+    public class StringBuffer : DeQueue<char>,
         IComparable, IConvertible, IEquatable<StringBuffer>, IEquatable<string>, ICloneable
     {
         // Constructors
@@ -40,7 +40,11 @@
         {
             foreach (StringBuffer original in originals)
                 foreach (char c in original)
-                    AddLast(c);
+                    PushTail(c);
+        }
+
+        public StringBuffer(int capacity) : base(capacity)
+        {
         }
 
         // Status Methods
@@ -184,19 +188,23 @@
             if (Count != other.Count)
                 return false;
 
-            LinkedListNode<char> nodeA = First;
-            LinkedListNode<char> nodeB = other.First;
+            Enumerator t = this.GetEnumerator();
+            Enumerator o = other.GetEnumerator();
 
-            while (nodeA.Next != null && nodeB.Next != null)
+            bool result = true;
+            while (o.MoveNext() && t.MoveNext())
             {
-                if (!nodeA.Value.Equals(nodeB.Value))
-                    return false;
-
-                nodeA = nodeA.Next;
-                nodeB = nodeB.Next;
+                if (t.Current != o.Current)
+                {
+                    result = false;
+                    break;
+                }
             }
 
-            return true;
+            t.Dispose();
+            o.Dispose();
+
+            return result;
         }
 
         public override bool Equals(object obj)
@@ -245,72 +253,54 @@
 
         private static bool BuffersAreEqual(StringBuffer a, StringBuffer b)
         {
-            if (b is null)
-                return false;
+            if (a is null)
+                return b is null;
 
-            if (ReferenceEquals(a, b))
-                return true;
-
-            if (a.Count != b.Count)
-                return false;
-
-            LinkedListNode<char> nodeA = a.First;
-            LinkedListNode<char> nodeB = b.First;
-
-            while (nodeA.Next != null && nodeB.Next != null)
-            {
-                if (!nodeA.Value.Equals(nodeB.Value))
-                    return false;
-
-                nodeA = nodeA.Next;
-                nodeB = nodeB.Next;
-            }
-
-            return true;
+            return a.Equals(b);
         }
 
         private static bool BufferEqualToString(StringBuffer a, string b)
         {
+            if (a is null)
+                return b is null;
+
             if (a.Count != b?.Length)
                 return false;
 
-            LinkedListNode<char> nodeA = a.First;
-            int index = 0;
+            Enumerator t = a.GetEnumerator();
+            CharEnumerator o = b.GetEnumerator();
 
-            while (nodeA.Next != null && index < b.Length)
+            bool result = true;
+            while (o.MoveNext() && t.MoveNext())
             {
-                if (!nodeA.Value.Equals(b[index]))
-                    return false;
-
-                nodeA = nodeA.Next;
-                index++;
+                if (t.Current != o.Current)
+                {
+                    result = false;
+                    break;
+                }
             }
 
-            return true;
+            t.Dispose();
+            //o.Dispose();
+
+            return result;
         }
 
         // Peeking Methods
 
-        public char PeekStart() => First.Value;
+        public char PeekStart() => PeekHead();
 
-        public char PeekEnd() => Last.Value;
+        public char PeekEnd() => PeekTail();
 
         // Pop From Start Methods
 
-        public char PopFromStart()
-        {
-            char value = First.Value;
-
-            RemoveFirst();
-
-            return value;
-        }
+        public char PopFromStart() => PopHead();
 
         public bool PopFromStartIfEquals(char value)
         {
-            if (!IsEmpty && First.Value.Equals(value))
+            if (!IsEmpty && PeekHead() == value)
             {
-                RemoveFirst();
+                PopHead();
                 return true;
             }
 
@@ -319,9 +309,9 @@
 
         public bool PopFromStartIfEquals(params char[] values)
         {
-            if (!IsEmpty && values.Contains(First.Value))
+            if (!IsEmpty && values.Contains(PeekHead()))
             {
-                RemoveFirst();
+                PopHead();
                 return true;
             }
 
@@ -330,20 +320,13 @@
 
         // Pop From End Methods
 
-        public char PopFromEnd()
-        {
-            char value = Last.Value;
-
-            RemoveLast();
-
-            return value;
-        }
+        public char PopFromEnd() => PopTail();
 
         public bool PopFromEndIfEquals(char value)
         {
-            if (!IsEmpty && Last.Value.Equals(value))
+            if (!IsEmpty && PeekTail() == value)
             {
-                RemoveLast();
+                PopTail();
                 return true;
             }
 
@@ -352,9 +335,9 @@
 
         public bool PopFromEndIfEquals(params char[] values)
         {
-            if (!IsEmpty && values.Contains(Last.Value))
+            if (!IsEmpty && values.Contains(this.PeekTail()))
             {
-                RemoveLast();
+                this.PopTail();
                 return true;
             }
 
@@ -395,72 +378,66 @@
 
         // Starts With Methods
 
-        public bool StartsWith(char value) => !IsEmpty && First.Value.Equals(value);
+        public bool StartsWith(char value) => !IsEmpty && PeekHead() == value;
 
         public bool StartsWith(params char[] values)
         {
             if (IsEmpty || Count < values.Length)
                 return false;
 
-            LinkedListNode<char> node = First;
-            int index = 0;
-
-            do
+            int i = 0;
+            foreach (char c in this)
             {
-                if (node.Value != values[index])
+                if (c != values[i])
                     return false;
 
-                node = node.Next;
-                index++;
-
-            } while (node != null && index < values.Length);
+                i++;
+                if (i == values.Length)
+                    break;
+            }
 
             return true;
         }
 
         public bool StartsWith(string value) => StartsWith(value.ToCharArray());
 
-        public bool StartsWithAny(params char[] values) => !IsEmpty && values.Contains(First.Value);
+        public bool StartsWithAny(params char[] values) => !IsEmpty && values.Contains(PeekStart());
 
         // Ends With Methods
 
-        public bool EndsWith(char value) => !IsEmpty && Last.Value.Equals(value);
+        public bool EndsWith(char value) => !IsEmpty && PeekTail() == value;
 
         public bool EndsWith(params char[] values)
         {
             if (IsEmpty || Count < values.Length)
                 return false;
 
-            LinkedListNode<char> node = Last;
-            int index = values.Length - 1;
+            int t = this.Count - 1;
+            int v = values.Length - 1;
 
-            do
+            for (int i = t; i > t - values.Length; i--)
             {
-                if (node.Value != values[index])
+                if (this[i] != values[v])
                     return false;
 
-                node = node.Previous;
-                index--;
-
-            } while (node != null && index > -1);
+                v--;
+            }
 
             return true;
         }
 
         public bool EndsWith(string value) => EndsWith(value.ToCharArray());
 
-        public bool EndsWithAny(params char[] values) => !IsEmpty && values.Contains(Last.Value);
+        public bool EndsWithAny(params char[] values) => !IsEmpty && values.Contains(PeekTail());
 
         // Push to Start Methods
-
-        public void PushToStart(char value) => AddFirst(value);
 
         public void PushToStart(params char[] values)
         {
             var stack = new Stack<char>(values);
 
             while (stack.Count > 0)
-                AddFirst(stack.Pop());
+                PushHead(stack.Pop());
         }
 
         public void PushToStart(char value, int count = 1)
@@ -470,11 +447,11 @@
                 case 0:
                     return;
                 case 1:
-                    PushToStart(value);
+                    PushHead(value);
                     break;
                 default:
                     while (count-- > 0)
-                        PushToStart(value);
+                        PushHead(value);
                     break;
             }
         }
@@ -483,12 +460,10 @@
 
         // Push to End Methods
 
-        public void PushToEnd(char value) => AddLast(value);
-
         public void PushToEnd(params char[] values)
         {
             foreach (char value in values)
-                AddLast(value);
+                PushTail(value);
         }
 
         public void PushToEnd(char value, int count = 1)
@@ -498,11 +473,11 @@
                 case 0:
                     return;
                 case 1:
-                    PushToEnd(value);
+                    PushTail(value);
                     break;
                 default:
                     while (count-- > 0)
-                        PushToEnd(value);
+                        PushTail(value);
                     break;
             }
         }
@@ -556,15 +531,11 @@
             if (IsEmpty)
                 return;
 
-            LinkedListNode<char> node = First;
-
-            do
+            for (int i = 0; i < this.Count; i++)
             {
-                if (node.Value == original)
-                    node.Value = replacement;
-
-                node = node.Next;
-            } while (node != null);
+                if (this[i] == original)
+                    this[i] = replacement;
+            }
         }
 
         public void Replace(char[] original, char[] replacement)
@@ -572,56 +543,50 @@
             if (IsEmpty)
                 return;
 
-            LinkedListNode<char> node = First;
 
-            int index = 0;
-            int count = 0;
-            int matchingCount = original.Length;
-            int replacementCount = replacement.Length;
+            var finalValue = new StringBuffer(this.Count);
+            var limbo = new StringBuffer(this.Count);
 
-            LinkedListNode<char> replacementNode = node;
+            int cIndex = 0;
+
+            int oCount = original.Length;
 
             do
             {
-                if (node.Value == original[index])
+                if (this.PeekStart() == original[cIndex])
                 {
-                    index++;
-                    count++;
+                    limbo.PushToEnd(this.PopFromStart());
+                    cIndex++;
 
-                    if (count == 1)
-                        replacementNode = node;
-
-                    if (count == matchingCount)
+                    if (cIndex == oCount) // Full match
                     {
-                        // replace
-                        replacementNode.Value = replacement[0];
-
-                        for (int i = 1; i < matchingCount; i++)
-                            if (replacementNode.Next != null)
-                                Remove(replacementNode.Next);
-
-                        for (int i = 1; i < replacementCount; i++)
+                        foreach (char c in replacement)
                         {
-                            AddAfter(replacementNode, replacement[i]);
-                            replacementNode = replacementNode.Next;
+                            finalValue.PushToEnd(c);
                         }
 
-                        count = 0;
-                        index = 0;
-
-                        node = replacementNode.Next;
-                        continue;
+                        limbo.Clear();
+                        cIndex = 0;
                     }
                 }
-                else // !=
+                else
                 {
-                    count = 0;
-                    index = 0;
+                    cIndex = 0;
+
+                    while (!limbo.IsEmpty)
+                    {
+                        finalValue.PushToEnd(limbo.PopFromStart());
+                    }
+
+                    finalValue.PushToEnd(this.PopFromStart());
                 }
 
-                node = node.Next;
+            } while (!this.IsEmpty);
 
-            } while (node != null);
+            do
+            {
+                this.PushToEnd(finalValue.PopFromStart());
+            } while (!finalValue.IsEmpty);
         }
 
         public void Replace(string original, string replacement) =>
@@ -640,6 +605,7 @@
             while (!valuesToTransfer.IsEmpty)
                 PushToEnd(valuesToTransfer.PopFromStart());
         }
+
 
     }
 
