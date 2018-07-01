@@ -4,18 +4,10 @@
 
 AddedRecipes:
 (
-    ItemID:LithiumIonBattery;
-    AmountCrafted: 1;
-    Ingredients:
-        ( ItemID:WhiteMushroom; Required:2; ),
-        ( ItemID:Lithium; Required:1; );
-    Path:Fabricator/Resources/Electronics;
-),
-(
-    ItemID:DepletedReactorRod;
+    ItemID:DepletedReactorRod; # Just an example of adding new recipes for things that normally aren't crafted #
     AmountCrafted: 1;
     Ingredients:
         ( ItemID:ReactorRod; Required:1; );
-    LinkedItemIDs:UraniniteCrystal,UraniniteCrystal,UraniniteCrystal;
+    LinkedItemIDs:UraniniteCrystal,UraniniteCrystal,UraniniteCrystal; # Linked items are created along side the crafted item #
     Path:Workbench/Resources/Electronics;
 );

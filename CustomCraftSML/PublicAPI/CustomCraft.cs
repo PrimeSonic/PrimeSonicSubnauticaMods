@@ -24,12 +24,12 @@
 
             var steps = path.Split(CraftingNode.Splitter);
 
-            ModCraftTreeNode node = craftTreeRoot;
+            ModCraftTreeLinkingNode node = craftTreeRoot;
             foreach (var step in steps)
             {
-                node = (node as ModCraftTreeLinkingNode).GetTabNode(step);
+                node = node.GetTabNode(step);
             }
-            (node as ModCraftTreeLinkingNode).AddCraftingNode(craftedItem);
+            node.AddCraftingNode(craftedItem);
         }
 
         public static void ModifyRecipe(TechType craftedItem, TechData recipe)

@@ -21,5 +21,10 @@ namespace CustomCraft.PublicAPI
 
             Scheme = (CraftTree.Type)Enum.Parse(typeof(CraftTree.Type), schemeString);
         }
+
+        public override string ToString()
+        {
+            return $"CraftingPath > {Scheme}/{Path}";
+        }
     }
 }

@@ -1,22 +1,23 @@
 ﻿# This is a sample file for modifying crafting recipes for in-game items #
 # Remember that this is only intended for use with items that already craftable in the base game #
-# This won't work with modded items or items that don't can't normally be crafted #
+# This won't work with modded items #
+# If the item can't normally be crafted, use the AddedRecipes file instead #
 
 ModifiedRecipes:
 (
-    ItemID:Welder;
+    ItemID:Welder; # This is the in-game Repair Tool #
     AmountCrafted: 1;
-    Ingredients:
+    Ingredients: # This modified recipe adds a battery to the required ingredients #
         ( ItemID:Silicone; Required:1; ),
         ( ItemID:CrashPowder; Required:1; ),
         ( ItemID:Titanium; Required:1; ),
-        ( ItemID:Battery; Required:1; );
+        ( ItemID:Battery; Required:1; ); # The battery ingredient was missing from this tool compared to all the others #
 ),
 (
-    ItemID:ComputerChip;
+    ItemID:ComputerChip; # This makes it so the ComputerChip is a little cheaper to produce #
     AmountCrafted: 1;
     Ingredients:
-        ( ItemID:JeweledDiskPiece; Required:1; ),
+        ( ItemID:JeweledDiskPiece; Required:1; ), # Only one table coral instead of 2 #
         ( ItemID:Gold; Required:1; ),
-        ( ItemID:Copper; Required:1; );
+        ( ItemID:Copper; Required:1; ); # Only a single copper instead of a CopperWire which would require 2 #
 );
