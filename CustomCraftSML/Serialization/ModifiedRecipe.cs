@@ -10,10 +10,10 @@
         public const short Max = 25;
         public const short Min = 1;
 
-        protected readonly EmProperty<TechType> emTechType;
+        protected readonly EmPropertyTechType emTechType;
         protected readonly EmProperty<short> amountCrafted;
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
-        protected readonly EmPropertyList<TechType> linkedItems;
+        protected readonly EmPropertyTechTypeList linkedItems;
 
         public TechType ItemID => emTechType.Value;
 
@@ -33,10 +33,10 @@
 
         public static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(4)
         {
-            new EmProperty<TechType>("ItemID"),
+            new EmPropertyTechType("ItemID"),
             new EmProperty<short>("AmountCrafted", 1),
             new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()),
-            new EmPropertyList<TechType>("LinkedItemIDs")
+            new EmPropertyTechTypeList("LinkedItemIDs")
         };
 
         public ModifiedRecipe() : this("ModifiedRecipe", ModifiedRecipeProperties)
@@ -49,10 +49,10 @@
 
         protected ModifiedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emTechType = (EmProperty<TechType>)Properties["ItemID"];
+            emTechType = (EmPropertyTechType)Properties["ItemID"];
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
             ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
-            linkedItems = (EmPropertyList<TechType>)Properties["LinkedItemIDs"];
+            linkedItems = (EmPropertyTechTypeList)Properties["LinkedItemIDs"];
 
             OnValueExtractedEvent += ValueExtracted;
         }
@@ -61,7 +61,7 @@
         {
             foreach (var ingredient in ingredients.Collections)
             {
-                TechType itemID = (ingredient["ItemID"] as EmProperty<TechType>).Value;
+                TechType itemID = (ingredient["ItemID"] as EmPropertyTechType).Value;
                 short required = (ingredient["Required"] as EmProperty<short>).Value;
 
                 Ingredients.Add(new Ingredient(itemID, required));

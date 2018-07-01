@@ -65,7 +65,7 @@
 
         internal override EmProperty Copy() => new EmPropertyList<T>(Key);
 
-        public T ConvertFromSerial(string value)
+        public virtual T ConvertFromSerial(string value)
         {
             var type = typeof(T);
 

@@ -6,23 +6,24 @@
     [TestFixture]
     public class AddedRecipeTests
     {
-        [Test]
-        public void Deserialize_AddedRecipe_FullDetails()
+        [TestCase("Aerogel", "Titanium", "Silver,Gold")]
+        [TestCase("aerogel", "titanium", "silver,gold")]
+        public void Deserialize_AddedRecipe_FullDetails(string itemName, string ingredient, string linkedItems)
         {
-            const string serialized = "AddedRecipe:" + "\r\n" +
+            string serialized = "AddedRecipe:" + "\r\n" +
                                       "(" + "\r\n" +
-                                      "    ItemID:Aerogel;" + "\r\n" +
+                                     $"    ItemID:{itemName};" + "\r\n" +
                                       "    AmountCrafted:5;" + "\r\n" +
                                       "    Ingredients:" + "\r\n" +
                                       "        (" + "\r\n" +
-                                      "            ItemID:Titanium;" + "\r\n" +
+                                     $"            ItemID:{ingredient};" + "\r\n" +
                                       "            Required:2;" + "\r\n" +
                                       "        )," + "\r\n" +
                                       "        (" + "\r\n" +
                                       "            ItemID:Copper;" + "\r\n" +
                                       "            Required:3;" + "\r\n" +
                                       "        );" + "\r\n" +
-                                      "    LinkedItemIDs:Silver,Gold;" + "\r\n" +
+                                     $"    LinkedItemIDs:{linkedItems};" + "\r\n" +
                                       "    Path:Fabricator/Resources/BasicMaterials;" + "\r\n" +
                                       ");" + "\r\n";
 

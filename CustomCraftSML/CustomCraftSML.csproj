@@ -71,6 +71,8 @@
     <Compile Include="Serialization\EasyMarkup\EmPropertyCollectionList.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyListT.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyT.cs" />
+    <Compile Include="Serialization\EasyMarkup\EmPropertyTechType.cs" />
+    <Compile Include="Serialization\EasyMarkup\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\EasyMarkup\EmUtils.cs" />
     <Compile Include="Serialization\EasyMarkup\IEmProperty.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />

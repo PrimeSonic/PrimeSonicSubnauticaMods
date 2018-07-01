@@ -5,24 +5,25 @@
 
     [TestFixture]
     public class ModifiedRecipeTests
-    {        
-        [Test]
-        public void Deserialize_ModifiedRecipe_FullDetails()
+    {
+        [TestCase("Aerogel", "Titanium", "Silver,Gold")]
+        [TestCase("aerogel", "titanium", "silver,gold")]
+        public void Deserialize_ModifiedRecipe_FullDetails(string itemName, string ingredient, string linkedItems)
         {
-            const string serialized = "ModifiedRecipe:" + "\r\n" +
+            string serialized = "ModifiedRecipe:" + "\r\n" +
                                       "(" + "\r\n" +
-                                      "    ItemID:Aerogel;" + "\r\n" +
+                                     $"    ItemID:{itemName};" + "\r\n" +
                                       "    AmountCrafted:4;" + "\r\n" +
                                       "    Ingredients:" + "\r\n" +
                                       "        (" + "\r\n" +
-                                      "            ItemID:Titanium;" + "\r\n" +
+                                     $"            ItemID:{ingredient};" + "\r\n" +
                                       "            Required:2;" + "\r\n" +
                                       "        )," + "\r\n" +
                                       "        (" + "\r\n" +
                                       "            ItemID:Copper;" + "\r\n" +
                                       "            Required:3;" + "\r\n" +
                                       "        );" + "\r\n" +
-                                      "    LinkedItemIDs:Silver,Gold;" + "\r\n" +
+                                     $"    LinkedItemIDs:{linkedItems};" + "\r\n" +
                                       ");" + "\r\n";
 
             var recipe = new ModifiedRecipe();

@@ -37,7 +37,7 @@
             return serialValue;
         }
 
-        public T ConvertFromSerial(string value)
+        public virtual T ConvertFromSerial(string value)
         {
             var type = typeof(T);
 

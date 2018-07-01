@@ -49,6 +49,7 @@
             // Value chosen for what should be the standard inventory size
 
             CraftDataHandler.EditItemSize(inventoryItem, new Vector2int(width, height));
+            
         }
     }
 }

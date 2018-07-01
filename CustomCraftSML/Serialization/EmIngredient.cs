@@ -9,7 +9,7 @@
         public const short Max = 25;
         public const short Min = 1;
 
-        private readonly EmProperty<TechType> emTechType;
+        private readonly EmPropertyTechType emTechType;
         private readonly EmProperty<short> required;
 
         public TechType ItemID => emTechType.Value;
@@ -26,13 +26,13 @@
 
         public static List<EmProperty> IngredientProperties => new List<EmProperty>(2)
         {
-            new EmProperty<TechType>("ItemID"),
+            new EmPropertyTechType("ItemID"),
             new EmProperty<short>("Required", 1),
         };
 
         public EmIngredient() : base("Ingredients", IngredientProperties)
         {
-            emTechType = (EmProperty<TechType>)Properties["ItemID"];
+            emTechType = (EmPropertyTechType)Properties["ItemID"];
             required = (EmProperty<short>)Properties["Required"];
         }
 
