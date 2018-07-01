@@ -2,6 +2,7 @@
 {
     using System;
     using System.Globalization;
+    using Common;
 
     public class EmProperty<T> : EmProperty where T : IConvertible
     {

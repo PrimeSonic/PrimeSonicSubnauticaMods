@@ -66,7 +66,6 @@
     <Compile Include="Serialization\AddedRecipeList.cs" />
     <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\CustomSizeList.cs" />
-    <Compile Include="Serialization\EasyMarkup\DeQueue.cs" />
     <Compile Include="Serialization\EasyMarkup\EmProperty.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyCollection.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyCollectionList.cs" />
@@ -74,7 +73,6 @@
     <Compile Include="Serialization\EasyMarkup\EmPropertyT.cs" />
     <Compile Include="Serialization\EasyMarkup\EmUtils.cs" />
     <Compile Include="Serialization\EasyMarkup\IEmProperty.cs" />
-    <Compile Include="Serialization\EasyMarkup\StringBuffer.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
     <Compile Include="Serialization\IAddedRecipe.cs" />

@@ -1,7 +1,7 @@
 ﻿namespace CustomCraftSML.Serialization.EasyMarkup
 {
-    using System.Text.RegularExpressions;
     using NUnit.Framework;
+    using Common;
 
     public abstract class EmProperty : IEmProperty
     {

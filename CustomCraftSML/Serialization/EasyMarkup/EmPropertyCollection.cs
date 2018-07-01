@@ -1,6 +1,7 @@
 ﻿namespace CustomCraftSML.Serialization.EasyMarkup
 {
     using System.Collections.Generic;
+    using Common;
 
     public abstract class EmPropertyCollection : EmProperty
     {

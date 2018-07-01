@@ -1,8 +1,8 @@
 ﻿namespace CustomCraftSML.Serialization.EasyMarkup
 {
-
     using System;
     using System.Collections.Generic;
+    using Common;
 
     public class EmPropertyList<T> : EmProperty where T : IConvertible
     {
