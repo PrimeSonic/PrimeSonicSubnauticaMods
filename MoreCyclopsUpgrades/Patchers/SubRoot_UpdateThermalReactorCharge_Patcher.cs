@@ -22,11 +22,9 @@
 
             Equipment modules = __instance.upgradeConsole.modules;
 
-            float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();
-            float origPowerDeficit = powerDeficit;
+            float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();            
 
             float availableSolarEnergy = SolarChargingManager.GetSolarChargeAmount(ref __instance);
-
             float availableThermalEnergy = ThermalChargingManager.GetThermalChargeAmount(ref __instance);
 
             float surplusPower = 0f;
@@ -76,7 +74,7 @@
                 }
             }
             
-            if (NuclerCells.Count > 0 && powerDeficit > 0f && !renewablePowerAvailable) // no renewable power available
+            if (NuclerCells.Count > 0 && powerDeficit > NuclearChargingManager.MinDeficitForCharge && !renewablePowerAvailable) // no renewable power available
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
                 for (int i = 0; i < NuclerCells.Count; i++)
