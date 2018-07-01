@@ -9,6 +9,9 @@
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
+        private static List<Battery> NuclerCells = new List<Battery>(6);
+
+        private static List<string> NuclerSlots = new List<string>(6);
 
         public static bool Prefix(ref SubRoot __instance)
         {
@@ -28,8 +31,8 @@
 
             float surplusPower = 0f;
             Battery lastBatteryToCharge = null;
-            var nuclearCells = new List<Battery>(6);
-            var nuclearSlots = new List<string>(6);
+            NuclerCells.Clear();
+            NuclerSlots.Clear();
 
             bool renewablePowerAvailable = false;
 
@@ -68,18 +71,18 @@
                 else if (techTypeInSlot == NuclearCharger.TechTypeID) // Nuclear
                 {
                     Battery battery = PowerCharging.GetBatteryInSlot(modules, slotName);
-                    nuclearCells.Add(battery);
-                    nuclearSlots.Add(slotName);
+                    NuclerCells.Add(battery);
+                    NuclerSlots.Add(slotName);
                 }
             }
             
-            if (nuclearCells.Count > 0 && powerDeficit > 0f && !renewablePowerAvailable) // no renewable power available
+            if (NuclerCells.Count > 0 && powerDeficit > 0f && !renewablePowerAvailable) // no renewable power available
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
-                for (int i = 0; i < nuclearCells.Count; i++)
+                for (int i = 0; i < NuclerCells.Count; i++)
                 {
-                    Battery battery = nuclearCells[i];
-                    string slotName = nuclearSlots[i];
+                    Battery battery = NuclerCells[i];
+                    string slotName = NuclerSlots[i];
                     PowerCharging.ChargeCyclopsFromBattery(ref __instance, battery, NuclearChargingManager.BatteryDrainRate, ref powerDeficit);
                     NuclearChargingManager.HandleBatteryDepletion(modules, slotName, battery);
                 }
