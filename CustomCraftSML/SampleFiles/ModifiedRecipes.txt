@@ -1,0 +1,22 @@
+﻿# This is a sample file for modifying crafting recipes for in-game items #
+# Remember that this is only intended for use with items that already craftable in the base game #
+# This won't work with modded items or items that don't can't normally be crafted #
+
+ModifiedRecipes:
+(
+    ItemID:Welder;
+    AmountCrafted: 1;
+    Ingredients:
+        ( ItemID:Silicone; Required:1; ),
+        ( ItemID:CrashPowder; Required:1; ),
+        ( ItemID:Titanium; Required:1; ),
+        ( ItemID:Battery; Required:1; );
+),
+(
+    ItemID:ComputerChip;
+    AmountCrafted: 1;
+    Ingredients:
+        ( ItemID:JeweledDiskPiece; Required:1; ),
+        ( ItemID:Gold; Required:1; ),
+        ( ItemID:Copper; Required:1; );
+);

@@ -1,0 +1,21 @@
+﻿# This is a sample file for adding new crafting recipes for in-game items #
+# Remember that this is only intended for use with items that already exist in the base game #
+# This won't work with modded items #
+
+AddedRecipes:
+(
+    ItemID:LithiumIonBattery;
+    AmountCrafted: 1;
+    Ingredients:
+        ( ItemID:WhiteMushroom; Required:2; ),
+        ( ItemID:Lithium; Required:1; );
+    Path:Fabricator/Resources/Electronics;
+),
+(
+    ItemID:DepletedReactorRod;
+    AmountCrafted: 1;
+    Ingredients:
+        ( ItemID:ReactorRod; Required:1; );
+    LinkedItemIDs:UraniniteCrystal,UraniniteCrystal,UraniniteCrystal;
+    Path:Workbench/Resources/Electronics;
+);

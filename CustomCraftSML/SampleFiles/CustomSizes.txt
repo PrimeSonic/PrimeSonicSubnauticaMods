@@ -1,0 +1,13 @@
+﻿# This is a sample file for modifying inventory items with custom sizes #
+
+CustomSizes: 
+(
+    ItemID:CreepvineSeedCluster;
+    Width: 1;
+    Height: 1;
+),
+(
+    ItemID:CreepvinePiece;
+    Width: 1;
+    Height: 1;
+);

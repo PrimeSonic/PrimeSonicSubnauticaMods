@@ -13,7 +13,7 @@
                                       "(" + "\r\n" +
                                       "    ItemID:Aerogel;" + "\r\n" +
                                       "    Width:3;" + "\r\n" +
-                                      "    Height:4;" + "\r\n" +
+                                      "    Height:4;" + "#THIS IS A COMMENT#" + "\r\n" +
                                       ");" + "\r\n";
 
             var size = new CustomSize();
@@ -30,7 +30,7 @@
         {
             const string serialized = "CustomSizes:" + "\r\n" +
                                       "(" + "\r\n" +
-                                      "    ItemID:Aerogel;" + "\r\n" +
+                                      "    ItemID:Aerogel;" + "#THIS IS A COMMENT#" + "\r\n" +
                                       "    Width:3;" + "\r\n" +
                                       "    Height:4;" + "\r\n" +
                                       ")," + "\r\n" +
@@ -39,8 +39,7 @@
                                       "    Width:3;" + "\r\n" +
                                       "    Height:4;" + "\r\n" +
                                       ");" + "\r\n";
-
-
+            
             var sizes = new CustomSizeList();
 
             sizes.FromString(serialized);
@@ -58,11 +57,10 @@
             const string serialized = "CustomSizes:" + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:Aerogel;" + "\r\n" +
-                                      ")," + "\r\n" +
+                                      ")," + "#THIS IS A COMMENT#" + "\r\n" + 
                                       "(" + "\r\n" +
                                       "    ItemID:Aerogel;" + "\r\n" +
                                       ");" + "\r\n";
-
 
             var sizes = new CustomSizeList();
 

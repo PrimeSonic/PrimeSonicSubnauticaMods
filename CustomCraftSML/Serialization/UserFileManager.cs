@@ -1,5 +1,6 @@
 ﻿namespace CustomCraftSML.Serialization
 {
+    using System.IO;
     using CustomCraft.PublicAPI;
     using CustomCraftSML.Serialization.EasyMarkup;
 
@@ -17,33 +18,40 @@
         internal static void PatchFromFiles()
         {
             customSizeList = new CustomSizeList();
+            if (File.Exists(CustomSizesFile))
+            {
+                if (customSizeList.Deserialize(File.ReadAllText(CustomSizesFile)))
+                {
+                    foreach (ICustomSize customSize in customSizeList)
+                    {
+                        CustomCraft.ModifyItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+                    }
+                }
+            }
+
             modifiedRecipeList = new ModifiedRecipeList();
+            if (File.Exists(ModifiedRecipesFile))
+            {
+                if (modifiedRecipeList.Deserialize(File.ReadAllText(ModifiedRecipesFile)))
+                {
+                    foreach (IModifiedRecipe item in modifiedRecipeList)
+                    {
+                        CustomCraft.ModifyRecipe(item.ItemID, item.SmlHelperRecipe());
+                    }
+                }
+            }
+
             addedRecipeList = new AddedRecipeList();
-
-            if (customSizeList.Deserialize(CustomSizesFile))
+            if (File.Exists(AddedRecipiesFile))
             {
-                foreach (ICustomSize customSize in customSizeList)
+                if (addedRecipeList.Deserialize(File.ReadAllText(AddedRecipiesFile)))
                 {
-                    CustomCraft.ModifyItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+                    foreach (IAddedRecipe item in addedRecipeList)
+                    {
+                        CustomCraft.AddRecipe(item.ItemID, item.SmlHelperRecipe(), new CraftingPath(item.Path));
+                    }
                 }
             }
-
-            if (modifiedRecipeList.Deserialize(ModifiedRecipesFile))
-            {
-                foreach (IModifiedRecipe item in modifiedRecipeList)
-                {
-                    CustomCraft.ModifyRecipe(item.ItemID, item.SmlHelperRecipe());
-                }
-            }
-
-            if (addedRecipeList.Deserialize(AddedRecipiesFile))
-            {
-                foreach (IAddedRecipe item in addedRecipeList)
-                {
-                    CustomCraft.AddRecipe(item.ItemID, item.SmlHelperRecipe(), new CraftingPath(item.Path));
-                }
-            }
-
         }
 
     }

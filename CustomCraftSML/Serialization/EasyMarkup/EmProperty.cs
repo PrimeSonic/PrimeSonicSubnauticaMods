@@ -9,7 +9,8 @@
         protected const char SpChar_ValueDelimiter = ';';
         protected const char SpChar_BeginComplexValue = '(';
         protected const char SpChar_FinishComplexValue = ')';
-        protected const char SpChar_ListItemSplitter = ',';        
+        protected const char SpChar_ListItemSplitter = ',';
+        protected const char SpChar_CommentBlock = '#';
 
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
@@ -24,7 +25,7 @@
         }
 
         public void FromString(string rawValue)
-        {            
+        {
             var cleanValue = CleanValue(new StringBuffer(rawValue));
 
             var key = ExtractKey(cleanValue);
@@ -113,10 +114,21 @@
                 switch (rawValue.PeekStart())
                 {
                     case ' ':
-                        rawValue.TrimStart(' ');                        
+                        rawValue.TrimStart(' ');
                         break;
                     case '\r':
                         rawValue.TrimStart('\r', '\n');
+                        break;
+                    case SpChar_CommentBlock:
+                        rawValue.PopFromStart(); // Pop first #
+
+                        char poppedChar;
+                        do
+                        {
+                            poppedChar = rawValue.PopFromStart();
+
+                        } while (!rawValue.IsEmpty && poppedChar != SpChar_CommentBlock);
+
                         break;
                     default:
                         cleanValue.PushToEnd(rawValue.PopFromStart());
