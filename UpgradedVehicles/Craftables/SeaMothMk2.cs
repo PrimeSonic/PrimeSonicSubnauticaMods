@@ -1,10 +1,10 @@
 ﻿namespace UpgradedVehicles
-{
-    using System;
+{    
     using System.Collections.Generic;
-    using Common;
-    using SMLHelper;
-    using SMLHelper.Patchers;
+    using Common;    
+    using SMLHelper.V2.Assets;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class SeaMothMk2
@@ -16,60 +16,67 @@
 
         public static void Patch()
         {
-            TechTypeID = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
-
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", TechTypeID, GetGameObject));
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
 
             // TODO Icon
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, SpriteManager.Get(TechType.Seamoth)));            
+            SpriteHandler.RegisterSprite(TechTypeID, SpriteManager.Get(TechType.Seamoth));                       
 
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.Constructor, $"Vehicles/{NameID}"));
+            CraftTreeHandler.AddCraftingNodeToTab(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
+            CraftDataHandler.AddCraftingTime(TechTypeID, 15f);
 
-            CraftDataPatcher.customTechData[TechTypeID] = GetRecipe();
+            CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
+
+            PrefabHandler.RegisterPrefab(new SeaMothMk2Prefab(TechTypeID, NameID));
         }
 
-        private static TechDataHelper GetRecipe()
+        private static TechData GetRecipe()
         {
-            return new TechDataHelper()
+            return new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[5]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[5]
                              {
-                                 new IngredientHelper(TechType.PlasteelIngot, 1), // Stronger than titanium ingot                                 
-                                 new IngredientHelper(TechType.EnameledGlass, 2), // Stronger than glass
-                                 new IngredientHelper(TechType.Lead, 1),
+                                 new Ingredient(TechType.PlasteelIngot, 1), // Stronger than titanium ingot                                 
+                                 new Ingredient(TechType.EnameledGlass, 2), // Stronger than glass
+                                 new Ingredient(TechType.Lead, 1),
 
-                                 new IngredientHelper(TechType.VehicleHullModule3, 1), // Minimum crush depth of 900 without upgrades
-                                 new IngredientHelper(VehiclePowerCore.TechTypeID, 1), // +2 to armor + speed without engine efficiency penalty
-                             }),
-                _techType = TechTypeID
+                                 new Ingredient(TechType.VehicleHullModule3, 1), // Minimum crush depth of 900 without upgrades
+                                 new Ingredient(VehiclePowerCore.TechTypeID, 1), // +2 to armor + speed without engine efficiency penalty
+                             })
             };
         }
 
-        private static GameObject GetGameObject()
+        internal class SeaMothMk2Prefab : ModPrefab
         {
-            GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeaMoth");
-            GameObject obj = GameObject.Instantiate(seamothPrefab);
+            public SeaMothMk2Prefab(TechType techtype, string nameID) : base(nameID, $"{nameID}Prefab", techtype)
+            {
+            }
 
-            obj.name = NameID;
+            public override GameObject GetGameObject()
+            {
+                GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeaMoth");
+                GameObject obj = GameObject.Instantiate(seamothPrefab);
 
-            obj.GetComponent<TechTag>().type = TechTypeID;
+                obj.name = this.PrefabFileName;
+                obj.GetComponent<TechTag>().type = this.TechType;
+                obj.GetComponent<PrefabIdentifier>().ClassId = this.ClassID;
 
-            var seamoth = obj.GetComponent<SeaMoth>();
+                var seamoth = obj.GetComponent<SeaMoth>();
 
-            var life = seamoth.GetComponent<LiveMixin>();
+                var life = seamoth.GetComponent<LiveMixin>();
 
-            LiveMixinData lifeData = (LiveMixinData)ScriptableObject.CreateInstance(typeof(LiveMixinData));
+                LiveMixinData lifeData = (LiveMixinData)ScriptableObject.CreateInstance(typeof(LiveMixinData));
 
-            life.data.CloneFieldsInto(lifeData);
-            lifeData.maxHealth = life.maxHealth * 2; // 100% more HP
+                life.data.CloneFieldsInto(lifeData);
+                lifeData.maxHealth = life.maxHealth * 2; // 100% more HP
 
-            life.data = lifeData;
-            life.health = life.data.maxHealth;
+                life.data = lifeData;
+                life.health = life.data.maxHealth;
 
-            // Always on upgrades handled in OnUpgradeModuleChange patch
+                // Always on upgrades handled in OnUpgradeModuleChange patch
 
-            return obj;
+                return obj;
+            }
         }
     }
 }
