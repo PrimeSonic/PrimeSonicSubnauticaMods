@@ -50,7 +50,7 @@
 
             public override GameObject GetGameObject()
             {
-                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/VehiclePowerUpgradeModule");
+                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PowerUpgradeModule");
                 GameObject obj = GameObject.Instantiate(prefab);
 
                 return obj;

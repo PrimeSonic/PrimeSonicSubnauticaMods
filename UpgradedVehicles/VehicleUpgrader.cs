@@ -6,14 +6,14 @@
     internal class VehicleUpgrader
     {
         // Original values from the Vehicle class
-        private const float ForwardForces = 13f;
-        private const float BackwardForces = 5f;
-        private const float SidewardForces = 11.5f;
+        private const float ForwardForce = 13f;
+        private const float BackwardForce = 5f;
+        private const float SidewardForce = 11.5f;
         private const float SidewaysTorque = 8.5f;
         private const float VerticalForce = 11f;
         private const float OnGroundForceMultiplier = 1f;
 
-        private const float BonusSpeed = 1.35f; //35% bonus
+        private const float BonusSpeed = 0.35f; //35% bonus
         internal const string BonusSpeedText = "35";
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth, TechType techType)
@@ -141,17 +141,17 @@
 
         private static void UpdateSpeedRating(Vehicle vehicle, int speedBoosterCount)
         {
-            float speedMultiplier = Mathf.Max(1f, speedBoosterCount * BonusSpeed);
+            float speedMultiplier = 1f + speedBoosterCount * BonusSpeed;
 
-            vehicle.forwardForce = speedMultiplier * ForwardForces;
-            vehicle.backwardForce = speedMultiplier * BackwardForces;
-            vehicle.sidewardForce = speedMultiplier * SidewardForces;
+            vehicle.forwardForce = speedMultiplier * ForwardForce;
+            vehicle.backwardForce = speedMultiplier * BackwardForce;
+            //vehicle.sidewardForce = speedMultiplier * SidewardForce;
 
-            vehicle.sidewaysTorque = speedMultiplier * SidewaysTorque;
+            //vehicle.sidewaysTorque = speedMultiplier * SidewaysTorque;
             vehicle.verticalForce = speedMultiplier * VerticalForce;
             vehicle.onGroundForceMultiplier = speedMultiplier * OnGroundForceMultiplier;
 
-            ErrorMessage.AddMessage($"Speed rating is now at {speedMultiplier:00}%");
+            ErrorMessage.AddMessage($"Speed rating is now at {speedMultiplier * 100:00}%");
         }
 
         private static void UpdatePowerRating(Vehicle vehicle, int speedBoosterCount, int powerModuleCount)
@@ -169,7 +169,7 @@
             var component = vehicle.GetComponent<DealDamageOnImpact>();
             component.mirroredSelfDamageFraction = 0.5f * Mathf.Pow(0.5f, armorModuleCount);
 
-            ErrorMessage.AddMessage($"Armor rating is now at {component.mirroredSelfDamageFraction:00}");
+            ErrorMessage.AddMessage($"Armor rating is now at {1f / component.mirroredSelfDamageFraction}");
         }
     }
 }
