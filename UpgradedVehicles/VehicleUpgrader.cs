@@ -13,7 +13,8 @@
         private const float VerticalForce = 11f;
         private const float OnGroundForceMultiplier = 1f;
 
-        private const float BonusSpeed = 1.25f; //25% bonus
+        private const float BonusSpeed = 1.35f; //35% bonus
+        internal const string BonusSpeedText = "35";
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth, TechType techType)
         {
@@ -156,7 +157,7 @@
         private static void UpdatePowerRating(Vehicle vehicle, int speedBoosterCount, int powerModuleCount)
         {
             float efficiencyBonus = Mathf.Max(1f, 1f * powerModuleCount);
-            float efficiencyPenalty = Mathf.Max(1f, +1f * speedBoosterCount);
+            float efficiencyPenalty = Mathf.Max(1f, 1f * speedBoosterCount);
             float powerRating = efficiencyBonus / efficiencyPenalty;
             vehicle.SetPrivateField("enginePowerRating", powerRating);
 

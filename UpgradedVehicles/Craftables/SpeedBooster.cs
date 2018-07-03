@@ -1,8 +1,9 @@
 ﻿namespace UpgradedVehicles
 {    
     using System.Collections.Generic;
-    using SMLHelper;
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Assets;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class SpeedBooster
@@ -10,46 +11,51 @@
         public static TechType TechTypeID { get; private set; }
         public const string NameID = "SpeedModule";
         public const string FriendlyName = "Speed Boost Module";
-        public const string Description = "Allows small vehicle engines to go into overdrive, adding a 25% speed boost per module. Warning: expect higher energy consumption rates.";
+        public static readonly string Description = $"Allows small vehicle engines to go into overdrive, adding a {VehicleUpgrader.BonusSpeedText}% speed boost per module. Warning: expect higher energy consumption rates.";
 
         public static void Patch()
         {
-            TechTypeID = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
 
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", TechTypeID, GetGameObject));
+            // TODO Icon            
+            SpriteHandler.RegisterSprite(TechTypeID, SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
 
-            // TODO Icon
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, SpriteManager.Get(TechType.VehiclePowerUpgradeModule)));            
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
+            CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
 
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.SeamothUpgrades, $"CommonModules/{NameID}"));
+            PrefabHandler.RegisterPrefab(new SpeedBoosterPreFab(TechTypeID, NameID));
+            CraftDataHandler.EditEquipmentType(TechTypeID, EquipmentType.VehicleModule);
 
-            CraftDataPatcher.customTechData[TechTypeID] = GetRecipe();
+            KnownTechHandler.EditAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
-        private static TechDataHelper GetRecipe()
+        private static TechData GetRecipe()
         {
-            return new TechDataHelper()
+            return new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[3]
                              {
-                                 new IngredientHelper(TechType.Aerogel, 1),                                 
-                                 new IngredientHelper(TechType.Magnetite, 1),
-                                 new IngredientHelper(TechType.ComputerChip, 1),
-                             }),
-                _techType = TechTypeID
+                                 new Ingredient(TechType.Aerogel, 1),                                 
+                                 new Ingredient(TechType.Magnetite, 1),
+                                 new Ingredient(TechType.ComputerChip, 1),
+                             })
             };
         }
 
-        public static GameObject GetGameObject()
+        internal class SpeedBoosterPreFab : ModPrefab
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/VehiclePowerUpgradeModule");
-            GameObject obj = GameObject.Instantiate(prefab);
+            internal SpeedBoosterPreFab(TechType techType, string classId) : base(classId, $"{classId}Prefab", techType)
+            {
+            }
 
-            obj.GetComponent<TechTag>().type = TechTypeID;
+            public override GameObject GetGameObject()
+            {
+                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/VehiclePowerUpgradeModule");
+                GameObject obj = GameObject.Instantiate(prefab);
 
-            return obj;
+                return obj;
+            }
         }
-
     }
 }

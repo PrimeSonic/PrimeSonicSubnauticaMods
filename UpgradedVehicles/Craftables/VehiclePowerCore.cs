@@ -1,8 +1,9 @@
 ﻿namespace UpgradedVehicles
 {
     using System.Collections.Generic;
-    using SMLHelper;
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Assets;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class VehiclePowerCore
@@ -10,53 +11,58 @@
         public static TechType TechTypeID { get; private set; }
         public const string NameID = "VehiclePowerCore";
         public const string FriendlyName = "Vehicle Power Core";
-        public const string Description = "A replcement power core for upgraded vehicles. Enables permanent enhacements without use of external upgrade modules.";
+        public const string Description = "A modified power core for upgraded vehicles. Enables permanent enhancements without use of external upgrade modules.";
 
         public static void Patch()
         {
-            TechTypeID = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
 
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", TechTypeID, GetGameObject));
+            // TODO Icon            
+            SpriteHandler.RegisterSprite(TechTypeID, SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
 
-            // TODO Icon
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, SpriteManager.Get(TechType.VehiclePowerUpgradeModule)));
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
+            CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
 
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.SeamothUpgrades, $"CommonModules/{NameID}"));
+            PrefabHandler.RegisterPrefab(new VehiclePowerCorePreFab(TechTypeID, NameID));
+            CraftDataHandler.EditEquipmentType(TechTypeID, EquipmentType.None);
 
-            CraftDataPatcher.customTechData[TechTypeID] = GetRecipe();
-                        
-            CraftDataPatcher.customEquipmentTypes[TechTypeID] = EquipmentType.None;
+            KnownTechHandler.EditAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");            
         }
 
-        private static TechDataHelper GetRecipe()
+        private static TechData GetRecipe()
         {
-            return new TechDataHelper()
+            return new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[6]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[6]
                              {
-                                 new IngredientHelper(TechType.Benzene, 1), 
-                                 new IngredientHelper(TechType.Lead, 2), 
-                                 new IngredientHelper(TechType.PowerCell, 1), 
+                                 new Ingredient(TechType.Benzene, 1),
+                                 new Ingredient(TechType.Lead, 2),
+                                 new Ingredient(TechType.PowerCell, 1),
 
-                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 2), // Permanent +2 to engine eficiency
-                                 new IngredientHelper(TechType.VehicleArmorPlating, 2), // Permanent +2 to armor                                 
-                                 new IngredientHelper(SpeedBooster.TechTypeID, 2), // Permanent speed boost
-                             }),
-                _techType = TechTypeID
+                                 new Ingredient(TechType.VehiclePowerUpgradeModule, 2), // Engine eficiency
+                                 new Ingredient(TechType.VehicleArmorPlating, 2), // Armor                                 
+                                 new Ingredient(SpeedBooster.TechTypeID, 2), // Speed boost
+                             })
             };
         }
 
-
-        public static GameObject GetGameObject()
+        internal class VehiclePowerCorePreFab : ModPrefab
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PrecursorIonPowerCell");
-            GameObject obj = GameObject.Instantiate(prefab);
-            GameObject.DestroyImmediate(obj.GetComponent<Battery>());
+            internal VehiclePowerCorePreFab(TechType techType, string classId) : base(classId, $"{classId}Prefab", techType)
+            {
+            }
 
-            obj.GetComponent<TechTag>().type = TechTypeID;
+            public override GameObject GetGameObject()
+            {
+                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PrecursorIonPowerCell");
+                GameObject obj = GameObject.Instantiate(prefab);
+                GameObject.DestroyImmediate(obj.GetComponent<Battery>());
 
-            return obj;
+                obj.GetComponent<TechTag>().type = TechTypeID;
+
+                return obj;
+            }
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿namespace UpgradedVehicles
 {
-    using System;
     using System.Collections.Generic;
     using Common;
-    using SMLHelper;
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Assets;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class ExosuitMk2
@@ -12,65 +12,68 @@
         public static TechType TechTypeID { get; private set; }
         public const string NameID = "ExosuitMk2";
         public const string FriendlyName = "Prawn Suit Mk2";
-        public const string Description = "An upgraded Prawn Suit built even tougher to take on anything.";
+        public const string Description = "An upgraded Prawn Suit now even tougher to take on anything.";
 
         public static void Patch()
         {
-            TechTypeID = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
-
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", TechTypeID, GetGameObject));
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
 
             // TODO Icon
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(TechTypeID, SpriteManager.Get(TechType.Exosuit)));
+            SpriteHandler.RegisterSprite(TechTypeID, SpriteManager.Get(TechType.Exosuit));
 
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(TechTypeID, CraftTree.Type.Constructor, $"Vehicles/{NameID}"));
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
+            CraftDataHandler.AddCraftingTime(TechTypeID, 15f);
+            CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
 
-            CraftDataPatcher.customTechData[TechTypeID] = GetRecipe();
+            PrefabHandler.RegisterPrefab(new ExosuitMk2Prefab(TechTypeID, NameID));
+            KnownTechHandler.EditAnalysisTechEntry(TechType.ExoHullModule2, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
-        private static TechDataHelper GetRecipe()
+        private static TechData GetRecipe()
         {
-            return new TechDataHelper()
+            return new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[6]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[6]
                              {
-                                 new IngredientHelper(TechType.PlasteelIngot, 2),                                 
-                                 new IngredientHelper(TechType.Kyanite, 4), // Better than Aerogel
-                                 new IngredientHelper(TechType.EnameledGlass, 1),
-                                 new IngredientHelper(TechType.Diamond, 2),
+                                 new Ingredient(TechType.PlasteelIngot, 2),                                 
+                                 new Ingredient(TechType.Kyanite, 4), // Better than Aerogel
+                                 new Ingredient(TechType.EnameledGlass, 1),
+                                 new Ingredient(TechType.Diamond, 2),
                                  
-                                 new IngredientHelper(TechType.ExoHullModule2, 1), // Minimum crush depth of 1700 without upgrades
-                                 new IngredientHelper(VehiclePowerCore.TechTypeID, 1),  // +2 to armor + speed without engine efficiency penalty
-                             }),
-                _techType = TechTypeID
+                                 new Ingredient(TechType.ExoHullModule2, 1), // Minimum crush depth of 1700 without upgrades
+                                 new Ingredient(VehiclePowerCore.TechTypeID, 1),  // +2 to armor + speed without engine efficiency penalty
+                             })
             };
         }
 
-        private static GameObject GetGameObject()
+        internal class ExosuitMk2Prefab : ModPrefab
         {
-            GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Exosuit");
-            GameObject obj = GameObject.Instantiate(seamothPrefab);
+            internal ExosuitMk2Prefab(TechType techtype, string nameID) : base(nameID, $"{nameID}Prefab", techtype)
+            {
+            }
 
-            obj.name = NameID;
-            
-            obj.GetComponent<TechTag>().type = TechTypeID;
+            public override GameObject GetGameObject()
+            {
+                GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Exosuit");
+                GameObject obj = GameObject.Instantiate(seamothPrefab);
 
-            var exosuit = obj.GetComponent<Exosuit>();
+                var exosuit = obj.GetComponent<Exosuit>();
 
-            var life = exosuit.GetComponent<LiveMixin>();
+                var life = exosuit.GetComponent<LiveMixin>();
 
-            LiveMixinData lifeData = (LiveMixinData)ScriptableObject.CreateInstance(typeof(LiveMixinData));
+                LiveMixinData lifeData = (LiveMixinData)ScriptableObject.CreateInstance(typeof(LiveMixinData));
 
-            life.data.CloneFieldsInto(lifeData);
-            lifeData.maxHealth = life.maxHealth * 1.5f; // 50% more HP
+                life.data.CloneFieldsInto(lifeData);
+                lifeData.maxHealth = life.maxHealth * 1.5f; // 50% more HP
 
-            life.data = lifeData;
-            life.health = life.data.maxHealth;
+                life.data = lifeData;
+                life.health = life.data.maxHealth;
 
-            // Always on upgrades handled in OnUpgradeModuleChange patch
+                // Always on upgrades handled in OnUpgradeModuleChange patch
 
-            return obj;
+                return obj;
+            }
         }
     }
 }
