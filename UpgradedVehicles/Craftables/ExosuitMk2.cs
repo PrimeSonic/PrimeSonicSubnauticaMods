@@ -18,8 +18,7 @@
         {
             TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
 
-            // TODO Icon
-            SpriteHandler.RegisterSprite(TechTypeID, SpriteManager.Get(TechType.Exosuit));
+            SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/ExosuitMk2.png");
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
             CraftDataHandler.AddCraftingTime(TechTypeID, 15f);
@@ -36,11 +35,11 @@
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[6]
                              {
-                                 new Ingredient(TechType.PlasteelIngot, 2),                                 
+                                 new Ingredient(TechType.PlasteelIngot, 2),
                                  new Ingredient(TechType.Kyanite, 4), // Better than Aerogel
                                  new Ingredient(TechType.EnameledGlass, 1),
                                  new Ingredient(TechType.Diamond, 2),
-                                 
+
                                  new Ingredient(TechType.ExoHullModule2, 1), // Minimum crush depth of 1700 without upgrades
                                  new Ingredient(VehiclePowerCore.TechTypeID, 1),  // +2 to armor + speed without engine efficiency penalty
                              })

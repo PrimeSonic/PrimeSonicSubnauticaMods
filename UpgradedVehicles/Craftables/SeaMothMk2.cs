@@ -18,8 +18,7 @@
         {
             TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
 
-            // TODO Icon
-            SpriteHandler.RegisterSprite(TechTypeID, SpriteManager.Get(TechType.Seamoth));
+            SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SeamothMk2.png");
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
             CraftDataHandler.AddCraftingTime(TechTypeID, 15f);

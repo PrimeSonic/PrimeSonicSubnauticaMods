@@ -1,5 +1,5 @@
 ﻿namespace UpgradedVehicles
-{    
+{
     using System.Collections.Generic;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -17,8 +17,7 @@
         {
             TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
 
-            // TODO Icon            
-            SpriteHandler.RegisterSprite(TechTypeID, SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
+            SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SpeedBoost.png");
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
             CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
@@ -36,7 +35,7 @@
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[3]
                              {
-                                 new Ingredient(TechType.Aerogel, 1),                                 
+                                 new Ingredient(TechType.Aerogel, 1),
                                  new Ingredient(TechType.Magnetite, 1),
                                  new Ingredient(TechType.ComputerChip, 1),
                              })
