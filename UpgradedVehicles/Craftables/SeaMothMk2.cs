@@ -68,6 +68,9 @@
                 life.data = lifeData;
                 life.health = life.data.maxHealth;
 
+                var crush = obj.GetComponent<CrushDamage>();
+                crush.vehicle = seamoth;
+
                 // Always on upgrades handled in OnUpgradeModuleChange patch
 
                 return obj;

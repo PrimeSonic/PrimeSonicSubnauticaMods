@@ -11,7 +11,7 @@
         public static TechType TechTypeID { get; private set; }
         public const string NameID = "SpeedModule";
         public const string FriendlyName = "Speed Boost Module";
-        public static readonly string Description = $"Allows small vehicle engines to go into overdrive, adding a {VehicleUpgrader.BonusSpeedText}% speed boost per module. Warning: expect higher energy consumption rates.";
+        public static readonly string Description = $"Allows small vehicle engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.";
 
         public static void Patch()
         {

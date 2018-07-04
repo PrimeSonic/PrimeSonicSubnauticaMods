@@ -71,6 +71,9 @@
 
                 // Always on upgrades handled in OnUpgradeModuleChange patch
 
+                var crush = obj.GetComponent<CrushDamage>();
+                crush.vehicle = exosuit;
+
                 return obj;
             }
         }
