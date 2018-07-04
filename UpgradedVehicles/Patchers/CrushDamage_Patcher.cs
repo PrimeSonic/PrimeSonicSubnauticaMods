@@ -1,10 +1,7 @@
 ﻿namespace UpgradedVehicles.Patchers
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection.Emit;
-    using System.Text;
     using Harmony;
 
     [HarmonyPatch(typeof(CrushDamage))]
@@ -18,12 +15,12 @@
         {
             foreach (CodeInstruction op in instructions)
             {
-                if (callCount >= 4)
+                if (callCount == 4)
                 {
-                    op.opcode = OpCodes.Nop;
-                    op.operand = null;
+                    callCount++;
+                    yield return new CodeInstruction(OpCodes.Ret);                    
                 }
-                else if (op.opcode.Equals(OpCodes.Call))
+                else if (callCount < 4 && op.opcode.Equals(OpCodes.Call))
                 {
                     callCount++;
                 }
@@ -31,6 +28,5 @@
                 yield return op;
             }
         }
-
     }
 }

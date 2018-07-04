@@ -16,6 +16,10 @@
         private const float BonusSpeed = 0.40f; //40% bonus
         internal const string BonusSpeedText = "40";
 
+        private const int BonusModuleCount = 2; // Extra bonus to common module upgrades
+
+        #region Crush Depth Upgrades
+
         internal static void UpgradeSeaMoth(SeaMoth seamoth, TechType techType)
         {
             if (techType != TechType.VehicleHullModule1 &&
@@ -81,29 +85,23 @@
             }
         }
 
+        #endregion
+
+        #region Common Upgrades
+
         internal static void UpgradeVehicle(Vehicle vehicle, TechType techType)
         {
             bool isUpgradedVehicle = IsUpgradedVehicle(vehicle);
 
             if (techType == TechType.VehicleArmorPlating) // Set armor rating
             {
-                int armorModuleCount = vehicle.modules.GetCount(TechType.VehicleArmorPlating);
-
-                if (isUpgradedVehicle)
-                    armorModuleCount += 2; // Minium of +2 to armor plating on upgraded vehicles
-
+                int armorModuleCount = GetModuleCount(vehicle.modules, TechType.VehicleArmorPlating, isUpgradedVehicle);
                 UpdateArmorRating(vehicle, armorModuleCount);
             }
             else if (techType == SpeedBooster.TechTypeID || techType == TechType.VehiclePowerUpgradeModule) // Set power efficiency rating
             {
-                int speedBoosterCount = vehicle.modules.GetCount(SpeedBooster.TechTypeID);
-                int powerModuleCount = vehicle.modules.GetCount(TechType.VehiclePowerUpgradeModule);
-
-                if (isUpgradedVehicle)
-                {
-                    speedBoosterCount += 2; // Minimum of +2 to speed boost on upgraded vehicles
-                    powerModuleCount += 2; // Minimum of +2 to engine eficiency on upgraded vehicles
-                }
+                int speedBoosterCount = GetModuleCount(vehicle.modules, SpeedBooster.TechTypeID, isUpgradedVehicle);
+                int powerModuleCount = GetModuleCount(vehicle.modules, TechType.VehiclePowerUpgradeModule, isUpgradedVehicle);
 
                 UpdatePowerRating(vehicle, speedBoosterCount, powerModuleCount);
 
@@ -114,44 +112,36 @@
             }
         }
 
+        internal static void UpgradeVehicle(Vehicle vehicle)
+        {
+            bool isUpgradedVehicle = IsUpgradedVehicle(vehicle);
+            
+            int armorModuleCount = GetModuleCount(vehicle.modules, TechType.VehicleArmorPlating, isUpgradedVehicle);
+            int speedBoosterCount = GetModuleCount(vehicle.modules, SpeedBooster.TechTypeID, isUpgradedVehicle);
+            int powerModuleCount = GetModuleCount(vehicle.modules, TechType.VehiclePowerUpgradeModule, isUpgradedVehicle);
+
+            // Set armor rating
+            UpdateArmorRating(vehicle, armorModuleCount);
+
+            // Set power efficiency rating
+            UpdatePowerRating(vehicle, speedBoosterCount, powerModuleCount);
+
+            // Set speed rating
+            UpdateSpeedRating(vehicle, speedBoosterCount);
+        }
+        
         private static bool IsUpgradedVehicle(Vehicle vehicle)
         {
             TechType vehicleTechType = vehicle.GetComponent<TechTag>().type;
             bool isUpgradedVehicle = vehicleTechType == SeaMothMk2.TechTypeID ||
                                      vehicleTechType == ExosuitMk2.TechTypeID ||
-                                     vehicleTechType == SeaMothMk3.TechTypeID;
+                                     vehicleTechType == SeaMothMk3.TechTypeID; // This one will be a nonsense TechType if it wasn't added
             return isUpgradedVehicle;
         }
 
-        internal static void UpgradeVehicle(Vehicle vehicle)
+        private static int GetModuleCount(Equipment modules, TechType moduleType, bool isUpgradedVehicle)
         {
-            bool isUpgradedVehicle = IsUpgradedVehicle(vehicle);
-
-            // Set armor rating
-
-            int armorModuleCount = vehicle.modules.GetCount(TechType.VehicleArmorPlating);
-
-            if (isUpgradedVehicle)
-                armorModuleCount += 2; // Minium of +2 to armor plating on upgraded vehicles
-
-            UpdateArmorRating(vehicle, armorModuleCount);
-
-            // Set power efficiency rating
-
-            int speedBoosterCount = vehicle.modules.GetCount(SpeedBooster.TechTypeID);
-            int powerModuleCount = vehicle.modules.GetCount(TechType.VehiclePowerUpgradeModule);
-
-            if (isUpgradedVehicle)
-            {
-                speedBoosterCount += 2; // Minimum of +2 to speed boost on upgraded vehicles
-                powerModuleCount += 2; // Minimum of +2 to engine eficiency on upgraded vehicles
-            }
-
-            UpdatePowerRating(vehicle, speedBoosterCount, powerModuleCount);
-
-            // Set speed rating
-
-            UpdateSpeedRating(vehicle, speedBoosterCount);
+            return modules.GetCount(moduleType) + (isUpgradedVehicle ? BonusModuleCount : 0);
         }
 
         private static void UpdateSpeedRating(Vehicle vehicle, int speedBoosterCount)
@@ -183,8 +173,18 @@
         {
             var component = vehicle.GetComponent<DealDamageOnImpact>();
             component.mirroredSelfDamageFraction = 0.5f * Mathf.Pow(0.5f, armorModuleCount);
-
-            ErrorMessage.AddMessage($"Armor rating is now at {1f / component.mirroredSelfDamageFraction}");
+            
+            ErrorMessage.AddMessage($"Armor rating is now {1f / component.mirroredSelfDamageFraction}");
         }
+
+        internal static float ReduceIncomingDamage(Vehicle vehicle, float damage)
+        {
+            bool isUpgradedVehicle = IsUpgradedVehicle(vehicle);
+            int armorModuleCount = GetModuleCount(vehicle.modules, TechType.VehicleArmorPlating, isUpgradedVehicle);
+
+            return damage * (1f - 0.15f * armorModuleCount);
+        }
+
+        #endregion
     }
 }

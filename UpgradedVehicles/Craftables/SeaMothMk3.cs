@@ -69,7 +69,7 @@
                 LiveMixinData lifeData = (LiveMixinData)ScriptableObject.CreateInstance(typeof(LiveMixinData));
 
                 life.data.CloneFieldsInto(lifeData);
-                lifeData.maxHealth = life.maxHealth * 2.25f; // 125% more HP
+                lifeData.maxHealth = life.maxHealth * 2.15f; // 115% more HP
 
                 life.data = lifeData;
                 life.health = life.data.maxHealth;
