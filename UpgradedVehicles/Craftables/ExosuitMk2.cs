@@ -21,7 +21,7 @@
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/ExosuitMk2.png");
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
-            CraftDataHandler.AddCraftingTime(TechTypeID, 15f);
+            CraftDataHandler.SetCraftingTime(TechTypeID, 15f);
             CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
 
             PrefabHandler.RegisterPrefab(new ExosuitMk2Prefab(TechTypeID, NameID));

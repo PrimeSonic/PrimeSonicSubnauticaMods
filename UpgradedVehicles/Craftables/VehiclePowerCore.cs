@@ -24,6 +24,7 @@
 
             PrefabHandler.RegisterPrefab(new VehiclePowerCorePreFab(TechTypeID, NameID));
             CraftDataHandler.EditEquipmentType(TechTypeID, EquipmentType.None);
+            CraftDataHandler.EditBackgroundColor(TechTypeID, CraftDataHandler.BackgroundColor.Purple);
 
             KnownTechHandler.EditAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }

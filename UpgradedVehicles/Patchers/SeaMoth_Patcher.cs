@@ -33,11 +33,16 @@
         [HarmonyPrefix]
         internal static bool Prefix(ref SeaMoth __instance, ref string __result)
         {
-            bool isUpgradedSeamoth = __instance.GetComponent<TechTag>().type == SeaMothMk2.TechTypeID;
+            var techType = __instance.GetComponent<TechTag>().type;
 
-            if (isUpgradedSeamoth)
+            if (techType == SeaMothMk2.TechTypeID)
             {
                 __result = "SEAMOTH MK2";
+                return false;
+            }
+            else if (techType == SeaMothMk3.TechTypeID)
+            {
+                __result = "SEAMOTH MK3";
                 return false;
             }
 
@@ -59,11 +64,11 @@
             {
                 __result = new Vector3[]
                             {
+                                new Vector3(0f, 0f, 0f),
                                 new Vector3(1f, 1f, 1f),
-                                new Vector3(0f, 0f, 0f),
-                                new Vector3(0f, 0f, 0f),
-                                new Vector3(0.577f, 0.447f, 0.604f),
-                                new Vector3(0.114f, 0.729f, 0.965f)
+                                new Vector3(0.5f, 0.5f, 0.5f),
+                                new Vector3(0.5f, 0.4f, 0.6f),
+                                new Vector3(0.1f, 0.7f, 0.9f)
                             };
                 return false;
             }

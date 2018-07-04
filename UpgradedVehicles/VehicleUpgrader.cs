@@ -13,8 +13,8 @@
         private const float VerticalForce = 11f;
         private const float OnGroundForceMultiplier = 1f;
 
-        private const float BonusSpeed = 0.35f; //35% bonus
-        internal const string BonusSpeedText = "35";
+        private const float BonusSpeed = 0.40f; //40% bonus
+        internal const string BonusSpeedText = "40";
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth, TechType techType)
         {
