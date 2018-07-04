@@ -18,41 +18,40 @@
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth, TechType techType)
         {
-            bool isUpgradedSeamoth = seamoth.GetComponent<TechTag>().type == SeaMothMk2.TechTypeID;
-
-            if (!isUpgradedSeamoth)
-                return; // This is a normal Seamoth. Do not upgrade.
-
             if (techType != TechType.VehicleHullModule1 &&
                 techType != TechType.VehicleHullModule2 &&
-                techType != TechType.VehicleHullModule3)
+                techType != TechType.VehicleHullModule3 &&
+                techType != SeaMothMk3.SeamothHullModule4 &&
+                techType != SeaMothMk3.SeamothHullModule5)
                 return; // Not a depth module. No need to update anything here.
 
-            UpgradeCrushDepth(seamoth, 700f);
+            UpgradeSeaMoth(seamoth);
         }
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth)
         {
-            bool isUpgradedSeamoth = seamoth.GetComponent<TechTag>().type == SeaMothMk2.TechTypeID;
+            TechType seamothType = seamoth.GetComponent<TechTag>().type;
 
-            if (!isUpgradedSeamoth)
+            if (seamothType != SeaMothMk2.TechTypeID && seamothType != SeaMothMk3.TechTypeID)
                 return; // This is a normal Seamoth. Do not upgrade.
 
-            UpgradeCrushDepth(seamoth, 700f);
+            float minimumCrush = 0f;
+
+            if (seamothType == SeaMothMk2.TechTypeID)
+                minimumCrush = 700f;
+            else if (seamothType == SeaMothMk3.TechTypeID)
+                minimumCrush = 1500f;
+
+            UpgradeCrushDepth(seamoth, minimumCrush);
         }
 
         internal static void UpgradeExosuit(Exosuit exosuit, TechType techType)
         {
-            bool isUpgradedExosuit = exosuit.GetComponent<TechTag>().type == ExosuitMk2.TechTypeID;
-
-            if (!isUpgradedExosuit)
-                return; // This is a normal Prawn Suit. Do not upgrade.
-
             if (techType != TechType.ExoHullModule1 &&
                 techType != TechType.ExoHullModule2)
                 return; // Not a depth module. No need to update anything here.
 
-            UpgradeCrushDepth(exosuit, 800f);
+            UpgradeExosuit(exosuit);
         }
 
         internal static void UpgradeExosuit(Exosuit exosuit)
@@ -65,7 +64,7 @@
             UpgradeCrushDepth(exosuit, 800f);
         }
 
-        private static void UpgradeCrushDepth(Vehicle vehicle, float minimumBonus = 0f)
+        private static void UpgradeCrushDepth(Vehicle vehicle, float minimumBonus)
         {
             // Minimum crush depth of 900 without upgrades            
             float bonusCrushDepth = Mathf.Max(minimumBonus, vehicle.crushDamage.extraCrushDepth);
@@ -74,8 +73,7 @@
 
         internal static void UpgradeVehicle(Vehicle vehicle, TechType techType)
         {
-            TechType vehicleTechType = vehicle.GetComponent<TechTag>().type;
-            bool isUpgradedVehicle = vehicleTechType == SeaMothMk2.TechTypeID || vehicleTechType == ExosuitMk2.TechTypeID;
+            bool isUpgradedVehicle = IsUpgradedVehicle(vehicle);
 
             if (techType == TechType.VehicleArmorPlating) // Set armor rating
             {
@@ -106,11 +104,18 @@
             }
         }
 
-        internal static void UpgradeVehicle(Vehicle vehicle)
+        private static bool IsUpgradedVehicle(Vehicle vehicle)
         {
             TechType vehicleTechType = vehicle.GetComponent<TechTag>().type;
+            bool isUpgradedVehicle = vehicleTechType == SeaMothMk2.TechTypeID ||
+                                     vehicleTechType == ExosuitMk2.TechTypeID ||
+                                     vehicleTechType == SeaMothMk3.TechTypeID;
+            return isUpgradedVehicle;
+        }
 
-            bool isUpgradedVehicle = vehicleTechType == SeaMothMk2.TechTypeID || vehicleTechType == ExosuitMk2.TechTypeID;
+        internal static void UpgradeVehicle(Vehicle vehicle)
+        {
+            bool isUpgradedVehicle = IsUpgradedVehicle(vehicle);
 
             // Set armor rating
 

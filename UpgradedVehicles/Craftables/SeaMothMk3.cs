@@ -9,26 +9,32 @@
 
     internal class SeaMothMk3
     {
-        public static TechType TechTypeID { get; private set; } = TechType.None; // Default for when not set but still used in comparisons
+        public static TechType TechTypeID { get; private set; } = TechType.Unobtanium; // Default for when not set but still used in comparisons
+        public static TechType SeamothHullModule4 { get; private set; } = TechType.Unobtanium;
+        public static TechType SeamothHullModule5 { get; private set; } = TechType.Unobtanium;
+
         public const string NameID = "SeaMothMk3";
         public const string FriendlyName = "Seamoth Mk3";
         public const string Description = "The highest end SeaMoth. Ready for adventures in the most hostile environments.";
 
-        public static void Patch(TechType seamothDepthMk5)
+        public static void Patch(TechType seamothHullModule4, TechType seamothHullModule5)
         {
+            SeamothHullModule4 = seamothHullModule4;
+            SeamothHullModule5 = seamothHullModule5;
+
             TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
 
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SeamothMk3.png");
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
             CraftDataHandler.SetCraftingTime(TechTypeID, 20f);
-            CraftDataHandler.AddTechData(TechTypeID, GetRecipe(seamothDepthMk5));
+            CraftDataHandler.AddTechData(TechTypeID, GetRecipe(seamothHullModule5));
 
             PrefabHandler.RegisterPrefab(new SeaMothMk3Prefab(TechTypeID, NameID));
-            KnownTechHandler.EditAnalysisTechEntry(seamothDepthMk5, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.EditAnalysisTechEntry(seamothHullModule5, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
-        private static TechData GetRecipe(TechType seamothDepthMk5)
+        private static TechData GetRecipe(TechType SeamothHullModule5)
         {
             return new TechData()
             {
@@ -39,7 +45,7 @@
                                  new Ingredient(TechType.EnameledGlass, 2), // Stronger than glass
                                  new Ingredient(TechType.Lead, 1),
 
-                                 new Ingredient(seamothDepthMk5, 1), // Minimum crush depth of 1700 without upgrades
+                                 new Ingredient(SeamothHullModule5, 1), // Minimum crush depth of 1700 without upgrades
                                  new Ingredient(VehiclePowerCore.TechTypeID, 1), // armor and speed without engine efficiency penalty
                              })
             };
