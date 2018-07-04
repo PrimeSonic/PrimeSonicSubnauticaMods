@@ -28,10 +28,10 @@
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
             CraftDataHandler.SetCraftingTime(TechTypeID, 20f);
-            CraftDataHandler.AddTechData(TechTypeID, GetRecipe(seamothHullModule5));
+            CraftDataHandler.SetTechData(TechTypeID, GetRecipe(seamothHullModule5));
 
             PrefabHandler.RegisterPrefab(new SeaMothMk3Prefab(TechTypeID, NameID));
-            KnownTechHandler.EditAnalysisTechEntry(seamothHullModule5, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(seamothHullModule5, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe(TechType SeamothHullModule5)

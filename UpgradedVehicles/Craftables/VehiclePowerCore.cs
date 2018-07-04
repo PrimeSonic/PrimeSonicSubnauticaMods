@@ -20,13 +20,12 @@
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/VehiclePowerCore.png");
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
-            CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
+            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
 
             PrefabHandler.RegisterPrefab(new VehiclePowerCorePreFab(TechTypeID, NameID));
-            CraftDataHandler.EditEquipmentType(TechTypeID, EquipmentType.None);
-            CraftDataHandler.EditBackgroundColor(TechTypeID, CraftDataHandler.BackgroundColor.Purple);
+            CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.None);
 
-            KnownTechHandler.EditAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe()

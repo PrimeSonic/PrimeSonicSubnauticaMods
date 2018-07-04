@@ -22,10 +22,10 @@
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
             CraftDataHandler.SetCraftingTime(TechTypeID, 15f);
-            CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
+            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
 
             PrefabHandler.RegisterPrefab(new ExosuitMk2Prefab(TechTypeID, NameID));
-            KnownTechHandler.EditAnalysisTechEntry(TechType.ExoHullModule2, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.ExoHullModule2, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe()

@@ -42,7 +42,7 @@
             else if (seamothType == SeaMothMk3.TechTypeID)
                 minimumCrush = 1500f;
 
-            UpgradeCrushDepth(seamoth, minimumCrush);
+            OverrideCrushDepth(seamoth, minimumCrush);
         }
 
         internal static void UpgradeExosuit(Exosuit exosuit, TechType techType)
@@ -61,14 +61,24 @@
             if (!isUpgradedExosuit)
                 return; // This is a normal Prawn Suit. Do not upgrade.
 
-            UpgradeCrushDepth(exosuit, 800f);
+            OverrideCrushDepth(exosuit, 800f);
         }
 
-        private static void UpgradeCrushDepth(Vehicle vehicle, float minimumBonus)
+        private static void OverrideCrushDepth(Vehicle vehicle, float minimumBonus)
         {
-            // Minimum crush depth of 900 without upgrades            
+            // Can set a minimum crush depth without upgrades
             float bonusCrushDepth = Mathf.Max(minimumBonus, vehicle.crushDamage.extraCrushDepth);
+
+            float origCrush = vehicle.crushDamage.crushDepth;
+
             vehicle.crushDamage.SetExtraCrushDepth(bonusCrushDepth);
+
+            float nextCrush = vehicle.crushDamage.crushDepth;
+
+            if (!Mathf.Approximately(origCrush, nextCrush))
+            {
+                ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", nextCrush));
+            }
         }
 
         internal static void UpgradeVehicle(Vehicle vehicle, TechType techType)

@@ -19,8 +19,8 @@
                 SeaMothMk2.Patch();
                 ExosuitMk2.Patch();
 
-                if (CrossModSupportHandler.TryGetModdedTechType("SeamothHullModule4", out TechType seamothDepthMk4) &&
-                    CrossModSupportHandler.TryGetModdedTechType("SeamothHullModule5", out TechType seamothDepthMk5))
+                if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType seamothDepthMk4) &&
+                    TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType seamothDepthMk5))
                 {
                     SeaMothMk3.Patch(seamothDepthMk4, seamothDepthMk5);
                 }

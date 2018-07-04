@@ -20,12 +20,12 @@
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SpeedBoost.png");
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
-            CraftDataHandler.AddTechData(TechTypeID, GetRecipe());
+            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
 
             PrefabHandler.RegisterPrefab(new SpeedBoosterPreFab(TechTypeID, NameID));
-            CraftDataHandler.EditEquipmentType(TechTypeID, EquipmentType.VehicleModule);
+            CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.VehicleModule);
 
-            KnownTechHandler.EditAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe()
