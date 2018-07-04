@@ -66,16 +66,18 @@
 
                 var life = seamoth.GetComponent<LiveMixin>();
 
-                LiveMixinData lifeData = (LiveMixinData)ScriptableObject.CreateInstance(typeof(LiveMixinData));
+                LiveMixinData lifeData = ScriptableObject.CreateInstance<LiveMixinData>();
 
                 life.data.CloneFieldsInto(lifeData);
                 lifeData.maxHealth = life.maxHealth * 2.15f; // 115% more HP
 
                 life.data = lifeData;
                 life.health = life.data.maxHealth;
+                lifeData.weldable = true;
 
                 var crush = obj.GetComponent<CrushDamage>();
                 crush.vehicle = seamoth;
+                crush.liveMixin = life;
 
                 // Always on upgrades handled in OnUpgradeModuleChange patch
 
