@@ -46,7 +46,7 @@
     </Reference>
     <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\SMLHelper\SMLHelper\bin\Debug\SMLHelper.dll</HintPath>
+      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

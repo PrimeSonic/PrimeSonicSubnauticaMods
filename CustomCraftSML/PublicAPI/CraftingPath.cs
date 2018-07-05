@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace CustomCraft.PublicAPI
+﻿namespace CustomCraft.PublicAPI
 {
+    using System;
+
     public class CraftingPath
     {
         public readonly CraftTree.Type Scheme;
@@ -15,11 +15,11 @@ namespace CustomCraft.PublicAPI
 
         internal CraftingPath(string path)
         {
-            Path = path;
-
-            string schemeString = path.Substring(0, path.IndexOf('/'));
+            int firstBreak = path.IndexOf('/');
+            string schemeString = path.Substring(0, firstBreak);
 
             Scheme = (CraftTree.Type)Enum.Parse(typeof(CraftTree.Type), schemeString);
+            Path = path.Substring(firstBreak + 1);
         }
 
         public override string ToString()

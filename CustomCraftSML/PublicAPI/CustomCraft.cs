@@ -17,9 +17,8 @@
             Assert.AreNotEqual(craftedItem.ToString(), ((int)craftedItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
             // Only modded enums use the int string as their ToString value
 
-            //CraftTreeHandler.customNodes.Add(new CustomCraftNode(craftedItem, craftTree, path));
-            CraftDataHandler.AddToBuildableList(craftedItem);
-            CraftDataHandler.EditTechData(craftedItem, recipe);
+            //CraftTreeHandler.customNodes.Add(new CustomCraftNode(craftedItem, craftTree, path));            
+            CraftDataHandler.SetTechData(craftedItem, recipe);
             ModCraftTreeRoot craftTreeRoot = CraftTreeHandler.GetExistingTree(craftTree);
 
             var steps = path.Split(CraftingNode.Splitter);
@@ -37,7 +36,7 @@
             Assert.AreNotEqual(craftedItem.ToString(), ((int)craftedItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
             // Only modded enums use the int string as their ToString value
 
-            CraftDataHandler.EditTechData(craftedItem, recipe);
+            CraftDataHandler.SetTechData(craftedItem, recipe);
         }
 
         public static void ModifyItemSize(TechType inventoryItem, int width, int height)
@@ -48,7 +47,7 @@
             Assert.IsTrue(width < 6 && height < 6, "Values must be smaller than six to fit");
             // Value chosen for what should be the standard inventory size
 
-            CraftDataHandler.EditItemSize(inventoryItem, new Vector2int(width, height));
+            CraftDataHandler.SetItemSize(inventoryItem, width, height);
             
         }
     }
