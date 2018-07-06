@@ -1,7 +1,61 @@
 ﻿namespace CustomCraft.PublicAPI
 {
-    public sealed class PathHelper
+    using System.Text;
+
+    public class PathHelper
     {
+        public static string GeneratePaths()
+        {
+            var builder = new StringBuilder();
+
+            builder.AppendLine();
+            builder.AppendLine("# Mobile Vehicle Bay #");
+            builder.AppendLine(MobileVehicleBay.GetThisNode.ToString());
+            builder.AppendLine(MobileVehicleBay.Vehicles.GetThisNode.ToString());
+            builder.AppendLine(MobileVehicleBay.NeptuneRocket.GetThisNode.ToString());
+            builder.AppendLine();
+            builder.AppendLine("# Cyclops Fabricator #");
+            builder.AppendLine(CyclopsFabricator.GetThisNode.ToString());
+            builder.AppendLine();
+            builder.AppendLine("# Fabricator #");
+            builder.AppendLine(Fabricator.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Resources.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Resources.BasicMaterials.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Resources.AdvancedMaterials.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Resources.Electronics.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Sustenance.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Sustenance.Water.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Sustenance.CookedFood.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Sustenance.CuredFood.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Personal.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Personal.Equipment.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Personal.Tools.GetThisNode.ToString());
+            builder.AppendLine(Fabricator.Deployables.GetThisNode.ToString());
+            builder.AppendLine();
+            builder.AppendLine("# Scanner Room #");
+            builder.AppendLine(ScannerRoom.GetThisNode.ToString());
+            builder.AppendLine();
+            builder.AppendLine("# Vehicle Upgrade Console #");
+            builder.AppendLine(VehicleUpgradeConsole.GetThisNode.ToString());
+            builder.AppendLine(VehicleUpgradeConsole.CommonModules.GetThisNode.ToString());
+            builder.AppendLine(VehicleUpgradeConsole.SeamothModules.GetThisNode.ToString());
+            builder.AppendLine(VehicleUpgradeConsole.PrawnSuitModules.GetThisNode.ToString());
+            builder.AppendLine(VehicleUpgradeConsole.Torpedoes.GetThisNode.ToString());
+            builder.AppendLine();
+            builder.AppendLine("# Modification Station #");
+            builder.AppendLine(ModificationStation.GetThisNode.ToString());
+            builder.AppendLine(ModificationStation.SurvivalKnifeUpgrades.GetThisNode.ToString());
+            builder.AppendLine(ModificationStation.AirTankUpgrades.GetThisNode.ToString());
+            builder.AppendLine(ModificationStation.FinUpgrades.GetThisNode.ToString());
+            builder.AppendLine(ModificationStation.PropulsionCannonUpgrades.GetThisNode.ToString());
+            builder.AppendLine(ModificationStation.CyclopsUpgrades.GetThisNode.ToString());
+            builder.AppendLine(ModificationStation.SeamothUpgrades.GetThisNode.ToString());
+            builder.AppendLine(ModificationStation.PrawnSuitUpgrades.GetThisNode.ToString());
+            builder.AppendLine();
+
+            return builder.ToString();
+        }
+
         public sealed class MobileVehicleBay
         {
             internal static CraftingRoot ConstructorScheme = new CraftingRoot(CraftTree.Type.Constructor);

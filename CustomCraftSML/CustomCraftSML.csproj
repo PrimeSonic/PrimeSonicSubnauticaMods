@@ -91,9 +91,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SampleFiles\AddedRecipes.txt" />
-    <Content Include="SampleFiles\CustomSizes.txt" />
-    <Content Include="SampleFiles\ModifiedRecipes.txt" />
+    <Content Include="SampleFiles\AddedRecipes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomSizes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\ModifiedRecipes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

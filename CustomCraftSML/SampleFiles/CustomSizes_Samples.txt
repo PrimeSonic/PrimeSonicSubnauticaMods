@@ -2,6 +2,8 @@
 # Remember that this is only intended for use with items that already exist in the base game #
 # This won't work with modded items #
 
+# You can use this file as a starting point. There text here is ready to use. #
+
 CustomSizes: 
 (
     ItemID:CreepvineSeedCluster; # Normally this item would be a 2x2 but with this we can make it smaller #

@@ -1,12 +1,13 @@
 ﻿namespace CustomCraft.PublicAPI
 {
-    using System;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine.Assertions;
 
     public static class CustomCraft
     {
+        public const string RootModName = "CustomCraft2SML";
+
         public static void AddRecipe(TechType craftedItem, TechData recipe, CraftingPath craftingPath)
         {
             AddRecipe(craftedItem, recipe, craftingPath.Scheme, craftingPath.Path);
