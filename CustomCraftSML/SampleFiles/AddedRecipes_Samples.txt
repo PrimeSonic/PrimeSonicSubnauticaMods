@@ -11,5 +11,5 @@ AddedRecipes:
     Ingredients:
         ( ItemID:ReactorRod; Required:1; );
     LinkedItemIDs:UraniniteCrystal,UraniniteCrystal,UraniniteCrystal; # Linked items are created along side the crafted item #
-    Path:Workbench/Resources/Electronics;
+    Path:Fabricator/Resources/Electronics;
 );

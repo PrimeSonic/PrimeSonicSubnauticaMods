@@ -24,7 +24,7 @@
 
         public override string ToString()
         {
-            return $"CraftingPath > {Scheme}/{Path}";
+            return $"{Scheme}/{Path}";
         }
     }
 }

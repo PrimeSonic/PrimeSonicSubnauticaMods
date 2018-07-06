@@ -4,21 +4,21 @@
 
     public static class EmUtils
     {
-        public static bool Deserialize(this IEmProperty emProperty, string serializedData)
+        public static bool Deserialize(this EmProperty emProperty, string serializedData)
         {
             try
             {
-                emProperty.FromString(serializedData);
-                return true;
+                return emProperty.FromString(serializedData);
             }
             catch (Exception ex)
             {
-                Logger.Log($"Error on Deserialize for {emProperty.Key}:{Environment.NewLine}{ex}");
+                Logger.Log($"Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}" +
+                           $"Error reported: {ex}");
                 return false;
             }
         }
 
-        public static string Serialize(this IEmProperty emProperty)
+        public static string Serialize(this EmProperty emProperty)
         {
             return emProperty.PrintyPrint();
         }

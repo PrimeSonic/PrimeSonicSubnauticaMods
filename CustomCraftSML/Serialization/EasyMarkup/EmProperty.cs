@@ -1,9 +1,10 @@
 ﻿namespace CustomCraft2SML.Serialization.EasyMarkup
 {
-    using NUnit.Framework;
     using Common;
+    using System;
+    using UnityEngine.Assertions;
 
-    public abstract class EmProperty : IEmProperty
+    public abstract class EmProperty
     {
         protected const char SpChar_KeyDelimiter = ':';
         protected const char SpChar_ValueDelimiter = ';';
@@ -24,9 +25,12 @@
             return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter}";
         }
 
-        public void FromString(string rawValue)
+        public bool FromString(string rawValue)
         {
-            var cleanValue = CleanValue(new StringBuffer(rawValue));
+            StringBuffer cleanValue = CleanValue(new StringBuffer(rawValue));
+
+            if (cleanValue.IsEmpty)
+                return false;
 
             var key = ExtractKey(cleanValue);
             if (string.IsNullOrEmpty(Key))
@@ -36,6 +40,8 @@
 
             SerializedValue = ExtractValue(cleanValue);
             OnValueExtractedEvent?.Invoke();
+
+            return true;
         }
 
         protected virtual string ExtractKey(StringBuffer fullString)
@@ -105,7 +111,7 @@
         }
 
 
-        private StringBuffer CleanValue(StringBuffer rawValue)
+        private static StringBuffer CleanValue(StringBuffer rawValue)
         {
             var cleanValue = new StringBuffer();
 

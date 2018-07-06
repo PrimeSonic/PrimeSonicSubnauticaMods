@@ -40,7 +40,7 @@
             CraftDataHandler.SetTechData(craftedItem, recipe);
         }
 
-        public static void ModifyItemSize(TechType inventoryItem, int width, int height)
+        public static void CustomizeItemSize(TechType inventoryItem, int width, int height)
         {
             Assert.AreNotEqual(inventoryItem.ToString(), ((int)inventoryItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
 

@@ -38,12 +38,6 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.10.1\lib\net35\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
@@ -74,7 +68,6 @@
     <Compile Include="Serialization\EasyMarkup\EmPropertyTechType.cs" />
     <Compile Include="Serialization\EasyMarkup\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\EasyMarkup\EmUtils.cs" />
-    <Compile Include="Serialization\EasyMarkup\IEmProperty.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
     <Compile Include="Serialization\IAddedRecipe.cs" />
@@ -91,15 +84,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SampleFiles\AddedRecipes_Samples.txt">
+    <EmbeddedResource Include="SampleFiles\AddedRecipes_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SampleFiles\CustomSizes_Samples.txt">
+    </EmbeddedResource>
+    <EmbeddedResource Include="SampleFiles\CustomSizes_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SampleFiles\ModifiedRecipes_Samples.txt">
+    </EmbeddedResource>
+    <EmbeddedResource Include="SampleFiles\ModifiedRecipes_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

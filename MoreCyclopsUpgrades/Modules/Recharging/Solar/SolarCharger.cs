@@ -27,14 +27,14 @@
             PrefabHandler.RegisterPrefab(new CySolarPreFab());
 
             // Pair the new item with its crafting recipe
-            CraftDataHandler.EditTechData(CySolarChargerTechType, GetRecipe());
+            CraftDataHandler.SetTechData(CySolarChargerTechType, GetRecipe());
 
             // Add the new item to the Modification Station crafting tree
             var craftTree = CraftTreeHandler.GetExistingTree(CraftTree.Type.Workbench);
             craftTree.GetTabNode("CyclopsMenu").AddCraftingNode(CySolarChargerTechType);
 
             // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
-            CraftDataHandler.EditEquipmentType(CySolarChargerTechType, EquipmentType.CyclopsModule);
+            CraftDataHandler.SetEquipmentType(CySolarChargerTechType, EquipmentType.CyclopsModule);
         }
 
         private static TechData GetRecipe()
