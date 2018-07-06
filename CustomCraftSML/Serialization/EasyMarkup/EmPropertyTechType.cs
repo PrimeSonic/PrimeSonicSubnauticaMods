@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSML.Serialization.EasyMarkup
+﻿namespace CustomCraft2SML.Serialization.EasyMarkup
 {
     public class EmPropertyTechType : EmProperty<TechType>
     {

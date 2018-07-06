@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSML
+﻿namespace CustomCraft2SML
 {
     using Serialization;
 

@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSML.Serialization.EasyMarkup
+﻿namespace CustomCraft2SML.Serialization.EasyMarkup
 {
     using System.Collections.Generic;
     using Common;

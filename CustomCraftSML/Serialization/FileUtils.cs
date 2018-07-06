@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSML.Serialization
+﻿namespace CustomCraft2SML.Serialization
 {
     using System;
     using System.IO;

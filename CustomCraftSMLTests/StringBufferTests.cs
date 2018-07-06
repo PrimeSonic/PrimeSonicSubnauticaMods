@@ -1,6 +1,6 @@
 ﻿namespace CustomCraftSMLTests
 {
-    using CustomCraftSML.Serialization.EasyMarkup;
+    using CustomCraft2SML.Serialization.EasyMarkup;
     using NUnit.Framework;
     using Common;
 

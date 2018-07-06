@@ -11,7 +11,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Utilities\Common.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreCyclopsUpgrades", "MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj", "{FC87AF94-413D-482E-AB0D-501E120E6E2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraftSML", "CustomCraftSML\CustomCraftSML.csproj", "{656A031A-0BAE-4633-89F7-0F3464D247E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraft2SML", "CustomCraftSML\CustomCraft2SML.csproj", "{656A031A-0BAE-4633-89F7-0F3464D247E2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraftSMLTests", "CustomCraftSMLTests\CustomCraftSMLTests.csproj", "{76A15559-2893-493A-9EBF-BB7523D2DC04}"
 EndProject

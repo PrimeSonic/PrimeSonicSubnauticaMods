@@ -1,10 +1,10 @@
-﻿namespace CustomCraftSML
+﻿namespace CustomCraft2SML
 {
     using System;
 
     internal static class Logger
     {
-        private const string MsgPrefix = "[CustomCraftSML] ";
+        private const string MsgPrefix = "[CustomCraft2SML] ";
 
         internal static void Log(string msg)
         {

@@ -1,6 +1,6 @@
 ﻿namespace CustomCraftSMLTests
 {
-    using CustomCraftSML.Serialization;
+    using CustomCraft2SML.Serialization;
     using NUnit.Framework;
 
     [TestFixture]

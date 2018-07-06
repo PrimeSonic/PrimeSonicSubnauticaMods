@@ -98,9 +98,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CustomCraftSML\CustomCraftSML.csproj">
+    <ProjectReference Include="..\CustomCraftSML\CustomCraft2SML.csproj">
       <Project>{656A031A-0BAE-4633-89F7-0F3464D247E2}</Project>
-      <Name>CustomCraftSML</Name>
+      <Name>CustomCraft2SML</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

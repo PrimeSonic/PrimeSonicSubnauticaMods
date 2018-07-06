@@ -1,11 +1,11 @@
 {
-  "Id": "CustomCraftSML",
-  "DisplayName": "CustomCraftSML",
+  "Id": "CustomCraft2SML",
+  "DisplayName": "CustomCraft2SML",
   "Author": "PrimeSonic",
   "Version": "1.0.0",
   "Requires": [ ],
   "Enable": true,
-  "AssemblyName": "CustomCraftSML.dll",
-  "EntryMethod": "CustomCraftSML.QPatch.Patch",
+  "AssemblyName": "CustomCraft2SML.dll",
+  "EntryMethod": "CustomCraft2SML.QPatch.Patch",
   "Config": {}
 }

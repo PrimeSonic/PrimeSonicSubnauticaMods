@@ -1,4 +1,4 @@
-﻿namespace CustomCraftSML.Serialization
+﻿namespace CustomCraft2SML.Serialization
 {
     using SMLHelper.V2.Crafting;
 
