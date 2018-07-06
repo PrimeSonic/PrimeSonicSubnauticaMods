@@ -1,4 +1,4 @@
-﻿namespace CustomCraft.PublicAPI
+﻿namespace CustomCraft2SML.PublicAPI
 {
     using System;
 

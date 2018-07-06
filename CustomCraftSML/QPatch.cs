@@ -3,7 +3,7 @@
     using System;
     using System.IO;
     using System.Text;
-    using CustomCraft.PublicAPI;
+    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
     using CustomCraft2SML.Serialization.EasyMarkup;
 

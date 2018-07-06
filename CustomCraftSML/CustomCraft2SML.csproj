@@ -75,7 +75,6 @@
     <Compile Include="Serialization\IModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipeList.cs" />
-    <Compile Include="Serialization\UserFileManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json">

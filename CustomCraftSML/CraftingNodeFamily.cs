@@ -1,7 +1,7 @@
-﻿namespace CustomCraft
+﻿namespace CustomCraft2SML
 {
     using System.Collections.Generic;
-    using CustomCraft.PublicAPI;
+    using CustomCraft2SML.PublicAPI;
     using UnityEngine.Assertions;
 
     internal abstract class CraftingNode

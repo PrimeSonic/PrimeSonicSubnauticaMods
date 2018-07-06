@@ -1,4 +1,4 @@
-﻿namespace CustomCraft.PublicAPI
+﻿namespace CustomCraft2SML.PublicAPI
 {
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -30,6 +30,7 @@
                 node = node.GetTabNode(step);
             }
             node.AddCraftingNode(craftedItem);
+            KnownTechHandler.UnlockOnStart(craftedItem);
         }
 
         public static void ModifyRecipe(TechType craftedItem, TechData recipe)
