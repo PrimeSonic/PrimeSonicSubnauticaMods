@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using UnityEngine;
-    using Object = UnityEngine.Object;
 
     /// <summary>
     /// This class handles keeping track of the nuclear batteries.
@@ -28,10 +27,10 @@
         private static InventoryItem SpawnDepletedModule()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
-            GameObject gameObject = Object.Instantiate(prefab);
+            GameObject gameObject = GameObject.Instantiate(prefab);
 
-            gameObject.GetComponent<PrefabIdentifier>().ClassId = "DepletedCyclopsNuclearModule";
-            gameObject.AddComponent<TechTag>().type = DepletedNuclearModule.TechTypeID;
+            gameObject.GetComponent<PrefabIdentifier>().ClassId = DepletedNuclearModule.DepletedNameID;
+            gameObject.AddComponent<TechTag>().type = CyclopsModule.DepletedNuclearModuleID;
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
