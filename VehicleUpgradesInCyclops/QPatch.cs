@@ -1,36 +1,33 @@
 ﻿namespace VehicleUpgradesInCyclops
-{    
-    using SMLHelper.Patchers; // https://github.com/ahk1221/SMLHelper/
+{
+    using System;
+    using SMLHelper.V2.Handlers;
 
     // QMods by qwiso https://github.com/Qwiso/QModManager
     public class QPatch
     {
         // This mod is intended to be replaced by the VModFabricator
-
+        // But since some people still want it, it's kept up and maintained.
         public static void Patch()
         {
             // Remove all original Cyclops fabricator nodes
-            CraftTreePatcher.nodesToRemove.AddRange(CraftingNodeLists.OriginalCyclopsModuleCraftingNodes);
+            foreach (string origNodeID in NodeCollections.OriginalCyclopsModuleCraftingNodes)
+                CraftTreeHandler.RemoveNode(CraftTree.Type.CyclopsFabricator, origNodeID);
 
-            // New Cyclops Upgrades Tab (This will keep things more organized and prevent the icons from being rendered off screen when there's too many)
-            CraftTreePatcher.customTabs.Add(CraftingNodeLists.CyclopsTab);
-            CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.CyclopsModuleCraftingNodes);
+            NodeCollections.CheckForCrossModAdditions();
 
-            // Common Modules
-            CraftTreePatcher.customTabs.Add(CraftingNodeLists.CommonModuleTab);
-            CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.CommonVehicleModuleCraftingNodes);
+            // Includes a new Cyclops Upgrades Tab (This will keep things more organized and prevent the icons from being rendered off screen when there's too many)
+            // Recreates all the tabs from the Vehicle Upgrade Console
 
-            // Seamoth Modules
-            CraftTreePatcher.customTabs.Add(CraftingNodeLists.SeamothModuleTab);
-            CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.SeamothModuleCraftingNodes);
+            foreach (ModulesTab tab in NodeCollections.UpgradeModuleTabs)
+            {
+                CraftTreeHandler.AddTabNode(CraftTree.Type.CyclopsFabricator, tab.TabID, tab.TabName, tab.TabSprite);
 
-            // Prawn Suit Modules
-            CraftTreePatcher.customTabs.Add(CraftingNodeLists.ExosuitModuleTab);
-            CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.ExosuitModuleCraftingNodes);
+                foreach (TechType craftTypeID in tab.CraftNodes)
+                    CraftTreeHandler.AddCraftingNode(CraftTree.Type.CyclopsFabricator, craftTypeID, tab.TabID);
+            }
 
-            // Torpedoes
-            CraftTreePatcher.customTabs.Add(CraftingNodeLists.TorpedoTab);
-            CraftTreePatcher.customNodes.AddRange(CraftingNodeLists.TorpedoCraftingNodes);
+            Console.WriteLine("[VehicleUpgradesInCyclops] Patching complete.");      
         }
     }
 }

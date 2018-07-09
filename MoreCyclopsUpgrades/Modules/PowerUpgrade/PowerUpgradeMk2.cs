@@ -1,64 +1,62 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Assets;
     using UnityEngine;
-    using Object = UnityEngine.Object;
 
-    public class PowerUpgradeMk2
+    internal class PowerUpgradeMk2 : CyclopsModule
     {
-        public static TechType Power2TechType { get; private set; }
-
-        public const string NameID = "PowerUpgradeModuleMk2";
-        public const string FriendlyName = "Cyclops Engine Efficiency Module MK2";
-        public const string Description = "Additional enhancement to engine efficiency. Silent running, Sonar, and Shield optimized. Does not stack.";
-
-        public static void Patch(AssetBundle assetBundle)
+        internal PowerUpgradeMk2() 
+            : base("PowerUpgradeModuleMk2",
+                  "Cyclops Engine Efficiency Module MK2",
+                  "Additional enhancement to engine efficiency. Silent running, Sonar, and Shield optimized. Does not stack.",
+                  CraftTree.Type.Workbench,
+                  new[] { "CyclopsMenu" },
+                  TechType.PowerUpgradeModule)
         {
-            // Create a new TechType
-            Power2TechType = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
 
-            // Create the in-game item that will behave like any other Cyclops upgrade module
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", Power2TechType, GetObject));
-
-            // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(Power2TechType, assetBundle.LoadAsset<Sprite>("CyPowerMk2")));
-
-            // Add the new recipe to the Modification Station crafting tree
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(Power2TechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
-
-            // Create a new Recipie and pair the new recipie with the new TechType
-            CraftDataPatcher.customTechData[Power2TechType] = GetRecipe();
-
-            // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
-            CraftDataPatcher.customEquipmentTypes[Power2TechType] = EquipmentType.CyclopsModule;
         }
 
-        private static TechDataHelper GetRecipe()
+        public override CyclopsModules ModuleID => CyclopsModules.PowerMk2;
+
+        protected override ModPrefab GetPrefab()
         {
-            return new TechDataHelper()
+            return new PowerUpgradeMk2PreFab(NameID, TechTypeID);
+        }
+
+        protected override TechData GetRecipe()
+        {
+            return new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[3]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[3]
                              {
-                                 new IngredientHelper(TechType.PowerUpgradeModule, 1),
-                                 new IngredientHelper(TechType.VehiclePowerUpgradeModule, 1), // Do you have a Vehicle Upgrade Console?
-                                 new IngredientHelper(TechType.Sulphur, 2) // Did you make it to the Lost River yet?
-                             }),
-                _techType = Power2TechType
+                                 new Ingredient(TechType.PowerUpgradeModule, 1),
+                                 new Ingredient(TechType.Aerogel, 1), 
+                                 new Ingredient(TechType.Sulphur, 2) // Did you make it to the Lost River yet?
+                             })
             };
         }
 
-        public static GameObject GetObject()
+        protected override void SetStaticTechTypeID(TechType techTypeID)
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PowerUpgradeModule");
-            GameObject obj = Object.Instantiate(prefab);
+            PowerUpgradeMk2ID = techTypeID;
+        }
 
-            obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
-            obj.GetComponent<TechTag>().type = Power2TechType;
+        internal class PowerUpgradeMk2PreFab : ModPrefab
+        {
+            internal PowerUpgradeMk2PreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
+            {
+            }
 
-            return obj;
+            public override GameObject GetGameObject()
+            {
+                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+                GameObject obj = GameObject.Instantiate(prefab);
+
+                return obj;
+            }
         }
     }
 }
