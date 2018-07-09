@@ -2,7 +2,7 @@
   "Id": "MoreCyclopsUpgrades",
   "DisplayName": "MoreCyclopsUpgrades",
   "Author": "PrimeSonic",
-  "Version": "1.1.3",
+  "Version": "2.0.0",
   "Requires": [ ],
   "Enable": true,
   "AssemblyName": "MoreCyclopsUpgrades.dll",
