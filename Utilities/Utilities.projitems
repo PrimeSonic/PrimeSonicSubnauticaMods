@@ -9,7 +9,9 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DeQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SimpleLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StringHelper.cs" />
   </ItemGroup>
 </Project>

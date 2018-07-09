@@ -39,6 +39,7 @@
             };
         }
 
+
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
             SolarChargerID = techTypeID;
@@ -60,4 +61,5 @@
         }
 
     }
+
 }

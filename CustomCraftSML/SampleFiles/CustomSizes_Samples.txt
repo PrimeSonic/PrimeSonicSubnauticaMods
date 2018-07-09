@@ -1,0 +1,17 @@
+﻿# This is a sample file for modifying inventory items with custom sizes #
+# Remember that this is only intended for use with items that already exist in the base game #
+# This won't work with modded items #
+
+# You can use this file as a starting point. There text here is ready to use. #
+
+CustomSizes: 
+(
+    ItemID:CreepvineSeedCluster; # Normally this item would be a 2x2 but with this we can make it smaller #
+    Width: 1;
+    Height: 1;
+),
+(
+    ItemID:CreepvinePiece;
+    Width: 1;
+    Height: 1;
+);

@@ -1,0 +1,65 @@
+# EasyMarkup is a custom syntax for serialization and deserialization of data object, created first and foremost for the CustomCraftSML mod. #
+
+# Below you'll find samples of the standard syntax constructs available from the EasyMarkup library. #
+
+SimpleKey:SimpleValue;
+
+SimpleKey:
+    SimpleValue;
+
+ComplexKey:(SubKey1:SubValue1;SubKey2:SubValue2;);
+
+ComplexKey:
+(
+    SubKey1:SubValue1;
+    SubKey2:SubValue2;
+);
+
+ListKey:ListValue1,ListValue2,ListValue3;
+
+ListKey: ListValue1, ListValue2, ListValue3;
+
+ComplexKey:
+(
+    NestedComplexKey:(SubKeyN1:SubValue1;SubKeyN2:SubValue2;);
+    SubKey2:SubValue2;
+);
+
+ComplexKey:
+(
+    NestedComplexKey:
+    (
+        SubKeyN1:SubValue1;
+        SubKeyN2:SubValue2;
+    );
+    SubKey2:SubValue2;
+);
+
+ComplexList:
+(SubKey1:SubValue1;SubKey2:SubValue2;),
+(SubKey1:SubValue1;SubKey2:SubValue2;);
+
+ComplexList:
+(
+    SubKey1:SubValue1;
+    SubKey2:SubValue2;
+),
+(
+    SubKey1:SubValue1;
+    SubKey2:SubValue2;
+);
+
+
+ComplexList:
+(
+    NestedComplexKey:
+        (
+            SubKeyN1:Val1;
+            SubKeyN2:Val2;
+        ),
+        (
+            SubKeyN1:Val3;
+            SubKeyN2:Val4;
+        );
+    NestedList:ValN1,ValN2,ValN3;
+);
