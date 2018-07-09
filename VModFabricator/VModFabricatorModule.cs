@@ -3,8 +3,9 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
-    using SMLHelper;
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Assets;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     public class VModFabricatorModule
@@ -30,45 +31,44 @@
             originalCyclopsFabricatorPrefab = Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator");
 
             // Create new Craft Tree Type
-            CustomCraftTreeRoot customTreeRootNode = CreateCustomTree(out CraftTree.Type craftType);
+            var customTreeRootNode = CreateCustomTree(out CraftTree.Type craftType);
             VModTreeType = craftType;
 
             // Create a new TechType for new fabricator
-            VModFabTechType = TechTypePatcher.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", true);
+            VModFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", true);
 
             // Create a Recipie for the new TechType
-            var customFabRecipe = new TechDataHelper()
+            var customFabRecipe = new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[4]
                              {
-                                 new IngredientHelper(TechType.Titanium, 2),
-                                 new IngredientHelper(TechType.ComputerChip, 1),
-                                 new IngredientHelper(TechType.Diamond, 1),
-                                 new IngredientHelper(TechType.Lead, 1),
-                             }),
-                _techType = VModFabTechType
+                                 new Ingredient(TechType.Titanium, 2),
+                                 new Ingredient(TechType.ComputerChip, 1),
+                                 new Ingredient(TechType.Diamond, 1),
+                                 new Ingredient(TechType.Lead, 1),
+                             })
             };
 
             // Add the new TechType to the buildables
-            CraftDataPatcher.customBuildables.Add(VModFabTechType);
+            CraftDataHandler.AddBuildable(VModFabTechType);
 
             // Add the new TechType to the group of Interior Module buildables
-            CraftDataPatcher.AddToCustomGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, VModFabTechType);
+            CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, VModFabTechType);
 
             // Set the buildable prefab
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(CustomFabAndTreeID, $"Submarine/Build/{CustomFabAndTreeID}", VModFabTechType, GetPrefab));
+            PrefabHandler.RegisterPrefab(new VModFabricatorModulePrefab(CustomFabAndTreeID, VModFabTechType));
 
             // Set the custom sprite for the Habitat Builder Tool menu
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(VModFabTechType, Assets.LoadAsset<Sprite>("CyFabIcon")));
+            SpriteHandler.RegisterSprite(VModFabTechType, Assets.LoadAsset<Sprite>("CyFabIcon"));
 
             // Associate the recipie to the new TechType
-            CraftDataPatcher.customTechData[VModFabTechType] = customFabRecipe;
+            CraftDataHandler.SetTechData(VModFabTechType, customFabRecipe);
         }
 
-        private static CustomCraftTreeRoot CreateCustomTree(out CraftTree.Type craftType)
+        private static ModCraftTreeRoot CreateCustomTree(out CraftTree.Type craftType)
         {
-            var rootNode = CraftTreeTypePatcher.CreateCustomCraftTreeAndType(CustomFabAndTreeID, out craftType);
+            ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(CustomFabAndTreeID, out craftType);
 
             var cyclopsTab = rootNode.AddTabNode("CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"));
             cyclopsTab.AddCraftingNode(TechType.CyclopsShieldModule,
@@ -125,67 +125,62 @@
             return rootNode;
         }
 
-        public static GameObject GetPrefab()
+        internal class VModFabricatorModulePrefab : ModPrefab
         {
-            // Instantiate CyclopsFabricator object
-            GameObject cyclopsFabPrefab = GameObject.Instantiate(originalCyclopsFabricatorPrefab);
+            internal VModFabricatorModulePrefab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
+            {
+            }
 
-            // Retrieve sub game objects
-            GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
-            GameObject cyclopsFabModel = cyclopsFabPrefab.FindChild("submarine_fabricator_03");
+            public override GameObject GetGameObject()
+            {
+                // Instantiate CyclopsFabricator object
+                GameObject cyclopsFabPrefab = GameObject.Instantiate(originalCyclopsFabricatorPrefab);
 
-            // Update prefab name
-            cyclopsFabPrefab.name = CustomFabAndTreeID;
+                // Retrieve sub game objects
+                GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
+                GameObject cyclopsFabModel = cyclopsFabPrefab.FindChild("submarine_fabricator_03");
 
-            // Add prefab ID
-            var prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
-            prefabId.ClassId = CustomFabAndTreeID;
-            prefabId.name = FriendlyName;
+                // Translate CyclopsFabricator model and light
+                cyclopsFabModel.transform.localPosition = new Vector3(
+                                                            cyclopsFabModel.transform.localPosition.x, // Same X position
+                                                            cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                            cyclopsFabModel.transform.localPosition.z); // Same Z position
+                cyclopsFabLight.transform.localPosition = new Vector3(
+                                                            cyclopsFabLight.transform.localPosition.x, // Same X position
+                                                            cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                            cyclopsFabLight.transform.localPosition.z); // Same Z position
 
-            // Add tech tag
-            var techTag = cyclopsFabPrefab.AddComponent<TechTag>();
-            techTag.type = VModFabTechType;
+                // Update sky applier
+                var skyApplier = cyclopsFabPrefab.GetComponent<SkyApplier>();
+                skyApplier.renderers = cyclopsFabPrefab.GetComponentsInChildren<Renderer>();
+                skyApplier.anchorSky = Skies.Auto;
 
-            // Translate CyclopsFabricator model and light
-            cyclopsFabModel.transform.localPosition = new Vector3(
-                                                        cyclopsFabModel.transform.localPosition.x, // Same X position
-                                                        cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
-                                                        cyclopsFabModel.transform.localPosition.z); // Same Z position
-            cyclopsFabLight.transform.localPosition = new Vector3(
-                                                        cyclopsFabLight.transform.localPosition.x, // Same X position
-                                                        cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
-                                                        cyclopsFabLight.transform.localPosition.z); // Same Z position
+                // Associate custom craft tree to the fabricator
+                var fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
+                fabricator.craftTree = VModTreeType;
 
-            // Update sky applier
-            var skyApplier = cyclopsFabPrefab.GetComponent<SkyApplier>();
-            skyApplier.renderers = cyclopsFabPrefab.GetComponentsInChildren<Renderer>();
-            skyApplier.anchorSky = Skies.Auto;
+                // Associate power relay
+                var ghost = fabricator.GetComponent<GhostCrafter>();
+                var powerRelay = new PowerRelay();
 
-            // Associate custom craft tree to the fabricator
-            var fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
-            fabricator.craftTree = VModTreeType;
+                fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
 
-            // Associate power relay
-            var ghost = fabricator.GetComponent<GhostCrafter>();
-            var powerRelay = new PowerRelay();            
+                // Add constructable
+                var constructible = cyclopsFabPrefab.AddComponent<Constructable>();
+                constructible.allowedInBase = true;
+                constructible.allowedInSub = true;
+                constructible.allowedOutside = false;
+                constructible.allowedOnCeiling = false;
+                constructible.allowedOnGround = false;
+                constructible.allowedOnWall = true;
+                constructible.allowedOnConstructables = false;
+                constructible.controlModelState = true;
+                constructible.rotationEnabled = false;
+                constructible.techType = VModFabTechType; // This was necessary to correctly associate the recipe at building time
+                constructible.model = cyclopsFabModel;
 
-            fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
-
-            // Add constructable
-            var constructible = cyclopsFabPrefab.AddComponent<Constructable>();
-            constructible.allowedInBase = true;
-            constructible.allowedInSub = true;
-            constructible.allowedOutside = false;
-            constructible.allowedOnCeiling = false;
-            constructible.allowedOnGround = false;
-            constructible.allowedOnWall = true;
-            constructible.allowedOnConstructables = false;
-            constructible.controlModelState = true;
-            constructible.rotationEnabled = false;
-            constructible.techType = VModFabTechType; // This was necessary to correctly associate the recipe at building time
-            constructible.model = cyclopsFabModel;
-
-            return cyclopsFabPrefab;
+                return cyclopsFabPrefab;
+            }
         }
     }
 }
