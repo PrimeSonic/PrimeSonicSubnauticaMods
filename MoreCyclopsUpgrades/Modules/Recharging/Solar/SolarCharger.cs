@@ -13,7 +13,7 @@
                   "Recharge your Cyclops with the plentiful power of the sun itself.",
                   CraftTree.Type.Workbench,
                   new[] { "CyclopsMenu" },
-                  TechType.SeamothSolarCharge)
+                  TechType.BaseUpgradeConsole) // This is to make sure the player has access to vehicle solar charging
         {
         }
 
@@ -31,10 +31,10 @@
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[4]
                              {
-                                 new Ingredient(TechType.SeamothSolarCharge, 1), // This is to make sure the player has access to vehicle solar charging
-                                 new Ingredient(TechType.Quartz, 3),
-                                 new Ingredient(TechType.Titanium, 3),
-                                 new Ingredient(TechType.CopperWire, 1),
+                                 new Ingredient(TechType.AdvancedWiringKit, 1),
+                                 new Ingredient(TechType.EnameledGlass, 1),
+                                 new Ingredient(TechType.Quartz, 2),
+                                 new Ingredient(TechType.Titanium, 2)
                              })
             };
         }

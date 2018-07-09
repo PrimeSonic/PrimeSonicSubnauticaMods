@@ -43,9 +43,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CraftingNodeLists.cs" />
+    <Compile Include="NodeCollections.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
+    <Compile Include="ModulesTab.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json">
