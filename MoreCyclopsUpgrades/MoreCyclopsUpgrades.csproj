@@ -76,12 +76,24 @@
     <Compile Include="QPatch.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icons\CyclopsNuclearModule.png" />
-    <Content Include="Icons\PowerUpgradeModuleMk2.png" />
-    <Content Include="Icons\PowerUpgradeModuleMk3.png" />
-    <Content Include="Icons\SolarCharger.png" />
-    <Content Include="Icons\CyclopsSolarChargerMk2.png" />
-    <Content Include="Icons\CyclopsThermalChargerMk2.png" />
+    <Content Include="Icons\CyclopsNuclearModule.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\PowerUpgradeModuleMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\PowerUpgradeModuleMk3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\SolarCharger.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\CyclopsSolarChargerMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icons\CyclopsThermalChargerMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json">
