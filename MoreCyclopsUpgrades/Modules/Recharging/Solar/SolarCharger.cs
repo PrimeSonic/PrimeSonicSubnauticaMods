@@ -7,12 +7,16 @@
 
     internal class SolarCharger : CyclopsModule
     {
-        internal SolarCharger()
+        internal SolarCharger(bool fabModPresent) : this(fabModPresent ? null : "CyclopsMenu")
+        {
+        }
+
+        protected SolarCharger(string tab)
             : base("CyclopsSolarCharger",
                   "Cyclops Solar Charger",
                   "Recharge your Cyclops with the plentiful power of the sun itself.",
-                  CraftTree.Type.Workbench,
-                  new[] { "CyclopsMenu" },
+                  CraftTree.Type.CyclopsFabricator,
+                  new[] { tab },
                   TechType.BaseUpgradeConsole) // This is to make sure the player has access to vehicle solar charging
         {
         }

@@ -61,7 +61,8 @@
 
             CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
 
-            CraftTreeHandler.AddCraftingNode(Fabricator, TechTypeID, FabricatorTabs);
+            if (FabricatorTabs[0] != null)
+                CraftTreeHandler.AddCraftingNode(Fabricator, TechTypeID, FabricatorTabs);            
 
             CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.CyclopsModule);
 

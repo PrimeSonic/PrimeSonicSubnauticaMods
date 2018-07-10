@@ -10,8 +10,6 @@
 
     public class VModFabricatorModule
     {
-        // This will contain the original prefab of CyclopsFabricator.
-        public static GameObject originalCyclopsFabricatorPrefab = null;
 
         public static CraftTree.Type VModTreeType { get; private set; }
         public static TechType VModFabTechType { get; private set; }
@@ -27,11 +25,8 @@
 
         public static void Patch()
         {
-            // Retrieve original CyclopsFabricator prefab. This must be done once (not everytime we call GetPrefab).
-            originalCyclopsFabricatorPrefab = Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator");
-
             // Create new Craft Tree Type
-            var customTreeRootNode = CreateCustomTree(out CraftTree.Type craftType);
+            ModCraftTreeRoot customTreeRootNode = CreateCustomTree(out CraftTree.Type craftType);
             VModTreeType = craftType;
 
             // Create a new TechType for new fabricator
@@ -81,15 +76,15 @@
                                             TechType.CyclopsHullModule2,
                                             TechType.CyclopsHullModule3);
             var cyclopsPowerTab = cyclopsTab.AddTabNode("CyclopsPowerModules", "Power Modules", SpriteManager.Get(TechType.PowerUpgradeModule));
-            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule);
-            // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
+            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule); // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk2");
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk3");
             cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarCharger");
             cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
             cyclopsPowerTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil");            
 
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
@@ -134,7 +129,7 @@
             public override GameObject GetGameObject()
             {
                 // Instantiate CyclopsFabricator object
-                GameObject cyclopsFabPrefab = GameObject.Instantiate(originalCyclopsFabricatorPrefab);
+                GameObject cyclopsFabPrefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
 
                 // Retrieve sub game objects
                 GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
