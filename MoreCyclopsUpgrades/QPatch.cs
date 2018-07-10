@@ -35,6 +35,8 @@
                     module.Patch();
                 }
 
+                NuclearFabricator.Patch();
+
                 HarmonyInstance harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 #if DEBUG

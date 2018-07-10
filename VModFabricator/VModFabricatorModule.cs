@@ -22,11 +22,11 @@
         public static void Patch()
         {
             // Create new Craft Tree Type
-            ModCraftTreeRoot customTreeRootNode = CreateCustomTree(out CraftTree.Type craftType);
+            CreateCustomTree(out CraftTree.Type craftType);
             VModTreeType = craftType;
 
             // Create a new TechType for new fabricator
-            VModFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", true);
+            VModFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.");
 
             // Create a Recipie for the new TechType
             var customFabRecipe = new TechData()
@@ -55,9 +55,11 @@
 
             // Associate the recipie to the new TechType
             CraftDataHandler.SetTechData(VModFabTechType, customFabRecipe);
+
+            KnownTechHandler.SetAnalysisTechEntry(TechType.AdvancedWiringKit, new TechType[] { VModFabTechType });
         }
 
-        private static ModCraftTreeRoot CreateCustomTree(out CraftTree.Type craftType)
+        private static void CreateCustomTree(out CraftTree.Type craftType)
         {
             ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(CustomFabAndTreeID, out craftType);
 
@@ -79,8 +81,8 @@
             cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
             cyclopsPowerTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
             cyclopsPowerTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil");
+            //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
+            //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil");
 
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
@@ -112,8 +114,7 @@
 
             var torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
             torpedoesTab.AddCraftingNode(TechType.WhirlpoolTorpedo,
-                                         TechType.GasTorpedo);
-            return rootNode;
+                                         TechType.GasTorpedo);           
         }
 
         internal class VModFabricatorModulePrefab : ModPrefab

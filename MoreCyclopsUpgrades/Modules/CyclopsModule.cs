@@ -24,6 +24,7 @@
         public static TechType PowerUpgradeMk3ID { get; protected set; }
         public static TechType NuclearChargerID { get; protected set; }
         public static TechType DepletedNuclearModuleID { get; protected set; }
+        public static TechType RefillNuclearModuleID { get; protected set; }
 
         public TechType TechTypeID { get; protected set; }
 
@@ -36,6 +37,8 @@
 
         public abstract CyclopsModules ModuleID { get; }
 
+        private readonly bool AddToCraftTree;
+
         protected CyclopsModule(string nameID, string friendlyName, string description, CraftTree.Type fabricator, string[] fabricatorTab, TechType requiredAnalysisItem = TechType.None)
         {
             NameID = nameID;
@@ -44,6 +47,18 @@
             RequiredForUnlock = requiredAnalysisItem;
             Fabricator = fabricator;
             FabricatorTabs = fabricatorTab;
+
+            AddToCraftTree = FabricatorTabs != null;
+        }
+
+        protected CyclopsModule(string nameID, string friendlyName, string description, TechType requiredAnalysisItem = TechType.None)
+        {
+            NameID = nameID;
+            FriendlyName = friendlyName;
+            Description = description;
+            RequiredForUnlock = requiredAnalysisItem;            
+
+            AddToCraftTree = false;
         }
 
         public virtual void Patch()
@@ -57,11 +72,11 @@
 
             PrefabHandler.RegisterPrefab(GetPrefab());
 
-            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Icons/{NameID}.png");
+            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/{NameID}.png");
 
             CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
 
-            if (FabricatorTabs != null)
+            if (AddToCraftTree)
                 CraftTreeHandler.AddCraftingNode(Fabricator, TechTypeID, FabricatorTabs);
 
             CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.CyclopsModule);

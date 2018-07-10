@@ -14,8 +14,6 @@
             : base(DepletedNameID,
                   "Depleted Cyclops Nuclear Reactor Module",
                   "Bring to a specialized fabricator for safe extraction of the depleted reactor rod inside.",
-                  CraftTree.Type.Workbench, // TODO Custom fabricator for all that is Cyclops and nuclear
-                  new[] { "CyclopsMenu" },
                   TechType.ReactorRod)
         {
 
@@ -27,16 +25,16 @@
         {
             TechTypeID = TechTypeHandler.AddTechType(DepletedNameID, FriendlyName, Description);
 
-            TechType dummy = TechTypeHandler.AddTechType("CyclopsNuclearModuleRefil",
+            TechType dummy = RefillNuclearModuleID = TechTypeHandler.AddTechType("CyclopsNuclearModuleRefil",
                                                          "Reload Cyclops Nuclear Module",
                                                          "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod");
 
-            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Icons/{DepletedNameID}.png");
-            SpriteHandler.RegisterSprite(dummy, $"./QMods/MoreCyclopsUpgrades/Icons/CyclopsNuclearModule.png");
+            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/{DepletedNameID}.png");
+            SpriteHandler.RegisterSprite(dummy, $"./QMods/MoreCyclopsUpgrades/Assets/CyclopsNuclearModule.png");
 
             CraftDataHandler.SetTechData(dummy, GetRecipe());
 
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, dummy, "CyclopsMenu");
+            //CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, dummy, "CyclopsMenu");
 
             PrefabHandler.RegisterPrefab(new DepletedNuclearModulePreFab(DepletedNameID, TechTypeID));
 
@@ -83,7 +81,7 @@
 
             public override GameObject GetGameObject()
             {
-                GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
+                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Natural/DepletedReactorRod");
                 GameObject gameObject = GameObject.Instantiate(prefab);
 
                 return gameObject;

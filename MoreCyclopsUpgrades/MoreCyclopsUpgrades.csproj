@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
@@ -76,25 +77,31 @@
     <Compile Include="QPatch.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icons\CyclopsNuclearModule.png">
+    <Content Include="Assets\CyclopsNuclearModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icons\DepletedCyclopsNuclearModule.png">
+    <Content Include="Assets\DepletedCyclopsNuclearModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icons\PowerUpgradeModuleMk2.png">
+    <Content Include="Assets\NuclearFabricatorI.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icons\PowerUpgradeModuleMk3.png">
+    <Content Include="Assets\NuclearFabricatorT.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icons\CyclopsSolarCharger.png">
+    <Content Include="Assets\PowerUpgradeModuleMk2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icons\CyclopsSolarChargerMk2.png">
+    <Content Include="Assets\PowerUpgradeModuleMk3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icons\CyclopsThermalChargerMk2.png">
+    <Content Include="Assets\CyclopsSolarCharger.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CyclopsSolarChargerMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CyclopsThermalChargerMk2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

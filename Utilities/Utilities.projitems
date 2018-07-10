@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DeQueue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImgUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringHelper.cs" />
