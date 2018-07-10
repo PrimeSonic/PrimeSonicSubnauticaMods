@@ -26,7 +26,7 @@
             VModTreeType = craftType;
 
             // Create a new TechType for new fabricator
-            VModFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.");
+            VModFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", false);
 
             // Create a Recipie for the new TechType
             var customFabRecipe = new TechData()
@@ -56,7 +56,7 @@
             // Associate the recipie to the new TechType
             CraftDataHandler.SetTechData(VModFabTechType, customFabRecipe);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.AdvancedWiringKit, new TechType[] { VModFabTechType });
+            KnownTechHandler.SetAnalysisTechEntry(TechType.ComputerChip, new TechType[1] { VModFabTechType }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static void CreateCustomTree(out CraftTree.Type craftType)
@@ -81,7 +81,7 @@
             cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
             cyclopsPowerTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
             cyclopsPowerTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
-            //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
             //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil");
 
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));

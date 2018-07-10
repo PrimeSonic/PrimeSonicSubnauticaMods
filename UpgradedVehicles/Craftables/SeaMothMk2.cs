@@ -16,7 +16,7 @@
 
         public static void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
 
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SeamothMk2.png");
 
@@ -25,7 +25,7 @@
             CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
 
             PrefabHandler.RegisterPrefab(new SeaMothMk2Prefab(TechTypeID, NameID));
-            KnownTechHandler.SetAnalysisTechEntry(TechType.VehicleHullModule3, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.VehicleHullModule3, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe()

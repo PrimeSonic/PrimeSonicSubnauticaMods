@@ -23,16 +23,18 @@
 
         public override void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(DepletedNameID, FriendlyName, Description);
+            TechTypeID = TechTypeHandler.AddTechType(DepletedNameID, FriendlyName, Description, false);
 
-            TechType dummy = RefillNuclearModuleID = TechTypeHandler.AddTechType("CyclopsNuclearModuleRefil",
+            RefillNuclearModuleID = TechTypeHandler.AddTechType("CyclopsNuclearModuleRefil",
                                                          "Reload Cyclops Nuclear Module",
-                                                         "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod");
+                                                         "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod",
+                                                         false);
 
             SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/{DepletedNameID}.png");
-            SpriteHandler.RegisterSprite(dummy, $"./QMods/MoreCyclopsUpgrades/Assets/CyclopsNuclearModule.png");
+            SpriteHandler.RegisterSprite(RefillNuclearModuleID, $"./QMods/MoreCyclopsUpgrades/Assets/CyclopsNuclearModule.png");
 
-            CraftDataHandler.SetTechData(dummy, GetRecipe());
+            CraftDataHandler.SetTechData(RefillNuclearModuleID, GetRecipe());
+            KnownTechHandler.SetAnalysisTechEntry(NuclearChargerID, new TechType[1] { RefillNuclearModuleID }, "Reload of cyclops nuclear module available.");
 
             //CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, dummy, "CyclopsMenu");
 

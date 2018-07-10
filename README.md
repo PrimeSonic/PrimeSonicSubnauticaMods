@@ -1,4 +1,6 @@
-# PrimeSonicSubnauticaMods Mods I've created for Subnautica 
+# PrimeSonic SubnauticaMods 
+Mods I've created for Subnautica 
+
 **Mod** | **Status** | **Features** | **Nexus** 
 -|-|-|- 
 **Vehicle Upgrades In Cyclops** | Released | <ul><li>Adds recipies from the Vehicle Upgrade Console to the Cyclops fabricator.</li><li>Reorganizes the Cyclops module recipies into their own tab on the crafting tree.</li><li>Made redundant by the Vehicle Module Fabricator but some people still prefer it.</li><li>Now cross compatible with MoreCyclopsUpgrades: Will add the CyclopsSolarCharger in the correct location when available.</li></ul> | [83](https://www.nexusmods.com/subnautica/mods/83) 

@@ -15,7 +15,7 @@
 
         public static void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
 
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/VehiclePowerCore.png");
 
@@ -25,7 +25,7 @@
             PrefabHandler.RegisterPrefab(new VehiclePowerCorePreFab(TechTypeID, NameID));
             CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.None);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe()

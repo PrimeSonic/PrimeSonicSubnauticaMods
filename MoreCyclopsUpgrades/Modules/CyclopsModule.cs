@@ -63,12 +63,12 @@
 
         public virtual void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, RequiredForUnlock == TechType.None);
 
             if (RequiredForUnlock == TechType.None)
                 KnownTechHandler.UnlockOnStart(TechTypeID);
             else
-                KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[] { TechTypeID }, $"{FriendlyName} blueprint unlocked!");
+                KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
 
             PrefabHandler.RegisterPrefab(GetPrefab());
 

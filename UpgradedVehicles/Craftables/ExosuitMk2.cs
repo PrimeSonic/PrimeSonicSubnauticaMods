@@ -16,7 +16,7 @@
 
         public static void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
 
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/ExosuitMk2.png");
 
@@ -25,7 +25,7 @@
             CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
 
             PrefabHandler.RegisterPrefab(new ExosuitMk2Prefab(TechTypeID, NameID));
-            KnownTechHandler.SetAnalysisTechEntry(TechType.ExoHullModule2, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.ExoHullModule2, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe()

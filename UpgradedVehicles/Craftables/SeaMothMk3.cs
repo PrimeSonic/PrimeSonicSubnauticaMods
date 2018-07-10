@@ -22,7 +22,7 @@
             SeamothHullModule4 = seamothHullModule4;
             SeamothHullModule5 = seamothHullModule5;
 
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
+            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
 
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SeamothMk3.png");
 
@@ -31,7 +31,7 @@
             CraftDataHandler.SetTechData(TechTypeID, GetRecipe(seamothHullModule5));
 
             PrefabHandler.RegisterPrefab(new SeaMothMk3Prefab(TechTypeID, NameID));
-            KnownTechHandler.SetAnalysisTechEntry(seamothHullModule5, new List<TechType>(1) { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(seamothHullModule5, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe(TechType SeamothHullModule5)

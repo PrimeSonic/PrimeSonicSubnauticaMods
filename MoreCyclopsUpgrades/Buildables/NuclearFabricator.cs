@@ -27,7 +27,7 @@
 
             // Create a new TechType for new fabricator
             NukeFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, 
-                "A specialized fabricator for safe handling of radioactive energy sources.");
+                "A specialized fabricator for safe handling of radioactive energy sources.", false);
 
             // Create a Recipie for the new TechType
             var customFabRecipe = new TechData()
@@ -57,7 +57,7 @@
             // Associate the recipie to the new TechType
             CraftDataHandler.SetTechData(NukeFabTechType, customFabRecipe);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseNuclearReactor, new TechType[] { NukeFabTechType });
+            KnownTechHandler.SetAnalysisTechEntry(CyclopsModule.DepletedNuclearModuleID, new TechType[1] { NukeFabTechType }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static void CreateCustomTree(out CraftTree.Type craftType)
