@@ -20,8 +20,9 @@
                 new PowerUpgradeMk2(),
                 new ThermalChargerMk2(),
                 new SolarChargerMk2(),
-                new SolarCharger(),
+                new SolarCharger(false),
             };
+
             IEnumerable<CyclopsModules> cyModsEnum = Enum.GetValues(typeof(CyclopsModules)).Cast<CyclopsModules>();
 
             CyclopsModules first = cyModsEnum.Min();
