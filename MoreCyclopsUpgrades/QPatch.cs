@@ -17,9 +17,7 @@
             {
 
 #endif
-                string mcuFolder = Directory.GetCurrentDirectory();
-                string qmodsFolder = Directory.GetParent(mcuFolder).FullName;
-                bool hasVehicleUpgradesInCyclops = Directory.Exists(qmodsFolder + "/VehicleUpgradesInCyclops");
+                bool hasVehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
 
                 ModulesToPatch = new SortedCyclopsModules(7)
                 {
@@ -32,14 +30,10 @@
                     new DepletedNuclearModule(),
                 };
 
-
-
                 foreach (CyclopsModule module in ModulesToPatch.Values)
                 {
                     module.Patch();
                 }
-
-
 
                 HarmonyInstance harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());

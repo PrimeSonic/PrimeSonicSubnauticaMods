@@ -10,7 +10,6 @@
 
     public class VModFabricatorModule
     {
-
         public static CraftTree.Type VModTreeType { get; private set; }
         public static TechType VModFabTechType { get; private set; }
 
@@ -19,9 +18,6 @@
 
         // The text you'll see in-game when you mouseover over it.
         public const string FriendlyName = "Vehicle Module Fabricator";
-
-        // AssetBundles must only be loaded once
-        private static AssetBundle Assets = AssetBundle.LoadFromFile(@"./QMods/VModFabricator/Assets/vmodfabricator.assets");
 
         public static void Patch()
         {
@@ -55,7 +51,7 @@
             PrefabHandler.RegisterPrefab(new VModFabricatorModulePrefab(CustomFabAndTreeID, VModFabTechType));
 
             // Set the custom sprite for the Habitat Builder Tool menu
-            SpriteHandler.RegisterSprite(VModFabTechType, Assets.LoadAsset<Sprite>("CyFabIcon"));
+            SpriteHandler.RegisterSprite(VModFabTechType, AssetBundle.LoadFromFile(@"./QMods/VModFabricator/Assets/vmodfabricator.assets").LoadAsset<Sprite>("CyFabIcon"));
 
             // Associate the recipie to the new TechType
             CraftDataHandler.SetTechData(VModFabTechType, customFabRecipe);
@@ -84,7 +80,7 @@
             cyclopsPowerTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
             cyclopsPowerTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
             cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil");            
+            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil");
 
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
@@ -134,6 +130,18 @@
                 // Retrieve sub game objects
                 GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
                 GameObject cyclopsFabModel = cyclopsFabPrefab.FindChild("submarine_fabricator_03");
+
+                // Update prefab name
+                cyclopsFabPrefab.name = CustomFabAndTreeID;
+
+                // Add prefab ID
+                var prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
+                prefabId.ClassId = CustomFabAndTreeID;
+                prefabId.name = FriendlyName;
+
+                // Add tech tag
+                var techTag = cyclopsFabPrefab.AddComponent<TechTag>();
+                techTag.type = VModFabTechType;
 
                 // Translate CyclopsFabricator model and light
                 cyclopsFabModel.transform.localPosition = new Vector3(

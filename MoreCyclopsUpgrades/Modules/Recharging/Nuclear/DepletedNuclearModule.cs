@@ -16,9 +16,9 @@
                   "Bring to a specialized fabricator for safe extraction of the depleted reactor rod inside.",
                   CraftTree.Type.Workbench, // TODO Custom fabricator for all that is Cyclops and nuclear
                   new[] { "CyclopsMenu" },
-                  NuclearChargerID)
-        {            
-            
+                  TechType.ReactorRod)
+        {
+
         }
 
         public override CyclopsModules ModuleID => CyclopsModules.DepletedNuclear;
@@ -31,10 +31,10 @@
                                                          "Reload Cyclops Nuclear Module",
                                                          "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod");
 
-            SpriteHandler.RegisterSprite(TechTypeID, SpriteManager.Get(TechType.DepletedReactorRod));
+            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Icons/{DepletedNameID}.png");
             SpriteHandler.RegisterSprite(dummy, $"./QMods/MoreCyclopsUpgrades/Icons/CyclopsNuclearModule.png");
 
-            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
+            CraftDataHandler.SetTechData(dummy, GetRecipe());
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, dummy, "CyclopsMenu");
 
@@ -68,6 +68,10 @@
 
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
+
+
+
+
             DepletedNuclearModuleID = techTypeID;
         }
 
