@@ -25,7 +25,7 @@
             PrefabHandler.RegisterPrefab(new VehiclePowerCorePreFab(TechTypeID, NameID));
             CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.None);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.VehiclePowerUpgradeModule, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe()

@@ -56,7 +56,11 @@
             // Associate the recipie to the new TechType
             CraftDataHandler.SetTechData(VModFabTechType, customFabRecipe);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.ComputerChip, new TechType[1] { VModFabTechType }, $"{FriendlyName} blueprint discovered!");
+            string unlockMessage = $"{FriendlyName} blueprint discovered!";
+            var toUnlock = new TechType[1] { VModFabTechType };
+            KnownTechHandler.SetAnalysisTechEntry(TechType.Workbench, toUnlock, unlockMessage);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, toUnlock, unlockMessage);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.Cyclops, toUnlock, unlockMessage);
         }
 
         private static void CreateCustomTree(out CraftTree.Type craftType)
@@ -111,6 +115,8 @@
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
                                       TechType.VehiclePowerUpgradeModule,
                                       TechType.VehicleStorageModule);
+            commonTab.AddModdedCraftingNode("SpeedModule");
+            commonTab.AddModdedCraftingNode("VehiclePowerCore");
 
             var torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
             torpedoesTab.AddCraftingNode(TechType.WhirlpoolTorpedo,

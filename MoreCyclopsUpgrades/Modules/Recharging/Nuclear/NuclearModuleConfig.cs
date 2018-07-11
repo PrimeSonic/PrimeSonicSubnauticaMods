@@ -3,9 +3,9 @@
     using System;
     using System.IO;
     using System.Text;
-    using System.Threading;
     using Common.EasyMarkup;
     using SMLHelper.V2.Options;
+    using UnityEngine;
 
     internal class NuclearModuleConfig : ModOptions
     {
@@ -37,7 +37,7 @@
 
         }
 
-        public NuclearModuleConfig() : base("Nuclear Module Options")
+        public NuclearModuleConfig() : base("Cyclops Nuclear Module Options")
         {
             base.ToggleChanged += ConservationEnabledChanged;
             base.SliderChanged += EnergyDeficitChanged;
@@ -53,8 +53,8 @@
         /// <exception cref="NotImplementedException"></exception>
         public override void BuildModOptions()
         {
-            base.AddToggleOption(ToggleID, "Conserve Nuclear Module Power", ConserveNuclearModulePower);
-            base.AddSliderOption(SliderID, "Activate Nuclear Module At X Power Deficit", Min, Max, RequiredEnergyDeficit);
+            base.AddToggleOption(ToggleID, "Conserve Power", ConserveNuclearModulePower);
+            base.AddSliderOption(SliderID, "Start At X Power Deficit", Min, Max, RequiredEnergyDeficit);
         }
 
         private void ConservationEnabledChanged(object sender, ToggleChangedEventArgs args)
@@ -62,8 +62,8 @@
             if (args.Id != ToggleID)
                 return;
 
-            ConserveNuclearModulePower = args.Value;
-            UpdateFileInBackground();
+            EmConserve.Value = ConserveNuclearModulePower = args.Value;
+            WriteConfigFile();
         }
 
         private void EnergyDeficitChanged(object sender, SliderChangedEventArgs args)
@@ -71,14 +71,8 @@
             if (args.Id != SliderID)
                 return;
 
-            RequiredEnergyDeficit = args.Value;
-            UpdateFileInBackground();
-        }
-
-        private void UpdateFileInBackground()
-        {
-            Thread bgWriter = new Thread(WriteConfigFile);
-            bgWriter.Start();
+            EmDeficit.Value = RequiredEnergyDeficit = Mathf.Floor(args.Value);
+            WriteConfigFile();
         }
 
         private void WriteConfigFile()
@@ -102,7 +96,7 @@
                 "# The maximum allowed value is '190' #",
                 "# For example: If you set this to 50, nuclear charging will only begin after your Cyclops is below 1150/1200 energy. #",
                 "",
-            }, Encoding.Unicode);
+            }, Encoding.UTF8);
         }
 
         private void LoadFromFile()
@@ -113,7 +107,7 @@
                 return;
             }
 
-            string[] lines = File.ReadAllLines(ConfigFile, Encoding.Unicode);
+            string[] lines = File.ReadAllLines(ConfigFile, Encoding.UTF8);
 
             bool readCorrectly =
                 EmConserve.FromString(lines[0]) &&

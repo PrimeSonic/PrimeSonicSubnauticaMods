@@ -1,10 +1,5 @@
 ﻿namespace Common.EasyMarkup
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using Common.EasyMarkup;
-
     internal class EmYesNo : EmProperty<bool>
     {
         public EmYesNo(string key) : base(key)
@@ -25,7 +20,6 @@
                 case "TRUE":
                 case "True":
                 case "true":
-                case "はい":
                     return true;
                 default:
                     return false;

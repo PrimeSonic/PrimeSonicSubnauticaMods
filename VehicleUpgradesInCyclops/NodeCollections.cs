@@ -11,6 +11,16 @@
             {
                 UpgradeModuleTabs[0].CraftNodes.Add(solarChargerID);
             }
+
+            if (TechTypeHandler.TryGetModdedTechType("SpeedModule", out TechType speedModuleID))
+            {
+                UpgradeModuleTabs[1].CraftNodes.Add(speedModuleID);
+            }
+
+            if (TechTypeHandler.TryGetModdedTechType("VehiclePowerCore", out TechType powerCoreID))
+            {
+                UpgradeModuleTabs[1].CraftNodes.Add(powerCoreID);
+            }
         }
 
         internal static List<ModulesTab> UpgradeModuleTabs = new List<ModulesTab>(5)
@@ -44,7 +54,6 @@
                     TechType.SeamothTorpedoModule,
                     TechType.SeamothSonarModule
                 }),
-
 
             new ModulesTab("ExosuitModules", "Prawn Suit Modules", "SeamothUpgrades_ExosuitModules",
                 new List<TechType>(7)
