@@ -17,7 +17,7 @@
                   "Recharge your Cyclops with the plentiful power of the sun itself.",
                   CraftTree.Type.CyclopsFabricator,
                   tabs,
-                  TechType.BaseUpgradeConsole) // This is to make sure the player has access to vehicle solar charging
+                  TechType.Cyclops) // This is to make sure the player has access to vehicle solar charging
         {
         }
 

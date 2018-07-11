@@ -13,7 +13,7 @@
                   "Improved solar charging and with integrated batteries to store a little extra power for when you can't see the sun.",
                   CraftTree.Type.Workbench,
                   new[] { "CyclopsMenu" },
-                  TechType.CyclopsThermalReactorModule)
+                  CyclopsModule.SolarChargerID)
         {            
         }
 

@@ -5,6 +5,7 @@
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using UnityEngine;
 
     internal class SeaMothMk2
@@ -16,9 +17,11 @@
 
         public static void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
-
-            SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SeamothMk2.png");
+            TechTypeID = TechTypeHandler.AddTechType(NameID,
+                                         FriendlyName,
+                                         Description,
+                                         ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/SeamothMk2.png"),
+                                         false);
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
             CraftDataHandler.SetCraftingTime(TechTypeID, 15f);

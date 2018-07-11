@@ -5,6 +5,7 @@
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using UnityEngine;
 
     internal class SeaMothMk3
@@ -22,12 +23,14 @@
             SeamothHullModule4 = seamothHullModule4;
             SeamothHullModule5 = seamothHullModule5;
 
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
-
-            SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SeamothMk3.png");
+            TechTypeID = TechTypeHandler.AddTechType(NameID,
+                                         FriendlyName,
+                                         Description,
+                                         ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/SeamothMk3.png"),
+                                         false);
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
-            CraftDataHandler.SetCraftingTime(TechTypeID, 20f);
+            CraftDataHandler.SetCraftingTime(TechTypeID, 15f);
             CraftDataHandler.SetTechData(TechTypeID, GetRecipe(seamothHullModule5));
 
             PrefabHandler.RegisterPrefab(new SeaMothMk3Prefab(TechTypeID, NameID));

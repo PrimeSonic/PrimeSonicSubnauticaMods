@@ -14,7 +14,7 @@
             : base(DepletedNameID,
                   "Depleted Cyclops Nuclear Reactor Module",
                   "Bring to a specialized fabricator for safe extraction of the depleted reactor rod inside.",
-                  TechType.ReactorRod)
+                  CyclopsModule.NuclearChargerID)
         {
 
         }
@@ -26,11 +26,11 @@
             TechTypeID = TechTypeHandler.AddTechType(DepletedNameID, FriendlyName, Description, false);
 
             RefillNuclearModuleID = TechTypeHandler.AddTechType("CyclopsNuclearModuleRefil",
-                                                         "Reload Cyclops Nuclear Module",
-                                                         "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod",
-                                                         false);
+                                                                 "Reload Cyclops Nuclear Module",
+                                                                 "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod",
+                                                                 false);
 
-            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/{DepletedNameID}.png");
+            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/DepletedCyclopsNuclearModule.png");
             SpriteHandler.RegisterSprite(RefillNuclearModuleID, $"./QMods/MoreCyclopsUpgrades/Assets/CyclopsNuclearModule.png");
 
             CraftDataHandler.SetTechData(RefillNuclearModuleID, GetRecipe());

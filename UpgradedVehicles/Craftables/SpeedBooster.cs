@@ -4,6 +4,7 @@
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using UnityEngine;
 
     internal class SpeedBooster
@@ -15,9 +16,11 @@
 
         public static void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
-
-            SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/UpgradedVehicles/Assets/SpeedBoost.png");
+            TechTypeID = TechTypeHandler.AddTechType(NameID, 
+                                                     FriendlyName, 
+                                                     Description,
+                                                     ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/SpeedBoost.png"),
+                                                     false);
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
             CraftDataHandler.SetTechData(TechTypeID, GetRecipe());

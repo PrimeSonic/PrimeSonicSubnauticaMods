@@ -13,7 +13,7 @@
                   "Recharge your Cyclops using this portable nuclear reactor. Intelligently provides power only when you need it.",
                   CraftTree.Type.Workbench, // TODO Custom fabricator for all that is Cyclops and nuclear
                   new[] { "CyclopsMenu" },
-                  TechType.ReactorRod)
+                  TechType.BaseNuclearReactor)
         {
         }
 
