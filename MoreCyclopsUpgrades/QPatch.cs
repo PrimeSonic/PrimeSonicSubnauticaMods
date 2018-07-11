@@ -4,11 +4,12 @@
     using System.IO;
     using System.Reflection;
     using Harmony;
+    using SMLHelper.V2.Handlers;
 
-    // QMods by qwiso https://github.com/Qwiso/QModManager
     public class QPatch
     {
         private static SortedCyclopsModules ModulesToPatch;
+        private static NuclearModuleConfig Config;
 
         public static void Patch()
         {
@@ -36,6 +37,10 @@
                 }
 
                 NuclearFabricator.Patch();
+                
+                Config = new NuclearModuleConfig();
+                OptionsPanelHandler.RegisterModOptions(Config);
+                Config.Initialize();
 
                 HarmonyInstance harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());

@@ -10,7 +10,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DeQueue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImgUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollectionList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyListT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyTechType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyTechTypeList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringHelper.cs" />

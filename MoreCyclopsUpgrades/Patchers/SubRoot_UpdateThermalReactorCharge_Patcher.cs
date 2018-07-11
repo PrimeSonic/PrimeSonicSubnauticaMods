@@ -74,7 +74,7 @@
                 }
             }
             
-            if (NuclerCells.Count > 0 && powerDeficit > NuclearChargingManager.MinDeficitForCharge && !renewablePowerAvailable) // no renewable power available
+            if (NuclerCells.Count > 0 && powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit && !renewablePowerAvailable) // no renewable power available
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
                 for (int i = 0; i < NuclerCells.Count; i++)

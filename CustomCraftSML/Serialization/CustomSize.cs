@@ -1,7 +1,7 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
     using System.Collections.Generic;
-    using EasyMarkup;
+    using Common.EasyMarkup;
     using UnityEngine.Assertions;
 
     public class CustomSize : EmPropertyCollection, ICustomSize

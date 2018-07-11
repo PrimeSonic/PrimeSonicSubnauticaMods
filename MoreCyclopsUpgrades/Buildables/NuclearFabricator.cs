@@ -6,6 +6,7 @@
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using UnityEngine;
 
     internal class NuclearFabricator
@@ -121,7 +122,7 @@
                 constructible.techType = NukeFabTechType; // This was necessary to correctly associate the recipe at building time
 
                 // Set the custom texture
-                var customTexture = ImgUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorT.png");
+                var customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorT.png");
                 var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
                 skinnedMeshRenderer.material.mainTexture = customTexture;
 

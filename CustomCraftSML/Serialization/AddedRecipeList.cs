@@ -2,7 +2,7 @@
 {
     using System.Collections;
     using System.Collections.Generic;
-    using EasyMarkup;
+    using Common.EasyMarkup;
 
     public class AddedRecipeList : EmPropertyCollectionList<AddedRecipe>, IEnumerable<AddedRecipe>
     {

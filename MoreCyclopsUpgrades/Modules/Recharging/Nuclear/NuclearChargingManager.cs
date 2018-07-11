@@ -8,8 +8,7 @@
     internal static class NuclearChargingManager
     {
         internal const float BatteryDrainRate = 0.15f;
-        internal const float MaxCharge = 6000f; // Less than the normal 20k for balance
-        internal const float MinDeficitForCharge = 50f;
+        internal const float MaxCharge = 6000f; // Less than the normal 20k for balance        
 
         /// <summary>
         /// Replaces a nuclear battery modules with Depleted Reactor Rods when they fully drained.

@@ -26,7 +26,7 @@
             VModTreeType = craftType;
 
             // Create a new TechType for new fabricator
-            VModFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", false);
+            VModFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your favorite habitat or cyclops.", false);
 
             // Create a Recipie for the new TechType
             var customFabRecipe = new TechData()
@@ -51,7 +51,7 @@
             PrefabHandler.RegisterPrefab(new VModFabricatorModulePrefab(CustomFabAndTreeID, VModFabTechType));
 
             // Set the custom sprite for the Habitat Builder Tool menu
-            SpriteHandler.RegisterSprite(VModFabTechType, AssetBundle.LoadFromFile(@"./QMods/VModFabricator/Assets/vmodfabricator.assets").LoadAsset<Sprite>("CyFabIcon"));
+            SpriteHandler.RegisterSprite(VModFabTechType, @"./QMods/VModFabricator/Assets/VModFabIcon.png");
 
             // Associate the recipie to the new TechType
             CraftDataHandler.SetTechData(VModFabTechType, customFabRecipe);

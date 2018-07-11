@@ -5,7 +5,7 @@
     using System.Text;
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
-    using CustomCraft2SML.Serialization.EasyMarkup;
+    using Common.EasyMarkup;
 
     public class QPatch
     {

@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML.Serialization.EasyMarkup
+﻿namespace Common.EasyMarkup
 {
     using System;
 
@@ -12,7 +12,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Log($"Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}" +
+                Console.WriteLine($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}" +
                            $"Error reported: {ex}");
                 return false;
             }
