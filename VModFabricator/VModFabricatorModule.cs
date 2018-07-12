@@ -83,12 +83,13 @@
             cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule); // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk2");
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk3");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarCharger");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
-            cyclopsPowerTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
-            //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil");
+            var cyclopsRechargTab = cyclopsTab.AddTabNode("CyclopsRechargeTab", "Recharge Modules", SpriteManager.Get(TechType.SeamothSolarCharge));
+            cyclopsRechargTab.AddModdedCraftingNode("CyclopsSolarCharger");
+            cyclopsRechargTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
+            cyclopsRechargTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
+            cyclopsRechargTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
+            cyclopsRechargTab.AddModdedCraftingNode("CyclopsNuclearModule");
+            //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil"); // Only in the nuclear fabricator
 
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));

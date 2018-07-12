@@ -13,7 +13,7 @@
                   "Maximum engine efficiency. Silent running, Sonar, and Shield greatly optimized. Does not stack.",
                   CraftTree.Type.Workbench,
                   new[] { "CyclopsMenu" },
-                  CyclopsModule.PowerUpgradeMk2ID)
+                  TechType.Workbench)
         {
         }
 

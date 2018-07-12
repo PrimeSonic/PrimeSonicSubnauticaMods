@@ -13,7 +13,7 @@
                   "Additional enhancement to engine efficiency. Silent running, Sonar, and Shield optimized. Does not stack.",
                   CraftTree.Type.Workbench,
                   new[] { "CyclopsMenu" },
-                  TechType.PowerUpgradeModule)
+                  TechType.Workbench)
         {
 
         }

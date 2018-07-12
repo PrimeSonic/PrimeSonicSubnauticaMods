@@ -15,7 +15,7 @@
                   "Improved thermal charging and with integrated batteries to store a little extra power for when it get cold.",
                   CraftTree.Type.Workbench,
                   new[] { "CyclopsMenu" },
-                  TechType.CyclopsThermalReactorModule)
+                  TechType.Workbench)
         {
         }
 
