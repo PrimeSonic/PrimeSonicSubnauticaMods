@@ -1,71 +1,69 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Assets;
     using UnityEngine;
-    using Object = UnityEngine.Object;
 
-    public class NuclearCharger
+    internal class NuclearCharger : CyclopsModule
     {
-        public static TechType CyNukBatteryType { get; private set; }
-        public const string NameId = "CyclopsNuclearModule";
-        public const string FriendlyName = "Cyclops Nuclear Reactor Module";
-        public const string Description = "Recharge your Cyclops using this portable nuclear reactor. Intelligently provides power only when you need it.";
-
-        public static void Patch(AssetBundle assetBundle)
+        internal NuclearCharger()
+            : base("CyclopsNuclearModule",
+                  "Cyclops Nuclear Reactor Module",
+                  "Recharge your Cyclops using this portable nuclear reactor. Intelligently provides power only when you need it.",
+                  CraftTree.Type.Workbench, // TODO Custom fabricator for all that is Cyclops and nuclear
+                  new[] { "CyclopsMenu" },
+                  TechType.BaseNuclearReactor)
         {
-            // Create a new TechType
-            CyNukBatteryType = TechTypePatcher.AddTechType(NameId, FriendlyName, Description, unlockOnGameStart: true);
-
-            // Create the in-game item that will behave like any other Cyclops upgrade module
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameId, $"WorldEntities/Tools/{NameId}", CyNukBatteryType, GetGameObject));
-
-            // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(CyNukBatteryType, assetBundle.LoadAsset<Sprite>("CyNukIcon")));
-
-            // Add the new recipe to the Modification Station crafting tree
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(CyNukBatteryType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameId}"));
-
-            // Pair the new recipie with the new TechType
-            CraftDataPatcher.customTechData[CyNukBatteryType] = GetRecipe();
-
-            // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
-            CraftDataPatcher.customEquipmentTypes[CyNukBatteryType] = EquipmentType.CyclopsModule;
         }
 
-        private static TechDataHelper GetRecipe()
+        public override CyclopsModules ModuleID => CyclopsModules.Nuclear;
+
+        protected override ModPrefab GetPrefab()
         {
-            return new TechDataHelper()
+            return new NuclearChargerPreFab(NameID, TechTypeID);
+        }
+
+        protected override TechData GetRecipe()
+        {
+            return new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[5]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[5]
                              {
-                                 new IngredientHelper(TechType.ReactorRod, 1), // This is to validate that the player has access to nuclear power already
-                                 new IngredientHelper(TechType.Benzene, 1), // And this is the validate that they've gone a little further down
-                                 new IngredientHelper(TechType.Lead, 2), // Extra insulation
-                                 new IngredientHelper(TechType.AdvancedWiringKit, 1), // All the smarts
-                                 new IngredientHelper(TechType.PlasteelIngot, 1) // Housing
-                             }),
-                _techType = CyNukBatteryType
+                                 new Ingredient(TechType.ReactorRod, 1), // This is to validate that the player has access to nuclear power already
+                                 new Ingredient(TechType.Benzene, 1), // And this is the validate that they've gone a little further down
+                                 new Ingredient(TechType.Lead, 2), // Extra insulation
+                                 new Ingredient(TechType.AdvancedWiringKit, 1), // All the smarts
+                                 new Ingredient(TechType.PlasteelIngot, 1) // Housing
+                             })
             };
         }
 
-        private static GameObject GetGameObject()
+        protected override void SetStaticTechTypeID(TechType techTypeID)
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/CyclopsThermalReactorModule");
-            GameObject obj = Object.Instantiate(prefab);
+            NuclearChargerID = techTypeID;
+        }
 
-            obj.GetComponent<PrefabIdentifier>().ClassId = NameId;
-            obj.GetComponent<TechTag>().type = CyNukBatteryType;
+        internal class NuclearChargerPreFab : ModPrefab
+        {
+            internal NuclearChargerPreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
+            {
+            }
 
-            // The battery component makes it easy to track the charge and saving the data is automatic.
-            var pCell = obj.AddComponent<Battery>();
-            pCell.name = FriendlyName;
-            pCell._capacity = NuclearChargingManager.MaxCharge;
-            pCell._charge = NuclearChargingManager.MaxCharge;
+            public override GameObject GetGameObject()
+            {
+                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+                GameObject obj = GameObject.Instantiate(prefab);
 
-            return obj;
+                // The battery component makes it easy to track the charge and saving the data is automatic.
+                var pCell = obj.AddComponent<Battery>();
+                pCell.name = "NuclearBattery";
+                pCell._capacity = NuclearChargingManager.MaxCharge;
+                pCell._charge = NuclearChargingManager.MaxCharge;
+
+                return obj;
+            }
         }
     }
 }

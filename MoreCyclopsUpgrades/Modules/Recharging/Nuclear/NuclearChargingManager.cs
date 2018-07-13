@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using UnityEngine;
-    using Object = UnityEngine.Object;
 
     /// <summary>
     /// This class handles keeping track of the nuclear batteries.
@@ -9,7 +8,7 @@
     internal static class NuclearChargingManager
     {
         internal const float BatteryDrainRate = 0.15f;
-        internal const float MaxCharge = 6000f; // Less than the normal 20k for balance
+        internal const float MaxCharge = 6000f; // Less than the normal 20k for balance        
 
         /// <summary>
         /// Replaces a nuclear battery modules with Depleted Reactor Rods when they fully drained.
@@ -20,14 +19,18 @@
             {
                 InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
                 Object.Destroy(inventoryItem.item.gameObject);
-                modules.AddItem(slotName, SpawnDepletedRod(), true);
+                modules.AddItem(slotName, SpawnDepletedModule(), true);
             }
         }
-
-        private static InventoryItem SpawnDepletedRod()
+ 
+        private static InventoryItem SpawnDepletedModule()
         {
-            GameObject prefabForTechType = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod, true);
-            GameObject gameObject = Object.Instantiate(prefabForTechType);
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
+            GameObject gameObject = GameObject.Instantiate(prefab);
+
+            gameObject.GetComponent<PrefabIdentifier>().ClassId = DepletedNuclearModule.DepletedNameID;
+            gameObject.AddComponent<TechTag>().type = CyclopsModule.DepletedNuclearModuleID;
+
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
         }

@@ -76,12 +76,12 @@
                 powerIndex = 1;
             }
 
-            if (modules.GetCount(PowerUpgradeMk2.Power2TechType) > 0)
+            if (modules.GetCount(CyclopsModule.PowerUpgradeMk2ID) > 0)
             {
                 powerIndex = 2;
             }
 
-            if (modules.GetCount(PowerUpgradeMk3.Power3TechType) > 0)
+            if (modules.GetCount(CyclopsModule.PowerUpgradeMk3ID) > 0)
             {
                 powerIndex = 3;
             }

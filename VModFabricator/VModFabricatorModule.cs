@@ -3,15 +3,14 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
-    using SMLHelper;
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Assets;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using UnityEngine;
 
     public class VModFabricatorModule
     {
-        // This will contain the original prefab of CyclopsFabricator.
-        public static GameObject originalCyclopsFabricatorPrefab = null;
-
         public static CraftTree.Type VModTreeType { get; private set; }
         public static TechType VModFabTechType { get; private set; }
 
@@ -21,54 +20,54 @@
         // The text you'll see in-game when you mouseover over it.
         public const string FriendlyName = "Vehicle Module Fabricator";
 
-        // AssetBundles must only be loaded once
-        private static AssetBundle Assets = AssetBundle.LoadFromFile(@"./QMods/VModFabricator/Assets/vmodfabricator.assets");
-
         public static void Patch()
         {
-            // Retrieve original CyclopsFabricator prefab. This must be done once (not everytime we call GetPrefab).
-            originalCyclopsFabricatorPrefab = Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator");
-
             // Create new Craft Tree Type
-            CustomCraftTreeRoot customTreeRootNode = CreateCustomTree(out CraftTree.Type craftType);
+            CreateCustomTree(out CraftTree.Type craftType);
             VModTreeType = craftType;
 
             // Create a new TechType for new fabricator
-            VModFabTechType = TechTypePatcher.AddTechType(CustomFabAndTreeID, FriendlyName, "Construct vehicle upgrade modules from the comfort of your own habitat or cyclops.", true);
+            VModFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, 
+                                                          FriendlyName, 
+                                                          "Construct vehicle upgrade modules from the comfort of your favorite habitat or cyclops.",
+                                                          ImageUtils.LoadSpriteFromFile(@"./QMods/VModFabricator/Assets/VModFabIcon.png"),
+                                                          false);
 
             // Create a Recipie for the new TechType
-            var customFabRecipe = new TechDataHelper()
+            var customFabRecipe = new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[4]
                              {
-                                 new IngredientHelper(TechType.Titanium, 2),
-                                 new IngredientHelper(TechType.ComputerChip, 1),
-                                 new IngredientHelper(TechType.Diamond, 1),
-                                 new IngredientHelper(TechType.Lead, 1),
-                             }),
-                _techType = VModFabTechType
+                                 new Ingredient(TechType.Titanium, 2),
+                                 new Ingredient(TechType.ComputerChip, 1),
+                                 new Ingredient(TechType.Diamond, 1),
+                                 new Ingredient(TechType.Lead, 1),
+                             })
             };
 
             // Add the new TechType to the buildables
-            CraftDataPatcher.customBuildables.Add(VModFabTechType);
+            CraftDataHandler.AddBuildable(VModFabTechType);
 
             // Add the new TechType to the group of Interior Module buildables
-            CraftDataPatcher.AddToCustomGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, VModFabTechType);
+            CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, VModFabTechType);
 
             // Set the buildable prefab
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(CustomFabAndTreeID, $"Submarine/Build/{CustomFabAndTreeID}", VModFabTechType, GetPrefab));
-
-            // Set the custom sprite for the Habitat Builder Tool menu
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(VModFabTechType, Assets.LoadAsset<Sprite>("CyFabIcon")));
+            PrefabHandler.RegisterPrefab(new VModFabricatorModulePrefab(CustomFabAndTreeID, VModFabTechType));
 
             // Associate the recipie to the new TechType
-            CraftDataPatcher.customTechData[VModFabTechType] = customFabRecipe;
+            CraftDataHandler.SetTechData(VModFabTechType, customFabRecipe);
+
+            string unlockMessage = $"{FriendlyName} blueprint discovered!";
+            var toUnlock = new TechType[1] { VModFabTechType };
+            KnownTechHandler.SetAnalysisTechEntry(TechType.Workbench, toUnlock, unlockMessage);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, toUnlock, unlockMessage);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.Cyclops, toUnlock, unlockMessage);
         }
 
-        private static CustomCraftTreeRoot CreateCustomTree(out CraftTree.Type craftType)
+        private static void CreateCustomTree(out CraftTree.Type craftType)
         {
-            var rootNode = CraftTreeTypePatcher.CreateCustomCraftTreeAndType(CustomFabAndTreeID, out craftType);
+            ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(CustomFabAndTreeID, out craftType);
 
             var cyclopsTab = rootNode.AddTabNode("CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"));
             cyclopsTab.AddCraftingNode(TechType.CyclopsShieldModule,
@@ -81,15 +80,16 @@
                                             TechType.CyclopsHullModule2,
                                             TechType.CyclopsHullModule3);
             var cyclopsPowerTab = cyclopsTab.AddTabNode("CyclopsPowerModules", "Power Modules", SpriteManager.Get(TechType.PowerUpgradeModule));
-            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule);
-            // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
+            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule); // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk2");
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk3");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarCharger");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModule");
-            cyclopsPowerTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
-            cyclopsPowerTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
+            var cyclopsRechargTab = cyclopsTab.AddTabNode("CyclopsRechargeTab", "Recharge Modules", SpriteManager.Get(TechType.SeamothSolarCharge));
+            cyclopsRechargTab.AddModdedCraftingNode("CyclopsSolarCharger");
+            cyclopsRechargTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
+            cyclopsRechargTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
+            cyclopsRechargTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
+            cyclopsRechargTab.AddModdedCraftingNode("CyclopsNuclearModule");
+            //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil"); // Only in the nuclear fabricator
 
             var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
@@ -118,74 +118,82 @@
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
                                       TechType.VehiclePowerUpgradeModule,
                                       TechType.VehicleStorageModule);
+            commonTab.AddModdedCraftingNode("SpeedModule");
+            commonTab.AddModdedCraftingNode("VehiclePowerCore");
 
             var torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
             torpedoesTab.AddCraftingNode(TechType.WhirlpoolTorpedo,
-                                         TechType.GasTorpedo);
-            return rootNode;
+                                         TechType.GasTorpedo);           
         }
 
-        public static GameObject GetPrefab()
+        internal class VModFabricatorModulePrefab : ModPrefab
         {
-            // Instantiate CyclopsFabricator object
-            GameObject cyclopsFabPrefab = GameObject.Instantiate(originalCyclopsFabricatorPrefab);
+            internal VModFabricatorModulePrefab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
+            {
+            }
 
-            // Retrieve sub game objects
-            GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
-            GameObject cyclopsFabModel = cyclopsFabPrefab.FindChild("submarine_fabricator_03");
+            public override GameObject GetGameObject()
+            {
+                // Instantiate CyclopsFabricator object
+                GameObject cyclopsFabPrefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
 
-            // Update prefab name
-            cyclopsFabPrefab.name = CustomFabAndTreeID;
+                // Retrieve sub game objects
+                GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
+                GameObject cyclopsFabModel = cyclopsFabPrefab.FindChild("submarine_fabricator_03");
 
-            // Add prefab ID
-            var prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
-            prefabId.ClassId = CustomFabAndTreeID;
-            prefabId.name = FriendlyName;
+                // Update prefab name
+                cyclopsFabPrefab.name = CustomFabAndTreeID;
 
-            // Add tech tag
-            var techTag = cyclopsFabPrefab.AddComponent<TechTag>();
-            techTag.type = VModFabTechType;
+                // Add prefab ID
+                var prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
+                prefabId.ClassId = CustomFabAndTreeID;
+                prefabId.name = FriendlyName;
 
-            // Translate CyclopsFabricator model and light
-            cyclopsFabModel.transform.localPosition = new Vector3(
-                                                        cyclopsFabModel.transform.localPosition.x, // Same X position
-                                                        cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
-                                                        cyclopsFabModel.transform.localPosition.z); // Same Z position
-            cyclopsFabLight.transform.localPosition = new Vector3(
-                                                        cyclopsFabLight.transform.localPosition.x, // Same X position
-                                                        cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
-                                                        cyclopsFabLight.transform.localPosition.z); // Same Z position
+                // Add tech tag
+                var techTag = cyclopsFabPrefab.AddComponent<TechTag>();
+                techTag.type = VModFabTechType;
 
-            // Update sky applier
-            var skyApplier = cyclopsFabPrefab.GetComponent<SkyApplier>();
-            skyApplier.renderers = cyclopsFabPrefab.GetComponentsInChildren<Renderer>();
-            skyApplier.anchorSky = Skies.Auto;
+                // Translate CyclopsFabricator model and light
+                cyclopsFabModel.transform.localPosition = new Vector3(
+                                                            cyclopsFabModel.transform.localPosition.x, // Same X position
+                                                            cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                            cyclopsFabModel.transform.localPosition.z); // Same Z position
+                cyclopsFabLight.transform.localPosition = new Vector3(
+                                                            cyclopsFabLight.transform.localPosition.x, // Same X position
+                                                            cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                            cyclopsFabLight.transform.localPosition.z); // Same Z position
 
-            // Associate custom craft tree to the fabricator
-            var fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
-            fabricator.craftTree = VModTreeType;
+                // Update sky applier
+                var skyApplier = cyclopsFabPrefab.GetComponent<SkyApplier>();
+                skyApplier.renderers = cyclopsFabPrefab.GetComponentsInChildren<Renderer>();
+                skyApplier.anchorSky = Skies.Auto;
 
-            // Associate power relay
-            var ghost = fabricator.GetComponent<GhostCrafter>();
-            var powerRelay = new PowerRelay();            
+                // Associate custom craft tree to the fabricator
+                var fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
+                fabricator.craftTree = VModTreeType;
 
-            fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
+                // Associate power relay
+                var ghost = fabricator.GetComponent<GhostCrafter>();
+                var powerRelay = new PowerRelay();
 
-            // Add constructable
-            var constructible = cyclopsFabPrefab.AddComponent<Constructable>();
-            constructible.allowedInBase = true;
-            constructible.allowedInSub = true;
-            constructible.allowedOutside = false;
-            constructible.allowedOnCeiling = false;
-            constructible.allowedOnGround = false;
-            constructible.allowedOnWall = true;
-            constructible.allowedOnConstructables = false;
-            constructible.controlModelState = true;
-            constructible.rotationEnabled = false;
-            constructible.techType = VModFabTechType; // This was necessary to correctly associate the recipe at building time
-            constructible.model = cyclopsFabModel;
+                fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
 
-            return cyclopsFabPrefab;
+                // Add constructable
+                var constructible = cyclopsFabPrefab.AddComponent<Constructable>();
+                constructible.allowedInBase = true;
+                constructible.allowedInSub = true;
+                constructible.allowedOutside = false;
+                constructible.allowedOnCeiling = false;
+                constructible.allowedOnGround = false;
+                constructible.allowedOnWall = true;
+                constructible.allowedOnConstructables = false;
+                constructible.controlModelState = true;
+                constructible.rotationEnabled = false;
+                constructible.techType = VModFabTechType; // This was necessary to correctly associate the recipe at building time
+                constructible.model = cyclopsFabModel;
+
+                return cyclopsFabPrefab;
+            }
         }
     }
 }

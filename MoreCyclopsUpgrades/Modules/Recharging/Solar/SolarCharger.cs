@@ -1,65 +1,69 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using SMLHelper; // by ahk1221 https://github.com/ahk1221/SMLHelper/
-    using SMLHelper.Patchers;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Assets;
     using UnityEngine;
-    using Object = UnityEngine.Object;
 
-    public class SolarCharger
+    internal class SolarCharger : CyclopsModule
     {
-        public static TechType CySolarChargerTechType { get; private set; }
-
-        public const string NameID = "CyclopsSolarCharger";
-        public const string FriendlyName = "Cyclops Solar Charger";
-        public const string Description = "Recharge your Cyclops with the power of the sun itself.";
-
-        public static void Patch(AssetBundle assetBundle)
+        internal SolarCharger(bool fabModPresent) : this(fabModPresent ? null : new[] { "CyclopsMenu" })
         {
-            // Create a new TechType
-            CySolarChargerTechType = TechTypePatcher.AddTechType(NameID, FriendlyName, Description, unlockOnGameStart: true);
-
-            // Create the in-game item that will behave like any other Cyclops upgrade module
-            CustomPrefabHandler.customPrefabs.Add(new CustomPrefab(NameID, $"WorldEntities/Tools/{NameID}", CySolarChargerTechType, GetSolarChargerObject));
-
-            // Get the custom icon from the Unity assets bundle
-            CustomSpriteHandler.customSprites.Add(new CustomSprite(CySolarChargerTechType, assetBundle.LoadAsset<Sprite>("CySolarIcon")));
-
-            // Add the new recipe to the Modification Station crafting tree
-            CraftTreePatcher.customNodes.Add(new CustomCraftNode(CySolarChargerTechType, CraftTree.Type.Workbench, $"CyclopsMenu/{NameID}"));
-
-            // Create a new Recipie and pair the new recipie with the new TechType
-            CraftDataPatcher.customTechData[CySolarChargerTechType] = GetRecipe();
-
-            // Ensure that the new in-game item is classified as a Cyclops upgrade module. Otherwise you can't equip it.
-            CraftDataPatcher.customEquipmentTypes[CySolarChargerTechType] = EquipmentType.CyclopsModule;
         }
 
-        private static TechDataHelper GetRecipe()
+        private SolarCharger(string[] tabs)
+            : base("CyclopsSolarCharger",
+                  "Cyclops Solar Charger",
+                  "Recharge your Cyclops with the plentiful power of the sun itself.",
+                  CraftTree.Type.CyclopsFabricator,
+                  tabs,
+                  TechType.Cyclops) // This is to make sure the player has access to vehicle solar charging
         {
-            return new TechDataHelper()
+        }
+
+        public override CyclopsModules ModuleID => CyclopsModules.Solar;
+
+        protected override ModPrefab GetPrefab()
+        {
+            return new SolarChargerPreFab(NameID, TechTypeID);
+        }
+
+        protected override TechData GetRecipe()
+        {
+            return new TechData()
             {
-                _craftAmount = 1,
-                _ingredients = new List<IngredientHelper>(new IngredientHelper[4]
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>(new Ingredient[4]
                              {
-                                 new IngredientHelper(TechType.SeamothSolarCharge, 1), // This is to make sure the player has access to vehicle solar charging
-                                 new IngredientHelper(TechType.Quartz, 3),
-                                 new IngredientHelper(TechType.Titanium, 3),
-                                 new IngredientHelper(TechType.CopperWire, 1),
-                             }),
-                _techType = CySolarChargerTechType
+                                 new Ingredient(TechType.AdvancedWiringKit, 1),
+                                 new Ingredient(TechType.EnameledGlass, 1),
+                                 new Ingredient(TechType.Quartz, 2),
+                                 new Ingredient(TechType.Titanium, 2)
+                             })
             };
         }
 
-        public static GameObject GetSolarChargerObject()
+
+        protected override void SetStaticTechTypeID(TechType techTypeID)
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/CyclopsThermalReactorModule");
-            GameObject obj = Object.Instantiate(prefab);
-
-            obj.GetComponent<PrefabIdentifier>().ClassId = NameID;
-            obj.GetComponent<TechTag>().type = CySolarChargerTechType;
-
-            return obj;
+            SolarChargerID = techTypeID;
         }
+
+        internal class SolarChargerPreFab : ModPrefab
+        {
+            internal SolarChargerPreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
+            {
+            }
+
+            public override GameObject GetGameObject()
+            {
+                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+                GameObject obj = GameObject.Instantiate(prefab);
+
+                return obj;
+            }
+        }
+
     }
+
 }

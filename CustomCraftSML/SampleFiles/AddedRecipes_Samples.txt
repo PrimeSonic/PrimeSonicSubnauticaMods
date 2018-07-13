@@ -1,0 +1,15 @@
+﻿# This is a sample file for adding new crafting recipes for in-game items #
+# Remember that this is only intended for use with items that already exist in the base game #
+# This won't work with modded items #
+
+# You can use this file as a starting point. There text here is ready to use. #
+
+AddedRecipes:
+(
+    ItemID:DepletedReactorRod; # Just an example of adding new recipes for things that normally aren't crafted #
+    AmountCrafted: 1;
+    Ingredients:
+        ( ItemID:ReactorRod; Required:1; );
+    LinkedItemIDs:UraniniteCrystal,UraniniteCrystal,UraniniteCrystal; # Linked items are created along side the crafted item #
+    Path:Fabricator/Resources/Electronics;
+);

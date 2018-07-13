@@ -1,28 +1,46 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System;
+    using System.IO;
     using System.Reflection;
     using Harmony;
-    using UnityEngine;
+    using SMLHelper.V2.Handlers;
 
-    // QMods by qwiso https://github.com/Qwiso/QModManager
     public class QPatch
     {
+        private static SortedCyclopsModules ModulesToPatch;
+        private static NuclearModuleConfig Config;
+
         public static void Patch()
         {
 #if DEBUG
             try
             {
-#endif
-                // Asset Bundles don't like being loaded more than once. So we load it only once and pass it around.
-                var assetBundle = AssetBundle.LoadFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/morecyclopsupgrades.assets");
 
-                SolarCharger.Patch(assetBundle);
-                SolarChargerMk2.Patch(assetBundle);
-                ThermalChargerMk2.Patch(assetBundle);
-                NuclearCharger.Patch(assetBundle);
-                PowerUpgradeMk2.Patch(assetBundle);
-                PowerUpgradeMk3.Patch(assetBundle);
+#endif
+                bool hasVehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
+
+                ModulesToPatch = new SortedCyclopsModules(7)
+                {
+                    new SolarCharger(hasVehicleUpgradesInCyclops),
+                    new SolarChargerMk2(),
+                    new ThermalChargerMk2(),
+                    new PowerUpgradeMk2(),
+                    new PowerUpgradeMk3(),
+                    new NuclearCharger(),
+                    new DepletedNuclearModule(),
+                };
+
+                foreach (CyclopsModule module in ModulesToPatch.Values)
+                {
+                    module.Patch();
+                }
+
+                NuclearFabricator.Patch();
+                
+                Config = new NuclearModuleConfig();
+                OptionsPanelHandler.RegisterModOptions(Config);
+                Config.Initialize();
 
                 HarmonyInstance harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());

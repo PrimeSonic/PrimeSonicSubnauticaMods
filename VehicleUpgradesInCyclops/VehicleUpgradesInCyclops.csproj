@@ -43,9 +43,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CraftingNodeLists.cs" />
+    <Compile Include="NodeCollections.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
+    <Compile Include="ModulesTab.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json">
@@ -54,6 +55,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetPath)" "D:\SteamApps\steamapps\common\Subnautica\QMods\VehicleUpgradesInCyclops\" /Y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

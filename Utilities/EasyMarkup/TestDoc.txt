@@ -1,0 +1,31 @@
+ComplexList:
+(
+    Itm:Val1;
+    Qty:1;
+    NestedComplexList:
+        (
+            Itm:Val1;
+            Qty:Val2;
+        ),
+        (
+            Itm:Val3;
+            Qty:Val4;
+        );
+    SimpleList:Val1,Val2,Val3;
+);
+
+ComplexList:
+(
+    Itm:Val1
+    Qty:1
+    NestedComplexList:
+        (
+            Itm:Val1
+            Qty:Val2
+        ),
+        (
+            Itm:Val3
+            Qty:Val4
+        )
+    SimpleList:Val1,Val2,Val3;
+)

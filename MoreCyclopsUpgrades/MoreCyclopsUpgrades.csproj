@@ -39,11 +39,9 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="SMLHelper">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+    <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SMLHelper\SMLHelper\bin\Debug\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
@@ -55,11 +53,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buildables\NuclearFabricator.cs" />
+    <Compile Include="Modules\CyclopsModule.cs" />
+    <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearChargingManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerIndexManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
+    <Compile Include="Modules\Recharging\Nuclear\NuclearModuleConfig.cs" />
     <Compile Include="Modules\Recharging\PowerCharging.cs" />
     <Compile Include="Modules\SlotHelper.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
@@ -67,6 +69,7 @@
     <Compile Include="Modules\Recharging\Solar\SolarChargingManager.cs" />
     <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
     <Compile Include="Modules\Recharging\Thermal\ThermalChargingManager.cs" />
+    <Compile Include="Modules\SortedCyclopsModules.cs" />
     <Compile Include="Patchers\CyclopsHelmHUDManager_Update_Patcher.cs" />
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_UpdatePowerRating_Patcher.cs" />
@@ -75,20 +78,35 @@
     <Compile Include="QPatch.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\CyNukIcon.png" />
-    <Content Include="Assets\CyPowerMk2.png" />
-    <Content Include="Assets\CyPowerMk3.png" />
-    <Content Include="Assets\CySolarIcon.png" />
-    <Content Include="Assets\CySolarIconMk2.png" />
-    <Content Include="Assets\ThermalMk2.png" />
+    <Content Include="Assets\CyclopsNuclearModule.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\DepletedCyclopsNuclearModule.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\NuclearFabricatorI.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\NuclearFabricatorT.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\PowerUpgradeModuleMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\PowerUpgradeModuleMk3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CyclopsSolarCharger.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CyclopsSolarChargerMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CyclopsThermalChargerMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\morecyclopsupgrades.assets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Assets\morecyclopsupgrades.manifest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

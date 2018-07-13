@@ -5,21 +5,21 @@
 
     internal static class PowerCharging
     {
-        private const float Mk2ChargeRateModifier = 1.15f;
-        internal const float NoCharge = 0f;
+        private const float Mk2ChargeRateModifier = 1.15f;        
         internal const float MaxMk2Charge = 100f;
+        private const float ZeroCharge = 0f;
 
         internal static int GetTotalReservePower(Equipment modules)
         {
-            float availableReservePower = 0f;
+            float availableReservePower = ZeroCharge;
 
             foreach (string slotName in SlotHelper.SlotNames)
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
 
-                if (techTypeInSlot == SolarChargerMk2.SolarMk2TechType ||
-                    techTypeInSlot == ThermalChargerMk2.ThermalMk2TechType ||
-                    techTypeInSlot == NuclearCharger.CyNukBatteryType)
+                if (techTypeInSlot == CyclopsModule.SolarChargerMk2ID ||
+                    techTypeInSlot == CyclopsModule.ThermalChargerMk2ID ||
+                    techTypeInSlot == CyclopsModule.NuclearChargerID)
                 {
                     Battery battery = GetBatteryInSlot(modules, slotName);
                     availableReservePower += battery.charge;
@@ -44,10 +44,10 @@
 
         internal static void ChargeCyclopsFromBattery(ref SubRoot cyclops, Battery batteryInSlot, float drainingRate, ref float powerDeficit)
         {
-            if (powerDeficit <= 0f) // No power deficit left to charge
+            if (Mathf.Approximately(powerDeficit, ZeroCharge)) // No power deficit left to charge
                 return; // Exit
 
-            if (batteryInSlot.charge <= NoCharge) // The battery has no charge left
+            if (Mathf.Approximately(batteryInSlot.charge, ZeroCharge)) // The battery has no charge left
                 return; // Skip this battery
 
             // Mathf.Min is to prevent accidentally taking too much power from the battery
@@ -60,7 +60,7 @@
             else // Battery about to be fully drained
             {
                 chargeAmt = batteryInSlot.charge; // Take what's left
-                batteryInSlot.charge = NoCharge; // Set battery to empty                
+                batteryInSlot.charge = ZeroCharge; // Set battery to empty                
             }
 
             powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
@@ -70,24 +70,24 @@
 
         internal static float ChargeFromModule(ref SubRoot cyclops, float chargeAmount, ref float powerDeficit)
         {
-            if (powerDeficit <= 0f)
+            if (Mathf.Approximately(powerDeficit, ZeroCharge))
                 return chargeAmount; // Surplus power
 
-            if (chargeAmount <= 0f)
-                return 0f;
+            if (Mathf.Approximately(chargeAmount, ZeroCharge))
+                return ZeroCharge;
 
             cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
-            powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
+            powerDeficit = Mathf.Max(ZeroCharge, powerDeficit - chargeAmount);
 
-            return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
+            return Mathf.Max(ZeroCharge, chargeAmount - powerDeficit); // Surplus power
         }
 
         internal static float ChargeFromModulelMk2(ref SubRoot cyclops, Battery batteryInSlot, float chargeAmount, float batteryDrainRate, ref float powerDeficit)
         {
-            if (chargeAmount <= 0f)
+            if (Mathf.Approximately(chargeAmount, ZeroCharge))
             {
                 ChargeCyclopsFromBattery(ref cyclops, batteryInSlot, batteryDrainRate, ref powerDeficit);
-                return 0f;
+                return ZeroCharge;
             }
             else
             {
@@ -100,11 +100,11 @@
             chargeAmount *= Mk2ChargeRateModifier;
 
             cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
-            powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
+            powerDeficit = Mathf.Max(ZeroCharge, powerDeficit - chargeAmount);
 
             batteryInSlot.charge = Mathf.Min(batteryInSlot.capacity, batteryInSlot.charge + chargeAmount);
 
-            return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
+            return Mathf.Max(ZeroCharge, chargeAmount - powerDeficit); // Surplus power
         }
     }
 }
