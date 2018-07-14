@@ -50,28 +50,4 @@
 
     }
 
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("vehicleDefaultColors", PropertyMethod.Getter)]
-    internal class SeaMoth_vehicleDefaultColors_Patcher
-    {
-        [HarmonyPrefix]
-        internal static bool Prefix(ref SeaMoth __instance, ref Vector3[] __result)
-        {
-            TechType seamothType = __instance.GetComponent<TechTag>().type;
-
-            bool isUpgradedSeamoth = 
-                seamothType == SeaMothMk2.TechTypeID ||
-                seamothType == SeaMothMk3.TechTypeID;
-
-            if (isUpgradedSeamoth)
-            {
-                __result = VehicleUpgrader.UpgradedVehicleColors;
-                return false;
-            }
-
-            return true;
-        }
-
-    }
-
 }

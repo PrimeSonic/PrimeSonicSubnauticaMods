@@ -45,24 +45,4 @@
 
     }
 
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("vehicleDefaultColors", PropertyMethod.Getter)]
-    internal class Exosuit_vehicleDefaultColors_Patcher
-    {
-        [HarmonyPrefix]
-        internal static bool Prefix(ref Exosuit __instance, ref Vector3[] __result)
-        {
-            bool isUpgradedSeamoth = __instance.GetComponent<TechTag>().type == ExosuitMk2.TechTypeID;
-
-            if (isUpgradedSeamoth)
-            {
-                __result = VehicleUpgrader.UpgradedVehicleColors;
-                return false;
-            }
-
-            return true;
-        }
-
-    }
-
 }

@@ -20,6 +20,8 @@
         // The text you'll see in-game when you mouseover over it.
         public const string FriendlyName = "Vehicle Module Fabricator";
 
+        public const string HandOverText = "UseVModFabricator";
+
         public static void Patch()
         {
             // Create new Craft Tree Type
@@ -51,6 +53,8 @@
 
             // Add the new TechType to the group of Interior Module buildables
             CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, VModFabTechType);
+
+            LanguageHandler.SetLanguageLine(HandOverText, "Use Vehicle Module Fabricator");
 
             // Set the buildable prefab
             PrefabHandler.RegisterPrefab(new VModFabricatorModulePrefab(CustomFabAndTreeID, VModFabTechType));
@@ -171,6 +175,7 @@
                 // Associate custom craft tree to the fabricator
                 var fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
                 fabricator.craftTree = VModTreeType;
+                fabricator.handOverText = HandOverText;
 
                 // Associate power relay
                 var ghost = fabricator.GetComponent<GhostCrafter>();

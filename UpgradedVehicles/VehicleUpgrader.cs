@@ -15,21 +15,6 @@
 
         private const int BonusModuleCount = 2; // Extra bonus to common module upgrades
 
-        internal static Vector3[] UpgradedVehicleColors
-        {
-            get
-            {
-                return new Vector3[]
-                            {
-                                new Vector3(0f, 0f, 0f),
-                                new Vector3(1f, 1f, 1f),
-                                new Vector3(0.5f, 0.5f, 0.5f),
-                                new Vector3(0.5f, 0.4f, 0.6f),
-                                new Vector3(0.1f, 0.7f, 0.9f)
-                            };
-            }
-        }
-
         #region Crush Depth Upgrades
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth, TechType techType)

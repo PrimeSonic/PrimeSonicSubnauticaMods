@@ -26,24 +26,6 @@
     }
 
     [HarmonyPatch(typeof(Vehicle))]
-    [HarmonyPatch("vehicleDefaultColors", PropertyMethod.Getter)]
-    internal class Vehicle_vehicleDefaultColors_Patcher
-    {
-        [HarmonyPrefix]
-        internal static bool Prefix(ref Vehicle __instance, ref Vector3[] __result)
-        {            
-            if (VehicleUpgrader.IsUpgradedVehicle(__instance))
-            {
-                __result = VehicleUpgrader.UpgradedVehicleColors;
-                return false;
-            }
-
-            return true;
-        }
-
-    }
-
-    [HarmonyPatch(typeof(Vehicle))]
     [HarmonyPatch("EnterVehicle")]
     internal class Vehicle_EnterVehicle_Patcher
     {
