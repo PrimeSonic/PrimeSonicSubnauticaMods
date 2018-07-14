@@ -39,7 +39,7 @@
                 }),
 
             new ModulesTab("CommonModules", "Common Modules", "SeamothUpgrades_CommonModules",
-                new List<TechType>(3)
+                new List<TechType>(3+2)
                 {
                     TechType.VehicleArmorPlating,
                     TechType.VehiclePowerUpgradeModule,
