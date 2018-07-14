@@ -21,5 +21,13 @@
         }
 
         internal override EmProperty Copy() => new EmPropertyTechTypeList(Key);
+
+        public override string ToString()
+        {
+            if (Count == 0)                            
+                return $" {SpChar_CommentBlock} The {Key} list was empty {SpChar_CommentBlock} ";            
+
+            return base.ToString();
+        }
     }
 }

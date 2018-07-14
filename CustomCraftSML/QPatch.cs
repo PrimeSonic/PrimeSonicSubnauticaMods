@@ -14,6 +14,7 @@
         private static readonly string ModifiedRecipesFile = FolderRoot + "ModifiedRecipes.txt";
         private static readonly string AddedRecipiesFile = FolderRoot + "AddedRecipes.txt";
         private static readonly string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
+        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} v1.0.1 #";
 
         private static CustomSizeList customSizeList;
         private static ModifiedRecipeList modifiedRecipeList;
@@ -38,53 +39,67 @@
         {
             if (!File.Exists(HowToFile))
             {
-                var builder = new StringBuilder();
-                builder.AppendLine($"# How to use {CustomCraft.RootModName} v1.0 #");
-                builder.AppendLine("# -------------------------------------------- #");
-                builder.AppendLine();
-                builder.AppendLine($"# {CustomCraft.RootModName} uses simple text files to send simple requests to SMLHelper, no additional DLLs needed #");
-                builder.AppendLine("# This can be great for those who have a few simple and specific ideas in mind but aren't able to create a whole mod themselves #");
-                builder.AppendLine("# Special thanks to Nexus modder Iw23J, creator of the original Custom Craft mod, who showed us how much we can empower players to take modding into their own hands #");
-                builder.AppendLine("# -------------------------------------------- #");
-                builder.AppendLine("# Currently, this mod includes the following features: #");
-                builder.AppendLine("# 1 - Customize the space occupied by an inventory item #");
-                builder.AppendLine("# 2 - Modify an existing crafting recipe: #");
-                builder.AppendLine("#   a - You can change a recipe's required ingredients in any way #");
-                builder.AppendLine("#   b - You can alter how many copies of the item are created when you craft the recipe #");
-                builder.AppendLine("#   c - You can also modify the recipe's linked items, those being items also created along side the main one #");
-                builder.AppendLine("# 3 - Adding new recipes and placing them into any of the existing fabricators #");
-                builder.AppendLine($"# Remember that only the standard in-game items can be used with {CustomCraft.RootModName} #");
-                builder.AppendLine("# Modded items can't be used at this time #");
-                builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");
-                builder.AppendLine("# -------------------------------------------- #");
-                builder.AppendLine();
-                builder.AppendLine($"# Writing the text files that {CustomCraft.RootModName} uses can be simple if you're paying attention #");
-                builder.AppendLine("# You can even copy the text from the sample files directly and use them right away without any changes #");
-                builder.AppendLine("# When you want to add a new item reference, remember that the 'ItemID' is the internal spawn ID of that item #");
-                builder.AppendLine("# You can visit the Subnautica Wikia for the full list of item IDs at http://subnautica.wikia.com/wiki/Obtainable_Items #");
-                builder.AppendLine("# -------------------------------------------- #");
-                builder.AppendLine();
-                builder.AppendLine("# You'll notice that a lot of text is written between these hash signs (or pound sign or hashtag if you prefer) #");
-                builder.AppendLine("# Any text in between these symbols is safely ignored by the mod's text reader #");
-                builder.AppendLine("# Use these if you want to leave notes or comments for yourself in the txt files #");
-                builder.AppendLine("# Whitespace is also ignored, so feel free to make your files as flat or as indented as you prefer #");
-                builder.AppendLine("# -------------------------------------------- #");
-                builder.AppendLine();
-                builder.AppendLine("# Once you've created your txt files, go ahead and launch the game #");
-                builder.AppendLine("# Assuming you've got everything configured correctly, your customizations will appear on your next game #");
-                builder.AppendLine();
-                builder.AppendLine("# -------------------------------------------- #");
-                builder.AppendLine("# Extra tip: When adding recipes, you must use the correct path to the tab you wish to add it to #");
-                builder.AppendLine("# Provided here is a list of all the valid paths to all the standard tabs for all available fabricators #");
-                builder.AppendLine();
-                builder.AppendLine(PathHelper.GeneratePaths());
-                builder.AppendLine();
-                builder.AppendLine("# -------------------------------------------- #");
-                builder.AppendLine("# Enjoy and happy modding #");
-
-                File.WriteAllText(HowToFile, builder.ToString());
+                File.WriteAllText(HowToFile, ReadMeFileText());
                 Logger.Log($"{HowToFile} file not found. File created.");
             }
+            else
+            {
+                string[] readmeLines = File.ReadAllLines(HowToFile);
+
+                if (readmeLines.Length < 1 || readmeLines[0] != ReadMeVersionLine)
+                {
+                    File.WriteAllText(HowToFile, ReadMeFileText());
+                    Logger.Log($"{HowToFile} out of date. Regenerated with new version.");
+                }
+            }
+        }
+
+        private static string ReadMeFileText()
+        {
+            var builder = new StringBuilder();            
+            builder.AppendLine(ReadMeVersionLine);
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine();
+            builder.AppendLine($"# {CustomCraft.RootModName} uses simple text files to send simple requests to SMLHelper, no additional DLLs needed #");
+            builder.AppendLine("# This can be great for those who have a few simple and specific ideas in mind but aren't able to create a whole mod themselves #");
+            builder.AppendLine("# Special thanks to Nexus modder Iw23J, creator of the original Custom Craft mod, who showed us how much we can empower players to take modding into their own hands #");
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine("# Currently, this mod includes the following features: #");
+            builder.AppendLine("# 1 - Customize the space occupied by an inventory item #");
+            builder.AppendLine("# 2 - Modify an existing crafting recipe: #");
+            builder.AppendLine("#   a - You can change a recipe's required ingredients in any way #");
+            builder.AppendLine("#   b - You can alter how many copies of the item are created when you craft the recipe #");
+            builder.AppendLine("#   c - You can also modify the recipe's linked items, those being items also created along side the main one #");
+            builder.AppendLine("# 3 - Adding new recipes and placing them into any of the existing fabricators #");
+            builder.AppendLine($"# Remember that only the standard in-game items can be used with {CustomCraft.RootModName} #");
+            builder.AppendLine("# Modded items can't be used at this time #");
+            builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine();
+            builder.AppendLine($"# Writing the text files that {CustomCraft.RootModName} uses can be simple if you're paying attention #");
+            builder.AppendLine("# You can even copy the text from the sample files directly and use them right away without any changes #");
+            builder.AppendLine("# When you want to add a new item reference, remember that the 'ItemID' is the internal spawn ID of that item #");
+            builder.AppendLine("# You can visit the Subnautica Wikia for the full list of item IDs at http://subnautica.wikia.com/wiki/Obtainable_Items #");
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine();
+            builder.AppendLine("# You'll notice that a lot of text is written between these hash signs (or pound sign or hashtag if you prefer) #");
+            builder.AppendLine("# Any text in between these symbols is safely ignored by the mod's text reader #");
+            builder.AppendLine("# Use these if you want to leave notes or comments for yourself in the txt files #");
+            builder.AppendLine("# Whitespace is also ignored, so feel free to make your files as flat or as indented as you prefer #");
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine();
+            builder.AppendLine("# Once you've created your txt files, go ahead and launch the game #");
+            builder.AppendLine("# Assuming you've got everything configured correctly, your customizations will appear on your next game #");
+            builder.AppendLine();
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine("# Extra tip: When adding recipes, you must use the correct path to the tab you wish to add it to #");
+            builder.AppendLine("# Provided here is a list of all the valid paths to all the standard tabs for all available fabricators #");
+            builder.AppendLine();
+            builder.AppendLine(PathHelper.GeneratePaths());
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine("# Enjoy and happy modding #");
+
+            return builder.ToString();
         }
 
         private static void PatchAddedRecipes()

@@ -84,7 +84,7 @@
             } while (fullString.Count > 0 && !exit);
 
             return serialValues + SpChar_FinishComplexValue;
-        }        
+        }
 
         protected ICollection<EmProperty> CopyDefinitions
         {

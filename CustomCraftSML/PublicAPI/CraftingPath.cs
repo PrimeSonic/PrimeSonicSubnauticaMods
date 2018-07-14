@@ -24,7 +24,7 @@
 
         public override string ToString()
         {
-            return Path;
+            return Path.TrimEnd('/');
         }
     }
 }

@@ -2,13 +2,16 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
-    using SMLHelper.Patchers;
 
     public class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
         private readonly EmProperty<string> path;
 
-        public string Path => path.Value;
+        public string Path
+        {
+            get => path.Value;
+            set => path.Value = value;
+        }
 
         protected static List<EmProperty> AddedRecipeProperties => new List<EmProperty>(ModifiedRecipeProperties)
         {          
