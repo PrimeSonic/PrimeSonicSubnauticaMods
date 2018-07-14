@@ -15,7 +15,8 @@ AddedRecipes:
         ItemID:HangingFruit;
         Required:1;
     );
-    Path:Fabricator/Survival/CuredFood;
+     # The LinkedItemIDs list was empty #
+     Path:Fabricator/Survival/CuredFood;
 ),
 (
     ItemID:BigFilteredWater;
@@ -25,5 +26,6 @@ AddedRecipes:
         ItemID:FilteredWater;
         Required:2;
     );
-    Path:Fabricator/Survival/Water;
+     # The LinkedItemIDs list was empty #
+     Path:Fabricator/Survival/Water;
 );

@@ -8,6 +8,8 @@
     {
         public readonly List<T> Values = new List<T>();
 
+        public int Count => Values.Count;
+
         public EmPropertyList(string key)
         {
             Key = key;

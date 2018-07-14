@@ -24,8 +24,8 @@
 
         public override string ToString()
         {
-            if (Values.Count == 0)
-                return string.Empty;
+            if (Count == 0)                            
+                return $" {SpChar_CommentBlock} The {Key} list was empty {SpChar_CommentBlock} ";            
 
             return base.ToString();
         }

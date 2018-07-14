@@ -81,7 +81,7 @@
             {
                 switch (originalString.PeekStart())
                 {
-                    case '(':
+                    case SpChar_BeginComplexValue:
                         prettyString.PushToEnd('\r', '\n');
                         prettyString.PushToEnd(' ', indentLevel * indentSize);
                         indentLevel++;
@@ -90,15 +90,27 @@
                         prettyString.PushToEnd(' ', indentLevel * indentSize);
                         prettyString.PushToEnd(originalString.PopFromStart());
                         break;
-                    case ';':
+                    case SpChar_ValueDelimiter:                    
                         prettyString.PushToEnd(originalString.PopFromStart());
 
-                        if (originalString.IsEmpty || originalString.PeekStart() == ')')
+                        if (originalString.IsEmpty || originalString.PeekStart() == SpChar_FinishComplexValue)
                             indentLevel--;
 
                         prettyString.PushToEnd('\r', '\n');
                         prettyString.PushToEnd(' ', indentLevel * indentSize);
 
+                        break;
+                    case SpChar_CommentBlock:
+                        prettyString.PushToEnd(originalString.PopFromStart());
+
+                        do
+                        {
+                            prettyString.PushToEnd(originalString.PopFromStart());
+
+                        } while (!originalString.IsEmpty && prettyString.PeekEnd() != SpChar_CommentBlock);
+
+                        prettyString.PushToEnd('\r', '\n');
+                        prettyString.PushToEnd(' ', indentLevel * indentSize);
                         break;
                     default:
                         prettyString.PushToEnd(originalString.PopFromStart());

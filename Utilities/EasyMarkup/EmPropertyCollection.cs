@@ -32,7 +32,7 @@
         {
             var val = $"{Key}{SpChar_KeyDelimiter}{SpChar_BeginComplexValue}";
             foreach (string key in Properties.Keys)
-            {                
+            {
                 val += $"{Properties[key]}";
             }
 
@@ -84,7 +84,7 @@
             } while (fullString.Count > 0 && !exit);
 
             return serialValues + SpChar_FinishComplexValue;
-        }        
+        }
 
         protected ICollection<EmProperty> CopyDefinitions
         {
