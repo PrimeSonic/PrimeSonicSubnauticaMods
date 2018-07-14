@@ -32,7 +32,7 @@
         {
             var val = $"{Key}{SpChar_KeyDelimiter}{SpChar_BeginComplexValue}";
             foreach (string key in Properties.Keys)
-            {
+            {                
                 val += $"{Properties[key]}";
             }
 

@@ -15,7 +15,11 @@
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
         protected readonly EmPropertyTechTypeList linkedItems;
 
-        public TechType ItemID => emTechType.Value;
+        public TechType ItemID
+        {
+            get => emTechType.Value;
+            set => emTechType.Value = value;
+        }
 
         public short AmountCrafted
         {
@@ -25,11 +29,24 @@
                 Assert.IsTrue(amountCrafted.Value >= Min, $"Amount crafted value for {ItemID} must be greater than {Min}.");
                 return amountCrafted.Value;
             }
+            set
+            {
+                Assert.IsTrue(value <= Max, $"Amount crafted value for {ItemID} must be less than {Max}.");
+                Assert.IsTrue(value >= Min, $"Amount crafted value for {ItemID} must be greater than {Min}.");
+                amountCrafted.Value = value;
+            }
         }
 
         public List<TechType> LinkedItems => linkedItems.Values;
 
-        public readonly List<Ingredient> Ingredients = new List<Ingredient>();
+        private readonly List<Ingredient> smlIngredients = new List<Ingredient>();
+        public IList<Ingredient> SmlIngredients => smlIngredients;
+
+        public void AddIngredient(TechType techType, short count)
+        {
+            ingredients.Collections.Add(new EmIngredient() { ItemID = techType, Required = count });
+            smlIngredients.Add(new Ingredient(techType, count));
+        }
 
         public static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(4)
         {
@@ -64,7 +81,7 @@
                 TechType itemID = (ingredient["ItemID"] as EmPropertyTechType).Value;
                 short required = (ingredient["Required"] as EmProperty<short>).Value;
 
-                Ingredients.Add(new Ingredient(itemID, required));
+                smlIngredients.Add(new Ingredient(itemID, required));
             }
         }
 
@@ -72,9 +89,9 @@
 
         public virtual TechData SmlHelperRecipe()
         {
-            var ingredientsList = new List<Ingredient>(Ingredients.Count);
+            var ingredientsList = new List<Ingredient>(smlIngredients.Count);
 
-            foreach (Ingredient item in Ingredients)
+            foreach (Ingredient item in SmlIngredients)
             {
                 ingredientsList.Add(new Ingredient(item.techType, item.amount));
             }

@@ -12,7 +12,11 @@
         private readonly EmPropertyTechType emTechType;
         private readonly EmProperty<short> required;
 
-        public TechType ItemID => emTechType.Value;
+        public TechType ItemID
+        {
+            get => emTechType.Value;
+            set => emTechType.Value = value;
+        }
 
         public short Required
         {
@@ -22,6 +26,13 @@
                 Assert.IsTrue(required.Value >= Min, $"Amount required value for ingredient {ItemID} must be greater than {Min}.");
                 return required.Value;
             }
+            set
+            {
+                Assert.IsTrue(value <= Max, $"Amount required value for ingredient {ItemID} must be less than {Max}.");
+                Assert.IsTrue(value >= Min, $"Amount required value for ingredient {ItemID} must be greater than {Min}.");
+                required.Value = value;
+            }
+
         }
 
         public static List<EmProperty> IngredientProperties => new List<EmProperty>(2)

@@ -21,5 +21,13 @@
         }
 
         internal override EmProperty Copy() => new EmPropertyTechTypeList(Key);
+
+        public override string ToString()
+        {
+            if (Values.Count == 0)
+                return string.Empty;
+
+            return base.ToString();
+        }
     }
 }

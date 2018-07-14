@@ -13,7 +13,11 @@
         private readonly EmProperty<short> width;
         private readonly EmProperty<short> height;
 
-        public TechType ItemID => emTechType.Value;
+        public TechType ItemID
+        {
+            get => emTechType.Value;
+            set => emTechType.Value = value;
+        }
 
         public short Width
         {
@@ -22,6 +26,12 @@
                 Assert.IsTrue(width.Value <= Max, $"Custom size value for {ItemID} must be less than {Max}.");
                 Assert.IsTrue(width.Value >= Min, $"Custom size value for {ItemID} must be greater than {Min}.");
                 return width.Value;
+            }
+            set
+            {
+                Assert.IsTrue(value <= Max, $"Custom size value for {ItemID} must be less than {Max}.");
+                Assert.IsTrue(value >= Min, $"Custom size value for {ItemID} must be greater than {Min}.");
+                width.Value = value;
             }
         }
 
@@ -32,6 +42,12 @@
                 Assert.IsTrue(height.Value <= Max, $"Custom size value for {ItemID} must be less than {Max}.");
                 Assert.IsTrue(height.Value >= Min, $"Custom size value for {ItemID} must be greater than {Min}.");
                 return height.Value;
+            }
+            set
+            {
+                Assert.IsTrue(value <= Max, $"Custom size value for {ItemID} must be less than {Max}.");
+                Assert.IsTrue(value >= Min, $"Custom size value for {ItemID} must be greater than {Min}.");
+                height.Value = value;
             }
         }
 
