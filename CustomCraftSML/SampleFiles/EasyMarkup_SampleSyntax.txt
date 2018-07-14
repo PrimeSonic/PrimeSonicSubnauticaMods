@@ -1,6 +1,7 @@
-# EasyMarkup is a custom syntax for serialization and deserialization of data object, created first and foremost for the CustomCraftSML mod. #
+# EasyMarkup is a custom syntax for serialization and deserialization of data objects, created first and foremost for the CustomCraftSML mod. #
 
 # Below you'll find samples of the standard syntax constructs available from the EasyMarkup library. #
+# Comments can be inserted at any point of an EasyMarkup file. Just wrap it between hash signs like you see here. #
 
 SimpleKey:SimpleValue;
 

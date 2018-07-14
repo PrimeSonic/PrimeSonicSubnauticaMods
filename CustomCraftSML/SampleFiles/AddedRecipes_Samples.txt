@@ -2,7 +2,7 @@
 # Remember that this is only intended for use with items that already exist in the base game #
 # This won't work with modded items #
 
-# You can use this file as a starting point. There text here is ready to use. #
+# You can use this file as a starting point. The text here is ready to use. #
 
 AddedRecipes:
 (

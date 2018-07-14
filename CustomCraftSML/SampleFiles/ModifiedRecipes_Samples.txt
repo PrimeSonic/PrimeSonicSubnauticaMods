@@ -3,7 +3,7 @@
 # This won't work with modded items #
 # If the item can't normally be crafted, use the AddedRecipes file instead #
 
-# You can use this file as a starting point. There text here is ready to use. #
+# You can use this file as a starting point. The text here is ready to use. #
 
 ModifiedRecipes:
 (
