@@ -3,26 +3,23 @@
     using System;
     using System.IO;
     using System.Text;
-    using Common.EasyMarkup;
     using SMLHelper.V2.Options;
     using UnityEngine;
 
     internal class NuclearModuleConfig : ModOptions
     {
-        private const string ConfigFile = @"./QMods/MoreCyclopsUpgrades/NuclearModuleConfig.txt";
+        private const string ConfigFile = @"./QMods/MoreCyclopsUpgrades/Config.txt";
 
-        private static bool ConserveNuclearModulePower = false;
-        private static float RequiredEnergyDeficit = Default;
-        private const float Min = 10f;
-        private const float Max = 190f;
-        private const float Default = 50f;
+        private static float RequiredEnergyDeficit = 1140f;
+        private const float MinPercent = 10f;
+        private const float MaxPercent = 99f;
+        private const float DefaultPercent = 95f;
         private const string ToggleID = "NukModConserve";
-        private const string SliderID = "NukeModActivatesOn";
+        private const string SliderID = "NukeModActivatesAt";
 
-        internal static float MinimumEnergyDeficit => ConserveNuclearModulePower ? RequiredEnergyDeficit : 0f;
+        internal static float MinimumEnergyDeficit => EmConfig.ConserveNuclearModulePower ? RequiredEnergyDeficit : 0f;
 
-        private readonly EmYesNo EmConserve = new EmYesNo("ConserveNuclearModulePower", ConserveNuclearModulePower);
-        private readonly EmProperty<float> EmDeficit = new EmProperty<float>("RequiredEnergyDeficit", Default);
+        internal static EmNuclearConfig EmConfig = new EmNuclearConfig(MinPercent, MaxPercent, DefaultPercent);
 
         internal void Initialize()
         {
@@ -33,8 +30,13 @@
             catch (Exception ex)
             {
                 Console.WriteLine("[MoreCyclopsUpgrades] Error loading NuclearModuleConfig: " + ex.ToString());
+                WriteConfigFile();
             }
+        }
 
+        internal static void UpdateValuesFromCyclops(float maxPower)
+        {
+            RequiredEnergyDeficit = Mathf.Round(maxPower - maxPower * EmConfig.RequiredEnergyPercentage / 100f);
         }
 
         public NuclearModuleConfig() : base("Cyclops Nuclear Module Options")
@@ -53,8 +55,8 @@
         /// <exception cref="NotImplementedException"></exception>
         public override void BuildModOptions()
         {
-            base.AddToggleOption(ToggleID, "Conserve Power", ConserveNuclearModulePower);
-            base.AddSliderOption(SliderID, "Start At X Power Deficit", Min, Max, RequiredEnergyDeficit);
+            base.AddToggleOption(ToggleID, "Conserve Power", EmConfig.ConserveNuclearModulePower);
+            base.AddSliderOption(SliderID, "Start charging below %", MinPercent, MaxPercent, EmConfig.RequiredEnergyPercentage);
         }
 
         private void ConservationEnabledChanged(object sender, ToggleChangedEventArgs args)
@@ -62,7 +64,7 @@
             if (args.Id != ToggleID)
                 return;
 
-            EmConserve.Value = ConserveNuclearModulePower = args.Value;
+            EmConfig.ConserveNuclearModulePower = args.Value;
             WriteConfigFile();
         }
 
@@ -71,7 +73,7 @@
             if (args.Id != SliderID)
                 return;
 
-            EmDeficit.Value = RequiredEnergyDeficit = Mathf.Floor(args.Value);
+            EmConfig.RequiredEnergyPercentage = Mathf.Round(args.Value);
             WriteConfigFile();
         }
 
@@ -79,23 +81,29 @@
         {
             File.WriteAllLines(ConfigFile, new[]
             {
-                EmConserve.ToString(),
-                EmDeficit.ToString(),
+                "# -------------------------------------------------------------------- #",
+                "# This config file can be edited in-game through the Mods options menu #",
+                "#                This save file is built using EasyMarkup              #",
+                "# -------------------------------------------------------------------- #",
                 "",
-                "# --------------------------- #",
-                "# How to use this config file",
+                EmConfig.PrintyPrint(),
                 "",
-                "# When 'Conserve Nuclear Module Power' is enabled, the Cyclops will only to use up the non-renewable nuclear power only after it's lost enough power cell charge. #",
+                "# Here's the full details on what these configurations do: #",
+                "",
+                $"# '{EmNuclearConfig.EmConserveDescription}' #",
+                "# When this option is enabled, the Cyclops will only to use up the non-renewable nuclear power only after it's lost enough power cell charge. #",
                 "# Set this to 'NO' if you want nuclear power to keep your Cyclops topped up. #",
                 "# Set this to 'YES' if you want coast on power cell charge for a while. #",
                 "# This way, you can conserve your nuclear battery for only when it's needed. #",
                 "# Conserving your nuclear module's power will help it last longer, especially if you're usually moving between renewable sources of energy anyways. #",
-                "# --------------------------- #",
-                "# Set the value of 'Required Energy Deficit' to configure how low you're willing to let your Cyclops go down in power before charging from the nuclear battery. #",
-                "# The minimum allowed value is '10' #",
-                "# The maximum allowed value is '190' #",
-                "# For example: If you set this to 50, nuclear charging will only begin after your Cyclops is below 1150/1200 energy. #",
                 "",
+                $"# '{EmNuclearConfig.EmDeficitDescription}' #",
+                "# Set the value of this option to configure how low you're willing to let your Cyclops go down in power before charging from the nuclear battery. #",
+                "# The minimum allowed value is '10' percent #",
+                "# The maximum allowed value is '99' percent #",
+                "# If you want your nuclear option only for absolute emergencies, set this to a lower value. #",
+                "# If you want to keep your power cells topped up, set this to a higher value. #",
+                $"# This option is ignored if '{EmNuclearConfig.EmConserveDescription}' is set to 'NO'. #",
             }, Encoding.UTF8);
         }
 
@@ -107,25 +115,15 @@
                 return;
             }
 
-            string[] lines = File.ReadAllLines(ConfigFile, Encoding.UTF8);
+            string text = File.ReadAllText(ConfigFile, Encoding.UTF8);
 
-            bool readCorrectly =
-                EmConserve.FromString(lines[0]) &&
-                EmDeficit.FromString(lines[1]);
+            bool readCorrectly = EmConfig.FromString(text);
 
-            if (!readCorrectly)
+            if (!readCorrectly || !EmConfig.ValidDataRead)
             {
                 WriteConfigFile();
                 return;
             }
-
-            ConserveNuclearModulePower = EmConserve.Value;
-
-            if (EmDeficit.Value > Max || EmDeficit.Value < Min)
-                RequiredEnergyDeficit = Default;
-            else
-                RequiredEnergyDeficit = EmDeficit.Value;
         }
-
     }
 }

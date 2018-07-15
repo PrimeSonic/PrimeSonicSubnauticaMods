@@ -30,6 +30,8 @@
             int totalPower = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
 
             __instance.energyCur.text = IntStringCache.GetStringForInt(totalPower);
+
+            NuclearModuleConfig.UpdateValuesFromCyclops(__instance.subRoot.powerRelay.GetMaxPower());
         }
     }
 }

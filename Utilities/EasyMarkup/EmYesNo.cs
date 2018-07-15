@@ -2,6 +2,8 @@
 {
     internal class EmYesNo : EmProperty<bool>
     {
+        internal bool ValidData = true;
+
         public EmYesNo(string key) : base(key)
         {
         }
@@ -20,8 +22,18 @@
                 case "TRUE":
                 case "True":
                 case "true":
+                    ValidData = true;
                     return true;
-                default:
+                case "NO":
+                case "no":
+                case "No":
+                case "FALSE":
+                case "False":
+                case "false":
+                    ValidData = true;
+                    return false;
+                default: 
+                    ValidData = false;
                     return false;
             }
         }

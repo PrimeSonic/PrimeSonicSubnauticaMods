@@ -22,7 +22,7 @@
 
             Equipment modules = __instance.upgradeConsole.modules;
 
-            float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();            
+            float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();
 
             float availableSolarEnergy = SolarChargingManager.GetSolarChargeAmount(ref __instance);
             float availableThermalEnergy = ThermalChargingManager.GetThermalChargeAmount(ref __instance);
@@ -50,7 +50,7 @@
                     renewablePowerAvailable |= battery.charge > 0f;
 
                     if (battery.charge < battery.capacity)
-                        lastBatteryToCharge = battery;                    
+                        lastBatteryToCharge = battery;
                 }
                 else if (techTypeInSlot == TechType.CyclopsThermalReactorModule) // Thermal
                 {
