@@ -28,7 +28,7 @@
             PrefabHandler.RegisterPrefab(new SpeedBoosterPreFab(TechTypeID, NameID));
             CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.VehicleModule);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.Seamoth, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static TechData GetRecipe()

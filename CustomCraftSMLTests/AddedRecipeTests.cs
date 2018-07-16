@@ -219,5 +219,44 @@
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe[0].Path);
         }
+
+        [Test]
+        public void Deserialize_AddedRecipesList_AllLowerCaseIDs()
+        {
+            const string serialized = "AddedRecipes:                                            " +
+                                        "(                                                        " +
+                                        "    ItemID:stalkertooth;                                 " +
+                                        "    AmountCrafted: 1;                                    " +
+                                        "    Ingredients:                                         " +
+                                        "        ( ItemID:quartz; Required:1; );                  " +
+                                        "    Path:Fabricator/Resources/BasicMaterials;            " +
+                                        "),                                                       " +
+                                        "(                                                        " +
+                                        "    ItemID:coralchunk;                                   " +
+                                        "    AmountCrafted: 2;                                    " +
+                                        "    Ingredients:                                         " +
+                                        "        ( ItemID:crashpowder; Required:2; );             " +
+                                        "    Path:Fabricator/Resources/BasicMaterials;            " +
+                                        "),                                                       " +
+                                        "(                                                        " +
+                                        "    ItemID:nutrientblock;                                " +
+                                        "    AmountCrafted: 2;                                    " +
+                                        "    Ingredients:                                         " +
+                                        "        ( ItemID:salt; Required:2; ),                    " +
+                                        "        ( ItemID:purplerattlespore; Required:1; ),       " +
+                                        "        ( ItemID:purplevaseplantseed; Required:1; ),     " +
+                                        "        ( ItemID:orangepetalsplantseed; Required:1; ),   " +
+                                        "        ( ItemID:orangemushroomspore; Required:1; ),     " +
+                                        "        ( ItemID:pinkmushroomspore; Required:1; );       " +
+                                        "    Path:Fabricator/Survival/CuredFood;                  " +
+                                        ");                                                       ";
+
+            var recipeList = new AddedRecipeList();
+
+            bool success = recipeList.FromString(serialized);
+
+            Assert.IsTrue(success);
+            Assert.AreEqual(3, recipeList.Count);
+        }
     }
 }

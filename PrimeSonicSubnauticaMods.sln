@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraft2SML", "CustomCr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraftSMLTests", "CustomCraftSMLTests\CustomCraftSMLTests.csproj", "{76A15559-2893-493A-9EBF-BB7523D2DC04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreCyclopsUpgradesTests", "MoreCyclopsUpgradesTests\MoreCyclopsUpgradesTests.csproj", "{CD9FE0A1-8B09-4F5E-8FDD-6222386A23DC}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
@@ -56,10 +54,6 @@ Global
 		{76A15559-2893-493A-9EBF-BB7523D2DC04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76A15559-2893-493A-9EBF-BB7523D2DC04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76A15559-2893-493A-9EBF-BB7523D2DC04}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CD9FE0A1-8B09-4F5E-8FDD-6222386A23DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD9FE0A1-8B09-4F5E-8FDD-6222386A23DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD9FE0A1-8B09-4F5E-8FDD-6222386A23DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD9FE0A1-8B09-4F5E-8FDD-6222386A23DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

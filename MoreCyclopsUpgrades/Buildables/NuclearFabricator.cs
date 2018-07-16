@@ -20,6 +20,8 @@
         // The text you'll see in-game when you mouseover over it.
         public const string FriendlyName = "Nuclear Fabricator";
 
+        public const string HandOverText = "UseNukFabricator";
+
         public static void Patch()
         {
             // Create new Craft Tree Type
@@ -51,6 +53,8 @@
 
             // Set the buildable prefab
             PrefabHandler.RegisterPrefab(new VModFabricatorModulePrefab(CustomFabAndTreeID, NukeFabTechType));
+
+            LanguageHandler.SetLanguageLine(HandOverText, "Use Nuclear Fabricator");
 
             // Set the custom sprite for the Habitat Builder Tool menu
             SpriteHandler.RegisterSprite(NukeFabTechType, @"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorI.png");
@@ -101,6 +105,7 @@
                 // Associate custom craft tree to the fabricator
                 var fabricator = prefab.GetComponent<Fabricator>();
                 fabricator.craftTree = NukeFabTreeType;
+                fabricator.handOverText = HandOverText;
 
                 // Associate power relay
                 var ghost = fabricator.GetComponent<GhostCrafter>();
