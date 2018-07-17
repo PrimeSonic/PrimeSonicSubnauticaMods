@@ -60,6 +60,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
+    <Compile Include="Modules\EmModuleSaveData.cs" />
+    <Compile Include="Monobehaviors\AuxUpgradeConsole.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
     <Compile Include="Modules\Recharging\Thermal\ThermalChargingManager.cs" />
     <Compile Include="Modules\SortedCyclopsModules.cs" />
+    <Compile Include="Buildables\AuxUpgradeConsoleSaveData.cs" />
     <Compile Include="Patchers\CyclopsHelmHUDManager_Update_Patcher.cs" />
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_UpdatePowerRating_Patcher.cs" />

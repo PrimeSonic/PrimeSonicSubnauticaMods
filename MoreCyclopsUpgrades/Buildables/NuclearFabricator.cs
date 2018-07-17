@@ -16,10 +16,7 @@
 
         // This name will be used as both the new TechType of the buildable fabricator and the CraftTree Type for the custom crafting tree.
         public const string CustomFabAndTreeID = "NuclearFabricator";
-
-        // The text you'll see in-game when you mouseover over it.
         public const string FriendlyName = "Nuclear Fabricator";
-
         public const string HandOverText = "UseNukFabricator";
 
         public static void Patch()
@@ -29,7 +26,7 @@
             NukeFabTreeType = craftType;
 
             // Create a new TechType for new fabricator
-            NukeFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName, 
+            NukeFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName,
                 "A specialized fabricator for safe handling of radioactive energy sources.", false);
 
             // Create a Recipie for the new TechType
@@ -83,7 +80,7 @@
             public override GameObject GetGameObject()
             {
                 // Instantiate CyclopsFabricator object
-                GameObject prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/Fabricator"));                
+                GameObject prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/Fabricator"));
 
                 // Update prefab name
                 prefab.name = CustomFabAndTreeID;

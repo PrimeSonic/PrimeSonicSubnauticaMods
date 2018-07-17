@@ -8,7 +8,7 @@
 
     public class QPatch
     {
-        private static SortedCyclopsModules ModulesToPatch;
+        internal static SortedCyclopsModules CyclopsModules;
         private static NuclearModuleConfig Config;
 
         public static void Patch()
@@ -20,7 +20,7 @@
 #endif
                 bool hasVehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
 
-                ModulesToPatch = new SortedCyclopsModules(7)
+                CyclopsModules = new SortedCyclopsModules(7)
                 {
                     new SolarCharger(hasVehicleUpgradesInCyclops),
                     new SolarChargerMk2(),
@@ -31,13 +31,15 @@
                     new DepletedNuclearModule(),
                 };
 
-                foreach (CyclopsModule module in ModulesToPatch.Values)
+                foreach (CyclopsModule module in CyclopsModules.Values)
                 {
                     module.Patch();
                 }
 
                 NuclearFabricator.Patch();
-                
+
+                AuxCyUpgradeConsole.Patch();
+
                 Config = new NuclearModuleConfig();
                 OptionsPanelHandler.RegisterModOptions(Config);
                 Config.Initialize();

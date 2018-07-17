@@ -3,6 +3,7 @@
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using UnityEngine;
 
     internal enum CyclopsModules : int
     {
@@ -56,7 +57,7 @@
             NameID = nameID;
             FriendlyName = friendlyName;
             Description = description;
-            RequiredForUnlock = requiredAnalysisItem;            
+            RequiredForUnlock = requiredAnalysisItem;
 
             AddToCraftTree = false;
         }
@@ -90,5 +91,81 @@
         protected abstract TechData GetRecipe();
 
         protected abstract ModPrefab GetPrefab();
+
+        public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
+        {
+            GameObject gameObject;
+
+            if (techTypeID < TechType.Databox)
+            {
+                GameObject prefab = CraftData.GetPrefabForTechType(techTypeID);
+                gameObject = GameObject.Instantiate(prefab);
+            }
+            else if (techTypeID == DepletedNuclearModuleID)
+            {
+                GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
+                gameObject = GameObject.Instantiate(prefab);
+
+                gameObject.GetComponent<PrefabIdentifier>().ClassId = DepletedNuclearModule.DepletedNameID;
+                gameObject.AddComponent<TechTag>().type = CyclopsModule.DepletedNuclearModuleID;
+            }
+            else
+            {
+                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+                gameObject = GameObject.Instantiate(prefab);
+
+                var tag = gameObject.GetComponent<TechTag>();
+                if (tag != null)
+                    tag.type = techTypeID;
+                else
+                    gameObject.AddComponent<TechTag>().type = techTypeID;
+
+                var ider = gameObject.GetComponent<PrefabIdentifier>();
+
+                if (techTypeID == SolarChargerID)
+                {
+                    ider.ClassId = QPatch.CyclopsModules[CyclopsModules.Solar].NameID;
+                }
+                else if (techTypeID == SolarChargerMk2ID)
+                {
+                    ider.ClassId = QPatch.CyclopsModules[CyclopsModules.SolarMk2].NameID;
+
+                    var pCell = gameObject.AddComponent<Battery>();
+                    pCell.name = "SolarBackupBattery";
+                    pCell._capacity = PowerCharging.MaxMk2Charge;
+                }
+                else if (techTypeID == ThermalChargerMk2ID)
+                {
+                    ider.ClassId = QPatch.CyclopsModules[CyclopsModules.ThermalMk2].NameID;
+
+                    var pCell = gameObject.AddComponent<Battery>();
+                    pCell.name = "ThermalBackupBattery";
+                    pCell._capacity = PowerCharging.MaxMk2Charge;
+                }
+                else if (techTypeID == PowerUpgradeMk2ID)
+                {
+                    ider.ClassId = QPatch.CyclopsModules[CyclopsModules.PowerMk2].NameID;
+                }
+                else if (techTypeID == PowerUpgradeMk3ID)
+                {
+                    ider.ClassId = QPatch.CyclopsModules[CyclopsModules.PowerMk3].NameID;
+                }
+                else if (techTypeID == NuclearChargerID)
+                {
+                    ider.ClassId = QPatch.CyclopsModules[CyclopsModules.Nuclear].NameID;
+
+                    var pCell = gameObject.AddComponent<Battery>();
+                    pCell.name = "NuclearBattery";
+                    pCell._capacity = PowerCharging.MaxMk2Charge;
+                }
+                else
+                {
+                    return null; // error condition
+                }
+            }
+
+            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
+            return new InventoryItem(pickupable);
+        }
     }
 }

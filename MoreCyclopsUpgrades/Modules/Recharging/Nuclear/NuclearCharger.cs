@@ -60,7 +60,6 @@
                 var pCell = obj.AddComponent<Battery>();
                 pCell.name = "NuclearBattery";
                 pCell._capacity = NuclearChargingManager.MaxCharge;
-                pCell._charge = NuclearChargingManager.MaxCharge;
 
                 return obj;
             }
