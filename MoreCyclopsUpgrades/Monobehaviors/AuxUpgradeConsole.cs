@@ -165,18 +165,21 @@
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
             bool hasSaveData = this.SaveData.Load();
+            Console.WriteLine($"AuxUpgradeConsole OnProtoDeserializeObjectTree HasData:{hasSaveData}");
             if (hasSaveData)
             {
                 foreach (string slot in Slots)
                 {
                     EmModuleSaveData savedModule = SaveData[slot];
 
+                    Console.WriteLine($"AuxUpgradeConsole Slot:{slot} ItemID:{savedModule.ItemID}");
                     if (savedModule.ItemID == TechType.None)
                         continue;
 
                     InventoryItem item = CyclopsModule.SpawnCyclopsModule(savedModule.ItemID);
 
-                    if (item == null)
+                    Console.WriteLine($"AuxUpgradeConsole Slot:{slot} SpawnIsNull:{item is null}");
+                    if (item is null)
                         continue;
 
                     if (savedModule.HasBattery)
@@ -184,6 +187,7 @@
                         item.item.GetComponent<Battery>().charge = savedModule.BatteryCharge;
                     }
 
+                    Console.WriteLine($"AuxUpgradeConsole AddingToSlot:{slot}");
                     this.Modules.AddItem(slot, item, true);
                 }
             }

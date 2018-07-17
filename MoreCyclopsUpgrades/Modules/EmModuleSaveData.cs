@@ -10,14 +10,14 @@
 
     public class EmModuleSaveData : EmPropertyCollection
     {
-        private EmPropertyTechType _itemID;
+        private EmProperty<int> _itemID;
         private EmProperty<bool> _hasBattery;
         private EmProperty<float> _batteryCharge;
 
         public TechType ItemID
         {
-            get => _itemID.Value;
-            set => _itemID.Value = value;
+            get => (TechType)_itemID.Value;
+            set => _itemID.Value = (int)value;
         }
 
         public bool HasBattery
@@ -36,7 +36,7 @@
         {
             get => new List<EmProperty>()
             {
-                new EmPropertyTechType("ItemID"),
+                new EmProperty<int>("ItemID"),
                 new EmProperty<bool>("HasBattery"),
                 new EmProperty<float>("BatteryCharge")
             };
@@ -44,7 +44,7 @@
 
         public EmModuleSaveData() : base("ModuleSaveData", GetDefinitions)
         {
-            _itemID = (EmPropertyTechType)Properties["ItemID"];
+            _itemID = (EmProperty<int>)Properties["ItemID"];
             _hasBattery = (EmProperty<bool>)Properties["HasBattery"];
             _batteryCharge = (EmProperty<float>)Properties["BatteryCharge"];
         }

@@ -45,6 +45,12 @@
         public AuxUpgradeConsoleSaveData(string id) : base("AuxUpgradeConsoleSaveData", new EmModuleSaveData())
         {
             ID = id;
+            this.Collections.Add(new EmModuleSaveData());
+            this.Collections.Add(new EmModuleSaveData());
+            this.Collections.Add(new EmModuleSaveData());
+            this.Collections.Add(new EmModuleSaveData());
+            this.Collections.Add(new EmModuleSaveData());
+            this.Collections.Add(new EmModuleSaveData());
         }
 
         public void Save()
