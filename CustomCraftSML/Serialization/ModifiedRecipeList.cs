@@ -10,6 +10,10 @@
 
         public new ModifiedRecipe this[int index] => (ModifiedRecipe)base[index];
 
+        internal ModifiedRecipeList(string keyOverride) : base(keyOverride, new ModifiedRecipe(KeyName))
+        {
+        }
+
         public ModifiedRecipeList() : base(KeyName, new ModifiedRecipe(KeyName))
         {
         }

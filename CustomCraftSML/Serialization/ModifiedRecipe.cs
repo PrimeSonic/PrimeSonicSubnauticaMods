@@ -56,6 +56,25 @@
             new EmPropertyTechTypeList("LinkedItemIDs")
         };
 
+        internal ModifiedRecipe(TechType origTechType) : this()
+        {
+            ITechData origRecipe = CraftData.Get(origTechType);
+            ItemID = origTechType;
+            AmountCrafted = (short)origRecipe.craftAmount;
+
+            for (int i = 0; i < origRecipe.ingredientCount; i++)
+            {
+                var origIngredient = origRecipe.GetIngredient(i);
+                AddIngredient(origIngredient.techType, (short)origIngredient.amount);
+            }
+
+            for (int i = 0; i < origRecipe.linkedItemCount; i++)
+            {
+                LinkedItems.Add(origRecipe.GetLinkedItem(i));
+            }
+
+        }
+
         public ModifiedRecipe() : this("ModifiedRecipe", ModifiedRecipeProperties)
         {
         }

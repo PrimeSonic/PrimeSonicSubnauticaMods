@@ -7,6 +7,7 @@
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
     using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML;
 
     [TestFixture]
     internal class SampleFileTests

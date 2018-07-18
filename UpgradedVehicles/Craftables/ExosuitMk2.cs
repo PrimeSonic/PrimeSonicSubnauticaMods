@@ -29,6 +29,7 @@
 
             PrefabHandler.RegisterPrefab(new ExosuitMk2Prefab(TechTypeID, NameID));
             KnownTechHandler.SetAnalysisTechEntry(TechType.ExoHullModule2, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            CraftDataHandler.AddToGroup(TechGroup.Constructor, TechCategory.Constructor, TechTypeID);
         }
 
         private static TechData GetRecipe()

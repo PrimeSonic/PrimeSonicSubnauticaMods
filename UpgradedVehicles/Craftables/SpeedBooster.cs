@@ -29,6 +29,7 @@
             CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.VehicleModule);
 
             KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            CraftDataHandler.AddToGroup(TechGroup.VehicleUpgrades, TechCategory.VehicleUpgrades, TechTypeID);
         }
 
         private static TechData GetRecipe()

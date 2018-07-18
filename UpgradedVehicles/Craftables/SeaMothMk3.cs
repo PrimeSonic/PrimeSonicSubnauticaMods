@@ -35,6 +35,7 @@
 
             PrefabHandler.RegisterPrefab(new SeaMothMk3Prefab(TechTypeID, NameID));
             KnownTechHandler.SetAnalysisTechEntry(seamothHullModule5, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            CraftDataHandler.AddToGroup(TechGroup.Constructor, TechCategory.Constructor, TechTypeID);
         }
 
         private static TechData GetRecipe(TechType SeamothHullModule5)

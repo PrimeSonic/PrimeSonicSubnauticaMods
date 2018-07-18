@@ -6,6 +6,8 @@
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
     using Common.EasyMarkup;
+    using UnityEngine;
+    using System.Collections.Generic;
 
     public class QPatch
     {
@@ -14,7 +16,10 @@
         private static readonly string ModifiedRecipesFile = FolderRoot + "ModifiedRecipes.txt";
         private static readonly string AddedRecipiesFile = FolderRoot + "AddedRecipes.txt";
         private static readonly string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
-        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} v1.0.1 #";
+        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} v1.0.2 #";
+
+        private static readonly string SamplesFolder = FolderRoot + "SampleFiles/";
+        private static readonly string OriginalsFile = SamplesFolder + "OriginalRecipes.txt";
 
         private static CustomSizeList customSizeList;
         private static ModifiedRecipeList modifiedRecipeList;
@@ -31,6 +36,16 @@
             PatchAddedRecipes();
 
             HandleReadMeFile();
+
+            try
+
+            {
+                GenerateOriginalRecipes();
+            }
+            catch (IndexOutOfRangeException outEx)
+            {
+                Logger.Log(outEx.ToString());
+            }
 
             Logger.Log("Loading files complete");
         }
@@ -56,7 +71,7 @@
 
         private static string ReadMeFileText()
         {
-            var builder = new StringBuilder();            
+            var builder = new StringBuilder();
             builder.AppendLine(ReadMeVersionLine);
             builder.AppendLine("# -------------------------------------------- #");
             builder.AppendLine();
@@ -108,7 +123,7 @@
             if (File.Exists(AddedRecipiesFile))
             {
                 string serializedData = File.ReadAllText(AddedRecipiesFile);
-                if (!string.IsNullOrEmpty(serializedData) && addedRecipeList.Deserialize(serializedData))
+                if (!string.IsNullOrEmpty(serializedData) && addedRecipeList.Deserialize(serializedData) && addedRecipeList.Count > 0)
                 {
                     foreach (IAddedRecipe item in addedRecipeList)
                     {
@@ -120,12 +135,12 @@
                         {
                             Logger.Log($"Error on AddRecipe{Environment.NewLine}" +
                                         $"Entry with error:{Environment.NewLine}" +
-                                        $"{item}");
+                                        $"{item}");                            
                         }
-
                     }
 
-                    Logger.Log($"AddedRecipies loaded.");
+                    Logger.Log($"AddedRecipies loaded. File reformatted.");
+                    File.WriteAllText(AddedRecipiesFile, addedRecipeList.PrintyPrint());
                 }
                 else
                 {
@@ -146,7 +161,7 @@
             if (File.Exists(ModifiedRecipesFile))
             {
                 string serializedData = File.ReadAllText(ModifiedRecipesFile);
-                if (!string.IsNullOrEmpty(serializedData) && modifiedRecipeList.Deserialize(serializedData))
+                if (!string.IsNullOrEmpty(serializedData) && modifiedRecipeList.Deserialize(serializedData) && modifiedRecipeList.Count > 0)
                 {
                     foreach (IModifiedRecipe item in modifiedRecipeList)
                     {
@@ -162,7 +177,8 @@
                         }
                     }
 
-                    Logger.Log($"ModifiedRecipes loaded.");
+                    Logger.Log($"ModifiedRecipes loaded. File reformatted.");
+                    File.WriteAllText(ModifiedRecipesFile, modifiedRecipeList.PrintyPrint());
                 }
                 else
                 {
@@ -183,13 +199,13 @@
             if (File.Exists(CustomSizesFile))
             {
                 string serializedData = File.ReadAllText(CustomSizesFile);
-                if (!string.IsNullOrEmpty(serializedData) && customSizeList.Deserialize(serializedData))
+                if (!string.IsNullOrEmpty(serializedData) && customSizeList.Deserialize(serializedData) && customSizeList.Count > 0)
                 {
                     foreach (ICustomSize customSize in customSizeList)
                     {
                         try
-                        { 
-                        CustomCraft.CustomizeItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+                        {
+                            CustomCraft.CustomizeItemSize(customSize.ItemID, customSize.Width, customSize.Height);
                         }
                         catch
                         {
@@ -199,7 +215,8 @@
                         }
                     }
 
-                    Logger.Log($"CustomSizes loaded.");
+                    Logger.Log($"CustomSizes loaded. File reformatted.");
+                    File.WriteAllText(CustomSizesFile, customSizeList.PrintyPrint());
                 }
                 else
                 {
@@ -214,6 +231,68 @@
                 Logger.Log($"{CustomSizesFile} file not found. Empty file created.");
             }
         }
+
+        private static void GenerateOriginalRecipes()
+        {
+            if (!Directory.Exists(SamplesFolder))
+                Directory.CreateDirectory(SamplesFolder);
+
+            if (File.Exists(OriginalsFile))
+                return;
+
+            List<string> printyPrints = GenerateOriginalsText();
+
+            File.WriteAllLines(OriginalsFile, printyPrints.ToArray());
+
+            Logger.Log($"{OriginalsFile} file not found. File created.");
+        }
+
+        public static List<string> GenerateOriginalsText()
+        {
+            var treeTypes = new CraftTree.Type[6]
+                        {
+                CraftTree.Type.Fabricator, CraftTree.Type.Constructor, CraftTree.Type.SeamothUpgrades,
+                CraftTree.Type.Workbench,
+                CraftTree.Type.MapRoom, CraftTree.Type.CyclopsFabricator
+                        };
+
+            var printyPrints = new List<string>(treeTypes.Length * 4 + 3)
+            {
+                "# This file was generated with all the existing recipes from all non-modded fabricators #",
+                "#         You can copy samples from this file to use in your personal overrides         #",
+                "# ------------------------------------------------------------------------------------- #",
+            };
+
+            foreach (CraftTree.Type tree in treeTypes)
+            {
+                ModifiedRecipeList list = GetOriginals(tree);
+
+                printyPrints.Add(list.PrintyPrint());
+                printyPrints.Add("");
+                printyPrints.Add("# ------------------------------------------------------------------------------------- #");
+                printyPrints.Add("");
+            }
+
+            return printyPrints;
+        }
+
+        public static ModifiedRecipeList GetOriginals(CraftTree.Type treeType)
+        {
+            CraftTree tree = CraftTree.GetTree(treeType);
+
+            IEnumerator<CraftNode> mover = tree.nodes.Traverse(true);
+
+            var originals = new ModifiedRecipeList($"{treeType}Originals");
+
+            while (mover.MoveNext())
+            {
+                if (mover.Current.action == TreeAction.Craft && mover.Current.techType0 < TechType.Databox)
+                    originals.Collections.Add(new ModifiedRecipe(mover.Current.techType0));
+            };
+
+            return originals;
+        }
+
     }
 
 

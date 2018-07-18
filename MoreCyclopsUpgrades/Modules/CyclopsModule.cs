@@ -80,6 +80,7 @@
                 CraftTreeHandler.AddCraftingNode(Fabricator, TechTypeID, FabricatorTabs);
 
             CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.CyclopsModule);
+            CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, TechTypeID);
 
             SetStaticTechTypeID(TechTypeID);
         }

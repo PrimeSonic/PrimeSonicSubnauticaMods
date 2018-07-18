@@ -29,6 +29,7 @@
             CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.None);
 
             KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, TechTypeID);
         }
 
         private static TechData GetRecipe()
