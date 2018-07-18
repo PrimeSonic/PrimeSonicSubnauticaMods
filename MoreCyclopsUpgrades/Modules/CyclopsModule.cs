@@ -9,9 +9,9 @@
 
     internal enum CyclopsModules : int
     {
-        Solar = 1,
-        SolarMk2 = 2,
-        ThermalMk2 = 3,
+        ThermalMk2 = 1,
+        Solar = 2,
+        SolarMk2 = 3,
         PowerMk2 = 4,
         PowerMk3 = 5,
         Speed = 6,
