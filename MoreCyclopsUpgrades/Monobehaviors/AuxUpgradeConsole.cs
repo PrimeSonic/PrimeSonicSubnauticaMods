@@ -117,29 +117,26 @@
 
             foreach (var slot in Slots)
             {
-                EmModuleSaveData savedModule = SaveData[slot];
+                EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
                 InventoryItem item = Modules.GetItemInSlot(slot);
 
                 if (item == null)
                 {
-                    savedModule.ItemID = TechType.None;
-                    savedModule.HasBattery = false;
-                    savedModule.BatteryCharge = 0f;
+                    savedModule.ItemID = (int)TechType.None;
+                    savedModule.BatteryCharge = -1f;
                 }
                 else
                 {
-                    savedModule.ItemID = item.item.GetTechType();
+                    savedModule.ItemID = (int)item.item.GetTechType();
 
                     var battery = item.item.GetComponent<Battery>();
 
                     if (battery == null)
-                    {
-                        savedModule.HasBattery = false;
-                        savedModule.BatteryCharge = 0f;
+                    {                        
+                        savedModule.BatteryCharge = -1f;
                     }
                     else
                     {
-                        savedModule.HasBattery = true;
                         savedModule.BatteryCharge = battery.charge;
                     }
                 }
@@ -170,19 +167,19 @@
             {
                 foreach (string slot in Slots)
                 {
-                    EmModuleSaveData savedModule = SaveData[slot];
+                    EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
 
                     Console.WriteLine($"AuxUpgradeConsole Slot:{slot} ItemID:{savedModule.ItemID}");
-                    if (savedModule.ItemID == TechType.None)
+                    if (savedModule.ItemID == (int)TechType.None)
                         continue;
 
-                    InventoryItem item = CyclopsModule.SpawnCyclopsModule(savedModule.ItemID);
+                    InventoryItem item = CyclopsModule.SpawnCyclopsModule((TechType)savedModule.ItemID);
 
                     Console.WriteLine($"AuxUpgradeConsole Slot:{slot} SpawnIsNull:{item is null}");
                     if (item is null)
                         continue;
 
-                    if (savedModule.HasBattery)
+                    if (savedModule.BatteryCharge > 0f)
                     {
                         item.item.GetComponent<Battery>().charge = savedModule.BatteryCharge;
                     }

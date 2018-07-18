@@ -59,7 +59,7 @@
             // Associate the recipie to the new TechType
             CraftDataHandler.SetTechData(NukeFabTechType, customFabRecipe);
 
-            KnownTechHandler.SetAnalysisTechEntry(CyclopsModule.DepletedNuclearModuleID, new TechType[1] { NukeFabTechType }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseNuclearReactor, new TechType[1] { NukeFabTechType }, $"{FriendlyName} blueprint discovered!");
         }
 
         private static void CreateCustomTree(out CraftTree.Type craftType)
