@@ -17,6 +17,8 @@
         private const string ToggleID = "NukModConserve";
         private const string SliderID = "NukeModActivatesAt";
 
+        private static float CyclopsMaxPower = 1;
+
         internal static float MinimumEnergyDeficit => EmConfig.ConserveNuclearModulePower ? RequiredEnergyDeficit : 0f;
 
         internal static EmNuclearConfig EmConfig = new EmNuclearConfig(MinPercent, MaxPercent, DefaultPercent);
@@ -34,9 +36,19 @@
             }
         }
 
-        internal static void UpdateValuesFromCyclops(float maxPower)
+        internal static void SetCyclopsMaxPower(float maxPower)
         {
-            RequiredEnergyDeficit = Mathf.Round(maxPower - maxPower * EmConfig.RequiredEnergyPercentage / 100f);
+            if (CyclopsMaxPower == maxPower)
+                return;
+
+            CyclopsMaxPower = maxPower;
+
+            UpdateRequiredDeficit();
+        }
+
+        private static void UpdateRequiredDeficit()
+        {
+            RequiredEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * EmConfig.RequiredEnergyPercentage / 100f);
         }
 
         public NuclearModuleConfig() : base("Cyclops Nuclear Module Options")
@@ -74,6 +86,7 @@
                 return;
 
             EmConfig.RequiredEnergyPercentage = Mathf.Round(args.Value);
+            UpdateRequiredDeficit();
             WriteConfigFile();
         }
 

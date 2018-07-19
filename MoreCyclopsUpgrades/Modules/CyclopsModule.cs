@@ -156,7 +156,7 @@
 
                     var pCell = gameObject.AddComponent<Battery>();
                     pCell.name = "NuclearBattery";
-                    pCell._capacity = NuclearChargingManager.MaxCharge;
+                    pCell._capacity = PowerCharging.MaxNuclearCharge;
                 }
                 else
                 {

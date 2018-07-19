@@ -65,7 +65,6 @@
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
     <Compile Include="SaveData\EmNuclearConfig.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
-    <Compile Include="Modules\Recharging\Nuclear\NuclearChargingManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerIndexManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
