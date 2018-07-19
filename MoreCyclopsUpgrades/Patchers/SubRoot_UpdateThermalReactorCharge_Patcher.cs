@@ -13,9 +13,11 @@
                 return true;
             }
 
-            Equipment modules = __instance.upgradeConsole.modules;
+            Equipment modules = __instance.upgradeConsole.modules;            
 
-            PowerCharging.RechargeCyclops(ref __instance, modules);
+            AuxUpgradeConsole[] secondaryUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
+
+            PowerCharging.RechargeCyclops(ref __instance, modules, secondaryUpgradeConsoles);
 
             // No need to execute original method anymore.
             // Original thermal charging is handled in here now.

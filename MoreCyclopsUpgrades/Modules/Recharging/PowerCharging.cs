@@ -6,20 +6,18 @@
 
     internal static class PowerCharging
     {
-        private static List<Battery> NuclerCells = new List<Battery>(6);
-        private static List<string> NuclerSlots = new List<string>(6);
+        private static List<Battery> NuclerCells = new List<Battery>(36);
+        private static List<string> NuclerSlots = new List<string>(36);
 
         private const float Mk2ChargeRateModifier = 1.15f;
         private const float NuclearDrainRate = 0.15f;
 
-        private const float ZeroCharge = 0f;
-
-        internal const float MaxMk2Charge = 100f;        
+        internal const float MaxMk2Charge = 100f;
         internal const float MaxNuclearCharge = 6000f; // Less than the normal 20k for balance
 
-        internal static void UpdateHelmHUD(ref CyclopsHelmHUDManager __instance, UpgradeConsole upgradeConsole, ref int lastReservePower)
+        internal static void UpdateHelmHUD(ref CyclopsHelmHUDManager __instance, Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles, ref int lastReservePower)
         {
-            int currentReservePower = GetTotalReservePower(upgradeConsole.modules);
+            int currentReservePower = GetTotalReservePower(modules, auxUpgradeConsoles);
 
             if (currentReservePower > 0f)
             {
@@ -45,7 +43,7 @@
             }
         }
 
-        internal static void RechargeCyclops(ref SubRoot __instance, Equipment modules)
+        internal static void RechargeCyclops(ref SubRoot __instance, Equipment coreModules, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
             float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();
 
@@ -59,55 +57,66 @@
 
             bool renewablePowerAvailable = false;
 
-            foreach (string slotName in SlotHelper.SlotNames)
+            Equipment modules;
+
+            // Do one large loop for all upgrade consoles
+            for (int moduleIndex = -1; moduleIndex < auxUpgradeConsoles.Length; moduleIndex++)
             {
-                TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
+                if (moduleIndex < 0)
+                    modules = coreModules;
+                else
+                    modules = auxUpgradeConsoles[moduleIndex].Modules;
 
-                if (techTypeInSlot == CyclopsModule.SolarChargerID) // Solar
+                foreach (string slotName in SlotHelper.SlotNames)
                 {
-                    surplusPower += ChargeFromModule(ref __instance, availableSolarEnergy, ref powerDeficit);
-                    renewablePowerAvailable |= availableSolarEnergy > 0f;
-                }
-                else if (techTypeInSlot == CyclopsModule.SolarChargerMk2ID) // Solar Mk2
-                {
-                    Battery battery = GetBatteryInSlot(modules, slotName);
-                    surplusPower += ChargeFromModulelMk2(ref __instance, battery, availableSolarEnergy, SolarChargingManager.BatteryDrainRate, ref powerDeficit);
-                    renewablePowerAvailable |= battery.charge > 0f;
+                    TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
 
-                    if (battery.charge < battery.capacity)
-                        lastBatteryToCharge = battery;
-                }
-                else if (techTypeInSlot == TechType.CyclopsThermalReactorModule) // Thermal
-                {
-                    surplusPower += PowerCharging.ChargeFromModule(ref __instance, availableThermalEnergy, ref powerDeficit);
-                    renewablePowerAvailable |= availableThermalEnergy > 0f;
-                }
-                else if (techTypeInSlot == CyclopsModule.ThermalChargerMk2ID) // Thermal Mk2
-                {
-                    Battery battery = GetBatteryInSlot(modules, slotName);
-                    surplusPower += ChargeFromModulelMk2(ref __instance, battery, availableThermalEnergy, ThermalChargingManager.BatteryDrainRate, ref powerDeficit);
-                    renewablePowerAvailable |= battery.charge > 0f;
+                    if (techTypeInSlot == CyclopsModule.SolarChargerID) // Solar
+                    {
+                        surplusPower += ChargeFromModule(ref __instance, availableSolarEnergy, ref powerDeficit);
+                        renewablePowerAvailable |= availableSolarEnergy > 0f;
+                    }
+                    else if (techTypeInSlot == CyclopsModule.SolarChargerMk2ID) // Solar Mk2
+                    {
+                        Battery battery = GetBatteryInSlot(modules, slotName);
+                        surplusPower += ChargeFromModulelMk2(ref __instance, battery, availableSolarEnergy, SolarChargingManager.BatteryDrainRate, ref powerDeficit);
+                        renewablePowerAvailable |= battery.charge > 0f;
 
-                    if (battery.charge < battery.capacity)
-                        lastBatteryToCharge = battery;
-                }
-                else if (techTypeInSlot == CyclopsModule.NuclearChargerID) // Nuclear
-                {
-                    Battery battery = GetBatteryInSlot(modules, slotName);
-                    NuclerCells.Add(battery);
-                    NuclerSlots.Add(slotName);
-                }
-            }
+                        if (battery.charge < battery.capacity)
+                            lastBatteryToCharge = battery;
+                    }
+                    else if (techTypeInSlot == TechType.CyclopsThermalReactorModule) // Thermal
+                    {
+                        surplusPower += PowerCharging.ChargeFromModule(ref __instance, availableThermalEnergy, ref powerDeficit);
+                        renewablePowerAvailable |= availableThermalEnergy > 0f;
+                    }
+                    else if (techTypeInSlot == CyclopsModule.ThermalChargerMk2ID) // Thermal Mk2
+                    {
+                        Battery battery = GetBatteryInSlot(modules, slotName);
+                        surplusPower += ChargeFromModulelMk2(ref __instance, battery, availableThermalEnergy, ThermalChargingManager.BatteryDrainRate, ref powerDeficit);
+                        renewablePowerAvailable |= battery.charge > 0f;
 
-            if (NuclerCells.Count > 0 && powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit && !renewablePowerAvailable) // no renewable power available
-            {
-                // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
-                for (int i = 0; i < NuclerCells.Count; i++)
+                        if (battery.charge < battery.capacity)
+                            lastBatteryToCharge = battery;
+                    }
+                    else if (techTypeInSlot == CyclopsModule.NuclearChargerID) // Nuclear
+                    {
+                        Battery battery = GetBatteryInSlot(modules, slotName);
+                        NuclerCells.Add(battery);
+                        NuclerSlots.Add(slotName);
+                    }
+                }
+
+                if (NuclerCells.Count > 0 && powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit && !renewablePowerAvailable) // no renewable power available
                 {
-                    Battery battery = NuclerCells[i];
-                    string slotName = NuclerSlots[i];
-                    ChargeCyclopsFromBattery(ref __instance, battery, NuclearDrainRate, ref powerDeficit);
-                    HandleBatteryDepletion(modules, slotName, battery);
+                    // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
+                    for (int nukCelIndex = 0; nukCelIndex < NuclerCells.Count; nukCelIndex++)
+                    {
+                        Battery battery = NuclerCells[nukCelIndex];
+                        string slotName = NuclerSlots[nukCelIndex];
+                        ChargeCyclopsFromBattery(ref __instance, battery, NuclearDrainRate, ref powerDeficit);
+                        HandleBatteryDepletion(modules, slotName, battery);
+                    }
                 }
             }
 
@@ -118,9 +127,9 @@
             }
         }
 
-        internal static void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager __instance, Equipment modules)
+        internal static void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager __instance, Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
-            int currentReservePower = GetTotalReservePower(modules);
+            int currentReservePower = GetTotalReservePower(modules, auxUpgradeConsoles);
 
             float currentBatteryPower = __instance.subRoot.powerRelay.GetPower();
 
@@ -140,10 +149,20 @@
             NuclearModuleConfig.SetCyclopsMaxPower(__instance.subRoot.powerRelay.GetMaxPower());
         }
 
-        private static int GetTotalReservePower(Equipment modules)
+        private static int GetTotalReservePower(Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
-            float availableReservePower = ZeroCharge;
+            float availableReservePower = 0f;
 
+            availableReservePower += GetReserverPowerInEquipment(modules, availableReservePower);
+
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                availableReservePower += GetReserverPowerInEquipment(auxConsole.Modules, availableReservePower);
+
+            return Mathf.FloorToInt(availableReservePower);
+        }
+
+        private static float GetReserverPowerInEquipment(Equipment modules, float availableReservePower)
+        {
             foreach (string slotName in SlotHelper.SlotNames)
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slotName);
@@ -157,14 +176,14 @@
                 }
             }
 
-            return Mathf.FloorToInt(availableReservePower);
+            return availableReservePower;
         }
 
         private static int GetLastPowerPercentage(ref CyclopsHelmHUDManager cyclopsHUD)
         {
             return (int)cyclopsHUD.GetPrivateField("lastPowerPctUsedForString");
         }
-        
+
         private static Battery GetBatteryInSlot(Equipment modules, string slotName)
         {
             // Get the battery component
@@ -175,10 +194,10 @@
 
         private static void ChargeCyclopsFromBattery(ref SubRoot cyclops, Battery batteryInSlot, float drainingRate, ref float powerDeficit)
         {
-            if (Mathf.Approximately(powerDeficit, ZeroCharge)) // No power deficit left to charge
+            if (Mathf.Approximately(powerDeficit, 0f)) // No power deficit left to charge
                 return; // Exit
 
-            if (Mathf.Approximately(batteryInSlot.charge, ZeroCharge)) // The battery has no charge left
+            if (Mathf.Approximately(batteryInSlot.charge, 0f)) // The battery has no charge left
                 return; // Skip this battery
 
             // Mathf.Min is to prevent accidentally taking too much power from the battery
@@ -191,7 +210,7 @@
             else // Battery about to be fully drained
             {
                 chargeAmt = batteryInSlot.charge; // Take what's left
-                batteryInSlot.charge = ZeroCharge; // Set battery to empty                
+                batteryInSlot.charge = 0f; // Set battery to empty                
             }
 
             powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
@@ -201,24 +220,24 @@
 
         private static float ChargeFromModule(ref SubRoot cyclops, float chargeAmount, ref float powerDeficit)
         {
-            if (Mathf.Approximately(powerDeficit, ZeroCharge))
+            if (Mathf.Approximately(powerDeficit, 0f))
                 return chargeAmount; // Surplus power
 
-            if (Mathf.Approximately(chargeAmount, ZeroCharge))
-                return ZeroCharge;
+            if (Mathf.Approximately(chargeAmount, 0f))
+                return 0f;
 
             cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
-            powerDeficit = Mathf.Max(ZeroCharge, powerDeficit - chargeAmount);
+            powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
 
-            return Mathf.Max(ZeroCharge, chargeAmount - powerDeficit); // Surplus power
+            return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
         }
 
         private static float ChargeFromModulelMk2(ref SubRoot cyclops, Battery batteryInSlot, float chargeAmount, float batteryDrainRate, ref float powerDeficit)
         {
-            if (Mathf.Approximately(chargeAmount, ZeroCharge))
+            if (Mathf.Approximately(chargeAmount, 0f))
             {
                 ChargeCyclopsFromBattery(ref cyclops, batteryInSlot, batteryDrainRate, ref powerDeficit);
-                return ZeroCharge;
+                return 0f;
             }
             else
             {
@@ -231,11 +250,11 @@
             chargeAmount *= Mk2ChargeRateModifier;
 
             cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
-            powerDeficit = Mathf.Max(ZeroCharge, powerDeficit - chargeAmount);
+            powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
 
             batteryInSlot.charge = Mathf.Min(batteryInSlot.capacity, batteryInSlot.charge + chargeAmount);
 
-            return Mathf.Max(ZeroCharge, chargeAmount - powerDeficit); // Surplus power
+            return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
         }
 
         /// <summary>

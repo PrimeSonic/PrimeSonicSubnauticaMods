@@ -44,20 +44,20 @@
             34f  // Power Index 3: 32% cost reduction
         };
 
-        internal static void UpdatePowerIndex(ref SubRoot cyclops)
+        internal static void UpdatePowerIndex(ref SubRoot cyclops, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
             float originalRating = (float)cyclops.GetPrivateField(currentPowerRatingField);
 
             Equipment modules = cyclops.upgradeConsole.modules;
 
-            int powerIndex = GetPowerIndex(modules);
+            int powerIndex = GetPowerIndex(modules, auxUpgradeConsoles);
 
             cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
             cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
             cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
 
             float nextPowerRating = EnginePowerRatings[powerIndex];
-            
+
             if (originalRating != nextPowerRating)
             {
                 cyclops.SetPrivateField(currentPowerRatingField, nextPowerRating);
@@ -67,26 +67,36 @@
             }
         }
 
-        private static int GetPowerIndex(Equipment modules)
+        private static int GetPowerIndex(Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
-            int powerIndex = 0;
+            // Engine Efficiency Mk1
+            int powerMk3Count = modules.GetCount(CyclopsModule.PowerUpgradeMk3ID);
 
-            if (modules.GetCount(TechType.PowerUpgradeModule) > 0)
-            {
-                powerIndex = 1;
-            }
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                powerMk3Count += auxConsole.Modules.GetCount(CyclopsModule.PowerUpgradeMk3ID);
 
-            if (modules.GetCount(CyclopsModule.PowerUpgradeMk2ID) > 0)
-            {
-                powerIndex = 2;
-            }
+            if (powerMk3Count > 0)
+                return 3;
 
-            if (modules.GetCount(CyclopsModule.PowerUpgradeMk3ID) > 0)
-            {
-                powerIndex = 3;
-            }
+            // Engine Efficiency Mk2
+            int powerMk2Count = modules.GetCount(CyclopsModule.PowerUpgradeMk2ID);
 
-            return powerIndex;
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                powerMk2Count += auxConsole.Modules.GetCount(CyclopsModule.PowerUpgradeMk2ID);
+
+            if (powerMk2Count > 0)
+                return 2;
+
+            // Engine Efficiency Mk3
+            int powerMk1Count = modules.GetCount(TechType.PowerUpgradeModule);
+
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                powerMk1Count += auxConsole.Modules.GetCount(TechType.PowerUpgradeModule);
+
+            if (powerMk1Count > 0)
+                return 1;
+
+            return 0;
         }
     }
 }

@@ -107,7 +107,7 @@
                 gameObject = GameObject.Instantiate(prefab);
 
                 gameObject.GetComponent<PrefabIdentifier>().ClassId = DepletedNuclearModule.DepletedNameID;
-                gameObject.AddComponent<TechTag>().type = CyclopsModule.DepletedNuclearModuleID;
+                gameObject.AddComponent<TechTag>().type = DepletedNuclearModuleID;
             }
             else
             {
