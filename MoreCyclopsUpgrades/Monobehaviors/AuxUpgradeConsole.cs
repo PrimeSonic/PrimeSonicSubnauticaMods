@@ -77,12 +77,12 @@
 
         private void OnEquip(string slot, InventoryItem item)
         {
-            //this.UpdateVisuals();                   
+            //this.UpdateVisuals();
         }
 
         private void OnUnequip(string slot, InventoryItem item)
         {
-            //this.UpdateVisuals();                   
+            //this.UpdateVisuals();
         }
 
         //private void UpdateVisuals()
@@ -156,12 +156,15 @@
             bool hasSaveData = this.SaveData.Load();
             if (hasSaveData)
             {
-                var prEquipment = (Dictionary<string, InventoryItem>)this.Modules.GetInstanceField("equipment");
-                var prEquipmentCount = (Dictionary<TechType, int>)this.Modules.GetInstanceField("equippedCount");
-                MethodInfo notifyMethod = this.Modules.GetInstanceMethod("NotifyEquip");
+                // Because the items here aren't being serialized with everything else normally,
+                // I've used custom save data to handle whatever gets left in these slots.
 
+                // The following is a recreation of the essential parts of the Equipment.ResponseEquipment method.
                 foreach (string slot in SlotHelper.SlotNames)
                 {
+                    // These slots need to be added before we can add items to them
+                    this.Modules.AddSlot(slot);
+
                     EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
 
                     if (savedModule.ItemID == (int)TechType.None)
@@ -172,25 +175,10 @@
                     if (spanwedItem is null)
                         continue;
 
-                    if (savedModule.BatteryCharge > 0f)
+                    if (savedModule.BatteryCharge > 0f) // Modules without batteries are stored with a -1 value for charge
                         spanwedItem.item.GetComponent<Battery>().charge = savedModule.BatteryCharge;
 
-                    // The code below is mostly a copy of Equipment.AddItem
-                    // AddItem couldn't be called directly due to 
-                    spanwedItem.container = this.Modules;
-                    spanwedItem.item.Reparent(this.Modules.tr);
-
-                    prEquipment[slot] = spanwedItem;
-
-                    TechType techType = spanwedItem.item.GetTechType();
-
-                    if (prEquipmentCount.ContainsKey(techType))
-                        prEquipmentCount[techType]++;
-                    else
-                        prEquipmentCount.Add(techType, 1);
-
-                    Equipment.SendEquipmentEvent(spanwedItem.item, 0, this.Modules.owner, slot);
-                    notifyMethod.Invoke(this.Modules, new object[] { slot, spanwedItem });
+                    this.Modules.AddItem(slot, spanwedItem, true);
                 }
             }
 
