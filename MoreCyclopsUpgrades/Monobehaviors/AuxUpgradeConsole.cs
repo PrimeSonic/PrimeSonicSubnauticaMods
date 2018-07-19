@@ -1,20 +1,25 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System;
-    using System.Collections.Generic;
-    using SMLHelper.V2.Utility;
     using ProtoBuf;
+    using SMLHelper.V2.Utility;
     using UnityEngine;
-    using System.Reflection;
 
     [ProtoContract]
     public class AuxUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
+        internal SubRoot ParentCyclops = null;
+
         public Equipment Modules { get; private set; }
 
         public override void Awake()
         {
             base.Awake();
+
+            if (ParentCyclops == null)
+            {
+                ParentCyclops = GetComponentInParent<SubRoot>();
+            }
 
             if (SaveData == null)
             {
@@ -78,11 +83,18 @@
         private void OnEquip(string slot, InventoryItem item)
         {
             //this.UpdateVisuals();
+            InformCyclopsUpgradeChange();
         }
 
         private void OnUnequip(string slot, InventoryItem item)
         {
             //this.UpdateVisuals();
+            InformCyclopsUpgradeChange();
+        }
+
+        internal void InformCyclopsUpgradeChange()
+        {
+            ParentCyclops?.SetInstanceField("subModulesDirty", true);
         }
 
         //private void UpdateVisuals()
