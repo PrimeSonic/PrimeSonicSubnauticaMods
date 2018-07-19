@@ -5,6 +5,7 @@
     using SMLHelper.V2.Utility;
     using ProtoBuf;
     using UnityEngine;
+    using System.Reflection;
 
     [ProtoContract]
     public class AuxUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
@@ -157,6 +158,7 @@
             {
                 var prEquipment = (Dictionary<string, InventoryItem>)this.Modules.GetInstanceField("equipment");
                 var prEquipmentCount = (Dictionary<TechType, int>)this.Modules.GetInstanceField("equippedCount");
+                MethodInfo notifyMethod = this.Modules.GetInstanceMethod("NotifyEquip");
 
                 foreach (string slot in SlotHelper.SlotNames)
                 {
@@ -188,6 +190,7 @@
                         prEquipmentCount.Add(techType, 1);
 
                     Equipment.SendEquipmentEvent(spanwedItem.item, 0, this.Modules.owner, slot);
+                    notifyMethod.Invoke(this.Modules, new object[] { slot, spanwedItem });
                 }
             }
 
