@@ -21,7 +21,7 @@
         public static void Patch()
         {
             TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
-            KnownTechHandler.SetAnalysisTechEntry(TechType.Cyclops, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.CyclopsHullModule1, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
             LanguageHandler.SetLanguageLine(HandOverText, "Access Auxiliary Cyclops Upgrade Console");
             CraftDataHandler.AddBuildable(TechTypeID);
             CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, TechTypeID);

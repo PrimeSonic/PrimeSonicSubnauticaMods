@@ -1,13 +1,15 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System;
+    using System.Collections.Generic;
+    using SMLHelper.V2.Utility;
     using ProtoBuf;
     using UnityEngine;
 
     [ProtoContract]
     public class AuxUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
-        internal static readonly string[] Slots = new string[]
+        internal static readonly IEnumerable<string> Slots = new string[]
         {
             "Module1",
             "Module2",
@@ -132,7 +134,7 @@
                     var battery = item.item.GetComponent<Battery>();
 
                     if (battery == null)
-                    {                        
+                    {
                         savedModule.BatteryCharge = -1f;
                     }
                     else
@@ -149,9 +151,8 @@
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
             if (this.Modules == null)
-            {
                 this.InitializeModules();
-            }
+
             this.Modules.Clear();
         }
 
@@ -162,30 +163,41 @@
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
             bool hasSaveData = this.SaveData.Load();
-            Console.WriteLine($"AuxUpgradeConsole OnProtoDeserializeObjectTree HasData:{hasSaveData}");
             if (hasSaveData)
             {
+                var prEquipment = (Dictionary<string, InventoryItem>)this.Modules.GetInstanceField("equipment");
+                var prEquipmentCount = (Dictionary<TechType, int>)this.Modules.GetInstanceField("equippedCount");
+
                 foreach (string slot in Slots)
                 {
                     EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
 
-                    Console.WriteLine($"AuxUpgradeConsole Slot:{slot} ItemID:{savedModule.ItemID}");
                     if (savedModule.ItemID == (int)TechType.None)
                         continue;
 
-                    InventoryItem item = CyclopsModule.SpawnCyclopsModule((TechType)savedModule.ItemID);
+                    InventoryItem spanwedItem = CyclopsModule.SpawnCyclopsModule((TechType)savedModule.ItemID);
 
-                    Console.WriteLine($"AuxUpgradeConsole Slot:{slot} SpawnIsNull:{item is null}");
-                    if (item is null)
+                    if (spanwedItem is null)
                         continue;
 
                     if (savedModule.BatteryCharge > 0f)
-                    {
-                        item.item.GetComponent<Battery>().charge = savedModule.BatteryCharge;
-                    }
+                        spanwedItem.item.GetComponent<Battery>().charge = savedModule.BatteryCharge;
 
-                    Console.WriteLine($"AuxUpgradeConsole AddingToSlot:{slot}");
-                    this.Modules.AddItem(slot, item, true);
+                    // The code below is mostly a copy of Equipment.AddItem
+                    // AddItem couldn't be called directly due to 
+                    spanwedItem.container = this.Modules;
+                    spanwedItem.item.Reparent(this.Modules.tr);
+
+                    prEquipment[slot] = spanwedItem;
+
+                    TechType techType = spanwedItem.item.GetTechType();
+
+                    if (prEquipmentCount.ContainsKey(techType))
+                        prEquipmentCount[techType]++;
+                    else
+                        prEquipmentCount.Add(techType, 1);
+
+                    Equipment.SendEquipmentEvent(spanwedItem.item, 0, this.Modules.owner, slot);
                 }
             }
 

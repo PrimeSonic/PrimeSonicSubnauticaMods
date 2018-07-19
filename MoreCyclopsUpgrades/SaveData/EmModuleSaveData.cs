@@ -1,15 +1,14 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System;
     using System.Collections.Generic;
-    using ProtoBuf;
-    using UnityEngine;
     using Common.EasyMarkup;
-    using SMLHelper.V2.Utility;
-    using System.IO;
 
     public class EmModuleSaveData : EmPropertyCollection
     {
+        private const string ItemIDKey = "ID";
+        private const string BatteryChargeKey = "B";
+        private const string KeyName = "MDS";
+
         private EmProperty<int> _itemID;
         private EmProperty<float> _batteryCharge;
 
@@ -29,19 +28,19 @@
         {
             get => new List<EmProperty>()
             {
-                new EmProperty<int>("ItemID", 0),
-                new EmProperty<float>("BatteryCharge", -1f)
+                new EmProperty<int>(ItemIDKey, 0),
+                new EmProperty<float>(BatteryChargeKey, -1f)
             };
         }
 
-        public EmModuleSaveData() : this("ModuleSaveData")
+        public EmModuleSaveData() : this(KeyName)
         {
         }
 
         public EmModuleSaveData(string keyName) : base(keyName, GetDefinitions)
         {
-            _itemID = (EmProperty<int>)Properties["ItemID"];
-            _batteryCharge = (EmProperty<float>)Properties["BatteryCharge"];
+            _itemID = (EmProperty<int>)Properties[ItemIDKey];
+            _batteryCharge = (EmProperty<float>)Properties[BatteryChargeKey];
         }
 
         internal override EmProperty Copy() => new EmModuleSaveData();
