@@ -9,16 +9,6 @@
     [ProtoContract]
     public class AuxUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
-        internal static readonly IEnumerable<string> Slots = new string[]
-        {
-            "Module1",
-            "Module2",
-            "Module3",
-            "Module4",
-            "Module5",
-            "Module6"
-        };
-
         public Equipment Modules { get; private set; }
 
         public override void Awake()
@@ -56,7 +46,7 @@
 
         private void UnlockDefaultModuleSlots()
         {
-            this.Modules.AddSlots(Slots);
+            this.Modules.AddSlots(SlotHelper.SlotNames);
         }
 
         public void OnHandClick(HandTargetEventData eventData)
@@ -117,7 +107,7 @@
         {
             this.version = 2;
 
-            foreach (var slot in Slots)
+            foreach (var slot in SlotHelper.SlotNames)
             {
                 EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
                 InventoryItem item = Modules.GetItemInSlot(slot);
@@ -168,7 +158,7 @@
                 var prEquipment = (Dictionary<string, InventoryItem>)this.Modules.GetInstanceField("equipment");
                 var prEquipmentCount = (Dictionary<TechType, int>)this.Modules.GetInstanceField("equippedCount");
 
-                foreach (string slot in Slots)
+                foreach (string slot in SlotHelper.SlotNames)
                 {
                     EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
 

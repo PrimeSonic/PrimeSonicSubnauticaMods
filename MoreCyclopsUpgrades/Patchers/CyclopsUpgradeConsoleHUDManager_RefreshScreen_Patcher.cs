@@ -15,9 +15,9 @@
 
             Equipment modules = upgradeConsole.modules;
 
-            AuxUpgradeConsole[] secondaryUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
+            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
-            PowerCharging.UpdateConsoleHUD(__instance, modules, secondaryUpgradeConsoles);
+            PowerCharging.UpdateConsoleHUD(__instance, modules, auxUpgradeConsoles);
         }
     }
 }

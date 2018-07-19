@@ -57,14 +57,12 @@
 
             bool renewablePowerAvailable = false;
 
-            Equipment modules;
+            Equipment modules = coreModules;
 
             // Do one large loop for all upgrade consoles
             for (int moduleIndex = -1; moduleIndex < auxUpgradeConsoles.Length; moduleIndex++)
             {
-                if (moduleIndex < 0)
-                    modules = coreModules;
-                else
+                if (moduleIndex > -1)
                     modules = auxUpgradeConsoles[moduleIndex].Modules;
 
                 foreach (string slotName in SlotHelper.SlotNames)
