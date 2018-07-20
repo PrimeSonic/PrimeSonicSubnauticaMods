@@ -64,7 +64,8 @@
 
         public void OnHandClick(GUIHand guiHand)
         {
-            // TODO - This actually allows interaction even when partially constructed
+            if (!Buildable.constructed)
+                return;
 
             Player main = Player.main;
             PDA pda = main.GetPDA();
@@ -74,6 +75,9 @@
 
         public void OnHandHover(GUIHand guiHand)
         {
+            if (!Buildable.constructed)
+                return;
+
             HandReticle main = HandReticle.main;
             main.SetInteractText("UseAuxConsole");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
