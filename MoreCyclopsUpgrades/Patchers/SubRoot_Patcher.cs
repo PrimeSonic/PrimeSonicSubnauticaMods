@@ -148,6 +148,7 @@
             return bonusCrushDepth;
         }
 
+        // This is a straight copy of the values in the original
         private static readonly Dictionary<TechType, float> ExtraCrushDepths = new Dictionary<TechType, float>
         {
             { TechType.HullReinforcementModule, 800f },
