@@ -1,12 +1,9 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using System.Reflection;
-    using Common;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Utility;
     using UnityEngine;
 
     internal class AuxCyUpgradeConsole
@@ -50,22 +47,47 @@
 
             public override GameObject GetGameObject()
             {
-                GameObject prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/Fabricator"));
-                GameObject.DestroyImmediate(prefab.GetComponent<Fabricator>());
+                GameObject consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide"));
+                GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
+                GameObject consoleModel = consoleWide.FindChild("console");
 
-                var upConsole = prefab.AddComponent<AuxUpgradeConsole>();                
+                GameObject prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Workbench));
+                prefab.FindChild("model").SetActive(false); // Turn off the model
+                GameObject.DestroyImmediate(prefab.GetComponent<Workbench>());
+
+                var auxConsole = prefab.AddComponent<AuxUpgradeConsole>();
+                
+                consoleModel.transform.parent = auxConsole.transform;
+
+                //auxConsole.Module1 = consoleWide.FindChild("engine_console_key_01_01");
+                //auxConsole.Module2 = consoleWide.FindChild("engine_console_key_01_02");
+                //auxConsole.Module3 = consoleWide.FindChild("engine_console_key_01_03");
+                //auxConsole.Module4 = consoleWide.FindChild("engine_console_key_01_04");
+                //auxConsole.Module5 = consoleWide.FindChild("engine_console_key_01_05");
+                //auxConsole.Module6 = consoleWide.FindChild("engine_console_key_01_06");
+
+                // Rotate to the correct orientation
+                consoleModel.transform.rotation *= Quaternion.Euler(180f, 180f, 180f);
+
+                // Update sky applier
+                var skyApplier = consolePrefab.GetComponent<SkyApplier>();
+                skyApplier.renderers = consolePrefab.GetComponentsInChildren<Renderer>();
+                skyApplier.anchorSky = Skies.Auto;
 
                 var constructible = prefab.GetComponent<Constructable>();
                 constructible.allowedInBase = false;
-                constructible.allowedInSub = true;
+                constructible.allowedInSub = true; // Only allowed in Cyclops
                 constructible.allowedOutside = false;
                 constructible.allowedOnCeiling = false;
-                constructible.allowedOnGround = false;
-                constructible.allowedOnWall = true;
+                constructible.allowedOnGround = true; // Allowed on floor
+                constructible.allowedOnWall = true; // Allowed on walls
                 constructible.allowedOnConstructables = false;
-                constructible.controlModelState = false;
+                constructible.controlModelState = true;
                 constructible.rotationEnabled = false;
                 constructible.techType = TechTypeID;
+                constructible.model = consoleModel;
+
+                constructible.transform.parent = auxConsole.transform;
 
                 return prefab;
             }

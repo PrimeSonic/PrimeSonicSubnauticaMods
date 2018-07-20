@@ -12,6 +12,8 @@
 
         public Equipment Modules { get; private set; }
 
+        private Constructable Buildable = null;
+
         public override void Awake()
         {
             base.Awake();
@@ -19,6 +21,11 @@
             if (ParentCyclops == null)
             {
                 ParentCyclops = GetComponentInParent<SubRoot>();
+            }
+
+            if (Buildable == null)
+            {
+                Buildable = GetComponentInChildren<Constructable>();
             }
 
             if (SaveData == null)
@@ -55,22 +62,14 @@
             this.Modules.AddSlots(SlotHelper.SlotNames);
         }
 
-        public void OnHandClick(HandTargetEventData eventData)
-        {
-            OnHandClick(eventData.guiHand);
-        }
-
         public void OnHandClick(GUIHand guiHand)
         {
+            // TODO - This actually allows interaction even when partially constructed
+
             Player main = Player.main;
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(this.Modules, false);
             pda.Open(PDATab.Inventory, null, null, -1f);
-        }
-
-        public void OnHandHover(HandTargetEventData eventData)
-        {
-            OnHandHover(eventData.guiHand);
         }
 
         public void OnHandHover(GUIHand guiHand)
@@ -82,14 +81,23 @@
 
         private void OnEquip(string slot, InventoryItem item)
         {
-            //this.UpdateVisuals();
             InformCyclopsUpgradeChange();
+            //this.UpdateVisuals();
+
+            Buildable.deconstructionAllowed = false;
         }
 
         private void OnUnequip(string slot, InventoryItem item)
         {
-            //this.UpdateVisuals();
             InformCyclopsUpgradeChange();
+            //this.UpdateVisuals();
+
+            bool allEmpty = true;
+
+            foreach (string slotName in SlotHelper.SlotNames)            
+                allEmpty &= Modules.GetTechTypeInSlot(slotName) == TechType.None;
+
+            Buildable.deconstructionAllowed = allEmpty;
         }
 
         internal void InformCyclopsUpgradeChange()
@@ -99,21 +107,27 @@
 
         //private void UpdateVisuals()
         //{
-        //    this.SetModuleVisibility("Module1", this.module1);
-        //    this.SetModuleVisibility("Module2", this.module2);
-        //    this.SetModuleVisibility("Module3", this.module3);
-        //    this.SetModuleVisibility("Module4", this.module4);
-        //    this.SetModuleVisibility("Module5", this.module5);
-        //    this.SetModuleVisibility("Module6", this.module6);
+        //    this.SetModuleVisibility("Module1", this.Module1);
+        //    this.SetModuleVisibility("Module2", this.Module2);
+        //    this.SetModuleVisibility("Module3", this.Module3);
+        //    this.SetModuleVisibility("Module4", this.Module4);
+        //    this.SetModuleVisibility("Module5", this.Module5);
+        //    this.SetModuleVisibility("Module6", this.Module6);
         //}
 
-        //private void SetModuleVisibility(string slot, GameObject module)
+        //private bool SetModuleVisibility(string slot, GameObject module)
         //{
         //    if (module == null)
         //    {
-        //        return;
+        //        ErrorMessage.AddMessage($"SetModuleVisibility in slot {slot} module was null");
+        //        return false;
         //    }
-        //    module.SetActive(this.modules.GetTechTypeInSlot(slot) != TechType.None);
+
+        //    bool hasItem = this.Modules.GetTechTypeInSlot(slot) != TechType.None;
+
+        //    module.SetActive(hasItem);
+
+        //    return hasItem;
         //}
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
