@@ -70,8 +70,8 @@
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearModuleConfig.cs" />
-    <Compile Include="Modules\Recharging\PowerCharging.cs" />
-    <Compile Include="Modules\SlotHelper.cs" />
+    <Compile Include="PowerManager.cs" />
+    <Compile Include="SlotHelper.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarChargingManager.cs" />
