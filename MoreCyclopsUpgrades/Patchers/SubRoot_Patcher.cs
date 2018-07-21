@@ -9,6 +9,8 @@
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
+        private static int LastKnownAuxUpgradeConsoleCount = 0;
+
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
@@ -18,6 +20,17 @@
             Equipment modules = __instance.upgradeConsole.modules;
 
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
+
+            if (auxUpgradeConsoles.Length != LastKnownAuxUpgradeConsoleCount)
+            {
+                foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                    auxConsole.ParentCyclops = __instance;
+
+                if (LastKnownAuxUpgradeConsoleCount < auxUpgradeConsoles.Length)
+                    ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
+
+                LastKnownAuxUpgradeConsoleCount = auxUpgradeConsoles.Length;
+            }
 
             PowerCharging.RechargeCyclops(ref __instance, modules, auxUpgradeConsoles);
 
@@ -34,7 +47,7 @@
         public static bool Prefix(ref SubRoot __instance)
         {
             if (__instance.upgradeConsole == null)
-                return true; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot            
+                return true; // safety check
 
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
@@ -51,24 +64,22 @@
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
-            var subLife = (LiveMixin)__instance.GetInstanceField("live");
-
-            if (__instance.upgradeConsole == null && subLife.IsAlive())
+            if (__instance.upgradeConsole == null)
                 return; // safety check
+
+            HandleToggleableUpgrades(__instance, __instance.upgradeConsole.modules);
 
             // This Postfix patch only handles the auxiliary upgrade consoles and isn't a full replacement
             // The original methos still handles upgrades in the core upgrade console            
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
-                HandleToggleableUpgrades(__instance, auxConsole);
+                HandleToggleableUpgrades(__instance, auxConsole.Modules);
         }
 
-        private static void HandleToggleableUpgrades(SubRoot __instance, AuxUpgradeConsole auxConsole)
+        private static void HandleToggleableUpgrades(SubRoot __instance, Equipment modules)
         {
             List<TechType> upgradeList = new List<TechType>(SlotHelper.SlotNames.Length);
-
-            Equipment modules = auxConsole.Modules;
 
             foreach (string slot in SlotHelper.SlotNames)
             {
@@ -110,7 +121,7 @@
         public static bool Prefix(ref SubRoot __instance)
         {
             if (__instance.upgradeConsole == null)
-                return true; // mimicing safety conditions from SetCyclopsUpgrades() method in SubRoot
+                return true; // safety check
 
             Equipment coreModules = __instance.upgradeConsole.modules;
 

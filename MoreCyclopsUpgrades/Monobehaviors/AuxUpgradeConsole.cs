@@ -18,11 +18,6 @@
         {
             base.Awake();
 
-            if (ParentCyclops == null)
-            {
-                ParentCyclops = GetComponentInParent<SubRoot>();
-            }
-
             if (Buildable == null)
             {
                 Buildable = GetComponentInChildren<Constructable>();
@@ -85,7 +80,7 @@
 
         private void OnEquip(string slot, InventoryItem item)
         {
-            InformCyclopsUpgradeChange();
+            CyclopsUpgradeChange();
             //this.UpdateVisuals();
 
             Buildable.deconstructionAllowed = false;
@@ -93,18 +88,18 @@
 
         private void OnUnequip(string slot, InventoryItem item)
         {
-            InformCyclopsUpgradeChange();
+            CyclopsUpgradeChange();
             //this.UpdateVisuals();
 
             bool allEmpty = true;
 
-            foreach (string slotName in SlotHelper.SlotNames)            
+            foreach (string slotName in SlotHelper.SlotNames)
                 allEmpty &= Modules.GetTechTypeInSlot(slotName) == TechType.None;
 
             Buildable.deconstructionAllowed = allEmpty;
         }
 
-        internal void InformCyclopsUpgradeChange()
+        internal void CyclopsUpgradeChange()
         {
             ParentCyclops?.SetInstanceField("subModulesDirty", true);
         }

@@ -51,13 +51,17 @@
                 GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
                 GameObject consoleModel = consoleWide.FindChild("console");
 
-                GameObject prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Workbench));
-                prefab.FindChild("model").SetActive(false); // Turn off the model
-                GameObject.DestroyImmediate(prefab.GetComponent<Workbench>());
+                // This prefab chosen for it's smaller collision model that's close to the same size
+                GameObject prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.LabTrashcan));
+
+                prefab.FindChild("discovery_trashcan_01_d").SetActive(false); // Turn off this model
+                GameObject.DestroyImmediate(prefab.GetComponent<Trashcan>()); // Don't need this
+                GameObject.DestroyImmediate(prefab.GetComponent<StorageContainer>()); // Don't need this
 
                 var auxConsole = prefab.AddComponent<AuxUpgradeConsole>();
-                
-                consoleModel.transform.parent = auxConsole.transform;
+                auxConsole.ParentCyclops = prefab.GetComponentInParent<SubRoot>();
+
+                consoleModel.transform.SetParent(prefab.transform);
 
                 //auxConsole.Module1 = consoleWide.FindChild("engine_console_key_01_01");
                 //auxConsole.Module2 = consoleWide.FindChild("engine_console_key_01_02");
@@ -70,8 +74,8 @@
                 consoleModel.transform.rotation *= Quaternion.Euler(180f, 180f, 180f);
 
                 // Update sky applier
-                var skyApplier = consolePrefab.GetComponent<SkyApplier>();
-                skyApplier.renderers = consolePrefab.GetComponentsInChildren<Renderer>();
+                var skyApplier = prefab.GetComponent<SkyApplier>();
+                skyApplier.renderers = consoleModel.GetComponentsInChildren<MeshRenderer>();
                 skyApplier.anchorSky = Skies.Auto;
 
                 var constructible = prefab.GetComponent<Constructable>();
@@ -79,15 +83,13 @@
                 constructible.allowedInSub = true; // Only allowed in Cyclops
                 constructible.allowedOutside = false;
                 constructible.allowedOnCeiling = false;
-                constructible.allowedOnGround = true; // Allowed on floor
-                constructible.allowedOnWall = true; // Allowed on walls
+                constructible.allowedOnGround = true; 
+                constructible.allowedOnWall = true; 
                 constructible.allowedOnConstructables = false;
                 constructible.controlModelState = true;
                 constructible.rotationEnabled = false;
                 constructible.techType = TechTypeID;
                 constructible.model = consoleModel;
-
-                constructible.transform.parent = auxConsole.transform;
 
                 return prefab;
             }
