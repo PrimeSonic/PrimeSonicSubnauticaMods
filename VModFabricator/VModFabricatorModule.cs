@@ -74,12 +74,13 @@
             ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(CustomFabAndTreeID, out craftType);
 
             var cyclopsTab = rootNode.AddTabNode("CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"));
-            cyclopsTab.AddCraftingNode(TechType.CyclopsShieldModule,
+            var cyclopsAbilityTab = cyclopsTab.AddTabNode("CyclopsAbilityModules", "Ability Modules", SpriteManager.Get(TechType.CyclopsShieldModule));
+            cyclopsAbilityTab.AddCraftingNode(TechType.CyclopsShieldModule,
                            TechType.CyclopsSonarModule,
                            TechType.CyclopsSeamothRepairModule,
                            TechType.CyclopsFireSuppressionModule,
                            TechType.CyclopsDecoyModule);
-            cyclopsTab.AddModdedCraftingNode("CyclopsSpeedModule");
+            cyclopsAbilityTab.AddModdedCraftingNode("CyclopsSpeedModule");
             var cyclopsDepthTab = cyclopsTab.AddTabNode("CyclopsDepthModules", "Depth Modules", SpriteManager.Get(TechType.CyclopsHullModule1));
             cyclopsDepthTab.AddCraftingNode(TechType.CyclopsHullModule1,
                                             TechType.CyclopsHullModule2,

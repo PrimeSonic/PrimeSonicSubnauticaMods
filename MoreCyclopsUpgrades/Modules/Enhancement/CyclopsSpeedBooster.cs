@@ -18,7 +18,7 @@
                   "Allows the cyclops engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.",
                   CraftTree.Type.CyclopsFabricator,
                   tabs,
-                  TechType.Cyclops)
+                  TechType.CyclopsHullModule1)
         {
         }
 
