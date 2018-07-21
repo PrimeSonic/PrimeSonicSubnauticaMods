@@ -11,8 +11,8 @@
         private const float NuclearDrainRate = 0.15f;
 
         private const float ForwardAccelBonus = 1.25f; // 25% faster forward speed per speed booster module
-        private const float TurningTorqueBonus = 1.15f; // 15% faster turning speed per speed booster module
-        private const float VerticalAccelBonus = 1.10f; // 10% faster vertical speed per speed booster module
+        private const float TurningTorqueBonus = 1.10f; // 10% faster turning speed per speed booster module
+        private const float VerticalAccelBonus = 1.05f; // 5% faster vertical speed per speed booster module
 
         private const float EnginePowerPentalty = 0.5f; // 50% reduced engine efficiency for each speed booster module
 
