@@ -66,6 +66,9 @@
                 // This is to tie the model to the prefab
                 consoleModel.transform.SetParent(prefab.transform);
 
+                consoleWide.SetActive(false);
+                consolePrefab.SetActive(false);
+
                 // TODO figure this out
                 //auxConsole.Module1 = consoleWide.FindChild("engine_console_key_01_01");
                 //auxConsole.Module2 = consoleWide.FindChild("engine_console_key_01_02");

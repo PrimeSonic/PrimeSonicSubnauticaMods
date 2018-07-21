@@ -66,7 +66,7 @@
         /// </summary>
         /// <param name="cyclops">The cyclops.</param>
         /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
-        internal static void UpdatePowerSpeedRating(ref SubRoot cyclops, AuxUpgradeConsole[] auxUpgradeConsoles)
+        internal static void UpdatePowerSpeedRating(ref SubRoot cyclops, IList<AuxUpgradeConsole> auxUpgradeConsoles)
         {
             Equipment modules = cyclops.upgradeConsole.modules;
 
@@ -111,7 +111,7 @@
         /// <param name="modules">The modules.</param>
         /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
         /// <param name="lastReservePower">The last reserve power.</param>
-        internal static void UpdateHelmHUD(ref CyclopsHelmHUDManager __instance, Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles, ref int lastReservePower)
+        internal static void UpdateHelmHUD(ref CyclopsHelmHUDManager __instance, Equipment modules, IList<AuxUpgradeConsole> auxUpgradeConsoles, ref int lastReservePower)
         {
             int currentReservePower = GetTotalReservePower(modules, auxUpgradeConsoles);
 
@@ -145,7 +145,7 @@
         /// <param name="__instance">The instance.</param>
         /// <param name="coreModules">The core modules.</param>
         /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
-        internal static void RechargeCyclops(ref SubRoot __instance, Equipment coreModules, AuxUpgradeConsole[] auxUpgradeConsoles)
+        internal static void RechargeCyclops(ref SubRoot __instance, Equipment coreModules, IList<AuxUpgradeConsole> auxUpgradeConsoles)
         {
             float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();
 
@@ -162,7 +162,7 @@
             Equipment modules = coreModules;
 
             // Do one large loop for all upgrade consoles
-            for (int moduleIndex = -1; moduleIndex < auxUpgradeConsoles.Length; moduleIndex++)
+            for (int moduleIndex = -1; moduleIndex < auxUpgradeConsoles.Count; moduleIndex++)
             {
                 if (moduleIndex > -1)
                     modules = auxUpgradeConsoles[moduleIndex].Modules;
@@ -234,7 +234,7 @@
         /// <param name="hudManager">The console HUD manager.</param>
         /// <param name="coreModules">The core modules.</param>
         /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
-        internal static void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager hudManager, Equipment coreModules, AuxUpgradeConsole[] auxUpgradeConsoles)
+        internal static void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager hudManager, Equipment coreModules, IList<AuxUpgradeConsole> auxUpgradeConsoles)
         {
             int currentReservePower = GetTotalReservePower(coreModules, auxUpgradeConsoles);
 
@@ -266,7 +266,7 @@
         /// <param name="modules">The core equipment modules.</param>
         /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
         /// <returns>The current power index.</returns>
-        private static int GetPowerIndex(Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
+        private static int GetPowerIndex(Equipment modules, IList<AuxUpgradeConsole> auxUpgradeConsoles)
         {
             // Engine Efficiency Mk1
             int powerMk3Count = modules.GetCount(CyclopsModule.PowerUpgradeMk3ID);
@@ -304,14 +304,12 @@
         /// <param name="modules">The modules.</param>
         /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
         /// <returns>The number of speed booster modules currently equipped.</returns>
-        private static int GetSpeedIndex(Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
+        private static int GetSpeedIndex(Equipment modules, IList<AuxUpgradeConsole> auxUpgradeConsoles)
         {
             int speedModuleCount = modules.GetCount(CyclopsModule.SpeedBoosterModuleID);            
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
-                speedModuleCount += auxConsole.Modules.GetCount(CyclopsModule.SpeedBoosterModuleID);
-
-            ErrorMessage.AddMessage($"AuxUpgradeConsole count {auxUpgradeConsoles.Length}");
+                speedModuleCount += auxConsole.Modules.GetCount(CyclopsModule.SpeedBoosterModuleID);            
 
             return speedModuleCount;
         }
@@ -322,7 +320,7 @@
         /// <param name="modules">The equipment modules.</param>
         /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
-        private static int GetTotalReservePower(Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
+        private static int GetTotalReservePower(Equipment modules, IList<AuxUpgradeConsole> auxUpgradeConsoles)
         {
             float availableReservePower = 0f;
 

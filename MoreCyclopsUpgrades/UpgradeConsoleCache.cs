@@ -1,22 +1,36 @@
 ﻿namespace MoreCyclopsUpgrades
 {
+    using System.Collections.Generic;    
+
     internal class UpgradeConsoleCache
     {
-        private static int LastKnownAuxUpgradeConsoleCount = 0;
+        private static List<AuxUpgradeConsole> auxConsoleCache = new List<AuxUpgradeConsole>();
+
+        internal static IList<AuxUpgradeConsole> AuxUpgradeConsoles => auxConsoleCache;
 
         internal static void SyncUpgradeConsoles(SubRoot cyclops, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
             // This is a dirty workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-            if (auxUpgradeConsoles.Length == LastKnownAuxUpgradeConsoleCount)
-                return;
-            
+            // This is also an even dirtier workaround because of the double-references objects being returned.
+
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
-                auxConsole.ParentCyclops = cyclops;
+            {
+                if (auxConsoleCache.Contains(auxConsole))
+                    return;
 
-            if (LastKnownAuxUpgradeConsoleCount < auxUpgradeConsoles.Length)
-                ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
+                auxConsoleCache.Add(auxConsole);
 
-            LastKnownAuxUpgradeConsoleCount = auxUpgradeConsoles.Length;
+                string log = $"AuxUpgradeConsole: {auxConsole.gameObject.name}: {auxConsole.gameObject.transform.position} - HasParentCyclops:{auxConsole.ParentCyclops != null}";
+
+                ErrorMessage.AddMessage(log);
+                System.Console.WriteLine(log);
+
+                if (auxConsole.ParentCyclops == null)
+                {
+                    auxConsole.ParentCyclops = cyclops;
+                    ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
+                }
+            }
         }
     }
 }

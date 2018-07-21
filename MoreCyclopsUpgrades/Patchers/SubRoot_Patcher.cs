@@ -17,9 +17,7 @@
 
             Equipment modules = __instance.upgradeConsole.modules;
 
-            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
-
-            PowerManager.RechargeCyclops(ref __instance, modules, auxUpgradeConsoles);
+            PowerManager.RechargeCyclops(ref __instance, modules, UpgradeConsoleCache.AuxUpgradeConsoles);
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
@@ -36,9 +34,7 @@
             if (__instance.upgradeConsole == null)
                 return true; // safety check
 
-            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
-
-            PowerManager.UpdatePowerSpeedRating(ref __instance, auxUpgradeConsoles);
+            PowerManager.UpdatePowerSpeedRating(ref __instance, UpgradeConsoleCache.AuxUpgradeConsoles);
 
             return false; // Completely override the method and do not continue with original execution
         }
@@ -63,9 +59,7 @@
 
             HandleToggleableUpgrades(__instance, __instance.upgradeConsole.modules);
 
-            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
-
-            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+            foreach (AuxUpgradeConsole auxConsole in UpgradeConsoleCache.AuxUpgradeConsoles)
                 HandleToggleableUpgrades(__instance, auxConsole.Modules);
 
             // No need to execute original method anymore
@@ -122,10 +116,8 @@
                 return true; // safety check
 
             Equipment coreModules = __instance.upgradeConsole.modules;
-
-            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
-
-            float bonusCrushDepth = GetMaxBonusCrushDepth(coreModules, auxUpgradeConsoles);
+            
+            float bonusCrushDepth = GetMaxBonusCrushDepth(coreModules, UpgradeConsoleCache.AuxUpgradeConsoles);
 
             CrushDamage component = __instance.gameObject.GetComponent<CrushDamage>();
             component.SetExtraCrushDepth(bonusCrushDepth);
@@ -134,13 +126,13 @@
             // The original method execution sucked anyways :P
         }
 
-        private static float GetMaxBonusCrushDepth(Equipment coreModules, AuxUpgradeConsole[] auxUpgradeConsoles)
+        private static float GetMaxBonusCrushDepth(Equipment coreModules, IList<AuxUpgradeConsole> auxUpgradeConsoles)
         {
             float bonusCrushDepth = 0f;
             Equipment modules = coreModules;
 
             // Do one large loop for all upgrade consoles
-            for (int moduleIndex = -1; moduleIndex < auxUpgradeConsoles.Length; moduleIndex++)
+            for (int moduleIndex = -1; moduleIndex < auxUpgradeConsoles.Count; moduleIndex++)
             {
                 if (moduleIndex > -1)
                     modules = auxUpgradeConsoles[moduleIndex].Modules;
