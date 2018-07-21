@@ -1,35 +1,36 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System.Collections.Generic;    
+    using System.Collections.Generic;
 
     internal class UpgradeConsoleCache
     {
-        private static List<AuxUpgradeConsole> auxConsoleCache = new List<AuxUpgradeConsole>();
-
-        internal static IList<AuxUpgradeConsole> AuxUpgradeConsoles => auxConsoleCache;
+        internal static List<AuxUpgradeConsole> AuxUpgradeConsoles { get; } = new List<AuxUpgradeConsole>();
 
         internal static void SyncUpgradeConsoles(SubRoot cyclops, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
             // This is a dirty workaround to get a reference to the Cyclops into the AuxUpgradeConsole
             // This is also an even dirtier workaround because of the double-references objects being returned.
 
+            var tempCache = new List<AuxUpgradeConsole>();
+
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
             {
-                if (auxConsoleCache.Contains(auxConsole))
-                    return;
+                if (tempCache.Contains(auxConsole))
+                    continue;
 
-                auxConsoleCache.Add(auxConsole);
-
-                string log = $"AuxUpgradeConsole: {auxConsole.gameObject.name}: {auxConsole.gameObject.transform.position} - HasParentCyclops:{auxConsole.ParentCyclops != null}";
-
-                ErrorMessage.AddMessage(log);
-                System.Console.WriteLine(log);
+                tempCache.Add(auxConsole);
 
                 if (auxConsole.ParentCyclops == null)
                 {
                     auxConsole.ParentCyclops = cyclops;
                     ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
                 }
+            }
+
+            if (tempCache.Count != AuxUpgradeConsoles.Count)
+            {
+                AuxUpgradeConsoles.Clear();
+                AuxUpgradeConsoles.AddRange(tempCache);
             }
         }
     }

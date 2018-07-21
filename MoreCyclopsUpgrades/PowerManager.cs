@@ -10,46 +10,44 @@
 
         private const float NuclearDrainRate = 0.15f;
 
-        private const float BaseForwardAccel = 50f;
-        private const float BaseTurningTorque = 4f;
-        private const float BaseVerticalAccel = 50f;
-
-        private const float ForwardAccelBonus = 0.25f; // 25% faster forward speed per speed booster module
-        private const float TurningTorqueBonus = 0.10f; // 10% faster turning speed per speed booster module
-        private const float VerticalAccelBonus = 0.05f; // 5% faster vertical speed per speed booster module
-
         private const float EnginePowerPenalty = 0.5f; // 50% reduced engine efficiency for each speed booster module
 
-        private static readonly float[] EnginePowerRatings = new[]
+        private const int SpeedIndexCount = 6;
+        private const int PowerIndexCount = 4;
+
+        private static readonly float[] SlowSpeedBonuses = new float[SpeedIndexCount]
         {
-            1f, // Power Index 0: Base Value
-            3f, // Power Index 1: 300% increase
-            5f, // Power Index 2: 500% increase
-            6f  // Power Index 3: 600% increase
+            0.15f, 0.10f, 0.05f, 0f, 0f, 0f // Diminishing returns on speed modules
         };
 
-        private static readonly float[] SilentRunningPowerCosts = new[]
+        private static readonly float[] StandardSpeedBonuses = new float[SpeedIndexCount]
         {
-            5f, // Power Index 0: Base Value
-            5f, // Power Index 1: Base Value
-            4f, // Power Index 2: 20% cost reduction
-            3f  // Power Index 3: 40% cost reduction
+            0.35f, 0.25f, 0.20f, 0.15f, 0.10f, 0.05f // Diminishing returns on speed modules
         };
 
-        private static readonly float[] SonarPowerCosts = new[]
+        private static readonly float[] FlankSpeedBonuses = new float[SpeedIndexCount]
         {
-            10f, // Power Index 0: Base Value
-            10f, // Power Index 1: Base Value
-            8f,  // Power Index 2: 20% cost reduction
-            7f   // Power Index 3: 30% cost reduction
+            0.40f, 0.20f, 0.10f, 0.05f, 0.025f, 0f // Diminishing returns on speed modules
         };
 
-        private static readonly float[] ShieldPowerCosts = new[]
+        private static readonly float[] EnginePowerRatings = new float[PowerIndexCount]
         {
-            50f, // Power Index 0: Base Value
-            50f, // Power Index 1: Base Value
-            42f, // Power Index 2: 16% cost reduction
-            34f  // Power Index 3: 32% cost reduction
+            1f, 3f, 5f, 6f
+        };
+
+        private static readonly float[] SilentRunningPowerCosts = new float[PowerIndexCount]
+        {
+            5f, 5f, 4f, 3f
+        };
+
+        private static readonly float[] SonarPowerCosts = new float[PowerIndexCount]
+        {
+            10f, 10f, 8f, 7f
+        };
+
+        private static readonly float[] ShieldPowerCosts = new float[PowerIndexCount]
+        {
+            50f, 50f, 42f, 34f
         };
 
         internal const float MaxMk2Charge = 100f;
@@ -60,6 +58,8 @@
 
         private static float LastKnownPowerRating = -1f;
         private static int LastKnownSpeedIndex = -1;
+
+        private static float[] OriginalSpeeds { get; } = new float[3];
 
         /// <summary>
         /// Updates the Cyclops power index. This manages engine efficiency as well as the power cost of using Silent Running, Sonar, and Defense Shield.
@@ -73,6 +73,7 @@
             int powerIndex = GetPowerIndex(modules, auxUpgradeConsoles);
             int speedIndex = GetSpeedIndex(modules, auxUpgradeConsoles);
 
+            // Speed modules can affect power rating too
             float nextPowerRating = Mathf.Max(0.01f, EnginePowerRatings[powerIndex] - speedIndex * EnginePowerPenalty);
 
             if (LastKnownPowerRating != nextPowerRating)
@@ -84,23 +85,60 @@
                 LastKnownPowerRating = nextPowerRating;
 
                 cyclops.SetPrivateField("currPowerRating", nextPowerRating);
+
                 // Inform the new power rating just like the original method would.                
                 ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating));
             }
 
+            if (LastKnownSpeedIndex == -1)
+            {
+                // Store the original values before we start to change them
+                // This will only run once
+                var motorMode = cyclops.GetComponentInChildren<CyclopsMotorMode>();
+                OriginalSpeeds[0] = motorMode.motorModeSpeeds[0];
+                OriginalSpeeds[1] = motorMode.motorModeSpeeds[1];
+                OriginalSpeeds[2] = motorMode.motorModeSpeeds[2];
+            }
+
+            if (speedIndex > SpeedIndexCount)
+            {
+                speedIndex = SpeedIndexCount; // Limit to Max
+                ErrorMessage.AddMessage($"Speed rating already at maximum");
+            }
+
             if (LastKnownSpeedIndex != speedIndex)
             {
+                float SlowMultiplier = 1f;
+                float StandardMultiplier = 1f;
+                float FlankMultiplier = 1f;
+
+                // Calculate the speed multiplier with diminishing returns
+                for (int s = 0; s < speedIndex; s++)
+                {
+                    SlowMultiplier += SlowSpeedBonuses[s];
+                    StandardMultiplier += StandardSpeedBonuses[s];
+                    FlankMultiplier += FlankSpeedBonuses[s];
+                }
+
+                // These will apply when changing speed modes
+                var motorMode = cyclops.GetComponentInChildren<CyclopsMotorMode>();
+                motorMode.motorModeSpeeds[0] = OriginalSpeeds[0] * SlowMultiplier;
+                motorMode.motorModeSpeeds[1] = OriginalSpeeds[1] * StandardMultiplier;
+                motorMode.motorModeSpeeds[2] = OriginalSpeeds[2] * FlankMultiplier;
+
+                // These will apply immediately
                 var subControl = cyclops.GetComponentInChildren<SubControl>();
-
-                float forwardSpeedMultiplier = 1f + speedIndex * ForwardAccelBonus;
-
-                subControl.BaseForwardAccel = BaseForwardAccel * forwardSpeedMultiplier;
-                subControl.BaseTurningTorque = BaseTurningTorque * (1f + speedIndex * TurningTorqueBonus);
-                subControl.BaseVerticalAccel = BaseVerticalAccel * (1f + speedIndex * VerticalAccelBonus);
+                CyclopsMotorMode.CyclopsMotorModes currentMode = subControl.cyclopsMotorMode.cyclopsMotorMode;
+                subControl.BaseForwardAccel = motorMode.motorModeSpeeds[(int)currentMode];
 
                 LastKnownSpeedIndex = speedIndex;
 
-                ErrorMessage.AddMessage($"Speed rating is now at {forwardSpeedMultiplier * 100:00}%");
+                ErrorMessage.AddMessage($"Speed rating is now at {(StandardMultiplier * 100):00}%");
+
+                if (speedIndex == SpeedIndexCount)
+                {
+                    ErrorMessage.AddMessage($"Maximum speed rating reached");
+                }
             }
         }
 
@@ -306,10 +344,10 @@
         /// <returns>The number of speed booster modules currently equipped.</returns>
         private static int GetSpeedIndex(Equipment modules, IList<AuxUpgradeConsole> auxUpgradeConsoles)
         {
-            int speedModuleCount = modules.GetCount(CyclopsModule.SpeedBoosterModuleID);            
+            int speedModuleCount = modules.GetCount(CyclopsModule.SpeedBoosterModuleID);
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
-                speedModuleCount += auxConsole.Modules.GetCount(CyclopsModule.SpeedBoosterModuleID);            
+                speedModuleCount += auxConsole.Modules.GetCount(CyclopsModule.SpeedBoosterModuleID);
 
             return speedModuleCount;
         }

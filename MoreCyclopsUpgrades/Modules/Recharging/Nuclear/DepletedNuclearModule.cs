@@ -34,7 +34,7 @@
             SpriteHandler.RegisterSprite(RefillNuclearModuleID, $"./QMods/MoreCyclopsUpgrades/Assets/CyclopsNuclearModule.png");
 
             CraftDataHandler.SetTechData(RefillNuclearModuleID, GetRecipe());
-            KnownTechHandler.SetAnalysisTechEntry(TechTypeID, new TechType[1] { RefillNuclearModuleID }, "Reload of cyclops nuclear module available.");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseNuclearReactor, new TechType[1] { RefillNuclearModuleID }, "Reload of cyclops nuclear module available.");
 
             //CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, dummy, "CyclopsMenu");
 
