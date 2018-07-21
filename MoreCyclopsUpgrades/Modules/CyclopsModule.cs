@@ -160,6 +160,10 @@
                     pCell.name = "NuclearBattery";
                     pCell._capacity = PowerManager.MaxNuclearCharge;
                 }
+                else if (techTypeID == SpeedBoosterModuleID)
+                {
+                    ider.ClassId = QPatch.CyclopsModules[CyclopsModules.Speed].NameID;
+                }
                 else
                 {
                     return null; // error condition

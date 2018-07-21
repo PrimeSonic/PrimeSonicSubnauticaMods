@@ -74,8 +74,7 @@
 
         private static void HandleToggleableUpgrades(SubRoot __instance, Equipment modules)
         {
-            var subControl = __instance.GetAllComponentsInChildren<SubControl>();
-            ErrorMessage.AddMessage($"SubControl Found:{subControl != null}");
+            var subControl = __instance.GetAllComponentsInChildren<SubControl>();            
 
             List<TechType> upgradeList = new List<TechType>(SlotHelper.SlotNames.Length);
 

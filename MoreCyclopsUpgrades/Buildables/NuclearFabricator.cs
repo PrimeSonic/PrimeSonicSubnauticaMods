@@ -108,8 +108,7 @@
                 var ghost = fabricator.GetComponent<GhostCrafter>();
                 var powerRelay = new PowerRelay();
 
-                fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
-                powerRelay.gameObject.transform.SetParent(ghost.transform);
+                fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);                
 
                 // Add constructable
                 var constructible = prefab.AddComponent<Constructable>();

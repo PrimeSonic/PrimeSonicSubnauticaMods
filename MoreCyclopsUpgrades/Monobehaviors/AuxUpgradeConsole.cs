@@ -209,8 +209,10 @@
                     this.Modules.AddItem(slot, spanwedItem, true);
                 }
             }
-
-            this.UnlockDefaultModuleSlots();
+            else
+            {
+                this.UnlockDefaultModuleSlots();
+            }
         }
 
         //public GameObject Module1;

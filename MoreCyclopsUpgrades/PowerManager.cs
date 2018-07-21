@@ -10,11 +10,15 @@
 
         private const float NuclearDrainRate = 0.15f;
 
-        private const float ForwardAccelBonus = 1.25f; // 25% faster forward speed per speed booster module
-        private const float TurningTorqueBonus = 1.10f; // 10% faster turning speed per speed booster module
-        private const float VerticalAccelBonus = 1.05f; // 5% faster vertical speed per speed booster module
+        private const float BaseForwardAccel = 50f;
+        private const float BaseTurningTorque = 4f;
+        private const float BaseVerticalAccel = 50f;
 
-        private const float EnginePowerPentalty = 0.5f; // 50% reduced engine efficiency for each speed booster module
+        private const float ForwardAccelBonus = 0.25f; // 25% faster forward speed per speed booster module
+        private const float TurningTorqueBonus = 0.10f; // 10% faster turning speed per speed booster module
+        private const float VerticalAccelBonus = 0.05f; // 5% faster vertical speed per speed booster module
+
+        private const float EnginePowerPenalty = 0.5f; // 50% reduced engine efficiency for each speed booster module
 
         private static readonly float[] EnginePowerRatings = new[]
         {
@@ -54,7 +58,7 @@
         private static List<Battery> NuclerCells = new List<Battery>(36);
         private static List<string> NuclerSlots = new List<string>(36);
 
-        private static float LastKnownPowerRating = -1f;        
+        private static float LastKnownPowerRating = -1f;
         private static int LastKnownSpeedIndex = -1;
 
         /// <summary>
@@ -69,33 +73,35 @@
             int powerIndex = GetPowerIndex(modules, auxUpgradeConsoles);
             int speedIndex = GetSpeedIndex(modules, auxUpgradeConsoles);
 
-            cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
-            cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
-            cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
-
-            var subControl = cyclops.GetComponentInChildren<SubControl>();
-
-            float nextPowerRating = Mathf.Max(0.10f, EnginePowerRatings[powerIndex] - speedIndex * EnginePowerPentalty);
+            float nextPowerRating = Mathf.Max(0.01f, EnginePowerRatings[powerIndex] - speedIndex * EnginePowerPenalty);
 
             if (LastKnownPowerRating != nextPowerRating)
             {
+                cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+                cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
+                cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
+
                 LastKnownPowerRating = nextPowerRating;
 
                 cyclops.SetPrivateField("currPowerRating", nextPowerRating);
-                // Inform the new power rating just like the original method would.
-                string format = Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating);
-                ErrorMessage.AddMessage(format);
+                // Inform the new power rating just like the original method would.                
+                ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating));
             }
-
-            float speedRating = 1f + speedIndex * ForwardAccelBonus;
 
             if (LastKnownSpeedIndex != speedIndex)
             {
+                var subControl = cyclops.GetComponentInChildren<SubControl>();
+
+                float forwardSpeedMultiplier = 1f + speedIndex * ForwardAccelBonus;
+
+                subControl.BaseForwardAccel = BaseForwardAccel * forwardSpeedMultiplier;
+                subControl.BaseTurningTorque = BaseTurningTorque * (1f + speedIndex * TurningTorqueBonus);
+                subControl.BaseVerticalAccel = BaseVerticalAccel * (1f + speedIndex * VerticalAccelBonus);
+
                 LastKnownSpeedIndex = speedIndex;
 
-                ErrorMessage.AddMessage($"Speed rating is now at {speedRating * 100:00}%");
+                ErrorMessage.AddMessage($"Speed rating is now at {forwardSpeedMultiplier * 100:00}%");
             }
-
         }
 
         /// <summary>
@@ -300,10 +306,12 @@
         /// <returns>The number of speed booster modules currently equipped.</returns>
         private static int GetSpeedIndex(Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
-            int speedModuleCount = modules.GetCount(CyclopsModule.SpeedBoosterModuleID);
+            int speedModuleCount = modules.GetCount(CyclopsModule.SpeedBoosterModuleID);            
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
                 speedModuleCount += auxConsole.Modules.GetCount(CyclopsModule.SpeedBoosterModuleID);
+
+            ErrorMessage.AddMessage($"AuxUpgradeConsole count {auxUpgradeConsoles.Length}");
 
             return speedModuleCount;
         }

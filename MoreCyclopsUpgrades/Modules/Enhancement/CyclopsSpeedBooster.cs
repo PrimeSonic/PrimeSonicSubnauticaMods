@@ -22,7 +22,7 @@
         {
         }
 
-        public override CyclopsModules ModuleID => throw new System.NotImplementedException();
+        public override CyclopsModules ModuleID => CyclopsModules.Speed;
 
         protected override ModPrefab GetPrefab()
         {
