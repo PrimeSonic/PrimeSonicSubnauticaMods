@@ -21,7 +21,7 @@
             if (upgradeConsole == null)
                 return; // safety check
 
-            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
+            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.subRoot.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
             PowerCharging.UpdateHelmHUD(ref __instance, upgradeConsole.modules, auxUpgradeConsoles, ref lastReservePower);
         }

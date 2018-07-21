@@ -15,9 +15,12 @@
 
             Equipment modules = upgradeConsole.modules;
 
-            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
+            AuxUpgradeConsole[] auxUpgradeConsoles = __instance.subRoot.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
             PowerCharging.UpdateConsoleHUD(__instance, modules, auxUpgradeConsoles);
+
+            // This method was put here because it's hit much less often than UpdateThermalReactorCharge
+            UpgradeConsoleCache.SyncUpgradeConsoles(__instance.subRoot, auxUpgradeConsoles);
         }
     }
 }

@@ -9,8 +9,6 @@
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
-        private static int LastKnownAuxUpgradeConsoleCount = 0;
-
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
@@ -20,18 +18,6 @@
             Equipment modules = __instance.upgradeConsole.modules;
 
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
-
-            // This is a dirty workaround to get a reference to the Cyclops in the AuxUpgradeConsole
-            if (auxUpgradeConsoles.Length != LastKnownAuxUpgradeConsoleCount)
-            {
-                foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
-                    auxConsole.ParentCyclops = __instance;
-
-                if (LastKnownAuxUpgradeConsoleCount < auxUpgradeConsoles.Length)
-                    ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
-
-                LastKnownAuxUpgradeConsoleCount = auxUpgradeConsoles.Length;
-            }
 
             PowerCharging.RechargeCyclops(ref __instance, modules, auxUpgradeConsoles);
 

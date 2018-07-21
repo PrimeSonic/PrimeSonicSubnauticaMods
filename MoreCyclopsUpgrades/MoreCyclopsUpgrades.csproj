@@ -83,6 +83,7 @@
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
+    <Compile Include="UpgradeConsoleCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AuxCyUpgradeConsole.png">
