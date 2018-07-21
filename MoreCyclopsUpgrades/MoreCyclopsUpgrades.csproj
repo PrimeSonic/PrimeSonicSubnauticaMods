@@ -85,6 +85,9 @@
     <Compile Include="QPatch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\AuxCyUpgradeConsole.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\CyclopsNuclearModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -8,7 +8,8 @@
     [ProtoContract]
     public class AuxUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
-        internal SubRoot ParentCyclops = null;
+        // This will be set externally
+        public SubRoot ParentCyclops = null;
 
         public Equipment Modules { get; private set; }
 
@@ -82,7 +83,8 @@
         {
             CyclopsUpgradeChange();
             //this.UpdateVisuals();
-
+            
+            // Disallow deconstruction while there are modules in here
             Buildable.deconstructionAllowed = false;
         }
 
@@ -96,6 +98,7 @@
             foreach (string slotName in SlotHelper.SlotNames)
                 allEmpty &= Modules.GetTechTypeInSlot(slotName) == TechType.None;
 
+            // Deconstruction only allowed if all slots are empty
             Buildable.deconstructionAllowed = allEmpty;
         }
 

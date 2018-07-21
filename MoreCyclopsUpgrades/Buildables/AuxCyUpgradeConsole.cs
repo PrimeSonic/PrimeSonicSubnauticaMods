@@ -37,6 +37,7 @@
             };
 
             CraftDataHandler.SetTechData(TechTypeID, recipe);
+            SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/MoreCyclopsUpgrades/Assets/AuxCyUpgradeConsole.png");
         }
 
         internal class AuxCyUpgradeConsolePreFab : ModPrefab
@@ -47,22 +48,25 @@
 
             public override GameObject GetGameObject()
             {
+                // We'll use this for the actual model
                 GameObject consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide"));
                 GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
                 GameObject consoleModel = consoleWide.FindChild("console");
 
-                // This prefab chosen for it's smaller collision model that's close to the same size
+                // The LabTrashcan prefab was chosen because it is very similar in size, shape, and collision model to the upgrade console model
                 GameObject prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.LabTrashcan));
 
                 prefab.FindChild("discovery_trashcan_01_d").SetActive(false); // Turn off this model
                 GameObject.DestroyImmediate(prefab.GetComponent<Trashcan>()); // Don't need this
                 GameObject.DestroyImmediate(prefab.GetComponent<StorageContainer>()); // Don't need this
 
+                // Add the custom component
                 var auxConsole = prefab.AddComponent<AuxUpgradeConsole>();
-                auxConsole.ParentCyclops = prefab.GetComponentInParent<SubRoot>();
 
+                // This is to tie the model to the prefab
                 consoleModel.transform.SetParent(prefab.transform);
 
+                // TODO figure this out
                 //auxConsole.Module1 = consoleWide.FindChild("engine_console_key_01_01");
                 //auxConsole.Module2 = consoleWide.FindChild("engine_console_key_01_02");
                 //auxConsole.Module3 = consoleWide.FindChild("engine_console_key_01_03");
@@ -84,10 +88,10 @@
                 constructible.allowedOutside = false;
                 constructible.allowedOnCeiling = false;
                 constructible.allowedOnGround = true; 
-                constructible.allowedOnWall = true; 
+                constructible.allowedOnWall = false;
                 constructible.allowedOnConstructables = false;
                 constructible.controlModelState = true;
-                constructible.rotationEnabled = false;
+                constructible.rotationEnabled = true;
                 constructible.techType = TechTypeID;
                 constructible.model = consoleModel;
 

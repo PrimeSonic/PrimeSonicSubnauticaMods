@@ -15,12 +15,13 @@
         public static bool Prefix(ref SubRoot __instance)
         {
             if (__instance.upgradeConsole == null)
-                return true; // Safety check            
+                return true; // Safety check
 
             Equipment modules = __instance.upgradeConsole.modules;
 
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
+            // This is a dirty workaround to get a reference to the Cyclops in the AuxUpgradeConsole
             if (auxUpgradeConsoles.Length != LastKnownAuxUpgradeConsoleCount)
             {
                 foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
@@ -64,13 +65,13 @@
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
-            if (__instance.upgradeConsole == null)
+            var cyclopsLife = (LiveMixin)__instance.GetInstanceField("live");
+
+            if (!cyclopsLife.IsAlive())
                 return; // safety check
 
-            HandleToggleableUpgrades(__instance, __instance.upgradeConsole.modules);
-
             // This Postfix patch only handles the auxiliary upgrade consoles and isn't a full replacement
-            // The original methos still handles upgrades in the core upgrade console            
+            // The original methos still handles upgrade modules in the core upgrade console            
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
