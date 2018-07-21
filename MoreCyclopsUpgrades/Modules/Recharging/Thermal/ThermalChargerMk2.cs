@@ -61,7 +61,7 @@
 
                 var pCell = obj.AddComponent<Battery>();
                 pCell.name = "ThermalBackupBattery";
-                pCell._capacity = PowerCharging.MaxMk2Charge;
+                pCell._capacity = PowerManager.MaxMk2Charge;
 
                 return obj;
             }

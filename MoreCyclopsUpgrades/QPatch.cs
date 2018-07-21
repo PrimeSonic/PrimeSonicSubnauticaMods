@@ -27,6 +27,7 @@
                     new ThermalChargerMk2(),
                     new PowerUpgradeMk2(),
                     new PowerUpgradeMk3(),
+                    new CyclopsSpeedBooster(hasVehicleUpgradesInCyclops),
                     new NuclearCharger(),
                     new DepletedNuclearModule(),
                 };

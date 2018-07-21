@@ -59,7 +59,7 @@
                 // The battery component makes it easy to track the charge and saving the data is automatic.
                 var pCell = obj.AddComponent<Battery>();
                 pCell.name = "NuclearBattery";
-                pCell._capacity = PowerCharging.MaxNuclearCharge;
+                pCell._capacity = PowerManager.MaxNuclearCharge;
 
                 return obj;
             }

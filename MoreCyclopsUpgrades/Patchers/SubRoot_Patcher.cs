@@ -19,7 +19,7 @@
 
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
-            PowerCharging.RechargeCyclops(ref __instance, modules, auxUpgradeConsoles);
+            PowerManager.RechargeCyclops(ref __instance, modules, auxUpgradeConsoles);
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
@@ -38,7 +38,7 @@
 
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
-            PowerIndexManager.UpdatePowerIndex(ref __instance, auxUpgradeConsoles);
+            PowerManager.UpdatePowerSpeedRating(ref __instance, auxUpgradeConsoles);
 
             return false; // Completely override the method and do not continue with original execution
         }
@@ -48,24 +48,35 @@
     [HarmonyPatch("SetCyclopsUpgrades")]
     internal class SubRoot_SetCyclopsUpgrades_Patcher
     {
-        [HarmonyPostfix]
-        public static void Postfix(ref SubRoot __instance)
+        [HarmonyPrefix]
+        public static bool Prefix(ref SubRoot __instance)
         {
             var cyclopsLife = (LiveMixin)__instance.GetInstanceField("live");
 
-            if (!cyclopsLife.IsAlive())
-                return; // safety check
+            if (__instance.upgradeConsole == null || !cyclopsLife.IsAlive())
+                return true; // safety check
 
-            // This Postfix patch only handles the auxiliary upgrade consoles and isn't a full replacement
-            // The original methos still handles upgrade modules in the core upgrade console            
+            __instance.shieldUpgrade = false;
+            __instance.sonarUpgrade = false;
+            __instance.vehicleRepairUpgrade = false;
+            __instance.decoyTubeSizeIncreaseUpgrade = false;
+
+            HandleToggleableUpgrades(__instance, __instance.upgradeConsole.modules);
+
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
                 HandleToggleableUpgrades(__instance, auxConsole.Modules);
+
+            // No need to execute original method anymore
+            return false; // Completely override the method and do not continue with original execution
         }
 
         private static void HandleToggleableUpgrades(SubRoot __instance, Equipment modules)
         {
+            var subControl = __instance.GetAllComponentsInChildren<SubControl>();
+            ErrorMessage.AddMessage($"SubControl Found:{subControl != null}");
+
             List<TechType> upgradeList = new List<TechType>(SlotHelper.SlotNames.Length);
 
             foreach (string slot in SlotHelper.SlotNames)
@@ -85,7 +96,8 @@
                     case TechType.CyclopsDecoyModule:
                         __instance.decoyTubeSizeIncreaseUpgrade = true;
                         break;
-                        // CyclopsThermalReactorModule handled in PowerCharging                      
+                        // CyclopsThermalReactorModule handled in PowerManager.RechargeCyclops
+                        // CyclopsSpeedModule handled in PowerManager.UpdatePowerSpeedRating
                 }
 
                 upgradeList.Add(techTypeInSlot);

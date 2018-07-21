@@ -4,19 +4,99 @@
     using Common;
     using UnityEngine;
 
-    internal static class PowerCharging
+    internal static class PowerManager
     {
-        private static List<Battery> NuclerCells = new List<Battery>(36);
-        private static List<string> NuclerSlots = new List<string>(36);
+        private const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
-        /// <summary>
-        /// The MK2 charging modules get a 15% bonus to their charge rate.
-        /// </summary>
-        private const float Mk2ChargeRateModifier = 1.15f;
         private const float NuclearDrainRate = 0.15f;
+
+        private const float ForwardAccelBonus = 1.25f; // 25% faster forward speed per speed booster module
+        private const float TurningTorqueBonus = 1.15f; // 15% faster turning speed per speed booster module
+        private const float VerticalAccelBonus = 1.10f; // 10% faster vertical speed per speed booster module
+
+        private const float EnginePowerPentalty = 0.5f; // 50% reduced engine efficiency for each speed booster module
+
+        private static readonly float[] EnginePowerRatings = new[]
+        {
+            1f, // Power Index 0: Base Value
+            3f, // Power Index 1: 300% increase
+            5f, // Power Index 2: 500% increase
+            6f  // Power Index 3: 600% increase
+        };
+
+        private static readonly float[] SilentRunningPowerCosts = new[]
+        {
+            5f, // Power Index 0: Base Value
+            5f, // Power Index 1: Base Value
+            4f, // Power Index 2: 20% cost reduction
+            3f  // Power Index 3: 40% cost reduction
+        };
+
+        private static readonly float[] SonarPowerCosts = new[]
+        {
+            10f, // Power Index 0: Base Value
+            10f, // Power Index 1: Base Value
+            8f,  // Power Index 2: 20% cost reduction
+            7f   // Power Index 3: 30% cost reduction
+        };
+
+        private static readonly float[] ShieldPowerCosts = new[]
+        {
+            50f, // Power Index 0: Base Value
+            50f, // Power Index 1: Base Value
+            42f, // Power Index 2: 16% cost reduction
+            34f  // Power Index 3: 32% cost reduction
+        };
 
         internal const float MaxMk2Charge = 100f;
         internal const float MaxNuclearCharge = 6000f; // Less than the normal 20k for balance
+
+        private static List<Battery> NuclerCells = new List<Battery>(36);
+        private static List<string> NuclerSlots = new List<string>(36);
+
+        private static float LastKnownPowerRating = -1f;        
+        private static int LastKnownSpeedIndex = -1;
+
+        /// <summary>
+        /// Updates the Cyclops power index. This manages engine efficiency as well as the power cost of using Silent Running, Sonar, and Defense Shield.
+        /// </summary>
+        /// <param name="cyclops">The cyclops.</param>
+        /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
+        internal static void UpdatePowerSpeedRating(ref SubRoot cyclops, AuxUpgradeConsole[] auxUpgradeConsoles)
+        {
+            Equipment modules = cyclops.upgradeConsole.modules;
+
+            int powerIndex = GetPowerIndex(modules, auxUpgradeConsoles);
+            int speedIndex = GetSpeedIndex(modules, auxUpgradeConsoles);
+
+            cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+            cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
+            cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
+
+            var subControl = cyclops.GetComponentInChildren<SubControl>();
+
+            float nextPowerRating = Mathf.Max(0.10f, EnginePowerRatings[powerIndex] - speedIndex * EnginePowerPentalty);
+
+            if (LastKnownPowerRating != nextPowerRating)
+            {
+                LastKnownPowerRating = nextPowerRating;
+
+                cyclops.SetPrivateField("currPowerRating", nextPowerRating);
+                // Inform the new power rating just like the original method would.
+                string format = Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating);
+                ErrorMessage.AddMessage(format);
+            }
+
+            float speedRating = 1f + speedIndex * ForwardAccelBonus;
+
+            if (LastKnownSpeedIndex != speedIndex)
+            {
+                LastKnownSpeedIndex = speedIndex;
+
+                ErrorMessage.AddMessage($"Speed rating is now at {speedRating * 100:00}%");
+            }
+
+        }
 
         /// <summary>
         /// Updates the Cyclops helm HUD  using data from all equipment modules across all upgrade consoles.
@@ -101,7 +181,7 @@
                     }
                     else if (techTypeInSlot == TechType.CyclopsThermalReactorModule) // Thermal
                     {
-                        surplusPower += PowerCharging.ChargeFromStandardModule(ref __instance, availableThermalEnergy, ref powerDeficit);
+                        surplusPower += PowerManager.ChargeFromStandardModule(ref __instance, availableThermalEnergy, ref powerDeficit);
                         renewablePowerAvailable |= availableThermalEnergy > 0f;
                     }
                     else if (techTypeInSlot == CyclopsModule.ThermalChargerMk2ID) // Thermal Mk2
@@ -168,6 +248,64 @@
             hudManager.energyCur.text = IntStringCache.GetStringForInt(totalPower);
 
             NuclearModuleConfig.SetCyclopsMaxPower(hudManager.subRoot.powerRelay.GetMaxPower());
+        }
+
+        /// <summary>
+        /// <para>Gets the current power index based on the currently equipped power upgrades across all equipment modules.</para>
+        /// <para>Power Index 0: No efficiency modules equipped.</para>
+        /// <para>Power Index 1: Standard PowerUpgradeModule equipped.</para>
+        /// <para>Power Index 2: PowerUpgradeModuleMk2 equipped.</para>                                                    
+        /// <para>Power Index 3: PowerUpgradeModuleMk3 equipped.</para>
+        /// </summary>
+        /// <param name="modules">The core equipment modules.</param>
+        /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
+        /// <returns>The current power index.</returns>
+        private static int GetPowerIndex(Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
+        {
+            // Engine Efficiency Mk1
+            int powerMk3Count = modules.GetCount(CyclopsModule.PowerUpgradeMk3ID);
+
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                powerMk3Count += auxConsole.Modules.GetCount(CyclopsModule.PowerUpgradeMk3ID);
+
+            if (powerMk3Count > 0)
+                return 3;
+
+            // Engine Efficiency Mk2
+            int powerMk2Count = modules.GetCount(CyclopsModule.PowerUpgradeMk2ID);
+
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                powerMk2Count += auxConsole.Modules.GetCount(CyclopsModule.PowerUpgradeMk2ID);
+
+            if (powerMk2Count > 0)
+                return 2;
+
+            // Engine Efficiency Mk3
+            int powerMk1Count = modules.GetCount(TechType.PowerUpgradeModule);
+
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                powerMk1Count += auxConsole.Modules.GetCount(TechType.PowerUpgradeModule);
+
+            if (powerMk1Count > 0)
+                return 1;
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Gets the current speed index based on the currently equipped Speed Booster modules across all equipment modules.
+        /// </summary>
+        /// <param name="modules">The modules.</param>
+        /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
+        /// <returns>The number of speed booster modules currently equipped.</returns>
+        private static int GetSpeedIndex(Equipment modules, AuxUpgradeConsole[] auxUpgradeConsoles)
+        {
+            int speedModuleCount = modules.GetCount(CyclopsModule.SpeedBoosterModuleID);
+
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+                speedModuleCount += auxConsole.Modules.GetCount(CyclopsModule.SpeedBoosterModuleID);
+
+            return speedModuleCount;
         }
 
         /// <summary>

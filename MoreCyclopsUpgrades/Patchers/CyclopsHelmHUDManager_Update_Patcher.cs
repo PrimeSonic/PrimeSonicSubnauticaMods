@@ -23,7 +23,7 @@
 
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.subRoot.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
-            PowerCharging.UpdateHelmHUD(ref __instance, upgradeConsole.modules, auxUpgradeConsoles, ref lastReservePower);
+            PowerManager.UpdateHelmHUD(ref __instance, upgradeConsole.modules, auxUpgradeConsoles, ref lastReservePower);
         }
 
         

@@ -182,6 +182,7 @@
                 var powerRelay = new PowerRelay();
 
                 fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
+                powerRelay.gameObject.transform.SetParent(ghost.transform);
 
                 // Add constructable
                 var constructible = cyclopsFabPrefab.AddComponent<Constructable>();

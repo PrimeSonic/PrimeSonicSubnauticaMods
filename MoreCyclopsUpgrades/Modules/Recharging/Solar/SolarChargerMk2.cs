@@ -59,7 +59,7 @@
 
                 var pCell = obj.AddComponent<Battery>();
                 pCell.name = "SolarBackupBattery";
-                pCell._capacity = PowerCharging.MaxMk2Charge;
+                pCell._capacity = PowerManager.MaxMk2Charge;
 
                 return obj;
             }

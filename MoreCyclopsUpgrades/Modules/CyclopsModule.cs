@@ -12,8 +12,9 @@
         ThermalMk2 = 3,
         PowerMk2 = 4,
         PowerMk3 = 5,
-        Nuclear = 6,
-        DepletedNuclear = 7
+        Speed = 6,
+        Nuclear = 7,
+        DepletedNuclear = 8
     }
 
     internal abstract class CyclopsModule
@@ -23,6 +24,7 @@
         public static TechType ThermalChargerMk2ID { get; protected set; }
         public static TechType PowerUpgradeMk2ID { get; protected set; }
         public static TechType PowerUpgradeMk3ID { get; protected set; }
+        public static TechType SpeedBoosterModuleID { get; protected set; }
         public static TechType NuclearChargerID { get; protected set; }
         public static TechType DepletedNuclearModuleID { get; protected set; }
         public static TechType RefillNuclearModuleID { get; protected set; }
@@ -132,7 +134,7 @@
 
                     var pCell = gameObject.AddComponent<Battery>();
                     pCell.name = "SolarBackupBattery";
-                    pCell._capacity = PowerCharging.MaxMk2Charge;
+                    pCell._capacity = PowerManager.MaxMk2Charge;
                 }
                 else if (techTypeID == ThermalChargerMk2ID)
                 {
@@ -140,7 +142,7 @@
 
                     var pCell = gameObject.AddComponent<Battery>();
                     pCell.name = "ThermalBackupBattery";
-                    pCell._capacity = PowerCharging.MaxMk2Charge;
+                    pCell._capacity = PowerManager.MaxMk2Charge;
                 }
                 else if (techTypeID == PowerUpgradeMk2ID)
                 {
@@ -156,7 +158,7 @@
 
                     var pCell = gameObject.AddComponent<Battery>();
                     pCell.name = "NuclearBattery";
-                    pCell._capacity = PowerCharging.MaxNuclearCharge;
+                    pCell._capacity = PowerManager.MaxNuclearCharge;
                 }
                 else
                 {

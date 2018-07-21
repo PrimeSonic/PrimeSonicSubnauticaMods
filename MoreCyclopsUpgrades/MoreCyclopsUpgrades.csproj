@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
+    <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\AuxUpgradeConsole.cs" />
@@ -66,7 +67,6 @@
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
     <Compile Include="SaveData\EmNuclearConfig.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
-    <Compile Include="Modules\PowerUpgrade\PowerIndexManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearModuleConfig.cs" />

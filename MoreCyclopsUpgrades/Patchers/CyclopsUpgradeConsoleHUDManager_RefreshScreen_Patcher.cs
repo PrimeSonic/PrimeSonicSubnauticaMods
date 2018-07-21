@@ -17,7 +17,7 @@
 
             AuxUpgradeConsole[] auxUpgradeConsoles = __instance.subRoot.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
-            PowerCharging.UpdateConsoleHUD(__instance, modules, auxUpgradeConsoles);
+            PowerManager.UpdateConsoleHUD(__instance, modules, auxUpgradeConsoles);
 
             // This method was put here because it's hit much less often than UpdateThermalReactorCharge
             UpgradeConsoleCache.SyncUpgradeConsoles(__instance.subRoot, auxUpgradeConsoles);
