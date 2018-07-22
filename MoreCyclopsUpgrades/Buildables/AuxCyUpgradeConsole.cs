@@ -15,10 +15,13 @@
         public const string HandOverText = "UseAuxConsole";
         public const string Description = "A secondary upgrade console to connect a greater number of upgrades to your Cyclops.";
 
-        public static void Patch()
+        public static void Patch(bool auxConsolesEnabled)
         {
             TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
-            KnownTechHandler.SetAnalysisTechEntry(TechType.CyclopsHullModule1, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+
+            if (!auxConsolesEnabled) // Even if the options have this be disabled,
+                return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
+
             LanguageHandler.SetLanguageLine(HandOverText, "Access Auxiliary Cyclops Upgrade Console");
             CraftDataHandler.AddBuildable(TechTypeID);
             CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, TechTypeID);
@@ -38,6 +41,7 @@
 
             CraftDataHandler.SetTechData(TechTypeID, recipe);
             SpriteHandler.RegisterSprite(TechTypeID, @"./QMods/MoreCyclopsUpgrades/Assets/AuxCyUpgradeConsole.png");
+            KnownTechHandler.SetAnalysisTechEntry(TechType.CyclopsHullModule1, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
         }
 
         internal class AuxCyUpgradeConsolePreFab : ModPrefab

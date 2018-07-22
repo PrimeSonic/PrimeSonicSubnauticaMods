@@ -4,12 +4,16 @@
     {
         internal bool ValidData = true;
 
-        public EmYesNo(string key) : base(key)
+        private readonly bool DefaultValue;
+
+        public EmYesNo(string key, bool defaultValue = false) : base(key)
         {
+            DefaultValue = defaultValue;
         }
 
-        public EmYesNo(string key, bool value) : base(key, value)
+        public EmYesNo(string key, bool value, bool defaultValue = false) : base(key, value)
         {
+            DefaultValue = defaultValue;
         }
 
         public override bool ConvertFromSerial(string value)
@@ -34,7 +38,7 @@
                     return false;
                 default: 
                     ValidData = false;
-                    return false;
+                    return DefaultValue;
             }
         }
 

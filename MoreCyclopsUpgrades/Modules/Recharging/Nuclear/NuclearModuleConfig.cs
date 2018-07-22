@@ -8,7 +8,8 @@
 
     internal class NuclearModuleConfig : ModOptions
     {
-        private const string ConfigFile = @"./QMods/MoreCyclopsUpgrades/Config.txt";
+        private const string OldConfigFile = @"./QMods/MoreCyclopsUpgrades/Config.txt";
+        private const string ConfigFile = "./QMods/MoreCyclopsUpgrades/" + EmNuclearConfig.ConfigKey + ".txt";
 
         private static float RequiredEnergyDeficit = 1140f;
         private const float MinPercent = 10f;
@@ -31,7 +32,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[MoreCyclopsUpgrades] Error loading NuclearModuleConfig: " + ex.ToString());
+                Console.WriteLine($"[MoreCyclopsUpgrades] Error loading {EmNuclearConfig.ConfigKey}: " + ex.ToString());
                 WriteConfigFile();
             }
         }
@@ -96,7 +97,7 @@
             {
                 "# -------------------------------------------------------------------- #",
                 "# This config file can be edited in-game through the Mods options menu #",
-                "#                This save file is built using EasyMarkup              #",
+                "#             This config file was built using EasyMarkup              #",
                 "# -------------------------------------------------------------------- #",
                 "",
                 EmConfig.PrintyPrint(),
@@ -122,8 +123,17 @@
 
         private void LoadFromFile()
         {
+            if (File.Exists(OldConfigFile))
+            {
+                Console.WriteLine($"[MoreCyclopsUpgrades] Found original nuclear module config file.");
+                // Renamed the config file because we're going to add a new one
+                File.Move(OldConfigFile, ConfigFile);
+                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file renamed.");
+            }
+
             if (!File.Exists(ConfigFile))
             {
+                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file not found. Writing default file.");
                 WriteConfigFile();
                 return;
             }
@@ -134,6 +144,7 @@
 
             if (!readCorrectly || !EmConfig.ValidDataRead)
             {
+                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file contained errors. Writing default file.");
                 WriteConfigFile();
                 return;
             }

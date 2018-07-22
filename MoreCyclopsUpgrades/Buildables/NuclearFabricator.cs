@@ -29,6 +29,9 @@
             NukeFabTechType = TechTypeHandler.AddTechType(CustomFabAndTreeID, FriendlyName,
                 "A specialized fabricator for safe handling of radioactive energy sources.", false);
 
+            if (!CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,
+                return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
+
             // Create a Recipie for the new TechType
             var customFabRecipe = new TechData()
             {

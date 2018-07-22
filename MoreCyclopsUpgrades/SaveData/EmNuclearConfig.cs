@@ -8,7 +8,7 @@
     {
         internal bool ValidDataRead = true;
 
-        private const string ConfigKey = "CyclopsNuclearChargerConfig";
+        internal const string ConfigKey = "CyclopsNuclearChargerConfig";
         private const string EmConserveKey = "ConserveNuclearModulePower";
         private const string EmDeficitKey = "ChargeBelowPercent";
 

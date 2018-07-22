@@ -14,7 +14,8 @@
             : base(DepletedNameID,
                   "Depleted Cyclops Nuclear Reactor Module",
                   "Bring to a specialized fabricator for safe extraction of the depleted reactor rod inside.",
-                  CyclopsModule.NuclearChargerID)
+                  CyclopsModule.NuclearChargerID,
+                  TechType.DepletedReactorRod)
         {
 
         }
@@ -30,17 +31,21 @@
                                                                  "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod",
                                                                  false);
 
-            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/DepletedCyclopsNuclearModule.png");
-            SpriteHandler.RegisterSprite(RefillNuclearModuleID, $"./QMods/MoreCyclopsUpgrades/Assets/CyclopsNuclearModule.png");
+            if (CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,                
+            {// we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
 
-            CraftDataHandler.SetTechData(RefillNuclearModuleID, GetRecipe());
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseNuclearReactor, new TechType[1] { RefillNuclearModuleID }, "Reload of cyclops nuclear module available.");
+                SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/DepletedCyclopsNuclearModule.png");
+                SpriteHandler.RegisterSprite(RefillNuclearModuleID, $"./QMods/MoreCyclopsUpgrades/Assets/CyclopsNuclearModule.png");
 
-            //CraftTreeHandler.AddCraftingNode(CraftTree.Type.Workbench, dummy, "CyclopsMenu");
+                CraftDataHandler.SetTechData(RefillNuclearModuleID, GetRecipe());
+                KnownTechHandler.SetAnalysisTechEntry(TechType.BaseNuclearReactor, new TechType[1] { RefillNuclearModuleID }, "Reload of cyclops nuclear module available.");
 
-            PrefabHandler.RegisterPrefab(new DepletedNuclearModulePreFab(DepletedNameID, TechTypeID));
+                PrefabHandler.RegisterPrefab(new DepletedNuclearModulePreFab(DepletedNameID, TechTypeID));
 
-            SetStaticTechTypeID(TechTypeID);
+                SetStaticTechTypeID(TechTypeID);
+            }
+
+            NuclearFabricator.Patch();
         }
 
         protected override ModPrefab GetPrefab()
@@ -68,10 +73,6 @@
 
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
-
-
-
-
             DepletedNuclearModuleID = techTypeID;
         }
 

@@ -4,9 +4,12 @@
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Assets;
     using UnityEngine;
+    using SMLHelper.V2.Handlers;
 
     internal class NuclearCharger : CyclopsModule
     {
+        internal NuclearModuleConfig Config { get; } = new NuclearModuleConfig();
+
         internal NuclearCharger()
             : base("CyclopsNuclearModule",
                   "Cyclops Nuclear Reactor Module",
@@ -18,6 +21,17 @@
         }
 
         public override CyclopsModules ModuleID => CyclopsModules.Nuclear;
+
+        public override void Patch()
+        {
+            base.Patch();
+
+            if (!CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,
+                return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
+
+            OptionsPanelHandler.RegisterModOptions(Config);
+            Config.Initialize();
+        }
 
         protected override ModPrefab GetPrefab()
         {

@@ -4,21 +4,22 @@
 
     internal class UpgradeConsoleCache
     {
+        private static List<AuxUpgradeConsole> TempCache = new List<AuxUpgradeConsole>();
+
         internal static List<AuxUpgradeConsole> AuxUpgradeConsoles { get; } = new List<AuxUpgradeConsole>();
 
         internal static void SyncUpgradeConsoles(SubRoot cyclops, AuxUpgradeConsole[] auxUpgradeConsoles)
         {
             // This is a dirty workaround to get a reference to the Cyclops into the AuxUpgradeConsole
             // This is also an even dirtier workaround because of the double-references objects being returned.
-
-            var tempCache = new List<AuxUpgradeConsole>();
+            TempCache.Clear();
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
             {
-                if (tempCache.Contains(auxConsole))
+                if (TempCache.Contains(auxConsole))
                     continue;
 
-                tempCache.Add(auxConsole);
+                TempCache.Add(auxConsole);
 
                 if (auxConsole.ParentCyclops == null)
                 {
@@ -27,10 +28,10 @@
                 }
             }
 
-            if (tempCache.Count != AuxUpgradeConsoles.Count)
+            if (TempCache.Count != AuxUpgradeConsoles.Count)
             {
                 AuxUpgradeConsoles.Clear();
-                AuxUpgradeConsoles.AddRange(tempCache);
+                AuxUpgradeConsoles.AddRange(TempCache);
             }
         }
     }
