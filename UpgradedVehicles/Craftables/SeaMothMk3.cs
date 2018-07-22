@@ -37,11 +37,12 @@
 
             TechTypeID = this.TechType;
 
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
-            CraftDataHandler.SetCraftingTime(TechTypeID, 15f);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");            
             CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
 
             PrefabHandler.RegisterPrefab(this);
+
+
             KnownTechHandler.SetAnalysisTechEntry(SeamothHullModule5, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
             CraftDataHandler.AddToGroup(TechGroup.Constructor, TechCategory.Constructor, TechTypeID);
         }

@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Craftables\Craftable.cs" />
     <Compile Include="Craftables\ExosuitMk2.cs" />
     <Compile Include="Craftables\SeaMothMk3.cs" />
     <Compile Include="Craftables\SpeedBooster.cs" />
