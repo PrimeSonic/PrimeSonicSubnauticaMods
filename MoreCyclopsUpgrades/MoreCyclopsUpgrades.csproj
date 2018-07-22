@@ -43,9 +43,6 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.10.1\lib\net35\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\SMLHelper\SMLHelper\bin\Debug\SMLHelper.dll</HintPath>
@@ -60,34 +57,40 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
+    <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
+    <Compile Include="Patchers\SubRoot_Patcher.cs" />
+    <Compile Include="SaveData\EmModPatchConfig.cs" />
+    <Compile Include="SaveData\EmModuleSaveData.cs" />
+    <Compile Include="Monobehaviors\AuxUpgradeConsole.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
-    <Compile Include="Modules\Recharging\Nuclear\EmNuclearConfig.cs" />
+    <Compile Include="SaveData\EmNuclearConfig.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
-    <Compile Include="Modules\Recharging\Nuclear\NuclearChargingManager.cs" />
-    <Compile Include="Modules\PowerUpgrade\PowerIndexManager.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
-    <Compile Include="Modules\Recharging\Nuclear\NuclearModuleConfig.cs" />
-    <Compile Include="Modules\Recharging\PowerCharging.cs" />
-    <Compile Include="Modules\SlotHelper.cs" />
+    <Compile Include="SaveData\NuclearModuleConfig.cs" />
+    <Compile Include="PowerManager.cs" />
+    <Compile Include="SlotHelper.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />
-    <Compile Include="Modules\Recharging\Solar\SolarChargingManager.cs" />
     <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
-    <Compile Include="Modules\Recharging\Thermal\ThermalChargingManager.cs" />
-    <Compile Include="Modules\SortedCyclopsModules.cs" />
+    <Compile Include="SaveData\AuxUpgradeConsoleSaveData.cs" />
     <Compile Include="Patchers\CyclopsHelmHUDManager_Update_Patcher.cs" />
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
-    <Compile Include="Patchers\SubRoot_UpdatePowerRating_Patcher.cs" />
-    <Compile Include="Patchers\SubRoot_UpdateThermalReactorCharge_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
-    <Compile Include="UnitTests\TestScenarios.cs" />
+    <Compile Include="UpgradeConsoleCache.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\AuxCyUpgradeConsole.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\CyclopsNuclearModule.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CyclopsSpeedModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\DepletedCyclopsNuclearModule.png">

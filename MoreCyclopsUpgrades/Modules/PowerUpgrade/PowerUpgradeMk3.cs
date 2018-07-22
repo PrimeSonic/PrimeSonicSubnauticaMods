@@ -51,7 +51,7 @@
 
             public override GameObject GetGameObject()
             {
-                GameObject prefab = CraftData.GetPrefabForTechType(TechType.PowerUpgradeModule);
+                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
                 GameObject obj = GameObject.Instantiate(prefab);
 
                 return obj;

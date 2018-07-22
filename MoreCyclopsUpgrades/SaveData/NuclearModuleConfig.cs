@@ -8,7 +8,8 @@
 
     internal class NuclearModuleConfig : ModOptions
     {
-        private const string ConfigFile = @"./QMods/MoreCyclopsUpgrades/Config.txt";
+        private const string OldConfigFile = @"./QMods/MoreCyclopsUpgrades/Config.txt";
+        private const string ConfigFile = "./QMods/MoreCyclopsUpgrades/" + EmNuclearConfig.ConfigKey + ".txt";
 
         private static float RequiredEnergyDeficit = 1140f;
         private const float MinPercent = 10f;
@@ -16,6 +17,8 @@
         private const float DefaultPercent = 95f;
         private const string ToggleID = "NukModConserve";
         private const string SliderID = "NukeModActivatesAt";
+
+        private static float CyclopsMaxPower = 1;
 
         internal static float MinimumEnergyDeficit => EmConfig.ConserveNuclearModulePower ? RequiredEnergyDeficit : 0f;
 
@@ -29,14 +32,24 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[MoreCyclopsUpgrades] Error loading NuclearModuleConfig: " + ex.ToString());
+                Console.WriteLine($"[MoreCyclopsUpgrades] Error loading {EmNuclearConfig.ConfigKey}: " + ex.ToString());
                 WriteConfigFile();
             }
         }
 
-        internal static void UpdateValuesFromCyclops(float maxPower)
+        internal static void SetCyclopsMaxPower(float maxPower)
         {
-            RequiredEnergyDeficit = Mathf.Round(maxPower - maxPower * EmConfig.RequiredEnergyPercentage / 100f);
+            if (CyclopsMaxPower == maxPower)
+                return;
+
+            CyclopsMaxPower = maxPower;
+
+            UpdateRequiredDeficit();
+        }
+
+        private static void UpdateRequiredDeficit()
+        {
+            RequiredEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * EmConfig.RequiredEnergyPercentage / 100f);
         }
 
         public NuclearModuleConfig() : base("Cyclops Nuclear Module Options")
@@ -74,6 +87,7 @@
                 return;
 
             EmConfig.RequiredEnergyPercentage = Mathf.Round(args.Value);
+            UpdateRequiredDeficit();
             WriteConfigFile();
         }
 
@@ -83,7 +97,7 @@
             {
                 "# -------------------------------------------------------------------- #",
                 "# This config file can be edited in-game through the Mods options menu #",
-                "#                This save file is built using EasyMarkup              #",
+                "#             This config file was built using EasyMarkup              #",
                 "# -------------------------------------------------------------------- #",
                 "",
                 EmConfig.PrintyPrint(),
@@ -109,8 +123,17 @@
 
         private void LoadFromFile()
         {
+            if (File.Exists(OldConfigFile))
+            {
+                Console.WriteLine($"[MoreCyclopsUpgrades] Found original nuclear module config file.");
+                // Renamed the config file because we're going to add a new one
+                File.Move(OldConfigFile, ConfigFile);
+                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file renamed.");
+            }
+
             if (!File.Exists(ConfigFile))
             {
+                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file not found. Writing default file.");
                 WriteConfigFile();
                 return;
             }
@@ -121,6 +144,7 @@
 
             if (!readCorrectly || !EmConfig.ValidDataRead)
             {
+                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file contained errors. Writing default file.");
                 WriteConfigFile();
                 return;
             }

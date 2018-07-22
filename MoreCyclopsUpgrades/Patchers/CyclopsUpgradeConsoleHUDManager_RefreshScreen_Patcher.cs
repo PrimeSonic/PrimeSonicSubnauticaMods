@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using Harmony;
-    using UnityEngine;
 
     [HarmonyPatch(typeof(CyclopsUpgradeConsoleHUDManager))]
     [HarmonyPatch("RefreshScreen")]
@@ -14,24 +13,12 @@
             if (upgradeConsole == null)
                 return; // safety check
 
-            int currentReservePower = PowerCharging.GetTotalReservePower(upgradeConsole.modules);
+            Equipment modules = upgradeConsole.modules;
 
-            float currentBatteryPower = __instance.subRoot.powerRelay.GetPower();
+            // This method was put here because it's hit much less often than UpdateThermalReactorCharge
+            UpgradeConsoleCache.SyncUpgradeConsoles(__instance.subRoot, __instance.subRoot.GetAllComponentsInChildren<AuxUpgradeConsole>());
 
-            if (currentReservePower > 0f)
-            {
-                __instance.energyCur.color = Color.cyan; // Distinct color for when reserve power is available
-            }
-            else
-            {
-                __instance.energyCur.color = Color.white; // Normal color
-            }
-
-            int totalPower = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
-
-            __instance.energyCur.text = IntStringCache.GetStringForInt(totalPower);
-
-            NuclearModuleConfig.UpdateValuesFromCyclops(__instance.subRoot.powerRelay.GetMaxPower());
+            PowerManager.UpdateConsoleHUD(__instance, modules, UpgradeConsoleCache.AuxUpgradeConsoles);
         }
     }
 }

@@ -12,6 +12,11 @@
                 UpgradeModuleTabs[0].CraftNodes.Add(solarChargerID);
             }
 
+            if (TechTypeHandler.TryGetModdedTechType("CyclopsSpeedModule", out TechType cyclopsSpeedModuleID))
+            {
+                UpgradeModuleTabs[0].CraftNodes.Add(cyclopsSpeedModuleID);
+            }
+
             if (TechTypeHandler.TryGetModdedTechType("SpeedModule", out TechType speedModuleID))
             {
                 UpgradeModuleTabs[1].CraftNodes.Add(speedModuleID);

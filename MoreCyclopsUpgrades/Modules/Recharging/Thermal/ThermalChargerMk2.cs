@@ -7,9 +7,11 @@
 
     internal class ThermalChargerMk2 : CyclopsModule
     {
+        internal const float BatteryCapacity = 100f;
+
         public const TechType RequiredAnalysisItem = TechType.CyclopsThermalReactorModule;
 
-        internal ThermalChargerMk2() 
+        internal ThermalChargerMk2()
             : base("CyclopsThermalChargerMk2",
                   "Cyclops Thermal Reactor Mk2",
                   "Improved thermal charging and with integrated batteries to store a little extra power for when it get cold.",
@@ -61,7 +63,7 @@
 
                 var pCell = obj.AddComponent<Battery>();
                 pCell.name = "ThermalBackupBattery";
-                pCell._capacity = PowerCharging.MaxMk2Charge;
+                pCell._capacity = BatteryCapacity;
 
                 return obj;
             }

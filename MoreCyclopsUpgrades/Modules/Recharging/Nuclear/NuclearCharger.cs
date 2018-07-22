@@ -4,9 +4,14 @@
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Assets;
     using UnityEngine;
+    using SMLHelper.V2.Handlers;
 
     internal class NuclearCharger : CyclopsModule
     {
+        internal const float BatteryCapacity = 6000f; // Less than the normal 20k for balance
+
+        internal NuclearModuleConfig Config { get; } = new NuclearModuleConfig();
+
         internal NuclearCharger()
             : base("CyclopsNuclearModule",
                   "Cyclops Nuclear Reactor Module",
@@ -18,6 +23,17 @@
         }
 
         public override CyclopsModules ModuleID => CyclopsModules.Nuclear;
+
+        public override void Patch()
+        {
+            base.Patch();
+
+            if (!CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,
+                return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
+
+            OptionsPanelHandler.RegisterModOptions(Config);
+            Config.Initialize();
+        }
 
         protected override ModPrefab GetPrefab()
         {
@@ -59,8 +75,7 @@
                 // The battery component makes it easy to track the charge and saving the data is automatic.
                 var pCell = obj.AddComponent<Battery>();
                 pCell.name = "NuclearBattery";
-                pCell._capacity = NuclearChargingManager.MaxCharge;
-                pCell._charge = NuclearChargingManager.MaxCharge;
+                pCell._capacity = BatteryCapacity;
 
                 return obj;
             }
