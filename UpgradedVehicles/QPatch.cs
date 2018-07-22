@@ -9,32 +9,40 @@
     {
         public static void Patch()
         {
-#if DEBUG
+
             try
             {
                 Console.WriteLine($"[UpgradedVehicles] Start patching");
-#endif
-                SpeedBooster.Patch();
-                VehiclePowerCore.Patch();
-                SeaMothMk2.Patch();
-                ExosuitMk2.Patch();
+
+                var speedModule = new SpeedBooster();
+                speedModule.Patch();
+
+                var powerCore = new VehiclePowerCore(speedModule.TechType);
+                powerCore.Patch();
+
+                var mothMk2 = new SeaMothMk2(powerCore.TechType);
+                mothMk2.Patch();
+
+                var suitMk2 = new ExosuitMk2(powerCore.TechType);
+                suitMk2.Patch();
 
                 if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType seamothDepthMk4) &&
                     TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType seamothDepthMk5))
                 {
-                    SeaMothMk3.Patch(seamothDepthMk4, seamothDepthMk5);
+                    var mothMk3 = new SeaMothMk3(powerCore.TechType, seamothDepthMk4, seamothDepthMk5);
+                    mothMk3.Patch();
                 }
 
                 HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
-#if DEBUG
+
                 Console.WriteLine($"[UpgradedVehicles] Finish patching");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("[UpgradedVehicles] EXCEPTION on Patch: " + ex.ToString());
             }
-#endif
+
         }
     }
 }

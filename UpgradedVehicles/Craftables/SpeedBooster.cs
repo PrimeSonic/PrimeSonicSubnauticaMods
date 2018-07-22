@@ -7,29 +7,34 @@
     using SMLHelper.V2.Utility;
     using UnityEngine;
 
-    internal class SpeedBooster
+    internal class SpeedBooster : ModPrefab
     {
         public static TechType TechTypeID { get; private set; }
         public const string NameID = "SpeedModule";
         public const string FriendlyName = "Speed Boost Module";
-        public static readonly string Description = "Allows small vehicle engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.";
+        public const string Description = "Allows small vehicle engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.";
 
-        public static void Patch()
+        internal SpeedBooster() : base(NameID, $"{NameID}Prefab")
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, 
-                                                     FriendlyName, 
+        }
+
+        public void Patch()
+        {
+            this.TechType = TechTypeHandler.AddTechType(NameID,
+                                                     FriendlyName,
                                                      Description,
                                                      ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/SpeedBoost.png"),
                                                      false);
+            TechTypeID = this.TechType;
 
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
-            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, this.TechType, "CommonModules");
+            CraftDataHandler.SetTechData(this.TechType, GetRecipe());
 
-            PrefabHandler.RegisterPrefab(new SpeedBoosterPreFab(TechTypeID, NameID));
-            CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.VehicleModule);
+            PrefabHandler.RegisterPrefab(this);
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.VehicleModule);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(TechGroup.VehicleUpgrades, TechCategory.VehicleUpgrades, TechTypeID);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
+            CraftDataHandler.AddToGroup(TechGroup.VehicleUpgrades, TechCategory.VehicleUpgrades, this.TechType);
         }
 
         private static TechData GetRecipe()
@@ -46,19 +51,12 @@
             };
         }
 
-        internal class SpeedBoosterPreFab : ModPrefab
+        public override GameObject GetGameObject()
         {
-            internal SpeedBoosterPreFab(TechType techType, string classId) : base(classId, $"{classId}Prefab", techType)
-            {
-            }
+            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PowerUpgradeModule");
+            GameObject obj = GameObject.Instantiate(prefab);
 
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PowerUpgradeModule");
-                GameObject obj = GameObject.Instantiate(prefab);
-
-                return obj;
-            }
+            return obj;
         }
     }
 }

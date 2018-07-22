@@ -8,31 +8,40 @@
     using SMLHelper.V2.Utility;
     using UnityEngine;
 
-    internal class SeaMothMk2
+    internal class SeaMothMk2 : ModPrefab
     {
         public static TechType TechTypeID { get; private set; }
         public const string NameID = "SeaMothMk2";
         public const string FriendlyName = "Seamoth Mk2";
         public const string Description = "An upgraded SeaMoth, built harder and faster to take you anywhere.";
 
-        public static void Patch()
+        internal readonly TechType PowerCoreID;
+
+        internal SeaMothMk2(TechType vehiclePowerCore) : base(NameID, $"{NameID}Prefab")
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID,
+            PowerCoreID = vehiclePowerCore;
+        }        
+
+        public void Patch()
+        {
+            this.TechType = TechTypeHandler.AddTechType(NameID,
                                          FriendlyName,
                                          Description,
                                          ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/SeamothMk2.png"),
                                          false);
 
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, TechTypeID, "Vehicles");
-            CraftDataHandler.SetCraftingTime(TechTypeID, 15f);
-            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
+            TechTypeID = this.TechType;
 
-            PrefabHandler.RegisterPrefab(new SeaMothMk2Prefab(TechTypeID, NameID));
-            KnownTechHandler.SetAnalysisTechEntry(TechType.VehicleHullModule3, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(TechGroup.Constructor, TechCategory.Constructor, TechTypeID);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, this.TechType, "Vehicles");
+            CraftDataHandler.SetCraftingTime(this.TechType, 15f);
+            CraftDataHandler.SetTechData(this.TechType, GetRecipe());
+
+            PrefabHandler.RegisterPrefab(this);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.VehicleHullModule3, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
+            CraftDataHandler.AddToGroup(TechGroup.Constructor, TechCategory.Constructor, this.TechType);
         }
 
-        private static TechData GetRecipe()
+        private TechData GetRecipe()
         {
             return new TechData()
             {
@@ -44,43 +53,36 @@
                                  new Ingredient(TechType.Lead, 1),
 
                                  new Ingredient(TechType.VehicleHullModule3, 1), // Minimum crush depth of 900 without upgrades
-                                 new Ingredient(VehiclePowerCore.TechTypeID, 1), // armor and speed without engine efficiency penalty
+                                 new Ingredient(PowerCoreID, 1), // armor and speed without engine efficiency penalty
                              })
             };
         }
 
-        internal class SeaMothMk2Prefab : ModPrefab
+        public override GameObject GetGameObject()
         {
-            internal SeaMothMk2Prefab(TechType techtype, string nameID) : base(nameID, $"{nameID}Prefab", techtype)
-            {
-            }
+            GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeaMoth");
+            GameObject obj = GameObject.Instantiate(seamothPrefab);
 
-            public override GameObject GetGameObject()
-            {
-                GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/SeaMoth");
-                GameObject obj = GameObject.Instantiate(seamothPrefab);
+            var seamoth = obj.GetComponent<SeaMoth>();
 
-                var seamoth = obj.GetComponent<SeaMoth>();
+            var life = seamoth.GetComponent<LiveMixin>();
 
-                var life = seamoth.GetComponent<LiveMixin>();
+            LiveMixinData lifeData = ScriptableObject.CreateInstance<LiveMixinData>();
 
-                LiveMixinData lifeData = ScriptableObject.CreateInstance<LiveMixinData>();
+            life.data.CloneFieldsInto(lifeData);
+            lifeData.maxHealth = life.maxHealth * 2f; // 100% more HP
 
-                life.data.CloneFieldsInto(lifeData);
-                lifeData.maxHealth = life.maxHealth * 2f; // 100% more HP
+            life.data = lifeData;
+            life.health = life.data.maxHealth;
+            lifeData.weldable = true;
 
-                life.data = lifeData;
-                life.health = life.data.maxHealth;
-                lifeData.weldable = true;
+            var crush = obj.GetComponent<CrushDamage>();
+            crush.vehicle = seamoth;
+            crush.liveMixin = life;
 
-                var crush = obj.GetComponent<CrushDamage>();
-                crush.vehicle = seamoth;
-                crush.liveMixin = life;
+            // Always on upgrades handled in OnUpgradeModuleChange patch
 
-                // Always on upgrades handled in OnUpgradeModuleChange patch
-
-                return obj;
-            }
+            return obj;
         }
     }
 }

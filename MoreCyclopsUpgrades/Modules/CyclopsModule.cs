@@ -35,8 +35,6 @@
         public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
         public static TechType RefillNuclearModuleID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
 
-        public TechType TechTypeID { get; protected set; }
-
         public readonly string NameID;
         public readonly string FriendlyName;
         public readonly string Description;
@@ -76,31 +74,31 @@
             PreFabTemplate = preFabTemplate;
         }
 
-        public virtual void Patch()
+        protected virtual void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, RequiredForUnlock == TechType.None);
+            this.TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, RequiredForUnlock == TechType.None);
 
             if (!ModulesEnabled) // Even if the options have this be disabled,
                 return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
 
             if (RequiredForUnlock == TechType.None)
-                KnownTechHandler.UnlockOnStart(TechTypeID);
+                KnownTechHandler.UnlockOnStart(this.TechType);
             else
-                KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
+                KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
 
             PrefabHandler.RegisterPrefab(this);
 
-            SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/{NameID}.png");
+            SpriteHandler.RegisterSprite(this.TechType, $"./QMods/MoreCyclopsUpgrades/Assets/{NameID}.png");
 
-            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
+            CraftDataHandler.SetTechData(this.TechType, GetRecipe());
 
             if (AddToCraftTree)
-                CraftTreeHandler.AddCraftingNode(Fabricator, TechTypeID, FabricatorTabs);
+                CraftTreeHandler.AddCraftingNode(Fabricator, this.TechType, FabricatorTabs);
 
-            CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.CyclopsModule);
-            CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, TechTypeID);
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
+            CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
 
-            SetStaticTechTypeID(TechTypeID);
+            SetStaticTechTypeID(this.TechType);
         }
 
         protected abstract void SetStaticTechTypeID(TechType techTypeID);
@@ -120,11 +118,12 @@
             CyclopsModulesByModuleType.Add(ModuleTypes.Nuclear, new NuclearCharger());
             CyclopsModulesByModuleType.Add(ModuleTypes.DepletedNuclear, new DepletedNuclearModule());
 
-            foreach (KeyValuePair<ModuleTypes, CyclopsModule> module in CyclopsModulesByModuleType)
-            {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Patching {module.Value.NameID} ");
-                module.Value.Patch();
-                CyclopsModulesByTechType.Add(module.Value.TechTypeID, module.Value);
+            foreach (ModuleTypes m in Enum.GetValues(typeof(ModuleTypes)))
+            {                
+                CyclopsModule module = CyclopsModulesByModuleType[m];
+                Console.WriteLine($"[MoreCyclopsUpgrades] Patching {module.NameID}");
+                module.Patch();
+                CyclopsModulesByTechType.Add(module.TechType, module);
             }
         }
 

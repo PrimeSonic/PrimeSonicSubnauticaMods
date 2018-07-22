@@ -7,32 +7,42 @@
     using SMLHelper.V2.Utility;
     using UnityEngine;
 
-    internal class VehiclePowerCore
+    internal class VehiclePowerCore : ModPrefab
     {
         public static TechType TechTypeID { get; private set; }
+
         public const string NameID = "VehiclePowerCore";
         public const string FriendlyName = "Vehicle Power Core";
         public const string Description = "A modified power core for upgraded vehicles. Enables permanent enhancements without use of external upgrade modules.";
 
-        public static void Patch()
+        internal readonly TechType SpeedBoosterID;
+
+        internal VehiclePowerCore(TechType speedBoostModule)
+            : base(NameID, $"{NameID}Prefab")
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, 
+            SpeedBoosterID = speedBoostModule;
+        }
+
+        public void Patch()
+        {
+            this.TechType = TechTypeHandler.AddTechType(NameID,
                                                      FriendlyName,
                                                      Description,
                                                      ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/VehiclePowerCore.png"),
                                                      false);
+            TechTypeID = this.TechType;
 
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
-            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, this.TechType, "CommonModules");
+            CraftDataHandler.SetTechData(this.TechType, GetRecipe());
 
-            PrefabHandler.RegisterPrefab(new VehiclePowerCorePreFab(TechTypeID, NameID));
-            CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.None);
+            PrefabHandler.RegisterPrefab(this);
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.None);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, TechTypeID);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
+            CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
         }
 
-        private static TechData GetRecipe()
+        private TechData GetRecipe()
         {
             return new TechData()
             {
@@ -45,27 +55,18 @@
 
                                  new Ingredient(TechType.VehiclePowerUpgradeModule, 2), // Engine eficiency
                                  new Ingredient(TechType.VehicleArmorPlating, 2), // Armor                                 
-                                 new Ingredient(SpeedBooster.TechTypeID, 2), // Speed boost
+                                 new Ingredient(SpeedBoosterID, 2), // Speed boost
                              })
             };
         }
 
-        internal class VehiclePowerCorePreFab : ModPrefab
+        public override GameObject GetGameObject()
         {
-            internal VehiclePowerCorePreFab(TechType techType, string classId) : base(classId, $"{classId}Prefab", techType)
-            {
-            }
+            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PrecursorIonPowerCell");
+            GameObject obj = GameObject.Instantiate(prefab);
+            GameObject.DestroyImmediate(obj.GetComponent<Battery>());
 
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PrecursorIonPowerCell");
-                GameObject obj = GameObject.Instantiate(prefab);
-                GameObject.DestroyImmediate(obj.GetComponent<Battery>());
-
-                obj.GetComponent<TechTag>().type = TechTypeID;
-
-                return obj;
-            }
+            return obj;
         }
     }
 }

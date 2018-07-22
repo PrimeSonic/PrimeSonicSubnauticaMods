@@ -51,8 +51,6 @@
 
                 SetStaticTechTypeID(TechTypeID);
             }
-
-            NuclearFabricator.Patch();
         }
 
         protected override TechData GetRecipe()
