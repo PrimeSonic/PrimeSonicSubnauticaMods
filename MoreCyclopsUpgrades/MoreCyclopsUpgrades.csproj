@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
+    <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />

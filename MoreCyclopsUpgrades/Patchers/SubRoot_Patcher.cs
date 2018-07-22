@@ -57,16 +57,21 @@
             __instance.vehicleRepairUpgrade = false;
             __instance.decoyTubeSizeIncreaseUpgrade = false;
 
-            HandleToggleableUpgrades(__instance, __instance.upgradeConsole.modules);
+            bool hasFireSupression = false;
+
+            HandleToggleableUpgrades(__instance, __instance.upgradeConsole.modules, ref hasFireSupression);
 
             foreach (AuxUpgradeConsole auxConsole in UpgradeConsoleCache.AuxUpgradeConsoles)
-                HandleToggleableUpgrades(__instance, auxConsole.Modules);
+                HandleToggleableUpgrades(__instance, auxConsole.Modules, ref hasFireSupression);
+
+            var cyclopsHUD = __instance.GetComponentInChildren<CyclopsHolographicHUD>();
+            cyclopsHUD.fireSuppressionSystem.SetActive(hasFireSupression);
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
         }
 
-        private static void HandleToggleableUpgrades(SubRoot __instance, Equipment modules)
+        private static void HandleToggleableUpgrades(SubRoot __instance, Equipment modules, ref bool fireSupressionSystem)
         {
             var subControl = __instance.GetAllComponentsInChildren<SubControl>();
 
@@ -88,6 +93,9 @@
                         break;
                     case TechType.CyclopsDecoyModule:
                         __instance.decoyTubeSizeIncreaseUpgrade = true;
+                        break;
+                    case TechType.CyclopsFireSuppressionModule:
+                        fireSupressionSystem = true;
                         break;
                         // CyclopsThermalReactorModule handled in PowerManager.RechargeCyclops
                         // CyclopsSpeedModule handled in PowerManager.UpdatePowerSpeedRating
