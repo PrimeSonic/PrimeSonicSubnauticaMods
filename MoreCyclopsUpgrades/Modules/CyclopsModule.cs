@@ -7,7 +7,7 @@
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal enum CyclopsModules : int
+    internal enum ModuleTypes : int
     {
         ThermalMk2 = 1,
         Solar = 2,
@@ -19,23 +19,10 @@
         DepletedNuclear = 8
     }
 
-    internal class SortedCyclopsModules : SortedList<CyclopsModules, CyclopsModule>
+    internal abstract class CyclopsModule : ModPrefab
     {
-        public SortedCyclopsModules()
-        {
-        }
-
-        public SortedCyclopsModules(int capacity) : base(capacity)
-        {
-        }
-
-        internal void Add(CyclopsModule module) => Add(module.ModuleID, module);
-    }
-
-    internal abstract class CyclopsModule
-    {
-        private static readonly SortedCyclopsModules CyclopsModulesList = new SortedCyclopsModules(8);
-        private static readonly Dictionary<TechType, CyclopsModules> TechTypeToModuleID = new Dictionary<TechType, CyclopsModules>(8);
+        private static readonly SortedList<ModuleTypes, CyclopsModule> CyclopsModulesByModuleType = new SortedList<ModuleTypes, CyclopsModule>(8);
+        private static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
         internal static bool ModulesEnabled { get; private set; } = true;
 
         public static TechType SolarChargerID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
@@ -59,11 +46,12 @@
 
         protected readonly TechType PreFabTemplate;
 
-        public abstract CyclopsModules ModuleID { get; }
+        public abstract ModuleTypes ModuleID { get; }
 
         private readonly bool AddToCraftTree;
 
         protected CyclopsModule(string nameID, string friendlyName, string description, CraftTree.Type fabricator, string[] fabricatorTab, TechType requiredAnalysisItem = TechType.None, TechType preFabTemplate = TechType.CyclopsThermalReactorModule)
+            : base(nameID, $"{nameID}PreFab")
         {
             NameID = nameID;
             FriendlyName = friendlyName;
@@ -77,6 +65,7 @@
         }
 
         protected CyclopsModule(string nameID, string friendlyName, string description, TechType requiredAnalysisItem = TechType.None, TechType preFabTemplate = TechType.CyclopsThermalReactorModule)
+            : base(nameID, $"{nameID}PreFab")
         {
             NameID = nameID;
             FriendlyName = friendlyName;
@@ -99,7 +88,7 @@
             else
                 KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
 
-            PrefabHandler.RegisterPrefab(GetPrefab());
+            PrefabHandler.RegisterPrefab(this);
 
             SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/{NameID}.png");
 
@@ -118,26 +107,24 @@
 
         protected abstract TechData GetRecipe();
 
-        protected abstract ModPrefab GetPrefab();
-
         internal static void PatchAllModules(bool vehicleUpgradesInCyclopsFabricator, bool modulesEnabled)
         {
             ModulesEnabled = modulesEnabled;
 
-            CyclopsModulesList.Add(new SolarCharger(vehicleUpgradesInCyclopsFabricator));
-            CyclopsModulesList.Add(new SolarChargerMk2());
-            CyclopsModulesList.Add(new ThermalChargerMk2());
-            CyclopsModulesList.Add(new PowerUpgradeMk2());
-            CyclopsModulesList.Add(new PowerUpgradeMk3());
-            CyclopsModulesList.Add(new CyclopsSpeedBooster(vehicleUpgradesInCyclopsFabricator));
-            CyclopsModulesList.Add(new NuclearCharger());
-            CyclopsModulesList.Add(new DepletedNuclearModule());
+            CyclopsModulesByModuleType.Add(ModuleTypes.Solar, new SolarCharger(vehicleUpgradesInCyclopsFabricator));
+            CyclopsModulesByModuleType.Add(ModuleTypes.SolarMk2, new SolarChargerMk2());
+            CyclopsModulesByModuleType.Add(ModuleTypes.ThermalMk2, new ThermalChargerMk2());
+            CyclopsModulesByModuleType.Add(ModuleTypes.PowerMk2, new PowerUpgradeMk2());
+            CyclopsModulesByModuleType.Add(ModuleTypes.PowerMk3, new PowerUpgradeMk3());
+            CyclopsModulesByModuleType.Add(ModuleTypes.Speed, new CyclopsSpeedBooster(vehicleUpgradesInCyclopsFabricator));
+            CyclopsModulesByModuleType.Add(ModuleTypes.Nuclear, new NuclearCharger());
+            CyclopsModulesByModuleType.Add(ModuleTypes.DepletedNuclear, new DepletedNuclearModule());
 
-            foreach (KeyValuePair<CyclopsModules, CyclopsModule> module in CyclopsModulesList)
+            foreach (KeyValuePair<ModuleTypes, CyclopsModule> module in CyclopsModulesByModuleType)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Patching {module.Value.NameID} ");
                 module.Value.Patch();
-                TechTypeToModuleID.Add(module.Value.TechTypeID, module.Key);
+                CyclopsModulesByTechType.Add(module.Value.TechTypeID, module.Value);
             }
         }
 
@@ -151,15 +138,14 @@
             }
             else if (ModulesEnabled) // Safety check in case these are disabled in the config
             {
-                if (!TechTypeToModuleID.ContainsKey(techTypeID))
+                if (!CyclopsModulesByTechType.ContainsKey(techTypeID))
                     return null; // error condition
 
                 // Get the CyclopsModule child class instance associated to this TechType
-                CyclopsModules moduleID = TechTypeToModuleID[techTypeID];
-                CyclopsModule cyclopsModule = CyclopsModulesList[moduleID];
+                CyclopsModule cyclopsModule = CyclopsModulesByTechType[techTypeID];
 
                 // Instantiate a new prefab of the appripriate template TechType
-                gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(cyclopsModule.PreFabTemplate));
+                gameObject = cyclopsModule.GetGameObject();
                 var ider = gameObject.GetComponent<PrefabIdentifier>();
 
                 // Set the TechType value on the TechTag
@@ -171,26 +157,6 @@
 
                 // Set the class ID
                 ider.ClassId = cyclopsModule.NameID;
-
-                // If we're dealing with a module that has a battery component, add it.
-                if (techTypeID == SolarChargerMk2ID)
-                {
-                    var pCell = gameObject.AddComponent<Battery>();
-                    pCell.name = "SolarBackupBattery";
-                    pCell._capacity = SolarChargerMk2.BatteryCapacity;
-                }
-                else if (techTypeID == ThermalChargerMk2ID)
-                {
-                    var pCell = gameObject.AddComponent<Battery>();
-                    pCell.name = "ThermalBackupBattery";
-                    pCell._capacity = ThermalChargerMk2.BatteryCapacity;
-                }
-                else if (techTypeID == NuclearChargerID)
-                {
-                    var pCell = gameObject.AddComponent<Battery>();
-                    pCell.name = "NuclearBattery";
-                    pCell._capacity = NuclearCharger.BatteryCapacity;
-                }
             }
             else
             {

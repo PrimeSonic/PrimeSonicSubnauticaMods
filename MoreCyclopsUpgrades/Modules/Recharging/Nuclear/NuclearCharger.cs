@@ -22,7 +22,7 @@
         {
         }
 
-        public override CyclopsModules ModuleID => CyclopsModules.Nuclear;
+        public override ModuleTypes ModuleID => ModuleTypes.Nuclear;
 
         public override void Patch()
         {
@@ -33,11 +33,6 @@
 
             OptionsPanelHandler.RegisterModOptions(Config);
             Config.Initialize();
-        }
-
-        protected override ModPrefab GetPrefab()
-        {
-            return new NuclearChargerPreFab(NameID, TechTypeID);
         }
 
         protected override TechData GetRecipe()
@@ -61,24 +56,17 @@
             NuclearChargerID = techTypeID;
         }
 
-        internal class NuclearChargerPreFab : ModPrefab
+        public override GameObject GetGameObject()
         {
-            internal NuclearChargerPreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
-            {
-            }
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+            GameObject obj = GameObject.Instantiate(prefab);
 
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-                GameObject obj = GameObject.Instantiate(prefab);
+            // The battery component makes it easy to track the charge and saving the data is automatic.
+            var pCell = obj.AddComponent<Battery>();
+            pCell.name = "NuclearBattery";
+            pCell._capacity = BatteryCapacity;
 
-                // The battery component makes it easy to track the charge and saving the data is automatic.
-                var pCell = obj.AddComponent<Battery>();
-                pCell.name = "NuclearBattery";
-                pCell._capacity = BatteryCapacity;
-
-                return obj;
-            }
+            return obj;
         }
     }
 }

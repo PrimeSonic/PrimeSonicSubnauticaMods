@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Assets;
     using UnityEngine;
 
     internal class SolarChargerMk2 : CyclopsModule
@@ -19,11 +18,18 @@
         {
         }
 
-        public override CyclopsModules ModuleID => CyclopsModules.SolarMk2;
+        public override ModuleTypes ModuleID => ModuleTypes.SolarMk2;
 
-        protected override ModPrefab GetPrefab()
+        public override GameObject GetGameObject()
         {
-            return new SolarChargerMk2PreFab(NameID, TechTypeID);
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+            GameObject obj = Object.Instantiate(prefab);
+
+            var pCell = obj.AddComponent<Battery>();
+            pCell.name = "SolarBackupBattery";
+            pCell._capacity = BatteryCapacity;
+
+            return obj;
         }
 
         protected override TechData GetRecipe()
@@ -46,25 +52,6 @@
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
             SolarChargerMk2ID = techTypeID;
-        }
-
-        internal class SolarChargerMk2PreFab : ModPrefab
-        {
-            internal SolarChargerMk2PreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
-            {
-            }
-
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-                GameObject obj = Object.Instantiate(prefab);
-
-                var pCell = obj.AddComponent<Battery>();
-                pCell.name = "SolarBackupBattery";
-                pCell._capacity = BatteryCapacity;
-
-                return obj;
-            }
         }
     }
 }

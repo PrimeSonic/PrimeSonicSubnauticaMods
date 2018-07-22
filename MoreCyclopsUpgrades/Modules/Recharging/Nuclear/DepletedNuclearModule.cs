@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -20,7 +19,15 @@
 
         }
 
-        public override CyclopsModules ModuleID => CyclopsModules.DepletedNuclear;
+        public override ModuleTypes ModuleID => ModuleTypes.DepletedNuclear;
+
+        public override GameObject GetGameObject()
+        {
+            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Natural/DepletedReactorRod");
+            GameObject gameObject = GameObject.Instantiate(prefab);
+
+            return gameObject;
+        }
 
         public override void Patch()
         {
@@ -40,17 +47,12 @@
                 CraftDataHandler.SetTechData(RefillNuclearModuleID, GetRecipe());
                 KnownTechHandler.SetAnalysisTechEntry(TechType.BaseNuclearReactor, new TechType[1] { RefillNuclearModuleID }, "Reload of cyclops nuclear module available.");
 
-                PrefabHandler.RegisterPrefab(new DepletedNuclearModulePreFab(DepletedNameID, TechTypeID));
+                PrefabHandler.RegisterPrefab(this);
 
                 SetStaticTechTypeID(TechTypeID);
             }
 
             NuclearFabricator.Patch();
-        }
-
-        protected override ModPrefab GetPrefab()
-        {
-            return new DepletedNuclearModulePreFab(DepletedNameID, TechTypeID);
         }
 
         protected override TechData GetRecipe()
@@ -74,21 +76,6 @@
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
             DepletedNuclearModuleID = techTypeID;
-        }
-
-        internal class DepletedNuclearModulePreFab : ModPrefab
-        {
-            internal DepletedNuclearModulePreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
-            {
-            }
-
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Natural/DepletedReactorRod");
-                GameObject gameObject = GameObject.Instantiate(prefab);
-
-                return gameObject;
-            }
         }
     }
 }
