@@ -23,15 +23,15 @@
 
         public override GameObject GetGameObject()
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Natural/DepletedReactorRod");
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
             GameObject gameObject = GameObject.Instantiate(prefab);
 
             return gameObject;
         }
 
-        public override void Patch()
+        protected override void Patch()
         {
-            TechTypeID = TechTypeHandler.AddTechType(DepletedNameID, FriendlyName, Description, false);
+            this.TechType = TechTypeHandler.AddTechType(DepletedNameID, FriendlyName, Description, false);
 
             RefillNuclearModuleID = TechTypeHandler.AddTechType("CyclopsNuclearModuleRefil",
                                                                  "Reload Cyclops Nuclear Module",
@@ -41,7 +41,7 @@
             if (CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,                
             {// we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
 
-                SpriteHandler.RegisterSprite(TechTypeID, $"./QMods/MoreCyclopsUpgrades/Assets/DepletedCyclopsNuclearModule.png");
+                SpriteHandler.RegisterSprite(this.TechType, $"./QMods/MoreCyclopsUpgrades/Assets/DepletedCyclopsNuclearModule.png");
                 SpriteHandler.RegisterSprite(RefillNuclearModuleID, $"./QMods/MoreCyclopsUpgrades/Assets/CyclopsNuclearModule.png");
 
                 CraftDataHandler.SetTechData(RefillNuclearModuleID, GetRecipe());
@@ -49,7 +49,7 @@
 
                 PrefabHandler.RegisterPrefab(this);
 
-                SetStaticTechTypeID(TechTypeID);
+                SetStaticTechTypeID(this.TechType);
             }
         }
 
@@ -60,7 +60,7 @@
                 craftAmount = 0,
                 Ingredients = new List<Ingredient>()
                     {
-                        new Ingredient(TechTypeID, 1),
+                        new Ingredient(this.TechType, 1),
                         new Ingredient(TechType.ReactorRod, 1)
                     },
                 LinkedItems = new List<TechType>()
