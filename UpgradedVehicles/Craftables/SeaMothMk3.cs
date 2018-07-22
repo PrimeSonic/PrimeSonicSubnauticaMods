@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
 
     internal class SeaMothMk3 : UpgradedVehicle<SeaMoth>
     {
@@ -11,17 +12,33 @@
 
         internal readonly TechType PowerCoreID;
 
-        internal SeaMothMk3(TechType vehiclePowerCore, TechType seamothHullModule4, TechType seamothHullModule5)
+        internal SeaMothMk3(VehiclePowerCore vehiclePowerCore)
             : base(nameID: "SeaMothMk3",
-                      friendlyName: "Seamoth ++",
+                      friendlyName: "Seamoth MK3",
                       description: "The highest end SeaMoth. Ready for adventures in the most hostile of environments.",
                       template: TechType.Seamoth,
                       healthModifier: 2.15f, // 2.15x Max HP. 115% more.
                       requiredAnalysis: TechType.VehicleHullModule3)
         {
-            PowerCoreID = vehiclePowerCore;
-            SeamothHullModule4 = seamothHullModule4;
-            SeamothHullModule5 = seamothHullModule5;
+            PowerCoreID = vehiclePowerCore.TechType;
+        }
+
+        public override void Patch()
+        {
+            if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType seamothDepthMk4) &&
+                TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType seamothDepthMk5))
+            {
+                SeamothHullModule4 = seamothDepthMk4;
+                SeamothHullModule5 = seamothDepthMk5;
+
+                // MoreSeamothUpgrades found. Patch normally.
+                base.Patch();
+            }
+            else
+            {
+                // MoreSeamothUpgrades not found. Register just the TechType to preserve the ID.
+                this.TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
+            }
         }
 
         protected override TechData GetRecipe()

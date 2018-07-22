@@ -11,7 +11,7 @@
         
         internal readonly TechType SpeedBoosterID;
 
-        internal VehiclePowerCore(TechType speedBoostModule)
+        internal VehiclePowerCore(SpeedBooster speedBoostModule)
              : base(nameID: "VehiclePowerCore",
                   friendlyName: "Vehicle Power Core",
                   description: "A modified power core for constructing upgraded vehicles. Enables permanent enhancements without use of external upgrade modules.",
@@ -22,7 +22,7 @@
                   groupForPDA: TechGroup.Resources,
                   categoryForPDA: TechCategory.Electronics)
         {
-            SpeedBoosterID = speedBoostModule;
+            SpeedBoosterID = speedBoostModule.TechType;
         }
 
         public override void Patch()

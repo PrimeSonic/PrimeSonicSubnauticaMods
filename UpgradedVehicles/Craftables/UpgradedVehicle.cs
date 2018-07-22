@@ -23,8 +23,7 @@
 
         public override GameObject GetGameObject()
         {
-            GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Exosuit");
-            GameObject obj = GameObject.Instantiate(seamothPrefab);
+            GameObject obj = base.GetGameObject();
 
             var vehicle = obj.GetComponent(VehicleComponentType);
 

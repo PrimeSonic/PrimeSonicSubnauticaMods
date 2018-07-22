@@ -1,7 +1,6 @@
 ﻿namespace UpgradedVehicles.Patchers
 {
     using Harmony;
-    using UnityEngine;
 
     [HarmonyPatch(typeof(Exosuit))]
     [HarmonyPatch("OnUpgradeModuleChange")]

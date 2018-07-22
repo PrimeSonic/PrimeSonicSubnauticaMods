@@ -11,7 +11,7 @@
 
         // Original value from VehicleMotor class
         private const float KSpeed = 100f;
-        private const float SpeedBonusPerModule = 0.40f;
+        private const float SpeedBonusPerModule = 0.35f;
 
         private const int BonusModuleCount = 2; // Extra bonus to common module upgrades
 

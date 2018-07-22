@@ -9,15 +9,15 @@
 
         internal readonly TechType PowerCoreID;
 
-        internal ExosuitMk2(TechType vehiclePowerCore) 
+        internal ExosuitMk2(VehiclePowerCore vehiclePowerCore) 
             : base("ExosuitMk2",
-                  "Prawn Suit +",
+                  "Prawn Suit MK2",
                   "An upgraded Prawn Suit now even tougher to take on anything.",
                   TechType.Exosuit,
                   1.5f,
                   TechType.ExoHullModule2)
         {
-            PowerCoreID = vehiclePowerCore;
+            PowerCoreID = vehiclePowerCore.TechType;
         }
 
         protected override TechData GetRecipe()

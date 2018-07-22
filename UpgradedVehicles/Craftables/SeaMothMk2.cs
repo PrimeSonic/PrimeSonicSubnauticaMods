@@ -9,15 +9,15 @@
 
         internal readonly TechType PowerCoreID;
 
-        internal SeaMothMk2(TechType vehiclePowerCore)
+        internal SeaMothMk2(VehiclePowerCore vehiclePowerCore)
             : base(nameID: "SeaMothMk2",
-                      friendlyName: "Seamoth +",
+                      friendlyName: "Seamoth MK2",
                       description: "An upgraded SeaMoth, built harder and faster to take you anywhere.",
                       template: TechType.Seamoth,
                       healthModifier: 2f, // 2x the Max HP. 100% more.
                       requiredAnalysis: TechType.VehicleHullModule3)
         {
-            PowerCoreID = vehiclePowerCore;
+            PowerCoreID = vehiclePowerCore.TechType;
         }
 
         protected override TechData GetRecipe()

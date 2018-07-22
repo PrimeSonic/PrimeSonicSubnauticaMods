@@ -70,9 +70,7 @@
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(PrefabTemplate);
-            GameObject obj = GameObject.Instantiate(prefab);
-
-            return obj;
+            return GameObject.Instantiate(prefab);
         }
     }
 }
