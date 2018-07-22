@@ -19,9 +19,22 @@
         DepletedNuclear = 8
     }
 
+    internal class SortedCyclopsModules : SortedList<CyclopsModules, CyclopsModule>
+    {
+        public SortedCyclopsModules()
+        {
+        }
+
+        public SortedCyclopsModules(int capacity) : base(capacity)
+        {
+        }
+
+        internal void Add(CyclopsModule module) => Add(module.ModuleID, module);
+    }
+
     internal abstract class CyclopsModule
     {
-        private static readonly SortedCyclopsModules CyclopsModulesList = new SortedCyclopsModules(8);        
+        private static readonly SortedCyclopsModules CyclopsModulesList = new SortedCyclopsModules(8);
         private static readonly Dictionary<TechType, CyclopsModules> TechTypeToModuleID = new Dictionary<TechType, CyclopsModules>(8);
         internal static bool ModulesEnabled { get; private set; } = true;
 
@@ -125,7 +138,7 @@
                 Console.WriteLine($"[MoreCyclopsUpgrades] Patching {module.Value.NameID} ");
                 module.Value.Patch();
                 TechTypeToModuleID.Add(module.Value.TechTypeID, module.Key);
-            }            
+            }
         }
 
         public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
@@ -164,19 +177,19 @@
                 {
                     var pCell = gameObject.AddComponent<Battery>();
                     pCell.name = "SolarBackupBattery";
-                    pCell._capacity = PowerManager.MaxMk2Charge;
+                    pCell._capacity = SolarChargerMk2.BatteryCapacity;
                 }
                 else if (techTypeID == ThermalChargerMk2ID)
                 {
                     var pCell = gameObject.AddComponent<Battery>();
                     pCell.name = "ThermalBackupBattery";
-                    pCell._capacity = PowerManager.MaxMk2Charge;
+                    pCell._capacity = ThermalChargerMk2.BatteryCapacity;
                 }
                 else if (techTypeID == NuclearChargerID)
                 {
                     var pCell = gameObject.AddComponent<Battery>();
                     pCell.name = "NuclearBattery";
-                    pCell._capacity = PowerManager.MaxNuclearCharge;
+                    pCell._capacity = NuclearCharger.BatteryCapacity;
                 }
             }
             else

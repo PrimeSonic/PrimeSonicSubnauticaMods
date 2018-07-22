@@ -24,7 +24,7 @@
             new EmModuleSaveData("M4"),
             new EmModuleSaveData("M5"),
             new EmModuleSaveData("M6"),
-        };        
+        };
 
         public EmModuleSaveData GetModuleInSlot(string slot)
         {

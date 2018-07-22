@@ -68,7 +68,7 @@
 
         private static void HandleToggleableUpgrades(SubRoot __instance, Equipment modules)
         {
-            var subControl = __instance.GetAllComponentsInChildren<SubControl>();            
+            var subControl = __instance.GetAllComponentsInChildren<SubControl>();
 
             List<TechType> upgradeList = new List<TechType>(SlotHelper.SlotNames.Length);
 
@@ -116,7 +116,7 @@
                 return true; // safety check
 
             Equipment coreModules = __instance.upgradeConsole.modules;
-            
+
             float bonusCrushDepth = GetMaxBonusCrushDepth(coreModules, UpgradeConsoleCache.AuxUpgradeConsoles);
 
             CrushDamage component = __instance.gameObject.GetComponent<CrushDamage>();

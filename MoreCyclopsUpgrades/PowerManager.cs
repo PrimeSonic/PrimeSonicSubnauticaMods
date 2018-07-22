@@ -6,6 +6,11 @@
 
     internal static class PowerManager
     {
+        private const float MaxSolarDepth = 200f;
+        private const float SolarChargingFactor = 0.03f;
+        private const float ThermalChargingFactor = 1.5f;
+        private const float BatteryDrainRate = 0.01f;
+
         private const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
         private const float NuclearDrainRate = 0.15f;
@@ -32,26 +37,23 @@
 
         private static readonly float[] EnginePowerRatings = new float[PowerIndexCount]
         {
-            1f, 3f, 5f, 6f
+            1f, 3f, 5f, 6f // Lower costs here don't show up until the Mk2
         };
 
         private static readonly float[] SilentRunningPowerCosts = new float[PowerIndexCount]
         {
-            5f, 5f, 4f, 3f
+            5f, 5f, 4f, 3f // Lower costs here don't show up until the Mk2
         };
 
         private static readonly float[] SonarPowerCosts = new float[PowerIndexCount]
         {
-            10f, 10f, 8f, 7f
+            10f, 10f, 8f, 7f // Lower costs here don't show up until the Mk2
         };
 
         private static readonly float[] ShieldPowerCosts = new float[PowerIndexCount]
         {
-            50f, 50f, 42f, 34f
+            50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
-
-        internal const float MaxMk2Charge = 100f;
-        internal const float MaxNuclearCharge = 6000f; // Less than the normal 20k for balance
 
         private static List<Battery> NuclerCells = new List<Battery>(36);
         private static List<string> NuclerSlots = new List<string>(36);
@@ -187,8 +189,8 @@
         {
             float powerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();
 
-            float availableSolarEnergy = SolarChargingManager.GetSolarChargeAmount(ref __instance);
-            float availableThermalEnergy = ThermalChargingManager.GetThermalChargeAmount(ref __instance);
+            float availableSolarEnergy = GetSolarChargeAmount(ref __instance);
+            float availableThermalEnergy = GetThermalChargeAmount(ref __instance);
 
             float surplusPower = 0f;
             Battery lastBatteryToCharge = null;
@@ -217,7 +219,7 @@
                     else if (techTypeInSlot == CyclopsModule.SolarChargerMk2ID) // Solar Mk2
                     {
                         Battery battery = GetBatteryInSlot(modules, slotName);
-                        surplusPower += ChargeFromModuleMk2(ref __instance, battery, availableSolarEnergy, SolarChargingManager.BatteryDrainRate, ref powerDeficit);
+                        surplusPower += ChargeFromModuleMk2(ref __instance, battery, availableSolarEnergy, BatteryDrainRate, ref powerDeficit);
                         renewablePowerAvailable |= battery.charge > 0f;
 
                         if (battery.charge < battery.capacity)
@@ -225,13 +227,13 @@
                     }
                     else if (techTypeInSlot == TechType.CyclopsThermalReactorModule) // Thermal
                     {
-                        surplusPower += PowerManager.ChargeFromStandardModule(ref __instance, availableThermalEnergy, ref powerDeficit);
+                        surplusPower += ChargeFromStandardModule(ref __instance, availableThermalEnergy, ref powerDeficit);
                         renewablePowerAvailable |= availableThermalEnergy > 0f;
                     }
                     else if (techTypeInSlot == CyclopsModule.ThermalChargerMk2ID) // Thermal Mk2
                     {
                         Battery battery = GetBatteryInSlot(modules, slotName);
-                        surplusPower += ChargeFromModuleMk2(ref __instance, battery, availableThermalEnergy, ThermalChargingManager.BatteryDrainRate, ref powerDeficit);
+                        surplusPower += ChargeFromModuleMk2(ref __instance, battery, availableThermalEnergy, BatteryDrainRate, ref powerDeficit);
                         renewablePowerAvailable |= battery.charge > 0f;
 
                         if (battery.charge < battery.capacity)
@@ -541,6 +543,46 @@
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
+        }
+
+        /// <summary>
+        /// Gets the amount of available energy provided by the currently available sunlight.
+        /// </summary>
+        /// <param name="cyclops">The cyclops.</param>
+        /// <returns>The currently available solar energy.</returns>
+        private static float GetSolarChargeAmount(ref SubRoot cyclops)
+        {
+            // The code here mostly replicates what the UpdateSolarRecharge() method does from the SeaMoth class.
+            // Consessions were made for the differences between the Seamoth and Cyclops upgrade modules.
+            DayNightCycle main = DayNightCycle.main;
+
+            if (main == null)
+                return 0f; // Safety check
+
+            // This is 1-to-1 the same way the Seamoth calculates its solar charging rate.
+            float proximityToSurface = Mathf.Clamp01((MaxSolarDepth + cyclops.transform.position.y) / MaxSolarDepth);
+            float localLightScalar = main.GetLocalLightScalar();
+
+            return SolarChargingFactor * localLightScalar * proximityToSurface;
+        }
+
+        /// <summary>
+        ///  Gets the amount of available energy provided by the current ambient heat.
+        /// </summary>
+        /// <param name="cyclops">The cyclops.</param>
+        /// <returns>The currently available thermal energy.</returns>
+        private static float GetThermalChargeAmount(ref SubRoot cyclops)
+        {
+            // This code mostly replicates what the UpdateThermalReactorCharge() method does from the SubRoot class
+            WaterTemperatureSimulation main = WaterTemperatureSimulation.main;
+            float temperature = (!(main != null)) ? 0f : main.GetTemperature(cyclops.transform.position);
+
+            float thermalCharge = cyclops.thermalReactorCharge.Evaluate(temperature) * ThermalChargingFactor;
+            float thermalChargeOverTime = thermalCharge * Time.deltaTime;
+
+            UWE.Utils.Assert(thermalChargeOverTime >= 0f, "ThermalReactorModule must produce positive amounts", cyclops);
+
+            return thermalChargeOverTime;
         }
     }
 }

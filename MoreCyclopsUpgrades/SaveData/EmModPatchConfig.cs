@@ -102,7 +102,7 @@
                 "# ----------------------------------------------------------------------------- #",
                 "# Because of how the Auxiliary Upgrade Console interacts with the new upgrade modules, #",
                 "# it was not possible to separate these two options into two distinct mods. #",
-                "# With that in mind, these options were enabled to accomodate players who wanted just one of these options. #",                
+                "# With that in mind, these options were enabled to accomodate players who wanted just one of these options. #",
                 "# ----------------------------------------------------------------------------- #",
             }, Encoding.UTF8);
         }

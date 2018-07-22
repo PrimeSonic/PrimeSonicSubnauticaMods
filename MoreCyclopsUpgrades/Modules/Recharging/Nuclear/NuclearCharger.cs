@@ -8,6 +8,8 @@
 
     internal class NuclearCharger : CyclopsModule
     {
+        internal const float BatteryCapacity = 6000f; // Less than the normal 20k for balance
+
         internal NuclearModuleConfig Config { get; } = new NuclearModuleConfig();
 
         internal NuclearCharger()
@@ -73,7 +75,7 @@
                 // The battery component makes it easy to track the charge and saving the data is automatic.
                 var pCell = obj.AddComponent<Battery>();
                 pCell.name = "NuclearBattery";
-                pCell._capacity = PowerManager.MaxNuclearCharge;
+                pCell._capacity = BatteryCapacity;
 
                 return obj;
             }

@@ -83,7 +83,7 @@
         {
             CyclopsUpgradeChange();
             //this.UpdateVisuals();
-            
+
             // Disallow deconstruction while there are modules in here
             Buildable.deconstructionAllowed = false;
         }

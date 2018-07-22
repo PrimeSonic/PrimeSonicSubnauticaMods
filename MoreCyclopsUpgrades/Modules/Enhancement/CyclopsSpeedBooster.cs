@@ -8,12 +8,12 @@
 
     internal class CyclopsSpeedBooster : CyclopsModule
     {
-        internal CyclopsSpeedBooster(bool fabModPresent) : this(fabModPresent? null : new[] { "CyclopsMenu" })
+        internal CyclopsSpeedBooster(bool fabModPresent) : this(fabModPresent ? null : new[] { "CyclopsMenu" })
         {
         }
 
-        private CyclopsSpeedBooster(string[] tabs) 
-            : base("CyclopsSpeedModule", 
+        private CyclopsSpeedBooster(string[] tabs)
+            : base("CyclopsSpeedModule",
                   "Cyclops Speed Boost Module",
                   "Allows the cyclops engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.",
                   CraftTree.Type.CyclopsFabricator,

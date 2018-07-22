@@ -7,6 +7,8 @@
 
     internal class SolarChargerMk2 : CyclopsModule
     {
+        internal const float BatteryCapacity = 100f;
+
         internal SolarChargerMk2()
             : base("CyclopsSolarChargerMk2",
                   "Cyclops Solar Charger Mk2",
@@ -14,7 +16,7 @@
                   CraftTree.Type.Workbench,
                   new[] { "CyclopsMenu" },
                   TechType.Workbench)
-        {            
+        {
         }
 
         public override CyclopsModules ModuleID => CyclopsModules.SolarMk2;
@@ -59,7 +61,7 @@
 
                 var pCell = obj.AddComponent<Battery>();
                 pCell.name = "SolarBackupBattery";
-                pCell._capacity = PowerManager.MaxMk2Charge;
+                pCell._capacity = BatteryCapacity;
 
                 return obj;
             }
