@@ -1,6 +1,5 @@
-﻿namespace UpgradedVehicles.Craftables
+﻿namespace UpgradedVehicles
 {
-    using System.Collections.Generic;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -13,41 +12,64 @@
         public readonly string FriendlyName;
         public readonly string Description;
 
-        protected readonly TechType TemplateTechType;
+        protected readonly TechType PrefabTemplate;
 
-        protected Craftable(string nameID, string friendlyName, string description, TechType templateTechType)
+        protected readonly CraftTree.Type FabricatorType;
+        protected readonly string FabricatorTab;
+
+        protected readonly TechType RequiredForUnlock;
+        protected readonly TechGroup GroupForPDA;
+        protected readonly TechCategory CategoryForPDA;
+
+        protected Craftable(
+            string nameID, 
+            string friendlyName, 
+            string description, 
+            TechType template, 
+            CraftTree.Type fabricatorType,
+            string fabricatorTab,
+            TechType requiredAnalysis,
+            TechGroup groupForPDA,
+            TechCategory categoryForPDA)
             : base(nameID, $"{nameID}Prefab")
         {
             NameID = nameID;
             FriendlyName = friendlyName;
             Description = description;
 
-            TemplateTechType = templateTechType;
+            PrefabTemplate = template;
+            FabricatorType = fabricatorType;
+            FabricatorTab = fabricatorTab;
+
+            RequiredForUnlock = requiredAnalysis;
+            GroupForPDA = groupForPDA;
+            CategoryForPDA = categoryForPDA;
         }
 
-        public void Patch()
+        public virtual void Patch()
         {
             this.TechType = TechTypeHandler.AddTechType(NameID,
                                                      FriendlyName,
                                                      Description,
-                                                     ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/VehiclePowerCore.png"),
+                                                     ImageUtils.LoadSpriteFromFile($"./QMods/UpgradedVehicles/Assets/{NameID}.png"),
                                                      false);
 
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, this.TechType, "CommonModules");
+            
+
+            CraftTreeHandler.AddCraftingNode(FabricatorType, this.TechType, FabricatorTab);
             CraftDataHandler.SetTechData(this.TechType, GetRecipe());
 
             PrefabHandler.RegisterPrefab(this);
-            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.None);
 
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
+            KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
+            CraftDataHandler.AddToGroup(GroupForPDA, CategoryForPDA, this.TechType);
         }
 
         protected abstract TechData GetRecipe();
 
         public override GameObject GetGameObject()
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(TemplateTechType);
+            GameObject prefab = CraftData.GetPrefabForTechType(PrefabTemplate);
             GameObject obj = GameObject.Instantiate(prefab);
 
             return obj;

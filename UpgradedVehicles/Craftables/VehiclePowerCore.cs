@@ -1,48 +1,37 @@
 ﻿namespace UpgradedVehicles
 {
     using System.Collections.Generic;
-    using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Utility;
     using UnityEngine;
 
-    internal class VehiclePowerCore : ModPrefab
+    internal class VehiclePowerCore : Craftable
     {
         public static TechType TechTypeID { get; private set; }
-
-        public const string NameID = "VehiclePowerCore";
-        public const string FriendlyName = "Vehicle Power Core";
-        public const string Description = "A modified power core for upgraded vehicles. Enables permanent enhancements without use of external upgrade modules.";
-
+        
         internal readonly TechType SpeedBoosterID;
 
         internal VehiclePowerCore(TechType speedBoostModule)
-            : base(NameID, $"{NameID}Prefab")
+             : base(nameID: "VehiclePowerCore",
+                  friendlyName: "Vehicle Power Core",
+                  description: "A modified power core for constructing upgraded vehicles. Enables permanent enhancements without use of external upgrade modules.",
+                  template: TechType.PrecursorIonPowerCell,
+                  fabricatorType: CraftTree.Type.SeamothUpgrades,
+                  fabricatorTab: "CommonModules",
+                  requiredAnalysis: TechType.BaseUpgradeConsole,
+                  groupForPDA: TechGroup.Resources,
+                  categoryForPDA: TechCategory.Electronics)
         {
             SpeedBoosterID = speedBoostModule;
         }
 
-        public void Patch()
+        public override void Patch()
         {
-            this.TechType = TechTypeHandler.AddTechType(NameID,
-                                                     FriendlyName,
-                                                     Description,
-                                                     ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/VehiclePowerCore.png"),
-                                                     false);
-            TechTypeID = this.TechType;
-
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, this.TechType, "CommonModules");
-            CraftDataHandler.SetTechData(this.TechType, GetRecipe());
-
-            PrefabHandler.RegisterPrefab(this);
+            base.Patch();
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.None);
-
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
         }
 
-        private TechData GetRecipe()
+        protected override TechData GetRecipe()
         {
             return new TechData()
             {
@@ -62,11 +51,11 @@
 
         public override GameObject GetGameObject()
         {
-            GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PrecursorIonPowerCell");
-            GameObject obj = GameObject.Instantiate(prefab);
+            var obj = base.GetGameObject();
+
             GameObject.DestroyImmediate(obj.GetComponent<Battery>());
 
             return obj;
-        }
+        }        
     }
 }

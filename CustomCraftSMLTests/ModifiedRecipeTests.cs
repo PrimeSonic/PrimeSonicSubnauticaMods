@@ -1,5 +1,6 @@
 ﻿namespace CustomCraftSMLTests
 {
+    using System;
     using CustomCraft2SML.Serialization;
     using NUnit.Framework;
 
@@ -95,7 +96,7 @@
             Assert.AreEqual(TechType.Silver, recipe[0].LinkedItems[0]);
             Assert.AreEqual(TechType.Gold, recipe[0].LinkedItems[1]);
         }
-        
+
         [Test]
         public void Deserialize_ModifiedRecipesList_NoAmounts_DefaultTo1()
         {
@@ -136,6 +137,27 @@
             Assert.AreEqual(1, recipe[0].SmlIngredients[1].amount);
 
             Assert.AreEqual(0, recipe[0].LinkedItems.Count);
+        }
+
+        [Test]
+        public void Deserialize_Other()
+        {
+            const string sample = "ModdifiedRecipes: " +
+                    "(ItemID:FiberMesh; AmountCrafted:1; Ingredients:(ItemID:CreepvinePiece; Required:1; ); )," +
+                    "(ItemID:Silicone; AmountCrafted:1; Ingredients:(ItemID:CreepvineSeedCluster; Required:1; ); )," +
+                    "(ItemID:PrecursorIonBattery; AmountCrafted:1; Ingredients:(ItemID:PrecursorIonCrystal; Required:1; ), (ItemID:Gold; Required:1; ), (ItemID:Silver; Required:1; ), (ItemID:Battery; Required:1; ); )," +
+                    "(ItemID:PrecursorIonPowerCell; AmountCrafted:1;Ingredients:(ItemID:PrecursorIonBattery; Required:2; ), (ItemID:Silicone; Required:1; ), (ItemID:PowerCell; Required:1; ); )," +
+                    "(ItemID:FilteredWater; AmountCrafted:2; Ingredients:(ItemID:Bladderfish; Required:1; ); )," +
+                    "(ItemID:FireExtinguisher; AmountCrafted:1; Ingredients:(ItemID:Titanium; Required:1; ); )," +
+                    "(ItemID:PrecursorKey_Purple; AmountCrafted:1; Ingredients:(ItemID:PrecursorIonCrystal; Required:1; ), (ItemID:Diamond; Required:1; ); ); ";
+
+            var recipes = new ModifiedRecipeList();
+
+            bool success = recipes.FromString(sample);
+
+            Assert.IsTrue(success);
+
+            Console.WriteLine(recipes.PrintyPrint());
         }
 
     }

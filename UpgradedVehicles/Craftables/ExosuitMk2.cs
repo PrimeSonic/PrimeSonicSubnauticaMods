@@ -1,47 +1,26 @@
 ﻿namespace UpgradedVehicles
 {
     using System.Collections.Generic;
-    using Common;
-    using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Utility;
-    using UnityEngine;
 
-    internal class ExosuitMk2 : ModPrefab
+    internal class ExosuitMk2 : UpgradedVehicle<Exosuit>
     {
         public static TechType TechTypeID { get; private set; }
-        public const string NameID = "ExosuitMk2";
-        public const string FriendlyName = "Prawn Suit Mk2";
-        public const string Description = "An upgraded Prawn Suit now even tougher to take on anything.";
 
         internal readonly TechType PowerCoreID;
 
-        internal ExosuitMk2(TechType vehiclePowerCore) : base(NameID, $"{NameID}Prefab")
+        internal ExosuitMk2(TechType vehiclePowerCore) 
+            : base("ExosuitMk2",
+                  "Prawn Suit +",
+                  "An upgraded Prawn Suit now even tougher to take on anything.",
+                  TechType.Exosuit,
+                  1.5f,
+                  TechType.ExoHullModule2)
         {
             PowerCoreID = vehiclePowerCore;
         }
 
-        public void Patch()
-        {
-            this.TechType = TechTypeHandler.AddTechType(NameID, 
-                                                     FriendlyName, 
-                                                     Description,
-                                                     ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/ExosuitMk2.png"),
-                                                     false);
-            TechTypeID = this.TechType;
-
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Constructor, this.TechType, "Vehicles");            
-            CraftDataHandler.SetTechData(this.TechType, GetRecipe());
-
-            PrefabHandler.RegisterPrefab(this);
-
-
-            KnownTechHandler.SetAnalysisTechEntry(TechType.ExoHullModule2, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(TechGroup.Constructor, TechCategory.Constructor, this.TechType);
-        }
-
-        private TechData GetRecipe()
+        protected override TechData GetRecipe()
         {
             return new TechData()
             {
@@ -57,33 +36,6 @@
                                  new Ingredient(PowerCoreID, 1),  // +2 to armor + speed without engine efficiency penalty
                              })
             };
-        }
-
-        public override GameObject GetGameObject()
-        {
-            GameObject seamothPrefab = Resources.Load<GameObject>("WorldEntities/Tools/Exosuit");
-            GameObject obj = GameObject.Instantiate(seamothPrefab);
-
-            var exosuit = obj.GetComponent<Exosuit>();
-
-            var life = exosuit.GetComponent<LiveMixin>();
-
-            LiveMixinData lifeData = ScriptableObject.CreateInstance<LiveMixinData>();
-
-            life.data.CloneFieldsInto(lifeData);
-            lifeData.maxHealth = life.maxHealth * 1.5f; // 50% more HP
-
-            life.data = lifeData;
-            life.health = life.data.maxHealth;
-            lifeData.weldable = true;
-
-            // Always on upgrades handled in OnUpgradeModuleChange patch
-
-            var crush = obj.GetComponent<CrushDamage>();
-            crush.vehicle = exosuit;
-            crush.liveMixin = life;
-
-            return obj;
         }
     }
 }

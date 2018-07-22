@@ -53,6 +53,7 @@
     <Compile Include="Craftables\ExosuitMk2.cs" />
     <Compile Include="Craftables\SeaMothMk3.cs" />
     <Compile Include="Craftables\SpeedBooster.cs" />
+    <Compile Include="Craftables\UpgradedVehicle.cs" />
     <Compile Include="Craftables\VehiclePowerCore.cs" />
     <Compile Include="Patchers\CrushDamage_Patcher.cs" />
     <Compile Include="Patchers\DamageSystem_Patcher.cs" />
@@ -79,7 +80,7 @@
     <Content Include="Assets\SeamothMk3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\SpeedBoost.png">
+    <Content Include="Assets\SpeedModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\VehiclePowerCore.png">
