@@ -21,7 +21,7 @@
 
         public const string HandOverText = "UseVModFabricator";
 
-        protected VModFabricatorModule() : base(NameID, $"{NameID}PreFab")
+        internal VModFabricatorModule() : base(NameID, $"{NameID}PreFab")
         {
         }
 

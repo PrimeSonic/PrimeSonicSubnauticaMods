@@ -11,7 +11,9 @@ namespace VModFabricator
             {
                 Console.WriteLine($"[VModFabricator] Start patching");
 #endif
-                VModFabricatorModule.Patch();
+                var vmodFabricator = new VModFabricatorModule();
+
+                vmodFabricator.Patch();
 
 #if DEBUG
                 Console.WriteLine($"[VModFabricator] Finish patching");
