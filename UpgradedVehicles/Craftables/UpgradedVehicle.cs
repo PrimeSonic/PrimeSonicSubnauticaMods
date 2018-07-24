@@ -27,6 +27,8 @@
 
             var vehicle = obj.GetComponent(VehicleComponentType);
 
+            obj.GetComponent<TechTag>().type = this.TechType;
+
             var life = vehicle.GetComponent<LiveMixin>();
 
             LiveMixinData lifeData = ScriptableObject.CreateInstance<LiveMixinData>();

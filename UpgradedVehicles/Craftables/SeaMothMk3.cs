@@ -23,6 +23,8 @@
             PowerCoreID = vehiclePowerCore.TechType;
         }
 
+
+
         public override void Patch()
         {
             if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType seamothDepthMk4) &&
@@ -33,6 +35,7 @@
 
                 // MoreSeamothUpgrades found. Patch normally.
                 base.Patch();
+                TechTypeID = this.TechType;
             }
             else
             {

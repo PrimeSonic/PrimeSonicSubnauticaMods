@@ -25,6 +25,7 @@
         {
             base.Patch();
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.VehicleModule);
+            TechTypeID = this.TechType;
         }
 
         protected override TechData GetRecipe()

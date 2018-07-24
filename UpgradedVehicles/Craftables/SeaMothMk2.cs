@@ -20,6 +20,13 @@
             PowerCoreID = vehiclePowerCore.TechType;
         }
 
+        public override void Patch()
+        {
+            base.Patch();
+
+            TechTypeID = this.TechType;
+        }
+
         protected override TechData GetRecipe()
         {
             return new TechData()
