@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Assets;
     using UnityEngine;
 
     internal class PowerUpgradeMk3 : CyclopsModule
@@ -17,11 +16,14 @@
         {
         }
 
-        public override CyclopsModules ModuleID => CyclopsModules.PowerMk3;
+        public override ModuleTypes ModuleID => ModuleTypes.PowerMk3;
 
-        protected override ModPrefab GetPrefab()
+        public override GameObject GetGameObject()
         {
-            return new PowerUpgradeMk3PreFab(NameID, TechTypeID);
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+            GameObject obj = GameObject.Instantiate(prefab);
+
+            return obj;
         }
 
         protected override TechData GetRecipe()
@@ -41,21 +43,6 @@
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
             PowerUpgradeMk3ID = techTypeID;
-        }
-
-        internal class PowerUpgradeMk3PreFab : ModPrefab
-        {
-            internal PowerUpgradeMk3PreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
-            {
-            }
-
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-                GameObject obj = GameObject.Instantiate(prefab);
-
-                return obj;
-            }
-        }
+        }        
     }
 }

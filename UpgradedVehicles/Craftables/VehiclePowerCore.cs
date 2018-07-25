@@ -1,38 +1,38 @@
 ﻿namespace UpgradedVehicles
 {
     using System.Collections.Generic;
-    using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Utility;
     using UnityEngine;
 
-    internal class VehiclePowerCore
+    internal class VehiclePowerCore : Craftable
     {
         public static TechType TechTypeID { get; private set; }
-        public const string NameID = "VehiclePowerCore";
-        public const string FriendlyName = "Vehicle Power Core";
-        public const string Description = "A modified power core for upgraded vehicles. Enables permanent enhancements without use of external upgrade modules.";
+        
+        internal readonly TechType SpeedBoosterID;
 
-        public static void Patch()
+        internal VehiclePowerCore(SpeedBooster speedBoostModule)
+             : base(nameID: "VehiclePowerCore",
+                  friendlyName: "Vehicle Power Core",
+                  description: "A modified power core for constructing upgraded vehicles. Enables permanent enhancements without use of external upgrade modules.",
+                  template: TechType.PrecursorIonPowerCell,
+                  fabricatorType: CraftTree.Type.SeamothUpgrades,
+                  fabricatorTab: "CommonModules",
+                  requiredAnalysis: TechType.BaseUpgradeConsole,
+                  groupForPDA: TechGroup.Resources,
+                  categoryForPDA: TechCategory.Electronics)
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, 
-                                                     FriendlyName,
-                                                     Description,
-                                                     ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/VehiclePowerCore.png"),
-                                                     false);
-
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
-            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
-
-            PrefabHandler.RegisterPrefab(new VehiclePowerCorePreFab(TechTypeID, NameID));
-            CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.None);
-
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, TechTypeID);
+            SpeedBoosterID = speedBoostModule.TechType;
         }
 
-        private static TechData GetRecipe()
+        public override void Patch()
+        {
+            base.Patch();
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.None);
+            TechTypeID = this.TechType;
+        }
+
+        protected override TechData GetRecipe()
         {
             return new TechData()
             {
@@ -45,27 +45,18 @@
 
                                  new Ingredient(TechType.VehiclePowerUpgradeModule, 2), // Engine eficiency
                                  new Ingredient(TechType.VehicleArmorPlating, 2), // Armor                                 
-                                 new Ingredient(SpeedBooster.TechTypeID, 2), // Speed boost
+                                 new Ingredient(SpeedBoosterID, 2), // Speed boost
                              })
             };
         }
 
-        internal class VehiclePowerCorePreFab : ModPrefab
+        public override GameObject GetGameObject()
         {
-            internal VehiclePowerCorePreFab(TechType techType, string classId) : base(classId, $"{classId}Prefab", techType)
-            {
-            }
+            var obj = base.GetGameObject();
 
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PrecursorIonPowerCell");
-                GameObject obj = GameObject.Instantiate(prefab);
-                GameObject.DestroyImmediate(obj.GetComponent<Battery>());
+            GameObject.DestroyImmediate(obj.GetComponent<Battery>());
 
-                obj.GetComponent<TechTag>().type = TechTypeID;
-
-                return obj;
-            }
-        }
+            return obj;
+        }        
     }
 }

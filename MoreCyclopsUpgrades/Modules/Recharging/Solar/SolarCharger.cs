@@ -1,8 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Assets;
+    using SMLHelper.V2.Crafting;    
     using UnityEngine;
 
     internal class SolarCharger : CyclopsModule
@@ -21,11 +20,14 @@
         {
         }
 
-        public override CyclopsModules ModuleID => CyclopsModules.Solar;
+        public override ModuleTypes ModuleID => ModuleTypes.Solar;
 
-        protected override ModPrefab GetPrefab()
+        public override GameObject GetGameObject()
         {
-            return new SolarChargerPreFab(NameID, TechTypeID);
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+            GameObject obj = GameObject.Instantiate(prefab);
+
+            return obj;
         }
 
         protected override TechData GetRecipe()
@@ -47,22 +49,6 @@
         {
             SolarChargerID = techTypeID;
         }
-
-        internal class SolarChargerPreFab : ModPrefab
-        {
-            internal SolarChargerPreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
-            {
-            }
-
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-                GameObject obj = GameObject.Instantiate(prefab);
-
-                return obj;
-            }
-        }
-
     }
 
 }

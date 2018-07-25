@@ -1,38 +1,34 @@
 ﻿namespace UpgradedVehicles
 {
     using System.Collections.Generic;
-    using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Utility;
-    using UnityEngine;
 
-    internal class SpeedBooster
+    internal class SpeedBooster : Craftable
     {
         public static TechType TechTypeID { get; private set; }
-        public const string NameID = "SpeedModule";
-        public const string FriendlyName = "Speed Boost Module";
-        public static readonly string Description = "Allows small vehicle engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.";
-
-        public static void Patch()
+        
+        internal SpeedBooster() 
+            : base(nameID: "SpeedModule",
+                  friendlyName: "Speed Boost Module",
+                  description: "Allows small vehicle engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.",
+                  template: TechType.PowerUpgradeModule,
+                  fabricatorType: CraftTree.Type.SeamothUpgrades,
+                  fabricatorTab: "CommonModules",
+                  requiredAnalysis: TechType.BaseUpgradeConsole,
+                  groupForPDA: TechGroup.VehicleUpgrades,
+                  categoryForPDA: TechCategory.VehicleUpgrades)
         {
-            TechTypeID = TechTypeHandler.AddTechType(NameID, 
-                                                     FriendlyName, 
-                                                     Description,
-                                                     ImageUtils.LoadSpriteFromFile(@"./QMods/UpgradedVehicles/Assets/SpeedBoost.png"),
-                                                     false);
-
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechTypeID, "CommonModules");
-            CraftDataHandler.SetTechData(TechTypeID, GetRecipe());
-
-            PrefabHandler.RegisterPrefab(new SpeedBoosterPreFab(TechTypeID, NameID));
-            CraftDataHandler.SetEquipmentType(TechTypeID, EquipmentType.VehicleModule);
-
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, new TechType[1] { TechTypeID }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(TechGroup.VehicleUpgrades, TechCategory.VehicleUpgrades, TechTypeID);
         }
 
-        private static TechData GetRecipe()
+        public override void Patch()
+        {
+            base.Patch();
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.VehicleModule);
+            TechTypeID = this.TechType;
+        }
+
+        protected override TechData GetRecipe()
         {
             return new TechData()
             {
@@ -44,21 +40,6 @@
                                  new Ingredient(TechType.ComputerChip, 1),
                              })
             };
-        }
-
-        internal class SpeedBoosterPreFab : ModPrefab
-        {
-            internal SpeedBoosterPreFab(TechType techType, string classId) : base(classId, $"{classId}Prefab", techType)
-            {
-            }
-
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = Resources.Load<GameObject>("WorldEntities/Tools/PowerUpgradeModule");
-                GameObject obj = GameObject.Instantiate(prefab);
-
-                return obj;
-            }
         }
     }
 }

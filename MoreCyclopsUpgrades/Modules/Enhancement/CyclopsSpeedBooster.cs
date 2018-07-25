@@ -2,9 +2,7 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Assets;
     using UnityEngine;
-
 
     internal class CyclopsSpeedBooster : CyclopsModule
     {
@@ -22,11 +20,14 @@
         {
         }
 
-        public override CyclopsModules ModuleID => CyclopsModules.Speed;
+        public override ModuleTypes ModuleID => ModuleTypes.Speed;
 
-        protected override ModPrefab GetPrefab()
+        public override GameObject GetGameObject()
         {
-            return new SpeedBoosterPreFab(TechTypeID, NameID);
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+            GameObject obj = GameObject.Instantiate(prefab);
+
+            return obj;
         }
 
         protected override TechData GetRecipe()
@@ -46,21 +47,6 @@
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
             SpeedBoosterModuleID = techTypeID;
-        }
-
-        internal class SpeedBoosterPreFab : ModPrefab
-        {
-            internal SpeedBoosterPreFab(TechType techType, string classId) : base(classId, $"{classId}Prefab", techType)
-            {
-            }
-
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-                GameObject obj = GameObject.Instantiate(prefab);
-
-                return obj;
-            }
-        }
+        }        
     }
 }

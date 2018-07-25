@@ -21,12 +21,7 @@
         {
         }
 
-        public override CyclopsModules ModuleID => CyclopsModules.ThermalMk2;
-
-        protected override ModPrefab GetPrefab()
-        {
-            return new ThermalChargerMk2PreFab(NameID, TechTypeID);
-        }
+        public override ModuleTypes ModuleID => ModuleTypes.ThermalMk2;
 
         protected override TechData GetRecipe()
         {
@@ -50,23 +45,16 @@
             ThermalChargerMk2ID = techTypeID;
         }
 
-        internal class ThermalChargerMk2PreFab : ModPrefab
+        public override GameObject GetGameObject()
         {
-            internal ThermalChargerMk2PreFab(string classId, TechType techType) : base(classId, $"{classId}PreFab", techType)
-            {
-            }
+            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
+            GameObject obj = GameObject.Instantiate(prefab);
 
-            public override GameObject GetGameObject()
-            {
-                GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-                GameObject obj = GameObject.Instantiate(prefab);
+            var pCell = obj.AddComponent<Battery>();
+            pCell.name = "ThermalBackupBattery";
+            pCell._capacity = BatteryCapacity;
 
-                var pCell = obj.AddComponent<Battery>();
-                pCell.name = "ThermalBackupBattery";
-                pCell._capacity = BatteryCapacity;
-
-                return obj;
-            }
+            return obj;
         }
     }
 }
