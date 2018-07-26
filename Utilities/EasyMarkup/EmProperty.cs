@@ -134,6 +134,9 @@
                     case ' ':
                         rawValue.TrimStart(' ');
                         break;
+                    case '\t':
+                        rawValue.TrimStart('\t');
+                        break;
                     case '\r':
                         rawValue.TrimStart('\r', '\n');
                         break;

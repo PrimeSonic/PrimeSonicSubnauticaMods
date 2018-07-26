@@ -1,5 +1,6 @@
 ﻿namespace Common.EasyMarkup
 {
+    using System;
     using System.Collections.Generic;
     using Common;
 
@@ -60,6 +61,9 @@
                         goto default;
                     case SpChar_ValueDelimiter when openParens == 1 && subKey != null: // End of a nested property belonging to this collection
                         buffer.PushToEnd(fullString.PopFromStart());
+                        if (!Properties.ContainsKey(subKey))
+                            Console.WriteLine($"Key Not Found: {subKey} - Current Buffer:{buffer}");
+
                         Properties[subKey].FromString(buffer.ToString());
                         buffer.Clear();
                         serialValues += Properties[subKey].ToString();
