@@ -15,6 +15,11 @@
 
         private const int BonusModuleCount = 2; // Extra bonus to common module upgrades
 
+        private const float BaseSeamothCrush = 200f;
+        private const float BaseExosuitCrush = 900f;
+
+        internal static bool CrushDepthSet = false;
+
         #region Crush Depth Upgrades
 
         internal static void UpgradeSeaMoth(SeaMoth seamoth, TechType techType)
@@ -24,7 +29,10 @@
                 techType != TechType.VehicleHullModule3 &&
                 techType != SeaMothMk3.SeamothHullModule4 &&
                 techType != SeaMothMk3.SeamothHullModule5)
+            {
+                CrushDepthSet = true;
                 return; // Not a depth module. No need to update anything here.
+            }
 
             UpgradeSeaMoth(seamoth, true);
         }
@@ -34,7 +42,10 @@
             TechType seamothType = seamoth.GetComponent<TechTag>().type;
 
             if (seamothType != SeaMothMk2.TechTypeID && seamothType != SeaMothMk3.TechTypeID)
+            {
+                CrushDepthSet = true;
                 return; // This is a normal Seamoth. Do not upgrade.
+            }
 
             float minimumCrush = 0f;
 
@@ -43,16 +54,19 @@
             else if (seamothType == SeaMothMk3.TechTypeID)
                 minimumCrush = 1500f;
 
-            OverrideCrushDepth(seamoth.crushDamage, minimumCrush, announce);
+            OverrideCrushDepth(seamoth.crushDamage, BaseSeamothCrush, minimumCrush, announce);
         }
 
         internal static void UpgradeExosuit(Exosuit exosuit, TechType techType)
         {
             if (techType != TechType.ExoHullModule1 &&
                 techType != TechType.ExoHullModule2)
+            {
+                CrushDepthSet = true;
                 return; // Not a depth module. No need to update anything here.
-
-            UpgradeExosuit(exosuit, true);
+            }
+            
+            UpgradeExosuit(exosuit, true);            
         }
 
         internal static void UpgradeExosuit(Exosuit exosuit, bool announce = false)
@@ -60,19 +74,28 @@
             bool isUpgradedExosuit = exosuit.GetComponent<TechTag>().type == ExosuitMk2.TechTypeID;
 
             if (!isUpgradedExosuit)
+            {
+                CrushDepthSet = true;
                 return; // This is a normal Prawn Suit. Do not upgrade.
-
-            OverrideCrushDepth(exosuit.crushDamage, 800f, announce);
+            }
+            
+            OverrideCrushDepth(exosuit.crushDamage, BaseExosuitCrush, 800f, announce);            
         }
 
-        private static void OverrideCrushDepth(CrushDamage crushDamage, float minimumBonus, bool announce)
+        private static void OverrideCrushDepth(CrushDamage crushDamage, float baseCrushDepth, float minimumBonus, bool announce)
         {
+            CrushDepthSet = false;
+
             // Can set a minimum crush depth without upgrades
             float bonusCrushDepth = Mathf.Max(minimumBonus, crushDamage.extraCrushDepth);
-                        
+            // The original extraCrushDepth is set before we call this
+
             float origCrush = crushDamage.crushDepth;
-            
-            crushDamage.SetExtraCrushDepth(bonusCrushDepth);
+
+            // Override the base crush depth entirely, for safety
+            crushDamage.kBaseCrushDepth = baseCrushDepth + bonusCrushDepth;
+
+            crushDamage.SetExtraCrushDepth(0f);
 
             float nextCrush = crushDamage.crushDepth;
 
@@ -80,6 +103,8 @@
             {
                 ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", crushDamage.crushDepth));
             }
+
+            CrushDepthSet = true;
         }
 
         #endregion
@@ -112,7 +137,7 @@
         internal static void UpgradeVehicle(Vehicle vehicle)
         {
             bool isUpgradedVehicle = IsUpgradedVehicle(vehicle);
-            
+
             int armorModuleCount = GetModuleCount(vehicle.modules, TechType.VehicleArmorPlating, isUpgradedVehicle);
             int speedBoosterCount = GetModuleCount(vehicle.modules, SpeedBooster.TechTypeID, isUpgradedVehicle);
             int powerModuleCount = GetModuleCount(vehicle.modules, TechType.VehiclePowerUpgradeModule, isUpgradedVehicle);
@@ -180,7 +205,7 @@
         {
             var component = vehicle.GetComponent<DealDamageOnImpact>();
             component.mirroredSelfDamageFraction = 0.5f * Mathf.Pow(0.5f, armorModuleCount);
-            
+
             if (announement)
                 ErrorMessage.AddMessage($"Armor rating is now {1f / component.mirroredSelfDamageFraction}");
         }

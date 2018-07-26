@@ -13,6 +13,7 @@
         [HarmonyTranspiler]
         internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
+            // This is just to remove the on-screen message from being shown
             foreach (CodeInstruction op in instructions)
             {
                 if (callCount == 4)
@@ -49,7 +50,21 @@
             {
                 VehicleUpgrader.UpgradeExosuit(exosuit);
             }
+        }
+    }
 
+    [HarmonyPatch(typeof(CrushDamage))]
+    [HarmonyPatch("CrushDamageUpdate")]
+    internal class CrushDamage_CrushDamageUpdate_Patcher
+    {
+        
+
+        [HarmonyPrefix]
+        internal static bool Prefix(ref CrushDamage __instance)
+        {
+            // true will return control to the original method
+            // false will prevent this method from executing until CrushDepthSet is done
+            return VehicleUpgrader.CrushDepthSet;
         }
     }
 }
