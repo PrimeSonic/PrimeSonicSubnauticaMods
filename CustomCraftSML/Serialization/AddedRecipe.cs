@@ -29,7 +29,10 @@
         protected AddedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             path = (EmProperty<string>)Properties["Path"];
+            ForceUnlockAtStart = true;
         }
+
+        protected override bool DefaultForceUnlock => true;
 
         internal override EmProperty Copy() => new AddedRecipe(Key, CopyDefinitions);
 

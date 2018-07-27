@@ -1,6 +1,6 @@
 ﻿namespace Common.EasyMarkup
 {
-    internal class EmYesNo : EmProperty<bool>
+    public class EmYesNo : EmProperty<bool>
     {
         internal bool ValidData = true;
 
@@ -47,5 +47,7 @@
             this.SerializedValue = this.Value ? "YES" : "NO";
             return base.ToString();
         }
+
+        internal override EmProperty Copy() => new EmYesNo(this.Key);
     }
 }

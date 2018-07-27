@@ -1,5 +1,6 @@
 ﻿namespace CustomCraftSMLTests
 {
+    using Common.EasyMarkup;
     using CustomCraft2SML.Serialization;
     using NUnit.Framework;
 
@@ -170,6 +171,7 @@
             Assert.AreEqual(1, recipe.SmlIngredients[1].amount);
 
             Assert.AreEqual(0, recipe.LinkedItems.Count);
+            Assert.AreEqual(true, recipe.ForceUnlockAtStart);
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe.Path);
         }
@@ -188,6 +190,7 @@
                                       "            ItemID:Copper;" + "\r\n" +
                                       "        );" + "\r\n" +
                                       "    Path:Fabricator/Resources/BasicMaterials;" +
+                                      "    ForceUnlockAtStart: NO;" + 
                                       ")," + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:Aerogel;" + "\r\n" +
@@ -216,6 +219,7 @@
             Assert.AreEqual(1, recipe[0].SmlIngredients[1].amount);
 
             Assert.AreEqual(0, recipe[0].LinkedItems.Count);
+            Assert.AreEqual(false, recipe[0].ForceUnlockAtStart);
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe[0].Path);
         }

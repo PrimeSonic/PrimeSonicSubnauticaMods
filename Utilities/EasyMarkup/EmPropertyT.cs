@@ -42,7 +42,7 @@
             var type = typeof(T);
 
             if (type.IsEnum)
-                return (T)Enum.Parse(type, value);
+                return (T)Enum.Parse(type, value, true);
             else
                 return (T)Convert.ChangeType(value, typeof(T));
         }

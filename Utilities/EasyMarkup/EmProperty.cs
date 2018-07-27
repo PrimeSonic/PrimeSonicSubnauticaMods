@@ -90,7 +90,7 @@
                         prettyString.PushToEnd(' ', indentLevel * indentSize);
                         prettyString.PushToEnd(originalString.PopFromStart());
                         break;
-                    case SpChar_ValueDelimiter:                    
+                    case SpChar_ValueDelimiter:
                         prettyString.PushToEnd(originalString.PopFromStart());
 
                         if (originalString.IsEmpty || originalString.PeekStart() == SpChar_FinishComplexValue)
@@ -122,7 +122,6 @@
             return prettyString.ToString();
         }
 
-
         private static StringBuffer CleanValue(StringBuffer rawValue)
         {
             var cleanValue = new StringBuffer();
@@ -131,16 +130,17 @@
             {
                 switch (rawValue.PeekStart())
                 {
-                    case ' ':
+                    case ' ': // spaces
                         rawValue.TrimStart(' ');
                         break;
-                    case '\t':
+                    case '\t': // tabs
                         rawValue.TrimStart('\t');
                         break;
-                    case '\r':
+                    case '\r': // line breaks
+                    case '\n':
                         rawValue.TrimStart('\r', '\n');
                         break;
-                    case SpChar_CommentBlock:
+                    case SpChar_CommentBlock: // comments
                         rawValue.PopFromStart(); // Pop first #
 
                         char poppedChar;

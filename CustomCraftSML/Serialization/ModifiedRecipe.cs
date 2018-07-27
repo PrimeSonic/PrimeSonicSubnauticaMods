@@ -14,6 +14,8 @@
         protected readonly EmProperty<short> amountCrafted;
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
         protected readonly EmPropertyTechTypeList linkedItems;
+        protected readonly EmYesNo unlockedAtStart;
+        protected readonly EmPropertyTechTypeList unlocks;
 
         public TechType ItemID
         {
@@ -37,7 +39,23 @@
             }
         }
 
+        protected virtual bool DefaultForceUnlock => false;
+
+        public bool ForceUnlockAtStart
+        {
+            get
+            {
+                if (unlockedAtStart.ValidData)
+                    return unlockedAtStart.Value;
+
+                return DefaultForceUnlock;
+            }
+
+            set => unlockedAtStart.Value = value;
+        }
+
         public List<TechType> LinkedItems => linkedItems.Values;
+        public IList<TechType> Unlocks => unlocks.Values;
 
         private readonly List<Ingredient> smlIngredients = new List<Ingredient>();
         public IList<Ingredient> SmlIngredients => smlIngredients;
@@ -53,7 +71,9 @@
             new EmPropertyTechType("ItemID"),
             new EmProperty<short>("AmountCrafted", 1),
             new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()),
-            new EmPropertyTechTypeList("LinkedItemIDs")
+            new EmPropertyTechTypeList("LinkedItemIDs"),
+            new EmYesNo("ForceUnlockAtStart"),
+            new EmPropertyTechTypeList("Unlocks"),
         };
 
         internal ModifiedRecipe(TechType origTechType) : this()
@@ -89,6 +109,8 @@
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
             ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
             linkedItems = (EmPropertyTechTypeList)Properties["LinkedItemIDs"];
+            unlockedAtStart = (EmYesNo)Properties["ForceUnlockAtStart"];
+            unlocks = (EmPropertyTechTypeList)Properties["Unlocks"];
 
             OnValueExtractedEvent += ValueExtracted;
         }

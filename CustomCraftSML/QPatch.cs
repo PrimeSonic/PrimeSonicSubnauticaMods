@@ -6,7 +6,6 @@
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
     using Common.EasyMarkup;
-    using UnityEngine;
     using System.Collections.Generic;
 
     public class QPatch
@@ -16,7 +15,7 @@
         private static readonly string ModifiedRecipesFile = FolderRoot + "ModifiedRecipes.txt";
         private static readonly string AddedRecipiesFile = FolderRoot + "AddedRecipes.txt";
         private static readonly string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
-        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} v1.0.2 #";
+        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} (Revision 4) #";
 
         private static readonly string SamplesFolder = FolderRoot + "SampleFiles/";
         private static readonly string OriginalsFile = SamplesFolder + "OriginalRecipes.txt";
@@ -129,7 +128,7 @@
                     {
                         try
                         {
-                            CustomCraft.AddRecipe(item.ItemID, item.SmlHelperRecipe(), new CraftingPath(item.Path));
+                            CustomCraft.AddRecipe(item);
                         }
                         catch
                         {
@@ -167,7 +166,7 @@
                     {
                         try
                         {
-                            CustomCraft.ModifyRecipe(item.ItemID, item.SmlHelperRecipe());
+                            CustomCraft.ModifyRecipe(item);
                         }
                         catch
                         {

@@ -15,7 +15,8 @@ AddedRecipes:
         ItemID:HangingFruit;
         Required:1;
     );
-    Path:Fabricator/Survival/CuredFood;
+    ForceUnlockAtStart:NO;
+    Path:;
 ),
 (
     ItemID:BigFilteredWater;
@@ -25,5 +26,6 @@ AddedRecipes:
         ItemID:FilteredWater;
         Required:2;
     );
+    ForceUnlockAtStart:NO;
     Path:Fabricator/Survival/Water;
 );
