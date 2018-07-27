@@ -84,7 +84,10 @@
             builder.AppendLine("#   a - You can change a recipe's required ingredients in any way #");
             builder.AppendLine("#   b - You can alter how many copies of the item are created when you craft the recipe #");
             builder.AppendLine("#   c - You can also modify the recipe's linked items, those being items also created along side the main one #");
+            builder.AppendLine("#   d - NEW! You can now also modify what other items will be unlocked when you analyze or craft this one #");
+            builder.AppendLine("#   e - NEW! You can now also set if this recipe should be unlocked at the start or not #");
             builder.AppendLine("# 3 - Adding new recipes and placing them into any of the existing fabricators #");
+            builder.AppendLine("#   a - Added recipes work exactly like Modified recipes, with the addition of a Path to where that recipe should go #");
             builder.AppendLine($"# Remember that only the standard in-game items can be used with {CustomCraft.RootModName} #");
             builder.AppendLine("# Modded items can't be used at this time #");
             builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");
@@ -94,6 +97,23 @@
             builder.AppendLine("# You can even copy the text from the sample files directly and use them right away without any changes #");
             builder.AppendLine("# When you want to add a new item reference, remember that the 'ItemID' is the internal spawn ID of that item #");
             builder.AppendLine("# You can visit the Subnautica Wikia for the full list of item IDs at http://subnautica.wikia.com/wiki/Obtainable_Items #");
+            builder.AppendLine("# NEW! As an added bonus, a file containing all the original game's recipes has been generated in the SampleFiles folder #");
+            builder.AppendLine("# You can copy and paste individual recipes from that file into your ModifiedRecipes file and tweak them to your liking #");
+            builder.AppendLine();
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine("# A quick overview of the less obvious keys for Added and Modified recipes #");
+            builder.AppendLine("# LinkedItemIDs: This is the list of items that will be created along side the main item when you craft the recipe #");
+            builder.AppendLine("#     - If you want multiple copies of an item here, you need to write it to this list multiple times #");
+            builder.AppendLine("# AmountCrafted: This is how many copies of the item will be created when you craft the recipe #");
+            builder.AppendLine("# ForceUnlockAtStart: When you set this to 'YES' this item will be forced to be unlocked from the very start of the game #");
+            builder.AppendLine("#     - You can use it to have Modified recipes early or to set if have Added recipes should wait to be unlocked by something else #");
+            builder.AppendLine("#     - If you don't include this ForceUnlockAtStart, then default behavior will be used #");
+            builder.AppendLine("#         - By default, Modified recipes will be unlocked as they normally would be #");
+            builder.AppendLine("#         - By default, Added recipes will be forced to be unlocked at the start of the game as a safety #");
+            builder.AppendLine("# Unlocks: This is a list of other ItemIDs that will be unlocked when you analyze or craft this recipe #");
+            builder.AppendLine("#     - You can use this along with 'ForceUnlockAtStart:NO' to have recipes be unlocked when you want them to be #");
+            builder.AppendLine("# Ingredients: This key is now optional #");
+            builder.AppendLine("#     - You can leave this out of your recipe block and the original recipe won't be altered in any way #");
             builder.AppendLine("# -------------------------------------------- #");
             builder.AppendLine();
             builder.AppendLine("# You'll notice that a lot of text is written between these hash signs (or pound sign or hashtag if you prefer) #");
@@ -134,7 +154,7 @@
                         {
                             Logger.Log($"Error on AddRecipe{Environment.NewLine}" +
                                         $"Entry with error:{Environment.NewLine}" +
-                                        $"{item}");                            
+                                        $"{item}");
                         }
                     }
 
