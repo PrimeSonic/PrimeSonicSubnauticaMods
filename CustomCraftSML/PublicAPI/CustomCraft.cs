@@ -1,7 +1,6 @@
 ﻿namespace CustomCraft2SML.PublicAPI
 {
     using CustomCraft2SML.Serialization;
-    using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine.Assertions;
 
@@ -11,66 +10,60 @@
 
         public static void AddRecipe(IAddedRecipe addedRecipe)
         {
-            var path = new CraftingPath(addedRecipe.Path);
+            Assert.IsTrue(addedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
-            AddRecipe(addedRecipe.ItemID, addedRecipe.SmlHelperRecipe(), path.Scheme, path.Path);
+            HandleNewRecipe(addedRecipe);
 
-            if (addedRecipe.ForceUnlockAtStart)
-                KnownTechHandler.UnlockOnStart(addedRecipe.ItemID);
+            HandleCraftTreeAddition(addedRecipe);
 
-            if (addedRecipe.Unlocks.Count > 0)
-                KnownTechHandler.SetAnalysisTechEntry(addedRecipe.ItemID, addedRecipe.Unlocks);
+            HandleUnlocks(addedRecipe);
         }
 
-        internal static void AddRecipe(TechType craftedItem, TechData recipe, CraftTree.Type craftTree, string path)
+        private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
         {
-            Assert.AreNotEqual(craftedItem.ToString(), ((int)craftedItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
-            // Only modded enums use the int string as their ToString value
+            var craftPath = new CraftingPath(addedRecipe.Path);
 
-            //CraftTreeHandler.customNodes.Add(new CustomCraftNode(craftedItem, craftTree, path));            
-            CraftDataHandler.SetTechData(craftedItem, recipe);
-
-            string[] steps = path.Split(CraftingNode.Splitter);
+            string[] steps = craftPath.Path.Split(CraftingNode.Splitter);
 
             if (steps.Length <= 1)
-                CraftTreeHandler.AddCraftingNode(craftTree, craftedItem);
+                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID);
             else
-                CraftTreeHandler.AddCraftingNode(craftTree, craftedItem, steps);
+                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID, steps);
         }
 
         public static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
         {
-            ModifyRecipe(modifiedRecipe.ItemID, modifiedRecipe.SmlHelperRecipe());
+            Assert.IsTrue(modifiedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
+            HandleNewRecipe(modifiedRecipe);
+
+            HandleUnlocks(modifiedRecipe);
+        }
+
+        private static void HandleNewRecipe(IModifiedRecipe modifiedRecipe)
+        {
+            if (modifiedRecipe.IngredientCount > 0 || modifiedRecipe.LinkedItemCount > 0)
+                CraftDataHandler.SetTechData(modifiedRecipe.ItemID, modifiedRecipe.SmlHelperRecipe());
+        }
+
+        private static void HandleUnlocks(IModifiedRecipe modifiedRecipe)
+        {
             if (modifiedRecipe.ForceUnlockAtStart)
                 KnownTechHandler.UnlockOnStart(modifiedRecipe.ItemID);
 
-            if (modifiedRecipe.Unlocks.Count > 0)            
-                KnownTechHandler.SetAnalysisTechEntry(modifiedRecipe.ItemID, modifiedRecipe.Unlocks);            
-        }
-
-        internal static void ModifyRecipe(TechType craftedItem, TechData recipe)
-        {
-            Assert.AreNotEqual(craftedItem.ToString(), ((int)craftedItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
-            // Only modded enums use the int string as their ToString value
-
-            CraftDataHandler.SetTechData(craftedItem, recipe);
+            if (modifiedRecipe.Unlocks.Count > 0)
+                KnownTechHandler.SetAnalysisTechEntry(modifiedRecipe.ItemID, modifiedRecipe.Unlocks);
         }
 
         public static void CustomizeItemSize(ICustomSize customSize)
         {
-            CustomizeItemSize(customSize.ItemID, customSize.Width, customSize.Height);
-        }
+            Assert.IsTrue(customSize.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
-        internal static void CustomizeItemSize(TechType inventoryItem, int width, int height)
-        {
-            Assert.AreNotEqual(inventoryItem.ToString(), ((int)inventoryItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
-
-            Assert.IsTrue(width > 0 && height > 0, "Values must be positive and non-zero");
-            Assert.IsTrue(width < 6 && height < 6, "Values must be smaller than six to fit");
+            Assert.IsTrue(customSize.Width > 0 && customSize.Height > 0, "Values must be positive and non-zero");
+            Assert.IsTrue(customSize.Width < 6 && customSize.Height < 6, "Values must be smaller than six to fit");
             // Value chosen for what should be the standard inventory size
 
-            CraftDataHandler.SetItemSize(inventoryItem, width, height);            
+            CraftDataHandler.SetItemSize(customSize.ItemID, customSize.Width, customSize.Height);
         }
     }
 }

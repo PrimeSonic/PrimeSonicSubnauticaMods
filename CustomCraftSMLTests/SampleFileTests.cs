@@ -1,14 +1,9 @@
 ﻿namespace CustomCraftSMLTests
 {
-    using System;
     using System.IO;
+    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
     using NUnit.Framework;
-    using System.Collections.Generic;
-    using SMLHelper.V2.Crafting;
-    using CustomCraft2SML.PublicAPI;
-    using CustomCraft2SML;
-    using Common.EasyMarkup;
 
     [TestFixture]
     internal class SampleFileTests
@@ -44,6 +39,14 @@
 
             bool result = mRecipes.FromString(sample);
             Assert.IsTrue(result);
+
+            ModifiedRecipe reactorRodChange = mRecipes[2];
+            Assert.AreEqual(TechType.ReactorRod, reactorRodChange.ItemID);
+            Assert.AreEqual(0, reactorRodChange.IngredientCount);
+            Assert.AreEqual(0, reactorRodChange.LinkedItemCount);
+
+            Assert.AreEqual(1, reactorRodChange.Unlocks.Count);
+            Assert.AreEqual(TechType.DepletedReactorRod, reactorRodChange.Unlocks[0]);
         }
 
         [Test]

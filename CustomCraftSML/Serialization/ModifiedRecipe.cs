@@ -76,6 +76,10 @@
             new EmPropertyTechTypeList("Unlocks"),
         };
 
+        public int IngredientCount => ingredients.Count;
+
+        public int LinkedItemCount => LinkedItems.Count;
+
         internal ModifiedRecipe(TechType origTechType) : this()
         {
             ITechData origRecipe = CraftData.Get(origTechType);

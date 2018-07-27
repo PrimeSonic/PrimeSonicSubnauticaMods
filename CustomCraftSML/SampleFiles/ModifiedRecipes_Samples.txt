@@ -22,4 +22,8 @@ ModifiedRecipes:
         ( ItemID:JeweledDiskPiece; Required:1; ), # Only one table coral instead of 2 #
         ( ItemID:Gold; Required:1; ),
         ( ItemID:Copper; Required:1; ); # Only a single copper instead of a CopperWire which would require 2 #
+),
+(
+    ItemID:ReactorRod; # No change will be made to this recipe #
+	Unlocks: DepletedReactorRod; # We're only adding an unlock for the added recipe in the other file. #
 );

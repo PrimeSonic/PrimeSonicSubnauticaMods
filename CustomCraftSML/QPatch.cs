@@ -204,7 +204,7 @@
                     {
                         try
                         {
-                            CustomCraft.CustomizeItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+                            CustomCraft.CustomizeItemSize(customSize);
                         }
                         catch
                         {
