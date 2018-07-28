@@ -6,7 +6,7 @@
     {
         TechType ItemID { get; }
         short? AmountCrafted { get; }
-        bool? ForceUnlockAtStart { get; }
+        bool ForceUnlockAtStart { get; }
 
         int? IngredientsCount { get; }
         IEnumerable<EmIngredient> Ingredients { get; }

@@ -41,7 +41,7 @@
 
         protected bool DefaultForceUnlock = false;
 
-        public bool? ForceUnlockAtStart
+        public bool ForceUnlockAtStart
         {
             get
             {

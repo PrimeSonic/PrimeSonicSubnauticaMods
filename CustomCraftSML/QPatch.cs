@@ -7,6 +7,7 @@
     using CustomCraft2SML.Serialization;
     using Common.EasyMarkup;
     using System.Collections.Generic;
+    using SMLHelper.V2.Utility;
 
     public class QPatch
     {
@@ -267,52 +268,60 @@
             };
 
             foreach (CraftTree.Type tree in treeTypes)
-                GenerateOriginalsFile(tree);
-        }
+            {
+                string recipesFile = $"{tree}Originals.txt";
 
-        public static void GenerateOriginalsFile(CraftTree.Type treeType)
-        {
-            string recipesFile = $"{treeType}Originals.txt";
+                if (File.Exists(recipesFile))
+                    continue;
 
-            if (File.Exists(recipesFile))
+                List<TechType> list = GetOriginals(tree);
+
+                GenerateOriginalsFile(tree.ToString(), list, recipesFile);
+            }
+
+            string buildablesFile = $"BuildableOriginals.txt";
+
+            if (File.Exists(buildablesFile))
                 return;
 
-            var printyPrints = new List<string>()
-            {
-                "# This file was generated with all the existing recipes from all non-modded fabricators #",
-                "#         You can copy samples from this file to use in your personal overrides         #",
-                "# ------------------------------------------------------------------------------------- #",
-            };
+            List<TechType> buildablesList = (List<TechType>)ReflectionHelper.GetStaticField<CraftData>("buildables");
 
-            ModifiedRecipeList list = GetOriginals(treeType);
-
-            printyPrints.Add(list.PrintyPrint());
-            printyPrints.Add("");
-            printyPrints.Add("# ------------------------------------------------------------------------------------- #");
-            printyPrints.Add("");
-
-            File.WriteAllLines(recipesFile, printyPrints.ToArray());
-
-            Logger.Log($"{recipesFile} file not found. File created.");
+            GenerateOriginalsFile("Buildable", buildablesList, buildablesFile);
         }
 
-        public static ModifiedRecipeList GetOriginals(CraftTree.Type treeType)
+        public static void GenerateOriginalsFile(string key, List<TechType> list, string fileName)
+        {
+            var printyPrints = new List<string>()
+            {
+                "# This file was generated with all the default recipes in the game #",
+                "#    You can copy samples from this file to use in your personal overrides   #",
+                "# -------------------------------------------------------------------------- #",
+            };
+
+            var originals = new ModifiedRecipeList($"{key}Originals");
+
+            foreach (TechType craftable in list)
+                originals.Add(new ModifiedRecipe(craftable));
+
+            printyPrints.Add(originals.PrintyPrint());            
+
+            File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
+
+            Logger.Log($"{fileName} file not found. File generated.");
+        }
+
+        public static List<TechType> GetOriginals(CraftTree.Type treeType)
         {
             CraftTree tree = CraftTree.GetTree(treeType);
 
             IEnumerator<CraftNode> mover = tree.nodes.Traverse(true);
 
-            var originals = new ModifiedRecipeList($"{treeType}Originals");
+            var originals = new List<TechType>();
 
             while (mover.MoveNext())
             {
                 if (mover.Current.action == TreeAction.Craft && mover.Current.techType0 < TechType.Databox)
-                {
-                    TechType itemID = mover.Current.techType0;
-                    var recipe = new ModifiedRecipe(itemID);
-
-                    originals.Add(recipe);
-                }
+                    originals.Add(mover.Current.techType0);
             };
 
             return originals;

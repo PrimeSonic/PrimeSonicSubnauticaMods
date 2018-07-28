@@ -98,8 +98,7 @@
 
         private static void HandleUnlocks(IModifiedRecipe modifiedRecipe)
         {
-            if (modifiedRecipe.ForceUnlockAtStart.HasValue &&
-                modifiedRecipe.ForceUnlockAtStart.Value)
+            if (modifiedRecipe.ForceUnlockAtStart)
                 KnownTechHandler.UnlockOnStart(modifiedRecipe.ItemID);
 
             if (modifiedRecipe.UnlocksCount.HasValue)

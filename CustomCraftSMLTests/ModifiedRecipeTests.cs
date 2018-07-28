@@ -139,7 +139,7 @@
 
             Assert.AreEqual(false, recipe[0].LinkedItemsCount.HasValue);
             Assert.AreEqual(false, recipe[0].UnlocksCount.HasValue);
-            Assert.AreEqual(false, recipe[0].ForceUnlockAtStart.HasValue);
+            Assert.AreEqual(false, recipe[0].ForceUnlockAtStart);
         }
 
         [Test]
