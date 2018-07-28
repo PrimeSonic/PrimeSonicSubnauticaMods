@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
-    using SMLHelper.V2.Crafting;
     using UnityEngine.Assertions;
 
     public class ModifiedRecipe : EmPropertyCollection, IModifiedRecipe
@@ -40,7 +39,7 @@
             }
         }
 
-        protected virtual bool DefaultForceUnlock => false;
+        protected bool DefaultForceUnlock = false;
 
         public bool? ForceUnlockAtStart
         {
@@ -49,7 +48,7 @@
                 if (unlockedAtStart.HasValue)
                     return unlockedAtStart.Value;
 
-                return null;
+                return DefaultForceUnlock;
             }
 
             set => unlockedAtStart.Value = (bool)value;
@@ -111,12 +110,6 @@
             new EmPropertyTechTypeList("Unlocks"),
         };
 
-        public int craftAmount => throw new System.NotImplementedException();
-
-        public int ingredientCount => throw new System.NotImplementedException();
-
-        public int linkedItemCount => throw new System.NotImplementedException();
-
         internal ModifiedRecipe(TechType origTechType) : this()
         {
             ITechData origRecipe = CraftData.Get(origTechType);
@@ -130,10 +123,7 @@
             }
 
             for (int i = 0; i < origRecipe.linkedItemCount; i++)
-            {
                 linkedItems.Add(origRecipe.GetLinkedItem(i));
-            }
-
         }
 
         public ModifiedRecipe() : this("ModifiedRecipe", ModifiedRecipeProperties)

@@ -18,7 +18,7 @@
         private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} (Revision 4) #";
 
         private static readonly string SamplesFolder = FolderRoot + "SampleFiles/";
-        private static readonly string OriginalsFile = SamplesFolder + "OriginalRecipes.txt";
+        private static readonly string OriginalsFolder = SamplesFolder + "OriginalRecipes/";
 
         private static CustomSizeList customSizeList;
         private static ModifiedRecipeList modifiedRecipeList;
@@ -256,43 +256,44 @@
             if (!Directory.Exists(SamplesFolder))
                 Directory.CreateDirectory(SamplesFolder);
 
-            if (File.Exists(OriginalsFile))
-                return;
+            if (!Directory.Exists(OriginalsFolder))
+                Directory.CreateDirectory(OriginalsFolder);
 
-            List<string> printyPrints = GenerateOriginalsText();
-
-            File.WriteAllLines(OriginalsFile, printyPrints.ToArray());
-
-            Logger.Log($"{OriginalsFile} file not found. File created.");
-        }
-
-        public static List<string> GenerateOriginalsText()
-        {
             var treeTypes = new CraftTree.Type[6]
-                        {
+            {
                 CraftTree.Type.Fabricator, CraftTree.Type.Constructor, CraftTree.Type.SeamothUpgrades,
                 CraftTree.Type.Workbench,
                 CraftTree.Type.MapRoom, CraftTree.Type.CyclopsFabricator
-                        };
+            };
 
-            var printyPrints = new List<string>(treeTypes.Length * 4 + 3)
+            foreach (CraftTree.Type tree in treeTypes)
+                GenerateOriginalsFile(tree);
+        }
+
+        public static void GenerateOriginalsFile(CraftTree.Type treeType)
+        {
+            string recipesFile = $"{treeType}Originals.txt";
+
+            if (File.Exists(recipesFile))
+                return;
+
+            var printyPrints = new List<string>()
             {
                 "# This file was generated with all the existing recipes from all non-modded fabricators #",
                 "#         You can copy samples from this file to use in your personal overrides         #",
                 "# ------------------------------------------------------------------------------------- #",
             };
 
-            foreach (CraftTree.Type tree in treeTypes)
-            {
-                ModifiedRecipeList list = GetOriginals(tree);
+            ModifiedRecipeList list = GetOriginals(treeType);
 
-                printyPrints.Add(list.PrintyPrint());
-                printyPrints.Add("");
-                printyPrints.Add("# ------------------------------------------------------------------------------------- #");
-                printyPrints.Add("");
-            }
+            printyPrints.Add(list.PrintyPrint());
+            printyPrints.Add("");
+            printyPrints.Add("# ------------------------------------------------------------------------------------- #");
+            printyPrints.Add("");
 
-            return printyPrints;
+            File.WriteAllLines(recipesFile, printyPrints.ToArray());
+
+            Logger.Log($"{recipesFile} file not found. File created.");
         }
 
         public static ModifiedRecipeList GetOriginals(CraftTree.Type treeType)
@@ -306,12 +307,16 @@
             while (mover.MoveNext())
             {
                 if (mover.Current.action == TreeAction.Craft && mover.Current.techType0 < TechType.Databox)
-                    originals.Add(new ModifiedRecipe(mover.Current.techType0));
+                {
+                    TechType itemID = mover.Current.techType0;
+                    var recipe = new ModifiedRecipe(itemID);
+
+                    originals.Add(recipe);
+                }
             };
 
             return originals;
         }
-
     }
 
 

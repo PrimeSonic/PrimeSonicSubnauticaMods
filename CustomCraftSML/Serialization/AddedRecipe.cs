@@ -11,7 +11,7 @@
         {
             get => path.Value;
             set => path.Value = value;
-        }
+        }        
 
         protected static List<EmProperty> AddedRecipeProperties => new List<EmProperty>(ModifiedRecipeProperties)
         {          
@@ -29,10 +29,8 @@
         protected AddedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             path = (EmProperty<string>)Properties["Path"];
-            ForceUnlockAtStart = true;
+            DefaultForceUnlock = true;
         }
-
-        protected override bool DefaultForceUnlock => true;
 
         internal override EmProperty Copy() => new AddedRecipe(Key, CopyDefinitions);
 
