@@ -97,7 +97,7 @@
             origRecipeList.Add(nutrientBlockRecipe);
             origRecipeList.Add(bigFilterWaterRecipe);
 
-            string serialized = origRecipeList.PrintyPrint();
+            string serialized = origRecipeList.PrettyPrint();
 
             string samples2File = SampleFileDirectory + "AddedRecipes_Samples2.txt";
 
@@ -155,7 +155,7 @@
             var origRecipeList = new ModifiedRecipeList();
             origRecipeList.Add(curedReginaldRecipe);
 
-            string serialized = origRecipeList.PrintyPrint();
+            string serialized = origRecipeList.PrettyPrint();
 
             string samples2File = SampleFileDirectory + "ModifiedRecipes_Samples2.txt";
 
@@ -216,7 +216,7 @@
             origCustSizes.Add(smallMelon);
             origCustSizes.Add(smallPotatoe);
 
-            string serialized = origCustSizes.PrintyPrint();
+            string serialized = origCustSizes.PrettyPrint();
 
             string samples2File = SampleFileDirectory + "CustomSizes_Samples2.txt";
 

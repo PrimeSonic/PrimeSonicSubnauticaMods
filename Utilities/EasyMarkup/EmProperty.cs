@@ -6,12 +6,12 @@
 
     public abstract class EmProperty
     {
-        protected const char SpChar_KeyDelimiter = ':';
-        protected const char SpChar_ValueDelimiter = ';';
-        protected const char SpChar_BeginComplexValue = '(';
-        protected const char SpChar_FinishComplexValue = ')';
-        protected const char SpChar_ListItemSplitter = ',';
-        protected const char SpChar_CommentBlock = '#';
+        internal const char SpChar_KeyDelimiter = ':';
+        internal const char SpChar_ValueDelimiter = ';';
+        internal const char SpChar_BeginComplexValue = '(';
+        internal const char SpChar_FinishComplexValue = ')';
+        internal const char SpChar_ListItemSplitter = ',';
+        internal const char SpChar_CommentBlock = '#';
 
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
@@ -68,7 +68,7 @@
 
         internal abstract EmProperty Copy();
 
-        public string PrintyPrint()
+        public string PrettyPrint()
         {
             var originalString = new StringBuffer(this.ToString());
 

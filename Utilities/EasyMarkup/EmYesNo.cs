@@ -8,6 +8,8 @@
 
         public override bool ConvertFromSerial(string value)
         {
+            bool retValue;
+
             switch (value)
             {
                 case "YES":
@@ -16,22 +18,31 @@
                 case "TRUE":
                 case "True":
                 case "true":
-                    return true;
+                    retValue =  true;
+                    break;
                 case "NO":
                 case "no":
                 case "No":
                 case "FALSE":
                 case "False":
                 case "false":
-                    return false;
+                    retValue = false;
+                    break;
                 default:
-                    return DefaultValue;
+                    retValue = DefaultValue;
+                    break;
             }
+
+            this.SerializedValue = retValue ? "YES" : "NO";
+
+            return retValue;
         }
 
         public override string ToString()
         {
-            this.SerializedValue = this.Value ? "YES" : "NO";
+            if (this.Value == DefaultValue)
+                return string.Empty;
+            
             return base.ToString();
         }
 

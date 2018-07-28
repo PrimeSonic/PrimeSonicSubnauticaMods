@@ -15,8 +15,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollectionList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyListT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyT.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyTechType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyTechTypeList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />

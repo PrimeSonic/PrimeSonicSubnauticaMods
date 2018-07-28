@@ -62,6 +62,8 @@
     <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\CustomSizeList.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
+    <Compile Include="Serialization\EmPropertyTechType.cs" />
+    <Compile Include="Serialization\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
     <Compile Include="Serialization\IAddedRecipe.cs" />
     <Compile Include="Serialization\ICustomSize.cs" />

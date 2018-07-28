@@ -1,6 +1,7 @@
-﻿namespace Common.EasyMarkup
+﻿namespace CustomCraft2SML.Serialization
 {
     using System.Collections.Generic;
+    using Common.EasyMarkup;
 
     public class EmPropertyTechTypeList : EmPropertyList<TechType>
     {

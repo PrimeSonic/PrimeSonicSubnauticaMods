@@ -84,7 +84,7 @@
                 "#                 This config file was built using EasyMarkup                   #",
                 "# ----------------------------------------------------------------------------- #",
                 "",
-                this.PrintyPrint(),
+                this.PrettyPrint(),
                 "",
                 "# Here's the full details on what these configurations do: #",
                 "",

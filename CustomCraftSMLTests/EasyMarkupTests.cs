@@ -405,7 +405,7 @@
             var testProp = new TestSimpleCollection("TestKey", properties);
             testProp.FromString(testValue);
 
-            var actualValue = testProp.PrintyPrint();
+            var actualValue = testProp.PrettyPrint();
 
             Assert.AreEqual(expectedValue, actualValue);
         }

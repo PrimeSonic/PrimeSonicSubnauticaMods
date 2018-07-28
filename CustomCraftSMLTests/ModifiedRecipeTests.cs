@@ -160,7 +160,7 @@
 
             Assert.IsTrue(success);
 
-            Console.WriteLine(recipes.PrintyPrint());
+            Console.WriteLine(recipes.PrettyPrint());
         }
 
         [Test]

@@ -18,11 +18,62 @@
             }
         }
 
-        public static string Serialize(this EmProperty emProperty)
+        public static string Serialize(this EmProperty emProperty, bool prettyPrint = true)
         {
-            return emProperty.PrintyPrint();
+            if (prettyPrint)
+                return emProperty.PrettyPrint();
+
+            return emProperty.ToString();
         }
 
+        public static string CommentText(string text)
+        {
+            return $"{EmProperty.SpChar_CommentBlock} {text} {EmProperty.SpChar_CommentBlock}";
+        }
 
+        public static string[] CommentTextLines(string[] textArray)
+        {
+            var commentedArray = new string[textArray.Length];
+
+            for (int i = 0; i < textArray.Length; i++)
+                commentedArray[i] = CommentText(textArray[i]);
+
+            return commentedArray;
+        }
+
+        public static string[] CommentTextLinesCentered(string[] textArray)
+        {
+            var commentedArray = new string[textArray.Length];
+
+            int maxSize = 0;
+            for (int i = 0; i < textArray.Length; i++)
+                maxSize = Math.Max(maxSize, textArray[i].Length);
+
+            if (maxSize % 2 != 0)
+                maxSize++;
+
+            for (int i = 0; i < textArray.Length; i++)
+            {
+                int totalPadding = maxSize - textArray[i].Length;
+                int leftPad = 0;
+                int rightPad = 0;
+
+                if (totalPadding % 2 == 0)
+                {
+                    rightPad = leftPad = totalPadding / 2;
+                }
+                else
+                {
+                    leftPad = (totalPadding - 1) / 2;
+                    rightPad = (totalPadding - 1) / 2 + 1;
+                }
+
+                string paddedText = $"{new string(' ', leftPad)}{textArray[i]}{new string(' ', rightPad)}";
+
+                commentedArray[i] = CommentText(paddedText);
+            }
+
+            return commentedArray;
+        }
     }
 }

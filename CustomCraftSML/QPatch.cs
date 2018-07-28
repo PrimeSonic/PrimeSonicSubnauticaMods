@@ -16,7 +16,7 @@
         private static readonly string ModifiedRecipesFile = FolderRoot + "ModifiedRecipes.txt";
         private static readonly string AddedRecipiesFile = FolderRoot + "AddedRecipes.txt";
         private static readonly string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
-        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} (Revision 4) #";
+        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} (Revision 1.1.0) #";
 
         private static readonly string SamplesFolder = FolderRoot + "SampleFiles/";
         private static readonly string OriginalsFolder = SamplesFolder + "OriginalRecipes/";
@@ -160,7 +160,7 @@
                     }
 
                     Logger.Log($"AddedRecipies loaded. File reformatted.");
-                    File.WriteAllText(AddedRecipiesFile, addedRecipeList.PrintyPrint());
+                    File.WriteAllText(AddedRecipiesFile, addedRecipeList.PrettyPrint());
                 }
                 else
                 {
@@ -198,7 +198,7 @@
                     }
 
                     Logger.Log($"ModifiedRecipes loaded. File reformatted.");
-                    File.WriteAllText(ModifiedRecipesFile, modifiedRecipeList.PrintyPrint());
+                    File.WriteAllText(ModifiedRecipesFile, modifiedRecipeList.PrettyPrint());
                 }
                 else
                 {
@@ -236,7 +236,7 @@
                     }
 
                     Logger.Log($"CustomSizes loaded. File reformatted.");
-                    File.WriteAllText(CustomSizesFile, customSizeList.PrintyPrint());
+                    File.WriteAllText(CustomSizesFile, customSizeList.PrettyPrint());
                 }
                 else
                 {
@@ -291,19 +291,20 @@
 
         public static void GenerateOriginalsFile(string key, List<TechType> list, string fileName)
         {
-            var printyPrints = new List<string>()
+            var printyPrints = new List<string>();
+            printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]
             {
-                "# This file was generated with all the default recipes in the game #",
-                "#    You can copy samples from this file to use in your personal overrides   #",
-                "# -------------------------------------------------------------------------- #",
-            };
+                "This file was generated with original recipes in the game",
+                "You can copy individual entries from this file to use in your personal overrides",
+                "--------------------------------------------------------------------------------",
+            }));
 
             var originals = new ModifiedRecipeList($"{key}Originals");
 
             foreach (TechType craftable in list)
                 originals.Add(new ModifiedRecipe(craftable));
 
-            printyPrints.Add(originals.PrintyPrint());            
+            printyPrints.Add(originals.PrettyPrint());            
 
             File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
 

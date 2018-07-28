@@ -100,7 +100,7 @@
                 "#             This config file was built using EasyMarkup              #",
                 "# -------------------------------------------------------------------- #",
                 "",
-                EmConfig.PrintyPrint(),
+                EmConfig.PrettyPrint(),
                 "",
                 "# Here's the full details on what these configurations do: #",
                 "",

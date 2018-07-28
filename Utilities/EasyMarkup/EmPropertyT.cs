@@ -6,6 +6,8 @@
 
     public class EmProperty<T> : EmProperty, ISerialConfirmation where T : IConvertible
     {
+        public string InLineComment { get; set; } = null;
+
         public bool HasValue { get; private set; } = false;
 
         protected T DefaultValue { get; private set; } = default(T);
@@ -29,6 +31,15 @@
             ObjValue = defaultValue;
             DefaultValue = defaultValue;
             SerializedValue = ObjValue?.ToString(CultureInfo.InvariantCulture);
+        }
+
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(InLineComment))
+                return base.ToString();
+
+
+            return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter} {EmUtils.CommentText(InLineComment)}";
         }
 
         protected override string ExtractValue(StringBuffer fullString)
