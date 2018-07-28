@@ -23,5 +23,6 @@
         {
             VehicleUpgrader.UpgradeVehicle(__instance);
         }
-    }  
+
+    }
 }

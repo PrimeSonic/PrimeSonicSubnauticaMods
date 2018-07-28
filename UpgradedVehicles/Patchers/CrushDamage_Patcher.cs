@@ -29,6 +29,7 @@
 
                 yield return op;
             }
+            // We'll show the on-screen message from the VehicleUpgrader
         }
     }
 
@@ -57,8 +58,6 @@
     [HarmonyPatch("CrushDamageUpdate")]
     internal class CrushDamage_CrushDamageUpdate_Patcher
     {
-        
-
         [HarmonyPrefix]
         internal static bool Prefix(ref CrushDamage __instance)
         {
