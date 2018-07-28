@@ -44,6 +44,7 @@
             if (seamothType != SeaMothMk2.TechTypeID && seamothType != SeaMothMk3.TechTypeID)
             {
                 CrushDepthSet = true;
+                ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", seamoth.crushDamage.crushDepth));
                 return; // This is a normal Seamoth. Do not upgrade.
             }
 
@@ -63,10 +64,11 @@
                 techType != TechType.ExoHullModule2)
             {
                 CrushDepthSet = true;
+                ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", exosuit.crushDamage.crushDepth));
                 return; // Not a depth module. No need to update anything here.
             }
-            
-            UpgradeExosuit(exosuit, true);            
+
+            UpgradeExosuit(exosuit, true);
         }
 
         internal static void UpgradeExosuit(Exosuit exosuit, bool announce = false)
@@ -78,8 +80,8 @@
                 CrushDepthSet = true;
                 return; // This is a normal Prawn Suit. Do not upgrade.
             }
-            
-            OverrideCrushDepth(exosuit.crushDamage, BaseExosuitCrush, 800f, announce);            
+
+            OverrideCrushDepth(exosuit.crushDamage, BaseExosuitCrush, 800f, announce);
         }
 
         private static void OverrideCrushDepth(CrushDamage crushDamage, float baseCrushDepth, float minimumBonus, bool announce)
@@ -193,8 +195,17 @@
         private static void UpdatePowerRating(Vehicle vehicle, int speedBoosterCount, int powerModuleCount, bool announement)
         {
             float efficiencyBonus = Mathf.Max(1f, 1f * powerModuleCount);
-            float efficiencyPenalty = Mathf.Max(1f, 1f * speedBoosterCount);
-            float powerRating = efficiencyBonus / efficiencyPenalty;
+
+            float powerRating;
+
+            if (speedBoosterCount == 0)
+                powerRating = efficiencyBonus;
+            else
+            {
+                float efficiencyPenalty = 1f * speedBoosterCount;
+                powerRating = efficiencyBonus / efficiencyPenalty;
+            }
+
             vehicle.SetPrivateField("enginePowerRating", powerRating);
 
             if (announement)

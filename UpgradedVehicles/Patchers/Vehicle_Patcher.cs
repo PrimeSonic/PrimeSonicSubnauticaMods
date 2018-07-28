@@ -24,25 +24,4 @@
             VehicleUpgrader.UpgradeVehicle(__instance);
         }
     }
-
-    [HarmonyPatch(typeof(Vehicle))]
-    [HarmonyPatch("EnterVehicle")]
-    internal class Vehicle_EnterVehicle_Patcher
-    {
-        [HarmonyPostfix]
-        internal static void Postfix(ref Vehicle __instance)
-        {
-            var seamoth = __instance.GetComponentInParent<SeaMoth>();
-            var exosuit = __instance.GetComponentInParent<Exosuit>();
-
-            if (seamoth != null)
-            {
-                VehicleUpgrader.UpgradeSeaMoth(seamoth);
-            }
-            else if (exosuit != null)
-            {
-                VehicleUpgrader.UpgradeExosuit(exosuit);
-            }
-        }
-    }
 }
