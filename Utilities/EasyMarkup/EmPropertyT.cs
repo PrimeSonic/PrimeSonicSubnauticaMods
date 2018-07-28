@@ -4,9 +4,13 @@
     using System.Globalization;
     using Common;
 
-    public class EmProperty<T> : EmProperty where T : IConvertible
+    public class EmProperty<T> : EmProperty, ISerialConfirmation where T : IConvertible
     {
-        protected T ObjValue;
+        public bool HasValue { get; private set; } = false;
+
+        protected T DefaultValue { get; private set; } = default(T);
+
+        private T ObjValue;
 
         public T Value
         {
@@ -14,18 +18,17 @@
             set
             {
                 ObjValue = value;
-                SerializedValue = ObjValue.ToString(CultureInfo.InvariantCulture);
+                HasValue = true;
+                SerializedValue = ObjValue?.ToString(CultureInfo.InvariantCulture);
             }
         }
 
-        public EmProperty(string key)
+        public EmProperty(string key, T defaultValue = default(T))
         {
             Key = key;
-        }
-
-        public EmProperty(string key, T value) : this(key)
-        {
-            Value = value;
+            ObjValue = defaultValue;
+            DefaultValue = defaultValue;
+            SerializedValue = ObjValue?.ToString(CultureInfo.InvariantCulture);
         }
 
         protected override string ExtractValue(StringBuffer fullString)
@@ -33,6 +36,8 @@
             string serialValue = base.ExtractValue(fullString);
 
             Value = ConvertFromSerial(serialValue);
+
+            HasValue = true;
 
             return serialValue;
         }
@@ -49,10 +54,10 @@
 
         internal override EmProperty Copy()
         {
-            if (ObjValue == null)
-                return new EmProperty<T>(Key);
-            else
+            if (HasValue)
                 return new EmProperty<T>(Key, ObjValue);
+
+            return new EmProperty<T>(Key, DefaultValue);
         }
     }
 

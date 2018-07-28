@@ -306,7 +306,7 @@
             while (mover.MoveNext())
             {
                 if (mover.Current.action == TreeAction.Craft && mover.Current.techType0 < TechType.Databox)
-                    originals.Collections.Add(new ModifiedRecipe(mover.Current.techType0));
+                    originals.Add(new ModifiedRecipe(mover.Current.techType0));
             };
 
             return originals;

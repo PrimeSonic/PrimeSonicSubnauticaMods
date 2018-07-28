@@ -35,15 +35,15 @@
             Assert.AreEqual(TechType.Aerogel, recipe.ItemID);
             Assert.AreEqual(4, recipe.AmountCrafted);
 
-            Assert.AreEqual(2, recipe.SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe.SmlIngredients[0].techType);
-            Assert.AreEqual(2, recipe.SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe.SmlIngredients[1].techType);
-            Assert.AreEqual(3, recipe.SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe.IngredientsCount);
+            Assert.AreEqual(TechType.Titanium, recipe.GetIngredient(0).ItemID);
+            Assert.AreEqual(2, recipe.GetIngredient(0).Required);
+            Assert.AreEqual(TechType.Copper, recipe.GetIngredient(1).ItemID);
+            Assert.AreEqual(3, recipe.GetIngredient(1).Required);
 
-            Assert.AreEqual(2, recipe.LinkedItems.Count);
-            Assert.AreEqual(TechType.Silver, recipe.LinkedItems[0]);
-            Assert.AreEqual(TechType.Gold, recipe.LinkedItems[1]);
+            Assert.AreEqual(2, recipe.LinkedItemsCount);
+            Assert.AreEqual(TechType.Silver, recipe.GetLinkedItem(0));
+            Assert.AreEqual(TechType.Gold, recipe.GetLinkedItem(1));
         }
 
         [Test]
@@ -87,19 +87,19 @@
             Assert.AreEqual(TechType.Aerogel, recipe[0].ItemID);
             Assert.AreEqual(1, recipe[0].AmountCrafted);
 
-            Assert.AreEqual(2, recipe[0].SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe[0].SmlIngredients[0].techType);
-            Assert.AreEqual(2, recipe[0].SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe[0].SmlIngredients[1].techType);
-            Assert.AreEqual(3, recipe[0].SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe[0].IngredientsCount);
+            Assert.AreEqual(TechType.Titanium, recipe[0].GetIngredient(0).ItemID);
+            Assert.AreEqual(2, recipe[0].GetIngredient(0).Required);
+            Assert.AreEqual(TechType.Copper, recipe[0].GetIngredient(1).ItemID);
+            Assert.AreEqual(3, recipe[0].GetIngredient(1).Required);
 
-            Assert.AreEqual(2, recipe[0].LinkedItems.Count);
-            Assert.AreEqual(TechType.Silver, recipe[0].LinkedItems[0]);
-            Assert.AreEqual(TechType.Gold, recipe[0].LinkedItems[1]);
+            Assert.AreEqual(2, recipe[0].LinkedItemsCount);
+            Assert.AreEqual(TechType.Silver, recipe[0].GetLinkedItem(0));
+            Assert.AreEqual(TechType.Gold, recipe[0].GetLinkedItem(1));
         }
 
         [Test]
-        public void Deserialize_ModifiedRecipesList_NoAmounts_DefaultTo1()
+        public void Deserialize_ModifiedRecipesList_NoAmounts_Defaults()
         {
             const string serialized = "ModifiedRecipes:" + "\r\n" +
                                       "(" + "\r\n" +
@@ -129,17 +129,17 @@
             recipe.FromString(serialized);
 
             Assert.AreEqual(TechType.Aerogel, recipe[0].ItemID);
-            Assert.AreEqual(1, recipe[0].AmountCrafted);
+            Assert.AreEqual(false, recipe[0].AmountCrafted.HasValue);
 
-            Assert.AreEqual(2, recipe[0].SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe[0].SmlIngredients[0].techType);
-            Assert.AreEqual(1, recipe[0].SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe[0].SmlIngredients[1].techType);
-            Assert.AreEqual(1, recipe[0].SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe[0].IngredientsCount);
+            Assert.AreEqual(TechType.Titanium, recipe[0].GetIngredient(0).ItemID);
+            Assert.AreEqual(1, recipe[0].GetIngredient(0).Required);
+            Assert.AreEqual(TechType.Copper, recipe[0].GetIngredient(1).ItemID);
+            Assert.AreEqual(1, recipe[0].GetIngredient(1).Required);
 
-            Assert.AreEqual(0, recipe[0].LinkedItems.Count);
-            Assert.AreEqual(0, recipe[0].Unlocks.Count);
-            Assert.AreEqual(false, recipe[0].ForceUnlockAtStart);
+            Assert.AreEqual(false, recipe[0].LinkedItemsCount.HasValue);
+            Assert.AreEqual(false, recipe[0].UnlocksCount.HasValue);
+            Assert.AreEqual(false, recipe[0].ForceUnlockAtStart.HasValue);
         }
 
         [Test]
@@ -194,21 +194,21 @@
             Assert.AreEqual(TechType.Aerogel, recipe.ItemID);
             Assert.AreEqual(1, recipe.AmountCrafted);
 
-            Assert.AreEqual(2, recipe.SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe.SmlIngredients[0].techType);
-            Assert.AreEqual(2, recipe.SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe.SmlIngredients[1].techType);
-            Assert.AreEqual(3, recipe.SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe.IngredientsCount);
+            Assert.AreEqual(TechType.Titanium, recipe.GetIngredient(0).ItemID);
+            Assert.AreEqual(2, recipe.GetIngredient(0).Required);
+            Assert.AreEqual(TechType.Copper, recipe.GetIngredient(1).ItemID);
+            Assert.AreEqual(3, recipe.GetIngredient(1).Required);
 
-            Assert.AreEqual(2, recipe.LinkedItems.Count);
-            Assert.AreEqual(TechType.Silver, recipe.LinkedItems[0]);
-            Assert.AreEqual(TechType.Gold, recipe.LinkedItems[1]);
+            Assert.AreEqual(2, recipe.LinkedItemsCount);
+            Assert.AreEqual(TechType.Silver, recipe.GetLinkedItem(0));
+            Assert.AreEqual(TechType.Gold, recipe.GetLinkedItem(1));
 
             Assert.AreEqual(false, recipe.ForceUnlockAtStart);
 
-            Assert.AreEqual(2, recipe.Unlocks.Count);
-            Assert.AreEqual(TechType.ComputerChip, recipe.Unlocks[0]);
-            Assert.AreEqual(TechType.Cyclops, recipe.Unlocks[1]);
+            Assert.AreEqual(2, recipe.UnlocksCount);
+            Assert.AreEqual(TechType.ComputerChip, recipe.GetUnlock(0));
+            Assert.AreEqual(TechType.Cyclops, recipe.GetUnlock(1));
         }
     }
 }

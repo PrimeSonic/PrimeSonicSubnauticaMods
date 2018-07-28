@@ -4,7 +4,7 @@
     using Common.EasyMarkup;
     using UnityEngine.Assertions;
 
-    public class EmIngredient : EmPropertyCollection
+    public class EmIngredient : EmPropertyCollection, IIngredient
     {
         public const short Max = 25;
         public const short Min = 1;
@@ -40,6 +40,10 @@
             new EmPropertyTechType("ItemID"),
             new EmProperty<short>("Required", 1),
         };
+
+        public TechType techType => ItemID;
+
+        public int amount => Required;
 
         public EmIngredient() : base("Ingredients", IngredientProperties)
         {

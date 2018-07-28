@@ -20,10 +20,10 @@
 
         internal override EmProperty Copy()
         {
-            if (ObjValue == default(TechType))
-                return new EmPropertyTechType(Key);
-            else
+            if (HasValue)
                 return new EmPropertyTechType(Key, Value);
+
+            return new EmPropertyTechType(Key);
         }
     }
 }

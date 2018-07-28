@@ -42,11 +42,11 @@
 
             ModifiedRecipe reactorRodChange = mRecipes[2];
             Assert.AreEqual(TechType.ReactorRod, reactorRodChange.ItemID);
-            Assert.AreEqual(0, reactorRodChange.IngredientCount);
-            Assert.AreEqual(0, reactorRodChange.LinkedItemCount);
+            Assert.AreEqual(false, reactorRodChange.IngredientsCount.HasValue);
+            Assert.AreEqual(false, reactorRodChange.LinkedItemsCount.HasValue);
 
-            Assert.AreEqual(1, reactorRodChange.Unlocks.Count);
-            Assert.AreEqual(TechType.DepletedReactorRod, reactorRodChange.Unlocks[0]);
+            Assert.AreEqual(1, reactorRodChange.UnlocksCount);
+            Assert.AreEqual(TechType.DepletedReactorRod, reactorRodChange.GetUnlock(0));
         }
 
         [Test]
@@ -94,8 +94,8 @@
             bigFilterWaterRecipe.AddIngredient(TechType.FilteredWater, 2);
 
             var origRecipeList = new AddedRecipeList();
-            origRecipeList.Collections.Add(nutrientBlockRecipe);
-            origRecipeList.Collections.Add(bigFilterWaterRecipe);
+            origRecipeList.Add(nutrientBlockRecipe);
+            origRecipeList.Add(bigFilterWaterRecipe);
 
             string serialized = origRecipeList.PrintyPrint();
 
@@ -118,14 +118,14 @@
             Assert.AreEqual(nutrientBlock.ItemID, nutrientBlockRecipe.ItemID);
             Assert.AreEqual(nutrientBlock.AmountCrafted, nutrientBlockRecipe.AmountCrafted);
             Assert.AreEqual(nutrientBlock.Path, nutrientBlockRecipe.Path);
-            Assert.AreEqual(nutrientBlock.SmlIngredients.Count, nutrientBlockRecipe.SmlIngredients.Count);
-            Assert.AreEqual(nutrientBlock.SmlIngredients[0].techType, nutrientBlockRecipe.SmlIngredients[0].techType);
-            Assert.AreEqual(nutrientBlock.SmlIngredients[1].techType, nutrientBlockRecipe.SmlIngredients[1].techType);
-            Assert.AreEqual(nutrientBlock.SmlIngredients[2].techType, nutrientBlockRecipe.SmlIngredients[2].techType);
-            Assert.AreEqual(nutrientBlock.SmlIngredients[0].amount, nutrientBlockRecipe.SmlIngredients[0].amount);
-            Assert.AreEqual(nutrientBlock.SmlIngredients[1].amount, nutrientBlockRecipe.SmlIngredients[1].amount);
-            Assert.AreEqual(nutrientBlock.SmlIngredients[2].amount, nutrientBlockRecipe.SmlIngredients[2].amount);
-            Assert.AreEqual(nutrientBlock.Unlocks.Count, nutrientBlockRecipe.Unlocks.Count);
+            Assert.AreEqual(nutrientBlock.IngredientsCount, nutrientBlockRecipe.IngredientsCount);
+            Assert.AreEqual(nutrientBlock.GetIngredient(0).ItemID, nutrientBlockRecipe.GetIngredient(0).ItemID);
+            Assert.AreEqual(nutrientBlock.GetIngredient(1).ItemID, nutrientBlockRecipe.GetIngredient(1).ItemID);
+            Assert.AreEqual(nutrientBlock.GetIngredient(2).ItemID, nutrientBlockRecipe.GetIngredient(2).ItemID);
+            Assert.AreEqual(nutrientBlock.GetIngredient(0).Required, nutrientBlockRecipe.GetIngredient(0).Required);
+            Assert.AreEqual(nutrientBlock.GetIngredient(1).Required, nutrientBlockRecipe.GetIngredient(1).Required);
+            Assert.AreEqual(nutrientBlock.GetIngredient(2).Required, nutrientBlockRecipe.GetIngredient(2).Required);
+            Assert.AreEqual(nutrientBlock.UnlocksCount, nutrientBlockRecipe.UnlocksCount);
             Assert.AreEqual(nutrientBlock.ForceUnlockAtStart, nutrientBlockRecipe.ForceUnlockAtStart);
 
             // bigFilterWaterRecipe
@@ -133,10 +133,10 @@
             Assert.AreEqual(bigFilteredWater.ItemID, bigFilterWaterRecipe.ItemID);
             Assert.AreEqual(bigFilteredWater.AmountCrafted, bigFilterWaterRecipe.AmountCrafted);
             Assert.AreEqual(bigFilteredWater.Path, bigFilterWaterRecipe.Path);
-            Assert.AreEqual(bigFilteredWater.SmlIngredients.Count, bigFilterWaterRecipe.SmlIngredients.Count);
-            Assert.AreEqual(bigFilteredWater.SmlIngredients[0].techType, bigFilterWaterRecipe.SmlIngredients[0].techType);
-            Assert.AreEqual(bigFilteredWater.SmlIngredients[0].amount, bigFilterWaterRecipe.SmlIngredients[0].amount);
-            Assert.AreEqual(bigFilteredWater.Unlocks.Count, bigFilterWaterRecipe.Unlocks.Count);
+            Assert.AreEqual(bigFilteredWater.IngredientsCount, bigFilterWaterRecipe.IngredientsCount);
+            Assert.AreEqual(bigFilteredWater.GetIngredient(0).ItemID, bigFilterWaterRecipe.GetIngredient(0).ItemID);
+            Assert.AreEqual(bigFilteredWater.GetIngredient(0).Required, bigFilterWaterRecipe.GetIngredient(0).Required);
+            Assert.AreEqual(bigFilteredWater.UnlocksCount, bigFilterWaterRecipe.UnlocksCount);
             Assert.AreEqual(bigFilteredWater.ForceUnlockAtStart, bigFilterWaterRecipe.ForceUnlockAtStart);
         }
 
@@ -146,17 +146,14 @@
             var curedReginaldRecipe = new ModifiedRecipe()
             {
                 ItemID = TechType.CuredReginald,
-                AmountCrafted = 1,
-                Unlocks =
-                {
-                    TechType.NutrientBlock
-                }
+                AmountCrafted = 1,                
             };
+            curedReginaldRecipe.AddUnlock(TechType.NutrientBlock);
             curedReginaldRecipe.AddIngredient(TechType.Reginald, 1);
             curedReginaldRecipe.AddIngredient(TechType.Salt, 1);
 
             var origRecipeList = new ModifiedRecipeList();
-            origRecipeList.Collections.Add(curedReginaldRecipe);
+            origRecipeList.Add(curedReginaldRecipe);
 
             string serialized = origRecipeList.PrintyPrint();
 
@@ -178,14 +175,14 @@
             ModifiedRecipe curedReginald = origRecipeList[0];
             Assert.AreEqual(curedReginald.ItemID, curedReginaldRecipe.ItemID);
             Assert.AreEqual(curedReginald.AmountCrafted, curedReginaldRecipe.AmountCrafted);
-            Assert.AreEqual(curedReginald.SmlIngredients.Count, curedReginaldRecipe.SmlIngredients.Count);
-            Assert.AreEqual(curedReginald.SmlIngredients[0].techType, curedReginaldRecipe.SmlIngredients[0].techType);
-            Assert.AreEqual(curedReginald.SmlIngredients[1].techType, curedReginaldRecipe.SmlIngredients[1].techType);
-            Assert.AreEqual(curedReginald.SmlIngredients[0].amount, curedReginaldRecipe.SmlIngredients[0].amount);
-            Assert.AreEqual(curedReginald.SmlIngredients[1].amount, curedReginaldRecipe.SmlIngredients[1].amount);
+            Assert.AreEqual(curedReginald.IngredientsCount, curedReginaldRecipe.IngredientsCount);
+            Assert.AreEqual(curedReginald.GetIngredient(0).ItemID,   curedReginaldRecipe.GetIngredient(0).ItemID);
+            Assert.AreEqual(curedReginald.GetIngredient(1).ItemID,   curedReginaldRecipe.GetIngredient(1).ItemID);
+            Assert.AreEqual(curedReginald.GetIngredient(0).Required, curedReginaldRecipe.GetIngredient(0).Required);
+            Assert.AreEqual(curedReginald.GetIngredient(1).Required, curedReginaldRecipe.GetIngredient(1).Required);
             Assert.AreEqual(curedReginald.ForceUnlockAtStart, curedReginaldRecipe.ForceUnlockAtStart);
-            Assert.AreEqual(curedReginald.Unlocks.Count, curedReginaldRecipe.Unlocks.Count);
-            Assert.AreEqual(curedReginald.Unlocks[0], curedReginaldRecipe.Unlocks[0]);
+            Assert.AreEqual(curedReginald.UnlocksCount, curedReginaldRecipe.UnlocksCount);
+            Assert.AreEqual(curedReginald.GetUnlock(0), curedReginaldRecipe.GetUnlock(0));
 
 
         }
@@ -215,9 +212,9 @@
             };
 
             var origCustSizes = new CustomSizeList();
-            origCustSizes.Collections.Add(smallBloodOil);
-            origCustSizes.Collections.Add(smallMelon);
-            origCustSizes.Collections.Add(smallPotatoe);
+            origCustSizes.Add(smallBloodOil);
+            origCustSizes.Add(smallMelon);
+            origCustSizes.Add(smallPotatoe);
 
             string serialized = origCustSizes.PrintyPrint();
 

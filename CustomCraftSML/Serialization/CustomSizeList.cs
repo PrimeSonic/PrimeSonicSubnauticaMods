@@ -16,7 +16,7 @@
 
         public IEnumerator<CustomSize> GetEnumerator()
         {
-            foreach (EmPropertyCollection item in Collections)
+            foreach (EmPropertyCollection item in InternalValues)
             {
                 yield return (CustomSize)item;
             }

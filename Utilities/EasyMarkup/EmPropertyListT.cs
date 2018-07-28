@@ -1,34 +1,51 @@
 ﻿namespace Common.EasyMarkup
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using Common;
 
-    public class EmPropertyList<T> : EmProperty where T : IConvertible
+    public class EmPropertyList<T> : EmProperty, IEnumerable<T> where T : IConvertible
     {
-        public readonly List<T> Values = new List<T>();
+        public bool HasValue { get; private set; } = false;
 
-        public int Count => Values.Count;
+        protected IList<T> InternalValues { get; } = new List<T>();
+
+        public T this[int index] => InternalValues[index];
+
+        public int Count => InternalValues.Count;
+
+        public void Add(T item)
+        {
+            HasValue = true;
+            InternalValues.Add(item);
+        }
+
+        public IEnumerable<T> Values => InternalValues;
+
+        public IEnumerator<T> GetEnumerator() => InternalValues.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => InternalValues.GetEnumerator();
 
         public EmPropertyList(string key)
         {
             Key = key;
         }
 
-        public EmPropertyList(string key, ICollection<T> values) : this(key)
+        public EmPropertyList(string key, IEnumerable<T> values) : this(key)
         {
-            Values = new List<T>(values.Count);
+            InternalValues = new List<T>();
 
             foreach (T value in values)
             {
-                Values.Add(value);
+                InternalValues.Add(value);
             }
         }
 
         public override string ToString()
         {
             var val = $"{Key}{SpChar_KeyDelimiter}";
-            foreach (T value in Values)
+            foreach (T value in InternalValues)
             {
                 val += $"{value}{SpChar_ListItemSplitter}";
             }
@@ -52,7 +69,7 @@
 
                 var serialValue = value.ToString();
 
-                Values.Add(ConvertFromSerial(serialValue));
+                InternalValues.Add(ConvertFromSerial(serialValue));
 
                 serialValues += serialValue + SpChar_ListItemSplitter;
 
@@ -62,10 +79,12 @@
 
             } while (fullString.Count > 0 && fullString.PeekStart() != SpChar_ValueDelimiter);
 
+            HasValue = true;
+
             return serialValues.TrimEnd(SpChar_ListItemSplitter);
         }
 
-        internal override EmProperty Copy() => new EmPropertyList<T>(Key);
+        internal override EmProperty Copy() => new EmPropertyList<T>(Key, this.InternalValues);
 
         public virtual T ConvertFromSerial(string value)
         {
@@ -76,6 +95,8 @@
             else
                 return (T)Convert.ChangeType(value, typeof(T));
         }
+
+
     }
 
 }

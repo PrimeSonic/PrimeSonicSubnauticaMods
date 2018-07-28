@@ -34,15 +34,21 @@
             Assert.AreEqual(TechType.Aerogel, recipe.ItemID);
             Assert.AreEqual(5, recipe.AmountCrafted);
 
-            Assert.AreEqual(2, recipe.SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe.SmlIngredients[0].techType);
-            Assert.AreEqual(2, recipe.SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe.SmlIngredients[1].techType);
-            Assert.AreEqual(3, recipe.SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe.IngredientsCount);
 
-            Assert.AreEqual(2, recipe.LinkedItems.Count);
-            Assert.AreEqual(TechType.Silver, recipe.LinkedItems[0]);
-            Assert.AreEqual(TechType.Gold, recipe.LinkedItems[1]);
+
+            IIngredient item0 = recipe.GetIngredient(0);
+            Assert.AreEqual(TechType.Titanium, item0.techType);
+            Assert.AreEqual(2, item0.amount);
+
+            IIngredient item1 = recipe.GetIngredient(1);
+            Assert.AreEqual(TechType.Copper, item1.techType);
+            Assert.AreEqual(3, item1.amount);
+
+            Assert.AreEqual(2, recipe.LinkedItemsCount);
+
+            Assert.AreEqual(TechType.Silver, recipe.GetLinkedItem(0));
+            Assert.AreEqual(TechType.Gold, recipe.GetLinkedItem(1));
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe.Path);
         }
@@ -90,15 +96,21 @@
             Assert.AreEqual(TechType.Aerogel, recipe[0].ItemID);
             Assert.AreEqual(1, recipe[0].AmountCrafted);
 
-            Assert.AreEqual(2, recipe[0].SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe[0].SmlIngredients[0].techType);
-            Assert.AreEqual(2, recipe[0].SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe[0].SmlIngredients[1].techType);
-            Assert.AreEqual(3, recipe[0].SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe[0].IngredientsCount);
 
-            Assert.AreEqual(2, recipe[0].LinkedItems.Count);
-            Assert.AreEqual(TechType.Silver, recipe[0].LinkedItems[0]);
-            Assert.AreEqual(TechType.Gold, recipe[0].LinkedItems[1]);
+            EmIngredient item0 = recipe[0].GetIngredient(0);
+            Assert.AreEqual(TechType.Titanium, item0.ItemID);
+            Assert.AreEqual(2, item0.Required);
+
+            EmIngredient item1 = recipe[0].GetIngredient(1);
+            Assert.AreEqual(TechType.Copper, item1.ItemID);
+            Assert.AreEqual(3, item1.Required);
+
+            Assert.AreEqual(2, recipe[0].LinkedItemsCount);
+
+
+            Assert.AreEqual(TechType.Silver, recipe[0].GetLinkedItem(0));
+            Assert.AreEqual(TechType.Gold, recipe[0].GetLinkedItem(1));
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe[0].Path);
         }
@@ -129,13 +141,17 @@
             Assert.AreEqual(TechType.Aerogel, recipe.ItemID);
             Assert.AreEqual(1, recipe.AmountCrafted);
 
-            Assert.AreEqual(2, recipe.SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe.SmlIngredients[0].techType);
-            Assert.AreEqual(2, recipe.SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe.SmlIngredients[1].techType);
-            Assert.AreEqual(3, recipe.SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe.IngredientsCount);
 
-            Assert.AreEqual(0, recipe.LinkedItems.Count);
+            var item0 = recipe.GetIngredient(0);
+            Assert.AreEqual(TechType.Titanium, item0.ItemID);
+            Assert.AreEqual(2, item0.Required);
+
+            var item1 = recipe.GetIngredient(1);
+            Assert.AreEqual(TechType.Copper, item1.ItemID);
+            Assert.AreEqual(3, item1.Required);
+
+            Assert.AreEqual(false, recipe.LinkedItemsCount.HasValue);
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe.Path);
         }
@@ -161,22 +177,26 @@
             recipe.FromString(serialized);
 
             Assert.AreEqual(TechType.Aerogel, recipe.ItemID);
-            Assert.AreEqual(1, recipe.AmountCrafted);
+            Assert.AreEqual(false, recipe.AmountCrafted.HasValue);
 
-            Assert.AreEqual(2, recipe.SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe.SmlIngredients[0].techType);
-            Assert.AreEqual(1, recipe.SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe.SmlIngredients[1].techType);
-            Assert.AreEqual(1, recipe.SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe.IngredientsCount);
 
-            Assert.AreEqual(0, recipe.LinkedItems.Count);
+            var item0 = recipe.GetIngredient(0);
+            Assert.AreEqual(TechType.Titanium, item0.ItemID);
+            Assert.AreEqual(1, item0.Required);
+
+            var item1 = recipe.GetIngredient(1);
+            Assert.AreEqual(TechType.Copper, item1.ItemID);
+            Assert.AreEqual(1, item1.Required);
+
+            Assert.AreEqual(false, recipe.LinkedItemsCount.HasValue);
             Assert.AreEqual(true, recipe.ForceUnlockAtStart);
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe.Path);
         }
         
         [Test]
-        public void Deserialize_AddedRecipesList_NoAmounts_DefaultTo1()
+        public void Deserialize_AddedRecipesList_NoAmounts_Defaults()
         {
             const string serialized = "AddedRecipes:" + "\r\n" +
                                       "(" + "\r\n" +
@@ -209,15 +229,19 @@
             recipe.FromString(serialized);
 
             Assert.AreEqual(TechType.Aerogel, recipe[0].ItemID);
-            Assert.AreEqual(1, recipe[0].AmountCrafted);
+            Assert.AreEqual(false, recipe[0].AmountCrafted.HasValue);
 
-            Assert.AreEqual(2, recipe[0].SmlIngredients.Count);
-            Assert.AreEqual(TechType.Titanium, recipe[0].SmlIngredients[0].techType);
-            Assert.AreEqual(1, recipe[0].SmlIngredients[0].amount);
-            Assert.AreEqual(TechType.Copper, recipe[0].SmlIngredients[1].techType);
-            Assert.AreEqual(1, recipe[0].SmlIngredients[1].amount);
+            Assert.AreEqual(2, recipe[0].IngredientsCount);
 
-            Assert.AreEqual(0, recipe[0].LinkedItems.Count);
+            var item0 = recipe[0].GetIngredient(0);
+            Assert.AreEqual(TechType.Titanium, item0.ItemID);
+            Assert.AreEqual(1, item0.Required);
+
+            var item1 = recipe[0].GetIngredient(1);
+            Assert.AreEqual(TechType.Copper, item1.ItemID);
+            Assert.AreEqual(1, item1.Required);
+
+            Assert.AreEqual(false, recipe[0].LinkedItemsCount.HasValue);
             Assert.AreEqual(false, recipe[0].ForceUnlockAtStart);
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe[0].Path);

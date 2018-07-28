@@ -8,7 +8,7 @@
         {
         }
 
-        public EmPropertyTechTypeList(string key, ICollection<TechType> values) : base(key, values)
+        public EmPropertyTechTypeList(string key, IEnumerable<TechType> values) : base(key, values)
         {
         }
 
@@ -20,7 +20,7 @@
                 return TechType.None;
         }
 
-        internal override EmProperty Copy() => new EmPropertyTechTypeList(Key);
+        internal override EmProperty Copy() => new EmPropertyTechTypeList(Key, this.Values);
 
         public override string ToString()
         {

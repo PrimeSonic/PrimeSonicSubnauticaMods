@@ -60,13 +60,13 @@
 
         private void Validate()
         {
-            if (!EmAuxEnabled.ValidData)
+            if (!EmAuxEnabled.HasData)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmAuxEnabled.Key} was out of range. Replaced with default.");
                 ValidDataRead &= false;
             }
 
-            if (!EmUpgradesEnabled.ValidData)
+            if (!EmUpgradesEnabled.HasData)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmUpgradesEnabled.Key} was out of range. Replaced with default.");
                 ValidDataRead &= false;

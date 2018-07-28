@@ -93,10 +93,10 @@
             var testProp = new TestSimpleList(key, values);
             string expectedValue = $"{key}:1,2,3,4,5;";
 
-            Assert.AreEqual(values.Count, testProp.Values.Count);
-            for (int i = 0; i < testProp.Values.Count; i++)
+            Assert.AreEqual(values.Count, testProp.Count);
+            for (int i = 0; i < testProp.Count; i++)
             {
-                Assert.AreEqual(values[i], testProp.Values[i]);
+                Assert.AreEqual(values[i], testProp[i]);
             }
 
             Assert.AreEqual(expectedValue, testProp.ToString());
@@ -113,10 +113,10 @@
             var testProp = new TestSimpleList("TestKey");
             testProp.FromString(goodString);
 
-            Assert.AreEqual(values.Count, testProp.Values.Count);
-            for (int i = 0; i < testProp.Values.Count; i++)
+            Assert.AreEqual(values.Count, testProp.Count);
+            for (int i = 0; i < testProp.Count; i++)
             {
-                Assert.AreEqual(values[i], testProp.Values[i]);
+                Assert.AreEqual(values[i], testProp[i]);
             }
         }
 
@@ -135,10 +135,10 @@
             string serialized = deserialized.ToString();
 
 
-            Assert.AreEqual(values.Count, orig.Values.Count);
-            for (int i = 0; i < deserialized.Values.Count; i++)
+            Assert.AreEqual(values.Count, orig.Count);
+            for (int i = 0; i < deserialized.Count; i++)
             {
-                Assert.AreEqual(values[i], orig.Values[i]);
+                Assert.AreEqual(values[i], orig[i]);
             }
 
             Assert.AreEqual(originalSerialized, serialized);
@@ -188,10 +188,10 @@
             Assert.AreEqual("Val", ((EmProperty<string>)testProp["String"]).Value);
             Assert.AreEqual(12, ((EmProperty<int>)testProp["Int"]).Value);
 
-            Assert.AreEqual(3, ((EmPropertyList<float>)testProp["FloatList"]).Values.Count);
-            Assert.AreEqual(1.0f, ((EmPropertyList<float>)testProp["FloatList"]).Values[0]);
-            Assert.AreEqual(2.1f, ((EmPropertyList<float>)testProp["FloatList"]).Values[1]);
-            Assert.AreEqual(3.2f, ((EmPropertyList<float>)testProp["FloatList"]).Values[2]);
+            Assert.AreEqual(3, ((EmPropertyList<float>)testProp["FloatList"]).Count);
+            Assert.AreEqual(1.0f, ((EmPropertyList<float>)testProp["FloatList"])[0]);
+            Assert.AreEqual(2.1f, ((EmPropertyList<float>)testProp["FloatList"])[1]);
+            Assert.AreEqual(3.2f, ((EmPropertyList<float>)testProp["FloatList"])[2]);
         }
 
         [Test]
@@ -264,10 +264,10 @@
             Assert.AreEqual("Val", ((EmProperty<string>)testProp["String"]).Value);
             Assert.AreEqual(12, ((EmProperty<int>)testProp["Int"]).Value);
 
-            Assert.AreEqual(3, ((EmPropertyList<float>)testProp["FloatList"]).Values.Count);
-            Assert.AreEqual(1.0f, ((EmPropertyList<float>)testProp["FloatList"]).Values[0]);
-            Assert.AreEqual(2.1f, ((EmPropertyList<float>)testProp["FloatList"]).Values[1]);
-            Assert.AreEqual(3.2f, ((EmPropertyList<float>)testProp["FloatList"]).Values[2]);
+            Assert.AreEqual(3, ((EmPropertyList<float>)testProp["FloatList"]).Count);
+            Assert.AreEqual(1.0f, ((EmPropertyList<float>)testProp["FloatList"])[0]);
+            Assert.AreEqual(2.1f, ((EmPropertyList<float>)testProp["FloatList"])[1]);
+            Assert.AreEqual(3.2f, ((EmPropertyList<float>)testProp["FloatList"])[2]);
 
             Assert.AreEqual("Nval", ((EmProperty<string>)((EmPropertyCollection)testProp["Nested"])["Nstring"]).Value);
             Assert.AreEqual(10, ((EmProperty<int>)((EmPropertyCollection)testProp["Nested"])["Nint"]).Value);
@@ -318,10 +318,10 @@
             Assert.AreEqual("Val", ((EmProperty<string>)deserialized["String"]).Value);
             Assert.AreEqual(12, ((EmProperty<int>)deserialized["Int"]).Value);
 
-            Assert.AreEqual(3, ((EmPropertyList<float>)deserialized["FloatList"]).Values.Count);
-            Assert.AreEqual(1.0f, ((EmPropertyList<float>)deserialized["FloatList"]).Values[0]);
-            Assert.AreEqual(2.1f, ((EmPropertyList<float>)deserialized["FloatList"]).Values[1]);
-            Assert.AreEqual(3.2f, ((EmPropertyList<float>)deserialized["FloatList"]).Values[2]);
+            Assert.AreEqual(3, ((EmPropertyList<float>)deserialized["FloatList"]).Count);
+            Assert.AreEqual(1.0f, ((EmPropertyList<float>)deserialized["FloatList"])[0]);
+            Assert.AreEqual(2.1f, ((EmPropertyList<float>)deserialized["FloatList"])[1]);
+            Assert.AreEqual(3.2f, ((EmPropertyList<float>)deserialized["FloatList"])[2]);
 
             Assert.AreEqual("Nval", ((EmProperty<string>)((EmPropertyCollection)deserialized["Nested"])["Nstring"]).Value);
             Assert.AreEqual(10, ((EmProperty<int>)((EmPropertyCollection)deserialized["Nested"])["Nint"]).Value);
@@ -352,7 +352,7 @@
 
             compList.FromString(testValue);
 
-            Assert.AreEqual(2, compList.Collections.Count);
+            Assert.AreEqual(2, compList.Count);
 
             Assert.AreEqual("Val1", ((EmProperty<string>)compList[0]["Nstring"]).Value);
             Assert.AreEqual(2, ((EmProperty<int>)compList[0]["Nint"]).Value);

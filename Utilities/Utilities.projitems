@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyTechTypeList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringHelper.cs" />

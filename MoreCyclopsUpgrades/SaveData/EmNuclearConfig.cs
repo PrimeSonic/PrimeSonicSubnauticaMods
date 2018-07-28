@@ -61,7 +61,7 @@
                 ValidDataRead = false;
             }
 
-            if (!EmConserve.ValidData)
+            if (!EmConserve.HasData)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmConserve.Key} was out of range. Replaced with default.");
                 ValidDataRead = false;

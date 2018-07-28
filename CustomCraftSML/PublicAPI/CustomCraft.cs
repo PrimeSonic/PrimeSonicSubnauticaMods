@@ -1,6 +1,7 @@
 ﻿namespace CustomCraft2SML.PublicAPI
 {
     using CustomCraft2SML.Serialization;
+    using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine.Assertions;
 
@@ -42,16 +43,66 @@
 
         private static void HandleNewRecipe(IModifiedRecipe modifiedRecipe)
         {
-            if (modifiedRecipe.IngredientCount > 0 || modifiedRecipe.LinkedItemCount > 0)
-                CraftDataHandler.SetTechData(modifiedRecipe.ItemID, modifiedRecipe.SmlHelperRecipe());
+            bool overrideRecipe = false;
+
+            ITechData original = CraftData.Get(modifiedRecipe.ItemID);
+
+            var replacement = new TechData();
+
+            // Amount
+            if (modifiedRecipe.AmountCrafted.HasValue)
+            {
+                overrideRecipe |= true;
+                replacement.craftAmount = modifiedRecipe.AmountCrafted.Value;
+            }
+            else
+                replacement.craftAmount = original.craftAmount;
+
+            // Ingredients
+            if (modifiedRecipe.IngredientsCount.HasValue)
+            {
+                overrideRecipe |= true;
+                foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)
+                {
+                    replacement.Ingredients.Add(
+                        new Ingredient(
+                            ingredient.ItemID,
+                            ingredient.Required));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < original.ingredientCount; i++)
+                    replacement.Ingredients.Add(
+                        new Ingredient(
+                        original.GetIngredient(i).techType,
+                        original.GetIngredient(i).amount));
+            }
+
+            // Linked Items
+            if (modifiedRecipe.LinkedItemsCount.HasValue)
+            {
+                overrideRecipe |= true;
+                foreach (TechType linkedItem in modifiedRecipe.LinkedItems)
+                    replacement.LinkedItems.Add(linkedItem);
+            }
+            else
+            {
+                for (int i = 0; i < original.linkedItemCount; i++)
+                    replacement.LinkedItems.Add(original.GetLinkedItem(i));
+            }
+
+            if (overrideRecipe)
+                CraftDataHandler.SetTechData(modifiedRecipe.ItemID, replacement);
         }
 
         private static void HandleUnlocks(IModifiedRecipe modifiedRecipe)
         {
-            if (modifiedRecipe.ForceUnlockAtStart)
+            if (modifiedRecipe.ForceUnlockAtStart.HasValue &&
+                modifiedRecipe.ForceUnlockAtStart.Value)
                 KnownTechHandler.UnlockOnStart(modifiedRecipe.ItemID);
 
-            if (modifiedRecipe.Unlocks.Count > 0)
+            if (modifiedRecipe.UnlocksCount.HasValue)
                 KnownTechHandler.SetAnalysisTechEntry(modifiedRecipe.ItemID, modifiedRecipe.Unlocks);
         }
 
