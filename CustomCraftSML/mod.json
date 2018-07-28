@@ -2,7 +2,7 @@
   "Id": "CustomCraft2SML",
   "DisplayName": "CustomCraft2SML",
   "Author": "PrimeSonic",
-  "Version": "1.0.2",
+  "Version": "1.0.3",
   "Requires": [ ],
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",

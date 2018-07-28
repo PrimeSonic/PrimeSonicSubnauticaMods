@@ -46,6 +46,17 @@
         }
 
         [Test]
+        public void Sample_ModifiedRecipes2_Ok()
+        {
+            var mRecipes = new ModifiedRecipeList();
+
+            string sample = File.ReadAllText(SampleFileDirectory + "Mattus666.txt");
+
+            bool result = mRecipes.FromString(sample);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
         public void Sample_AddedRecipes_Ok()
         {
             var aRecipes = new AddedRecipeList();
