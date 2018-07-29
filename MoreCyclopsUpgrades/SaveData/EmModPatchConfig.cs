@@ -33,8 +33,8 @@
 
         private static ICollection<EmProperty> definitions = new List<EmProperty>()
         {
-            new EmYesNo(EmAuxEnabledKey, true, true),
-            new EmYesNo(EmUpgradesEnabledKey, true, true)
+            new EmYesNo(EmAuxEnabledKey, true),
+            new EmYesNo(EmUpgradesEnabledKey, true)
         };
 
         public EmModPatchConfig() : base(ConfigKey, definitions)
@@ -60,13 +60,13 @@
 
         private void Validate()
         {
-            if (!EmAuxEnabled.HasData)
+            if (!EmAuxEnabled.HasValue)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmAuxEnabled.Key} was out of range. Replaced with default.");
                 ValidDataRead &= false;
             }
 
-            if (!EmUpgradesEnabled.HasData)
+            if (!EmUpgradesEnabled.HasValue)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmUpgradesEnabled.Key} was out of range. Replaced with default.");
                 ValidDataRead &= false;

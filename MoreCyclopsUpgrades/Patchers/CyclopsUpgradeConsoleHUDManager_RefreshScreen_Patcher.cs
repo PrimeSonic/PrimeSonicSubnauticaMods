@@ -6,6 +6,7 @@
     [HarmonyPatch("RefreshScreen")]
     internal class CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher
     {
+        [HarmonyPostfix]
         public static void Postfix(ref CyclopsUpgradeConsoleHUDManager __instance)
         {
             UpgradeConsole upgradeConsole = __instance.subRoot.upgradeConsole;
