@@ -1,7 +1,5 @@
 ﻿namespace Common.EasyMarkup
 {
-    using Common;
-    using System;
     using UnityEngine.Assertions;
 
     public abstract class EmProperty
@@ -25,7 +23,7 @@
             return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter}";
         }
 
-        public bool FromString(string rawValue)
+        public bool FromString(string rawValue, bool haltOnKeyMismatch = false)
         {
             StringBuffer cleanValue = CleanValue(new StringBuffer(rawValue));
 
@@ -35,8 +33,8 @@
             var key = ExtractKey(cleanValue);
             if (string.IsNullOrEmpty(Key))
                 Key = key;
-            else
-                Assert.AreEqual(Key, key);
+            else if (haltOnKeyMismatch && Key != key)
+                throw new AssertionException($"Key mismatch. Expected:{Key} but was {key}.", $"Wrong key found: {Key}=/={key}");
 
             SerializedValue = ExtractValue(cleanValue);
             OnValueExtractedEvent?.Invoke();

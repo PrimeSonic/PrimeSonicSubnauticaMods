@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using NUnit.Framework;
+    using AssertionException = UnityEngine.Assertions.AssertionException;
 
     [TestFixture]
     public class EasyMarkupTests
@@ -42,8 +43,6 @@
             }
         }
 
-
-
         [Test]
         public void EmProperty_ToString_GetExpected()
         {
@@ -63,6 +62,31 @@
         {
             var testProp = new TestProperty("TestKey");
             testProp.FromString(goodString);
+
+            Assert.AreEqual(expectedValue, testProp.Value);
+        }
+
+        [TestCase("TestAKey:1;")]
+        [TestCase("TestBKey : 1; ")]
+        [TestCase(" TestCKey : 1 ;")]
+        [TestCase("TestDKey:\r\n1\r\n;")]
+        public void EmProperty_FromString_MismatchedKey_Throws(string serialValue)
+        {
+            var testProp = new TestProperty("TestKey");
+            Assert.Throws<AssertionException>(() =>
+            {
+                testProp.FromString(serialValue, true);
+            });            
+        }
+
+        [TestCase("TestAKey:1;", 1)]
+        [TestCase("TestBKey : 1; ", 1)]
+        [TestCase(" TestCKey : 1 ;", 1)]
+        [TestCase("TestDKey:\r\n1\r\n;", 1)]
+        public void EmProperty_FromString_MismatchedKey_Ignored_GetExpected(string goodString, int expectedValue)
+        {
+            var testProp = new TestProperty("TestKey");
+            testProp.FromString(goodString, false);
 
             Assert.AreEqual(expectedValue, testProp.Value);
         }
@@ -376,7 +400,7 @@
                                          ");" +
                                      ");";
 
-            const string expectedValue = "TestKey:\r\n" + 
+            const string expectedValue = "TestKey:\r\n" +
                                          "(\r\n" +
                                          "    String:Val;\r\n" +
                                          "    Int:12;\r\n" +

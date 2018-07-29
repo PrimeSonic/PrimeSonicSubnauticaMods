@@ -26,4 +26,8 @@ ModifiedRecipes:
 (
     ItemID:ReactorRod; # No change will be made to this recipe #
 	Unlocks: DepletedReactorRod; # We're only adding an unlock for the added recipe in the other file. #
+),
+(
+    ItemID:Seaglide;
+	ForceUnlockAtStart: YES; # This recipe will be unlocked from the start, without other changes. #
 );

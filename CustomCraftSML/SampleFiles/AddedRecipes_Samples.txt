@@ -12,5 +12,5 @@ AddedRecipes:
         ( ItemID:ReactorRod; Required:1; );
     LinkedItemIDs:UraniniteCrystal,UraniniteCrystal,UraniniteCrystal; # Linked items are created along side the crafted item #
     Path:Fabricator/Resources/Electronics;
-	ForceUnlockAtStart: NO;
+	ForceUnlockAtStart: NO; # This won't be automatically unlocked. See ModifiedRecipes_Samples.txt for how it will unlock. #
 );
