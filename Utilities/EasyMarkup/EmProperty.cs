@@ -1,17 +1,15 @@
 ﻿namespace Common.EasyMarkup
 {
-    using Common;
-    using System;
     using UnityEngine.Assertions;
 
     public abstract class EmProperty
     {
-        protected const char SpChar_KeyDelimiter = ':';
-        protected const char SpChar_ValueDelimiter = ';';
-        protected const char SpChar_BeginComplexValue = '(';
-        protected const char SpChar_FinishComplexValue = ')';
-        protected const char SpChar_ListItemSplitter = ',';
-        protected const char SpChar_CommentBlock = '#';
+        internal const char SpChar_KeyDelimiter = ':';
+        internal const char SpChar_ValueDelimiter = ';';
+        internal const char SpChar_BeginComplexValue = '(';
+        internal const char SpChar_FinishComplexValue = ')';
+        internal const char SpChar_ListItemSplitter = ',';
+        internal const char SpChar_CommentBlock = '#';
 
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
@@ -25,7 +23,7 @@
             return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter}";
         }
 
-        public bool FromString(string rawValue)
+        public bool FromString(string rawValue, bool haltOnKeyMismatch = false)
         {
             StringBuffer cleanValue = CleanValue(new StringBuffer(rawValue));
 
@@ -35,8 +33,8 @@
             var key = ExtractKey(cleanValue);
             if (string.IsNullOrEmpty(Key))
                 Key = key;
-            else
-                Assert.AreEqual(Key, key);
+            else if (haltOnKeyMismatch && Key != key)
+                throw new AssertionException($"Key mismatch. Expected:{Key} but was {key}.", $"Wrong key found: {Key}=/={key}");
 
             SerializedValue = ExtractValue(cleanValue);
             OnValueExtractedEvent?.Invoke();
@@ -68,7 +66,7 @@
 
         internal abstract EmProperty Copy();
 
-        public string PrintyPrint()
+        public string PrettyPrint()
         {
             var originalString = new StringBuffer(this.ToString());
 
@@ -90,7 +88,7 @@
                         prettyString.PushToEnd(' ', indentLevel * indentSize);
                         prettyString.PushToEnd(originalString.PopFromStart());
                         break;
-                    case SpChar_ValueDelimiter:                    
+                    case SpChar_ValueDelimiter:
                         prettyString.PushToEnd(originalString.PopFromStart());
 
                         if (originalString.IsEmpty || originalString.PeekStart() == SpChar_FinishComplexValue)
@@ -122,7 +120,6 @@
             return prettyString.ToString();
         }
 
-
         private static StringBuffer CleanValue(StringBuffer rawValue)
         {
             var cleanValue = new StringBuffer();
@@ -131,16 +128,17 @@
             {
                 switch (rawValue.PeekStart())
                 {
-                    case ' ':
+                    case ' ': // spaces
                         rawValue.TrimStart(' ');
                         break;
-                    case '\t':
+                    case '\t': // tabs
                         rawValue.TrimStart('\t');
                         break;
-                    case '\r':
+                    case '\r': // line breaks
+                    case '\n':
                         rawValue.TrimStart('\r', '\n');
                         break;
-                    case SpChar_CommentBlock:
+                    case SpChar_CommentBlock: // comments
                         rawValue.PopFromStart(); // Pop first #
 
                         char poppedChar;

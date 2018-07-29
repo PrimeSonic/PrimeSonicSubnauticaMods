@@ -60,13 +60,13 @@
 
         private void Validate()
         {
-            if (!EmAuxEnabled.ValidData)
+            if (!EmAuxEnabled.HasValue)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmAuxEnabled.Key} was out of range. Replaced with default.");
                 ValidDataRead &= false;
             }
 
-            if (!EmUpgradesEnabled.ValidData)
+            if (!EmUpgradesEnabled.HasValue)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmUpgradesEnabled.Key} was out of range. Replaced with default.");
                 ValidDataRead &= false;
@@ -84,7 +84,7 @@
                 "#                 This config file was built using EasyMarkup                   #",
                 "# ----------------------------------------------------------------------------- #",
                 "",
-                this.PrintyPrint(),
+                this.PrettyPrint(),
                 "",
                 "# Here's the full details on what these configurations do: #",
                 "",

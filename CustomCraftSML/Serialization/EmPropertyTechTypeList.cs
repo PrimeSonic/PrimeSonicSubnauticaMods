@@ -1,6 +1,7 @@
-﻿namespace Common.EasyMarkup
+﻿namespace CustomCraft2SML.Serialization
 {
     using System.Collections.Generic;
+    using Common.EasyMarkup;
 
     public class EmPropertyTechTypeList : EmPropertyList<TechType>
     {
@@ -8,7 +9,7 @@
         {
         }
 
-        public EmPropertyTechTypeList(string key, ICollection<TechType> values) : base(key, values)
+        public EmPropertyTechTypeList(string key, IEnumerable<TechType> values) : base(key, values)
         {
         }
 
@@ -20,7 +21,7 @@
                 return TechType.None;
         }
 
-        internal override EmProperty Copy() => new EmPropertyTechTypeList(Key);
+        internal override EmProperty Copy() => new EmPropertyTechTypeList(Key, this.Values);
 
         public override string ToString()
         {

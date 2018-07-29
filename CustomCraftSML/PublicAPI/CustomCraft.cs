@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML.PublicAPI
 {
+    using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine.Assertions;
@@ -8,47 +9,113 @@
     {
         public const string RootModName = "CustomCraft2SML";
 
-        public static void AddRecipe(TechType craftedItem, TechData recipe, CraftingPath craftingPath)
+        public static void AddRecipe(IAddedRecipe addedRecipe)
         {
-            AddRecipe(craftedItem, recipe, craftingPath.Scheme, craftingPath.Path);
+            Assert.IsTrue(addedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+
+            HandleNewRecipe(addedRecipe);
+
+            HandleCraftTreeAddition(addedRecipe);
+
+            HandleUnlocks(addedRecipe);
         }
 
-        public static void AddRecipe(TechType craftedItem, TechData recipe, CraftTree.Type craftTree, string path)
+        public static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
         {
-            Assert.AreNotEqual(craftedItem.ToString(), ((int)craftedItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
-            // Only modded enums use the int string as their ToString value
+            Assert.IsTrue(modifiedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
-            //CraftTreeHandler.customNodes.Add(new CustomCraftNode(craftedItem, craftTree, path));            
-            CraftDataHandler.SetTechData(craftedItem, recipe);
+            HandleNewRecipe(modifiedRecipe);
 
-            string[] steps = path.Split(CraftingNode.Splitter);
-
-            if (steps.Length <= 1)
-                CraftTreeHandler.AddCraftingNode(craftTree, craftedItem);
-            else
-                CraftTreeHandler.AddCraftingNode(craftTree, craftedItem, steps);
-
-            KnownTechHandler.UnlockOnStart(craftedItem);
+            HandleUnlocks(modifiedRecipe);
         }
 
-        public static void ModifyRecipe(TechType craftedItem, TechData recipe)
+        public static void CustomizeItemSize(ICustomSize customSize)
         {
-            Assert.AreNotEqual(craftedItem.ToString(), ((int)craftedItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
-            // Only modded enums use the int string as their ToString value
+            Assert.IsTrue(customSize.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
-            CraftDataHandler.SetTechData(craftedItem, recipe);
-        }
-
-        public static void CustomizeItemSize(TechType inventoryItem, int width, int height)
-        {
-            Assert.AreNotEqual(inventoryItem.ToString(), ((int)inventoryItem).ToString(), "This API in intended only for use with standard, non-modded TechTypes.");
-
-            Assert.IsTrue(width > 0 && height > 0, "Values must be positive and non-zero");
-            Assert.IsTrue(width < 6 && height < 6, "Values must be smaller than six to fit");
+            Assert.IsTrue(customSize.Width > 0 && customSize.Height > 0, "Values must be positive and non-zero");
+            Assert.IsTrue(customSize.Width < 6 && customSize.Height < 6, "Values must be smaller than six to fit");
             // Value chosen for what should be the standard inventory size
 
-            CraftDataHandler.SetItemSize(inventoryItem, width, height);
-            
+            CraftDataHandler.SetItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+        }
+
+        // ----------------------
+
+        private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
+        {
+            var craftPath = new CraftingPath(addedRecipe.Path);
+
+            string[] steps = craftPath.Path.Split(CraftingNode.Splitter);
+
+            if (steps.Length <= 1)
+                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID);
+            else
+                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID, steps);
+        }
+
+        private static void HandleNewRecipe(IModifiedRecipe modifiedRecipe)
+        {
+            bool overrideRecipe = false;
+
+            ITechData original = CraftData.Get(modifiedRecipe.ItemID);
+
+            var replacement = new TechData();
+
+            // Amount
+            if (modifiedRecipe.AmountCrafted.HasValue)
+            {
+                overrideRecipe |= true;
+                replacement.craftAmount = modifiedRecipe.AmountCrafted.Value;
+            }
+            else
+                replacement.craftAmount = original.craftAmount;
+
+            // Ingredients
+            if (modifiedRecipe.IngredientsCount.HasValue)
+            {
+                overrideRecipe |= true;
+                foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)
+                {
+                    replacement.Ingredients.Add(
+                        new Ingredient(
+                            ingredient.ItemID,
+                            ingredient.Required));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < original.ingredientCount; i++)
+                    replacement.Ingredients.Add(
+                        new Ingredient(
+                        original.GetIngredient(i).techType,
+                        original.GetIngredient(i).amount));
+            }
+
+            // Linked Items
+            if (modifiedRecipe.LinkedItemsCount.HasValue)
+            {
+                overrideRecipe |= true;
+                foreach (TechType linkedItem in modifiedRecipe.LinkedItems)
+                    replacement.LinkedItems.Add(linkedItem);
+            }
+            else
+            {
+                for (int i = 0; i < original.linkedItemCount; i++)
+                    replacement.LinkedItems.Add(original.GetLinkedItem(i));
+            }
+
+            if (overrideRecipe)
+                CraftDataHandler.SetTechData(modifiedRecipe.ItemID, replacement);
+        }
+
+        private static void HandleUnlocks(IModifiedRecipe modifiedRecipe)
+        {
+            if (modifiedRecipe.ForceUnlockAtStart)
+                KnownTechHandler.UnlockOnStart(modifiedRecipe.ItemID);
+
+            if (modifiedRecipe.UnlocksCount.HasValue)
+                KnownTechHandler.SetAnalysisTechEntry(modifiedRecipe.ItemID, modifiedRecipe.Unlocks);
         }
     }
 }

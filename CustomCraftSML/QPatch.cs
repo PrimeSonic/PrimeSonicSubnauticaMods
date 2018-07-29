@@ -6,8 +6,8 @@
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
     using Common.EasyMarkup;
-    using UnityEngine;
     using System.Collections.Generic;
+    using SMLHelper.V2.Utility;
 
     public class QPatch
     {
@@ -16,10 +16,10 @@
         private static readonly string ModifiedRecipesFile = FolderRoot + "ModifiedRecipes.txt";
         private static readonly string AddedRecipiesFile = FolderRoot + "AddedRecipes.txt";
         private static readonly string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
-        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} v1.0.2 #";
+        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} (Revision 1.1.0) #";
 
         private static readonly string SamplesFolder = FolderRoot + "SampleFiles/";
-        private static readonly string OriginalsFile = SamplesFolder + "OriginalRecipes.txt";
+        private static readonly string OriginalsFolder = SamplesFolder + "OriginalRecipes/";
 
         private static CustomSizeList customSizeList;
         private static ModifiedRecipeList modifiedRecipeList;
@@ -85,7 +85,10 @@
             builder.AppendLine("#   a - You can change a recipe's required ingredients in any way #");
             builder.AppendLine("#   b - You can alter how many copies of the item are created when you craft the recipe #");
             builder.AppendLine("#   c - You can also modify the recipe's linked items, those being items also created along side the main one #");
+            builder.AppendLine("#   d - NEW! You can now also modify what other items will be unlocked when you analyze or craft this one #");
+            builder.AppendLine("#   e - NEW! You can now also set if this recipe should be unlocked at the start or not #");
             builder.AppendLine("# 3 - Adding new recipes and placing them into any of the existing fabricators #");
+            builder.AppendLine("#   a - Added recipes work exactly like Modified recipes, with the addition of a Path to where that recipe should go #");
             builder.AppendLine($"# Remember that only the standard in-game items can be used with {CustomCraft.RootModName} #");
             builder.AppendLine("# Modded items can't be used at this time #");
             builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");
@@ -95,6 +98,23 @@
             builder.AppendLine("# You can even copy the text from the sample files directly and use them right away without any changes #");
             builder.AppendLine("# When you want to add a new item reference, remember that the 'ItemID' is the internal spawn ID of that item #");
             builder.AppendLine("# You can visit the Subnautica Wikia for the full list of item IDs at http://subnautica.wikia.com/wiki/Obtainable_Items #");
+            builder.AppendLine("# NEW! As an added bonus, a file containing all the original game's recipes has been generated in the SampleFiles folder #");
+            builder.AppendLine("# You can copy and paste individual recipes from that file into your ModifiedRecipes file and tweak them to your liking #");
+            builder.AppendLine();
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine("# A quick overview of the less obvious keys for Added and Modified recipes #");
+            builder.AppendLine("# LinkedItemIDs: This is the list of items that will be created along side the main item when you craft the recipe #");
+            builder.AppendLine("#     - If you want multiple copies of an item here, you need to write it to this list multiple times #");
+            builder.AppendLine("# AmountCrafted: This is how many copies of the item will be created when you craft the recipe #");
+            builder.AppendLine("# ForceUnlockAtStart: When you set this to 'YES' this item will be forced to be unlocked from the very start of the game #");
+            builder.AppendLine("#     - You can use it to have Modified recipes early or to set if have Added recipes should wait to be unlocked by something else #");
+            builder.AppendLine("#     - If you don't include this ForceUnlockAtStart, then default behavior will be used #");
+            builder.AppendLine("#         - By default, Modified recipes will be unlocked as they normally would be #");
+            builder.AppendLine("#         - By default, Added recipes will be forced to be unlocked at the start of the game as a safety #");
+            builder.AppendLine("# Unlocks: This is a list of other ItemIDs that will be unlocked when you analyze or craft this recipe #");
+            builder.AppendLine("#     - You can use this along with 'ForceUnlockAtStart:NO' to have recipes be unlocked when you want them to be #");
+            builder.AppendLine("# Ingredients: This key is now optional #");
+            builder.AppendLine("#     - You can leave this out of your recipe block and the original recipe won't be altered in any way #");
             builder.AppendLine("# -------------------------------------------- #");
             builder.AppendLine();
             builder.AppendLine("# You'll notice that a lot of text is written between these hash signs (or pound sign or hashtag if you prefer) #");
@@ -129,18 +149,21 @@
                     {
                         try
                         {
-                            CustomCraft.AddRecipe(item.ItemID, item.SmlHelperRecipe(), new CraftingPath(item.Path));
+                            CustomCraft.AddRecipe(item);
+#if DEBUG
+                            Logger.Log($"Added recipe for {item.ItemID}");
+#endif
                         }
                         catch
                         {
                             Logger.Log($"Error on AddRecipe{Environment.NewLine}" +
                                         $"Entry with error:{Environment.NewLine}" +
-                                        $"{item}");                            
+                                        $"{item}");
                         }
                     }
 
                     Logger.Log($"AddedRecipies loaded. File reformatted.");
-                    File.WriteAllText(AddedRecipiesFile, addedRecipeList.PrintyPrint());
+                    File.WriteAllText(AddedRecipiesFile, addedRecipeList.PrettyPrint());
                 }
                 else
                 {
@@ -167,7 +190,10 @@
                     {
                         try
                         {
-                            CustomCraft.ModifyRecipe(item.ItemID, item.SmlHelperRecipe());
+                            CustomCraft.ModifyRecipe(item);
+#if DEBUG
+                            Logger.Log($"Modified recipe for {item.ItemID}");
+#endif
                         }
                         catch
                         {
@@ -178,7 +204,7 @@
                     }
 
                     Logger.Log($"ModifiedRecipes loaded. File reformatted.");
-                    File.WriteAllText(ModifiedRecipesFile, modifiedRecipeList.PrintyPrint());
+                    File.WriteAllText(ModifiedRecipesFile, modifiedRecipeList.PrettyPrint());
                 }
                 else
                 {
@@ -205,7 +231,10 @@
                     {
                         try
                         {
-                            CustomCraft.CustomizeItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+                            CustomCraft.CustomizeItemSize(customSize);
+#if DEBUG
+                            Logger.Log($"Custom size for {customSize.ItemID}");
+#endif
                         }
                         catch
                         {
@@ -216,7 +245,7 @@
                     }
 
                     Logger.Log($"CustomSizes loaded. File reformatted.");
-                    File.WriteAllText(CustomSizesFile, customSizeList.PrintyPrint());
+                    File.WriteAllText(CustomSizesFile, customSizeList.PrettyPrint());
                 }
                 else
                 {
@@ -237,62 +266,76 @@
             if (!Directory.Exists(SamplesFolder))
                 Directory.CreateDirectory(SamplesFolder);
 
-            if (File.Exists(OriginalsFile))
-                return;
+            if (!Directory.Exists(OriginalsFolder))
+                Directory.CreateDirectory(OriginalsFolder);
 
-            List<string> printyPrints = GenerateOriginalsText();
-
-            File.WriteAllLines(OriginalsFile, printyPrints.ToArray());
-
-            Logger.Log($"{OriginalsFile} file not found. File created.");
-        }
-
-        public static List<string> GenerateOriginalsText()
-        {
             var treeTypes = new CraftTree.Type[6]
-                        {
+            {
                 CraftTree.Type.Fabricator, CraftTree.Type.Constructor, CraftTree.Type.SeamothUpgrades,
                 CraftTree.Type.Workbench,
                 CraftTree.Type.MapRoom, CraftTree.Type.CyclopsFabricator
-                        };
-
-            var printyPrints = new List<string>(treeTypes.Length * 4 + 3)
-            {
-                "# This file was generated with all the existing recipes from all non-modded fabricators #",
-                "#         You can copy samples from this file to use in your personal overrides         #",
-                "# ------------------------------------------------------------------------------------- #",
             };
 
             foreach (CraftTree.Type tree in treeTypes)
             {
-                ModifiedRecipeList list = GetOriginals(tree);
+                string recipesFile = $"{tree}Originals.txt";
 
-                printyPrints.Add(list.PrintyPrint());
-                printyPrints.Add("");
-                printyPrints.Add("# ------------------------------------------------------------------------------------- #");
-                printyPrints.Add("");
+                if (File.Exists(OriginalsFolder + recipesFile))
+                    continue;
+
+                List<TechType> list = GetOriginals(tree);
+
+                GenerateOriginalsFile(tree.ToString(), list, recipesFile);
             }
 
-            return printyPrints;
+            //string buildablesFile = $"BuildableOriginals.txt";
+
+            //if (File.Exists(OriginalsFolder + buildablesFile))
+            //    return;
+
+            //List<TechType> buildablesList = (List<TechType>)ReflectionHelper.GetStaticField<CraftData>("buildables");
+
+            //GenerateOriginalsFile("Buildable", buildablesList, buildablesFile);
         }
 
-        public static ModifiedRecipeList GetOriginals(CraftTree.Type treeType)
+        public static void GenerateOriginalsFile(string key, List<TechType> list, string fileName)
+        {
+            var printyPrints = new List<string>();
+            printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]
+            {
+                "This file was generated with original recipes in the game",
+                "You can copy individual entries from this file to use in your personal overrides",
+                "--------------------------------------------------------------------------------",
+            }));
+
+            var originals = new ModifiedRecipeList($"{key}Originals");
+
+            foreach (TechType craftable in list)
+                originals.Add(new ModifiedRecipe(craftable));
+
+            printyPrints.Add(originals.PrettyPrint());
+
+            File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
+
+            Logger.Log($"{fileName} file not found. File generated.");
+        }
+
+        public static List<TechType> GetOriginals(CraftTree.Type treeType)
         {
             CraftTree tree = CraftTree.GetTree(treeType);
 
             IEnumerator<CraftNode> mover = tree.nodes.Traverse(true);
 
-            var originals = new ModifiedRecipeList($"{treeType}Originals");
+            var originals = new List<TechType>();
 
             while (mover.MoveNext())
             {
                 if (mover.Current.action == TreeAction.Craft && mover.Current.techType0 < TechType.Databox)
-                    originals.Collections.Add(new ModifiedRecipe(mover.Current.techType0));
+                    originals.Add(mover.Current.techType0);
             };
 
             return originals;
         }
-
     }
 
 

@@ -2,18 +2,19 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
-    using SMLHelper.V2.Crafting;
     using UnityEngine.Assertions;
 
     public class ModifiedRecipe : EmPropertyCollection, IModifiedRecipe
     {
         public const short Max = 25;
-        public const short Min = 1;
+        public const short Min = 0;
 
         protected readonly EmPropertyTechType emTechType;
         protected readonly EmProperty<short> amountCrafted;
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
         protected readonly EmPropertyTechTypeList linkedItems;
+        protected readonly EmYesNo unlockedAtStart;
+        protected readonly EmPropertyTechTypeList unlocks;
 
         public TechType ItemID
         {
@@ -21,39 +22,92 @@
             set => emTechType.Value = value;
         }
 
-        public short AmountCrafted
+        public short? AmountCrafted
         {
             get
             {
-                Assert.IsTrue(amountCrafted.Value <= Max, $"Amount crafted value for {ItemID} must be less than {Max}.");
-                Assert.IsTrue(amountCrafted.Value >= Min, $"Amount crafted value for {ItemID} must be greater than {Min}.");
-                return amountCrafted.Value;
+                if (amountCrafted.HasValue)
+                    return amountCrafted.Value;
+
+                return null;
             }
             set
             {
                 Assert.IsTrue(value <= Max, $"Amount crafted value for {ItemID} must be less than {Max}.");
                 Assert.IsTrue(value >= Min, $"Amount crafted value for {ItemID} must be greater than {Min}.");
-                amountCrafted.Value = value;
+                amountCrafted.Value = (short)value;
             }
         }
 
-        public List<TechType> LinkedItems => linkedItems.Values;
+        protected bool DefaultForceUnlock = false;
 
-        private readonly List<Ingredient> smlIngredients = new List<Ingredient>();
-        public IList<Ingredient> SmlIngredients => smlIngredients;
-
-        public void AddIngredient(TechType techType, short count)
+        public bool ForceUnlockAtStart
         {
-            ingredients.Collections.Add(new EmIngredient() { ItemID = techType, Required = count });
-            smlIngredients.Add(new Ingredient(techType, count));
+            get
+            {
+                if (unlockedAtStart.HasValue)
+                    return unlockedAtStart.Value;
+
+                return DefaultForceUnlock;
+            }
+
+            set => unlockedAtStart.Value = (bool)value;
         }
 
-        public static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(4)
+        public IEnumerable<TechType> Unlocks => unlocks.Values;
+
+        public int? UnlocksCount
+        {
+            get
+            {
+                if (unlocks.HasValue)
+                    return unlocks.Count;
+
+                return null;
+            }
+        }
+
+        public IEnumerable<EmIngredient> Ingredients => ingredients.Values;
+
+        public int? IngredientsCount
+        {
+            get
+            {
+                if (ingredients.HasValue)
+                    return ingredients.Count;
+
+                return null;
+            }
+        }
+
+        public IEnumerable<TechType> LinkedItems => linkedItems.Values;
+
+        public int? LinkedItemsCount
+        {
+            get
+            {
+                if (linkedItems.HasValue)
+                    return linkedItems.Count;
+
+                return null;
+            }
+        }
+
+        public void AddIngredient(TechType techType, short count) =>
+    ingredients.Add(new EmIngredient() { ItemID = techType, Required = count });
+
+        public void AddLinkedItem(TechType linkedItem) => linkedItems.Add(linkedItem);
+
+        public void AddUnlock(TechType unlock) => unlocks.Add(unlock);
+
+        protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(4)
         {
             new EmPropertyTechType("ItemID"),
             new EmProperty<short>("AmountCrafted", 1),
             new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()),
-            new EmPropertyTechTypeList("LinkedItemIDs")
+            new EmPropertyTechTypeList("LinkedItemIDs"),
+            new EmYesNo("ForceUnlockAtStart"),
+            new EmPropertyTechTypeList("Unlocks"),
         };
 
         internal ModifiedRecipe(TechType origTechType) : this()
@@ -69,10 +123,7 @@
             }
 
             for (int i = 0; i < origRecipe.linkedItemCount; i++)
-            {
-                LinkedItems.Add(origRecipe.GetLinkedItem(i));
-            }
-
+                linkedItems.Add(origRecipe.GetLinkedItem(i));
         }
 
         public ModifiedRecipe() : this("ModifiedRecipe", ModifiedRecipeProperties)
@@ -89,37 +140,27 @@
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
             ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
             linkedItems = (EmPropertyTechTypeList)Properties["LinkedItemIDs"];
+            unlockedAtStart = (EmYesNo)Properties["ForceUnlockAtStart"];
+            unlocks = (EmPropertyTechTypeList)Properties["Unlocks"];
 
             OnValueExtractedEvent += ValueExtracted;
         }
 
         private void ValueExtracted()
         {
-            foreach (var ingredient in ingredients.Collections)
+            foreach (EmIngredient ingredient in ingredients)
             {
                 TechType itemID = (ingredient["ItemID"] as EmPropertyTechType).Value;
                 short required = (ingredient["Required"] as EmProperty<short>).Value;
-
-                smlIngredients.Add(new Ingredient(itemID, required));
             }
         }
 
         internal override EmProperty Copy() => new ModifiedRecipe(Key, CopyDefinitions);
 
-        public virtual TechData SmlHelperRecipe()
-        {
-            var ingredientsList = new List<Ingredient>(smlIngredients.Count);
+        public EmIngredient GetIngredient(int index) => ingredients[index];
 
-            foreach (Ingredient item in SmlIngredients)
-            {
-                ingredientsList.Add(new Ingredient(item.techType, item.amount));
-            }
+        public TechType GetLinkedItem(int index) => linkedItems[index];
 
-            return new TechData(ingredientsList)
-            {
-                craftAmount = AmountCrafted,
-                LinkedItems = LinkedItems
-            };
-        }
+        public TechType GetUnlock(int index) => unlocks[index];
     }
 }

@@ -1,17 +1,32 @@
 ﻿namespace Common.EasyMarkup
 {
+    using System.Collections;
     using System.Collections.Generic;
     using Common;
 
-    public class EmPropertyCollectionList<T> : EmProperty where T : EmPropertyCollection
+    public class EmPropertyCollectionList<T> : EmProperty, IEnumerable<T>, ISerialConfirmation where T : EmPropertyCollection
     {
+        public bool HasValue { get; private set; } = false;
+
+        protected IList<T> InternalValues { get; } = new List<T>();
+
         protected EmPropertyCollection Template;
 
-        public EmPropertyCollection this[int index] => Collections[index];
+        public T this[int index] => InternalValues[index];
 
-        public int Count => Collections.Count;
+        public int Count => InternalValues.Count;
 
-        public readonly List<EmPropertyCollection> Collections = new List<EmPropertyCollection>();
+        public void Add(T item)
+        {
+            HasValue = true;
+            InternalValues.Add(item);
+        }
+
+        public IEnumerable<T> Values => InternalValues;
+
+        public IEnumerator<T> GetEnumerator() => InternalValues.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => InternalValues.GetEnumerator();
 
         public EmPropertyCollectionList(string key, T template)
         {
@@ -22,7 +37,7 @@
         public override string ToString()
         {
             var val = $"{Key}{SpChar_KeyDelimiter}";
-            foreach (EmPropertyCollection collection in Collections)
+            foreach (EmPropertyCollection collection in InternalValues)
             {
                 val += SpChar_BeginComplexValue;
 
@@ -53,9 +68,9 @@
                     case SpChar_ListItemSplitter when openParens == 0 && fullString.Count > 0: // End of a nested property belonging to this collection
                         fullString.PopFromStart(); // Skip delimiter
 
-                        var collection = (EmPropertyCollection)Template.Copy();
+                        var collection = (T)Template.Copy();
                         collection.FromString($"{Key}{SpChar_KeyDelimiter}{buffer.ToString()}{SpChar_ValueDelimiter}");
-                        Collections.Add(collection);
+                        InternalValues.Add(collection);
                         buffer.Clear();
                         serialValues += $"{collection.SerializedValue}{SpChar_ListItemSplitter}";
                         break;
@@ -71,13 +86,14 @@
                 }
             } while (fullString.Count > 0);
 
+            HasValue = true;
+
             return serialValues.TrimEnd(SpChar_ListItemSplitter) + SpChar_FinishComplexValue;
         }
 
-        internal override EmProperty Copy()
-        {
-            return new EmPropertyCollectionList<T>(Key, (T)Template.Copy());
-        }
+        internal override EmProperty Copy() => new EmPropertyCollectionList<T>(Key, (T)Template.Copy());
+
+
     }
 
 }

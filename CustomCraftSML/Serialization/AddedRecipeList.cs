@@ -16,7 +16,7 @@
 
         public IEnumerator<AddedRecipe> GetEnumerator()
         {
-            foreach (EmPropertyCollection item in Collections)
+            foreach (EmPropertyCollection item in InternalValues)
             {
                 yield return (AddedRecipe)item;
             }
