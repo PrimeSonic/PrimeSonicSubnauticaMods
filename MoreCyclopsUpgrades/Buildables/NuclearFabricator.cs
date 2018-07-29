@@ -11,7 +11,7 @@
 
     internal class NuclearFabricator : ModPrefab
     {
-        public CraftTree.Type TreeTypeID { get; private set; }        
+        public CraftTree.Type TreeTypeID { get; private set; }
 
         // This name will be used as both the new TechType of the buildable fabricator and the CraftTree Type for the custom crafting tree.
         public const string NameID = "NuclearFabricator";

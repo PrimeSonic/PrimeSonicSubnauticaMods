@@ -119,7 +119,7 @@
             CyclopsModulesByModuleType.Add(ModuleTypes.DepletedNuclear, new DepletedNuclearModule());
 
             foreach (ModuleTypes m in Enum.GetValues(typeof(ModuleTypes)))
-            {                
+            {
                 CyclopsModule module = CyclopsModulesByModuleType[m];
                 Console.WriteLine($"[MoreCyclopsUpgrades] Patching {module.NameID}");
                 module.Patch();

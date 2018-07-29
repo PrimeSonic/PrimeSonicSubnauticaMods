@@ -31,10 +31,10 @@
         private readonly EmYesNo EmAuxEnabled;
         private readonly EmYesNo EmUpgradesEnabled;
 
-        private static ICollection<EmProperty> definitions = new List<EmProperty>()
+        private static ICollection<EmProperty> definitions = new List<EmProperty>(2)
         {
-            new EmYesNo(EmAuxEnabledKey, true),
-            new EmYesNo(EmUpgradesEnabledKey, true)
+            new EmYesNo(EmAuxEnabledKey, true){ ForceWrite = true },
+            new EmYesNo(EmUpgradesEnabledKey, true){ ForceWrite = true },
         };
 
         public EmModPatchConfig() : base(ConfigKey, definitions)

@@ -9,6 +9,8 @@
     {
         internal const string DepletedNameID = "DepletedCyclopsNuclearModule";
 
+        internal NuclearFabricator NukFabricator { get; } = new NuclearFabricator();
+
         internal DepletedNuclearModule()
             : base(DepletedNameID,
                   "Depleted Cyclops Nuclear Reactor Module",
@@ -51,6 +53,8 @@
 
                 SetStaticTechTypeID(this.TechType);
             }
+
+            NukFabricator.Patch(CyclopsModule.ModulesEnabled);
         }
 
         protected override TechData GetRecipe()

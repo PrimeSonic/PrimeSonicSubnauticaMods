@@ -36,7 +36,7 @@
 
         private static ICollection<EmProperty> definitions = new List<EmProperty>()
         {
-            new EmYesNo(EmConserveKey, false),
+            new EmYesNo(EmConserveKey, false){ ForceWrite = true },
             new EmProperty<float>(EmDeficitKey, 95f)
         };
 

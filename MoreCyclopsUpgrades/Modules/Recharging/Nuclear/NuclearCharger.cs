@@ -11,8 +11,6 @@
 
         internal NuclearModuleConfig Config { get; } = new NuclearModuleConfig();
 
-        internal NuclearFabricator NukFabricator { get; } = new NuclearFabricator();
-
         internal NuclearCharger()
             : base("CyclopsNuclearModule",
                   "Cyclops Nuclear Reactor Module",
@@ -29,8 +27,6 @@
         {
             // Patch through the base as normal then patch the nuclear fabricator
             base.Patch();
-
-            NukFabricator.Patch(CyclopsModule.ModulesEnabled);
 
             if (!CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,
                 return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched

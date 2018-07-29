@@ -2,6 +2,8 @@
 {
     public class EmYesNo : EmProperty<bool>
     {
+        public bool ForceWrite { get; set; } = false;
+
         public EmYesNo(string key, bool defaultValue = false) : base(key, defaultValue)
         {
         }
@@ -18,7 +20,7 @@
                 case "TRUE":
                 case "True":
                 case "true":
-                    retValue =  true;
+                    retValue = true;
                     break;
                 case "NO":
                 case "no":
@@ -40,9 +42,11 @@
 
         public override string ToString()
         {
-            if (this.Value == DefaultValue)
+            if (this.Value == DefaultValue && !ForceWrite)
                 return string.Empty;
-            
+
+            this.SerializedValue = Value ? "YES" : "NO";
+
             return base.ToString();
         }
 
