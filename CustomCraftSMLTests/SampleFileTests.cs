@@ -78,7 +78,8 @@
             {
                 ItemID = TechType.NutrientBlock,
                 AmountCrafted = 1,
-                ForceUnlockAtStart = false
+                ForceUnlockAtStart = false,
+                Path = PathHelper.Fabricator.Sustenance.CuredFood.CuredFoodTab.GetCraftingPath.ToString()
             };
             nutrientBlockRecipe.AddIngredient(TechType.CuredReginald, 1);
             nutrientBlockRecipe.AddIngredient(TechType.PurpleVegetable, 1);
@@ -93,9 +94,11 @@
             };
             bigFilterWaterRecipe.AddIngredient(TechType.FilteredWater, 2);
 
-            var origRecipeList = new AddedRecipeList();
-            origRecipeList.Add(nutrientBlockRecipe);
-            origRecipeList.Add(bigFilterWaterRecipe);
+            var origRecipeList = new AddedRecipeList
+            {
+                nutrientBlockRecipe,
+                bigFilterWaterRecipe
+            };
 
             string serialized = origRecipeList.PrettyPrint();
 
@@ -127,6 +130,7 @@
             Assert.AreEqual(nutrientBlock.GetIngredient(2).Required, nutrientBlockRecipe.GetIngredient(2).Required);
             Assert.AreEqual(nutrientBlock.UnlocksCount, nutrientBlockRecipe.UnlocksCount);
             Assert.AreEqual(nutrientBlock.ForceUnlockAtStart, nutrientBlockRecipe.ForceUnlockAtStart);
+            Assert.AreEqual("Fabricator/Survival/CuredFood", nutrientBlockRecipe.Path);
 
             // bigFilterWaterRecipe
             AddedRecipe bigFilteredWater = origRecipeList[1];

@@ -35,7 +35,7 @@
 
         }
 
-        public static List<EmProperty> IngredientProperties => new List<EmProperty>(2)
+        protected static List<EmProperty> IngredientProperties => new List<EmProperty>(2)
         {
             new EmPropertyTechType("ItemID"),
             new EmProperty<short>("Required", 1),
@@ -45,12 +45,28 @@
 
         public int amount => Required;
 
-        public EmIngredient() : base("Ingredients", IngredientProperties)
+        internal EmIngredient(TechType item) : this()
+        {
+            ItemID = item;
+        }
+
+        internal EmIngredient(TechType item, short required) : this(item)
+        {
+            Required = required;
+        }
+
+        internal EmIngredient() : base("Ingredients", IngredientProperties)
         {
             emTechType = (EmPropertyTechType)Properties["ItemID"];
             required = (EmProperty<short>)Properties["Required"];
         }
 
-        internal override EmProperty Copy() => new EmIngredient();
+        internal override EmProperty Copy()
+        {
+            if (ItemID != TechType.None)
+                return new EmIngredient(ItemID, Required);
+
+            return new EmIngredient();
+        }
     }
 }

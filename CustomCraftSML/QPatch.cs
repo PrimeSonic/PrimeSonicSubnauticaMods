@@ -150,6 +150,9 @@
                         try
                         {
                             CustomCraft.AddRecipe(item);
+#if DEBUG
+                            Logger.Log($"Added recipe for {item.ItemID}");
+#endif
                         }
                         catch
                         {
@@ -188,6 +191,9 @@
                         try
                         {
                             CustomCraft.ModifyRecipe(item);
+#if DEBUG
+                            Logger.Log($"Modified recipe for {item.ItemID}");
+#endif
                         }
                         catch
                         {
@@ -226,6 +232,9 @@
                         try
                         {
                             CustomCraft.CustomizeItemSize(customSize);
+#if DEBUG
+                            Logger.Log($"Custom size for {customSize.ItemID}");
+#endif
                         }
                         catch
                         {
@@ -271,7 +280,7 @@
             {
                 string recipesFile = $"{tree}Originals.txt";
 
-                if (File.Exists(recipesFile))
+                if (File.Exists(OriginalsFolder + recipesFile))
                     continue;
 
                 List<TechType> list = GetOriginals(tree);
@@ -279,14 +288,14 @@
                 GenerateOriginalsFile(tree.ToString(), list, recipesFile);
             }
 
-            string buildablesFile = $"BuildableOriginals.txt";
+            //string buildablesFile = $"BuildableOriginals.txt";
 
-            if (File.Exists(buildablesFile))
-                return;
+            //if (File.Exists(OriginalsFolder + buildablesFile))
+            //    return;
 
-            List<TechType> buildablesList = (List<TechType>)ReflectionHelper.GetStaticField<CraftData>("buildables");
+            //List<TechType> buildablesList = (List<TechType>)ReflectionHelper.GetStaticField<CraftData>("buildables");
 
-            GenerateOriginalsFile("Buildable", buildablesList, buildablesFile);
+            //GenerateOriginalsFile("Buildable", buildablesList, buildablesFile);
         }
 
         public static void GenerateOriginalsFile(string key, List<TechType> list, string fileName)
@@ -304,7 +313,7 @@
             foreach (TechType craftable in list)
                 originals.Add(new ModifiedRecipe(craftable));
 
-            printyPrints.Add(originals.PrettyPrint());            
+            printyPrints.Add(originals.PrettyPrint());
 
             File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
 

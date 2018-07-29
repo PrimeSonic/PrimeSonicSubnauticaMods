@@ -20,6 +20,28 @@
             HandleUnlocks(addedRecipe);
         }
 
+        public static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
+        {
+            Assert.IsTrue(modifiedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+
+            HandleNewRecipe(modifiedRecipe);
+
+            HandleUnlocks(modifiedRecipe);
+        }
+
+        public static void CustomizeItemSize(ICustomSize customSize)
+        {
+            Assert.IsTrue(customSize.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+
+            Assert.IsTrue(customSize.Width > 0 && customSize.Height > 0, "Values must be positive and non-zero");
+            Assert.IsTrue(customSize.Width < 6 && customSize.Height < 6, "Values must be smaller than six to fit");
+            // Value chosen for what should be the standard inventory size
+
+            CraftDataHandler.SetItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+        }
+
+        // ----------------------
+
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
         {
             var craftPath = new CraftingPath(addedRecipe.Path);
@@ -30,15 +52,6 @@
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID);
             else
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID, steps);
-        }
-
-        public static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
-        {
-            Assert.IsTrue(modifiedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
-
-            HandleNewRecipe(modifiedRecipe);
-
-            HandleUnlocks(modifiedRecipe);
         }
 
         private static void HandleNewRecipe(IModifiedRecipe modifiedRecipe)
@@ -103,17 +116,6 @@
 
             if (modifiedRecipe.UnlocksCount.HasValue)
                 KnownTechHandler.SetAnalysisTechEntry(modifiedRecipe.ItemID, modifiedRecipe.Unlocks);
-        }
-
-        public static void CustomizeItemSize(ICustomSize customSize)
-        {
-            Assert.IsTrue(customSize.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
-
-            Assert.IsTrue(customSize.Width > 0 && customSize.Height > 0, "Values must be positive and non-zero");
-            Assert.IsTrue(customSize.Width < 6 && customSize.Height < 6, "Values must be smaller than six to fit");
-            // Value chosen for what should be the standard inventory size
-
-            CraftDataHandler.SetItemSize(customSize.ItemID, customSize.Width, customSize.Height);
         }
     }
 }
