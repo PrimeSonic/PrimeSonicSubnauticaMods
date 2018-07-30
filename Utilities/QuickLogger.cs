@@ -1,0 +1,48 @@
+﻿namespace Common
+{
+    using System;
+    using System.Reflection;
+
+    internal static class QuickLogger
+    {
+        public static void Message(string msg, bool showOnScreen = true)
+        {
+            string name = Assembly.GetCallingAssembly().GetName().Name;
+
+            Console.WriteLine($"[{name}] : {msg}");
+
+            if (showOnScreen)
+                ErrorMessage.AddMessage(msg);
+        }
+
+        public static void Debug(string msg, bool showOnScreen = true)
+        {
+            string name = Assembly.GetCallingAssembly().GetName().Name;
+
+            Console.WriteLine($"[{name}] DEBUG: {msg}");
+
+            if (showOnScreen)
+                ErrorMessage.AddDebug(msg);
+        }
+
+        public static void Error(string msg, bool showOnScreen = true)
+        {
+            string name = Assembly.GetCallingAssembly().GetName().Name;
+
+            Console.WriteLine($"[{name}] ERROR: {msg}");
+
+            if (showOnScreen)
+                ErrorMessage.AddError(msg);
+        }
+
+        public static void Warning(string msg, bool showOnScreen = true)
+        {
+            string name = Assembly.GetCallingAssembly().GetName().Name;
+
+            Console.WriteLine($"[{name}] WARN: {msg}");
+
+            if (showOnScreen)
+                ErrorMessage.AddWarning(msg);
+        }
+    }
+}
