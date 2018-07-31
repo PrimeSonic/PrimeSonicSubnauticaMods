@@ -1,6 +1,7 @@
 ﻿namespace Common
 {
     using System;
+    using System.Diagnostics;
     using System.Reflection;
 
     internal static class QuickLogger
@@ -43,6 +44,13 @@
 
             if (showOnScreen)
                 ErrorMessage.AddWarning(msg);
+        }
+
+        public static string GetAssemblyVersion()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return fvi.FileVersion;
         }
     }
 }
