@@ -10,15 +10,15 @@
 
             try
             {
-                TutorialFiles.HandleReadMeFile();
+                FileReaderWriter.HandleReadMeFile();
 
-                TutorialFiles.GenerateOriginalRecipes();
+                FileReaderWriter.GenerateOriginalRecipes();
 
-                ParsingFiles.PatchCustomSizes();
+                FileReaderWriter.PatchCustomSizes();
 
-                ParsingFiles.PatchModifiedRecipes();
+                FileReaderWriter.PatchModifiedRecipes();
 
-                ParsingFiles.PatchAddedRecipes();
+                FileReaderWriter.PatchAddedRecipes();
 
             }
             catch (IndexOutOfRangeException outEx)

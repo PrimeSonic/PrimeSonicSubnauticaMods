@@ -7,7 +7,6 @@
 
     public static class CustomCraft
     {
-        public const string RootModName = "CustomCraft2SML";
 
         public static void AddRecipe(IAddedRecipe addedRecipe)
         {

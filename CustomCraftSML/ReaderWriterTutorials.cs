@@ -9,13 +9,14 @@
     using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Utility;
 
-    internal static class TutorialFiles
+    internal static partial class FileReaderWriter
     {
-        private static readonly string FolderRoot = $"./QMods/{CustomCraft.RootModName}/";
-        private static readonly string SamplesFolder = FolderRoot + "SampleFiles/";
-        private static readonly string OriginalsFolder = SamplesFolder + "OriginalRecipes/";
-        private static readonly string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
-        private static readonly string ReadMeVersionLine = $"# How to use {CustomCraft.RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
+        private const string RootModName = "CustomCraft2SML";
+        private const string FolderRoot = "./QMods/" + RootModName + "/";
+        private const string SamplesFolder = FolderRoot + "SampleFiles/";
+        private const string OriginalsFolder = SamplesFolder + "OriginalRecipes/";
+        private const string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
+        private static readonly string ReadMeVersionLine = $"# How to use {RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
 
         internal static void GenerateOriginalRecipes()
         {
@@ -97,7 +98,7 @@
             builder.AppendLine(ReadMeVersionLine);
             builder.AppendLine("# -------------------------------------------- #");
             builder.AppendLine();
-            builder.AppendLine($"# {CustomCraft.RootModName} uses simple text files to send simple requests to SMLHelper, no additional DLLs needed #");
+            builder.AppendLine($"# {RootModName} uses simple text files to send simple requests to SMLHelper, no additional DLLs needed #");
             builder.AppendLine("# This can be great for those who have a few simple and specific ideas in mind but aren't able to create a whole mod themselves #");
             builder.AppendLine("# Special thanks to Nexus modder Iw23J, creator of the original Custom Craft mod, who showed us how much we can empower players to take modding into their own hands #");
             builder.AppendLine("# -------------------------------------------- #");
@@ -111,12 +112,12 @@
             builder.AppendLine("#   e - NEW! You can now also set if this recipe should be unlocked at the start or not #");
             builder.AppendLine("# 3 - Adding new recipes and placing them into any of the existing fabricators #");
             builder.AppendLine("#   a - Added recipes work exactly like Modified recipes, with the addition of a Path to where that recipe should go #");
-            builder.AppendLine($"# Remember that only the standard in-game items can be used with {CustomCraft.RootModName} #");
+            builder.AppendLine($"# Remember that only the standard in-game items can be used with {RootModName} #");
             builder.AppendLine("# Modded items can't be used at this time #");
             builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");
             builder.AppendLine("# -------------------------------------------- #");
             builder.AppendLine();
-            builder.AppendLine($"# Writing the text files that {CustomCraft.RootModName} uses can be simple if you're paying attention #");
+            builder.AppendLine($"# Writing the text files that {RootModName} uses can be simple if you're paying attention #");
             builder.AppendLine("# You can even copy the text from the sample files directly and use them right away without any changes #");
             builder.AppendLine("# When you want to add a new item reference, remember that the 'ItemID' is the internal spawn ID of that item #");
             builder.AppendLine("# You can visit the Subnautica Wikia for the full list of item IDs at http://subnautica.wikia.com/wiki/Obtainable_Items #");

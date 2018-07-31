@@ -51,7 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logger.cs" />
-    <Compile Include="ParsingFiles.cs" />
+    <Compile Include="ReaderWriterCrafts.cs" />
+    <Compile Include="ReaderWriterTutorials.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CraftingNodeFamily.cs" />
     <Compile Include="PublicAPI\CraftingPath.cs" />
@@ -71,7 +72,6 @@
     <Compile Include="Serialization\IModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipeList.cs" />
-    <Compile Include="TutorialFiles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json">
