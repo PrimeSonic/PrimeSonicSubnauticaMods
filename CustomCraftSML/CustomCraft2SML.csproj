@@ -8,7 +8,7 @@
     <ProjectGuid>{656A031A-0BAE-4633-89F7-0F3464D247E2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomCraftSML</RootNamespace>
+    <RootNamespace>CustomCraft2SML</RootNamespace>
     <AssemblyName>CustomCraft2SML</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -51,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logger.cs" />
+    <Compile Include="ReaderWriterCrafts.cs" />
+    <Compile Include="ReaderWriterTutorials.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CraftingNodeFamily.cs" />
     <Compile Include="PublicAPI\CraftingPath.cs" />
