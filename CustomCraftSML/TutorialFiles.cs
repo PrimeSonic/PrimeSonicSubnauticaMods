@@ -7,10 +7,10 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
+    using SMLHelper.V2.Utility;
 
     internal static class TutorialFiles
     {
-
         private static readonly string FolderRoot = $"./QMods/{CustomCraft.RootModName}/";
         private static readonly string SamplesFolder = FolderRoot + "SampleFiles/";
         private static readonly string OriginalsFolder = SamplesFolder + "OriginalRecipes/";
@@ -44,14 +44,32 @@
                 GenerateOriginalsFile(tree.ToString(), list, recipesFile);
             }
 
-            //string buildablesFile = $"BuildableOriginals.txt";
+            var allGroups = (Dictionary<TechGroup, Dictionary<TechCategory, List<TechType>>>)ReflectionHelper.GetStaticField<CraftData>("groups");
 
-            //if (File.Exists(OriginalsFolder + buildablesFile))
-            //    return;
+            var techGroups = new TechGroup[]
+            {
+                TechGroup.BasePieces, TechGroup.ExteriorModules,
+                TechGroup.InteriorPieces, TechGroup.InteriorModules,
+                TechGroup.Miscellaneous
+            };
 
-            //List<TechType> buildablesList = (List<TechType>)ReflectionHelper.GetStaticField<CraftData>("buildables");
+            foreach (TechGroup group in techGroups)
+            {
+                Dictionary<TechCategory, List<TechType>> groupCategories = allGroups[group];
 
-            //GenerateOriginalsFile("Buildable", buildablesList, buildablesFile);
+                foreach (TechCategory category in groupCategories.Keys)
+                {
+                    string buildablesFile = $"{category}Originals.txt";
+
+                    if (File.Exists(OriginalsFolder + buildablesFile))
+                        continue;
+
+                    List<TechType> buildablesList = groupCategories[category];
+
+                    GenerateOriginalsFile(category.ToString(), buildablesList, buildablesFile);
+                }
+            }
+
         }
 
         internal static void HandleReadMeFile()

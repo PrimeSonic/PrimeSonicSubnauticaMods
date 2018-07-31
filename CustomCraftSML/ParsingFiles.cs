@@ -23,7 +23,9 @@
             if (File.Exists(AddedRecipiesFile))
             {
                 string serializedData = File.ReadAllText(AddedRecipiesFile);
-                if (!string.IsNullOrEmpty(serializedData) && addedRecipeList.Deserialize(serializedData) && addedRecipeList.Count > 0)
+                if (!string.IsNullOrEmpty(serializedData) && // Not a blank file
+                    addedRecipeList.Deserialize(serializedData) && // Correctly parsed
+                    addedRecipeList.Count > 0) // Has entries
                 {
                     foreach (IAddedRecipe item in addedRecipeList)
                     {
@@ -64,7 +66,9 @@
             if (File.Exists(ModifiedRecipesFile))
             {
                 string serializedData = File.ReadAllText(ModifiedRecipesFile);
-                if (!string.IsNullOrEmpty(serializedData) && modifiedRecipeList.Deserialize(serializedData) && modifiedRecipeList.Count > 0)
+                if (!string.IsNullOrEmpty(serializedData) && // Not a blank file
+                    modifiedRecipeList.Deserialize(serializedData) && // Parsed correctly
+                    modifiedRecipeList.Count > 0) // Has entries
                 {
                     foreach (IModifiedRecipe item in modifiedRecipeList)
                     {
@@ -105,7 +109,9 @@
             if (File.Exists(CustomSizesFile))
             {
                 string serializedData = File.ReadAllText(CustomSizesFile);
-                if (!string.IsNullOrEmpty(serializedData) && customSizeList.Deserialize(serializedData) && customSizeList.Count > 0)
+                if (!string.IsNullOrEmpty(serializedData) && // Not a blank file
+                    customSizeList.Deserialize(serializedData) && // Parsed correctly
+                    customSizeList.Count > 0) // Has entires
                 {
                     foreach (ICustomSize customSize in customSizeList)
                     {
