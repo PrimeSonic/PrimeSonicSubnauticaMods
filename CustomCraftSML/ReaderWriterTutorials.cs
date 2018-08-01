@@ -14,11 +14,11 @@
         private const string RootModName = "CustomCraft2SML";
         private const string FolderRoot = "./QMods/" + RootModName + "/";
         private const string SamplesFolder = FolderRoot + "SampleFiles/";
-        private const string OriginalsFolder = SamplesFolder + "OriginalRecipes/";
+        private const string OriginalsFolder = FolderRoot + "OriginalRecipes/";
         private const string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
         private static readonly string ReadMeVersionLine = $"# How to use {RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
 
-        internal static void GenerateOriginalRecipes()
+        private static void GenerateOriginalRecipes()
         {
             if (!Directory.Exists(SamplesFolder))
                 Directory.CreateDirectory(SamplesFolder);
@@ -26,41 +26,15 @@
             if (!Directory.Exists(OriginalsFolder))
                 Directory.CreateDirectory(OriginalsFolder);
 
-            var treeTypes = new CraftTree.Type[6]
-            {
-                CraftTree.Type.Fabricator, CraftTree.Type.Constructor, CraftTree.Type.SeamothUpgrades,
-                CraftTree.Type.Workbench,
-                CraftTree.Type.MapRoom, CraftTree.Type.CyclopsFabricator
-            };
+            var allGroups = ValidTechTypes.groups;
 
-            foreach (CraftTree.Type tree in treeTypes)
-            {
-                string recipesFile = $"{tree}Originals.txt";
-
-                if (File.Exists(OriginalsFolder + recipesFile))
-                    continue;
-
-                List<TechType> list = GetOriginals(tree);
-
-                GenerateOriginalsFile(tree.ToString(), list, recipesFile);
-            }
-
-            var allGroups = (Dictionary<TechGroup, Dictionary<TechCategory, List<TechType>>>)ReflectionHelper.GetStaticField<CraftData>("groups");
-
-            var techGroups = new TechGroup[]
-            {
-                TechGroup.BasePieces, TechGroup.ExteriorModules,
-                TechGroup.InteriorPieces, TechGroup.InteriorModules,
-                TechGroup.Miscellaneous
-            };
-
-            foreach (TechGroup group in techGroups)
+            foreach (TechGroup group in allGroups.Keys)
             {
                 Dictionary<TechCategory, List<TechType>> groupCategories = allGroups[group];
 
                 foreach (TechCategory category in groupCategories.Keys)
                 {
-                    string buildablesFile = $"{category}Originals.txt";
+                    string buildablesFile = $"{group}_{category}.txt";
 
                     if (File.Exists(OriginalsFolder + buildablesFile))
                         continue;
@@ -70,10 +44,9 @@
                     GenerateOriginalsFile(category.ToString(), buildablesList, buildablesFile);
                 }
             }
-
         }
 
-        internal static void HandleReadMeFile()
+        private static void HandleReadMeFile()
         {
             if (!File.Exists(HowToFile))
             {
@@ -115,6 +88,13 @@
             builder.AppendLine($"# Remember that only the standard in-game items can be used with {RootModName} #");
             builder.AppendLine("# Modded items can't be used at this time #");
             builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");
+            builder.AppendLine("# -------------------------------------------- #");
+            builder.AppendLine();
+            builder.AppendLine("# New feature: You can now have multiple files for added recipes, modified recipes, and custom sizes, all living together in the WorkingFiles folder. #");
+            builder.AppendLine("# As of v1.2, the file name no longer matters. All files in the WorkingFiles folder will be read and parsed into the game. So name them however you want. #");
+            builder.AppendLine("# As long as the file contains one, and only one, primary key of 'AddedRecipes:', 'ModifiedRecipes', or 'CustomSizes' with its entries, will be handled correctly. #");
+            builder.AppendLine("# So if you've created your own customized crafts for and want to share them, you can now do so easily. #");
+            builder.AppendLine("# Installation of your custom crafts on another player's system is as simple as copying the txt files into their WorkingFiles folder. #");
             builder.AppendLine("# -------------------------------------------- #");
             builder.AppendLine();
             builder.AppendLine($"# Writing the text files that {RootModName} uses can be simple if you're paying attention #");
@@ -160,7 +140,7 @@
             return builder.ToString();
         }
 
-        public static void GenerateOriginalsFile(string key, List<TechType> list, string fileName)
+        private static void GenerateOriginalsFile(string key, List<TechType> list, string fileName)
         {
             var printyPrints = new List<string>();
             printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]
@@ -170,7 +150,7 @@
                 "--------------------------------------------------------------------------------",
             }));
 
-            var originals = new ModifiedRecipeList($"{key}Originals");
+            var originals = new ModifiedRecipeList($"{key}");
 
             foreach (TechType craftable in list)
                 originals.Add(new ModifiedRecipe(craftable));
@@ -182,21 +162,5 @@
             Logger.Log($"{fileName} file not found. File generated.");
         }
 
-        public static List<TechType> GetOriginals(CraftTree.Type treeType)
-        {
-            CraftTree tree = CraftTree.GetTree(treeType);
-
-            IEnumerator<CraftNode> mover = tree.nodes.Traverse(true);
-
-            var originals = new List<TechType>();
-
-            while (mover.MoveNext())
-            {
-                if (mover.Current.action == TreeAction.Craft && mover.Current.techType0 < TechType.Databox)
-                    originals.Add(mover.Current.techType0);
-            };
-
-            return originals;
-        }
     }
 }

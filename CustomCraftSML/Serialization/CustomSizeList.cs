@@ -8,13 +8,13 @@
     {
         private const string KeyName = "CustomSizes";
 
-        public new CustomSize this[int index] => (CustomSize)base[index];
+        public new CustomSize this[int index] => base[index];
 
         public CustomSizeList() : base(KeyName, new CustomSize(KeyName))
         {
         }
 
-        public IEnumerator<CustomSize> GetEnumerator()
+        public new IEnumerator<CustomSize> GetEnumerator()
         {
             foreach (EmPropertyCollection item in InternalValues)
             {

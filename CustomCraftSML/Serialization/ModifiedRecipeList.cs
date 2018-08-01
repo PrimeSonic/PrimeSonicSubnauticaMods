@@ -8,7 +8,7 @@
     {
         private const string KeyName = "ModifiedRecipes";
 
-        public new ModifiedRecipe this[int index] => (ModifiedRecipe)base[index];
+        public new ModifiedRecipe this[int index] => base[index];
 
         internal ModifiedRecipeList(string keyOverride) : base(keyOverride, new ModifiedRecipe(KeyName))
         {
@@ -18,7 +18,7 @@
         {
         }
 
-        public IEnumerator<ModifiedRecipe> GetEnumerator()
+        public new IEnumerator<ModifiedRecipe> GetEnumerator()
         {
             foreach (EmPropertyCollection item in InternalValues)
             {

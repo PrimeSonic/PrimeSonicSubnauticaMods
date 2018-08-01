@@ -8,13 +8,13 @@
     {
         private const string KeyName = "AddedRecipes";
 
-        public new AddedRecipe this[int index] => (AddedRecipe)base[index];
+        public new AddedRecipe this[int index] => base[index];
 
         public AddedRecipeList() : base(KeyName, new AddedRecipe(KeyName))
         {
         }
 
-        public IEnumerator<AddedRecipe> GetEnumerator()
+        public new IEnumerator<AddedRecipe> GetEnumerator()
         {
             foreach (EmPropertyCollection item in InternalValues)
             {
