@@ -2,40 +2,47 @@
 {
     using System;
     using System.Reflection;
+    using Common;
     using Harmony;
 
     public class QPatch
     {
         public static void Patch()
         {
-
             try
             {
-                Console.WriteLine($"[UpgradedVehicles] Start patching");
+                QuickLogger.Message("Started patching");
+
+                var unlockConfig = new EmUnlockConfig();
+                unlockConfig.Initialize();
+
+                Craftable.ForceUnlockAtStart = unlockConfig.Value;
+
+                if (Craftable.ForceUnlockAtStart)
+                    QuickLogger.Message("ForceUnlockAtStart was enabled. New items will start unlocked.");
+                else
+                    QuickLogger.Message("New items set to normal unlock requirements.");
 
                 var speedModule = new SpeedBooster();
-                speedModule.Patch();
-
                 var powerCore = new VehiclePowerCore(speedModule);
-                powerCore.Patch();
-
                 var mothMk2 = new SeaMothMk2(powerCore);
-                mothMk2.Patch();
-
                 var suitMk2 = new ExosuitMk2(powerCore);
-                suitMk2.Patch();
-
                 var mothMk3 = new SeaMothMk3(powerCore);
+
+                speedModule.Patch();
+                powerCore.Patch();
+                mothMk2.Patch();
+                suitMk2.Patch();
                 mothMk3.Patch();
 
                 HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-                Console.WriteLine($"[UpgradedVehicles] Finish patching");
+                QuickLogger.Message("Finished patching");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[UpgradedVehicles] EXCEPTION on Patch: " + ex.ToString());
+                QuickLogger.Error("EXCEPTION on Patch: " + ex.ToString());
             }
 
         }

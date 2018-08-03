@@ -27,8 +27,8 @@
             if (techType != TechType.VehicleHullModule1 &&
                 techType != TechType.VehicleHullModule2 &&
                 techType != TechType.VehicleHullModule3 &&
-                techType != SeaMothMk3.SeamothHullModule4 &&
-                techType != SeaMothMk3.SeamothHullModule5)
+                techType != MTechType.SeamothHullModule4 &&
+                techType != MTechType.SeamothHullModule5)
             {
                 CrushDepthSet = true;
                 return; // Not a depth module. No need to update anything here.
@@ -41,7 +41,7 @@
         {
             TechType seamothType = seamoth.GetComponent<TechTag>().type;
 
-            if (seamothType != SeaMothMk2.TechTypeID && seamothType != SeaMothMk3.TechTypeID)
+            if (seamothType != MTechType.SeaMothMk2 && seamothType != MTechType.SeaMothMk3)
             {
                 CrushDepthSet = true;
                 ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", seamoth.crushDamage.crushDepth));
@@ -50,9 +50,9 @@
 
             float minimumCrush = 0f;
 
-            if (seamothType == SeaMothMk2.TechTypeID)
+            if (seamothType == MTechType.SeaMothMk2)
                 minimumCrush = 700f;
-            else if (seamothType == SeaMothMk3.TechTypeID)
+            else if (seamothType == MTechType.SeaMothMk3)
                 minimumCrush = 1500f;
 
             OverrideCrushDepth(seamoth.crushDamage, BaseSeamothCrush, minimumCrush, announce);
@@ -73,7 +73,7 @@
 
         internal static void UpgradeExosuit(Exosuit exosuit, bool announce = false)
         {
-            bool isUpgradedExosuit = exosuit.GetComponent<TechTag>().type == ExosuitMk2.TechTypeID;
+            bool isUpgradedExosuit = exosuit.GetComponent<TechTag>().type == MTechType.ExosuitMk2;
 
             if (!isUpgradedExosuit)
             {
@@ -122,14 +122,14 @@
                 int armorModuleCount = GetModuleCount(vehicle.modules, TechType.VehicleArmorPlating, isUpgradedVehicle);
                 UpdateArmorRating(vehicle, armorModuleCount, true);
             }
-            else if (techType == SpeedBooster.TechTypeID || techType == TechType.VehiclePowerUpgradeModule) // Set power efficiency rating
+            else if (techType == MTechType.SpeedBooster|| techType == TechType.VehiclePowerUpgradeModule) // Set power efficiency rating
             {
-                int speedBoosterCount = GetModuleCount(vehicle.modules, SpeedBooster.TechTypeID, isUpgradedVehicle);
+                int speedBoosterCount = GetModuleCount(vehicle.modules, MTechType.SpeedBooster, isUpgradedVehicle);
                 int powerModuleCount = GetModuleCount(vehicle.modules, TechType.VehiclePowerUpgradeModule, isUpgradedVehicle);
 
                 UpdatePowerRating(vehicle, speedBoosterCount, powerModuleCount, true);
 
-                if (techType == SpeedBooster.TechTypeID) // Set speed rating
+                if (techType == MTechType.SpeedBooster) // Set speed rating
                 {
                     UpdateSpeedRating(vehicle, speedBoosterCount, true);
                 }
@@ -141,7 +141,7 @@
             bool isUpgradedVehicle = IsUpgradedVehicle(vehicle);
 
             int armorModuleCount = GetModuleCount(vehicle.modules, TechType.VehicleArmorPlating, isUpgradedVehicle);
-            int speedBoosterCount = GetModuleCount(vehicle.modules, SpeedBooster.TechTypeID, isUpgradedVehicle);
+            int speedBoosterCount = GetModuleCount(vehicle.modules, MTechType.SpeedBooster, isUpgradedVehicle);
             int powerModuleCount = GetModuleCount(vehicle.modules, TechType.VehiclePowerUpgradeModule, isUpgradedVehicle);
 
             // Set armor rating
@@ -158,9 +158,9 @@
         {
             TechType vehicleTechType = vehicle.GetComponent<TechTag>().type;
 
-            bool isUpgradedVehicle = vehicleTechType == SeaMothMk2.TechTypeID ||
-                                     vehicleTechType == ExosuitMk2.TechTypeID ||
-                                     vehicleTechType == SeaMothMk3.TechTypeID; // This one will be a nonsense TechType if it wasn't added
+            bool isUpgradedVehicle = vehicleTechType == MTechType.SeaMothMk2 ||
+                                     vehicleTechType == MTechType.ExosuitMk2 ||
+                                     vehicleTechType == MTechType.SeaMothMk3; // This one will be a nonsense TechType if it wasn't added
             return isUpgradedVehicle;
         }
 
@@ -174,11 +174,6 @@
             float speedMultiplier = 1f + speedBoosterCount * SpeedBonusPerModule;
 
             vehicle.forwardForce = speedMultiplier * ForwardForce;
-            //vehicle.backwardForce = speedMultiplier * BackwardForce;
-            //vehicle.sidewardForce = speedMultiplier * SidewardForce;
-
-            //vehicle.sidewaysTorque = speedMultiplier * SidewaysTorque;
-            //vehicle.verticalForce = speedMultiplier * VerticalForce;
             vehicle.onGroundForceMultiplier = speedMultiplier * OnGroundForceMultiplier;
 
             var motor = vehicle.GetComponent<VehicleMotor>();

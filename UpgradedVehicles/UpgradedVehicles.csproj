@@ -55,6 +55,8 @@
     <Compile Include="Craftables\SpeedBooster.cs" />
     <Compile Include="Craftables\UpgradedVehicle.cs" />
     <Compile Include="Craftables\VehiclePowerCore.cs" />
+    <Compile Include="EmUnlockConfig.cs" />
+    <Compile Include="MTechType.cs" />
     <Compile Include="Patchers\CrushDamage_Patcher.cs" />
     <Compile Include="Patchers\DamageSystem_Patcher.cs" />
     <Compile Include="Patchers\Exosuit_Patcher.cs" />

@@ -8,9 +8,11 @@
 
     internal abstract class Craftable : ModPrefab
     {
-        public readonly string NameID;
-        public readonly string FriendlyName;
-        public readonly string Description;
+        internal static bool ForceUnlockAtStart { get; set; } = false;
+
+        protected readonly string NameID;
+        protected readonly string FriendlyName;
+        protected readonly string Description;
 
         protected readonly TechType PrefabTemplate;
 
@@ -21,11 +23,14 @@
         protected readonly TechGroup GroupForPDA;
         protected readonly TechCategory CategoryForPDA;
 
+        public bool IsPatched { get; protected set; } = false;
+        protected bool PatchTechTypeOnly { get; set; } = false;
+
         protected Craftable(
-            string nameID, 
-            string friendlyName, 
-            string description, 
-            TechType template, 
+            string nameID,
+            string friendlyName,
+            string description,
+            TechType template,
             CraftTree.Type fabricatorType,
             string fabricatorTab,
             TechType requiredAnalysis,
@@ -42,28 +47,48 @@
             FabricatorTab = fabricatorTab;
 
             RequiredForUnlock = requiredAnalysis;
+
             GroupForPDA = groupForPDA;
             CategoryForPDA = categoryForPDA;
         }
 
-        public virtual void Patch()
+        protected abstract void PrePatch();
+
+        public void Patch()
         {
-            this.TechType = TechTypeHandler.AddTechType(NameID,
-                                                     FriendlyName,
-                                                     Description,
-                                                     ImageUtils.LoadSpriteFromFile($"./QMods/UpgradedVehicles/Assets/{NameID}.png"),
-                                                     false);
+            PrePatch();
 
-            
+            if (PatchTechTypeOnly) // Register just the TechType to preserve the ID.
+            {
+                this.TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
+            }
+            else // Full patching
+            {
+                this.TechType = TechTypeHandler.AddTechType(NameID,
+                                                         FriendlyName,
+                                                         Description,
+                                                         ImageUtils.LoadSpriteFromFile($"./QMods/UpgradedVehicles/Assets/{NameID}.png"),
+                                                         false);
 
-            CraftTreeHandler.AddCraftingNode(FabricatorType, this.TechType, FabricatorTab);
-            CraftDataHandler.SetTechData(this.TechType, GetRecipe());
+                CraftTreeHandler.AddCraftingNode(FabricatorType, this.TechType, FabricatorTab);
+                CraftDataHandler.SetTechData(this.TechType, GetRecipe());
 
-            PrefabHandler.RegisterPrefab(this);
+                PrefabHandler.RegisterPrefab(this);
 
-            KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
-            CraftDataHandler.AddToGroup(GroupForPDA, CategoryForPDA, this.TechType);
+                if (ForceUnlockAtStart)
+                    KnownTechHandler.UnlockOnStart(this.TechType);
+                else
+                    KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
+
+                CraftDataHandler.AddToGroup(GroupForPDA, CategoryForPDA, this.TechType);
+            }
+
+            IsPatched = true;
+
+            PostPatch();
         }
+
+        protected abstract void PostPatch();
 
         protected abstract TechData GetRecipe();
 

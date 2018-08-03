@@ -5,26 +5,21 @@
 
     internal class ExosuitMk2 : UpgradedVehicle<Exosuit>
     {
-        public static TechType TechTypeID { get; private set; }
-
-        internal readonly TechType PowerCoreID;
-
-        internal ExosuitMk2(VehiclePowerCore vehiclePowerCore) 
-            : base("ExosuitMk2",
-                  "Prawn Suit MK2",
-                  "An upgraded Prawn Suit now even tougher to take on anything.",
-                  TechType.Exosuit,
-                  1.5f,
-                  TechType.ExoHullModule2)
+        internal ExosuitMk2(VehiclePowerCore vehiclePowerCore)
+            : base(
+                  nameID: "ExosuitMk2",
+                  friendlyName: "Prawn Suit MK2",
+                  description: "An upgraded Prawn Suit now even tougher to take on anything.",
+                  template: TechType.Exosuit,
+                  healthModifier: 1.5f,
+                  requiredAnalysis: TechType.ExoHullModule2,
+                  powerCore: vehiclePowerCore)
         {
-            PowerCoreID = vehiclePowerCore.TechType;
         }
 
-        public override void Patch()
+        protected override void PostPatch()
         {
-            base.Patch();
-
-            TechTypeID = this.TechType;
+            MTechType.ExosuitMk2 = this.TechType;
         }
 
         protected override TechData GetRecipe()
@@ -40,7 +35,7 @@
                                  new Ingredient(TechType.Diamond, 2),
 
                                  new Ingredient(TechType.ExoHullModule2, 1), // Minimum crush depth of 1700 without upgrades
-                                 new Ingredient(PowerCoreID, 1),  // +2 to armor + speed without engine efficiency penalty
+                                 new Ingredient(PowerCore.TechType, 1),  // +2 to armor + speed without engine efficiency penalty
                              })
             };
         }
