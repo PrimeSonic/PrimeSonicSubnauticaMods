@@ -12,7 +12,7 @@
         {
             Assert.IsTrue(addedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
-            HandleNewRecipe(addedRecipe);
+            HandleAddedRecipe(addedRecipe);
 
             HandleCraftTreeAddition(addedRecipe);
 
@@ -23,7 +23,7 @@
         {
             Assert.IsTrue(modifiedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
-            HandleNewRecipe(modifiedRecipe);
+            HandleModifiedRecipe(modifiedRecipe);
 
             HandleUnlocks(modifiedRecipe);
         }
@@ -53,7 +53,22 @@
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID, steps);
         }
 
-        private static void HandleNewRecipe(IModifiedRecipe modifiedRecipe)
+        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe)
+        {
+            var replacement = new TechData();
+
+            replacement.craftAmount = modifiedRecipe.AmountCrafted ?? 1;
+
+            foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)
+                replacement.Ingredients.Add(new Ingredient(ingredient.ItemID, ingredient.Required));
+
+            foreach (TechType linkedItem in modifiedRecipe.LinkedItems)
+                replacement.LinkedItems.Add(linkedItem);
+
+            CraftDataHandler.SetTechData(modifiedRecipe.ItemID, replacement);
+        }
+
+        private static void HandleModifiedRecipe(IModifiedRecipe modifiedRecipe)
         {
             bool overrideRecipe = false;
 

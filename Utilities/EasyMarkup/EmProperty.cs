@@ -23,6 +23,18 @@
             return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter}";
         }
 
+        public bool CheckKey(string rawValue, out string foundKey)
+        {
+            StringBuffer cleanValue = CleanValue(new StringBuffer(rawValue), true);
+
+            foundKey = cleanValue.ToString();
+
+            if (string.IsNullOrEmpty(Key))
+                return !string.IsNullOrEmpty(foundKey);
+            else
+                return foundKey == Key;
+        }
+
         public bool FromString(string rawValue, bool haltOnKeyMismatch = false)
         {
             StringBuffer cleanValue = CleanValue(new StringBuffer(rawValue));
@@ -120,7 +132,7 @@
             return prettyString.ToString();
         }
 
-        private static StringBuffer CleanValue(StringBuffer rawValue)
+        private static StringBuffer CleanValue(StringBuffer rawValue, bool stopAtKey = false)
         {
             var cleanValue = new StringBuffer();
 
@@ -149,6 +161,8 @@
                         } while (!rawValue.IsEmpty && poppedChar != SpChar_CommentBlock);
 
                         break;
+                    case SpChar_KeyDelimiter when stopAtKey:
+                        return cleanValue;
                     default:
                         cleanValue.PushToEnd(rawValue.PopFromStart());
                         break;

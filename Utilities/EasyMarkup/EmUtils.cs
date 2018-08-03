@@ -26,6 +26,21 @@
             return emProperty.ToString();
         }
 
+        public static bool DeserializeKeyOnly(this EmProperty emProperty, string serializedData, out string foundKey)
+        {
+            try
+            {
+                return emProperty.CheckKey(serializedData, out foundKey);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[EasyMarkup] DeserializeKeyOnly halted unexpectedly for {emProperty.Key}{Environment.NewLine}" +
+                           $"Error reported: {ex}");
+                foundKey = null;
+                return false;
+            }
+        }
+
         public static string CommentText(string text)
         {
             return $"{EmProperty.SpChar_CommentBlock} {text} {EmProperty.SpChar_CommentBlock}";

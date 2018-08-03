@@ -10,16 +10,7 @@
 
             try
             {
-                FileReaderWriter.HandleReadMeFile();
-
-                FileReaderWriter.GenerateOriginalRecipes();
-
-                FileReaderWriter.PatchCustomSizes();
-
-                FileReaderWriter.PatchModifiedRecipes();
-
-                FileReaderWriter.PatchAddedRecipes();
-
+                FileReaderWriter.Patch();
             }
             catch (IndexOutOfRangeException outEx)
             {
