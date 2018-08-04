@@ -28,16 +28,11 @@
                   fabricatorTab: "Vehicles",
                   requiredAnalysis: requiredAnalysis,
                   groupForPDA: TechGroup.Constructor,
-                  categoryForPDA: TechCategory.Constructor)
+                  categoryForPDA: TechCategory.Constructor,
+                  prerequisite: powerCore)
         {
             HealthModifier = healthModifier;
             PowerCore = powerCore;
-        }
-
-        protected override void PrePatch()
-        {
-            if (!PowerCore.IsPatched)
-                PowerCore.Patch();
         }
 
         public override GameObject GetGameObject()

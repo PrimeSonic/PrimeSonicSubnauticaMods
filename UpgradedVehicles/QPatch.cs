@@ -13,28 +13,14 @@
             {
                 QuickLogger.Message("Started patching");
 
-                var unlockConfig = new EmUnlockConfig();
-                unlockConfig.Initialize();
+                var speedBoost = Craftable.AddForPatching(new SpeedBooster());
+                var vpowerCore = Craftable.AddForPatching(new VehiclePowerCore(speedBoost));
+                var seamothMk2 = Craftable.AddForPatching(new SeaMothMk2(vpowerCore));
+                var exosuitMk2 = Craftable.AddForPatching(new ExosuitMk2(vpowerCore));
+                var seamothMk3 = Craftable.AddForPatching(new SeaMothMk3(vpowerCore));
 
-                Craftable.ForceUnlockAtStart = unlockConfig.Value;
-
-                if (Craftable.ForceUnlockAtStart)
-                    QuickLogger.Message("ForceUnlockAtStart was enabled. New items will start unlocked.");
-                else
-                    QuickLogger.Message("New items set to normal unlock requirements.");
-
-                var speedModule = new SpeedBooster();
-                var powerCore = new VehiclePowerCore(speedModule);
-                var mothMk2 = new SeaMothMk2(powerCore);
-                var suitMk2 = new ExosuitMk2(powerCore);
-                var mothMk3 = new SeaMothMk3(powerCore);
-
-                speedModule.Patch();
-                powerCore.Patch();
-                mothMk2.Patch();
-                suitMk2.Patch();
-                mothMk3.Patch();
-
+                Craftable.PatchAll();
+                
                 HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 

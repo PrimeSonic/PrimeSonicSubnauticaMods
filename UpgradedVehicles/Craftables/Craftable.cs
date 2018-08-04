@@ -1,5 +1,6 @@
 ﻿namespace UpgradedVehicles
 {
+    using System.Collections.Generic;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -8,7 +9,20 @@
 
     internal abstract class Craftable : ModPrefab
     {
-        internal static bool ForceUnlockAtStart { get; set; } = false;
+        private static readonly List<Craftable> Items = new List<Craftable>(MTechType.Count);
+        private static readonly EmUnlockConfig Config = new EmUnlockConfig();
+
+        internal static T AddForPatching<T>(T item) where T : Craftable
+        {
+            Items.Add(item);
+            return item;
+        }
+
+        internal static void PatchAll()
+        {
+            foreach (Craftable item in Items)
+                item.Patch();
+        }
 
         protected readonly string NameID;
         protected readonly string FriendlyName;
@@ -26,6 +40,8 @@
         public bool IsPatched { get; protected set; } = false;
         protected bool PatchTechTypeOnly { get; set; } = false;
 
+        protected readonly Craftable Prerequisite;
+
         protected Craftable(
             string nameID,
             string friendlyName,
@@ -35,7 +51,8 @@
             string fabricatorTab,
             TechType requiredAnalysis,
             TechGroup groupForPDA,
-            TechCategory categoryForPDA)
+            TechCategory categoryForPDA,
+            Craftable prerequisite = null)
             : base(nameID, $"{nameID}Prefab")
         {
             NameID = nameID;
@@ -50,32 +67,41 @@
 
             GroupForPDA = groupForPDA;
             CategoryForPDA = categoryForPDA;
+
+            Prerequisite = prerequisite;
         }
 
-        protected abstract void PrePatch();
+        protected virtual void PrePatch() { }
 
-        public void Patch()
+        private void Patch()
         {
-            PrePatch();
+            if (IsPatched)
+                return; // Already patched. Skip all this.
+
+            if (Prerequisite != null && !Prerequisite.IsPatched)
+                Prerequisite.Patch(); // Go and patch the prerequisite craftable first
+
+            PrePatch(); // Run any prepatch overrides
 
             if (PatchTechTypeOnly) // Register just the TechType to preserve the ID.
             {
-                this.TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description);
+                this.TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, false);
             }
             else // Full patching
             {
-                this.TechType = TechTypeHandler.AddTechType(NameID,
-                                                         FriendlyName,
-                                                         Description,
-                                                         ImageUtils.LoadSpriteFromFile($"./QMods/UpgradedVehicles/Assets/{NameID}.png"),
-                                                         false);
+                this.TechType = TechTypeHandler.AddTechType(
+                                                internalName: NameID,
+                                                displayName: FriendlyName,
+                                                tooltip: Description,
+                                                sprite: ImageUtils.LoadSpriteFromFile($"./QMods/UpgradedVehicles/Assets/{NameID}.png"),
+                                                unlockAtStart: false);
 
                 CraftTreeHandler.AddCraftingNode(FabricatorType, this.TechType, FabricatorTab);
                 CraftDataHandler.SetTechData(this.TechType, GetRecipe());
 
                 PrefabHandler.RegisterPrefab(this);
 
-                if (ForceUnlockAtStart)
+                if (Config.ForceUnlockAtStart)
                     KnownTechHandler.UnlockOnStart(this.TechType);
                 else
                     KnownTechHandler.SetAnalysisTechEntry(RequiredForUnlock, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
@@ -83,9 +109,9 @@
                 CraftDataHandler.AddToGroup(GroupForPDA, CategoryForPDA, this.TechType);
             }
 
-            IsPatched = true;
+            PostPatch(); // Run any postpatch overrides
 
-            PostPatch();
+            IsPatched = true;
         }
 
         protected abstract void PostPatch();

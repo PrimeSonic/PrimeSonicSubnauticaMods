@@ -18,15 +18,10 @@
                   fabricatorTab: "CommonModules",
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.Resources,
-                  categoryForPDA: TechCategory.Electronics)
+                  categoryForPDA: TechCategory.Electronics,
+                  prerequisite: speedBoostModule)
         {
             SpeedBoosterModule = speedBoostModule;
-        }
-
-        protected override void PrePatch()
-        {
-            if (!SpeedBoosterModule.IsPatched)
-                SpeedBoosterModule.Patch();
         }
 
         protected override void PostPatch()

@@ -10,6 +10,19 @@
     {
         private const string ConfigFile = "./QMods/UpgradedVehicles/Config.txt";
 
+        internal bool ForceUnlockAtStart
+        {
+            get
+            {
+                if (!Initialized)
+                    Initialize();
+
+                return this.Value;
+            }
+        }
+
+        internal bool Initialized { get; private set; } = false;
+
         public EmUnlockConfig() : base("ForceUnlockAtStart", false)
         {
         }
@@ -45,6 +58,15 @@
             {
                 QuickLogger.Error("EXCEPTION LOADING {ConfigKey}: " + ex.ToString());
                 WriteConfigFile();
+            }
+            finally
+            {
+                Initialized = true;
+
+                if (this.Value)
+                    QuickLogger.Message("ForceUnlockAtStart was enabled. New items will start unlocked.");
+                else
+                    QuickLogger.Message("New items set to normal unlock requirements.");
             }
         }
 
