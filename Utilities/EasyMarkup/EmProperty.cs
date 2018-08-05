@@ -80,7 +80,12 @@
 
         public string PrettyPrint()
         {
-            var originalString = new StringBuffer(this.ToString());
+            string originalValue = this.ToString();
+
+            if (string.IsNullOrEmpty(originalValue))
+                return string.Empty;
+
+            var originalString = new StringBuffer(originalValue);
 
             var prettyString = new StringBuffer();
 
@@ -121,6 +126,10 @@
 
                         prettyString.PushToEnd('\r', '\n');
                         prettyString.PushToEnd(' ', indentLevel * indentSize);
+                        break;
+                    case SpChar_KeyDelimiter:
+                        prettyString.PushToEnd(originalString.PopFromStart());
+                        prettyString.PushToEnd(' '); // Add a space after every KeyDelilmiter
                         break;
                     default:
                         prettyString.PushToEnd(originalString.PopFromStart());

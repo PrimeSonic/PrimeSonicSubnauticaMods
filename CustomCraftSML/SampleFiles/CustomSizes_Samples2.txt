@@ -1,16 +1,16 @@
-CustomSizes:
+CustomSizes: 
 (
-    ItemID:BloodOil;
-    Width:1;
-    Height:1;
+    ItemID: BloodOil;
+    Width: 1;
+    Height: 1;
 ),
 (
-    ItemID:BulboTreePiece;
-    Width:1;
-    Height:1;
+    ItemID: BulboTreePiece;
+    Width: 1;
+    Height: 1;
 ),
 (
-    ItemID:PurpleVegetable;
-    Width:1;
-    Height:1;
+    ItemID: PurpleVegetable;
+    Width: 1;
+    Height: 1;
 );

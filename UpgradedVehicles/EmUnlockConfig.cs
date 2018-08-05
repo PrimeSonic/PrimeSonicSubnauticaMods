@@ -10,6 +10,8 @@
     {
         private const string ConfigFile = "./QMods/UpgradedVehicles/Config.txt";
 
+        private const string ConfigKey = "ForceUnlockAtStart";
+
         internal bool ForceUnlockAtStart
         {
             get
@@ -23,8 +25,9 @@
 
         internal bool Initialized { get; private set; } = false;
 
-        public EmUnlockConfig() : base("ForceUnlockAtStart", false)
+        public EmUnlockConfig() : base(ConfigKey, false)
         {
+            base.ForceWrite = true;
         }
 
         private void WriteConfigFile()
@@ -56,7 +59,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error("EXCEPTION LOADING {ConfigKey}: " + ex.ToString());
+                QuickLogger.Error($"EXCEPTION LOADING {ConfigKey}: " + ex.ToString());
                 WriteConfigFile();
             }
             finally
