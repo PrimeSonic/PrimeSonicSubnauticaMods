@@ -76,7 +76,7 @@
             Assert.Throws<AssertionException>(() =>
             {
                 testProp.FromString(serialValue, true);
-            });            
+            });
         }
 
         [TestCase("TestAKey:1;", 1)]
@@ -388,27 +388,27 @@
         [Test]
         public void EmPropertyCollection_WithNestedCollection_PrettyPrint_GetExpected()
         {
-            const string testValue = "TestKey:" +
+            const string testValue = "TestKey: " +
                                      "(" +
-                                         "String:Val;" +
-                                         "Int:12;" +
-                                         "FloatList:1,2.1,3.2;" +
+                                         "String: Val;" +
+                                         "Int: 12;" +
+                                         "FloatList: 1,2.1,3.2;" +
                                          "Nested:" +
                                          "(" +
-                                             "Nstring:Nval;" +
-                                             "Nint:10;" +
+                                             "Nstring: Nval;" +
+                                             "Nint: 10;" +
                                          ");" +
                                      ");";
 
-            const string expectedValue = "TestKey:\r\n" +
+            const string expectedValue = "TestKey: \r\n" +
                                          "(\r\n" +
-                                         "    String:Val;\r\n" +
-                                         "    Int:12;\r\n" +
-                                         "    FloatList:1,2.1,3.2;\r\n" +
-                                         "    Nested:\r\n" +
+                                         "    String: Val;\r\n" +
+                                         "    Int: 12;\r\n" +
+                                         "    FloatList: 1,2.1,3.2;\r\n" +
+                                         "    Nested: \r\n" +
                                          "    (\r\n" +
-                                         "        Nstring:Nval;\r\n" +
-                                         "        Nint:10;\r\n" +
+                                         "        Nstring: Nval;\r\n" +
+                                         "        Nint: 10;\r\n" +
                                          "    );\r\n" +
                                          ");\r\n";
 
@@ -432,6 +432,16 @@
             var actualValue = testProp.PrettyPrint();
 
             Assert.AreEqual(expectedValue, actualValue);
+        }
+
+        [Test]
+        public void EmProperty_SuperSImple_PrettyPrint_GetExpected()
+        {
+            var emString = new EmProperty<string>("String", "Value");
+
+            var actualValue = emString.PrettyPrint();
+
+            Assert.AreEqual("String: Value;\r\n", actualValue);
         }
     }
 }

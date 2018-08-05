@@ -33,7 +33,7 @@
         {
             var techType = __instance.GetComponent<TechTag>().type;
 
-            if (techType == ExosuitMk2.TechTypeID)
+            if (techType == MTechType.ExosuitMk2)
             {
                 __result = "PRAWN SUIT MK2";
                 return false;

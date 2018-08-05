@@ -6,7 +6,7 @@
 
     internal static class QuickLogger
     {
-        public static void Message(string msg, bool showOnScreen = true)
+        public static void Message(string msg, bool showOnScreen = false)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
@@ -16,7 +16,7 @@
                 ErrorMessage.AddMessage(msg);
         }
 
-        public static void Debug(string msg, bool showOnScreen = true)
+        public static void Debug(string msg, bool showOnScreen = false)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
@@ -26,7 +26,7 @@
                 ErrorMessage.AddDebug(msg);
         }
 
-        public static void Error(string msg, bool showOnScreen = true)
+        public static void Error(string msg, bool showOnScreen = false)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
@@ -36,7 +36,7 @@
                 ErrorMessage.AddError(msg);
         }
 
-        public static void Warning(string msg, bool showOnScreen = true)
+        public static void Warning(string msg, bool showOnScreen = false)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
 

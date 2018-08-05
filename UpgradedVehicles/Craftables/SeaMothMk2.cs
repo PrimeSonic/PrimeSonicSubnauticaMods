@@ -5,26 +5,20 @@
 
     internal class SeaMothMk2 : UpgradedVehicle<SeaMoth>
     {
-        public static TechType TechTypeID { get; private set; }
-
-        internal readonly TechType PowerCoreID;
-
         internal SeaMothMk2(VehiclePowerCore vehiclePowerCore)
             : base(nameID: "SeaMothMk2",
                       friendlyName: "Seamoth MK2",
                       description: "An upgraded SeaMoth, built harder and faster to take you anywhere.",
                       template: TechType.Seamoth,
                       healthModifier: 2f, // 2x the Max HP. 100% more.
-                      requiredAnalysis: TechType.VehicleHullModule3)
+                      requiredAnalysis: TechType.VehicleHullModule3,
+                      powerCore: vehiclePowerCore)
         {
-            PowerCoreID = vehiclePowerCore.TechType;
         }
 
-        public override void Patch()
+        protected override void PostPatch()
         {
-            base.Patch();
-
-            TechTypeID = this.TechType;
+            MTechType.SeaMothMk2 = this.TechType;
         }
 
         protected override TechData GetRecipe()
@@ -34,12 +28,12 @@
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[5]
                              {
-                                 new Ingredient(TechType.PlasteelIngot, 1), // Stronger than titanium ingot                                 
+                                 new Ingredient(TechType.PlasteelIngot, 1), // Stronger than titanium ingot
                                  new Ingredient(TechType.EnameledGlass, 2), // Stronger than glass
                                  new Ingredient(TechType.Lead, 1),
 
                                  new Ingredient(TechType.VehicleHullModule3, 1), // Minimum crush depth of 900 without upgrades
-                                 new Ingredient(PowerCoreID, 1), // armor and speed without engine efficiency penalty
+                                 new Ingredient(PowerCore.TechType, 1), // armor and speed without engine efficiency penalty
                              })
             };
         }

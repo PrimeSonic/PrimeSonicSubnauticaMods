@@ -2,40 +2,33 @@
 {
     using System;
     using System.Reflection;
+    using Common;
     using Harmony;
 
     public class QPatch
     {
         public static void Patch()
         {
-
             try
             {
-                Console.WriteLine($"[UpgradedVehicles] Start patching");
+                QuickLogger.Message("Started patching");
 
-                var speedModule = new SpeedBooster();
-                speedModule.Patch();
+                var speedBoost = Craftable.AddForPatching(new SpeedBooster());
+                var vpowerCore = Craftable.AddForPatching(new VehiclePowerCore(speedBoost));
+                var seamothMk2 = Craftable.AddForPatching(new SeaMothMk2(vpowerCore));
+                var exosuitMk2 = Craftable.AddForPatching(new ExosuitMk2(vpowerCore));
+                var seamothMk3 = Craftable.AddForPatching(new SeaMothMk3(vpowerCore));
 
-                var powerCore = new VehiclePowerCore(speedModule);
-                powerCore.Patch();
-
-                var mothMk2 = new SeaMothMk2(powerCore);
-                mothMk2.Patch();
-
-                var suitMk2 = new ExosuitMk2(powerCore);
-                suitMk2.Patch();
-
-                var mothMk3 = new SeaMothMk3(powerCore);
-                mothMk3.Patch();
-
+                Craftable.PatchAll();
+                
                 HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-                Console.WriteLine($"[UpgradedVehicles] Finish patching");
+                QuickLogger.Message("Finished patching");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[UpgradedVehicles] EXCEPTION on Patch: " + ex.ToString());
+                QuickLogger.Error("EXCEPTION on Patch: " + ex.ToString());
             }
 
         }

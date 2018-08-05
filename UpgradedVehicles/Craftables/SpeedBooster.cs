@@ -6,9 +6,7 @@
 
     internal class SpeedBooster : Craftable
     {
-        public static TechType TechTypeID { get; private set; }
-        
-        internal SpeedBooster() 
+        internal SpeedBooster()
             : base(nameID: "SpeedModule",
                   friendlyName: "Speed Boost Module",
                   description: "Allows small vehicle engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.",
@@ -21,11 +19,12 @@
         {
         }
 
-        public override void Patch()
+        protected override void PrePatch() { }
+
+        protected override void PostPatch()
         {
-            base.Patch();
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.VehicleModule);
-            TechTypeID = this.TechType;
+            MTechType.SpeedBooster = this.TechType;
         }
 
         protected override TechData GetRecipe()

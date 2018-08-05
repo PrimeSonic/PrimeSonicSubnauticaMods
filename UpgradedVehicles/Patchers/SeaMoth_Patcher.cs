@@ -1,7 +1,6 @@
 ﻿namespace UpgradedVehicles.Patchers
 {
     using Harmony;
-    using UnityEngine;
 
     [HarmonyPatch(typeof(SeaMoth))]
     [HarmonyPatch("OnUpgradeModuleChange")]
@@ -34,12 +33,12 @@
         {
             var techType = __instance.GetComponent<TechTag>().type;
 
-            if (techType == SeaMothMk2.TechTypeID)
+            if (techType == MTechType.SeaMothMk2)
             {
                 __result = "SEAMOTH MK2";
                 return false;
             }
-            else if (techType == SeaMothMk3.TechTypeID)
+            else if (techType == MTechType.SeaMothMk3)
             {
                 __result = "SEAMOTH MK3";
                 return false;

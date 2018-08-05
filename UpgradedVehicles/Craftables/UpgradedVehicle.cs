@@ -1,7 +1,7 @@
 ﻿namespace UpgradedVehicles
 {
     using System;
-    using Common;    
+    using Common;
     using UnityEngine;
 
     internal abstract class UpgradedVehicle<T> : Craftable where T : Vehicle
@@ -9,16 +9,30 @@
         private readonly Type VehicleComponentType = typeof(T);
         protected readonly float HealthModifier;
 
+        protected readonly VehiclePowerCore PowerCore;
+
         protected UpgradedVehicle(
             string nameID,
             string friendlyName,
             string description,
             TechType template,
             float healthModifier,
-            TechType requiredAnalysis)
-            : base(nameID, friendlyName, description, template, CraftTree.Type.Constructor, "Vehicles", requiredAnalysis, TechGroup.Constructor, TechCategory.Constructor)
+            TechType requiredAnalysis,
+            VehiclePowerCore powerCore)
+            : base(
+                  nameID: nameID,
+                  friendlyName: friendlyName,
+                  description: description,
+                  template: template,
+                  fabricatorType: CraftTree.Type.Constructor,
+                  fabricatorTab: "Vehicles",
+                  requiredAnalysis: requiredAnalysis,
+                  groupForPDA: TechGroup.Constructor,
+                  categoryForPDA: TechCategory.Constructor,
+                  prerequisite: powerCore)
         {
             HealthModifier = healthModifier;
+            PowerCore = powerCore;
         }
 
         public override GameObject GetGameObject()

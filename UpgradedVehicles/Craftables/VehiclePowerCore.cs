@@ -7,9 +7,7 @@
 
     internal class VehiclePowerCore : Craftable
     {
-        public static TechType TechTypeID { get; private set; }
-        
-        internal readonly TechType SpeedBoosterID;
+        protected readonly SpeedBooster SpeedBoosterModule;
 
         internal VehiclePowerCore(SpeedBooster speedBoostModule)
              : base(nameID: "VehiclePowerCore",
@@ -20,16 +18,16 @@
                   fabricatorTab: "CommonModules",
                   requiredAnalysis: TechType.BaseUpgradeConsole,
                   groupForPDA: TechGroup.Resources,
-                  categoryForPDA: TechCategory.Electronics)
+                  categoryForPDA: TechCategory.Electronics,
+                  prerequisite: speedBoostModule)
         {
-            SpeedBoosterID = speedBoostModule.TechType;
+            SpeedBoosterModule = speedBoostModule;
         }
 
-        public override void Patch()
+        protected override void PostPatch()
         {
-            base.Patch();
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.None);
-            TechTypeID = this.TechType;
+            MTechType.VehiclePowerCore = this.TechType;
         }
 
         protected override TechData GetRecipe()
@@ -44,8 +42,8 @@
                                  new Ingredient(TechType.PowerCell, 1),
 
                                  new Ingredient(TechType.VehiclePowerUpgradeModule, 2), // Engine eficiency
-                                 new Ingredient(TechType.VehicleArmorPlating, 2), // Armor                                 
-                                 new Ingredient(SpeedBoosterID, 2), // Speed boost
+                                 new Ingredient(TechType.VehicleArmorPlating, 2), // Armor
+                                 new Ingredient(SpeedBoosterModule.TechType, 2), // Speed boost
                              })
             };
         }
@@ -57,6 +55,6 @@
             GameObject.DestroyImmediate(obj.GetComponent<Battery>());
 
             return obj;
-        }        
+        }
     }
 }
