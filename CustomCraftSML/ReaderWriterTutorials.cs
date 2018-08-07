@@ -44,6 +44,37 @@
                     GenerateOriginalsFile(category.ToString(), buildablesList, buildablesFile);
                 }
             }
+
+            GenerateOriginalBIoFuels();
+        }
+
+        private static void GenerateOriginalBIoFuels()
+        {
+            const string fileName = "OriginalBioFuelValues.txt";
+
+            if (File.Exists(OriginalsFolder + fileName))
+                return;
+
+            var allBioFuels = ValidBioFuels.charge;
+
+            var bioFuelList = new CustomBioFuelList();
+            foreach (TechType bioEnergyKey in allBioFuels.Keys)
+                bioFuelList.Add(new CustomBioFuel { ItemID = bioEnergyKey, Energy = allBioFuels[bioEnergyKey] });
+
+            var printyPrints = new List<string>();
+            printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]
+            {
+                "This file was generated with original BIoFuel energy values in the game",
+                "You can copy individual entries from this file to use in your personal overrides",
+                "--------------------------------------------------------------------------------",
+            }));
+
+            printyPrints.Add(bioFuelList.PrettyPrint());
+            printyPrints.Add(bioFuelList.PrettyPrint());
+
+            File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
+
+            Logger.Log($"{fileName} file not found. File generated.");
         }
 
         private static void HandleReadMeFile()

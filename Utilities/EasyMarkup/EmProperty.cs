@@ -48,6 +48,9 @@
             else if (haltOnKeyMismatch && Key != key)
                 throw new AssertionException($"Key mismatch. Expected:{Key} but was {key}.", $"Wrong key found: {Key}=/={key}");
 
+            if (cleanValue.Count <= 1) // only enough for the final delimiter
+                return true;
+
             SerializedValue = ExtractValue(cleanValue);
             OnValueExtractedEvent?.Invoke();
 

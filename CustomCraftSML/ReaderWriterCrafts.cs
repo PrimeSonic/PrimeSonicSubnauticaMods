@@ -32,9 +32,9 @@
             MoveToWorkingFiles(OldModifiedRecipesFile, ModifiedRecipesFile);
             MoveToWorkingFiles(OldCustomSizesFile, CustomSizesFile);
 
-            string[] workingFiles = Directory.GetFiles(WorkingFolder);
+            List<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
 
-            if (workingFiles.Length == 0)
+            if (workingFiles.Count == 0)
             {
                 CreateEmptyDefaultFiles();
                 return;
@@ -48,21 +48,25 @@
         private static void CreateEmptyDefaultFiles()
         {
             File.WriteAllText(AddedRecipiesFile, $"# Added Recipes #{Environment.NewLine}" +
-                $"# Check the AddedRecipes_Samples.txt file in the SampleFiles folder for details on how to add recipes for items normally not craftable #{Environment.NewLine}");
+                $"# Check the AddedRecipes_Samples.txt file in the SampleFiles folder for details on how to add recipes for items normally not craftable #{Environment.NewLine}" +
+                new AddedRecipeList().PrettyPrint());
+
             File.WriteAllText(ModifiedRecipesFile, $"# Modified Recipes #{Environment.NewLine}" +
-                $"# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #{Environment.NewLine}");
+                $"# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #{Environment.NewLine}" +
+                new ModifiedRecipeList().PrettyPrint());
+
             File.WriteAllText(CustomSizesFile, $"# Custom Sizes go in this file #{Environment.NewLine}" +
-                $"# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #{Environment.NewLine}");
+                $"# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #{Environment.NewLine}" +
+                new CustomSizeList().PrettyPrint());
 
             File.WriteAllText(CustomBioFuelsFile, $"# Custom BioFuel values go in this file #{Environment.NewLine}" +
-                //$"# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #" +
-                $"{Environment.NewLine}");
-
+                $"# Check the OriginalBioFuelValues.txt file in the SampleFiles folder for origina values and samples on how to modify bioreactor fuel values # {Environment.NewLine}" +
+                new CustomBioFuelList().PrettyPrint());
 
             Logger.Log($"No files found in working folder. Empty starter files created.");
         }
 
-        private static void DeserializedFiles(string[] workingFiles)
+        private static void DeserializedFiles(IEnumerable<string> workingFiles)
         {
             var keyChecker = new EmFileKeyChecker();
 
