@@ -14,6 +14,7 @@
         private const string CustomSizesFile = WorkingFolder + "CustomSizes.txt";
         private const string ModifiedRecipesFile = WorkingFolder + "ModifiedRecipes.txt";
         private const string AddedRecipiesFile = WorkingFolder + "AddedRecipes.txt";
+        private const string CustomBioFuelsFile = WorkingFolder + "CustomBioFuels.txt";
 
         private const string OldCustomSizesFile = FolderRoot + "CustomSizes.txt";
         private const string OldModifiedRecipesFile = FolderRoot + "ModifiedRecipes.txt";
@@ -22,6 +23,7 @@
         private static readonly IDictionary<TechType, AddedRecipe> addedRecipes = new Dictionary<TechType, AddedRecipe>();
         private static readonly IDictionary<TechType, ModifiedRecipe> modifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
         private static readonly IDictionary<TechType, CustomSize> customSizes = new Dictionary<TechType, CustomSize>();
+        private static readonly IDictionary<TechType, CustomBioFuel> customBioFuels = new Dictionary<TechType, CustomBioFuel>();
 
         private static void HandleWorkingFiles()
         {
@@ -51,6 +53,11 @@
                 $"# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #{Environment.NewLine}");
             File.WriteAllText(CustomSizesFile, $"# Custom Sizes go in this file #{Environment.NewLine}" +
                 $"# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #{Environment.NewLine}");
+
+            File.WriteAllText(CustomBioFuelsFile, $"# Custom BioFuel values go in this file #{Environment.NewLine}" +
+                //$"# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #" +
+                $"{Environment.NewLine}");
+
 
             Logger.Log($"No files found in working folder. Empty starter files created.");
         }
@@ -86,6 +93,10 @@
 
                         case "CustomSizes":
                             check = ParseCustomSizes(serializedData);
+                            break;
+
+                        case "CustomBioFuels":
+                            check = ParseCustomBioFuelValues(serializedData);
                             break;
 
                         default:
@@ -200,6 +211,35 @@
             return unique;
         }
 
+        private static int ParseCustomBioFuelValues(string serializedData)
+        {
+            var customBioFuelsList = new CustomBioFuelList();
+
+            bool successfullyParsed = customBioFuelsList.Deserialize(serializedData);
+
+            if (!successfullyParsed)
+                return -1;
+
+            if (customBioFuelsList.Count == 0)
+                return 0;
+
+            int unique = 0;
+            foreach (CustomBioFuel bioEnergy in customBioFuelsList)
+            {
+                if (customBioFuels.ContainsKey(bioEnergy.ItemID))
+                {
+                    QuickLogger.Warning($"Custom BioFuel for '{bioEnergy.ItemID}' was already added by another working file. First found kept.", false);
+                }
+                else
+                {
+                    customBioFuels.Add(bioEnergy.ItemID, bioEnergy);
+                    unique++;
+                }
+            }
+
+            return unique;
+        }
+
         private static void MoveToWorkingFiles(string oldFile, string newFile)
         {
             if (!Directory.Exists(WorkingFolder))
@@ -213,18 +253,19 @@
         {
             foreach (IAddedRecipe item in addedRecipes.Values)
                 CustomCraft.AddRecipe(item);
-
             Logger.Log($"{addedRecipes.Count} Added Recipies patched.");
 
             foreach (IModifiedRecipe item in modifiedRecipes.Values)
                 CustomCraft.ModifyRecipe(item);
-
             Logger.Log($"{modifiedRecipes.Count} Modified Recipies patched.");
 
             foreach (ICustomSize customSize in customSizes.Values)
                 CustomCraft.CustomizeItemSize(customSize);
-
             Logger.Log($"{customSizes.Count} Custom Sizes patched.");
+
+            foreach (ICustomBioFuel customBioFuel in customBioFuels.Values)
+                CustomCraft.CustomizeBioFuel(customBioFuel);
+            Logger.Log($"{customBioFuels.Count} Custom bioreactor values patched.");
         }
     }
 }

@@ -7,7 +7,6 @@
 
     public static class CustomCraft
     {
-
         public static void AddRecipe(IAddedRecipe addedRecipe)
         {
             Assert.IsTrue(addedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
@@ -37,6 +36,11 @@
             // Value chosen for what should be the standard inventory size
 
             CraftDataHandler.SetItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+        }
+
+        public static void CustomizeBioFuel(ICustomBioFuel customBioFuel)
+        {
+            BioReactorHandler.SetBioReactorCharge(customBioFuel.ItemID, customBioFuel.Energy);
         }
 
         // ----------------------

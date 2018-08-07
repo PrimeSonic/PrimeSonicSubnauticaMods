@@ -92,8 +92,6 @@
         }
 
         internal override EmProperty Copy() => new EmPropertyCollectionList<T>(Key, (T)Template.Copy());
-
-
     }
 
 }

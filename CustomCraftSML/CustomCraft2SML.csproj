@@ -62,6 +62,8 @@
     <Compile Include="QPatch.cs" />
     <Compile Include="Serialization\AddedRecipe.cs" />
     <Compile Include="Serialization\AddedRecipeList.cs" />
+    <Compile Include="Serialization\CustomBioFuel.cs" />
+    <Compile Include="Serialization\CustomBioFuelList.cs" />
     <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\CustomSizeList.cs" />
     <Compile Include="Serialization\EmFileKeyChecker.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="Serialization\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
     <Compile Include="Serialization\IAddedRecipe.cs" />
+    <Compile Include="Serialization\ICustomBioFuel.cs" />
     <Compile Include="Serialization\ICustomSize.cs" />
     <Compile Include="Serialization\IModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipe.cs" />

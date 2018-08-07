@@ -150,7 +150,7 @@
                 "--------------------------------------------------------------------------------",
             }));
 
-            var originals = new ModifiedRecipeList($"{key}");
+            var originals = new ModifiedRecipeList();
 
             foreach (TechType craftable in list)
                 originals.Add(new ModifiedRecipe(craftable));
