@@ -16,10 +16,6 @@
         private const string AddedRecipiesFile = WorkingFolder + "AddedRecipes.txt";
         private const string CustomBioFuelsFile = WorkingFolder + "CustomBioFuels.txt";
 
-        private const string OldCustomSizesFile = FolderRoot + "CustomSizes.txt";
-        private const string OldModifiedRecipesFile = FolderRoot + "ModifiedRecipes.txt";
-        private const string OldAddedRecipiesFile = FolderRoot + "AddedRecipes.txt";
-
         private static readonly IDictionary<TechType, AddedRecipe> addedRecipes = new Dictionary<TechType, AddedRecipe>();
         private static readonly IDictionary<TechType, ModifiedRecipe> modifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
         private static readonly IDictionary<TechType, CustomSize> customSizes = new Dictionary<TechType, CustomSize>();
@@ -27,43 +23,51 @@
 
         private static void HandleWorkingFiles()
         {
-            // Old files and file location
-            MoveToWorkingFiles(OldAddedRecipiesFile, AddedRecipiesFile);
-            MoveToWorkingFiles(OldModifiedRecipesFile, ModifiedRecipesFile);
-            MoveToWorkingFiles(OldCustomSizesFile, CustomSizesFile);
-
             List<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
 
-            if (workingFiles.Count == 0)
-            {
-                CreateEmptyDefaultFiles();
-                return;
-            }
+            if (!workingFiles.Contains(AddedRecipiesFile))
+                CreateEmptyAddedRecipesFile();
+
+            if (!workingFiles.Contains(ModifiedRecipesFile))
+                CreateEmptyModifiedRecipesFile();
+
+            if (!workingFiles.Contains(CustomSizesFile))
+                CreateEmptySizesFile();
+
+            if (!workingFiles.Contains(CustomBioFuelsFile))
+                CreateEmptyBioFuelFile();
 
             DeserializedFiles(workingFiles);
 
             SendToSMLHelper();
         }
 
-        private static void CreateEmptyDefaultFiles()
+        private static void CreateEmptyAddedRecipesFile()
         {
             File.WriteAllText(AddedRecipiesFile, $"# Added Recipes #{Environment.NewLine}" +
-                $"# Check the AddedRecipes_Samples.txt file in the SampleFiles folder for details on how to add recipes for items normally not craftable #{Environment.NewLine}" +
-                new AddedRecipeList().PrettyPrint());
+                            $"# Check the AddedRecipes_Samples.txt file in the SampleFiles folder for details on how to add recipes for items normally not craftable #{Environment.NewLine}" +
+                            new AddedRecipeList().PrettyPrint());
+        }
 
+        private static void CreateEmptyModifiedRecipesFile()
+        {
             File.WriteAllText(ModifiedRecipesFile, $"# Modified Recipes #{Environment.NewLine}" +
-                $"# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #{Environment.NewLine}" +
-                new ModifiedRecipeList().PrettyPrint());
+                            $"# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #{Environment.NewLine}" +
+                            new ModifiedRecipeList().PrettyPrint());
+        }
 
+        private static void CreateEmptySizesFile()
+        {
             File.WriteAllText(CustomSizesFile, $"# Custom Sizes go in this file #{Environment.NewLine}" +
-                $"# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #{Environment.NewLine}" +
-                new CustomSizeList().PrettyPrint());
+                            $"# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #{Environment.NewLine}" +
+                            new CustomSizeList().PrettyPrint());
+        }
 
+        private static void CreateEmptyBioFuelFile()
+        {
             File.WriteAllText(CustomBioFuelsFile, $"# Custom BioFuel values go in this file #{Environment.NewLine}" +
-                $"# Check the OriginalBioFuelValues.txt file in the SampleFiles folder for origina values and samples on how to modify bioreactor fuel values # {Environment.NewLine}" +
-                new CustomBioFuelList().PrettyPrint());
-
-            Logger.Log($"No files found in working folder. Empty starter files created.");
+                            $"# Check the OriginalBioFuelValues.txt file in the SampleFiles folder for origina values and samples on how to modify bioreactor fuel values # {Environment.NewLine}" +
+                            new CustomBioFuelList().PrettyPrint());
         }
 
         private static void DeserializedFiles(IEnumerable<string> workingFiles)
@@ -72,13 +76,13 @@
 
             foreach (string fileName in workingFiles)
             {
-                QuickLogger.Message($"Reading file: {fileName}", false);
+                QuickLogger.Message($"Reading file: {fileName}");
 
                 string serializedData = File.ReadAllText(fileName);
 
                 if (string.IsNullOrEmpty(serializedData))
                 {
-                    QuickLogger.Warning($"File contained no text", false);
+                    QuickLogger.Warning($"File contained no text");
                     continue;
                 }
 
@@ -104,20 +108,20 @@
                             break;
 
                         default:
-                            QuickLogger.Error($"Invalid primary key '{key}' detected in file", false);
+                            QuickLogger.Error($"Invalid primary key '{key}' detected in file");
                             continue;
                     }
 
                     switch (check)
                     {
                         case -1:
-                            QuickLogger.Error($"Unable to parse file", false);
+                            QuickLogger.Error($"Unable to parse file");
                             break;
                         case 0:
-                            QuickLogger.Warning($"File was parsed but no entries were found", false);
+                            QuickLogger.Message($"File was parsed but no entries were found");
                             break;
                         default:
-                            QuickLogger.Message($"{check} entries parsed from file", false);
+                            QuickLogger.Message($"{check} entries parsed from file");
                             break;
                     }
                 }
@@ -145,7 +149,7 @@
             {
                 if (addedRecipes.ContainsKey(recipe.ItemID))
                 {
-                    QuickLogger.Warning($"Added recipe for '{recipe.ItemID}' was already added by another working file. First found kept.", false);
+                    QuickLogger.Warning($"Added recipe for '{recipe.ItemID}' was already added by another working file. First found kept.");
                 }
                 else
                 {
@@ -174,7 +178,7 @@
             {
                 if (modifiedRecipes.ContainsKey(recipe.ItemID))
                 {
-                    QuickLogger.Warning($"Modified recipe for '{recipe.ItemID}' was already added by another working file. First found kept.", false);
+                    QuickLogger.Warning($"Modified recipe for '{recipe.ItemID}' was already added by another working file. First found kept.");
                 }
                 else
                 {
@@ -203,7 +207,7 @@
             {
                 if (customSizes.ContainsKey(size.ItemID))
                 {
-                    QuickLogger.Warning($"Custom Size for '{size.ItemID}' was already added by another working file. First found kept.", false);
+                    QuickLogger.Warning($"Custom Size for '{size.ItemID}' was already added by another working file. First found kept.");
                 }
                 else
                 {
@@ -232,7 +236,7 @@
             {
                 if (customBioFuels.ContainsKey(bioEnergy.ItemID))
                 {
-                    QuickLogger.Warning($"Custom BioFuel for '{bioEnergy.ItemID}' was already added by another working file. First found kept.", false);
+                    QuickLogger.Warning($"Custom BioFuel for '{bioEnergy.ItemID}' was already added by another working file. First found kept.");
                 }
                 else
                 {

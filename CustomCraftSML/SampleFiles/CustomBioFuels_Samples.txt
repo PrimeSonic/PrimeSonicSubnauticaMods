@@ -1,0 +1,15 @@
+# Custom BioFuel values go in this file #
+# Check the OriginalBioFuelValues.txt file in the SampleFiles folder for origina values and samples on how to modify bioreactor fuel values 
+#CustomBioFuels: 
+(
+    ItemID: Oculus; # You can change the values of any existing organic material for the BioReactor. #
+    Energy: 650; # This one was normally 630 #
+),
+(
+    ItemID: NutrientBlock; # You can add an item for the BioReactor that normally wouldn't go there. #
+    Energy: 400;
+),
+(
+    ItemID: CreepvineSeedCluster; # You can't actually remove an item from being compatible with the BioReactor. #
+    Energy: 0; # But set this to 0 and the BioReactor won't get any power from it. #
+);

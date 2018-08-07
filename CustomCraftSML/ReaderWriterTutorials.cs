@@ -50,7 +50,7 @@
 
         private static void GenerateOriginalBIoFuels()
         {
-            const string fileName = "OriginalBioFuelValues.txt";
+            const string fileName = "BioReactor_Values.txt";
 
             if (File.Exists(OriginalsFolder + fileName))
                 return;
