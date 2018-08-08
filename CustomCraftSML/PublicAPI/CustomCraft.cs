@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML.PublicAPI
 {
+    using Common;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Crafting;
@@ -8,20 +9,27 @@
 
     public static class CustomCraft
     {
-        public static void AddEntry<T>(T entry)
+        public static bool AddEntry<T>(T entry)
             where T : ITechTyped
         {
-            if (typeof(T) == typeof(IAddedRecipe))
-                AddRecipe(entry as IAddedRecipe);
-
-            if (typeof(T) == typeof(IModifiedRecipe))
-                ModifyRecipe(entry as IModifiedRecipe);
-
-            if (typeof(T) == typeof(ICustomSize))
-                CustomizeItemSize(entry as ICustomSize);
-
-            if (typeof(T) == typeof(ICustomBioFuel))
-                CustomizeBioFuel(entry as ICustomBioFuel);
+            switch (entry)
+            {
+                case IAddedRecipe addedRecipe:
+                    AddRecipe(addedRecipe);
+                    return true;
+                case IModifiedRecipe modifiedRecipe:
+                    ModifyRecipe(modifiedRecipe);
+                    return true;
+                case ICustomSize customSize:
+                    CustomizeItemSize(customSize);
+                    return true;
+                case ICustomBioFuel customBioFuel:
+                    CustomizeBioFuel(customBioFuel);
+                    return true;
+                default:
+                    QuickLogger.Error("Type check failure in CustomCraft.AddEntry");
+                    return false;
+            }
         }
 
         internal static void AddRecipe(IAddedRecipe addedRecipe)

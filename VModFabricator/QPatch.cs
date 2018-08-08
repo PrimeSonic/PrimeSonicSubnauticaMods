@@ -1,28 +1,25 @@
-﻿using System;
-
-namespace VModFabricator
+﻿namespace VModFabricator
 {
+    using System;
+    using Common;
+
     public class QPatch
     {
         public static void Patch()
         {
-#if DEBUG
             try
             {
-                Console.WriteLine($"[VModFabricator] Start patching");
-#endif
+                QuickLogger.Message("Start");
                 var vmodFabricator = new VModFabricatorModule();
 
                 vmodFabricator.Patch();
 
-#if DEBUG
-                Console.WriteLine($"[VModFabricator] Finish patching");
+                QuickLogger.Message("Finish");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[VModFabricator] EXCEPTION on Patch: " + ex.ToString());
+                QuickLogger.Error("EXCEPTION on Patch: " + ex.ToString());
             }
-#endif
         }
     }
 }

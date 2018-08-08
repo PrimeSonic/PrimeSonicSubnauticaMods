@@ -21,6 +21,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)QuickLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StringHelper.cs" />
   </ItemGroup>
 </Project>

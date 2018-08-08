@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using Common;
 
-    public class EmPropertyCollectionList<T> : EmProperty, IEnumerable<T>, ISerialConfirmation where T : EmPropertyCollection
+    public class EmPropertyCollectionList<T> : EmProperty, IEnumerable<T>, IValueConfirmation where T : EmPropertyCollection
     {
         public bool HasValue { get; private set; } = false;
 

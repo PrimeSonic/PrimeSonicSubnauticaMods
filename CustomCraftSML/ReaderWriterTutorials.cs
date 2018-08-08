@@ -45,10 +45,10 @@
                 }
             }
 
-            GenerateOriginalBIoFuels();
+            GenerateOriginalBioFuels();
         }
 
-        private static void GenerateOriginalBIoFuels()
+        private static void GenerateOriginalBioFuels()
         {
             const string fileName = "BioReactor_Values.txt";
 
@@ -69,7 +69,6 @@
                 "--------------------------------------------------------------------------------",
             }));
 
-            printyPrints.Add(bioFuelList.PrettyPrint());
             printyPrints.Add(bioFuelList.PrettyPrint());
 
             File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());

@@ -4,7 +4,7 @@
     using System.Globalization;
     using Common;
 
-    public class EmProperty<T> : EmProperty, ISerialConfirmation where T : IConvertible
+    public class EmProperty<T> : EmProperty, IValueConfirmation where T : IConvertible
     {
         public string InLineComment { get; set; } = null;
 

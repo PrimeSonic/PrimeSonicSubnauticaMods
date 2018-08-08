@@ -1,6 +1,6 @@
 ﻿namespace Common.EasyMarkup
 {
-    interface ISerialConfirmation
+    public interface IValueConfirmation
     {
         bool HasValue { get; }
     }

@@ -151,10 +151,15 @@
         private static void SendToSMLHelper<T>(IDictionary<TechType, T> uniqueEntries)
             where T : ITechTyped
         {
+            int successCount = 0;
             foreach (T item in uniqueEntries.Values)
-                CustomCraft.AddEntry(item);
+            {
+                bool result = CustomCraft.AddEntry(item);
 
-            Logger.Log($"{uniqueEntries.Count} {typeof(T).Name} entries were patched.");
+                if (result) successCount++;
+            }
+
+            Logger.Log($"{successCount} of {uniqueEntries.Count} {typeof(T).Name} entries were patched.");
         }
     }
 }
