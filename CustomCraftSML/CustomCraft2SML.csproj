@@ -50,6 +50,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\ITechTyped.cs" />
+    <Compile Include="Interfaces\ITutorialText.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ReaderWriterCrafts.cs" />
     <Compile Include="ReaderWriterManager.cs" />
@@ -66,15 +68,14 @@
     <Compile Include="Serialization\CustomBioFuelList.cs" />
     <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\CustomSizeList.cs" />
-    <Compile Include="Serialization\EmFileKeyChecker.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
     <Compile Include="Serialization\EmPropertyTechType.cs" />
     <Compile Include="Serialization\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
-    <Compile Include="Serialization\IAddedRecipe.cs" />
-    <Compile Include="Serialization\ICustomBioFuel.cs" />
-    <Compile Include="Serialization\ICustomSize.cs" />
-    <Compile Include="Serialization\IModifiedRecipe.cs" />
+    <Compile Include="Interfaces\IAddedRecipe.cs" />
+    <Compile Include="Interfaces\ICustomBioFuel.cs" />
+    <Compile Include="Interfaces\ICustomSize.cs" />
+    <Compile Include="Interfaces\IModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipeList.cs" />
     <Compile Include="ValidBioFuels.cs" />
@@ -112,6 +113,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

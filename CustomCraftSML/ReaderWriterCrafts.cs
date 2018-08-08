@@ -5,8 +5,10 @@
     using System.IO;
     using Common;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
+    using UnityEngine.Assertions;
 
     internal static partial class FileReaderWriter
     {
@@ -26,254 +28,134 @@
             List<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
 
             if (!workingFiles.Contains(AddedRecipiesFile))
-                CreateEmptyAddedRecipesFile();
+                CreateEmptyFile<AddedRecipeList>(AddedRecipiesFile);
 
             if (!workingFiles.Contains(ModifiedRecipesFile))
-                CreateEmptyModifiedRecipesFile();
+                CreateEmptyFile<ModifiedRecipeList>(ModifiedRecipesFile);
 
             if (!workingFiles.Contains(CustomSizesFile))
-                CreateEmptySizesFile();
+                CreateEmptyFile<CustomSizeList>(CustomSizesFile);
 
             if (!workingFiles.Contains(CustomBioFuelsFile))
-                CreateEmptyBioFuelFile();
+                CreateEmptyFile<CustomBioFuelList>(CustomBioFuelsFile);
 
-            DeserializedFiles(workingFiles);
+            foreach (string file in workingFiles)
+                DeserializedFile(file);
 
-            SendToSMLHelper();
+            SendToSMLHelper(addedRecipes);
+            SendToSMLHelper(modifiedRecipes);
+            SendToSMLHelper(customSizes);
+            SendToSMLHelper(customBioFuels);
         }
 
-        private static void CreateEmptyAddedRecipesFile()
+        private static void CreateEmptyFile<T>(string filePath) where T : EmProperty, ITutorialText, new()
         {
-            File.WriteAllText(AddedRecipiesFile, $"# Added Recipes #{Environment.NewLine}" +
-                            $"# Check the AddedRecipes_Samples.txt file in the SampleFiles folder for details on how to add recipes for items normally not craftable #{Environment.NewLine}" +
-                            new AddedRecipeList().PrettyPrint());
+            T emptyList = new T();
+
+            List<string> tutorialText = emptyList.TutorialText;
+
+            tutorialText.Add(emptyList.PrettyPrint());
+
+            File.WriteAllLines(filePath, tutorialText.ToArray());
         }
 
-        private static void CreateEmptyModifiedRecipesFile()
+        private static void DeserializedFile(string workingFile)
         {
-            File.WriteAllText(ModifiedRecipesFile, $"# Modified Recipes #{Environment.NewLine}" +
-                            $"# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #{Environment.NewLine}" +
-                            new ModifiedRecipeList().PrettyPrint());
-        }
+            QuickLogger.Message($"Reading file: {workingFile}");
 
-        private static void CreateEmptySizesFile()
-        {
-            File.WriteAllText(CustomSizesFile, $"# Custom Sizes go in this file #{Environment.NewLine}" +
-                            $"# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #{Environment.NewLine}" +
-                            new CustomSizeList().PrettyPrint());
-        }
+            string serializedData = File.ReadAllText(workingFile);
 
-        private static void CreateEmptyBioFuelFile()
-        {
-            File.WriteAllText(CustomBioFuelsFile, $"# Custom BioFuel values go in this file #{Environment.NewLine}" +
-                            $"# Check the OriginalBioFuelValues.txt file in the SampleFiles folder for origina values and samples on how to modify bioreactor fuel values # {Environment.NewLine}" +
-                            new CustomBioFuelList().PrettyPrint());
-        }
-
-        private static void DeserializedFiles(IEnumerable<string> workingFiles)
-        {
-            var keyChecker = new EmFileKeyChecker();
-
-            foreach (string fileName in workingFiles)
+            if (string.IsNullOrEmpty(serializedData))
             {
-                QuickLogger.Message($"Reading file: {fileName}");
+                QuickLogger.Warning($"File contained no text");
+                return;
+            }
 
-                string serializedData = File.ReadAllText(fileName);
-
-                if (string.IsNullOrEmpty(serializedData))
+            if (EmProperty.CheckKey(serializedData, out string key))
+            {
+                int check = -2;
+                switch (key)
                 {
-                    QuickLogger.Warning($"File contained no text");
-                    continue;
+                    case "AddedRecipes":
+                        check = ParseEntries<AddedRecipe, AddedRecipeList>(serializedData, addedRecipes);
+                        break;
+
+                    case "ModifiedRecipes":
+                        check = ParseEntries<ModifiedRecipe, ModifiedRecipeList>(serializedData, modifiedRecipes);
+                        break;
+
+                    case "CustomSizes":
+                        check = ParseEntries<CustomSize, CustomSizeList>(serializedData, customSizes);
+                        break;
+
+                    case "CustomBioFuels":
+                        check = ParseEntries<CustomBioFuel, CustomBioFuelList>(serializedData, customBioFuels);
+                        break;
+
+                    default:
+                        QuickLogger.Error($"Invalid primary key '{key}' detected in file");
+                        return;
                 }
 
-                if (keyChecker.CheckKey(serializedData, out string key))
+                switch (check)
                 {
-                    int check = -2;
-                    switch (key)
-                    {
-                        case "AddedRecipes":
-                            check = ParseAddedRecipes(serializedData);
-                            break;
-
-                        case "ModifiedRecipes":
-                            check = ParseModifiedRecipes(serializedData);
-                            break;
-
-                        case "CustomSizes":
-                            check = ParseCustomSizes(serializedData);
-                            break;
-
-                        case "CustomBioFuels":
-                            check = ParseCustomBioFuelValues(serializedData);
-                            break;
-
-                        default:
-                            QuickLogger.Error($"Invalid primary key '{key}' detected in file");
-                            continue;
-                    }
-
-                    switch (check)
-                    {
-                        case -1:
-                            QuickLogger.Error($"Unable to parse file");
-                            break;
-                        case 0:
-                            QuickLogger.Message($"File was parsed but no entries were found");
-                            break;
-                        default:
-                            QuickLogger.Message($"{check} entries parsed from file");
-                            break;
-                    }
+                    case -1:
+                        QuickLogger.Error($"Unable to parse file");
+                        break;
+                    case 0:
+                        QuickLogger.Message($"File was parsed but no entries were found");
+                        break;
+                    default:
+                        QuickLogger.Message($"{check} entries parsed from file");
+                        break;
                 }
-                else
-                {
-                    QuickLogger.Warning("Could not identify primary key in file");
-                }
+            }
+            else
+            {
+                QuickLogger.Warning("Could not identify primary key in file");
             }
         }
 
-        private static int ParseAddedRecipes(string serializedData)
+        private static int ParseEntries<T, T2>(string serializedData, IDictionary<TechType, T> parsedItems)
+            where T : EmPropertyCollection, ITechTyped
+            where T2 : EmPropertyCollectionList<T>, new()
         {
-            var addedRecipeList = new AddedRecipeList();
+            T2 list = new T2();
 
-            bool successfullyParsed = addedRecipeList.Deserialize(serializedData);
+            Assert.AreEqual(typeof(T), list.ItemType);
+
+            bool successfullyParsed = list.Deserialize(serializedData);
 
             if (!successfullyParsed)
-                return -1;
+                return -1; // Error case
 
-            if (addedRecipeList.Count == 0)
-                return 0;
+            if (list.Count == 0)
+                return 0; // No entries
 
             int unique = 0;
-            foreach (AddedRecipe recipe in addedRecipeList)
+            foreach (T item in list)
             {
-                if (addedRecipes.ContainsKey(recipe.ItemID))
+                if (parsedItems.ContainsKey(item.ItemID))
                 {
-                    QuickLogger.Warning($"Added recipe for '{recipe.ItemID}' was already added by another working file. First found kept.");
+                    QuickLogger.Warning($"Duplicate entry for '{item.ItemID}' in '{list.Key}' was already added by another working file. Kept first one. Discarded duplicate.");
                 }
                 else
                 {
-                    addedRecipes.Add(recipe.ItemID, recipe);
+                    parsedItems.Add(item.ItemID, item);
                     unique++;
                 }
             }
 
-            return unique++;
+            return unique++; // Return the number of unique entries added in this list
         }
 
-        private static int ParseModifiedRecipes(string serializedData)
+        private static void SendToSMLHelper<T>(IDictionary<TechType, T> uniqueEntries)
+            where T : ITechTyped
         {
-            var modifiedRecipeList = new ModifiedRecipeList();
+            foreach (T item in uniqueEntries.Values)
+                CustomCraft.AddEntry(item);
 
-            bool successfullyParsed = modifiedRecipeList.Deserialize(serializedData);
-
-            if (!successfullyParsed)
-                return -1;
-
-            if (modifiedRecipeList.Count == 0)
-                return 0;
-
-            int unique = 0;
-            foreach (ModifiedRecipe recipe in modifiedRecipeList)
-            {
-                if (modifiedRecipes.ContainsKey(recipe.ItemID))
-                {
-                    QuickLogger.Warning($"Modified recipe for '{recipe.ItemID}' was already added by another working file. First found kept.");
-                }
-                else
-                {
-                    modifiedRecipes.Add(recipe.ItemID, recipe);
-                    unique++;
-                }
-            }
-
-            return unique++;
-        }
-
-        private static int ParseCustomSizes(string serializedData)
-        {
-            var customSizesList = new CustomSizeList();
-
-            bool successfullyParsed = customSizesList.Deserialize(serializedData);
-
-            if (!successfullyParsed)
-                return -1;
-
-            if (customSizesList.Count == 0)
-                return 0;
-
-            int unique = 0;
-            foreach (CustomSize size in customSizesList)
-            {
-                if (customSizes.ContainsKey(size.ItemID))
-                {
-                    QuickLogger.Warning($"Custom Size for '{size.ItemID}' was already added by another working file. First found kept.");
-                }
-                else
-                {
-                    customSizes.Add(size.ItemID, size);
-                    unique++;
-                }
-            }
-
-            return unique;
-        }
-
-        private static int ParseCustomBioFuelValues(string serializedData)
-        {
-            var customBioFuelsList = new CustomBioFuelList();
-
-            bool successfullyParsed = customBioFuelsList.Deserialize(serializedData);
-
-            if (!successfullyParsed)
-                return -1;
-
-            if (customBioFuelsList.Count == 0)
-                return 0;
-
-            int unique = 0;
-            foreach (CustomBioFuel bioEnergy in customBioFuelsList)
-            {
-                if (customBioFuels.ContainsKey(bioEnergy.ItemID))
-                {
-                    QuickLogger.Warning($"Custom BioFuel for '{bioEnergy.ItemID}' was already added by another working file. First found kept.");
-                }
-                else
-                {
-                    customBioFuels.Add(bioEnergy.ItemID, bioEnergy);
-                    unique++;
-                }
-            }
-
-            return unique;
-        }
-
-        private static void MoveToWorkingFiles(string oldFile, string newFile)
-        {
-            if (!Directory.Exists(WorkingFolder))
-                Directory.CreateDirectory(WorkingFolder);
-
-            if (File.Exists(oldFile))
-                File.Move(oldFile, newFile);
-        }
-
-        private static void SendToSMLHelper()
-        {
-            foreach (IAddedRecipe item in addedRecipes.Values)
-                CustomCraft.AddRecipe(item);
-            Logger.Log($"{addedRecipes.Count} Added Recipies patched.");
-
-            foreach (IModifiedRecipe item in modifiedRecipes.Values)
-                CustomCraft.ModifyRecipe(item);
-            Logger.Log($"{modifiedRecipes.Count} Modified Recipies patched.");
-
-            foreach (ICustomSize customSize in customSizes.Values)
-                CustomCraft.CustomizeItemSize(customSize);
-            Logger.Log($"{customSizes.Count} Custom Sizes patched.");
-
-            foreach (ICustomBioFuel customBioFuel in customBioFuels.Values)
-                CustomCraft.CustomizeBioFuel(customBioFuel);
-            Logger.Log($"{customBioFuels.Count} Custom bioreactor values patched.");
+            Logger.Log($"{uniqueEntries.Count} {nameof(T)} entries patched.");
         }
     }
 }

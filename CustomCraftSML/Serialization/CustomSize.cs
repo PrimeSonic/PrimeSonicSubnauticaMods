@@ -2,9 +2,10 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
     using UnityEngine.Assertions;
 
-    public class CustomSize : EmPropertyCollection, ICustomSize
+    internal class CustomSize : EmPropertyCollection, ICustomSize
     {
         public const short Max = 6;
         public const short Min = 1;

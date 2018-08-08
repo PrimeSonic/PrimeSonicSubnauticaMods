@@ -30,7 +30,7 @@
         {
             try
             {
-                return emProperty.CheckKey(serializedData, out foundKey);
+                return EmProperty.CheckKey(serializedData, out foundKey, emProperty.Key);
             }
             catch (Exception ex)
             {

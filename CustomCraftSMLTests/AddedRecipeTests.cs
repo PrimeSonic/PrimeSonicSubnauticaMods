@@ -89,7 +89,7 @@
                                       ");" + "\r\n";
 
 
-            var recipe = new AddedRecipeList();
+            var recipe = new CustomCraft2SML.Serialization.AddedRecipeList();
 
             recipe.FromString(serialized);
 
@@ -224,7 +224,7 @@
                                       ");" + "\r\n";
 
 
-            var recipe = new AddedRecipeList();
+            var recipe = new CustomCraft2SML.Serialization.AddedRecipeList();
 
             recipe.FromString(serialized);
 
@@ -278,7 +278,7 @@
                                         "    Path:Fabricator/Survival/CuredFood;                  " +
                                         ");                                                       ";
 
-            var recipeList = new AddedRecipeList();
+            var recipeList = new CustomCraft2SML.Serialization.AddedRecipeList();
 
             bool success = recipeList.FromString(serialized);
 

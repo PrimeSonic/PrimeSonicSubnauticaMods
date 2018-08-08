@@ -1,10 +1,10 @@
-﻿namespace CustomCraft2SML.Serialization
+﻿namespace CustomCraft2SML.Interfaces
 {
     using System.Collections.Generic;
+    using CustomCraft2SML.Serialization;
 
-    public interface IModifiedRecipe
+    public interface IModifiedRecipe : ITechTyped
     {
-        TechType ItemID { get; }
         short? AmountCrafted { get; }
         bool ForceUnlockAtStart { get; }
 

@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
 
     internal class CustomBioFuel : EmPropertyCollection, ICustomBioFuel
     {

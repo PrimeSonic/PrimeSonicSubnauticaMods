@@ -2,8 +2,9 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
 
-    public class AddedRecipe : ModifiedRecipe, IAddedRecipe
+    internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
         private readonly EmProperty<string> path;
 
