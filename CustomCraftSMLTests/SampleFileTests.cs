@@ -63,7 +63,7 @@
         [Test]
         public void Sample_AddedRecipes_Ok()
         {
-            var aRecipes = new AddedRecipeList();
+            var aRecipes = new CustomCraft2SML.Serialization.AddedRecipeList();
 
             string sample = File.ReadAllText(SampleFileDirectory + "AddedRecipes_Samples.txt");
 
@@ -94,7 +94,7 @@
             };
             bigFilterWaterRecipe.AddIngredient(TechType.FilteredWater, 2);
 
-            var origRecipeList = new AddedRecipeList
+            var origRecipeList = new CustomCraft2SML.Serialization.AddedRecipeList
             {
                 nutrientBlockRecipe,
                 bigFilterWaterRecipe
@@ -106,7 +106,7 @@
 
             File.WriteAllText(samples2File, serialized);
 
-            var readingRecipeList = new AddedRecipeList();
+            var readingRecipeList = new CustomCraft2SML.Serialization.AddedRecipeList();
 
             string reserialized = File.ReadAllText(samples2File);
 

@@ -6,7 +6,7 @@
     {
         public static void Patch()
         {
-            Logger.Log("Loading files begin");
+            Logger.Log("START");
 
             try
             {
@@ -17,7 +17,7 @@
                 Logger.Log(outEx.ToString());
             }
 
-            Logger.Log("Loading files complete");
+            Logger.Log("FINISH");
         }
     }
 }

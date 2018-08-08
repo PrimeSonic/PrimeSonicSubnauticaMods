@@ -1,5 +1,6 @@
 ﻿namespace Common.EasyMarkup
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using Common;
@@ -7,6 +8,8 @@
     public class EmPropertyCollectionList<T> : EmProperty, IEnumerable<T>, ISerialConfirmation where T : EmPropertyCollection
     {
         public bool HasValue { get; private set; } = false;
+
+        public Type ItemType => typeof(T);
 
         protected IList<T> InternalValues { get; } = new List<T>();
 
@@ -92,8 +95,6 @@
         }
 
         internal override EmProperty Copy() => new EmPropertyCollectionList<T>(Key, (T)Template.Copy());
-
-
     }
 
 }

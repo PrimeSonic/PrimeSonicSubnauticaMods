@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML.Serialization
+﻿namespace CustomCraft2SML.Interfaces
 {
     public interface IAddedRecipe : IModifiedRecipe
     {

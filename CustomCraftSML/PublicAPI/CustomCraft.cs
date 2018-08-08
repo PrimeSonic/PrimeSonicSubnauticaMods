@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML.PublicAPI
 {
+    using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -7,8 +8,23 @@
 
     public static class CustomCraft
     {
+        public static void AddEntry<T>(T entry)
+            where T : ITechTyped
+        {
+            if (typeof(T) == typeof(IAddedRecipe))
+                AddRecipe(entry as IAddedRecipe);
 
-        public static void AddRecipe(IAddedRecipe addedRecipe)
+            if (typeof(T) == typeof(IModifiedRecipe))
+                ModifyRecipe(entry as IModifiedRecipe);
+
+            if (typeof(T) == typeof(ICustomSize))
+                CustomizeItemSize(entry as ICustomSize);
+
+            if (typeof(T) == typeof(ICustomBioFuel))
+                CustomizeBioFuel(entry as ICustomBioFuel);
+        }
+
+        internal static void AddRecipe(IAddedRecipe addedRecipe)
         {
             Assert.IsTrue(addedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
@@ -19,7 +35,7 @@
             HandleUnlocks(addedRecipe);
         }
 
-        public static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
+        internal static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
         {
             Assert.IsTrue(modifiedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
@@ -28,7 +44,7 @@
             HandleUnlocks(modifiedRecipe);
         }
 
-        public static void CustomizeItemSize(ICustomSize customSize)
+        internal static void CustomizeItemSize(ICustomSize customSize)
         {
             Assert.IsTrue(customSize.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
@@ -37,6 +53,11 @@
             // Value chosen for what should be the standard inventory size
 
             CraftDataHandler.SetItemSize(customSize.ItemID, customSize.Width, customSize.Height);
+        }
+
+        internal static void CustomizeBioFuel(ICustomBioFuel customBioFuel)
+        {
+            BioReactorHandler.SetBioReactorCharge(customBioFuel.ItemID, customBioFuel.Energy);
         }
 
         // ----------------------

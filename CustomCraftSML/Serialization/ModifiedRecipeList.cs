@@ -1,34 +1,21 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
-    using System.Collections;
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
 
-    public class ModifiedRecipeList : EmPropertyCollectionList<ModifiedRecipe>, IEnumerable<ModifiedRecipe>
+    internal class ModifiedRecipeList : EmPropertyCollectionList<ModifiedRecipe>, ITutorialText
     {
-        private const string KeyName = "ModifiedRecipes";
-
-        public new ModifiedRecipe this[int index] => base[index];
-
-        internal ModifiedRecipeList(string keyOverride) : base(keyOverride, new ModifiedRecipe(KeyName))
+        public ModifiedRecipeList() : base("ModifiedRecipes", new ModifiedRecipe())
         {
         }
 
-        public ModifiedRecipeList() : base(KeyName, new ModifiedRecipe(KeyName))
-        {
-        }
-
-        public new IEnumerator<ModifiedRecipe> GetEnumerator()
-        {
-            foreach (EmPropertyCollection item in InternalValues)
+        public List<string> TutorialText => 
+            new List<string>
             {
-                yield return (ModifiedRecipe)item;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+                "# Modified Recipes #",
+                "# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #",
+                "# You'll also find all the existing recipes in the OriginalRecipes folder. #"
+            };
     }
 }

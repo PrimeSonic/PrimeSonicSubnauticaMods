@@ -23,16 +23,18 @@
             return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter}";
         }
 
-        public bool CheckKey(string rawValue, out string foundKey)
+        public static bool CheckKey(string rawValue, out string foundKey, string keyToValidate)
+        {
+            return CheckKey(rawValue, out foundKey) && foundKey == keyToValidate;
+        }
+
+        public static bool CheckKey(string rawValue, out string foundKey)
         {
             StringBuffer cleanValue = CleanValue(new StringBuffer(rawValue), true);
 
             foundKey = cleanValue.ToString();
 
-            if (string.IsNullOrEmpty(Key))
-                return !string.IsNullOrEmpty(foundKey);
-            else
-                return foundKey == Key;
+            return !string.IsNullOrEmpty(foundKey);
         }
 
         public bool FromString(string rawValue, bool haltOnKeyMismatch = false)
@@ -47,6 +49,9 @@
                 Key = key;
             else if (haltOnKeyMismatch && Key != key)
                 throw new AssertionException($"Key mismatch. Expected:{Key} but was {key}.", $"Wrong key found: {Key}=/={key}");
+
+            if (cleanValue.Count <= 1) // only enough for the final delimiter
+                return true;
 
             SerializedValue = ExtractValue(cleanValue);
             OnValueExtractedEvent?.Invoke();

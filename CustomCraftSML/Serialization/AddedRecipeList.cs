@@ -1,30 +1,20 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
-    using System.Collections;
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
 
-    public class AddedRecipeList : EmPropertyCollectionList<AddedRecipe>, IEnumerable<AddedRecipe>
+    internal class AddedRecipeList : EmPropertyCollectionList<AddedRecipe>, ITutorialText
     {
-        private const string KeyName = "AddedRecipes";
-
-        public new AddedRecipe this[int index] => base[index];
-
-        public AddedRecipeList() : base(KeyName, new AddedRecipe(KeyName))
+        public AddedRecipeList() : base("AddedRecipes", new AddedRecipe())
         {
         }
 
-        public new IEnumerator<AddedRecipe> GetEnumerator()
-        {
-            foreach (EmPropertyCollection item in InternalValues)
+        public List<string> TutorialText => 
+            new List<string> 
             {
-                yield return (AddedRecipe)item;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+                "# Added Recipes #",
+                "# Check the AddedRecipes_Samples.txt file in the SampleFiles folder for details on how to add recipes for items normally not craftable #"
+            };
     }
 }

@@ -1,30 +1,20 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
-    using System.Collections;
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
 
-    public class CustomSizeList : EmPropertyCollectionList<CustomSize>, IEnumerable<CustomSize>
+    internal class CustomSizeList : EmPropertyCollectionList<CustomSize>, ITutorialText
     {
-        private const string KeyName = "CustomSizes";
-
-        public new CustomSize this[int index] => base[index];
-
-        public CustomSizeList() : base(KeyName, new CustomSize(KeyName))
+        public CustomSizeList() : base("CustomSizes", new CustomSize())
         {
         }
 
-        public new IEnumerator<CustomSize> GetEnumerator()
-        {
-            foreach (EmPropertyCollection item in InternalValues)
+        public List<string> TutorialText =>
+            new List<string>
             {
-                yield return (CustomSize)item;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+                "# Custom Inventory Item Sizes #",
+                "# Check the CustomSizes_Samples.txt file in the SampleFiles folder for details on how to set your own custom sizes #"
+            };
     }
 }
