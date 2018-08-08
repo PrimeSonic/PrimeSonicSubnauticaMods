@@ -1,6 +1,5 @@
 ﻿namespace CustomCraft2SML
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using Common;
@@ -25,22 +24,22 @@
 
         private static void HandleWorkingFiles()
         {
-            List<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
-
-            if (!workingFiles.Contains(AddedRecipiesFile))
-                CreateEmptyFile<AddedRecipeList>(AddedRecipiesFile);
-
-            if (!workingFiles.Contains(ModifiedRecipesFile))
-                CreateEmptyFile<ModifiedRecipeList>(ModifiedRecipesFile);
-
-            if (!workingFiles.Contains(CustomSizesFile))
-                CreateEmptyFile<CustomSizeList>(CustomSizesFile);
-
-            if (!workingFiles.Contains(CustomBioFuelsFile))
-                CreateEmptyFile<CustomBioFuelList>(CustomBioFuelsFile);
+            ICollection<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
 
             foreach (string file in workingFiles)
-                DeserializedFile(file);
+                DeserializeFile(file);
+
+            if (addedRecipes.Count == 0 && !workingFiles.Contains(AddedRecipiesFile))
+                CreateEmptyFile<AddedRecipeList>(AddedRecipiesFile);
+
+            if (modifiedRecipes.Count == 0 && !workingFiles.Contains(ModifiedRecipesFile))
+                CreateEmptyFile<ModifiedRecipeList>(ModifiedRecipesFile);
+
+            if (customSizes.Count == 0 && !workingFiles.Contains(CustomSizesFile))
+                CreateEmptyFile<CustomSizeList>(CustomSizesFile);
+
+            if (customBioFuels.Count == 0 && !workingFiles.Contains(CustomBioFuelsFile))
+                CreateEmptyFile<CustomBioFuelList>(CustomBioFuelsFile);
 
             SendToSMLHelper(addedRecipes);
             SendToSMLHelper(modifiedRecipes);
@@ -59,11 +58,11 @@
             File.WriteAllLines(filePath, tutorialText.ToArray());
         }
 
-        private static void DeserializedFile(string workingFile)
+        private static void DeserializeFile(string workingFilePath)
         {
-            QuickLogger.Message($"Reading file: {workingFile}");
+            QuickLogger.Message($"Reading file: {workingFilePath}");
 
-            string serializedData = File.ReadAllText(workingFile);
+            string serializedData = File.ReadAllText(workingFilePath);
 
             if (string.IsNullOrEmpty(serializedData))
             {
@@ -155,7 +154,7 @@
             foreach (T item in uniqueEntries.Values)
                 CustomCraft.AddEntry(item);
 
-            Logger.Log($"{uniqueEntries.Count} {nameof(T)} entries patched.");
+            Logger.Log($"{uniqueEntries.Count} {typeof(T).Name} entries were patched.");
         }
     }
 }

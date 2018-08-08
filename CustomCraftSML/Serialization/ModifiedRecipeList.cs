@@ -14,7 +14,8 @@
             new List<string>
             {
                 "# Modified Recipes #",
-                "# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #"
+                "# Check the ModifiedRecipes_Samples.txt file in the SampleFiles folder for details on how to alter existing crafting recipes #",
+                "# You'll also find all the existing recipes in the OriginalRecipes folder. #"
             };
     }
 }

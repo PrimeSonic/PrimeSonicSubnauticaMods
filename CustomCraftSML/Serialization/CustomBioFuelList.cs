@@ -14,7 +14,8 @@
             new List<string>
             {
                 "# Custom BioFuel Values #",
-                "# Check the OriginalBioFuelValues.txt file in the SampleFiles folder for origina values and samples on how to modify bioreactor fuel values #"
+                "# Check the CustomBioFuels_Samples.txt file in the SampleFiles folder for original values and samples on how to modify bioreactor fuel values #",
+                "# You'll also find all the default BioReactor values in the OriginalRecipes folder. #"
             };
     }
 }
