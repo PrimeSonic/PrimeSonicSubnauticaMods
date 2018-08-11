@@ -29,6 +29,7 @@
         {
             PowerManager.UpdatePowerSpeedRating(ref __instance);
 
+            // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
         }
     }
@@ -44,6 +45,9 @@
 
             if (!cyclopsLife.IsAlive())
                 return true; // safety check
+
+            if (!UpgradeConsoleCache.IsSynced(__instance)) // Because this might run before CyclopsUpgradeConsoleHUDManager.RefreshScreen
+                UpgradeConsoleCache.SyncUpgradeConsoles(__instance); // Be prepared to sync here once
 
             __instance.shieldUpgrade = false;
             __instance.sonarUpgrade = false;

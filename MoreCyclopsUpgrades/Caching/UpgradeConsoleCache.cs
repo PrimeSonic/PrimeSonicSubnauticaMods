@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Caching
 {
+    using System;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -18,11 +19,9 @@
         internal static bool HasThermalModules { get; private set; } = false;
         internal static bool HasNuclearModules { get; private set; } = false;
 
-        internal static bool HasPowerMk1ModuleCount { get; private set; } = false;
-        internal static bool HasPowerMk2ModuleCount { get; private set; } = false;
-        internal static bool HasPowerMk3ModuleCount { get; private set; } = false;
+        internal static int PowerIndex { get; private set; } = 0;
 
-        internal static int SpeedModuleCount { get; private set; } = 0;
+        internal static int SpeedIndex { get; private set; } = 0;
 
         internal static int SolarModuleCount { get; private set; } = 0;
         internal static int ThermalModuleCount { get; private set; } = 0;
@@ -50,39 +49,46 @@
         {
             get
             {
-                yield return Cyclops.upgradeConsole.modules;
+                if (Cyclops.upgradeConsole != null)
+                    yield return Cyclops.upgradeConsole.modules;
 
                 foreach (AuxUpgradeConsole aux in AuxUpgradeConsoles)
                     yield return aux.Modules;
             }
         }
 
+        internal static bool IsSynced(SubRoot cyclops) => ReferenceEquals(cyclops, Cyclops);
+
         private static List<AuxUpgradeConsole> AuxUpgradeConsoles = new List<AuxUpgradeConsole>();
         private static SubRoot Cyclops = null;
 
-        internal static void SyncUpgradeConsoles(SubRoot cyclops, AuxUpgradeConsole[] auxUpgradeConsoles)
+        internal static void SyncUpgradeConsoles(SubRoot cyclops)
         {
-            // This is a dirty workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-            // This is also an even dirtier workaround because of the double-references objects being returned.
+            if (cyclops == null)
+                return;
+
             TempCache.Clear();
-            Cyclops = cyclops;
+
+            AuxUpgradeConsole[] auxUpgradeConsoles = cyclops.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
             {
                 if (TempCache.Contains(auxConsole))
-                    continue;
+                    continue; // This is a workaround because of the object references being returned twice in this array.
 
                 TempCache.Add(auxConsole);
 
                 if (auxConsole.ParentCyclops == null)
                 {
+                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
                     auxConsole.ParentCyclops = cyclops;
                     ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
                 }
             }
 
-            if (TempCache.Count != AuxUpgradeConsoles.Count)
+            if (!ReferenceEquals(Cyclops, cyclops) || TempCache.Count != AuxUpgradeConsoles.Count)
             {
+                Cyclops = cyclops;
                 AuxUpgradeConsoles.Clear();
                 AuxUpgradeConsoles.AddRange(TempCache);
             }
@@ -92,12 +98,11 @@
         {
             BonusCrushDepth = 0f;
 
+            PowerIndex = 0;
+            SpeedIndex = 0;
+
             SolarModuleCount = 0;
             ThermalModuleCount = 0;
-
-            HasPowerMk1ModuleCount = false;
-            HasPowerMk2ModuleCount = false;
-            HasPowerMk3ModuleCount = false;
 
             SolarBatteries.Clear();
             ThermalBatteries.Clear();
@@ -109,11 +114,13 @@
             HasNuclearModules = false;
         }
 
-        internal static void AddSpeedModule() => SpeedModuleCount++;
+        internal static void AddSpeedModule() => SpeedIndex++;
 
-        internal static void AddPowerMk1Module() => HasPowerMk1ModuleCount = true;
-        internal static void AddPowerMk2Module() => HasPowerMk2ModuleCount = true;
-        internal static void AddPowerMk3Module() => HasPowerMk3ModuleCount = true;
+        internal static void AddPowerMk1Module() => PowerIndex = Math.Max(PowerIndex, 1);
+
+        internal static void AddPowerMk2Module() => PowerIndex = Math.Max(PowerIndex, 2);
+
+        internal static void AddPowerMk3Module() => PowerIndex = Math.Max(PowerIndex, 3);
 
         internal static void AddSolarModule()
         {
@@ -150,10 +157,7 @@
             HasNuclearModules = true;
         }
 
-        internal static void AddDepthModule(TechType depthModule)
-        {
-            BonusCrushDepth = Mathf.Max(BonusCrushDepth, ExtraCrushDepths[depthModule]);
-        }
+        internal static void AddDepthModule(TechType depthModule) => BonusCrushDepth = Mathf.Max(BonusCrushDepth, ExtraCrushDepths[depthModule]);
 
         // This is a straight copy of the values in the original
         private static readonly Dictionary<TechType, float> ExtraCrushDepths = new Dictionary<TechType, float>

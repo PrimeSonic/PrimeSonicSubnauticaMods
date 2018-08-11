@@ -82,8 +82,8 @@
         {
             Equipment modules = cyclops.upgradeConsole.modules;
 
-            int powerIndex = GetPowerIndex();
-            int speedIndex = UpgradeConsoleCache.SpeedModuleCount;
+            int powerIndex = UpgradeConsoleCache.PowerIndex;
+            int speedIndex = UpgradeConsoleCache.SpeedIndex;
 
             // Speed modules can affect power rating too
             float nextPowerRating = Mathf.Max(0.01f, EnginePowerRatings[powerIndex] - speedIndex * EnginePowerPenalty);
@@ -191,8 +191,6 @@
         /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
         /// </summary>
         /// <param name="__instance">The instance.</param>
-        /// <param name="coreModules">The core modules.</param>
-        /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
         internal static void RechargeCyclops(ref SubRoot __instance)
         {
             if (!UpgradeConsoleCache.HasChargingModules)
@@ -209,10 +207,10 @@
             {
                 AvailableSolarEnergy = GetSolarChargeAmount(ref __instance);
 
-                if (UpgradeConsoleCache.SolarModuleCount > 0)
+                if (UpgradeConsoleCache.SolarModuleCount > 0 && AvailableSolarEnergy > 0f)
                 {
                     SurplusPower += ChargeFromStandardModule(ref __instance, UpgradeConsoleCache.SolarModuleCount * AvailableSolarEnergy, ref PowerDeficit);
-                    RenewablePowerAvailable |= AvailableSolarEnergy > 0f;
+                    RenewablePowerAvailable = true;
                 }
 
                 foreach (Battery battery in UpgradeConsoleCache.SolarMk2Batteries)
@@ -229,10 +227,10 @@
             {
                 AvailableThermalEnergy = GetThermalChargeAmount(ref __instance);
 
-                if (UpgradeConsoleCache.ThermalModuleCount > 0)
+                if (UpgradeConsoleCache.ThermalModuleCount > 0 && AvailableThermalEnergy > 0f)
                 {
                     SurplusPower += ChargeFromStandardModule(ref __instance, UpgradeConsoleCache.ThermalModuleCount * AvailableThermalEnergy, ref PowerDeficit);
-                    RenewablePowerAvailable |= AvailableThermalEnergy > 0f;
+                    RenewablePowerAvailable = true;
                 }
 
                 foreach (Battery battery in UpgradeConsoleCache.ThermalMk2Batteries)
@@ -246,19 +244,19 @@
             }
 
             if (UpgradeConsoleCache.HasNuclearModules && // Handle nuclear power
-                PowerDeficit > NuclearModuleConfig.MinimumEnergyDeficit &&
-                !RenewablePowerAvailable)
+                PowerDeficit > NuclearModuleConfig.MinimumEnergyDeficit && // User config for threshold to start charging
+                !RenewablePowerAvailable) // Only if there's no renewable power available
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
                 foreach (NuclearModuleDetails module in UpgradeConsoleCache.NuclearModules)
                 {
                     ChargeCyclopsFromBattery(ref __instance, module.NuclearBattery, NuclearDrainRate, ref PowerDeficit);
-                    HandleNuclearBatteryDepletion(module.ParentModule, module.SlotName, module.NuclearBattery);
+                    HandleNuclearBatteryDepletion(module.ParentEquipment, module.SlotName, module.NuclearBattery);
                 }
             }
 
-            // If the Cyclops is at full energy and it's generating a surplus of power it can recharge a reserve battery
-            if (PowerDeficit <= 0f && SurplusPower > 0f && LastBatteryToCharge != null)
+            // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
+            if (Mathf.Approximately(PowerDeficit, 0f) && SurplusPower > 0f && LastBatteryToCharge != null)
             {
                 // Recycle surplus power back into the batteries that need it
                 LastBatteryToCharge.charge = Mathf.Min(LastBatteryToCharge.capacity, LastBatteryToCharge.charge + SurplusPower);
@@ -292,37 +290,8 @@
         }
 
         /// <summary>
-        /// <para>Gets the current power index based on the currently equipped power upgrades across all equipment modules.</para>
-        /// <para>Power Index 0: No efficiency modules equipped.</para>
-        /// <para>Power Index 1: Standard PowerUpgradeModule equipped.</para>
-        /// <para>Power Index 2: PowerUpgradeModuleMk2 equipped.</para>                                                    
-        /// <para>Power Index 3: PowerUpgradeModuleMk3 equipped.</para>
-        /// </summary>
-        /// <param name="modules">The core equipment modules.</param>
-        /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
-        /// <returns>The current power index.</returns>
-        private static int GetPowerIndex()
-        {
-            // Engine Efficiency Mk1
-            if (UpgradeConsoleCache.HasPowerMk3ModuleCount)
-                return 3;
-
-            // Engine Efficiency Mk2
-            if (UpgradeConsoleCache.HasPowerMk2ModuleCount)
-                return 2;
-
-            // Engine Efficiency Mk3
-            if (UpgradeConsoleCache.HasPowerMk1ModuleCount)
-                return 1;
-
-            return 0;
-        }
-
-        /// <summary>
         /// Gets the total available reserve power across all equipment upgrade modules.
         /// </summary>
-        /// <param name="modules">The equipment modules.</param>
-        /// <param name="auxUpgradeConsoles">The aux upgrade consoles.</param>
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
         private static int GetTotalReservePower()
         {
@@ -462,12 +431,15 @@
         /// <param name="nuclearBattery">The nuclear battery that just ran out.</param>
         private static void HandleNuclearBatteryDepletion(Equipment modules, string slotName, Battery nuclearBattery)
         {
-            if (nuclearBattery.charge <= 0f) // Drained nuclear batteries are handled just like how the Nuclear Reactor handles depleated reactor rods
-            {
-                InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
-                Object.Destroy(inventoryItem.item.gameObject);
-                modules.AddItem(slotName, SpawnDepletedNuclearModule(), true);
-            }
+            if (nuclearBattery.charge > 0f)
+                return; // Still has charge, skip
+
+            // Drained nuclear batteries are handled just like how the Nuclear Reactor handles depleated reactor rods
+
+            InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
+            Object.Destroy(inventoryItem.item.gameObject);
+            modules.AddItem(slotName, SpawnDepletedNuclearModule(), true);
+            ErrorMessage.AddMessage("Nuclear Reactor Module depleted");
         }
 
         /// <summary>

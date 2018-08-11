@@ -1,7 +1,6 @@
 ﻿namespace VModFabricator
 {
     using System.Collections.Generic;
-    using System.Reflection;
     using Common;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -123,7 +122,7 @@
                                             TechType.VehicleHullModule3);
 
             seamothDepthTab.AddModdedCraftingNode("SeamothHullModule4"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!           
+            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
             seamothTab.AddCraftingNode(TechType.SeamothSolarCharge,
                                        TechType.SeamothElectricalDefense,
                                        TechType.SeamothSonarModule);
@@ -131,7 +130,7 @@
             seamothTab.AddModdedCraftingNode("SeamothThermalModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
             seamothTab.AddModdedCraftingNode("SeamothDrillModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
             seamothTab.AddModdedCraftingNode("ScannerModule"); // Compatible with the Scanner Module Mod
-
+            seamothTab.AddModdedCraftingNode("RepairModule"); // Compatible with the Repair Module Mod
             var commonTab = rootNode.AddTabNode("CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"));
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
                                       TechType.VehiclePowerUpgradeModule,

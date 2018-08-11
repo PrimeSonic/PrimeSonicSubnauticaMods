@@ -2,13 +2,13 @@
 {
     internal class NuclearModuleDetails
     {
-        internal readonly Equipment ParentModule;
+        internal readonly Equipment ParentEquipment;
         internal readonly string SlotName;
         internal readonly Battery NuclearBattery;
 
         public NuclearModuleDetails(Equipment parentModule, string slotName, Battery nuclearBattery)
         {
-            ParentModule = parentModule;
+            ParentEquipment = parentModule;
             SlotName = slotName;
             NuclearBattery = nuclearBattery;
         }
