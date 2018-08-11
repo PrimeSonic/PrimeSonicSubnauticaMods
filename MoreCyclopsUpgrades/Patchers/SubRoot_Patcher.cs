@@ -49,26 +49,27 @@
             if (!UpgradeConsoleCache.IsSynced(__instance)) // Because this might run before CyclopsUpgradeConsoleHUDManager.RefreshScreen
                 UpgradeConsoleCache.SyncUpgradeConsoles(__instance); // Be prepared to sync here once
 
+            // Turn off all toggleable upgrades first
             __instance.shieldUpgrade = false;
             __instance.sonarUpgrade = false;
             __instance.vehicleRepairUpgrade = false;
             __instance.decoyTubeSizeIncreaseUpgrade = false;
 
-            bool hasFireSupression = false;
-
-            UpgradeConsoleCache.ClearModuleCache();
-            
-            foreach (Equipment modules in UpgradeConsoleCache.UpgradeConsoles)
-                HandleUpgrades(__instance, modules, ref hasFireSupression);
-
+            // The fire suppression system is toggleable but isn't a field on the SubRoot class
             var cyclopsHUD = __instance.GetComponentInChildren<CyclopsHolographicHUD>();
-            cyclopsHUD.fireSuppressionSystem.SetActive(hasFireSupression);
+            cyclopsHUD.fireSuppressionSystem.SetActive(false);
+
+            // Clear the cache that will be used by PowerManager
+            UpgradeConsoleCache.ClearModuleCache();
+
+            foreach (Equipment modules in UpgradeConsoleCache.UpgradeConsoles)
+                HandleUpgrades(__instance, modules, cyclopsHUD);
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
         }
 
-        private static void HandleUpgrades(SubRoot cyclops, Equipment modules, ref bool fireSupressionSystem)
+        private static void HandleUpgrades(SubRoot cyclops, Equipment modules, CyclopsHolographicHUD cyclopsHUD)
         {
             List<TechType> upgradeList = new List<TechType>(SlotHelper.SlotNames.Length);
 
@@ -76,31 +77,33 @@
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);
 
+                upgradeList.Add(techTypeInSlot);
+
                 // Handle standard modules
 
                 switch (techTypeInSlot)
                 {
                     case TechType.CyclopsShieldModule:
                         cyclops.shieldUpgrade = true;
-                        break;
+                        continue;
                     case TechType.CyclopsSonarModule:
                         cyclops.sonarUpgrade = true;
-                        break;
+                        continue;
                     case TechType.CyclopsSeamothRepairModule:
                         cyclops.vehicleRepairUpgrade = true;
-                        break;
+                        continue;
                     case TechType.CyclopsDecoyModule:
                         cyclops.decoyTubeSizeIncreaseUpgrade = true;
-                        break;
+                        continue;
                     case TechType.CyclopsFireSuppressionModule:
-                        fireSupressionSystem = true;
-                        break;
+                        cyclopsHUD.fireSuppressionSystem.SetActive(true);
+                        continue;
                     case TechType.CyclopsThermalReactorModule:
                         UpgradeConsoleCache.AddThermalModule();
-                        break;
+                        continue;
                     case TechType.PowerUpgradeModule:
                         UpgradeConsoleCache.AddPowerMk1Module();
-                        break;
+                        continue;
                     case TechType.HullReinforcementModule:
                     case TechType.HullReinforcementModule2:
                     case TechType.HullReinforcementModule3:
@@ -108,7 +111,7 @@
                     case TechType.CyclopsHullModule2:
                     case TechType.CyclopsHullModule3:
                         UpgradeConsoleCache.AddDepthModule(techTypeInSlot);
-                        break;
+                        continue;
                 }
 
                 // Handle modded modules
@@ -116,33 +119,44 @@
                 if (techTypeInSlot == CyclopsModule.SolarChargerID) // Solar
                 {
                     UpgradeConsoleCache.AddSolarModule();
-                }
-                else if (techTypeInSlot == CyclopsModule.SolarChargerMk2ID) // Solar Mk2
-                {
-                    UpgradeConsoleCache.AddSolarMk2Module(PowerManager.GetBatteryInSlot(modules, slot));
-                }
-                else if (techTypeInSlot == CyclopsModule.ThermalChargerMk2ID) // Thermal Mk2
-                {
-                    UpgradeConsoleCache.AddThermalMk2Module(PowerManager.GetBatteryInSlot(modules, slot));
-                }
-                else if (techTypeInSlot == CyclopsModule.NuclearChargerID) // Nuclear
-                {
-                    UpgradeConsoleCache.AddNuclearModule(modules, slot, PowerManager.GetBatteryInSlot(modules, slot));
-                }
-                else if (techTypeInSlot == CyclopsModule.SpeedBoosterModuleID) // Speed booster
-                {
-                    UpgradeConsoleCache.AddSpeedModule();
-                }
-                else if (techTypeInSlot == CyclopsModule.PowerUpgradeMk2ID) // Power MK2
-                {
-                    UpgradeConsoleCache.AddPowerMk2Module();
-                }
-                else if (techTypeInSlot == CyclopsModule.PowerUpgradeMk3ID) // Power Mk3
-                {
-                    UpgradeConsoleCache.AddPowerMk3Module();
+                    continue;
                 }
 
-                upgradeList.Add(techTypeInSlot);
+                if (techTypeInSlot == CyclopsModule.SolarChargerMk2ID) // Solar Mk2
+                {
+                    UpgradeConsoleCache.AddSolarMk2Module(PowerManager.GetBatteryInSlot(modules, slot));
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.ThermalChargerMk2ID) // Thermal Mk2
+                {
+                    UpgradeConsoleCache.AddThermalMk2Module(PowerManager.GetBatteryInSlot(modules, slot));
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.NuclearChargerID) // Nuclear
+                {
+                    UpgradeConsoleCache.AddNuclearModule(modules, slot, PowerManager.GetBatteryInSlot(modules, slot));
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.SpeedBoosterModuleID) // Speed booster
+                {
+                    UpgradeConsoleCache.AddSpeedModule();
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.PowerUpgradeMk2ID) // Power MK2
+                {
+                    UpgradeConsoleCache.AddPowerMk2Module();
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.PowerUpgradeMk3ID) // Power Mk3
+                {
+                    UpgradeConsoleCache.AddPowerMk3Module();
+                    continue;
+                }
             }
 
             if (cyclops.slotModSFX != null)
