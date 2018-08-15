@@ -37,10 +37,7 @@
             {
             }
 
-            internal override EmProperty Copy()
-            {
-                return new TestSimpleCollection(Key, CopyDefinitions);
-            }
+            internal override EmProperty Copy() => new TestSimpleCollection(Key, CopyDefinitions);
         }
 
         [Test]

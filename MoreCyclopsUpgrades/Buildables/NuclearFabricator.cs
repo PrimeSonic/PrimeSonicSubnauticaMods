@@ -27,7 +27,7 @@
         {
             // Create new Craft Tree Type
             CreateCustomTree(out CraftTree.Type craftType);
-            TreeTypeID = craftType;
+            this.TreeTypeID = craftType;
 
             // Create a new TechType for new fabricator
             this.TechType = TechTypeHandler.AddTechType(NameID, FriendlyName,
@@ -81,39 +81,34 @@
 
         public override GameObject GetGameObject()
         {
-            // Instantiate CyclopsFabricator object
-            GameObject prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/Fabricator"));
+            // Instantiate Fabricator object
+            var prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Fabricator));
 
             // Update prefab name
             prefab.name = NameID;
 
             // Add prefab ID
-            var prefabId = prefab.AddComponent<PrefabIdentifier>();
+            PrefabIdentifier prefabId = prefab.AddComponent<PrefabIdentifier>();
             prefabId.ClassId = NameID;
             prefabId.name = FriendlyName;
 
             // Add tech tag
-            var techTag = prefab.AddComponent<TechTag>();
+            TechTag techTag = prefab.AddComponent<TechTag>();
             techTag.type = this.TechType;
 
             // Update sky applier
-            var skyApplier = prefab.GetComponent<SkyApplier>();
+            SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
             skyApplier.renderers = prefab.GetComponentsInChildren<Renderer>();
             skyApplier.anchorSky = Skies.Auto;
 
             // Associate custom craft tree to the fabricator
-            var fabricator = prefab.GetComponent<Fabricator>();
-            fabricator.craftTree = TreeTypeID;
+            Fabricator fabricator = prefab.GetComponent<Fabricator>();
+            fabricator.craftTree = this.TreeTypeID;
             fabricator.handOverText = HandOverText;
 
-            // Associate power relay
-            var ghost = fabricator.GetComponent<GhostCrafter>();
-            var powerRelay = new PowerRelay();
+            // Modify existing constructable - This is just a modified Fabricator which already had a Constructible component.
+            Constructable constructible = prefab.GetComponent<Constructable>();
 
-            fabricator.SetPrivateField("powerRelay", powerRelay, BindingFlags.FlattenHierarchy);
-
-            // Add constructable
-            var constructible = prefab.AddComponent<Constructable>();
             constructible.allowedInBase = true;
             constructible.allowedInSub = true;
             constructible.allowedOutside = false;
@@ -126,9 +121,18 @@
             constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time
 
             // Set the custom texture
-            var customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorT.png");
-            var skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
+            Texture2D customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorT.png");
+            SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.material.mainTexture = customTexture;
+
+            // Associate power relay
+            var powerRelay = new PowerRelay();
+
+            // This is actually a dirty hack
+            // The problem is that the parent SubRoot isn't correctly associated at this time.
+            // The power relay should be getting set in the GhostCrafter Start() method.
+            // But the parent components are coming up null.
+            (fabricator as GhostCrafter).SetPrivateField("powerRelay", powerRelay, BindingFlags.Instance);
 
             return prefab;
         }
