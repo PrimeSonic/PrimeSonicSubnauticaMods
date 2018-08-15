@@ -57,8 +57,8 @@
             GameObject prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.LabTrashcan));
 
             prefab.FindChild("discovery_trashcan_01_d").SetActive(false); // Turn off this model
-            GameObject.Destroy(prefab.GetComponent<Trashcan>()); // Don't need this
-            GameObject.Destroy(prefab.GetComponent<StorageContainer>()); // Don't need this
+            GameObject.DestroyImmediate(prefab.GetComponent<Trashcan>()); // Don't need this
+            GameObject.DestroyImmediate(prefab.GetComponent<StorageContainer>()); // Don't need this
 
             // Add the custom component
             var auxConsole = prefab.AddComponent<AuxUpgradeConsole>();

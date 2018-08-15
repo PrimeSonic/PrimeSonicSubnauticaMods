@@ -62,17 +62,19 @@
             // Clear the cache that will be used by PowerManager
             UpgradeConsoleCache.ClearModuleCache();
 
+            var foundUpgrades = new List<TechType>();
+
             foreach (Equipment modules in UpgradeConsoleCache.UpgradeConsoles)
-                HandleUpgrades(__instance, modules, cyclopsHUD);
+                HandleUpgrades(__instance, modules, cyclopsHUD, foundUpgrades);
+
+            __instance.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
         }
 
-        private static void HandleUpgrades(SubRoot cyclops, Equipment modules, CyclopsHolographicHUD cyclopsHUD)
+        private static void HandleUpgrades(SubRoot cyclops, Equipment modules, CyclopsHolographicHUD cyclopsHUD, List<TechType> upgradeList)
         {
-            List<TechType> upgradeList = new List<TechType>(SlotHelper.SlotNames.Length);
-
             foreach (string slot in SlotHelper.SlotNames)
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);
@@ -163,8 +165,6 @@
             {
                 cyclops.slotModSFX.Play();
             }
-
-            cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", upgradeList.ToArray(), SendMessageOptions.RequireReceiver);
         }
     }
 
