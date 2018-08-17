@@ -84,7 +84,7 @@
                 "#                 This config file was built using EasyMarkup                   #",
                 "# ----------------------------------------------------------------------------- #",
                 "",
-                this.PrettyPrint(),
+                base.PrettyPrint(),
                 "",
                 "# Here's the full details on what these configurations do: #",
                 "",
@@ -118,7 +118,7 @@
 
             string text = File.ReadAllText(ConfigFile, Encoding.UTF8);
 
-            bool readCorrectly = this.FromString(text);
+            bool readCorrectly = base.FromString(text);
 
             if (!readCorrectly || !ValidDataRead)
             {

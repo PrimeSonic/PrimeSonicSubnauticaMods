@@ -16,14 +16,7 @@
                 return;
             }
 
-            UpgradeConsole upgradeConsole = __instance.subRoot.upgradeConsole;
-
-            if (upgradeConsole == null)
-                return; // safety check
-
-            PowerManager.UpdateHelmHUD(ref __instance, upgradeConsole.modules, UpgradeConsoleCache.AuxUpgradeConsoles, ref lastReservePower);
+            PowerManager.UpdateHelmHUD(__instance, ref lastReservePower);
         }
-
-        
     }
 }

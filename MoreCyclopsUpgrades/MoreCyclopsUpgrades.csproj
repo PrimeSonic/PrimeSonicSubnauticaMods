@@ -45,7 +45,7 @@
     </Reference>
     <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\SMLHelper\SMLHelper\bin\Debug\SMLHelper.dll</HintPath>
+      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
@@ -58,8 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
+    <Compile Include="Caching\NuclearModuleDetails.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
+    <Compile Include="Caching\UpgradeConsoleCache.cs" />
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
+    <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
@@ -79,10 +82,8 @@
     <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
     <Compile Include="SaveData\AuxUpgradeConsoleSaveData.cs" />
     <Compile Include="Patchers\CyclopsHelmHUDManager_Update_Patcher.cs" />
-    <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
-    <Compile Include="UpgradeConsoleCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AuxCyUpgradeConsole.png">

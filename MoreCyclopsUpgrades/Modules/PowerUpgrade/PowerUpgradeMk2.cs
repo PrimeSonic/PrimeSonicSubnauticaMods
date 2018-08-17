@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Assets;
     using UnityEngine;
 
     internal class PowerUpgradeMk2 : CyclopsModule

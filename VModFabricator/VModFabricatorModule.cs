@@ -1,7 +1,6 @@
 ﻿namespace VModFabricator
 {
     using System.Collections.Generic;
-    using System.Reflection;
     using Common;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -32,7 +31,7 @@
             TreeTypeID = craftType;
 
             // Create a new TechType for new fabricator
-            this.TechType = TechTypeHandler.AddTechType(
+            TechType = TechTypeHandler.AddTechType(
                                     internalName: NameID,
                                     displayName: FriendlyName,
                                     tooltip: "Construct vehicle upgrade modules from the comfort of your favorite habitat or cyclops.",
@@ -53,10 +52,10 @@
             };
 
             // Add the new TechType to the buildables
-            CraftDataHandler.AddBuildable(this.TechType);
+            CraftDataHandler.AddBuildable(TechType);
 
             // Add the new TechType to the group of Interior Module buildables
-            CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, this.TechType);
+            CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, TechType);
 
             LanguageHandler.SetLanguageLine(HandOverText, "Use Vehicle Module Fabricator");
 
@@ -64,11 +63,11 @@
             PrefabHandler.RegisterPrefab(this);
 
             // Associate the recipie to the new TechType
-            CraftDataHandler.SetTechData(this.TechType, customFabRecipe);
+            CraftDataHandler.SetTechData(TechType, customFabRecipe);
 
             // Set which blueprints unlock the VMod Fabricator
             string unlockMessage = $"{FriendlyName} blueprint discovered!";
-            var unlockThis = new TechType[1] { this.TechType };
+            var unlockThis = new TechType[1] { TechType };
             KnownTechHandler.SetAnalysisTechEntry(TechType.Workbench, unlockThis, unlockMessage);
             KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, unlockThis, unlockMessage);
             KnownTechHandler.SetAnalysisTechEntry(TechType.Cyclops, unlockThis, unlockMessage);
@@ -78,8 +77,8 @@
         {
             ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(NameID, out craftType);
 
-            var cyclopsTab = rootNode.AddTabNode("CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"));
-            var cyclopsAbilityTab = cyclopsTab.AddTabNode("CyclopsAbilityModules", "Ability Modules", SpriteManager.Get(TechType.CyclopsShieldModule));
+            ModCraftTreeTab cyclopsTab = rootNode.AddTabNode("CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"));
+            ModCraftTreeTab cyclopsAbilityTab = cyclopsTab.AddTabNode("CyclopsAbilityModules", "Ability Modules", SpriteManager.Get(TechType.CyclopsShieldModule));
             cyclopsAbilityTab.AddCraftingNode(TechType.CyclopsShieldModule,
                            TechType.CyclopsSonarModule,
                            TechType.CyclopsSeamothRepairModule,
@@ -87,17 +86,17 @@
                            TechType.CyclopsDecoyModule);
 
             cyclopsAbilityTab.AddModdedCraftingNode("CyclopsSpeedModule");
-            var cyclopsDepthTab = cyclopsTab.AddTabNode("CyclopsDepthModules", "Depth Modules", SpriteManager.Get(TechType.CyclopsHullModule1));
+            ModCraftTreeTab cyclopsDepthTab = cyclopsTab.AddTabNode("CyclopsDepthModules", "Depth Modules", SpriteManager.Get(TechType.CyclopsHullModule1));
             cyclopsDepthTab.AddCraftingNode(TechType.CyclopsHullModule1,
                                             TechType.CyclopsHullModule2,
                                             TechType.CyclopsHullModule3);
 
-            var cyclopsPowerTab = cyclopsTab.AddTabNode("CyclopsPowerModules", "Power Modules", SpriteManager.Get(TechType.PowerUpgradeModule));
+            ModCraftTreeTab cyclopsPowerTab = cyclopsTab.AddTabNode("CyclopsPowerModules", "Power Modules", SpriteManager.Get(TechType.PowerUpgradeModule));
             cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule); // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk2");
             cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk3");
 
-            var cyclopsRechargTab = cyclopsTab.AddTabNode("CyclopsRechargeTab", "Recharge Modules", SpriteManager.Get(TechType.SeamothSolarCharge));
+            ModCraftTreeTab cyclopsRechargTab = cyclopsTab.AddTabNode("CyclopsRechargeTab", "Recharge Modules", SpriteManager.Get(TechType.SeamothSolarCharge));
             cyclopsRechargTab.AddModdedCraftingNode("CyclopsSolarCharger");
             cyclopsRechargTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
             cyclopsRechargTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
@@ -105,8 +104,8 @@
             cyclopsRechargTab.AddModdedCraftingNode("CyclopsNuclearModule");
             //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil"); // Only in the nuclear fabricator
 
-            var exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
-            var exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
+            ModCraftTreeTab exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
+            ModCraftTreeTab exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
             exosuitDepthTab.AddCraftingNode(TechType.ExoHullModule1,
                                             TechType.ExoHullModule2);
             exosuitTab.AddCraftingNode(TechType.ExosuitThermalReactorModule,
@@ -116,14 +115,14 @@
                                        TechType.ExosuitDrillArmModule,
                                        TechType.ExosuitTorpedoArmModule);
 
-            var seamothTab = rootNode.AddTabNode("SeamothModules", "Seamoth Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules"));
-            var seamothDepthTab = seamothTab.AddTabNode("SeamothDepthModules", "Depth Modules", SpriteManager.Get(TechType.VehicleHullModule1));
+            ModCraftTreeTab seamothTab = rootNode.AddTabNode("SeamothModules", "Seamoth Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules"));
+            ModCraftTreeTab seamothDepthTab = seamothTab.AddTabNode("SeamothDepthModules", "Depth Modules", SpriteManager.Get(TechType.VehicleHullModule1));
             seamothDepthTab.AddCraftingNode(TechType.VehicleHullModule1,
                                             TechType.VehicleHullModule2,
                                             TechType.VehicleHullModule3);
 
             seamothDepthTab.AddModdedCraftingNode("SeamothHullModule4"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!           
+            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
             seamothTab.AddCraftingNode(TechType.SeamothSolarCharge,
                                        TechType.SeamothElectricalDefense,
                                        TechType.SeamothSonarModule);
@@ -131,15 +130,15 @@
             seamothTab.AddModdedCraftingNode("SeamothThermalModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
             seamothTab.AddModdedCraftingNode("SeamothDrillModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
             seamothTab.AddModdedCraftingNode("ScannerModule"); // Compatible with the Scanner Module Mod
-
-            var commonTab = rootNode.AddTabNode("CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"));
+            seamothTab.AddModdedCraftingNode("RepairModule"); // Compatible with the Repair Module Mod
+            ModCraftTreeTab commonTab = rootNode.AddTabNode("CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"));
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
                                       TechType.VehiclePowerUpgradeModule,
                                       TechType.VehicleStorageModule);
             commonTab.AddModdedCraftingNode("SpeedModule");
             commonTab.AddModdedCraftingNode("VehiclePowerCore");
 
-            var torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
+            ModCraftTreeTab torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
             torpedoesTab.AddCraftingNode(TechType.WhirlpoolTorpedo,
                                          TechType.GasTorpedo);
         }
@@ -147,7 +146,7 @@
         public override GameObject GetGameObject()
         {
             // Instantiate CyclopsFabricator object
-            GameObject cyclopsFabPrefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
+            var cyclopsFabPrefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
 
             // Retrieve sub game objects
             GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
@@ -157,13 +156,13 @@
             cyclopsFabPrefab.name = NameID;
 
             // Add prefab ID
-            var prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
+            PrefabIdentifier prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
             prefabId.ClassId = NameID;
             prefabId.name = FriendlyName;
 
             // Add tech tag
-            var techTag = cyclopsFabPrefab.AddComponent<TechTag>();
-            techTag.type = this.TechType;
+            TechTag techTag = cyclopsFabPrefab.AddComponent<TechTag>();
+            techTag.type = TechType;
 
             // Translate CyclopsFabricator model and light
             cyclopsFabModel.transform.localPosition = new Vector3(
@@ -176,23 +175,24 @@
                                                         cyclopsFabLight.transform.localPosition.z); // Same Z position
 
             // Update sky applier
-            var skyApplier = cyclopsFabPrefab.GetComponent<SkyApplier>();
+            SkyApplier skyApplier = cyclopsFabPrefab.GetComponent<SkyApplier>();
             skyApplier.renderers = cyclopsFabPrefab.GetComponentsInChildren<Renderer>();
             skyApplier.anchorSky = Skies.Auto;
 
             // Associate custom craft tree to the fabricator
-            var fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
+            Fabricator fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
             fabricator.craftTree = TreeTypeID;
             fabricator.handOverText = HandOverText;
 
             // Associate power relay
-            var ghost = fabricator.GetComponent<GhostCrafter>();
+            GhostCrafter ghost = fabricator.GetComponent<GhostCrafter>();
             var powerRelay = new PowerRelay(); // This isn't correct, but nothing else seems to work.
 
             ghost.SetPrivateField("powerRelay", powerRelay);
 
-            // Add constructable
-            var constructible = cyclopsFabPrefab.AddComponent<Constructable>();
+            // Add constructable - This prefab normally isn't constructed.
+            Constructable constructible = cyclopsFabPrefab.AddComponent<Constructable>();
+
             constructible.allowedInBase = true;
             constructible.allowedInSub = true;
             constructible.allowedOutside = false;
@@ -202,7 +202,7 @@
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
             constructible.rotationEnabled = false;
-            constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time
+            constructible.techType = TechType; // This was necessary to correctly associate the recipe at building time
             constructible.model = cyclopsFabModel;
 
             return cyclopsFabPrefab;

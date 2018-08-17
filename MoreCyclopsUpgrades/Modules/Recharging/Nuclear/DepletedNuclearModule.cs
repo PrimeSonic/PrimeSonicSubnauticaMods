@@ -40,7 +40,7 @@
                                                                  "Reload a Depleted Cyclops Nuclear Module with a Reactor Rod",
                                                                  false);
 
-            if (CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,                
+            if (CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,
             {// we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
 
                 SpriteHandler.RegisterSprite(this.TechType, $"./QMods/MoreCyclopsUpgrades/Assets/DepletedCyclopsNuclearModule.png");

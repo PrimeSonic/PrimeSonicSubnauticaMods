@@ -86,6 +86,7 @@
             skyApplier.anchorSky = Skies.Auto;
 
             var constructible = prefab.GetComponent<Constructable>();
+
             constructible.allowedInBase = false;
             constructible.allowedInSub = true; // Only allowed in Cyclops
             constructible.allowedOutside = false;

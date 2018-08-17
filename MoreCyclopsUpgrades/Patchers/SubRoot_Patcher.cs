@@ -4,6 +4,7 @@
     using Harmony;
     using UnityEngine;
     using SMLHelper.V2.Utility;
+    using Caching;
 
     [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
@@ -12,12 +13,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            if (__instance.upgradeConsole == null)
-                return true; // Safety check
-
-            Equipment modules = __instance.upgradeConsole.modules;
-
-            PowerManager.RechargeCyclops(ref __instance, modules, UpgradeConsoleCache.AuxUpgradeConsoles);
+            PowerManager.RechargeCyclops(ref __instance);
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
@@ -31,11 +27,9 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            if (__instance.upgradeConsole == null)
-                return true; // safety check
+            PowerManager.UpdatePowerSpeedRating(ref __instance);
 
-            PowerManager.UpdatePowerSpeedRating(ref __instance, UpgradeConsoleCache.AuxUpgradeConsoles);
-
+            // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
         }
     }
@@ -49,67 +43,128 @@
         {
             var cyclopsLife = (LiveMixin)__instance.GetInstanceField("live");
 
-            if (__instance.upgradeConsole == null || !cyclopsLife.IsAlive())
+            if (!cyclopsLife.IsAlive())
                 return true; // safety check
 
+            if (!UpgradeConsoleCache.IsSynced(__instance)) // Because this might run before CyclopsUpgradeConsoleHUDManager.RefreshScreen
+                UpgradeConsoleCache.SyncUpgradeConsoles(__instance); // Be prepared to sync here once
+
+            // Turn off all toggleable upgrades first
             __instance.shieldUpgrade = false;
             __instance.sonarUpgrade = false;
             __instance.vehicleRepairUpgrade = false;
             __instance.decoyTubeSizeIncreaseUpgrade = false;
 
-            bool hasFireSupression = false;
-
-            HandleToggleableUpgrades(__instance, __instance.upgradeConsole.modules, ref hasFireSupression);
-
-            foreach (AuxUpgradeConsole auxConsole in UpgradeConsoleCache.AuxUpgradeConsoles)
-                HandleToggleableUpgrades(__instance, auxConsole.Modules, ref hasFireSupression);
-
+            // The fire suppression system is toggleable but isn't a field on the SubRoot class
             var cyclopsHUD = __instance.GetComponentInChildren<CyclopsHolographicHUD>();
-            cyclopsHUD.fireSuppressionSystem.SetActive(hasFireSupression);
+            cyclopsHUD.fireSuppressionSystem.SetActive(false);
+
+            // Clear the cache that will be used by PowerManager
+            UpgradeConsoleCache.ClearModuleCache();
+
+            var foundUpgrades = new List<TechType>();
+
+            foreach (Equipment modules in UpgradeConsoleCache.UpgradeConsoles)
+                HandleUpgrades(__instance, modules, cyclopsHUD, foundUpgrades);
+
+            __instance.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
         }
 
-        private static void HandleToggleableUpgrades(SubRoot __instance, Equipment modules, ref bool fireSupressionSystem)
+        private static void HandleUpgrades(SubRoot cyclops, Equipment modules, CyclopsHolographicHUD cyclopsHUD, List<TechType> upgradeList)
         {
-            var subControl = __instance.GetAllComponentsInChildren<SubControl>();
-
-            List<TechType> upgradeList = new List<TechType>(SlotHelper.SlotNames.Length);
-
             foreach (string slot in SlotHelper.SlotNames)
             {
                 TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);
+
+                upgradeList.Add(techTypeInSlot);
+
+                // Handle standard modules
+
                 switch (techTypeInSlot)
                 {
                     case TechType.CyclopsShieldModule:
-                        __instance.shieldUpgrade = true;
-                        break;
+                        cyclops.shieldUpgrade = true;
+                        continue;
                     case TechType.CyclopsSonarModule:
-                        __instance.sonarUpgrade = true;
-                        break;
+                        cyclops.sonarUpgrade = true;
+                        continue;
                     case TechType.CyclopsSeamothRepairModule:
-                        __instance.vehicleRepairUpgrade = true;
-                        break;
+                        cyclops.vehicleRepairUpgrade = true;
+                        continue;
                     case TechType.CyclopsDecoyModule:
-                        __instance.decoyTubeSizeIncreaseUpgrade = true;
-                        break;
+                        cyclops.decoyTubeSizeIncreaseUpgrade = true;
+                        continue;
                     case TechType.CyclopsFireSuppressionModule:
-                        fireSupressionSystem = true;
-                        break;
-                        // CyclopsThermalReactorModule handled in PowerManager.RechargeCyclops
-                        // CyclopsSpeedModule handled in PowerManager.UpdatePowerSpeedRating
+                        cyclopsHUD.fireSuppressionSystem.SetActive(true);
+                        continue;
+                    case TechType.CyclopsThermalReactorModule:
+                        UpgradeConsoleCache.AddThermalModule();
+                        continue;
+                    case TechType.PowerUpgradeModule:
+                        UpgradeConsoleCache.AddPowerMk1Module();
+                        continue;
+                    case TechType.HullReinforcementModule:
+                    case TechType.HullReinforcementModule2:
+                    case TechType.HullReinforcementModule3:
+                    case TechType.CyclopsHullModule1:
+                    case TechType.CyclopsHullModule2:
+                    case TechType.CyclopsHullModule3:
+                        UpgradeConsoleCache.AddDepthModule(techTypeInSlot);
+                        continue;
                 }
 
-                upgradeList.Add(techTypeInSlot);
+                // Handle modded modules
+
+                if (techTypeInSlot == CyclopsModule.SolarChargerID) // Solar
+                {
+                    UpgradeConsoleCache.AddSolarModule();
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.SolarChargerMk2ID) // Solar Mk2
+                {
+                    UpgradeConsoleCache.AddSolarMk2Module(PowerManager.GetBatteryInSlot(modules, slot));
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.ThermalChargerMk2ID) // Thermal Mk2
+                {
+                    UpgradeConsoleCache.AddThermalMk2Module(PowerManager.GetBatteryInSlot(modules, slot));
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.NuclearChargerID) // Nuclear
+                {
+                    UpgradeConsoleCache.AddNuclearModule(modules, slot, PowerManager.GetBatteryInSlot(modules, slot));
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.SpeedBoosterModuleID) // Speed booster
+                {
+                    UpgradeConsoleCache.AddSpeedModule();
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.PowerUpgradeMk2ID) // Power MK2
+                {
+                    UpgradeConsoleCache.AddPowerMk2Module();
+                    continue;
+                }
+
+                if (techTypeInSlot == CyclopsModule.PowerUpgradeMk3ID) // Power Mk3
+                {
+                    UpgradeConsoleCache.AddPowerMk3Module();
+                    continue;
+                }
             }
 
-            if (__instance.slotModSFX != null)
+            if (cyclops.slotModSFX != null)
             {
-                __instance.slotModSFX.Play();
+                cyclops.slotModSFX.Play();
             }
-
-            __instance.BroadcastMessage("RefreshUpgradeConsoleIcons", upgradeList.ToArray(), SendMessageOptions.RequireReceiver);
         }
     }
 
@@ -120,53 +175,15 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            if (__instance.upgradeConsole == null)
-                return true; // safety check
-
-            Equipment coreModules = __instance.upgradeConsole.modules;
-
-            float bonusCrushDepth = GetMaxBonusCrushDepth(coreModules, UpgradeConsoleCache.AuxUpgradeConsoles);
-
             CrushDamage component = __instance.gameObject.GetComponent<CrushDamage>();
-            component.SetExtraCrushDepth(bonusCrushDepth);
+
+            component.SetExtraCrushDepth(UpgradeConsoleCache.BonusCrushDepth);
 
             return false; // Completely override the method and do not continue with original execution
             // The original method execution sucked anyways :P
         }
 
-        private static float GetMaxBonusCrushDepth(Equipment coreModules, IList<AuxUpgradeConsole> auxUpgradeConsoles)
-        {
-            float bonusCrushDepth = 0f;
-            Equipment modules = coreModules;
 
-            // Do one large loop for all upgrade consoles
-            for (int moduleIndex = -1; moduleIndex < auxUpgradeConsoles.Count; moduleIndex++)
-            {
-                if (moduleIndex > -1)
-                    modules = auxUpgradeConsoles[moduleIndex].Modules;
-
-                foreach (string slot in SlotHelper.SlotNames)
-                {
-                    TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);
-
-                    if (ExtraCrushDepths.ContainsKey(techTypeInSlot))
-                        bonusCrushDepth = Mathf.Max(bonusCrushDepth, ExtraCrushDepths[techTypeInSlot]);
-                }
-            }
-
-            return bonusCrushDepth;
-        }
-
-        // This is a straight copy of the values in the original
-        private static readonly Dictionary<TechType, float> ExtraCrushDepths = new Dictionary<TechType, float>
-        {
-            { TechType.HullReinforcementModule, 800f },
-            { TechType.HullReinforcementModule2, 1600f },
-            { TechType.HullReinforcementModule3, 2800f },
-            { TechType.CyclopsHullModule1, 400f },
-            { TechType.CyclopsHullModule2, 800f },
-            { TechType.CyclopsHullModule3, 1200f }
-        };
     }
 
 }
