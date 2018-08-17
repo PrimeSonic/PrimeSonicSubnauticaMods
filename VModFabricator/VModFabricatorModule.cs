@@ -28,10 +28,10 @@
         {
             // Create new Craft Tree Type
             CreateCustomTree(out CraftTree.Type craftType);
-            TreeTypeID = craftType;
+            this.TreeTypeID = craftType;
 
             // Create a new TechType for new fabricator
-            TechType = TechTypeHandler.AddTechType(
+            this.TechType = TechTypeHandler.AddTechType(
                                     internalName: NameID,
                                     displayName: FriendlyName,
                                     tooltip: "Construct vehicle upgrade modules from the comfort of your favorite habitat or cyclops.",
@@ -52,10 +52,10 @@
             };
 
             // Add the new TechType to the buildables
-            CraftDataHandler.AddBuildable(TechType);
+            CraftDataHandler.AddBuildable(this.TechType);
 
             // Add the new TechType to the group of Interior Module buildables
-            CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, TechType);
+            CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, this.TechType);
 
             LanguageHandler.SetLanguageLine(HandOverText, "Use Vehicle Module Fabricator");
 
@@ -63,11 +63,11 @@
             PrefabHandler.RegisterPrefab(this);
 
             // Associate the recipie to the new TechType
-            CraftDataHandler.SetTechData(TechType, customFabRecipe);
+            CraftDataHandler.SetTechData(this.TechType, customFabRecipe);
 
             // Set which blueprints unlock the VMod Fabricator
             string unlockMessage = $"{FriendlyName} blueprint discovered!";
-            var unlockThis = new TechType[1] { TechType };
+            var unlockThis = new TechType[1] { this.TechType };
             KnownTechHandler.SetAnalysisTechEntry(TechType.Workbench, unlockThis, unlockMessage);
             KnownTechHandler.SetAnalysisTechEntry(TechType.BaseUpgradeConsole, unlockThis, unlockMessage);
             KnownTechHandler.SetAnalysisTechEntry(TechType.Cyclops, unlockThis, unlockMessage);
@@ -120,22 +120,25 @@
             seamothDepthTab.AddCraftingNode(TechType.VehicleHullModule1,
                                             TechType.VehicleHullModule2,
                                             TechType.VehicleHullModule3);
-
             seamothDepthTab.AddModdedCraftingNode("SeamothHullModule4"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothTab.AddCraftingNode(TechType.SeamothSolarCharge,
-                                       TechType.SeamothElectricalDefense,
-                                       TechType.SeamothSonarModule);
+            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!            
 
+            ModCraftTreeTab seamothAbilityTab = seamothTab.AddTabNode("SeamothAbilityModules", "Ability Modules", SpriteManager.Get(TechType.SeamothElectricalDefense));
+            seamothAbilityTab.AddCraftingNode(TechType.SeamothElectricalDefense,
+                                              TechType.SeamothSonarModule);
+            seamothAbilityTab.AddModdedCraftingNode("SeamothDrillModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!                        
+
+            seamothTab.AddCraftingNode(TechType.SeamothSolarCharge);
             seamothTab.AddModdedCraftingNode("SeamothThermalModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothTab.AddModdedCraftingNode("SeamothDrillModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothTab.AddModdedCraftingNode("ScannerModule"); // Compatible with the Scanner Module Mod
-            seamothTab.AddModdedCraftingNode("RepairModule"); // Compatible with the Repair Module Mod
+
             ModCraftTreeTab commonTab = rootNode.AddTabNode("CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"));
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
                                       TechType.VehiclePowerUpgradeModule,
                                       TechType.VehicleStorageModule);
             commonTab.AddModdedCraftingNode("SpeedModule");
+            commonTab.AddModdedCraftingNode("ScannerModule"); // Compatible with Scanner Module Mod
+            commonTab.AddModdedCraftingNode("RepairModule"); // Compatible with Repair Module Mod
+            commonTab.AddModdedCraftingNode("LaserCannon"); // Compatible with Laser Cannon Mod
             commonTab.AddModdedCraftingNode("VehiclePowerCore");
 
             ModCraftTreeTab torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
@@ -162,7 +165,7 @@
 
             // Add tech tag
             TechTag techTag = cyclopsFabPrefab.AddComponent<TechTag>();
-            techTag.type = TechType;
+            techTag.type = this.TechType;
 
             // Translate CyclopsFabricator model and light
             cyclopsFabModel.transform.localPosition = new Vector3(
@@ -181,7 +184,7 @@
 
             // Associate custom craft tree to the fabricator
             Fabricator fabricator = cyclopsFabPrefab.GetComponent<Fabricator>();
-            fabricator.craftTree = TreeTypeID;
+            fabricator.craftTree = this.TreeTypeID;
             fabricator.handOverText = HandOverText;
 
             // Associate power relay
@@ -202,7 +205,7 @@
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
             constructible.rotationEnabled = false;
-            constructible.techType = TechType; // This was necessary to correctly associate the recipe at building time
+            constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time
             constructible.model = cyclopsFabModel;
 
             return cyclopsFabPrefab;
