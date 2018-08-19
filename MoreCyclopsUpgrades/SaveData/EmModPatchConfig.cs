@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.SaveData
 {
     using System;
     using System.Collections.Generic;

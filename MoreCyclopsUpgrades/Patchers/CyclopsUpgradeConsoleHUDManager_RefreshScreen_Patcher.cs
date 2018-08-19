@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Patchers
 {
     using Harmony;
     using MoreCyclopsUpgrades.Caching;

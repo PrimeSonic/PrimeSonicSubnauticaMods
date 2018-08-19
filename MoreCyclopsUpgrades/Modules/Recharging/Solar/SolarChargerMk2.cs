@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Modules.Recharging.Solar
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
@@ -23,7 +23,7 @@
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
             GameObject obj = Object.Instantiate(prefab);
 
-            var pCell = obj.AddComponent<Battery>();
+            Battery pCell = obj.AddComponent<Battery>();
             pCell.name = "SolarBackupBattery";
             pCell._capacity = BatteryCapacity;
 
@@ -47,9 +47,6 @@
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID)
-        {
-            SolarChargerMk2ID = techTypeID;
-        }
+        protected override void SetStaticTechTypeID(TechType techTypeID) => SolarChargerMk2ID = techTypeID;
     }
 }

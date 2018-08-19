@@ -1,6 +1,7 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Modules.Recharging.Nuclear
 {
     using System.Collections.Generic;
+    using Buildables;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -24,7 +25,7 @@
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
-            GameObject gameObject = GameObject.Instantiate(prefab);
+            var gameObject = GameObject.Instantiate(prefab);
 
             return gameObject;
         }
@@ -52,7 +53,7 @@
                 SetStaticTechTypeID(this.TechType);
             }
 
-            NukFabricator.Patch(CyclopsModule.ModulesEnabled);
+            this.NukFabricator.Patch(CyclopsModule.ModulesEnabled);
         }
 
         protected override TechData GetRecipe()
@@ -73,9 +74,6 @@
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID)
-        {
-            DepletedNuclearModuleID = techTypeID;
-        }
+        protected override void SetStaticTechTypeID(TechType techTypeID) => DepletedNuclearModuleID = techTypeID;
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Modules.Recharging.Thermal
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Assets;
     using UnityEngine;
 
     internal class ThermalChargerMk2 : CyclopsModule
@@ -38,17 +37,14 @@
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID)
-        {
-            ThermalChargerMk2ID = techTypeID;
-        }
+        protected override void SetStaticTechTypeID(TechType techTypeID) => ThermalChargerMk2ID = techTypeID;
 
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-            GameObject obj = GameObject.Instantiate(prefab);
+            var obj = GameObject.Instantiate(prefab);
 
-            var pCell = obj.AddComponent<Battery>();
+            Battery pCell = obj.AddComponent<Battery>();
             pCell.name = "ThermalBackupBattery";
             pCell._capacity = BatteryCapacity;
 

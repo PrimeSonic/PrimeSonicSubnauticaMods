@@ -1,8 +1,13 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Modules
 {
     using System.Collections.Generic;
     using Caching;
     using Common;
+    using Enhancement;
+    using PowerUpgrade;
+    using Recharging.Nuclear;
+    using Recharging.Solar;
+    using Recharging.Thermal;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -16,15 +21,15 @@
 
         internal static bool ModulesEnabled { get; private set; } = true;
 
-        public static TechType SolarChargerID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType NuclearChargerID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
+        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
 
         public readonly string NameID;
         public readonly string FriendlyName;

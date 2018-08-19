@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.SaveData
 {
     using System;
     using System.Collections.Generic;
@@ -54,10 +54,10 @@
 
         private void Validate()
         {
-            if (RequiredEnergyPercentage > MaxF || RequiredEnergyPercentage < MinF)
+            if (this.RequiredEnergyPercentage > MaxF || this.RequiredEnergyPercentage < MinF)
             {
                 Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmDeficit.Key} was out of range. Replaced with default.");
-                RequiredEnergyPercentage = DefaultF;
+                this.RequiredEnergyPercentage = DefaultF;
                 ValidDataRead = false;
             }
 

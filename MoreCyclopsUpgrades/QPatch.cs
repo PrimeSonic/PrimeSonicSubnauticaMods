@@ -6,6 +6,9 @@
     using Caching;
     using Common;
     using Harmony;
+    using Buildables;
+    using Modules;
+    using SaveData;
 
     public class QPatch
     {
