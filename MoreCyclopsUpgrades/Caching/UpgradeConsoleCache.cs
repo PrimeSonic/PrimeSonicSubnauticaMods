@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Monobehaviors;
     using UnityEngine;
 
     internal class UpgradeConsoleCache

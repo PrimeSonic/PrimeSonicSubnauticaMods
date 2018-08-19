@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.SaveData
 {
     using System;
     using System.IO;
@@ -47,10 +47,7 @@
             UpdateRequiredDeficit();
         }
 
-        private static void UpdateRequiredDeficit()
-        {
-            RequiredEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * EmConfig.RequiredEnergyPercentage / 100f);
-        }
+        private static void UpdateRequiredDeficit() => RequiredEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * EmConfig.RequiredEnergyPercentage / 100f);
 
         public NuclearModuleConfig() : base("Cyclops Nuclear Module Options")
         {

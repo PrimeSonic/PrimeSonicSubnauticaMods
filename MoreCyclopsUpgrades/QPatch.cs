@@ -3,7 +3,12 @@
     using System;
     using System.IO;
     using System.Reflection;
+    using Caching;
+    using Common;
     using Harmony;
+    using Buildables;
+    using Modules;
+    using SaveData;
 
     public class QPatch
     {
@@ -11,46 +16,42 @@
         {
             try
             {
-                var modConfig = new EmModPatchConfig();
+                OtherMods.VehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
+                OtherMods.UpgradedVehicles = Directory.Exists(@"./QMods/UpgradedVehicles");
 
+                if (OtherMods.VehicleUpgradesInCyclops)
+                    QuickLogger.Message("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");
+
+                if (OtherMods.UpgradedVehicles)
+                    QuickLogger.Message("UpgradedVehicles detected. Correcting Cyclops crush depth announcemnts.");
+
+                var modConfig = new EmModPatchConfig();
                 modConfig.Initialize();
 
-                bool hasVehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
-
-                // ----------------------------------------------
-
-                Console.WriteLine("[MoreCyclopsUpgrades] Patching new upgrade modules");
-                CyclopsModule.PatchAllModules(hasVehicleUpgradesInCyclops, modConfig.EnableNewUpgradeModules);
+                QuickLogger.Message("Patching new upgrade modules");
+                CyclopsModule.PatchAllModules(modConfig.EnableNewUpgradeModules);
 
                 if (!modConfig.EnableNewUpgradeModules)
-                {
-                    Console.WriteLine("[MoreCyclopsUpgrades] New upgrade modules disabled by config settings");
-                }
+                    QuickLogger.Message("New upgrade modules disabled by config settings");
 
-                // ----------------------------------------------
-
-                Console.WriteLine("[MoreCyclopsUpgrades] Patching Auxiliary Upgrade Console");
+                QuickLogger.Message("Patching Auxiliary Upgrade Console");
 
                 var auxConsole = new AuxCyUpgradeConsole();
 
                 auxConsole.Patch(modConfig.EnableAuxiliaryUpgradeConsoles);
 
                 if (!modConfig.EnableAuxiliaryUpgradeConsoles)
-                {
-                    Console.WriteLine("[MoreCyclopsUpgrades] Auxiliary Upgrade Console disabled by config settings");
-                }
+                    QuickLogger.Message("Auxiliary Upgrade Console disabled by config settings");
 
-                // ----------------------------------------------
-
-                HarmonyInstance harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
+                var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-                Console.WriteLine("[MoreCyclopsUpgrades] Finished Patching");
+                QuickLogger.Message("Finished Patching");
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[MoreCyclopsUpgrades] ERROR: " + ex.ToString());
+                QuickLogger.Error(ex);
             }
         }
     }

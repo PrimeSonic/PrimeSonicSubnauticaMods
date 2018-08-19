@@ -36,6 +36,13 @@
                 ErrorMessage.AddError(msg);
         }
 
+        public static void Error(Exception ex)
+        {
+            string name = Assembly.GetCallingAssembly().GetName().Name;
+
+            Console.WriteLine($"[{name}] ERROR: {ex.ToString()}");
+        }
+
         public static void Warning(string msg, bool showOnScreen = false)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;

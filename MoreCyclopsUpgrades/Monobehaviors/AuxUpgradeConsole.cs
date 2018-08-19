@@ -1,6 +1,8 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
     using System;
+    using Modules;
+    using SaveData;
     using ProtoBuf;
     using SMLHelper.V2.Utility;
     using UnityEngine;
@@ -32,31 +34,28 @@
 
             if (this.Modules == null)
             {
-                this.InitializeModules();
+                InitializeModules();
             }
         }
 
         private void InitializeModules()
         {
-            if (this.ModulesRoot == null)
+            if (ModulesRoot == null)
             {
                 var equipmentRoot = new GameObject("EquipmentRoot");
                 equipmentRoot.transform.SetParent(this.transform, false);
-                this.ModulesRoot = equipmentRoot.AddComponent<ChildObjectIdentifier>();
+                ModulesRoot = equipmentRoot.AddComponent<ChildObjectIdentifier>();
             }
 
-            this.Modules = new Equipment(base.gameObject, this.ModulesRoot.transform);
+            this.Modules = new Equipment(base.gameObject, ModulesRoot.transform);
             this.Modules.SetLabel("CyclopsUpgradesStorageLabel");
             //this.UpdateVisuals();
-            this.Modules.onEquip += this.OnEquip;
-            this.Modules.onUnequip += this.OnUnequip;
-            this.UnlockDefaultModuleSlots();
+            this.Modules.onEquip += OnEquip;
+            this.Modules.onUnequip += OnUnequip;
+            UnlockDefaultModuleSlots();
         }
 
-        private void UnlockDefaultModuleSlots()
-        {
-            this.Modules.AddSlots(SlotHelper.SlotNames);
-        }
+        private void UnlockDefaultModuleSlots() => this.Modules.AddSlots(SlotHelper.SlotNames);
 
         public void OnHandClick(GUIHand guiHand)
         {
@@ -96,16 +95,13 @@
             bool allEmpty = true;
 
             foreach (string slotName in SlotHelper.SlotNames)
-                allEmpty &= Modules.GetTechTypeInSlot(slotName) == TechType.None;
+                allEmpty &= this.Modules.GetTechTypeInSlot(slotName) == TechType.None;
 
             // Deconstruction only allowed if all slots are empty
             Buildable.deconstructionAllowed = allEmpty;
         }
 
-        internal void CyclopsUpgradeChange()
-        {
-            ParentCyclops?.SetInstanceField("subModulesDirty", true);
-        }
+        internal void CyclopsUpgradeChange() => ParentCyclops?.SetInstanceField("subModulesDirty", true);
 
         //private void UpdateVisuals()
         //{
@@ -134,12 +130,12 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            this.version = 2;
+            version = 2;
 
-            foreach (var slot in SlotHelper.SlotNames)
+            foreach (string slot in SlotHelper.SlotNames)
             {
                 EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
-                InventoryItem item = Modules.GetItemInSlot(slot);
+                InventoryItem item = this.Modules.GetItemInSlot(slot);
 
                 if (item == null)
                 {
@@ -150,7 +146,7 @@
                 {
                     savedModule.ItemID = (int)item.item.GetTechType();
 
-                    var battery = item.item.GetComponent<Battery>();
+                    Battery battery = item.item.GetComponent<Battery>();
 
                     if (battery == null)
                     {
@@ -170,7 +166,7 @@
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
             if (this.Modules == null)
-                this.InitializeModules();
+                InitializeModules();
 
             this.Modules.Clear();
         }
@@ -181,7 +177,7 @@
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
-            bool hasSaveData = this.SaveData.Load();
+            bool hasSaveData = SaveData.Load();
             if (hasSaveData)
             {
                 // Because the items here aren't being serialized with everything else normally,
@@ -195,8 +191,8 @@
 
                     EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
 
-                    if (savedModule.ItemID == (int)TechType.None)
-                        continue;
+                    if (savedModule.ItemID == 0) // (int)TechType.None
+                        continue; // Nothing here
 
                     InventoryItem spanwedItem = CyclopsModule.SpawnCyclopsModule((TechType)savedModule.ItemID);
 
@@ -211,7 +207,7 @@
             }
             else
             {
-                this.UnlockDefaultModuleSlots();
+                UnlockDefaultModuleSlots();
             }
         }
 

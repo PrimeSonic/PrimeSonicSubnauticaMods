@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
     <Compile Include="Caching\NuclearModuleDetails.cs" />
+    <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Caching\UpgradeConsoleCache.cs" />
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />

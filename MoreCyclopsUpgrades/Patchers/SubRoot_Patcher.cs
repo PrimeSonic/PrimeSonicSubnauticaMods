@@ -1,10 +1,11 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Patchers
 {
     using System.Collections.Generic;
-    using Harmony;
-    using UnityEngine;
-    using SMLHelper.V2.Utility;
     using Caching;
+    using Harmony;
+    using Modules;
+    using SMLHelper.V2.Utility;
+    using UnityEngine;
 
     [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
@@ -56,7 +57,7 @@
             __instance.decoyTubeSizeIncreaseUpgrade = false;
 
             // The fire suppression system is toggleable but isn't a field on the SubRoot class
-            var cyclopsHUD = __instance.GetComponentInChildren<CyclopsHolographicHUD>();
+            CyclopsHolographicHUD cyclopsHUD = __instance.GetComponentInChildren<CyclopsHolographicHUD>();
             cyclopsHUD.fireSuppressionSystem.SetActive(false);
 
             // Clear the cache that will be used by PowerManager
@@ -177,13 +178,16 @@
         {
             CrushDamage component = __instance.gameObject.GetComponent<CrushDamage>();
 
+            float orignialCrushDepth = component.crushDepth;
+
             component.SetExtraCrushDepth(UpgradeConsoleCache.BonusCrushDepth);
+
+            if (OtherMods.UpgradedVehicles && orignialCrushDepth != component.crushDepth)
+                ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", component.crushDepth));
 
             return false; // Completely override the method and do not continue with original execution
             // The original method execution sucked anyways :P
         }
-
-
     }
 
 }

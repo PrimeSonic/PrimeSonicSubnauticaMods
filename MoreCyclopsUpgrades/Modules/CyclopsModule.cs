@@ -1,39 +1,35 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Modules
 {
-    using System;
     using System.Collections.Generic;
+    using Caching;
+    using Common;
+    using Enhancement;
+    using PowerUpgrade;
+    using Recharging.Nuclear;
+    using Recharging.Solar;
+    using Recharging.Thermal;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal enum ModuleTypes : int
-    {
-        ThermalMk2 = 1,
-        Solar = 2,
-        SolarMk2 = 3,
-        PowerMk2 = 4,
-        PowerMk3 = 5,
-        Speed = 6,
-        Nuclear = 7,
-        DepletedNuclear = 8
-    }
-
     internal abstract class CyclopsModule : ModPrefab
     {
-        private static readonly SortedList<ModuleTypes, CyclopsModule> CyclopsModulesByModuleType = new SortedList<ModuleTypes, CyclopsModule>(8);
+        private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>(8);
+
         private static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
+
         internal static bool ModulesEnabled { get; private set; } = true;
 
-        public static TechType SolarChargerID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType NuclearChargerID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
-        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.Unobtanium; // Default value that shouldn't get hit
+        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
 
         public readonly string NameID;
         public readonly string FriendlyName;
@@ -43,8 +39,6 @@
         public readonly string[] FabricatorTabs;
 
         protected readonly TechType PreFabTemplate;
-
-        public abstract ModuleTypes ModuleID { get; }
 
         private readonly bool AddToCraftTree;
 
@@ -105,23 +99,22 @@
 
         protected abstract TechData GetRecipe();
 
-        internal static void PatchAllModules(bool vehicleUpgradesInCyclopsFabricator, bool modulesEnabled)
+        internal static void PatchAllModules(bool modulesEnabled)
         {
             ModulesEnabled = modulesEnabled;
 
-            CyclopsModulesByModuleType.Add(ModuleTypes.Solar, new SolarCharger(vehicleUpgradesInCyclopsFabricator));
-            CyclopsModulesByModuleType.Add(ModuleTypes.SolarMk2, new SolarChargerMk2());
-            CyclopsModulesByModuleType.Add(ModuleTypes.ThermalMk2, new ThermalChargerMk2());
-            CyclopsModulesByModuleType.Add(ModuleTypes.PowerMk2, new PowerUpgradeMk2());
-            CyclopsModulesByModuleType.Add(ModuleTypes.PowerMk3, new PowerUpgradeMk3());
-            CyclopsModulesByModuleType.Add(ModuleTypes.Speed, new CyclopsSpeedBooster(vehicleUpgradesInCyclopsFabricator));
-            CyclopsModulesByModuleType.Add(ModuleTypes.Nuclear, new NuclearCharger());
-            CyclopsModulesByModuleType.Add(ModuleTypes.DepletedNuclear, new DepletedNuclearModule());
+            ModulesToPatch.Add(new ThermalChargerMk2());
+            ModulesToPatch.Add(new SolarCharger(OtherMods.VehicleUpgradesInCyclops));
+            ModulesToPatch.Add(new SolarChargerMk2());
+            ModulesToPatch.Add(new PowerUpgradeMk2());
+            ModulesToPatch.Add(new PowerUpgradeMk3());
+            ModulesToPatch.Add(new CyclopsSpeedBooster(OtherMods.VehicleUpgradesInCyclops));
+            ModulesToPatch.Add(new NuclearCharger());
+            ModulesToPatch.Add(new DepletedNuclearModule());
 
-            foreach (ModuleTypes m in Enum.GetValues(typeof(ModuleTypes)))
+            foreach (CyclopsModule module in ModulesToPatch)
             {
-                CyclopsModule module = CyclopsModulesByModuleType[m];
-                Console.WriteLine($"[MoreCyclopsUpgrades] Patching {module.NameID}");
+                QuickLogger.Message($"Patching {module.NameID}");
                 module.Patch();
                 CyclopsModulesByTechType.Add(module.TechType, module);
             }
@@ -145,10 +138,10 @@
 
                 // Instantiate a new prefab of the appripriate template TechType
                 gameObject = cyclopsModule.GetGameObject();
-                var ider = gameObject.GetComponent<PrefabIdentifier>();
+                PrefabIdentifier ider = gameObject.GetComponent<PrefabIdentifier>();
 
                 // Set the TechType value on the TechTag
-                var tag = gameObject.GetComponent<TechTag>();
+                TechTag tag = gameObject.GetComponent<TechTag>();
                 if (tag != null)
                     tag.type = techTypeID;
                 else // Add if needed since this is how these are identified throughout the mod

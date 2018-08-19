@@ -1,6 +1,7 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Modules.Recharging.Nuclear
 {
     using System.Collections.Generic;
+    using SaveData;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -21,8 +22,6 @@
         {
         }
 
-        public override ModuleTypes ModuleID => ModuleTypes.Nuclear;
-
         protected override void Patch()
         {
             // Patch through the base as normal then patch the nuclear fabricator
@@ -31,8 +30,8 @@
             if (!CyclopsModule.ModulesEnabled) // Even if the options have this be disabled,
                 return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
 
-            OptionsPanelHandler.RegisterModOptions(Config);
-            Config.Initialize();
+            OptionsPanelHandler.RegisterModOptions(this.Config);
+            this.Config.Initialize();
         }
 
         protected override TechData GetRecipe()
@@ -51,18 +50,15 @@
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID)
-        {
-            NuclearChargerID = techTypeID;
-        }
+        protected override void SetStaticTechTypeID(TechType techTypeID) => NuclearChargerID = techTypeID;
 
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-            GameObject obj = GameObject.Instantiate(prefab);
+            var obj = GameObject.Instantiate(prefab);
 
             // The battery component makes it easy to track the charge and saving the data is automatic.
-            var pCell = obj.AddComponent<Battery>();
+            Battery pCell = obj.AddComponent<Battery>();
             pCell.name = "NuclearBattery";
             pCell._capacity = BatteryCapacity;
 

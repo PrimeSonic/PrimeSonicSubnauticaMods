@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Modules.PowerUpgrade
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
@@ -17,12 +17,10 @@
 
         }
 
-        public override ModuleTypes ModuleID => ModuleTypes.PowerMk2;
-
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-            GameObject obj = GameObject.Instantiate(prefab);
+            var obj = GameObject.Instantiate(prefab);
 
             return obj;
         }
@@ -41,9 +39,6 @@
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID)
-        {
-            PowerUpgradeMk2ID = techTypeID;
-        }
+        protected override void SetStaticTechTypeID(TechType techTypeID) => PowerUpgradeMk2ID = techTypeID;
     }
 }

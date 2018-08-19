@@ -1,8 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using Common;
-    using MoreCyclopsUpgrades.Caching;
+    using Caching;
+    using SaveData;
     using UnityEngine;
+    using Modules;
+    using Modules.Recharging.Nuclear;
 
     internal static class PowerManager
     {
