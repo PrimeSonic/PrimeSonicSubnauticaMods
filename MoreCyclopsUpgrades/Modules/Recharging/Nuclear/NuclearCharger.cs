@@ -21,8 +21,6 @@
         {
         }
 
-        public override ModuleTypes ModuleID => ModuleTypes.Nuclear;
-
         protected override void Patch()
         {
             // Patch through the base as normal then patch the nuclear fabricator

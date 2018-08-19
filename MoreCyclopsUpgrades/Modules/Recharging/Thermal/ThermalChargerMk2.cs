@@ -21,8 +21,6 @@
         {
         }
 
-        public override ModuleTypes ModuleID => ModuleTypes.ThermalMk2;
-
         protected override TechData GetRecipe()
         {
             return new TechData()

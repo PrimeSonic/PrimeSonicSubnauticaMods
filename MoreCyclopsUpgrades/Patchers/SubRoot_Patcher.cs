@@ -177,13 +177,16 @@
         {
             CrushDamage component = __instance.gameObject.GetComponent<CrushDamage>();
 
+            float orignialCrushDepth = component.crushDepth;
+
             component.SetExtraCrushDepth(UpgradeConsoleCache.BonusCrushDepth);
+
+            if (OtherMods.UpgradedVehicles && orignialCrushDepth != component.crushDepth)
+                ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", component.crushDepth));
 
             return false; // Completely override the method and do not continue with original execution
             // The original method execution sucked anyways :P
         }
-
-
     }
 
 }

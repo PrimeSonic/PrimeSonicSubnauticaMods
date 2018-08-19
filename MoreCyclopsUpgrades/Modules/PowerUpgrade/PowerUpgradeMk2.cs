@@ -17,8 +17,6 @@
 
         }
 
-        public override ModuleTypes ModuleID => ModuleTypes.PowerMk2;
-
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);

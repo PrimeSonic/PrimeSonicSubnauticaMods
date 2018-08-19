@@ -20,8 +20,6 @@
         {
         }
 
-        public override ModuleTypes ModuleID => ModuleTypes.Speed;
-
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);

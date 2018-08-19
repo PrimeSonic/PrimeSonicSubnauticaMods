@@ -21,8 +21,6 @@
 
         }
 
-        public override ModuleTypes ModuleID => ModuleTypes.DepletedNuclear;
-
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
