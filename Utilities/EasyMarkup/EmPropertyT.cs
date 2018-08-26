@@ -38,7 +38,7 @@
             if (string.IsNullOrEmpty(InLineComment))
                 return base.ToString();
 
-            return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter} {EmUtils.CommentText(InLineComment)}";
+            return $"{Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter} {EmUtils.CommentText(InLineComment)}";
         }
 
         protected override string ExtractValue(StringBuffer fullString)

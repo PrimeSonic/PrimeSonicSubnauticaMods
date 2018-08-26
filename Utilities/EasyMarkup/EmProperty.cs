@@ -1,5 +1,6 @@
 ﻿namespace Common.EasyMarkup
 {
+    using System.Collections.Generic;
     using UnityEngine.Assertions;
 
     public abstract class EmProperty
@@ -10,6 +11,8 @@
         internal const char SpChar_FinishComplexValue = ')';
         internal const char SpChar_ListItemSplitter = ',';
         internal const char SpChar_CommentBlock = '#';
+        internal const char SpChar_LiteralStringBlock = '"';
+        internal const char SpChar_EscapeChar = '\\';
 
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
@@ -20,13 +23,10 @@
 
         public override string ToString()
         {
-            return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter}";
+            return $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";
         }
 
-        public static bool CheckKey(string rawValue, out string foundKey, string keyToValidate)
-        {
-            return CheckKey(rawValue, out foundKey) && foundKey == keyToValidate;
-        }
+        public static bool CheckKey(string rawValue, out string foundKey, string keyToValidate) => CheckKey(rawValue, out foundKey) && foundKey == keyToValidate;
 
         public static bool CheckKey(string rawValue, out string foundKey)
         {
@@ -44,11 +44,11 @@
             if (cleanValue.IsEmpty)
                 return false;
 
-            var key = ExtractKey(cleanValue);
-            if (string.IsNullOrEmpty(Key))
-                Key = key;
-            else if (haltOnKeyMismatch && Key != key)
-                throw new AssertionException($"Key mismatch. Expected:{Key} but was {key}.", $"Wrong key found: {Key}=/={key}");
+            string key = ExtractKey(cleanValue);
+            if (string.IsNullOrEmpty(this.Key))
+                this.Key = key;
+            else if (haltOnKeyMismatch && this.Key != key)
+                throw new AssertionException($"Key mismatch. Expected:{this.Key} but was {key}.", $"Wrong key found: {this.Key}=/={key}");
 
             if (cleanValue.Count <= 1) // only enough for the final delimiter
                 return true;
@@ -70,22 +70,14 @@
             return key.ToString();
         }
 
-        protected virtual string ExtractValue(StringBuffer fullString)
-        {
-            var value = new StringBuffer();
-            while (fullString.Count > 0 && fullString.PeekStart() != ';')
-                value.PushToEnd(fullString.PopFromStart());
-
-            fullString.PopFromStart(); // Skip ; separator
-
-            return value.ToString();
-        }
+        protected virtual string ExtractValue(StringBuffer fullString) =>
+            ReadUntilDelimiter(fullString, SpChar_ValueDelimiter).ToString();
 
         internal abstract EmProperty Copy();
 
         public string PrettyPrint()
         {
-            string originalValue = this.ToString();
+            string originalValue = ToString();
 
             if (string.IsNullOrEmpty(originalValue))
                 return string.Empty;
@@ -177,13 +169,91 @@
                         break;
                     case SpChar_KeyDelimiter when stopAtKey:
                         return cleanValue;
+                    case SpChar_LiteralStringBlock:
+                        cleanValue.PushToEnd(rawValue.PopFromStart()); // Add first "
+
+                        char popped;
+                        do
+                        {
+                            popped = rawValue.PopFromStart();
+                            cleanValue.PushToEnd(popped);
+                        } while (popped != SpChar_LiteralStringBlock);
+
+                        break;
+                    case SpChar_EscapeChar:
+                        cleanValue.PushToEnd(rawValue.PopFromStart()); // Pop escape char
+                        cleanValue.PushToEnd(rawValue.PopFromStart()); // Add escaped char
+                        break;
                     default:
                         cleanValue.PushToEnd(rawValue.PopFromStart());
                         break;
+
                 }
             }
 
             return cleanValue;
+        }
+
+        internal static string ReadUntilDelimiter(StringBuffer fullString, char delimeter)
+            => ReadUntilDelimiter(fullString, new HashSet<char> { delimeter });
+
+        internal static string ReadUntilDelimiter(StringBuffer fullString, ICollection<char> delimeters)
+        {
+            var value = new StringBuffer();
+            char nextChar;
+
+            while (!fullString.IsEmpty && !delimeters.Contains(nextChar = fullString.PeekStart()))
+            {
+                if (nextChar == SpChar_EscapeChar)
+                {
+                    fullString.PopFromStart(); // Skip the escape char.
+                    value.PushToEnd(fullString.PopFromStart()); // Allow the escaped char into the value.
+                }
+                else if (nextChar == SpChar_LiteralStringBlock)
+                {
+                    fullString.PopFromStart(); // Skip the escape char.
+                    while (!fullString.IsEmpty && (nextChar = fullString.PopFromStart()) != SpChar_LiteralStringBlock)
+                    {
+                        value.PushToEnd(nextChar); // Grab everything contained between the " chars except the " chars
+                    }
+                }
+                else
+                {
+                    value.PushToEnd(fullString.PopFromStart()); // Basic case
+                }
+            }
+
+            fullString.PopFromStart(); // Skip delimeter
+
+            return value.ToString();
+        }
+
+        internal static string EscapeSpecialCharacters(string unescapedValue)
+        {
+            var original = new StringBuffer(unescapedValue);
+            var escaped = new StringBuffer();
+
+            while (!original.IsEmpty)
+            {
+                switch (original.PeekStart())
+                {
+                    case SpChar_KeyDelimiter:
+                    case SpChar_ValueDelimiter:
+                    case SpChar_BeginComplexValue:
+                    case SpChar_FinishComplexValue:
+                    case SpChar_ListItemSplitter:
+                    case SpChar_CommentBlock:
+                    case SpChar_EscapeChar:
+                        escaped.PushToEnd(SpChar_EscapeChar);
+                        break;
+                    default:
+                        break;
+                }
+
+                escaped.PushToEnd(original.PopFromStart());
+            }
+
+            return escaped.ToString();
         }
     }
 

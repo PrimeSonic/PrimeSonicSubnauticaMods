@@ -67,7 +67,7 @@
             {
                 switch (fullString.PeekStart())
                 {
-                    case SpChar_ValueDelimiter when openParens == 0: // End of ComplexList                        
+                    case SpChar_ValueDelimiter when openParens == 0: // End of ComplexList
                     case SpChar_ListItemSplitter when openParens == 0 && fullString.Count > 0: // End of a nested property belonging to this collection
                         fullString.PopFromStart(); // Skip delimiter
 

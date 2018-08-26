@@ -74,6 +74,9 @@
                         buffer.PopFromStartIfEquals(SpChar_ListItemSplitter);
                         subKey = buffer.ToString();
                         goto default;
+                    case SpChar_EscapeChar:
+                        buffer.PushToEnd(fullString.PopFromStart()); // Include escape char to be handled by EmProperty
+                        goto default;
                     case SpChar_BeginComplexValue:
                         openParens++;
                         goto default;

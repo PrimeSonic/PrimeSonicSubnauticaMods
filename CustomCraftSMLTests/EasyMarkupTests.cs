@@ -8,25 +8,46 @@
     [TestFixture]
     public class EasyMarkupTests
     {
-
-        private class TestProperty : EmProperty<int>
+        private class TestStringProperty : EmProperty<string>
         {
-            public TestProperty(string key) : base(key)
+            public TestStringProperty(string key) : base(key)
             {
             }
 
-            public TestProperty(string key, int value) : base(key, value)
+            public TestStringProperty(string key, string value) : base(key, value)
             {
             }
         }
 
-        private class TestSimpleList : EmPropertyList<int>
+        private class TestSimpleStringList : EmPropertyList<string>
         {
-            public TestSimpleList(string key) : base(key)
+            public TestSimpleStringList(string key) : base(key)
             {
             }
 
-            public TestSimpleList(string key, ICollection<int> values) : base(key, values)
+            public TestSimpleStringList(string key, ICollection<string> values) : base(key, values)
+            {
+            }
+        }
+
+        private class TestIntProperty : EmProperty<int>
+        {
+            public TestIntProperty(string key) : base(key)
+            {
+            }
+
+            public TestIntProperty(string key, int value) : base(key, value)
+            {
+            }
+        }
+
+        private class TestSimpleIntList : EmPropertyList<int>
+        {
+            public TestSimpleIntList(string key) : base(key)
+            {
+            }
+
+            public TestSimpleIntList(string key, ICollection<int> values) : base(key, values)
             {
             }
         }
@@ -44,20 +65,39 @@
         public void EmProperty_ToString_GetExpected()
         {
             const string key = "TestKey";
-            var testProp = new TestProperty(key, 1);
+            var testProp = new TestIntProperty(key, 1);
             string expectedValue = $"{key}:{1};";
 
             Assert.AreEqual(1, testProp.Value);
             Assert.AreEqual(expectedValue, testProp.ToString());
         }
 
+        [TestCase("TestKey:\"Test Value\";", "Test Value")]
+        [TestCase("TestKey : \"Test,Value\"; ", "Test,Value")]
+        [TestCase(" TestKey : \"Test;Value\" ;", "Test;Value")]
+        [TestCase(" TestKey: \"Test:Value\";", "Test:Value")]
+        [TestCase(@"TestKey : Test\,Value; ", "Test,Value")]
+        [TestCase(@" TestKey : Test\;Value ;", "Test;Value")]
+        [TestCase(@" TestKey: Test\:Value;", "Test:Value")]
+        [TestCase(@" TestKey: Test\#Value;", "Test#Value")]
+        public void EmPropertyString_FromString_GoodString_GetExpected(string goodString, string expectedValue)
+        {
+            var testProp = new TestStringProperty("TestKey");
+            testProp.FromString(goodString);
+
+            Assert.AreEqual(expectedValue, testProp.Value);
+        }
+
         [TestCase("TestKey:1;", 1)]
         [TestCase("TestKey : 1; ", 1)]
         [TestCase(" TestKey : 1 ;", 1)]
+        [TestCase("TestKey:\"1\";", 1)]
+        [TestCase("TestKey : \"1\"; ", 1)]
+        [TestCase(" TestKey : \"1\" ;", 1)]
         [TestCase("TestKey:\r\n1\r\n;", 1)]
-        public void EmProperty_FromString_GoodString_GetExpected(string goodString, int expectedValue)
+        public void EmPropertyInt_FromString_GoodString_GetExpected(string goodString, int expectedValue)
         {
-            var testProp = new TestProperty("TestKey");
+            var testProp = new TestIntProperty("TestKey");
             testProp.FromString(goodString);
 
             Assert.AreEqual(expectedValue, testProp.Value);
@@ -69,7 +109,7 @@
         [TestCase("TestDKey:\r\n1\r\n;")]
         public void EmProperty_FromString_MismatchedKey_Throws(string serialValue)
         {
-            var testProp = new TestProperty("TestKey");
+            var testProp = new TestIntProperty("TestKey");
             Assert.Throws<AssertionException>(() =>
             {
                 testProp.FromString(serialValue, true);
@@ -82,7 +122,7 @@
         [TestCase("TestDKey:\r\n1\r\n;", 1)]
         public void EmProperty_FromString_MismatchedKey_Ignored_GetExpected(string goodString, int expectedValue)
         {
-            var testProp = new TestProperty("TestKey");
+            var testProp = new TestIntProperty("TestKey");
             testProp.FromString(goodString, false);
 
             Assert.AreEqual(expectedValue, testProp.Value);
@@ -92,8 +132,8 @@
         public void EmProperty_ToAndFromString_DataPreserved()
         {
             const string key = "TestKey";
-            var orig = new TestProperty(key, 10);
-            var deserialized = new TestProperty(key);
+            var orig = new TestIntProperty(key, 10);
+            var deserialized = new TestIntProperty(key);
 
             string originalSerialized = orig.ToString();
             deserialized.FromString(originalSerialized);
@@ -111,7 +151,7 @@
             List<int> values = new List<int>(5)
             { 1, 2, 3, 4, 5, };
 
-            var testProp = new TestSimpleList(key, values);
+            var testProp = new TestSimpleIntList(key, values);
             string expectedValue = $"{key}:1,2,3,4,5;";
 
             Assert.AreEqual(values.Count, testProp.Count);
@@ -127,11 +167,27 @@
         [TestCase("TestKey : 1, 2, 3, 4, 5; ")]
         [TestCase(" TestKey : 1 , 2 , 3 , 4 , 5 ;")]
         [TestCase("TestKey:\r\n1,\r\n2,\r\n3,\r\n4,\r\n5;")]
-        public void EmPropertyList_FromString_GoodString_GetExpected(string goodString)
+        public void EmPropertyIntList_FromString_GoodString_GetExpected(string goodString)
         {
             var values = new List<int> { 1, 2, 3, 4, 5 };
 
-            var testProp = new TestSimpleList("TestKey");
+            var testProp = new TestSimpleIntList("TestKey");
+            testProp.FromString(goodString);
+
+            Assert.AreEqual(values.Count, testProp.Count);
+            for (int i = 0; i < testProp.Count; i++)
+            {
+                Assert.AreEqual(values[i], testProp[i]);
+            }
+        }
+
+        [TestCase("TestKey:1\\:,2\\,,3\\;,\"4 \",\" 5\";")]
+        [TestCase("TestKey : \"1:\", \"2,\", \"3;\", \"4 \", \" 5\";")]
+        public void EmPropertyStringList_FromString_GoodString_GetExpected(string goodString)
+        {
+            var values = new List<string> { "1:", "2,", "3;", "4 ", " 5" };
+
+            var testProp = new TestSimpleStringList("TestKey");
             testProp.FromString(goodString);
 
             Assert.AreEqual(values.Count, testProp.Count);
@@ -147,8 +203,8 @@
             var values = new List<int> { 1, 2, 3, 4, 5 };
 
             const string key = "TestKey";
-            var orig = new TestSimpleList(key, values);
-            var deserialized = new TestSimpleList(key);
+            var orig = new TestSimpleIntList(key, values);
+            var deserialized = new TestSimpleIntList(key);
 
             string originalSerialized = orig.ToString();
             deserialized.FromString(originalSerialized);
@@ -165,36 +221,45 @@
             Assert.AreEqual(originalSerialized, serialized);
         }
 
-        [Test]
-        public void EmPropertyCollection_NoNestedComplex_ToString_GetExpected()
+        [TestCase("Val", "Val")]
+        [TestCase("Val:", @"Val\:")]
+        [TestCase("Val,", @"Val\,")]
+        [TestCase("Val;", @"Val\;")]
+        [TestCase("Val#", @"Val\#")]
+        public void EmPropertyCollection_NoNestedComplex_ToString_GetExpected(string stValue, string escapedValue)
         {
             var properties = new List<EmProperty>()
             {
-                new EmProperty<string>("String", "Val"),
+                new EmProperty<string>("String", stValue),
                 new EmProperty<int>("Int", 12),
                 new EmPropertyList<float>("FloatList", new List<float>{ 1.0f, 2.1f, 3.2f }),
             };
 
             var testProp = new TestSimpleCollection("TestKey", properties);
 
-            const string expectedValue = "TestKey:" +
-                                         "(" +
-                                             "String:Val;" +
-                                             "Int:12;" +
-                                             "FloatList:1,2.1,3.2;" +
-                                         ");";
+            string expectedValue = "TestKey:" +
+                                    "(" +
+                                    $"String:{escapedValue};" +
+                                        "Int:12;" +
+                                        "FloatList:1,2.1,3.2;" +
+                                    ");";
 
             Assert.AreEqual(expectedValue, testProp.ToString());
         }
 
-        public void EmPropertyCollection_FromString_GoodString_GetExpected()
+        [TestCase("Val", "Val")]
+        [TestCase("Val:", @"Val\:")]
+        [TestCase("Val,", @"Val\,")]
+        [TestCase("Val;", @"Val\;")]
+        [TestCase("Val#", @"Val\#")]
+        public void EmPropertyCollection_FromString_GoodString_GetExpected(string stValue, string escapedValue)
         {
-            const string testValue = "TestKey:" +
-                                     "(" +
-                                        "String:Val;" +
-                                        "Int:12;" +
-                                        "FloatList:1,2.1,3.2;" +
-                                     ");";
+            string testValue = "TestKey:" +
+                                "(" +
+                                   $"String:{escapedValue};" +
+                                    "Int:12;" +
+                                    "FloatList:1,2.1,3.2;" +
+                                ");";
 
             var properties = new List<EmProperty>()
             {
@@ -206,7 +271,7 @@
             var testProp = new TestSimpleCollection("TestKey", properties);
             testProp.FromString(testValue);
 
-            Assert.AreEqual("Val", ((EmProperty<string>)testProp["String"]).Value);
+            Assert.AreEqual(stValue, ((EmProperty<string>)testProp["String"]).Value);
             Assert.AreEqual(12, ((EmProperty<int>)testProp["Int"]).Value);
 
             Assert.AreEqual(3, ((EmPropertyList<float>)testProp["FloatList"]).Count);
@@ -432,7 +497,7 @@
         }
 
         [Test]
-        public void EmProperty_SuperSImple_PrettyPrint_GetExpected()
+        public void EmProperty_SuperSimple_PrettyPrint_GetExpected()
         {
             var emString = new EmProperty<string>("String", "Value");
 

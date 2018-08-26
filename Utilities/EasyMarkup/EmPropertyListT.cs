@@ -7,6 +7,8 @@
 
     public class EmPropertyList<T> : EmProperty, IEnumerable<T> where T : IConvertible
     {
+        private static HashSet<char> ListDelimeters { get; } = new HashSet<char> { SpChar_ListItemSplitter, SpChar_ValueDelimiter };
+
         public bool HasValue { get; private set; } = false;
 
         protected IList<T> InternalValues { get; } = new List<T>();
@@ -47,7 +49,7 @@
             var val = $"{Key}{SpChar_KeyDelimiter}";
             foreach (T value in InternalValues)
             {
-                val += $"{value}{SpChar_ListItemSplitter}";
+                val += $"{EscapeSpecialCharacters(value.ToString())}{SpChar_ListItemSplitter}";
             }
 
             val = val.TrimEnd(SpChar_ListItemSplitter);
@@ -57,25 +59,16 @@
 
         protected override string ExtractValue(StringBuffer fullString)
         {
-            var value = new StringBuffer();
+            
             string serialValues = string.Empty;
 
             do
             {
-                while (fullString.Count > 0 && fullString.PeekStart() != SpChar_ListItemSplitter && fullString.PeekStart() != SpChar_ValueDelimiter) // separator
-                {
-                    value.PushToEnd(fullString.PopFromStart());
-                }
-
-                var serialValue = value.ToString();
+                string serialValue = ReadUntilDelimiter(fullString, ListDelimeters);
 
                 InternalValues.Add(ConvertFromSerial(serialValue));
 
                 serialValues += serialValue + SpChar_ListItemSplitter;
-
-                fullString.PopFromStart(); // Skip , separator
-
-                value.Clear();
 
             } while (fullString.Count > 0 && fullString.PeekStart() != SpChar_ValueDelimiter);
 

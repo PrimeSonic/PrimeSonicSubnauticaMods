@@ -65,10 +65,20 @@
 
         internal static void CustomizeBioFuel(ICustomBioFuel customBioFuel)
         {
+            Assert.IsTrue(customBioFuel.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+
             BioReactorHandler.SetBioReactorCharge(customBioFuel.ItemID, customBioFuel.Energy);
         }
 
         // ----------------------
+
+        private static void HandleCraftingTab(ICraftingTab craftingTab)
+        {
+            Assert.IsTrue(craftingTab.ItemForSprite <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+            Assert.IsTrue(craftingTab.FabricatorType <= CraftTree.Type.Rocket, "This API in intended only for use with standard, non-modded CraftTree.Types.");
+
+            CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.ItemForSprite));
+        }
 
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
         {
@@ -84,9 +94,10 @@
 
         private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe)
         {
-            var replacement = new TechData();
-
-            replacement.craftAmount = modifiedRecipe.AmountCrafted ?? 1;
+            var replacement = new TechData
+            {
+                craftAmount = modifiedRecipe.AmountCrafted ?? 1
+            };
 
             foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)
                 replacement.Ingredients.Add(new Ingredient(ingredient.ItemID, ingredient.Required));
