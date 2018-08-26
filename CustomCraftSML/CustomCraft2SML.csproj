@@ -67,9 +67,11 @@
     <Compile Include="Serialization\AddedRecipeList.cs" />
     <Compile Include="Serialization\CustomBioFuel.cs" />
     <Compile Include="Serialization\CustomBioFuelList.cs" />
+    <Compile Include="Serialization\CustomCraftingTab.cs" />
     <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\CustomSizeList.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
+    <Compile Include="Serialization\EmPropertyCraftTreeType.cs" />
     <Compile Include="Serialization\EmPropertyTechType.cs" />
     <Compile Include="Serialization\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\FileUtils.cs" />

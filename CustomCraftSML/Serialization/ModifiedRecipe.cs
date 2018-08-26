@@ -101,7 +101,7 @@
 
         public void AddUnlock(TechType unlock) => unlocks.Add(unlock);
 
-        protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(4)
+        protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(7)
         {
             new EmPropertyTechType("ItemID"),
             new EmProperty<short>("AmountCrafted", 1),
