@@ -50,6 +50,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Serialization\CustomCraftingTabList.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
     <Compile Include="Interfaces\ITutorialText.cs" />

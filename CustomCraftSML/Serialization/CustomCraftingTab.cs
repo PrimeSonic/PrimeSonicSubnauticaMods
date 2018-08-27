@@ -4,7 +4,6 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
 
-
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab
     {
         private const string KeyName = "CustomTab";

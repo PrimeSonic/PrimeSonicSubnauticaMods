@@ -21,6 +21,7 @@
         private static readonly IDictionary<TechType, ModifiedRecipe> modifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
         private static readonly IDictionary<TechType, CustomSize> customSizes = new Dictionary<TechType, CustomSize>();
         private static readonly IDictionary<TechType, CustomBioFuel> customBioFuels = new Dictionary<TechType, CustomBioFuel>();
+        private static readonly IDictionary<string, CustomCraftingTab> customTabs = new Dictionary<string, CustomCraftingTab>();
 
         private static void HandleWorkingFiles()
         {
@@ -28,18 +29,6 @@
 
             foreach (string file in workingFiles)
                 DeserializeFile(file);
-
-            if (addedRecipes.Count == 0 && !workingFiles.Contains(AddedRecipiesFile))
-                CreateEmptyFile<AddedRecipeList>(AddedRecipiesFile);
-
-            if (modifiedRecipes.Count == 0 && !workingFiles.Contains(ModifiedRecipesFile))
-                CreateEmptyFile<ModifiedRecipeList>(ModifiedRecipesFile);
-
-            if (customSizes.Count == 0 && !workingFiles.Contains(CustomSizesFile))
-                CreateEmptyFile<CustomSizeList>(CustomSizesFile);
-
-            if (customBioFuels.Count == 0 && !workingFiles.Contains(CustomBioFuelsFile))
-                CreateEmptyFile<CustomBioFuelList>(CustomBioFuelsFile);
 
             SendToSMLHelper(addedRecipes);
             SendToSMLHelper(modifiedRecipes);
@@ -89,6 +78,10 @@
 
                     case "CustomBioFuels":
                         check = ParseEntries<CustomBioFuel, CustomBioFuelList>(serializedData, customBioFuels);
+                        break;
+
+                    case "CustomCraftingTabs":
+                        check = ParseEntries<CustomCraftingTab, CustomCraftingTabList>(serializedData, customTabs);
                         break;
 
                     default:
@@ -141,6 +134,39 @@
                 else
                 {
                     parsedItems.Add(item.ItemID, item);
+                    unique++;
+                }
+            }
+
+            return unique++; // Return the number of unique entries added in this list
+        }
+
+        private static int ParseEntries<T, T2>(string serializedData, IDictionary<string, T> parsedItems)
+            where T : EmPropertyCollection, ICraftingTab
+            where T2 : EmPropertyCollectionList<T>, new()
+        {
+            T2 list = new T2();
+
+            Assert.AreEqual(typeof(T), list.ItemType);
+
+            bool successfullyParsed = list.Deserialize(serializedData);
+
+            if (!successfullyParsed)
+                return -1; // Error case
+
+            if (list.Count == 0)
+                return 0; // No entries
+
+            int unique = 0;
+            foreach (T item in list)
+            {
+                if (parsedItems.ContainsKey(item.TabID))
+                {
+                    QuickLogger.Warning($"Duplicate entry for '{item.TabID}' in '{list.Key}' was already added by another working file. Kept first one. Discarded duplicate.");
+                }
+                else
+                {
+                    parsedItems.Add(item.TabID, item);
                     unique++;
                 }
             }
