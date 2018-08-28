@@ -112,6 +112,9 @@
     <Content Include="SampleFiles\CustomSizes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\CustomTab_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SampleFiles\Mattus666.txt" />
     <Content Include="SampleFiles\ModifiedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

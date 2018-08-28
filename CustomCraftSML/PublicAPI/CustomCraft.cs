@@ -74,10 +74,10 @@
 
         private static void HandleCraftingTab(ICraftingTab craftingTab)
         {
-            Assert.IsTrue(craftingTab.ItemForSprite <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+            Assert.IsTrue(craftingTab.SpriteItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
             Assert.IsTrue(craftingTab.FabricatorType <= CraftTree.Type.Rocket, "This API in intended only for use with standard, non-modded CraftTree.Types.");
 
-            CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.ItemForSprite));
+            CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID));
         }
 
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)

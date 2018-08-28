@@ -1,0 +1,36 @@
+﻿# These are samples for adding your own custom crafting tab nodes to the game's existing fabricators. #
+# After you add new tabs here, you can use them to better organize your AddedRecipes. #
+# If you want to add your new tab inside an existing one, you will need internal name of that tab. #
+# You can find all the internal names of all tabs to all fabricators in the README file. #
+
+# The Custom Tabs update comes with some new additions to what you can do with EasyMarkup, so pay close attention to the samples here. #
+
+CustomCraftingTabs: 
+(
+    TabID: Doodads;  # This will be the internal name for this new tab #
+    DisplayName: "Doodas and Gizmos";  # This is the name displayed in-game for your tab. If you want this name to have spaces, you will need to wrap it in quotes as shown. #
+    SpriteItemID: AdvancedWiringKit; # This is the ItemID for the in-game item that will be used as the sprite for your custom tab. #
+    FabricatorType: Fabricator; # This is the fabricator that tab will go to. For a full list of available fabricators, check the README file. #
+    ParentTabID: Personal; # This is the tab under which this will go. If you want to add your tab to the root of the crafting tree, just leave this out. #
+),
+(
+    TabID: SpecialItems;
+    DisplayName: "Special Items";
+    SpriteItemID: PowerCell;
+    FabricatorType: SeamothUpgrades;
+    # This entry doesn't have a ParentTabID, so it will be added to the end of the crafting tree, right below CommonModules in this case. #
+),
+(
+    TabID: AdvTech;
+    DisplayName: "Advanced Electronics";
+    SpriteItemID: ReactorRod;
+    FabricatorType: Fabricator;
+    ParentTabID: Electronics; # You only need to specify the immediate parent tab. You don't have to specify the whole path. #
+),
+(
+    TabID: AltFood;
+    DisplayName: Nutrition; # If you don't need spaces, you can leave out the quotes. But it's also fine if you leave them in. #
+    SpriteItemID: NutrientBlock;
+    FabricatorType: Fabricator;
+    ParentTabID: Survival;
+);

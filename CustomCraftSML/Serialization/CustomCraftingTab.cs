@@ -18,7 +18,7 @@
         {
             new EmProperty<string>("TabID"),
             new EmProperty<string>("DisplayName"),
-            new EmPropertyTechType("ItemForSprite"),
+            new EmPropertyTechType("SpriteItemID"),
             new EmPropertyCraftTreeType("FabricatorType"),
             new EmProperty<string>("ParentTabID"),
         };
@@ -27,7 +27,7 @@
         {
             emTabID = (EmProperty<string>)Properties["TabID"];
             emDisplayName = (EmProperty<string>)Properties["DisplayName"];
-            emSpriteID = (EmPropertyTechType)Properties["ItemForSprite"];
+            emSpriteID = (EmPropertyTechType)Properties["SpriteItemID"];
             emTreeType = (EmPropertyCraftTreeType)Properties["FabricatorType"];
             emParentTabID = (EmProperty<string>)Properties["ParentTabID"];
         }
@@ -50,7 +50,7 @@
             set => emTreeType.Value = value;
         }
 
-        public TechType ItemForSprite
+        public TechType SpriteItemID
         {
             get => emSpriteID.Value;
             set => emSpriteID.Value = value;

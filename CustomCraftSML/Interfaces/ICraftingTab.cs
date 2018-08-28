@@ -5,7 +5,7 @@
         string TabID { get; }
         string DisplayName { get; }
         CraftTree.Type FabricatorType { get; }
-        TechType ItemForSprite { get; }
+        TechType SpriteItemID { get; }
         string ParentTabID { get; }
     }
 }
