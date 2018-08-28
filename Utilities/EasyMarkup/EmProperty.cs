@@ -1,9 +1,10 @@
 ﻿namespace Common.EasyMarkup
 {
+    using System;
     using System.Collections.Generic;
     using UnityEngine.Assertions;
 
-    public abstract class EmProperty
+    public abstract class EmProperty : IEquatable<EmProperty>
     {
         internal const char SpChar_KeyDelimiter = ':';
         internal const char SpChar_ValueDelimiter = ';';
@@ -138,6 +139,24 @@
             return prettyString.ToString();
         }
 
+        internal abstract bool ValueEquals(EmProperty other);
+
+        public bool Equals(EmProperty other)
+        {
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            if (this.GetType() != other.GetType())
+                return false;
+
+            return
+                this.Key == other.Key &&
+                this.ValueEquals(other);
+        }
+
         private static StringBuffer CleanValue(StringBuffer rawValue, bool stopAtKey = false)
         {
             var cleanValue = new StringBuffer();
@@ -233,27 +252,52 @@
             var original = new StringBuffer(unescapedValue);
             var escaped = new StringBuffer();
 
-            while (!original.IsEmpty)
+            if (original.Contains(' '))
             {
-                switch (original.PeekStart())
+                escaped.PushToEnd(SpChar_LiteralStringBlock);
+                escaped.TransferToEnd(original);
+                escaped.PushToEnd(SpChar_LiteralStringBlock);
+            }
+            else
+            {
+                while (!original.IsEmpty)
                 {
-                    case SpChar_KeyDelimiter:
-                    case SpChar_ValueDelimiter:
-                    case SpChar_BeginComplexValue:
-                    case SpChar_FinishComplexValue:
-                    case SpChar_ListItemSplitter:
-                    case SpChar_CommentBlock:
-                    case SpChar_EscapeChar:
-                        escaped.PushToEnd(SpChar_EscapeChar);
-                        break;
-                    default:
-                        break;
-                }
+                    switch (original.PeekStart())
+                    {
+                        case SpChar_KeyDelimiter:
+                        case SpChar_ValueDelimiter:
+                        case SpChar_BeginComplexValue:
+                        case SpChar_FinishComplexValue:
+                        case SpChar_ListItemSplitter:
+                        case SpChar_CommentBlock:
+                        case SpChar_EscapeChar:
+                            escaped.PushToEnd(SpChar_EscapeChar);
+                            break;
+                        default:
+                            break;
+                    }
 
-                escaped.PushToEnd(original.PopFromStart());
+                    escaped.PushToEnd(original.PopFromStart());
+                }
             }
 
             return escaped.ToString();
+        }
+
+        public static bool operator ==(EmProperty a, EmProperty b)
+        {
+            if (a is null)
+                return b is null;
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(EmProperty a, EmProperty b)
+        {
+            if (a is null)
+                return !(b is null);
+
+            return !a.Equals(b);
         }
     }
 

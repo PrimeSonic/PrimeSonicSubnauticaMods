@@ -30,6 +30,7 @@
             foreach (string file in workingFiles)
                 DeserializeFile(file);
 
+            //SendToSMLHelper(customTabs);
             SendToSMLHelper(addedRecipes);
             SendToSMLHelper(modifiedRecipes);
             SendToSMLHelper(customSizes);

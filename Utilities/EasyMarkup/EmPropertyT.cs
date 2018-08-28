@@ -69,6 +69,16 @@
 
             return new EmProperty<T>(Key, DefaultValue);
         }
+
+        internal override bool ValueEquals(EmProperty other)
+        {
+            if (other is EmProperty<T> otherTyped)
+            {
+                return this.Value.Equals(otherTyped.Value);
+            }
+
+            return false;
+        }
     }
 
 }

@@ -95,6 +95,25 @@
         }
 
         internal override EmProperty Copy() => new EmPropertyCollectionList<T>(Key, (T)Template.Copy());
+
+        internal override bool ValueEquals(EmProperty other)
+        {
+            if (other is EmPropertyCollectionList<T> otherTyped)
+            {
+                if (this.Count != otherTyped.Count)
+                    return false;
+
+                for (int i = 0; i < this.Count; i++)
+                {
+                    if (!this[i].Equals(otherTyped[i]))
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
     }
 
 }
