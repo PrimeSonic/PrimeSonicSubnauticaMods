@@ -30,7 +30,7 @@
             foreach (string file in workingFiles)
                 DeserializeFile(file);
 
-            //SendToSMLHelper(customTabs);
+            SendToSMLHelper(customTabs);
             SendToSMLHelper(addedRecipes);
             SendToSMLHelper(modifiedRecipes);
             SendToSMLHelper(customSizes);
@@ -187,6 +187,17 @@
             }
 
             Logger.Log($"{successCount} of {uniqueEntries.Count} {typeof(T).Name} entries were patched.");
+        }
+
+        private static void SendToSMLHelper<T>(IDictionary<string, T> uniqueEntries)
+            where T : ICraftingTab
+        {
+            foreach (T item in uniqueEntries.Values)
+            {
+                CustomCraft.CustomCraftingTab(item);
+            }
+
+            Logger.Log($"Custom Crafting Tabs were patched.");
         }
     }
 }

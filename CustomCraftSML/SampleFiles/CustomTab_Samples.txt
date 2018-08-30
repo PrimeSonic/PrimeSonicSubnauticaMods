@@ -39,4 +39,5 @@ CustomCraftingTabs:
     SpriteItemID: PrecursorIonPowerCell;
     ParentTabPath: SeamothUpgrades/SpecialItems;
     # Yes! You can create new tabs after custom tabs you just added. Just make sure to list them in order of appearance. The file is read top to bottom #
+    # And of course, you can all all your AddRecipes to your custom tabs. #
 );
