@@ -249,6 +249,9 @@
 
         internal static string EscapeSpecialCharacters(string unescapedValue)
         {
+            if (string.IsNullOrEmpty(unescapedValue))
+                return string.Empty;
+
             var original = new StringBuffer(unescapedValue);
             var escaped = new StringBuffer();
 

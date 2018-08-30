@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.PublicAPI;
 
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab
     {
@@ -11,16 +12,15 @@
         private readonly EmProperty<string> emTabID;
         private readonly EmProperty<string> emDisplayName;
         private readonly EmPropertyTechType emSpriteID;
-        private readonly EmPropertyCraftTreeType emTreeType;
-        private readonly EmProperty<string> emParentTabID;
+        private readonly EmProperty<string> emParentTabPath;
+        private CraftingPath craftingPath;
 
         protected static ICollection<EmProperty> CustomCraftingTabProperties => new List<EmProperty>(4)
         {
             new EmProperty<string>("TabID"),
             new EmProperty<string>("DisplayName"),
             new EmPropertyTechType("SpriteItemID"),
-            new EmPropertyCraftTreeType("FabricatorType"),
-            new EmProperty<string>("ParentTabID"),
+            new EmProperty<string>("ParentTabPath"),
         };
 
         public CustomCraftingTab() : base(KeyName, CustomCraftingTabProperties)
@@ -28,9 +28,18 @@
             emTabID = (EmProperty<string>)Properties["TabID"];
             emDisplayName = (EmProperty<string>)Properties["DisplayName"];
             emSpriteID = (EmPropertyTechType)Properties["SpriteItemID"];
-            emTreeType = (EmPropertyCraftTreeType)Properties["FabricatorType"];
-            emParentTabID = (EmProperty<string>)Properties["ParentTabID"];
+            emParentTabPath = (EmProperty<string>)Properties["ParentTabPath"];
+
+            base.OnValueExtractedEvent += ParsePath;
         }
+
+        internal CustomCraftingTab(string path) : this()
+        {
+            this.ParentTabPath = path;
+            ParsePath();
+        }
+
+        private void ParsePath() => craftingPath = new CraftingPath(this.ParentTabPath);
 
         public string TabID
         {
@@ -46,8 +55,13 @@
 
         public CraftTree.Type FabricatorType
         {
-            get => emTreeType.Value;
-            set => emTreeType.Value = value;
+            get
+            {
+                if (craftingPath is null)
+                    return CraftTree.Type.None;
+
+                return craftingPath.Scheme;
+            }
         }
 
         public TechType SpriteItemID
@@ -56,10 +70,20 @@
             set => emSpriteID.Value = value;
         }
 
-        public string ParentTabID
+        public string ParentTabPath
         {
-            get => emParentTabID.Value;
-            set => emParentTabID.Value = value;
+            get => emParentTabPath.Value;
+            set => emParentTabPath.Value = value;
+        }
+        public string[] StepsToTab
+        {
+            get
+            {
+                if (craftingPath is null)
+                    return null;
+
+                return craftingPath.Steps;
+            }
         }
 
         internal override EmProperty Copy() => new CustomCraftingTab();

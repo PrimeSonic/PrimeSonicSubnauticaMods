@@ -70,14 +70,27 @@
             BioReactorHandler.SetBioReactorCharge(customBioFuel.ItemID, customBioFuel.Energy);
         }
 
+        internal static void CustomCraftingTab(ICraftingTab craftingTab)
+        {
+            Assert.IsTrue(craftingTab.SpriteItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+            Assert.IsTrue(craftingTab.FabricatorType <= CraftTree.Type.Rocket, "This API in intended only for use with standard, non-modded CraftTree.Types.");
+            Assert.IsTrue(craftingTab.FabricatorType > CraftTree.Type.None, "ParentTabPath must identify a fabricator for the custom tab.");
+
+            HandleCraftingTab(craftingTab);
+        }
+
         // ----------------------
 
         private static void HandleCraftingTab(ICraftingTab craftingTab)
         {
-            Assert.IsTrue(craftingTab.SpriteItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
-            Assert.IsTrue(craftingTab.FabricatorType <= CraftTree.Type.Rocket, "This API in intended only for use with standard, non-modded CraftTree.Types.");
-
-            CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID));
+            if (craftingTab.ParentTabPath == null)
+            {
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID));
+            }
+            else
+            {
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID), craftingTab.StepsToTab);
+            }
         }
 
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)

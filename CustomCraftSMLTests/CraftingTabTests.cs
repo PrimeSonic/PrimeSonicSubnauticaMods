@@ -10,12 +10,10 @@
         [Test]
         public void CraftingTab_Serialize_Deserialize()
         {
-            var originalTab = new CustomCraftingTab
+            var originalTab = new CustomCraftingTab("Workbench/OriginalTab")
             {
                 TabID = "CustomTab",
                 DisplayName = "Custom Tab",
-                FabricatorType = CraftTree.Type.Workbench,
-                ParentTabID = "OriginalTab",
                 SpriteItemID = TechType.ComputerChip
             };
 
@@ -28,7 +26,7 @@
             Assert.AreEqual(originalTab.TabID, copiedTab.TabID);
             Assert.AreEqual(originalTab.DisplayName, copiedTab.DisplayName);
             Assert.AreEqual(originalTab.FabricatorType, copiedTab.FabricatorType);
-            Assert.AreEqual(originalTab.ParentTabID, copiedTab.ParentTabID);
+            Assert.AreEqual(originalTab.ParentTabPath, copiedTab.ParentTabPath);
             Assert.AreEqual(originalTab.SpriteItemID, copiedTab.SpriteItemID);
             Assert.IsTrue(originalTab.Equals(copiedTab));
             Assert.IsTrue(originalTab == copiedTab);
@@ -37,12 +35,10 @@
         [Test]
         public void CraftingTab_PrettyPrint_Deserialize()
         {
-            var originalTab = new CustomCraftingTab
+            var originalTab = new CustomCraftingTab("Workbench/OriginalTab")
             {
                 TabID = "CustomTab",
                 DisplayName = "Custom Tab",
-                FabricatorType = CraftTree.Type.Workbench,
-                ParentTabID = "OriginalTab",
                 SpriteItemID = TechType.ComputerChip
             };
 
@@ -54,7 +50,7 @@
             Assert.AreEqual(originalTab.TabID, copiedTab.TabID);
             Assert.AreEqual(originalTab.DisplayName, copiedTab.DisplayName);
             Assert.AreEqual(originalTab.FabricatorType, copiedTab.FabricatorType);
-            Assert.AreEqual(originalTab.ParentTabID, copiedTab.ParentTabID);
+            Assert.AreEqual(originalTab.ParentTabPath, copiedTab.ParentTabPath);
             Assert.AreEqual(originalTab.SpriteItemID, copiedTab.SpriteItemID);
             Assert.IsTrue(originalTab.Equals(copiedTab));
             Assert.IsTrue(originalTab == copiedTab);
@@ -68,18 +64,19 @@
                                     TabID: CustomTab;
                                     DisplayName: ""Custom Tab"";
                                     SpriteItemID: ComputerChip;
-                                    FabricatorType: Workbench;
-                                    ParentTabID: OriginalTab;
+                                    ParentTabPath: Workbench/OriginalTab;
                                 ); ";
 
-            var copiedTab = new CustomCraftingTab();
-            copiedTab.FromString(serialized);
+            var tab = new CustomCraftingTab();
+            tab.FromString(serialized);
 
-            Assert.AreEqual("CustomTab", copiedTab.TabID);
-            Assert.AreEqual("Custom Tab", copiedTab.DisplayName);
-            Assert.AreEqual(TechType.ComputerChip, copiedTab.SpriteItemID);
-            Assert.AreEqual(CraftTree.Type.Workbench, copiedTab.FabricatorType);
-            Assert.AreEqual("OriginalTab", copiedTab.ParentTabID);
+            Assert.AreEqual("CustomTab", tab.TabID);
+            Assert.AreEqual("Custom Tab", tab.DisplayName);
+            Assert.AreEqual(TechType.ComputerChip, tab.SpriteItemID);
+            Assert.AreEqual(CraftTree.Type.Workbench, tab.FabricatorType);
+            Assert.AreEqual("Workbench/OriginalTab", tab.ParentTabPath);
+            Assert.AreEqual(1, tab.StepsToTab.Length);
+            Assert.AreEqual("OriginalTab", tab.StepsToTab[0]);
         }
 
         [Test]
@@ -91,16 +88,14 @@
                 {
                     TabID = "CustomTab1",
                     DisplayName = "Custom Tab The First",
-                    FabricatorType = CraftTree.Type.CyclopsFabricator,
-                    ParentTabID = "OriginalTab_1",
+                    ParentTabPath = "CyclopsFabricator/OriginalTab_1",
                     SpriteItemID = TechType.Cyclops
                 },
                 new CustomCraftingTab
                 {
                     TabID = "CustomTab2",
                     DisplayName = "Custom Tab The Second",
-                    FabricatorType = CraftTree.Type.SeamothUpgrades,
-                    ParentTabID = "OriginalTab_2",
+                    ParentTabPath = "SeamothUpgrades/OriginalTab_2",
                     SpriteItemID = TechType.Seamoth
                 },
             };
@@ -116,26 +111,41 @@
             Assert.IsTrue(tabList == tabList2);
         }
 
-
         [Test]
-        public void CraftingTab_NoParentTab_Deserialize()
+        public void CraftingTab_AtRoot_Deserialize()
         {
             string serialized = @"CustomTab: 
                                 (
                                     TabID: CustomTab;
                                     DisplayName: ""Custom Tab"";
                                     SpriteItemID: ComputerChip;
-                                    FabricatorType: Workbench;
+                                    ParentTabPath: Workbench;
                                 ); ";
 
-            var copiedTab = new CustomCraftingTab();
-            copiedTab.FromString(serialized);
+            var tab = new CustomCraftingTab();
+            tab.FromString(serialized);
 
-            Assert.AreEqual("CustomTab", copiedTab.TabID);
-            Assert.AreEqual("Custom Tab", copiedTab.DisplayName);
-            Assert.AreEqual(TechType.ComputerChip, copiedTab.SpriteItemID);
-            Assert.AreEqual(CraftTree.Type.Workbench, copiedTab.FabricatorType);
-            Assert.AreEqual(null, copiedTab.ParentTabID);
+            Assert.AreEqual("CustomTab", tab.TabID);
+            Assert.AreEqual("Custom Tab", tab.DisplayName);
+            Assert.AreEqual(TechType.ComputerChip, tab.SpriteItemID);
+            Assert.AreEqual(CraftTree.Type.Workbench, tab.FabricatorType);
+            Assert.AreEqual(null, tab.StepsToTab);
+        }
+
+        [Test]
+        public void CraftingTab_CheckPath()
+        {
+
+            var originalTab = new CustomCraftingTab("Fabricator/AdvancedMaterials")
+            {
+                TabID = "CustomTab",
+                DisplayName = "Custom Tab",
+                SpriteItemID = TechType.ComputerChip
+            };
+            
+
+            Assert.IsNotNull(originalTab.StepsToTab);
+
         }
     }
 }

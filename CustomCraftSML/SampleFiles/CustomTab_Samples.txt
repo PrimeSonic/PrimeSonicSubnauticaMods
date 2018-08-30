@@ -9,28 +9,34 @@ CustomCraftingTabs:
 (
     TabID: Doodads;  # This will be the internal name for this new tab #
     DisplayName: "Doodas and Gizmos";  # This is the name displayed in-game for your tab. If you want this name to have spaces, you will need to wrap it in quotes as shown. #
-    SpriteItemID: AdvancedWiringKit; # This is the ItemID for the in-game item that will be used as the sprite for your custom tab. #
-    FabricatorType: Fabricator; # This is the fabricator that tab will go to. For a full list of available fabricators, check the README file. #
-    ParentTabID: Personal; # This is the tab under which this will go. If you want to add your tab to the root of the crafting tree, just leave this out. #
-),
-(
-    TabID: SpecialItems;
-    DisplayName: "Special Items";
-    SpriteItemID: PowerCell;
-    FabricatorType: SeamothUpgrades;
-    # This entry doesn't have a ParentTabID, so it will be added to the end of the crafting tree, right below CommonModules in this case. #
+    SpriteItemID: AdvancedWiringKit; # This is the ItemID for the in-game item that will be used as the sprite for your custom tab. #    
+    ParentTabPath: Fabricator/Personal;
+    # This tab will be added to the Personal tab of the Fabricator crafting tree. For a full list of available fabricators, check the README file. #
 ),
 (
     TabID: AdvTech;
     DisplayName: "Advanced Electronics";
     SpriteItemID: ReactorRod;
-    FabricatorType: Fabricator;
-    ParentTabID: Electronics; # You only need to specify the immediate parent tab. You don't have to specify the whole path. #
+    ParentTabPath: Fabricator/Resources/Electronics; 
+    # Remember that icons get smaller as the crafting tree goes deeper. #
 ),
 (
     TabID: AltFood;
     DisplayName: Nutrition; # If you don't need spaces, you can leave out the quotes. But it's also fine if you leave them in. #
     SpriteItemID: NutrientBlock;
-    FabricatorType: Fabricator;
-    ParentTabID: Survival;
+    ParentTabPath: Fabricator/Survival;
+),
+(
+    TabID: SpecialItems;
+    DisplayName: "Special Items";
+    SpriteItemID: PowerCell;
+    ParentTabPath: SeamothUpgrades;
+    # This entry doesn't have a tab after the fabricator type, so it will be added to the root of the crafting tree, right below CommonModules in this case. #
+),
+(
+    TabID: ExtraSpecialItems;
+    DisplayName: "Extra Special Items";
+    SpriteItemID: PrecursorIonPowerCell;
+    ParentTabPath: SeamothUpgrades/SpecialItems;
+    # Yes! You can create new tabs after custom tabs you just added. Just make sure to list them in order of appearance. The file is read top to bottom #
 );
