@@ -6,6 +6,7 @@
     {
         public readonly CraftTree.Type Scheme;
         public readonly string Path;
+        public string[] Steps { get; internal set; }
 
         internal CraftingPath(CraftTree.Type scheme, string path)
         {
@@ -15,16 +16,30 @@
 
         internal CraftingPath(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                Scheme = CraftTree.Type.None;
+                return;
+            }
+
             int firstBreak = path.IndexOf('/');
-            string schemeString = path.Substring(0, firstBreak);
+
+            string schemeString;
+
+            if (firstBreak > -1)
+            {
+                schemeString = path.Substring(0, firstBreak);
+                Path = path.Substring(firstBreak + 1);
+                this.Steps = Path.Split('/');
+            }
+            else
+            {
+                schemeString = path;
+            }
 
             Scheme = (CraftTree.Type)Enum.Parse(typeof(CraftTree.Type), schemeString);
-            Path = path.Substring(firstBreak + 1);
         }
 
-        public override string ToString()
-        {
-            return Path.TrimEnd('/');
-        }
+        public override string ToString() => Path.TrimEnd('/');
     }
 }

@@ -27,7 +27,7 @@
                     CraftTreeHandler.AddCraftingNode(CraftTree.Type.CyclopsFabricator, craftTypeID, tab.TabID);
             }
 
-            Console.WriteLine("[VehicleUpgradesInCyclops] Patching complete.");      
+            Console.WriteLine("[VehicleUpgradesInCyclops] Patching complete.");
         }
     }
 }

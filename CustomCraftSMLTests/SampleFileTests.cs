@@ -12,7 +12,7 @@
         {
             get
             {
-                var path = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
+                string path = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
                 path = Directory.GetParent(path).FullName;
                 path = Directory.GetParent(path).FullName;
                 return Directory.GetParent(path).FullName + "/CustomCraftSML/SampleFiles/";
@@ -63,11 +63,33 @@
         [Test]
         public void Sample_AddedRecipes_Ok()
         {
-            var aRecipes = new CustomCraft2SML.Serialization.AddedRecipeList();
+            var aRecipes = new AddedRecipeList();
 
             string sample = File.ReadAllText(SampleFileDirectory + "AddedRecipes_Samples.txt");
 
             bool result = aRecipes.FromString(sample);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void Sample_BioFuels_Ok()
+        {
+            var cFuels = new CustomBioFuelList();
+
+            string sample = File.ReadAllText(SampleFileDirectory + "CustomBioFuels_Samples.txt");
+
+            bool result = cFuels.FromString(sample);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void Sample_CustomTabs_Ok()
+        {
+            var cTabs = new CustomCraftingTabList();
+
+            string sample = File.ReadAllText(SampleFileDirectory + "CustomTab_Samples.txt");
+
+            bool result = cTabs.FromString(sample);
             Assert.IsTrue(result);
         }
 
@@ -89,12 +111,12 @@
             {
                 ItemID = TechType.BigFilteredWater,
                 AmountCrafted = 1,
-                Path = PathHelper.Fabricator.Sustenance.Water.GetThisNode.ToString(),
+                Path = PathHelper.Fabricator.Sustenance.Water.WaterTab.GetCraftingPath.ToString(),
                 ForceUnlockAtStart = false
             };
             bigFilterWaterRecipe.AddIngredient(TechType.FilteredWater, 2);
 
-            var origRecipeList = new CustomCraft2SML.Serialization.AddedRecipeList
+            var origRecipeList = new AddedRecipeList
             {
                 nutrientBlockRecipe,
                 bigFilterWaterRecipe
@@ -106,7 +128,7 @@
 
             File.WriteAllText(samples2File, serialized);
 
-            var readingRecipeList = new CustomCraft2SML.Serialization.AddedRecipeList();
+            var readingRecipeList = new AddedRecipeList();
 
             string reserialized = File.ReadAllText(samples2File);
 
@@ -150,14 +172,16 @@
             var curedReginaldRecipe = new ModifiedRecipe()
             {
                 ItemID = TechType.CuredReginald,
-                AmountCrafted = 1,                
+                AmountCrafted = 1,
             };
             curedReginaldRecipe.AddUnlock(TechType.NutrientBlock);
             curedReginaldRecipe.AddIngredient(TechType.Reginald, 1);
             curedReginaldRecipe.AddIngredient(TechType.Salt, 1);
 
-            var origRecipeList = new ModifiedRecipeList();
-            origRecipeList.Add(curedReginaldRecipe);
+            var origRecipeList = new ModifiedRecipeList
+            {
+                curedReginaldRecipe
+            };
 
             string serialized = origRecipeList.PrettyPrint();
 
@@ -180,8 +204,8 @@
             Assert.AreEqual(curedReginald.ItemID, curedReginaldRecipe.ItemID);
             Assert.AreEqual(curedReginald.AmountCrafted, curedReginaldRecipe.AmountCrafted);
             Assert.AreEqual(curedReginald.IngredientsCount, curedReginaldRecipe.IngredientsCount);
-            Assert.AreEqual(curedReginald.GetIngredient(0).ItemID,   curedReginaldRecipe.GetIngredient(0).ItemID);
-            Assert.AreEqual(curedReginald.GetIngredient(1).ItemID,   curedReginaldRecipe.GetIngredient(1).ItemID);
+            Assert.AreEqual(curedReginald.GetIngredient(0).ItemID, curedReginaldRecipe.GetIngredient(0).ItemID);
+            Assert.AreEqual(curedReginald.GetIngredient(1).ItemID, curedReginaldRecipe.GetIngredient(1).ItemID);
             Assert.AreEqual(curedReginald.GetIngredient(0).Required, curedReginaldRecipe.GetIngredient(0).Required);
             Assert.AreEqual(curedReginald.GetIngredient(1).Required, curedReginaldRecipe.GetIngredient(1).Required);
             Assert.AreEqual(curedReginald.ForceUnlockAtStart, curedReginaldRecipe.ForceUnlockAtStart);
@@ -215,10 +239,12 @@
                 Height = 1
             };
 
-            var origCustSizes = new CustomSizeList();
-            origCustSizes.Add(smallBloodOil);
-            origCustSizes.Add(smallMelon);
-            origCustSizes.Add(smallPotatoe);
+            var origCustSizes = new CustomSizeList
+            {
+                smallBloodOil,
+                smallMelon,
+                smallPotatoe
+            };
 
             string serialized = origCustSizes.PrettyPrint();
 

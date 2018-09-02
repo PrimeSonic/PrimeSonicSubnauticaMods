@@ -67,7 +67,7 @@
             {
                 switch (fullString.PeekStart())
                 {
-                    case SpChar_ValueDelimiter when openParens == 0: // End of ComplexList                        
+                    case SpChar_ValueDelimiter when openParens == 0: // End of ComplexList
                     case SpChar_ListItemSplitter when openParens == 0 && fullString.Count > 0: // End of a nested property belonging to this collection
                         fullString.PopFromStart(); // Skip delimiter
 
@@ -95,6 +95,25 @@
         }
 
         internal override EmProperty Copy() => new EmPropertyCollectionList<T>(Key, (T)Template.Copy());
+
+        internal override bool ValueEquals(EmProperty other)
+        {
+            if (other is EmPropertyCollectionList<T> otherTyped)
+            {
+                if (this.Count != otherTyped.Count)
+                    return false;
+
+                for (int i = 0; i < this.Count; i++)
+                {
+                    if (!this[i].Equals(otherTyped[i]))
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
     }
 
 }

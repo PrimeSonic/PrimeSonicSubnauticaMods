@@ -50,6 +50,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Serialization\CustomCraftingTabList.cs" />
+    <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
     <Compile Include="Interfaces\ITutorialText.cs" />
     <Compile Include="Logger.cs" />
@@ -66,9 +68,11 @@
     <Compile Include="Serialization\AddedRecipeList.cs" />
     <Compile Include="Serialization\CustomBioFuel.cs" />
     <Compile Include="Serialization\CustomBioFuelList.cs" />
+    <Compile Include="Serialization\CustomCraftingTab.cs" />
     <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\CustomSizeList.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
+    <Compile Include="Serialization\EmPropertyCraftTreeType.cs" />
     <Compile Include="Serialization\EmPropertyTechType.cs" />
     <Compile Include="Serialization\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
@@ -106,6 +110,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\CustomSizes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomTab_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\Mattus666.txt" />

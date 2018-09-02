@@ -38,7 +38,7 @@
             if (string.IsNullOrEmpty(InLineComment))
                 return base.ToString();
 
-            return $"{Key}{SpChar_KeyDelimiter}{SerializedValue}{SpChar_ValueDelimiter} {EmUtils.CommentText(InLineComment)}";
+            return $"{Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter} {EmUtils.CommentText(InLineComment)}";
         }
 
         protected override string ExtractValue(StringBuffer fullString)
@@ -68,6 +68,16 @@
                 return new EmProperty<T>(Key, ObjValue);
 
             return new EmProperty<T>(Key, DefaultValue);
+        }
+
+        internal override bool ValueEquals(EmProperty other)
+        {
+            if (other is EmProperty<T> otherTyped)
+            {
+                return this.Value.Equals(otherTyped.Value);
+            }
+
+            return false;
         }
     }
 

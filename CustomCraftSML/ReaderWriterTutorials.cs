@@ -115,8 +115,9 @@
             builder.AppendLine("#   e - You can now also set if this recipe should be unlocked at the start or not #");
             builder.AppendLine("# 3 - Adding new recipes and placing them into any of the existing fabricators #");
             builder.AppendLine("#   a - Added recipes work exactly like Modified recipes, with the addition of a Path to where that recipe should go #");
-            builder.AppendLine("# 4 - NEW! Customize the energy values of items in the BioReactor #");
+            builder.AppendLine("# 4 - Customize the energy values of items in the BioReactor #");
             builder.AppendLine("#   a - This can also be used to make items compatible with the BioReactor that originally weren't. #");
+            builder.AppendLine("# 5 - NEW! Add your own custom tabs into the fabricator crafting trees. #");
             builder.AppendLine($"# Remember that only the standard in-game items can be used with {RootModName} #");
             builder.AppendLine("# Modded items can't be used at this time #");
             builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");

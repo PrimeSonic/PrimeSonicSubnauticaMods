@@ -4,7 +4,7 @@
     using CustomCraft2SML.PublicAPI;
     using UnityEngine.Assertions;
 
-    internal abstract class CraftingNode
+    public abstract class CraftingNode
     {
         internal const char Splitter = '/';
         internal readonly CraftingNode Parent = null;
@@ -44,7 +44,7 @@
         internal CraftingPath GetCraftingPath => new CraftingPath(Scheme, GetPath());
     }
 
-    internal class CraftingRoot : CraftingNode
+    public class CraftingRoot : CraftingNode
     {
         public static readonly IList<CraftTree.Type> ValidCraftTrees = new List<CraftTree.Type>(6)
         {
@@ -69,7 +69,7 @@
         }
     }
 
-    internal class CraftingTab : CraftingNode
+    public class CraftingTab : CraftingNode
     {
         internal readonly string TabName;
         internal override string Name => TabName;

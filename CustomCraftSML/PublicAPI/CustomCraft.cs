@@ -65,10 +65,33 @@
 
         internal static void CustomizeBioFuel(ICustomBioFuel customBioFuel)
         {
+            Assert.IsTrue(customBioFuel.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+
             BioReactorHandler.SetBioReactorCharge(customBioFuel.ItemID, customBioFuel.Energy);
         }
 
+        internal static void CustomCraftingTab(ICraftingTab craftingTab)
+        {
+            Assert.IsTrue(craftingTab.SpriteItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+            Assert.IsTrue(craftingTab.FabricatorType <= CraftTree.Type.Rocket, "This API in intended only for use with standard, non-modded CraftTree.Types.");
+            Assert.IsTrue(craftingTab.FabricatorType > CraftTree.Type.None, "ParentTabPath must identify a fabricator for the custom tab.");
+
+            HandleCraftingTab(craftingTab);
+        }
+
         // ----------------------
+
+        private static void HandleCraftingTab(ICraftingTab craftingTab)
+        {
+            if (craftingTab.ParentTabPath == null)
+            {
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID));
+            }
+            else
+            {
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID), craftingTab.StepsToTab);
+            }
+        }
 
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
         {
@@ -84,9 +107,10 @@
 
         private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe)
         {
-            var replacement = new TechData();
-
-            replacement.craftAmount = modifiedRecipe.AmountCrafted ?? 1;
+            var replacement = new TechData
+            {
+                craftAmount = modifiedRecipe.AmountCrafted ?? 1
+            };
 
             foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)
                 replacement.Ingredients.Add(new Ingredient(ingredient.ItemID, ingredient.Required));

@@ -21,7 +21,7 @@
 
         public EmPropertyCollection(string key, ICollection<EmProperty> definitions)
         {
-            Key = key;
+            this.Key = key;
             Definitions = definitions;
             Properties = new Dictionary<string, EmProperty>(definitions.Count);
 
@@ -31,7 +31,7 @@
 
         public override string ToString()
         {
-            var val = $"{Key}{SpChar_KeyDelimiter}{SpChar_BeginComplexValue}";
+            string val = $"{this.Key}{SpChar_KeyDelimiter}{SpChar_BeginComplexValue}";
             foreach (string key in Properties.Keys)
             {
                 val += $"{Properties[key]}";
@@ -74,6 +74,9 @@
                         buffer.PopFromStartIfEquals(SpChar_ListItemSplitter);
                         subKey = buffer.ToString();
                         goto default;
+                    case SpChar_EscapeChar:
+                        buffer.PushToEnd(fullString.PopFromStart()); // Include escape char to be handled by EmProperty
+                        goto default;
                     case SpChar_BeginComplexValue:
                         openParens++;
                         goto default;
@@ -88,6 +91,28 @@
             } while (fullString.Count > 0 && !exit);
 
             return serialValues + SpChar_FinishComplexValue;
+        }
+
+        internal override bool ValueEquals(EmProperty other)
+        {
+            if (other is EmPropertyCollection otherTyped)
+            {
+                if (Properties.Count != otherTyped.Properties.Count)
+                    return false;
+
+                foreach (KeyValuePair<string, EmProperty> property in Properties)
+                {
+                    if (!otherTyped.Properties.ContainsKey(property.Key))
+                        return false;
+
+                    if (!property.Value.Equals(otherTyped[property.Key]))
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         protected ICollection<EmProperty> CopyDefinitions

@@ -1,0 +1,43 @@
+﻿# These are samples for adding your own custom crafting tab nodes to the game's existing fabricators. #
+# After you add new tabs here, you can use them to better organize your AddedRecipes. #
+# If you want to add your new tab inside an existing one, you will need internal name of that tab. #
+# You can find all the internal names of all tabs to all fabricators in the README file. #
+
+# The Custom Tabs update comes with some new additions to what you can do with EasyMarkup, so pay close attention to the samples here. #
+
+CustomCraftingTabs: 
+(
+    TabID: Doodads;  # This will be the internal name for this new tab #
+    DisplayName: "Doodas and Gizmos";  # This is the name displayed in-game for your tab. If you want this name to have spaces, you will need to wrap it in quotes as shown. #
+    SpriteItemID: AdvancedWiringKit; # This is the ItemID for the in-game item that will be used as the sprite for your custom tab. #    
+    ParentTabPath: Fabricator/Personal;
+    # This tab will be added to the Personal tab of the Fabricator crafting tree. For a full list of available fabricators, check the README file. #
+),
+(
+    TabID: AdvTech;
+    DisplayName: "Advanced Electronics";
+    SpriteItemID: ReactorRod;
+    ParentTabPath: Fabricator/Resources/Electronics; 
+    # Remember that icons get smaller as the crafting tree goes deeper. #
+),
+(
+    TabID: AltFood;
+    DisplayName: Nutrition; # If you don't need spaces, you can leave out the quotes. But it's also fine if you leave them in. #
+    SpriteItemID: NutrientBlock;
+    ParentTabPath: Fabricator/Survival;
+),
+(
+    TabID: SpecialItems;
+    DisplayName: "Special Items";
+    SpriteItemID: PowerCell;
+    ParentTabPath: SeamothUpgrades;
+    # This entry doesn't have a tab after the fabricator type, so it will be added to the root of the crafting tree, right below CommonModules in this case. #
+),
+(
+    TabID: ExtraSpecialItems;
+    DisplayName: "Extra Special Items";
+    SpriteItemID: PrecursorIonPowerCell;
+    ParentTabPath: SeamothUpgrades/SpecialItems;
+    # Yes! You can create new tabs after custom tabs you just added. Just make sure to list them in order of appearance. The file is read top to bottom #
+    # And of course, you can all all your AddRecipes to your custom tabs. #
+);
