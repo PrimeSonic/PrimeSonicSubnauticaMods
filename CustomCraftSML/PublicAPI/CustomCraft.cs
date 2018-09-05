@@ -83,7 +83,7 @@
 
         private static void HandleCraftingTab(ICraftingTab craftingTab)
         {
-            if (craftingTab.ParentTabPath == null)
+            if (craftingTab.StepsToTab == null)
             {
                 CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID));
             }
