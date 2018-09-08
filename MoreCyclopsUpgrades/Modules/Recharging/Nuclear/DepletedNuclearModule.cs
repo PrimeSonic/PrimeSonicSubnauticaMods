@@ -53,7 +53,7 @@
                 SetStaticTechTypeID(this.TechType);
             }
 
-            //this.NukFabricator.Patch(CyclopsModule.ModulesEnabled);
+            this.NukFabricator.Patch(CyclopsModule.ModulesEnabled);
         }
 
         protected override TechData GetRecipe()
