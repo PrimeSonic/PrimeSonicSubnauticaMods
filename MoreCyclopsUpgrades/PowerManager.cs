@@ -75,6 +75,7 @@
         private static float AvailableThermalEnergy = 0f;
         private static float SurplusPower = 0f;
         private static bool RenewablePowerAvailable = false;
+        private static bool CyclopsDoneCharging = false;
         private static Battery LastBatteryToCharge = null;
 
         /// <summary>
@@ -246,7 +247,10 @@
                 }
             }
 
+            CyclopsDoneCharging = Mathf.Approximately(PowerDeficit, 0f);
+
             if (UpgradeConsoleCache.HasNuclearModules && // Handle nuclear power
+                !CyclopsDoneCharging && // Halt charging if Cyclops is on full charge
                 PowerDeficit > NuclearModuleConfig.MinimumEnergyDeficit && // User config for threshold to start charging
                 !RenewablePowerAvailable) // Only if there's no renewable power available
             {
@@ -259,7 +263,7 @@
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
-            if (Mathf.Approximately(PowerDeficit, 0f) && SurplusPower > 0f && LastBatteryToCharge != null)
+            if (CyclopsDoneCharging && SurplusPower > 0f && LastBatteryToCharge != null)
             {
                 // Recycle surplus power back into the batteries that need it
                 LastBatteryToCharge.charge = Mathf.Min(LastBatteryToCharge.capacity, LastBatteryToCharge.charge + SurplusPower);
