@@ -247,7 +247,7 @@
                 }
             }
 
-            CyclopsDoneCharging = Mathf.Approximately(PowerDeficit, 0f);
+            CyclopsDoneCharging = PowerDeficit <= 0.001f;
 
             if (UpgradeConsoleCache.HasNuclearModules && // Handle nuclear power
                 !CyclopsDoneCharging && // Halt charging if Cyclops is on full charge
