@@ -89,13 +89,19 @@
             prefab.name = NameID;
 
             // Add prefab ID
-            PrefabIdentifier prefabId = prefab.AddComponent<PrefabIdentifier>();
-            prefabId.ClassId = NameID;
-            prefabId.name = FriendlyName;
+            PrefabIdentifier prefabId = prefab.GetComponent<PrefabIdentifier>();
+            if (prefabId != null)
+            {
+                prefabId.ClassId = NameID;
+                prefabId.name = FriendlyName;
+            }
 
             // Add tech tag
-            TechTag techTag = prefab.AddComponent<TechTag>();
-            techTag.type = this.TechType;
+            TechTag techTag = prefab.GetComponent<TechTag>();
+            if (techTag != null)
+            {
+                techTag.type = this.TechType;
+            }
 
             // Update sky applier
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();

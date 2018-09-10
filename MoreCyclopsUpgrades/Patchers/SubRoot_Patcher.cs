@@ -44,7 +44,7 @@
         {
             var cyclopsLife = (LiveMixin)__instance.GetInstanceField("live");
 
-            if (!cyclopsLife.IsAlive())
+            if (cyclopsLife is null || !cyclopsLife.IsAlive())
                 return true; // safety check
 
             if (!UpgradeConsoleCache.IsSynced(__instance)) // Because this might run before CyclopsUpgradeConsoleHUDManager.RefreshScreen
