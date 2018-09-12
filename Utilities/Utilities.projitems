@@ -9,7 +9,7 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)DeQueue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Deque.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollectionList.cs" />
