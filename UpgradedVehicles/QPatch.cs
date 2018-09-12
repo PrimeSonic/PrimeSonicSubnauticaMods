@@ -11,15 +11,9 @@
         {
             try
             {
-                QuickLogger.Message("Started patching");
+                QuickLogger.Message("Started patching - " + QuickLogger.GetAssemblyVersion());
 
-                var speedBoost = Craftable.AddForPatching(new SpeedBooster());
-                var vpowerCore = Craftable.AddForPatching(new VehiclePowerCore(speedBoost));
-                var seamothMk2 = Craftable.AddForPatching(new SeaMothMk2(vpowerCore));
-                var exosuitMk2 = Craftable.AddForPatching(new ExosuitMk2(vpowerCore));
-                var seamothMk3 = Craftable.AddForPatching(new SeaMothMk3(vpowerCore));
-
-                Craftable.PatchAll();
+                SpeedBooster.HandlePatching();
                 
                 HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
