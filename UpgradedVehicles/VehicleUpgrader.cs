@@ -16,10 +16,6 @@
         // Original value from VehicleMotor class
         private float KSpeedScalar = 100f;
 
-        private const float SpeedBonusPerModule = 0.35f;
-
-        private const float HealthModifier = 0.5f;
-
         private Vehicle ParentVehicle { get; set; } = null;
         private Equipment UpgradeModules { get; set; } = null;
         private DealDamageOnImpact DmgOnImpact { get; set; } = null;
@@ -88,8 +84,7 @@
                 if (this.UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
                     return 1;
             }
-
-            if (this.IsSeamoth)
+            else if (this.IsSeamoth)
             {
                 if (HasModdedDepthModules)
                 {
@@ -121,14 +116,7 @@
             {
                 this.DepthIndex = nextDepthIndex;
 
-                float originalMaxHp = this.LifeMix.data.maxHealth;
-                float originalHp = this.LifeMix.health;
-
-                float nextMaxHp = this.OriginalMaxHP + (this.DepthIndex * HealthModifier);
-                float nextHp = (originalHp / originalMaxHp) * nextMaxHp;
-
-                this.LifeMix.data.maxHealth = nextMaxHp;
-                this.LifeMix.health = nextHp;
+                UpdateHitPoints();
             }
             else if (techType == TechType.VehicleArmorPlating) // Armor
             {
@@ -151,9 +139,25 @@
             }
         }
 
+        private void UpdateHitPoints()
+        {
+            float originalMaxHp = this.LifeMix.data.maxHealth;
+            float originalHp = this.LifeMix.health;
+
+            float bonusHealth = this.DepthIndex * 0.5f;
+
+            float nextMaxHp = this.OriginalMaxHP + bonusHealth;
+            float nextHp = originalHp / originalMaxHp * nextMaxHp;
+
+            this.LifeMix.data.maxHealth = nextMaxHp;
+            this.LifeMix.health = nextHp;
+
+            ErrorMessage.AddMessage($"Vehicle durability is now {nextMaxHp}");
+        }
+
         private void UpdateSpeedRating(int speedBoosterCount)
         {
-            float speedMultiplier = 1f + SpeedBonusPerModule * speedBoosterCount + ExtraSpeedBonus();
+            float speedMultiplier = 1f + 0.35f * speedBoosterCount + ExtraSpeedBonus();
 
             this.ParentVehicle.forwardForce = speedMultiplier * ForwardForce;
             this.ParentVehicle.onGroundForceMultiplier = speedMultiplier * OnGroundForceMultiplier;
@@ -164,7 +168,7 @@
                 this.Motor.kMaxSpeed = speedMultiplier * KSpeedScalar;
             }
 
-            ErrorMessage.AddMessage($"Now running at {speedMultiplier * 100:00}% speed");
+            ErrorMessage.AddMessage($"Now running at {speedMultiplier * 100f:00}% speed");
         }
 
         private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)
@@ -205,8 +209,8 @@
                 reduction -= 0.02f;
             }
 
-            ErrorMessage.AddMessage($"Impact armor rating is now at +{1f / this.DmgOnImpact.mirroredSelfDamageFraction}");
-            ErrorMessage.AddMessage($"General damage reduction at {this.GeneralDamageReduction * 100:00}%");
+            ErrorMessage.AddMessage($"Impact damage reduced by {(1f - this.DmgOnImpact.mirroredSelfDamageFraction) * 100f:00}%");
+            ErrorMessage.AddMessage($"General damage reduced by {(1f - this.GeneralDamageReduction) * 100f:00}%");
         }
 
         internal float ReduceIncomingDamage(float damage) => damage * this.GeneralDamageReduction;
