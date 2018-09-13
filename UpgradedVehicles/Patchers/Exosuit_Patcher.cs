@@ -9,7 +9,7 @@
         [HarmonyPostfix]
         internal static void Postfix(ref Exosuit __instance, TechType techType)
         {
-            VehicleUpgrader.UpgradeExosuit(__instance, techType);
+            __instance.GetComponent<VehicleUpgrader>().UpgradeVehicle(techType);
         }
     }
 
@@ -20,28 +20,12 @@
         [HarmonyPostfix]
         internal static void Postfix(ref Exosuit __instance)
         {
-            VehicleUpgrader.UpgradeExosuit(__instance);
-        }
-    }
-
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("vehicleDefaultName", PropertyMethod.Getter)]
-    internal class Exosuit_vehicleDefaultName_Patcher
-    {
-        [HarmonyPrefix]
-        internal static bool Prefix(ref Exosuit __instance, ref string __result)
-        {
-            var techType = __instance.GetComponent<TechTag>().type;
-
-            if (techType == MTechType.ExosuitMk2)
+            if (__instance.GetComponent<VehicleUpgrader>() == null)
             {
-                __result = "PRAWN SUIT MK2";
-                return false;
+                var vUpgrader = __instance.gameObject.AddComponent<VehicleUpgrader>();
+                vUpgrader.Initialize(__instance);
             }
-
-            return true;
         }
-
     }
 
 }

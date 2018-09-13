@@ -10,11 +10,11 @@
         [HarmonyPostfix]
         internal static void Postfix(ref float __result, GameObject target)
         {
-            Vehicle vehicle = target.GetComponent<Vehicle>();
+            var vehicle = target.GetComponent<VehicleUpgrader>();
 
             if (vehicle != null) // Target is vehicle
             {
-                __result = VehicleUpgrader.ReduceIncomingDamage(vehicle, __result);
+                __result = vehicle.ReduceIncomingDamage(__result);
             }
         }
     }

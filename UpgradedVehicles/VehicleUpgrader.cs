@@ -1,76 +1,175 @@
 ﻿namespace UpgradedVehicles
 {
-    using UnityEngine;
     using Common;
+    using UnityEngine;
 
-    internal class VehicleUpgrader
+    internal class VehicleUpgrader : MonoBehaviour
     {
+        internal static TechType SeamothHullModule4 { get; private set; } = TechType.UnusedOld;
+        internal static TechType SeamothHullModule5 { get; private set; } = TechType.UnusedOld;
+        internal static bool HasModdedDepthModules { get; private set; } = false;
+
         // Original values from the Vehicle class
-        private const float ForwardForce = 13f;
-        private const float OnGroundForceMultiplier = 1f;
+        private float ForwardForce = 13f;
+        private float OnGroundForceMultiplier = 1f;
 
         // Original value from VehicleMotor class
-        private const float KSpeed = 100f;
-        private const float SpeedBonusPerModule = 0.75f;
+        private float KSpeedScalar = 100f;
 
-        internal static void UpgradeVehicle(Vehicle vehicle, TechType techType)
+        private const float SpeedBonusPerModule = 0.35f;
+
+        private const float HealthModifier = 0.5f;
+
+        private Vehicle ParentVehicle { get; set; } = null;
+        private Equipment UpgradeModules { get; set; } = null;
+        private DealDamageOnImpact DmgOnImpact { get; set; } = null;
+        private VehicleMotor Motor { get; set; } = null;
+        private LiveMixin LifeMix { get; set; } = null;
+
+        private int DepthIndex { get; set; } = -1;
+        private float OriginalMaxHP { get; set; } = -1f;
+        private bool IsSeamoth { get; set; } = false;
+        private bool IsExosuit { get; set; } = false;
+
+        private float ExtraSpeedBonus()
         {
-            if (techType == TechType.VehicleArmorPlating) // Set armor rating
+            if (this.IsExosuit)
+                return this.DepthIndex * 0.25f;
+
+            if (this.IsSeamoth)
+                return this.DepthIndex * 0.20f;
+
+            return 0f;
+        }
+
+        private float ExtraEfficiencyBonus()
+        {
+            if (this.IsExosuit)
+                return this.DepthIndex * 0.15f;
+
+            if (this.IsSeamoth)
+                return this.DepthIndex * 0.10f;
+
+            return 0f;
+        }
+
+        private float GeneralDamageReduction { get; set; } = 1f;
+
+        internal void Initialize<T>(T vehicle) where T : Vehicle
+        {
+            if (this.ParentVehicle != null)
+                return; // Already initialized
+
+            this.ParentVehicle = vehicle;
+            this.UpgradeModules = vehicle.modules;
+
+            this.DmgOnImpact = vehicle.GetComponent<DealDamageOnImpact>();
+            this.Motor = vehicle.GetComponent<VehicleMotor>();
+            this.LifeMix = vehicle.GetComponent<LiveMixin>();
+
+            this.OriginalMaxHP = vehicle.GetComponent<LiveMixin>().maxHealth;
+
+            this.IsSeamoth = vehicle is SeaMoth;
+            this.IsExosuit = vehicle is Exosuit;
+
+            ForwardForce = vehicle.forwardForce;
+            OnGroundForceMultiplier = vehicle.onGroundForceMultiplier;
+
+            KSpeedScalar = this.Motor.kSpeedScalar;
+        }
+
+        private int CalculateDepthModuleIndex()
+        {
+            if (this.IsExosuit)
             {
-                int armorModuleCount = vehicle.modules.GetCount(TechType.VehicleArmorPlating);
-                UpdateArmorRating(vehicle, armorModuleCount, true);
+                if (this.UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
+                    return 2;
+
+                if (this.UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
+                    return 1;
             }
-            else if (techType == SpeedBooster.SpeedBoosterTechType|| techType == TechType.VehiclePowerUpgradeModule) // Set power efficiency rating
+
+            if (this.IsSeamoth)
             {
-                int speedBoosterCount = vehicle.modules.GetCount(SpeedBooster.SpeedBoosterTechType);
-                int powerModuleCount = vehicle.modules.GetCount(TechType.VehiclePowerUpgradeModule);
-
-                UpdatePowerRating(vehicle, speedBoosterCount, powerModuleCount, true);
-
-                if (techType == SpeedBooster.SpeedBoosterTechType) // Set speed rating
+                if (HasModdedDepthModules)
                 {
-                    UpdateSpeedRating(vehicle, speedBoosterCount, true);
+                    if (this.UpgradeModules.GetCount(SeamothHullModule5) > 0)
+                        return 5;
+
+                    if (this.UpgradeModules.GetCount(SeamothHullModule4) > 0)
+                        return 4;
+                }
+
+                if (this.UpgradeModules.GetCount(TechType.VehicleHullModule3) > 0)
+                    return 3;
+
+                if (this.UpgradeModules.GetCount(TechType.VehicleHullModule2) > 0)
+                    return 2;
+
+                if (this.UpgradeModules.GetCount(TechType.VehicleHullModule1) > 0)
+                    return 1;
+            }
+
+            return 0;
+        }
+
+        internal void UpgradeVehicle(TechType techType)
+        {
+            int nextDepthIndex = CalculateDepthModuleIndex();
+
+            if (this.DepthIndex != nextDepthIndex) // Bonus HP from Depth modules
+            {
+                this.DepthIndex = nextDepthIndex;
+
+                float originalMaxHp = this.LifeMix.data.maxHealth;
+                float originalHp = this.LifeMix.health;
+
+                float nextMaxHp = this.OriginalMaxHP + (this.DepthIndex * HealthModifier);
+                float nextHp = (originalHp / originalMaxHp) * nextMaxHp;
+
+                this.LifeMix.data.maxHealth = nextMaxHp;
+                this.LifeMix.health = nextHp;
+            }
+            else if (techType == TechType.VehicleArmorPlating) // Armor
+            {
+                int armorModuleCount = this.UpgradeModules.GetCount(TechType.VehicleArmorPlating);
+
+                UpdateArmorRating(armorModuleCount);
+            }
+            else if (techType == SpeedBooster.SpeedBoosterTechType || // Speed
+                techType == TechType.VehiclePowerUpgradeModule) // Efficiency
+            {
+                int speedBoosterCount = this.UpgradeModules.GetCount(SpeedBooster.SpeedBoosterTechType);
+                int powerModuleCount = this.UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
+
+                UpdatePowerRating(speedBoosterCount, powerModuleCount);
+
+                if (techType == SpeedBooster.SpeedBoosterTechType) // Speed
+                {
+                    UpdateSpeedRating(speedBoosterCount);
                 }
             }
         }
 
-        internal static void UpgradeVehicle(Vehicle vehicle)
+        private void UpdateSpeedRating(int speedBoosterCount)
         {
-            int armorModuleCount = vehicle.modules.GetCount(TechType.VehicleArmorPlating);
-            int speedBoosterCount = vehicle.modules.GetCount(SpeedBooster.SpeedBoosterTechType);
-            int powerModuleCount = vehicle.modules.GetCount(TechType.VehiclePowerUpgradeModule);
+            float speedMultiplier = 1f + SpeedBonusPerModule * speedBoosterCount + ExtraSpeedBonus();
 
-            // Set armor rating
-            UpdateArmorRating(vehicle, armorModuleCount, false);
+            this.ParentVehicle.forwardForce = speedMultiplier * ForwardForce;
+            this.ParentVehicle.onGroundForceMultiplier = speedMultiplier * OnGroundForceMultiplier;
 
-            // Set power efficiency rating
-            UpdatePowerRating(vehicle, speedBoosterCount, powerModuleCount, false);
-
-            // Set speed rating
-            UpdateSpeedRating(vehicle, speedBoosterCount, false);
-        }
-
-        private static void UpdateSpeedRating(Vehicle vehicle, int speedBoosterCount, bool announement)
-        {
-            float speedMultiplier = 1f + speedBoosterCount * SpeedBonusPerModule;
-
-            vehicle.forwardForce = speedMultiplier * ForwardForce;
-            vehicle.onGroundForceMultiplier = speedMultiplier * OnGroundForceMultiplier;
-
-            var motor = vehicle.GetComponent<VehicleMotor>();
-            if (motor != null)
+            if (this.Motor != null)
             {
-                motor.kSpeedScalar = speedMultiplier * KSpeed;
-                motor.kMaxSpeed = speedMultiplier * KSpeed;
+                this.Motor.kSpeedScalar = speedMultiplier * KSpeedScalar;
+                this.Motor.kMaxSpeed = speedMultiplier * KSpeedScalar;
             }
 
-            if (announement)
-                ErrorMessage.AddMessage($"Speed rating is now at {speedMultiplier * 100:00}%");
+            ErrorMessage.AddMessage($"Now running at {speedMultiplier * 100:00}% speed");
         }
 
-        private static void UpdatePowerRating(Vehicle vehicle, int speedBoosterCount, int powerModuleCount, bool announement)
+        private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)
         {
-            float efficiencyBonus = Mathf.Max(1f, 1f * powerModuleCount);
+            float efficiencyBonus = (powerModuleCount + 1f) + ExtraEfficiencyBonus();
 
             float powerRating;
 
@@ -78,30 +177,45 @@
                 powerRating = efficiencyBonus;
             else
             {
-                float efficiencyPenalty = 1f * speedBoosterCount;
+                float efficiencyPenalty = 1.05f;
+
+                while (--speedBoosterCount > 0)
+                {
+                    efficiencyPenalty += 1f + 0.15f * speedBoosterCount;
+                }
+
                 powerRating = efficiencyBonus / efficiencyPenalty;
             }
 
-            vehicle.SetPrivateField("enginePowerRating", powerRating);
+            this.ParentVehicle.SetPrivateField("enginePowerRating", powerRating);
 
-            if (announement)
-                ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
+            ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
         }
 
-        private static void UpdateArmorRating(Vehicle vehicle, int armorModuleCount, bool announement)
+        private void UpdateArmorRating(int armorModuleCount)
         {
-            var component = vehicle.GetComponent<DealDamageOnImpact>();
-            component.mirroredSelfDamageFraction = 0.5f * Mathf.Pow(0.5f, armorModuleCount);
+            this.GeneralDamageReduction = 1f - (0.05f * this.DepthIndex);
 
-            if (announement)
-                ErrorMessage.AddMessage($"Armor rating is now {1f / component.mirroredSelfDamageFraction}");
+            this.DmgOnImpact.mirroredSelfDamageFraction = Mathf.Pow(0.5f, ++armorModuleCount);
+
+            float reduction = 0.10f;
+            while (--armorModuleCount > 0)
+            {
+                this.GeneralDamageReduction -= Mathf.Max(0.01f, reduction);
+                reduction -= 0.02f;
+            }
+
+            ErrorMessage.AddMessage($"Impact armor rating is now at +{1f / this.DmgOnImpact.mirroredSelfDamageFraction}");
+            ErrorMessage.AddMessage($"General damage reduction at {this.GeneralDamageReduction * 100:00}%");
         }
 
-        internal static float ReduceIncomingDamage(Vehicle vehicle, float damage)
-        {
-            int armorModuleCount = vehicle.modules.GetCount(TechType.VehicleArmorPlating);
+        internal float ReduceIncomingDamage(float damage) => damage * this.GeneralDamageReduction;
 
-            return damage * (1f - 0.15f * armorModuleCount);
+        internal static void SetModdedDepthModules(TechType seamothDepth4, TechType seamothDepth5)
+        {
+            SeamothHullModule4 = seamothDepth4;
+            SeamothHullModule5 = seamothDepth5;
+            HasModdedDepthModules = true;
         }
     }
 }

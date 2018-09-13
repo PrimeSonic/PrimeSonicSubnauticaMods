@@ -4,6 +4,7 @@
     using System.Reflection;
     using Common;
     using Harmony;
+    using SMLHelper.V2.Handlers;
 
     public class QPatch
     {
@@ -12,6 +13,12 @@
             try
             {
                 QuickLogger.Message("Started patching - " + QuickLogger.GetAssemblyVersion());
+
+                if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
+                    TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
+                {
+                    VehicleUpgrader.SetModdedDepthModules(vehicleHullModule4, vehicleHullModule5);
+                }
 
                 SpeedBooster.HandlePatching();
                 
