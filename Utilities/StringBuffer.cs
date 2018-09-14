@@ -14,7 +14,7 @@
     /// <seealso cref="System.IEquatable{StringBuffer}" />
     /// <seealso cref="string" />
     /// <seealso cref="ICloneable" />
-    public class StringBuffer : DeQueue<char>,
+    public class StringBuffer : Deque<char>,
         IComparable, IConvertible, IEquatable<StringBuffer>, IEquatable<string>, ICloneable
     {
         // Constructors
@@ -188,8 +188,8 @@
             if (Count != other.Count)
                 return false;
 
-            Enumerator t = this.GetEnumerator();
-            Enumerator o = other.GetEnumerator();
+            var t = this.GetEnumerator();
+            var o = other.GetEnumerator();
 
             bool result = true;
             while (o.MoveNext() && t.MoveNext())
@@ -267,8 +267,8 @@
             if (a.Count != b?.Length)
                 return false;
 
-            Enumerator t = a.GetEnumerator();
-            CharEnumerator o = b.GetEnumerator();
+            var t = a.GetEnumerator();
+            var o = b.GetEnumerator();
 
             bool result = true;
             while (o.MoveNext() && t.MoveNext())
