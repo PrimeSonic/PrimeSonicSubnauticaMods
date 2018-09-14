@@ -20,9 +20,12 @@
                     VehicleUpgrader.SetModdedDepthModules(vehicleHullModule4, vehicleHullModule5);
                 }
 
-                SpeedBooster.HandlePatching();
-                
-                HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
+                SpeedBooster speedModule = SpeedBooster.Main;
+                speedModule.Patch();
+
+                VehicleUpgrader.SetSpeedBooster(speedModule);
+
+                var harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
                 QuickLogger.Message("Finished patching");

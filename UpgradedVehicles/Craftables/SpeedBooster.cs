@@ -8,11 +8,9 @@
 
     internal class SpeedBooster : Craftable
     {
-        private static SpeedBooster Singleton { get; } = new SpeedBooster();
+        internal static SpeedBooster Main { get; } = new SpeedBooster();
 
-        internal static void HandlePatching() => Singleton.Patch();
-
-        internal static TechType SpeedBoosterTechType => Singleton.TechType;
+        internal static TechType SpeedBoosterTechType => Main.TechType;
 
         public override CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
         public override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
@@ -20,7 +18,7 @@
         public override string[] StepsToFabricatorTab => new[] { "CommonModules" };
         public override TechType RequiredForUnlock => TechType.PowerUpgradeModule;
 
-        public SpeedBooster()
+        protected SpeedBooster()
             : base(classId: "SpeedModule",
                    friendlyName: "Speed Boost Module",
                    description: "Allows small vehicle engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.")
