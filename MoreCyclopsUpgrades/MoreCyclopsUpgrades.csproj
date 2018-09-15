@@ -70,8 +70,8 @@
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\AuxUpgradeConsole.cs" />
-    <Compile Include="Monobehaviors\PowerManager.cs" />
-    <Compile Include="Monobehaviors\UpgradeManager.cs" />
+    <Compile Include="PowerManager.cs" />
+    <Compile Include="UpgradeManager.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />

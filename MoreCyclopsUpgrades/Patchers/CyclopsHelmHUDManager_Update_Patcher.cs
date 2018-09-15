@@ -17,7 +17,7 @@
                 return;
             }
 
-            PowerManager powerMgr = CyclopsManager.GetManager(__instance.subRoot)?.PowerManager;
+            PowerManager powerMgr = CyclopsManager.GetPowerManager(__instance.subRoot);
 
             if (powerMgr == null)
             {

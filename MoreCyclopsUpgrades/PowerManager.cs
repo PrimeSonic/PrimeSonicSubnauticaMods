@@ -54,10 +54,11 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
-        public SubRoot Cyclops { get; set; } = null;
+        public CyclopsManager Manager { get; private set; }
 
-        private UpgradeManager upgradeManager;
-        private UpgradeManager UpgradeManager => upgradeManager ?? (upgradeManager = CyclopsManager.GetManager(this.Cyclops)?.UpgradeManager);
+        public SubRoot Cyclops => Manager.Cyclops;
+
+        private UpgradeManager UpgradeManager => Manager.UpgradeManager;
 
         private CyclopsMotorMode motorMode;
         private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = this.Cyclops.GetComponentInChildren<CyclopsMotorMode>());
@@ -71,17 +72,12 @@
 
         private float[] OriginalSpeeds { get; } = new float[3];
 
-        public bool Initialize(SubRoot cyclops, UpgradeManager upgradeMgr)
+        public bool Initialize(CyclopsManager manager)
         {
-            if (this.Cyclops != null)
+            if (this.Manager != null)
                 return false; // Already initialized
 
-            if (cyclops == null)
-                return false; // wtf
-
-            this.Cyclops = cyclops;
-
-            upgradeManager = upgradeMgr;
+            this.Manager = manager;
 
             // Store the original values before we start to change them
             this.OriginalSpeeds[0] = this.MotorMode.motorModeSpeeds[0];

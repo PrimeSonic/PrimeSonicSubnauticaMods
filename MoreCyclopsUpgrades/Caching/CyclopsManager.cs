@@ -4,7 +4,11 @@
 
     internal class CyclopsManager
     {
-        private static IDictionary<string, CyclopsManager> Managers = new Dictionary<string, CyclopsManager>();
+        public UpgradeManager UpgradeManager { get; private set; }
+
+        public PowerManager PowerManager { get; private set; }
+
+        public SubRoot Cyclops { get; private set; }
 
         protected CyclopsManager(UpgradeManager upgradeManager, PowerManager powerManager, SubRoot cyclops)
         {
@@ -13,12 +17,9 @@
             this.Cyclops = cyclops;
         }
 
-        public static CyclopsManager GetManager(SubRoot cyclops)
-        {
-            string id = cyclops.GetComponent<PrefabIdentifier>().ClassId;
+        private static IDictionary<string, CyclopsManager> Managers = new Dictionary<string, CyclopsManager>();
 
-            return GetManager(id, cyclops);
-        }
+        public static CyclopsManager GetAllManagers(SubRoot cyclops) => GetManager(cyclops.GetComponent<PrefabIdentifier>().ClassId, cyclops);
 
         private static CyclopsManager GetManager(string id, SubRoot cyclops)
         {
@@ -27,8 +28,6 @@
                 if (!ReferenceEquals(cyclops, mgr.Cyclops))
                 {
                     mgr.Cyclops = cyclops;
-                    mgr.UpgradeManager.Cyclops = cyclops;
-                    mgr.PowerManager.Cyclops = cyclops;
                 }
 
                 return mgr;
@@ -47,20 +46,18 @@
                 return; // Already exists and now updated
 
             var upgradeMgr = new UpgradeManager();
-            upgradeMgr.Initialize(cyclops);
-
             var powerMgr = new PowerManager();
-            powerMgr.Initialize(cyclops, upgradeMgr);
 
-            Managers.Add(id, new CyclopsManager(upgradeMgr, powerMgr, cyclops));
+            var mgr = new CyclopsManager(upgradeMgr, powerMgr, cyclops);
+
+            upgradeMgr.Initialize(mgr);
+            powerMgr.Initialize(mgr);
+
+            Managers.Add(id, mgr);
         }
 
-        public UpgradeManager UpgradeManager { get; private set; }
+        public static UpgradeManager GetUpgradeManager(SubRoot cyclops) => GetManager(cyclops.GetComponent<PrefabIdentifier>().ClassId, cyclops)?.UpgradeManager;
 
-        public PowerManager PowerManager { get; private set; }
-
-        public SubRoot Cyclops { get; private set; }
-
-
+        public static PowerManager GetPowerManager(SubRoot cyclops) => GetManager(cyclops.GetComponent<PrefabIdentifier>().ClassId, cyclops)?.PowerManager;
     }
 }

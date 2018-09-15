@@ -1,8 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
-    using Harmony;
     using Caching;
-    using Common;
+    using Harmony;
 
     [HarmonyPatch(typeof(CyclopsUpgradeConsoleHUDManager))]
     [HarmonyPatch("RefreshScreen")]
@@ -11,25 +10,16 @@
         [HarmonyPostfix]
         public static void Postfix(ref CyclopsUpgradeConsoleHUDManager __instance)
         {
-            UpgradeManager upgradeMgr = CyclopsManager.GetManager(__instance.subRoot)?.UpgradeManager;
+            var cyclopsManager = CyclopsManager.GetAllManagers(__instance.subRoot);
 
-            if (upgradeMgr == null)
+            if (cyclopsManager == null)
             {
-                QuickLogger.Debug("RefreshScreen: UpgradeManager not found!", true);
                 return;
             }
 
-            PowerManager powerMgr = CyclopsManager.GetManager(__instance.subRoot)?.PowerManager;
+            cyclopsManager.UpgradeManager.SyncUpgradeConsoles();
 
-            if (powerMgr == null)
-            {
-                QuickLogger.Debug("RefreshScreen: PowerManager not found!", true);
-                return;
-            }
-
-            upgradeMgr.SyncUpgradeConsoles();
-
-            powerMgr.UpdateConsoleHUD(__instance);
+            cyclopsManager.PowerManager.UpdateConsoleHUD(__instance);
         }
     }
 }

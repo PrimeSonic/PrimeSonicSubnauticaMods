@@ -1,10 +1,11 @@
-﻿namespace MoreCyclopsUpgrades.Caching
+﻿namespace MoreCyclopsUpgrades
 {
     using System;
     using System.Collections.Generic;
     using Common;
     using Modules;
     using Monobehaviors;
+    using Caching;
     using UnityEngine;
 
     internal class UpgradeManager
@@ -85,7 +86,10 @@
             }
         }
 
-        public SubRoot Cyclops { get; set; } = null;
+        public CyclopsManager Manager { get; private set; }
+
+        public SubRoot Cyclops => Manager.Cyclops;
+
         private List<AuxUpgradeConsole> AuxUpgradeConsoles { get; } = new List<AuxUpgradeConsole>();
         private CyclopsHolographicHUD holographicHUD = null;
         private CyclopsHolographicHUD HolographicHUD => holographicHUD ?? (holographicHUD = this.Cyclops.GetComponentInChildren<CyclopsHolographicHUD>());
@@ -94,15 +98,12 @@
         private readonly Dictionary<TechType, Action<Equipment, string>> SlotBoundUpgradeActions = new Dictionary<TechType, Action<Equipment, string>>(12);
         private readonly HashSet<TechType> ChargingModules = new HashSet<TechType>();
 
-        internal bool Initialize(SubRoot cyclops)
+        internal bool Initialize(CyclopsManager manager)
         {
-            if (this.Cyclops != null)
+            if (this.Manager != null)
                 return false; // Already initialized
 
-            if (cyclops == null)
-                return false; // wtf
-
-            this.Cyclops = cyclops;
+            this.Manager = manager;
 
             SimpleUpgradeActions.Add(TechType.CyclopsShieldModule, EnabledShield);
             SimpleUpgradeActions.Add(TechType.CyclopsSonarModule, EnableSonar);
@@ -127,7 +128,7 @@
             ChargingModules.Add(CyclopsModule.ThermalChargerMk2ID);
             ChargingModules.Add(CyclopsModule.NuclearChargerID);
 
-            AuxUpgradeConsole[] auxUpgradeConsoles = cyclops.GetAllComponentsInChildren<AuxUpgradeConsole>();
+            AuxUpgradeConsole[] auxUpgradeConsoles = manager.Cyclops.GetAllComponentsInChildren<AuxUpgradeConsole>();
 
             foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
             {
@@ -224,13 +225,8 @@
         private void EnableSonar() => this.Cyclops.sonarUpgrade = true;
         private void EnabledShield() => this.Cyclops.shieldUpgrade = true;
 
-        internal void HandleUpgrades(SubRoot backupCyclops)
+        internal void HandleUpgrades()
         {
-            if (this.Cyclops == null && backupCyclops != null)
-            {
-                this.Cyclops = backupCyclops;
-            }
-
             // Turn off all upgrades and clear all values
             ClearAllUpgrades();
 
