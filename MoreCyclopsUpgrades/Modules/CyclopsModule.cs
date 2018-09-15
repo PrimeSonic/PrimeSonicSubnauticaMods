@@ -138,7 +138,6 @@
 
                 // Instantiate a new prefab of the appripriate template TechType
                 gameObject = cyclopsModule.GetGameObject();
-                PrefabIdentifier ider = gameObject.GetComponent<PrefabIdentifier>();
 
                 // Set the TechType value on the TechTag
                 TechTag tag = gameObject.GetComponent<TechTag>();
@@ -147,8 +146,8 @@
                 else // Add if needed since this is how these are identified throughout the mod
                     gameObject.AddComponent<TechTag>().type = techTypeID;
 
-                // Set the class ID
-                ider.ClassId = cyclopsModule.NameID;
+                // Set the ClassId
+                gameObject.GetComponent<PrefabIdentifier>().ClassId = cyclopsModule.NameID;
             }
             else
             {

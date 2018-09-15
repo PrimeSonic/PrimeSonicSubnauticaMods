@@ -16,14 +16,12 @@
         {
             try
             {
+                QuickLogger.Message("Started patching " + QuickLogger.GetAssemblyVersion());
+
                 OtherMods.VehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
-                OtherMods.UpgradedVehicles = Directory.Exists(@"./QMods/UpgradedVehicles");
 
                 if (OtherMods.VehicleUpgradesInCyclops)
                     QuickLogger.Message("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");
-
-                if (OtherMods.UpgradedVehicles)
-                    QuickLogger.Message("UpgradedVehicles detected. Correcting Cyclops crush depth announcemnts.");
 
                 var modConfig = new EmModPatchConfig();
                 modConfig.Initialize();

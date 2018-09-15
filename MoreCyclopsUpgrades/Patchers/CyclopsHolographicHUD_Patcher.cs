@@ -1,16 +1,17 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
+    using System.Collections.Generic;
+    using System.Reflection.Emit;
     using Harmony;
 
     [HarmonyPatch(typeof(CyclopsHolographicHUD))]
     [HarmonyPatch("RefreshUpgradeConsoleIcons")]
     internal class CyclopsHolographicHUD_Patcher
     {
-        [HarmonyPrefix]
-        internal static bool Prefix(ref CyclopsHolographicHUD __instance)
+        [HarmonyTranspiler]
+        internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            return false; // Should now be handled by SetCyclopsUpgrades
+            yield return new CodeInstruction(OpCodes.Ret); // Should now be handled by SetCyclopsUpgrades
         }
-
     }
 }
