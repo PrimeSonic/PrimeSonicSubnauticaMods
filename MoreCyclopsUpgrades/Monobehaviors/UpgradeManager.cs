@@ -2,11 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using Common;
     using Modules;
     using Monobehaviors;
     using UnityEngine;
 
-    internal class UpgradeManager : MonoBehaviour
+    internal class UpgradeManager
     {
         // This is a straight copy of the values in the original
         private static readonly Dictionary<TechType, float> ExtraCrushDepths = new Dictionary<TechType, float>
@@ -84,21 +85,24 @@
             }
         }
 
-        private SubRoot Cyclops { get; set; } = null;
-        private CyclopsHolographicHUD HolographicHUD { get; set; } = null;
+        public SubRoot Cyclops { get; set; } = null;
         private List<AuxUpgradeConsole> AuxUpgradeConsoles { get; } = new List<AuxUpgradeConsole>();
+        private CyclopsHolographicHUD holographicHUD = null;
+        private CyclopsHolographicHUD HolographicHUD => holographicHUD ?? (holographicHUD = this.Cyclops.GetComponentInChildren<CyclopsHolographicHUD>());
 
         private readonly Dictionary<TechType, Action> SimpleUpgradeActions = new Dictionary<TechType, Action>(12);
         private readonly Dictionary<TechType, Action<Equipment, string>> SlotBoundUpgradeActions = new Dictionary<TechType, Action<Equipment, string>>(12);
         private readonly HashSet<TechType> ChargingModules = new HashSet<TechType>();
 
-        internal void Initialize(SubRoot cyclops)
+        internal bool Initialize(SubRoot cyclops)
         {
             if (this.Cyclops != null)
-                return; // Already initialized
+                return false; // Already initialized
+
+            if (cyclops == null)
+                return false; // wtf
 
             this.Cyclops = cyclops;
-            this.HolographicHUD = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
 
             SimpleUpgradeActions.Add(TechType.CyclopsShieldModule, EnabledShield);
             SimpleUpgradeActions.Add(TechType.CyclopsSonarModule, EnableSonar);
@@ -122,13 +126,29 @@
             ChargingModules.Add(TechType.CyclopsThermalReactorModule);
             ChargingModules.Add(CyclopsModule.ThermalChargerMk2ID);
             ChargingModules.Add(CyclopsModule.NuclearChargerID);
+
+            AuxUpgradeConsole[] auxUpgradeConsoles = cyclops.GetAllComponentsInChildren<AuxUpgradeConsole>();
+
+            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+            {
+                if (this.AuxUpgradeConsoles.Contains(auxConsole))
+                    continue; // This is a workaround because of the object references being returned twice in this array.
+
+                this.AuxUpgradeConsoles.Add(auxConsole);
+
+                if (auxConsole.ParentCyclops == null)
+                {
+                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
+                    auxConsole.ParentCyclops = this.Cyclops;
+                    ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
+                }
+            }
+
+            return true;
         }
 
-        internal void SyncUpgradeConsoles(SubRoot cyclops)
+        internal void SyncUpgradeConsoles()
         {
-            if (cyclops is null)
-                return;
-
             TempCache.Clear();
 
             AuxUpgradeConsole[] auxUpgradeConsoles = this.Cyclops.GetAllComponentsInChildren<AuxUpgradeConsole>();
@@ -143,7 +163,7 @@
                 if (auxConsole.ParentCyclops == null)
                 {
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    auxConsole.ParentCyclops = cyclops;
+                    auxConsole.ParentCyclops = this.Cyclops;
                     ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
                 }
             }
@@ -157,11 +177,17 @@
 
         private void ClearAllUpgrades()
         {
+            if (this.Cyclops == null)
+                QuickLogger.Error("ClearAllUpgrades: Cyclops ref is null", true);
+
             // Turn off all toggleable upgrades first
             this.Cyclops.shieldUpgrade = false;
             this.Cyclops.sonarUpgrade = false;
             this.Cyclops.vehicleRepairUpgrade = false;
             this.Cyclops.decoyTubeSizeIncreaseUpgrade = false;
+
+            if (this.HolographicHUD == null)
+                QuickLogger.Error("ClearAllUpgrades: HolographicHUD ref is null", true);
 
             // The fire suppression system is toggleable but isn't a field on the SubRoot class
             this.HolographicHUD.fireSuppressionSystem.SetActive(false);
@@ -187,9 +213,9 @@
         private void AddPowerMk3Module() => this.PowerIndex = Math.Max(this.PowerIndex, 3);
         private void AddSolarModule() => ++this.SolarModuleCount;
         private void AddThermalModule() => ++this.ThermalModuleCount;
-        private void AddSolarMk2Module(Equipment modules, string slot) => SolarBatteries.Add(PowerManager.GetBatteryInSlot(modules, slot));
-        private void AddThermalMk2Module(Equipment modules, string slot) => ThermalBatteries.Add(PowerManager.GetBatteryInSlot(modules, slot));
-        private void AddNuclearModule(Equipment modules, string slot) => NuclearReactorModules.Add(new NuclearModuleDetails(modules, slot, PowerManager.GetBatteryInSlot(modules, slot)));
+        private void AddSolarMk2Module(Equipment modules, string slot) => SolarBatteries.Add(GetBatteryInSlot(modules, slot));
+        private void AddThermalMk2Module(Equipment modules, string slot) => ThermalBatteries.Add(GetBatteryInSlot(modules, slot));
+        private void AddNuclearModule(Equipment modules, string slot) => NuclearReactorModules.Add(new NuclearModuleDetails(modules, slot, GetBatteryInSlot(modules, slot)));
         private void AddDepthModule(TechType depthModule) => this.BonusCrushDepth = Mathf.Max(this.BonusCrushDepth, ExtraCrushDepths[depthModule]);
 
         private void EnableFireSuppressionSystem() => this.HolographicHUD.fireSuppressionSystem.SetActive(true);
@@ -198,8 +224,13 @@
         private void EnableSonar() => this.Cyclops.sonarUpgrade = true;
         private void EnabledShield() => this.Cyclops.shieldUpgrade = true;
 
-        internal void HandleUpgrades()
+        internal void HandleUpgrades(SubRoot backupCyclops)
         {
+            if (this.Cyclops == null && backupCyclops != null)
+            {
+                this.Cyclops = backupCyclops;
+            }
+
             // Turn off all upgrades and clear all values
             ClearAllUpgrades();
 
@@ -251,5 +282,16 @@
             }
         }
 
+        /// <summary>
+        /// Gets the battery of the upgrade module in the specified slot.
+        /// </summary>
+        /// <param name="modules">The equipment modules.</param>
+        /// <param name="slotName">The slot name.</param>
+        /// <returns>The <see cref="Battery"/> component from the upgrade module.</returns>
+        private static Battery GetBatteryInSlot(Equipment modules, string slotName)
+        {
+            // Get the battery component
+            return modules.GetItemInSlot(slotName).item.GetComponent<Battery>();
+        }
     }
 }

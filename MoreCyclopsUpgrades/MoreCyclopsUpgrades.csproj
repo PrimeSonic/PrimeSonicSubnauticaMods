@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
-    <Compile Include="Caching\ComponentCache.cs" />
+    <Compile Include="Caching\CyclopsManager.cs" />
     <Compile Include="Caching\NuclearModuleDetails.cs" />
     <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />

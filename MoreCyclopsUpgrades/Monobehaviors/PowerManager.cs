@@ -6,7 +6,7 @@
     using SaveData;
     using UnityEngine;
 
-    internal class PowerManager : MonoBehaviour
+    internal class PowerManager
     {
         private const float MaxSolarDepth = 200f;
         private const float SolarChargingFactor = 0.03f;
@@ -16,21 +16,20 @@
         private const float NuclearDrainRate = 0.15f;
         private const float EnginePowerPenalty = 0.5f; // 50% reduced engine efficiency for each speed booster module
 
-        private const int SpeedIndexCount = 6;
+        private const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
-        private const int MaxSpeedBoosters = SpeedIndexCount - 1;
 
-        private static readonly float[] SlowSpeedBonuses = new float[SpeedIndexCount]
+        private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
         {
             0.15f, 0.10f, 0.05f, 0.05f, 0.05f, 0.05f // Diminishing returns on speed modules
         };
 
-        private static readonly float[] StandardSpeedBonuses = new float[SpeedIndexCount]
+        private static readonly float[] StandardSpeedBonuses = new float[MaxSpeedBoosters]
         {
             0.40f, 0.30f, 0.25f, 0.20f, 0.15f, 0.10f // Diminishing returns on speed modules
         };
 
-        private static readonly float[] FlankSpeedBonuses = new float[SpeedIndexCount]
+        private static readonly float[] FlankSpeedBonuses = new float[MaxSpeedBoosters]
         {
             0.50f, 0.25f, 0.15f, 0.10f, 0.10f, 0.10f // Diminishing returns on speed modules
         };
@@ -55,10 +54,16 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
-        private SubRoot Cyclops { get; set; } = null;
-        private UpgradeManager UpgradeManager { get; set; } = null;
-        private CyclopsMotorMode MotorMode { get; set; } = null;
-        private SubControl SubControl { get; set; } = null;
+        public SubRoot Cyclops { get; set; } = null;
+
+        private UpgradeManager upgradeManager;
+        private UpgradeManager UpgradeManager => upgradeManager ?? (upgradeManager = CyclopsManager.GetManager(this.Cyclops)?.UpgradeManager);
+
+        private CyclopsMotorMode motorMode;
+        private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = this.Cyclops.GetComponentInChildren<CyclopsMotorMode>());
+
+        private SubControl subControl;
+        private SubControl SubControl => subControl ?? (subControl = this.Cyclops.GetComponentInChildren<SubControl>());
 
         private float LastKnownPowerRating { get; set; } = -1f;
         private int LastKnownSpeedBoosters { get; set; } = -1;
@@ -66,17 +71,27 @@
 
         private float[] OriginalSpeeds { get; } = new float[3];
 
-        public void Initialize(SubRoot cyclops, UpgradeManager upgradeConsoleCache)
+        public bool Initialize(SubRoot cyclops, UpgradeManager upgradeMgr)
         {
+            if (this.Cyclops != null)
+                return false; // Already initialized
+
+            if (cyclops == null)
+                return false; // wtf
+
             this.Cyclops = cyclops;
-            this.UpgradeManager = upgradeConsoleCache;
-            this.MotorMode = cyclops.GetComponentInChildren<CyclopsMotorMode>();
-            this.SubControl = cyclops.GetComponentInChildren<SubControl>();
+
+            if (upgradeMgr == null)
+                QuickLogger.Debug($"PowerManager Initialize: UpgradeManager is null:", true);
+
+            upgradeManager = upgradeMgr;
 
             // Store the original values before we start to change them
             this.OriginalSpeeds[0] = this.MotorMode.motorModeSpeeds[0];
             this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
             this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
+
+            return true;
         }
 
         /// <summary>
@@ -113,7 +128,7 @@
 
             if (speedBoosters > MaxSpeedBoosters)
             {
-                ErrorMessage.AddMessage($"Speed rating already at maximum. You have {speedBoosters - SpeedIndexCount} too many.");
+                ErrorMessage.AddMessage($"Speed rating already at maximum. You have {speedBoosters - MaxSpeedBoosters} too many.");
                 return; // Exit here
             }
 
@@ -142,7 +157,7 @@
                 CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
                 this.SubControl.BaseForwardAccel = this.MotorMode.motorModeSpeeds[(int)currentMode];
 
-                ErrorMessage.AddMessage($"Speed rating is now at {StandardMultiplier * 100:00}%");
+                ErrorMessage.AddMessage($"Speed rating is now at +{this.LastKnownSpeedBoosters} : {StandardMultiplier * 100:00}%");
 
                 if (this.LastKnownSpeedBoosters == MaxSpeedBoosters)
                 {
@@ -158,6 +173,12 @@
         /// <param name="lastReservePower">The last reserve power.</param>
         internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, ref int lastReservePower)
         {
+            if (this.UpgradeManager == null)
+            {
+                ErrorMessage.AddMessage("UpdateHelmHUD: UpgradeManager is null");
+                return;
+            }
+
             int currentReservePower = GetTotalReservePower();
 
             if (currentReservePower > 0f)
@@ -189,6 +210,12 @@
         /// </summary>
         internal void RechargeCyclops()
         {
+            if (this.UpgradeManager == null)
+            {
+                ErrorMessage.AddMessage("RechargeCyclops: UpgradeManager is null");
+                return;
+            }
+
             if (!this.UpgradeManager.HasChargingModules)
                 return; // No charging modules, early exit
 
@@ -272,7 +299,7 @@
         {
             int currentReservePower = GetTotalReservePower();
 
-            float currentBatteryPower = hudManager.subRoot.powerRelay.GetPower();
+            float currentBatteryPower = this.Cyclops.powerRelay.GetPower();
 
             if (currentReservePower > 0)
             {
@@ -287,7 +314,7 @@
 
             hudManager.energyCur.text = IntStringCache.GetStringForInt(TotalPowerUnits);
 
-            NuclearModuleConfig.SetCyclopsMaxPower(hudManager.subRoot.powerRelay.GetMaxPower());
+            NuclearModuleConfig.SetCyclopsMaxPower(this.Cyclops.powerRelay.GetMaxPower());
         }
 
         /// <summary>
@@ -302,18 +329,6 @@
                 availableReservePower += battery.charge;
 
             return Mathf.FloorToInt(availableReservePower);
-        }
-
-        /// <summary>
-        /// Gets the battery of the upgrade module in the specified slot.
-        /// </summary>
-        /// <param name="modules">The equipment modules.</param>
-        /// <param name="slotName">The slot name.</param>
-        /// <returns>The <see cref="Battery"/> component from the upgrade module.</returns>
-        internal static Battery GetBatteryInSlot(Equipment modules, string slotName)
-        {
-            // Get the battery component
-            return modules.GetItemInSlot(slotName).item.GetComponent<Battery>();
         }
 
         /// <summary>

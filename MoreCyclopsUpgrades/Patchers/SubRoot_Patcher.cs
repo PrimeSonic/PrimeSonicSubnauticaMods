@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
     using Caching;
+    using Common;
     using Harmony;
     using SMLHelper.V2.Utility;
 
@@ -11,26 +12,7 @@
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
-            UpgradeManager upgradeMgr = __instance.GetComponent<UpgradeManager>();
-
-            if (upgradeMgr is null)
-            {
-                upgradeMgr = __instance.gameObject.AddComponent<UpgradeManager>();
-                upgradeMgr.Initialize(__instance);
-                upgradeMgr.SyncUpgradeConsoles(__instance);
-            }
-
-            PowerManager powerMgr = __instance.GetComponent<PowerManager>();
-
-            if (powerMgr is null)
-            {
-                powerMgr = __instance.gameObject.AddComponent<PowerManager>();
-                powerMgr.Initialize(__instance, upgradeMgr);
-            }
-
-            CrushDamage crushDmg = __instance.gameObject.GetComponent<CrushDamage>();
-
-            ComponentCache.CacheComponents(__instance, upgradeMgr, powerMgr, crushDmg);
+            CyclopsManager.CreateNewManagers(__instance);
         }
     }
 
@@ -41,12 +23,17 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            var components = ComponentCache.Find(__instance);
+            PowerManager powerMgr = CyclopsManager.GetManager(__instance)?.PowerManager;
 
-            components?.PowerManager?.RechargeCyclops();
+            if (powerMgr == null)
+            {
+                return true; // safety check
+            }
+
+            powerMgr.RechargeCyclops();
 
             // No need to execute original method anymore
-            return components == null; // Completely override the method and do not continue with original execution
+            return false; // Completely override the method and do not continue with original execution
         }
     }
 
@@ -57,12 +44,18 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            var components = ComponentCache.Find(__instance);
+            PowerManager powerMgr = CyclopsManager.GetManager(__instance)?.PowerManager;
 
-            components?.PowerManager?.UpdatePowerSpeedRating();
+            if (powerMgr == null)
+            {
+                QuickLogger.Debug("UpdatePowerRating: PowerManager not found!", true);
+                return true; // safety check
+            }
+
+            powerMgr.UpdatePowerSpeedRating();
 
             // No need to execute original method anymore
-            return components is null; // Completely override the method and do not continue with original execution
+            return false; // Completely override the method and do not continue with original execution
         }
     }
 
@@ -75,15 +68,21 @@
         {
             var cyclopsLife = (LiveMixin)__instance.GetInstanceField("live");
 
-            if (cyclopsLife is null || !cyclopsLife.IsAlive())
+            if (cyclopsLife == null || !cyclopsLife.IsAlive())
                 return true; // safety check
 
-            var components = ComponentCache.Find(__instance);
+            UpgradeManager upgradeMgr = CyclopsManager.GetManager(__instance)?.UpgradeManager;
 
-            components?.UpgradeManager?.HandleUpgrades();
+            if (upgradeMgr == null)
+            {
+                QuickLogger.Debug("SetCyclopsUpgrades: UpgradeManager not found!", true);
+                return true; // safety check
+            }
+
+            upgradeMgr.HandleUpgrades(__instance);
 
             // No need to execute original method anymore
-            return components is null; // Completely override the method and do not continue with original execution
+            return false; // Completely override the method and do not continue with original execution
         }
     }
 
@@ -94,16 +93,28 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            var components = ComponentCache.Find(__instance);
+            UpgradeManager upgradeMgr = CyclopsManager.GetManager(__instance)?.UpgradeManager;
 
-            if (components is null)
-                return true; // safety check
+            if (upgradeMgr == null)
+            {
+                QuickLogger.Debug("SetExtraDepth: UpgradeManager not found!", true);
+                return true;
+            }
 
-            float orignialCrushDepth = components.CrushDamage.crushDepth;
+            CrushDamage crushDmg = __instance.gameObject.GetComponent<CrushDamage>();
 
-            components.CrushDamage.SetExtraCrushDepth(components.UpgradeManager.BonusCrushDepth);
+            if (crushDmg == null)
+            {
+                QuickLogger.Debug("SetExtraDepth: CrushDamage not found!", true);
+                return true;
+            }
 
-            ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", components.CrushDamage.crushDepth));
+            float orignialCrushDepth = crushDmg.crushDepth;
+
+            crushDmg.SetExtraCrushDepth(upgradeMgr.BonusCrushDepth);
+
+            if (orignialCrushDepth != crushDmg.crushDepth)
+                ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", crushDmg.crushDepth));
 
             return false; // Completely override the method and do not continue with original execution
             // The original method execution sucked anyways :P

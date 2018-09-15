@@ -17,9 +17,14 @@
                 return;
             }
 
-            var components = ComponentCache.Find(__instance.subRoot);
+            PowerManager powerMgr = CyclopsManager.GetManager(__instance.subRoot)?.PowerManager;
 
-            components?.PowerManager?.UpdateHelmHUD(__instance, ref lastReservePower);
+            if (powerMgr == null)
+            {
+                return;
+            }
+
+            powerMgr.UpdateHelmHUD(__instance, ref lastReservePower);
         }
     }
 }
