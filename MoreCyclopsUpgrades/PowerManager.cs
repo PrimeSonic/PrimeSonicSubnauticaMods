@@ -445,24 +445,8 @@
 
             InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
             Object.Destroy(inventoryItem.item.gameObject);
-            modules.AddItem(slotName, SpawnDepletedNuclearModule(), true);
+            modules.AddItem(slotName, CyclopsModule.SpawnCyclopsModule(CyclopsModule.DepletedNuclearModuleID), true);
             ErrorMessage.AddMessage("Nuclear Reactor Module depleted");
-        }
-
-        /// <summary>
-        /// Spawns the depleted nuclear module.
-        /// </summary>
-        /// <returns>Returns a new <see cref="InventoryItem"/> instance of the <see cref="DepletedNuclearModule"/>.</returns>
-        private static InventoryItem SpawnDepletedNuclearModule()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
-            GameObject gameObject = GameObject.Instantiate(prefab);
-
-            gameObject.GetComponent<PrefabIdentifier>().ClassId = DepletedNuclearModule.DepletedNameID;
-            gameObject.GetComponent<TechTag>().type = CyclopsModule.DepletedNuclearModuleID;
-
-            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
-            return new InventoryItem(pickupable);
         }
 
         /// <summary>
