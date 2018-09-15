@@ -22,10 +22,7 @@
 
         internal string SerializedValue;
 
-        public override string ToString()
-        {
-            return $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";
-        }
+        public override string ToString() => $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";
 
         public static bool CheckKey(string rawValue, out string foundKey, string keyToValidate) => CheckKey(rawValue, out foundKey) && foundKey == keyToValidate;
 
@@ -286,6 +283,9 @@
 
             return escaped.ToString();
         }
+
+        public override bool Equals(object obj) => base.Equals(obj);
+        public override int GetHashCode() => base.GetHashCode();
 
         public static bool operator ==(EmProperty a, EmProperty b)
         {

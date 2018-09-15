@@ -2,12 +2,23 @@
 {
     using System;
     using System.Collections.Generic;
+    using Modules;
     using Monobehaviors;
-    using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
     internal class UpgradeManager : MonoBehaviour
     {
+        // This is a straight copy of the values in the original
+        private static readonly Dictionary<TechType, float> ExtraCrushDepths = new Dictionary<TechType, float>
+        {
+            { TechType.HullReinforcementModule, 800f },
+            { TechType.HullReinforcementModule2, 1600f },
+            { TechType.HullReinforcementModule3, 2800f },
+            { TechType.CyclopsHullModule1, 400f },
+            { TechType.CyclopsHullModule2, 800f },
+            { TechType.CyclopsHullModule3, 1200f }
+        };
+
         private struct UpgradeSlot
         {
             internal Equipment Modules;
@@ -20,22 +31,22 @@
             }
         }
 
-        private readonly List<Battery> SolarBatteries = new List<Battery>();
-        private readonly List<Battery> ThermalBatteries = new List<Battery>();
-        private readonly List<NuclearModuleDetails> NuclearReactorModules = new List<NuclearModuleDetails>();
+        private readonly IList<Battery> SolarBatteries = new List<Battery>();
+        private readonly IList<Battery> ThermalBatteries = new List<Battery>();
+        private readonly IList<NuclearModuleDetails> NuclearReactorModules = new List<NuclearModuleDetails>();
 
         private List<AuxUpgradeConsole> TempCache = new List<AuxUpgradeConsole>();
 
         internal float BonusCrushDepth { get; private set; } = 0f;
 
         internal bool HasChargingModules { get; private set; } = false;
-        internal bool HasSolarModules { get; private set; } = false;
-        internal bool HasThermalModules { get; private set; } = false;
-        internal bool HasNuclearModules { get; private set; } = false;
+        internal bool HasSolarModules => this.SolarModuleCount > 0 || SolarBatteries.Count > 0;
+        internal bool HasThermalModules => this.ThermalModuleCount > 0 || ThermalBatteries.Count > 0;
+        internal bool HasNuclearModules => NuclearReactorModules.Count > 0;
 
         internal int PowerIndex { get; private set; } = 0;
 
-        internal int SpeedIndex { get; private set; } = 0;
+        internal int SpeedBoosters { get; private set; } = 0;
 
         internal int SolarModuleCount { get; private set; } = 0;
         internal int ThermalModuleCount { get; private set; } = 0;
@@ -73,9 +84,13 @@
             }
         }
 
-        private List<AuxUpgradeConsole> AuxUpgradeConsoles { get; } = new List<AuxUpgradeConsole>();
         private SubRoot Cyclops { get; set; } = null;
         private CyclopsHolographicHUD HolographicHUD { get; set; } = null;
+        private List<AuxUpgradeConsole> AuxUpgradeConsoles { get; } = new List<AuxUpgradeConsole>();
+
+        private readonly Dictionary<TechType, Action> SimpleUpgradeActions = new Dictionary<TechType, Action>(12);
+        private readonly Dictionary<TechType, Action<Equipment, string>> SlotBoundUpgradeActions = new Dictionary<TechType, Action<Equipment, string>>(12);
+        private readonly HashSet<TechType> ChargingModules = new HashSet<TechType>();
 
         internal void Initialize(SubRoot cyclops)
         {
@@ -101,6 +116,12 @@
             SlotBoundUpgradeActions.Add(CyclopsModule.SolarChargerMk2ID, AddSolarMk2Module);
             SlotBoundUpgradeActions.Add(CyclopsModule.ThermalChargerMk2ID, AddThermalMk2Module);
             SlotBoundUpgradeActions.Add(CyclopsModule.NuclearChargerID, AddNuclearModule);
+
+            ChargingModules.Add(CyclopsModule.SolarChargerID);
+            ChargingModules.Add(CyclopsModule.SolarChargerMk2ID);
+            ChargingModules.Add(TechType.CyclopsThermalReactorModule);
+            ChargingModules.Add(CyclopsModule.ThermalChargerMk2ID);
+            ChargingModules.Add(CyclopsModule.NuclearChargerID);
         }
 
         internal void SyncUpgradeConsoles(SubRoot cyclops)
@@ -148,7 +169,7 @@
             this.BonusCrushDepth = 0f;
 
             this.PowerIndex = 0;
-            this.SpeedIndex = 0;
+            this.SpeedBoosters = 0;
 
             this.SolarModuleCount = 0;
             this.ThermalModuleCount = 0;
@@ -158,61 +179,24 @@
             NuclearReactorModules.Clear();
 
             this.HasChargingModules = false;
-            this.HasSolarModules = false;
-            this.HasThermalModules = false;
-            this.HasNuclearModules = false;
         }
 
-        private void AddSpeedModule() => this.SpeedIndex++;
-
+        private void AddSpeedModule() => ++this.SpeedBoosters;
         private void AddPowerMk1Module() => this.PowerIndex = Math.Max(this.PowerIndex, 1);
-
         private void AddPowerMk2Module() => this.PowerIndex = Math.Max(this.PowerIndex, 2);
-
         private void AddPowerMk3Module() => this.PowerIndex = Math.Max(this.PowerIndex, 3);
-
-        private void AddSolarModule()
-        {
-            this.SolarModuleCount++;
-            this.HasChargingModules = true;
-            this.HasSolarModules = true;
-        }
-
-        private void AddThermalModule()
-        {
-            this.ThermalModuleCount++;
-            this.HasChargingModules = true;
-            this.HasThermalModules = true;
-        }
-
-        private void AddSolarMk2Module(Equipment modules, string slot)
-        {
-            Battery battery = PowerManager.GetBatteryInSlot(modules, slot);
-
-            SolarBatteries.Add(battery);
-            this.HasChargingModules = true;
-            this.HasSolarModules = true;
-        }
-
-        private void AddThermalMk2Module(Equipment modules, string slot)
-        {
-            Battery battery = PowerManager.GetBatteryInSlot(modules, slot);
-
-            ThermalBatteries.Add(battery);
-            this.HasChargingModules = true;
-            this.HasThermalModules = true;
-        }
-
-        private void AddNuclearModule(Equipment modules, string slot)
-        {
-            Battery battery = PowerManager.GetBatteryInSlot(modules, slot);
-
-            NuclearReactorModules.Add(new NuclearModuleDetails(modules, slot, battery));
-            this.HasChargingModules = true;
-            this.HasNuclearModules = true;
-        }
-
+        private void AddSolarModule() => ++this.SolarModuleCount;
+        private void AddThermalModule() => ++this.ThermalModuleCount;
+        private void AddSolarMk2Module(Equipment modules, string slot) => SolarBatteries.Add(PowerManager.GetBatteryInSlot(modules, slot));
+        private void AddThermalMk2Module(Equipment modules, string slot) => ThermalBatteries.Add(PowerManager.GetBatteryInSlot(modules, slot));
+        private void AddNuclearModule(Equipment modules, string slot) => NuclearReactorModules.Add(new NuclearModuleDetails(modules, slot, PowerManager.GetBatteryInSlot(modules, slot)));
         private void AddDepthModule(TechType depthModule) => this.BonusCrushDepth = Mathf.Max(this.BonusCrushDepth, ExtraCrushDepths[depthModule]);
+
+        private void EnableFireSuppressionSystem() => this.HolographicHUD.fireSuppressionSystem.SetActive(true);
+        private void EnableExtraDecoySlots() => this.Cyclops.decoyTubeSizeIncreaseUpgrade = true;
+        private void EnableRepairDock() => this.Cyclops.vehicleRepairUpgrade = true;
+        private void EnableSonar() => this.Cyclops.sonarUpgrade = true;
+        private void EnabledShield() => this.Cyclops.shieldUpgrade = true;
 
         internal void HandleUpgrades()
         {
@@ -232,6 +216,8 @@
                     continue;
 
                 foundUpgrades.Add(techTypeInSlot);
+
+                this.HasChargingModules |= ChargingModules.Contains(techTypeInSlot);
 
                 if (SimpleUpgradeActions.TryGetValue(techTypeInSlot, out Action simpleUpgrade))
                 {
@@ -265,24 +251,5 @@
             }
         }
 
-        private readonly Dictionary<TechType, Action> SimpleUpgradeActions = new Dictionary<TechType, Action>(12);
-        private readonly Dictionary<TechType, Action<Equipment, string>> SlotBoundUpgradeActions = new Dictionary<TechType, Action<Equipment, string>>(12);
-
-        private void EnableFireSuppressionSystem() => this.HolographicHUD.fireSuppressionSystem.SetActive(true);
-        private void EnableExtraDecoySlots() => this.Cyclops.decoyTubeSizeIncreaseUpgrade = true;
-        private void EnableRepairDock() => this.Cyclops.vehicleRepairUpgrade = true;
-        private void EnableSonar() => this.Cyclops.sonarUpgrade = true;
-        private void EnabledShield() => this.Cyclops.shieldUpgrade = true;
-
-        // This is a straight copy of the values in the original
-        private static readonly Dictionary<TechType, float> ExtraCrushDepths = new Dictionary<TechType, float>
-        {
-            { TechType.HullReinforcementModule, 800f },
-            { TechType.HullReinforcementModule2, 1600f },
-            { TechType.HullReinforcementModule3, 2800f },
-            { TechType.CyclopsHullModule1, 400f },
-            { TechType.CyclopsHullModule2, 800f },
-            { TechType.CyclopsHullModule3, 1200f }
-        };
     }
 }
