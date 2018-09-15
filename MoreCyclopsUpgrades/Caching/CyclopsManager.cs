@@ -17,7 +17,12 @@
         {
             string id = cyclops.GetComponent<PrefabIdentifier>().ClassId;
 
-            if (Managers.TryGetValue(id, out var mgr))
+            return GetManager(id, cyclops);
+        }
+
+        private static CyclopsManager GetManager(string id, SubRoot cyclops)
+        {
+            if (Managers.TryGetValue(id, out CyclopsManager mgr))
             {
                 if (!ReferenceEquals(cyclops, mgr.Cyclops))
                 {
@@ -34,12 +39,12 @@
 
         public static void CreateNewManagers(SubRoot cyclops)
         {
-            var existingMgr = GetManager(cyclops);
+            string id = cyclops.GetComponent<PrefabIdentifier>().ClassId;
+
+            CyclopsManager existingMgr = GetManager(id, cyclops);
 
             if (existingMgr != null)
                 return; // Already exists and now updated
-
-            string id = cyclops.GetComponent<PrefabIdentifier>().ClassId;
 
             var upgradeMgr = new UpgradeManager();
             upgradeMgr.Initialize(cyclops);

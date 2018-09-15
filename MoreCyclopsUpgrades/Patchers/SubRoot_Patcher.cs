@@ -48,7 +48,6 @@
 
             if (powerMgr == null)
             {
-                QuickLogger.Debug("UpdatePowerRating: PowerManager not found!", true);
                 return true; // safety check
             }
 
@@ -75,7 +74,6 @@
 
             if (upgradeMgr == null)
             {
-                QuickLogger.Debug("SetCyclopsUpgrades: UpgradeManager not found!", true);
                 return true; // safety check
             }
 
@@ -97,7 +95,6 @@
 
             if (upgradeMgr == null)
             {
-                QuickLogger.Debug("SetExtraDepth: UpgradeManager not found!", true);
                 return true;
             }
 
@@ -105,7 +102,6 @@
 
             if (crushDmg == null)
             {
-                QuickLogger.Debug("SetExtraDepth: CrushDamage not found!", true);
                 return true;
             }
 

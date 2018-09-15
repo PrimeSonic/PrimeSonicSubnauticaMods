@@ -81,9 +81,6 @@
 
             this.Cyclops = cyclops;
 
-            if (upgradeMgr == null)
-                QuickLogger.Debug($"PowerManager Initialize: UpgradeManager is null:", true);
-
             upgradeManager = upgradeMgr;
 
             // Store the original values before we start to change them
