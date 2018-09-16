@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Caching
 {
     using System.Collections.Generic;
+    using Common;
 
     internal class CyclopsManager
     {
@@ -10,25 +11,36 @@
 
         public SubRoot Cyclops { get; private set; }
 
+        public readonly int InstanceID;
+
+        public int Calls { get; private set; } = 0;
+
         protected CyclopsManager(UpgradeManager upgradeManager, PowerManager powerManager, SubRoot cyclops)
         {
             this.UpgradeManager = upgradeManager;
             this.PowerManager = powerManager;
             this.Cyclops = cyclops;
+            InstanceID = cyclops.GetInstanceID();
         }
 
-        private static IDictionary<string, CyclopsManager> Managers = new Dictionary<string, CyclopsManager>();
+        private const int TimeToCheck = 1200;
+        private static int CallCounter = 0;
 
-        public static CyclopsManager GetAllManagers(SubRoot cyclops) => GetManager(cyclops.GetComponent<PrefabIdentifier>().ClassId, cyclops);
+        // List was chosen because of the very small number of entries it will mamaged.
+        private static List<CyclopsManager> Managers = new List<CyclopsManager>(3);
 
-        private static CyclopsManager GetManager(string id, SubRoot cyclops)
+        public static CyclopsManager GetAllManagers(SubRoot cyclops) => GetManager(cyclops.GetInstanceID(), cyclops);
+
+        private static CyclopsManager GetManager(int id, SubRoot cyclops)
         {
-            if (Managers.TryGetValue(id, out CyclopsManager mgr))
+            HandlePurging();
+
+            CyclopsManager mgr = Managers.Find(m => m.InstanceID == cyclops.GetInstanceID());
+
+            if (mgr != null)
             {
-                if (!ReferenceEquals(cyclops, mgr.Cyclops))
-                {
-                    mgr.Cyclops = cyclops;
-                }
+                if (Managers.Count > 1)
+                    mgr.Calls++;
 
                 return mgr;
             }
@@ -36,15 +48,29 @@
             return null;
         }
 
+        private static void HandlePurging()
+        {
+            if (Managers.Count < 2)
+                return;
+
+            CallCounter++;
+
+            if (CallCounter < TimeToCheck)
+                return;
+
+            CallCounter = 0;
+
+            CyclopsManager unused = Managers.Find(m => m.Calls == 0);
+
+            if (unused != null)
+            {
+                Managers.Remove(unused);
+                QuickLogger.Debug("Unsued SubRoot reference removed", true);
+            }
+        }
+
         public static void CreateNewManagers(SubRoot cyclops)
         {
-            string id = cyclops.GetComponent<PrefabIdentifier>().ClassId;
-
-            CyclopsManager existingMgr = GetManager(id, cyclops);
-
-            if (existingMgr != null)
-                return; // Already exists and now updated
-
             var upgradeMgr = new UpgradeManager();
             var powerMgr = new PowerManager();
 
@@ -53,11 +79,11 @@
             upgradeMgr.Initialize(mgr);
             powerMgr.Initialize(mgr);
 
-            Managers.Add(id, mgr);
+            Managers.Add(mgr);
         }
 
-        public static UpgradeManager GetUpgradeManager(SubRoot cyclops) => GetManager(cyclops.GetComponent<PrefabIdentifier>().ClassId, cyclops)?.UpgradeManager;
+        public static UpgradeManager GetUpgradeManager(SubRoot cyclops) => GetManager(cyclops.GetInstanceID(), cyclops)?.UpgradeManager;
 
-        public static PowerManager GetPowerManager(SubRoot cyclops) => GetManager(cyclops.GetComponent<PrefabIdentifier>().ClassId, cyclops)?.PowerManager;
+        public static PowerManager GetPowerManager(SubRoot cyclops) => GetManager(cyclops.GetInstanceID(), cyclops)?.PowerManager;
     }
 }

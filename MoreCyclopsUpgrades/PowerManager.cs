@@ -14,24 +14,28 @@
         private const float BatteryDrainRate = 0.01f;
         private const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
         private const float NuclearDrainRate = 0.15f;
-        private const float EnginePowerPenalty = 0.5f; // 50% reduced engine efficiency for each speed booster module
+
+        private const float EnginePowerPenalty = 0.25f; // 25% reduced engine efficiency for each speed booster module
 
         private const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
 
         private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.15f, 0.10f, 0.05f, 0.05f, 0.05f, 0.05f // Diminishing returns on speed modules
+            0.30f, 0.15f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
+            // Max +75%
         };
 
         private static readonly float[] StandardSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.40f, 0.30f, 0.25f, 0.20f, 0.15f, 0.10f // Diminishing returns on speed modules
+            0.45f, 0.35f, 0.25f, 0.20f, 0.15f, 0.10f // Diminishing returns on speed modules
+            // Max +150%
         };
 
         private static readonly float[] FlankSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.50f, 0.25f, 0.15f, 0.10f, 0.10f, 0.10f // Diminishing returns on speed modules
+            0.50f, 0.20f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
+            // Max +100%
         };
 
         private static readonly float[] EnginePowerRatings = new float[PowerIndexCount]
