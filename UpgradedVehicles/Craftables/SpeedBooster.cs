@@ -18,6 +18,8 @@
         public override string[] StepsToFabricatorTab => new[] { "CommonModules" };
         public override TechType RequiredForUnlock => TechType.PowerUpgradeModule;
 
+        public override string AssetsFolder => "UpgradedVehicles/Assets";
+
         protected SpeedBooster()
             : base(classId: "SpeedModule",
                    friendlyName: "Speed Boost Module",

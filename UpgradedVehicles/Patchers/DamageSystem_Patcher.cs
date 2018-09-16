@@ -1,5 +1,6 @@
 ﻿namespace UpgradedVehicles.Patchers
 {
+    using Common;
     using Harmony;
     using UnityEngine;
 
@@ -10,11 +11,18 @@
         [HarmonyPostfix]
         internal static void Postfix(ref float __result, GameObject target)
         {
-            var vehicle = target.GetComponent<VehicleUpgrader>();
+            var vehicle = target.GetComponent<Vehicle>();
 
             if (vehicle != null) // Target is vehicle
             {
-                __result = vehicle.ReduceIncomingDamage(__result);
+                var vehicleUpgrader = VehicleUpgrader.GetUpgrader(vehicle);
+
+                if (vehicleUpgrader == null)
+                {
+                    return;
+                }
+
+                __result = vehicleUpgrader.ReduceIncomingDamage(__result);
             }
         }
     }
