@@ -15,7 +15,7 @@
         private const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
         private const float NuclearDrainRate = 0.15f;
 
-        private const float EnginePowerPenalty = 0.25f; // 25% reduced engine efficiency for each speed booster module
+        private const float EnginePowerPenalty = 0.75f;
 
         private const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
@@ -60,9 +60,9 @@
 
         public CyclopsManager Manager { get; private set; }
 
-        public SubRoot Cyclops => Manager.Cyclops;
+        public SubRoot Cyclops => this.Manager.Cyclops;
 
-        private UpgradeManager UpgradeManager => Manager.UpgradeManager;
+        private UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
 
         private CyclopsMotorMode motorMode;
         private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = this.Cyclops.GetComponentInChildren<CyclopsMotorMode>());
@@ -111,7 +111,19 @@
             }
 
             // Speed modules can affect power rating too
-            float powerRating = Mathf.Max(0.01f, EnginePowerRatings[powerIndex] - speedBoosters * EnginePowerPenalty);
+            float efficiencyBonus = EnginePowerRatings[powerIndex];
+
+            for (int i = 0; i < speedBoosters; i++)
+            {
+                efficiencyBonus *= EnginePowerPenalty;
+            }
+
+            int cleanRating = Mathf.CeilToInt(100f * efficiencyBonus);
+
+            while (cleanRating % 5 != 0)
+                cleanRating--;
+
+            float powerRating = cleanRating / 100f;
 
             if (this.LastKnownPowerRating != powerRating)
             {
