@@ -6,17 +6,6 @@
     using SMLHelper.V2.Utility;
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("Awake")]
-    internal class SubRoot_Awake_Patcher
-    {
-        [HarmonyPostfix]
-        public static void Postfix(ref SubRoot __instance)
-        {
-            CyclopsManager.CreateNewManagers(__instance);
-        }
-    }
-
-    [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
