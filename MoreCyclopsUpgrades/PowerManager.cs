@@ -83,6 +83,9 @@
 
             this.Manager = manager;
 
+            if (this.MotorMode == null)
+                return false;
+
             // Store the original values before we start to change them
             this.OriginalSpeeds[0] = this.MotorMode.motorModeSpeeds[0];
             this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];

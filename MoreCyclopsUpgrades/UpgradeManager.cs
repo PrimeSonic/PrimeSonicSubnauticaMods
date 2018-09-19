@@ -186,6 +186,7 @@
             this.Cyclops.sonarUpgrade = false;
             this.Cyclops.vehicleRepairUpgrade = false;
             this.Cyclops.decoyTubeSizeIncreaseUpgrade = false;
+            this.Cyclops.thermalReactorUpgrade = false;
 
             if (this.HolographicHUD == null)
                 QuickLogger.Error("ClearAllUpgrades: HolographicHUD ref is null", true);

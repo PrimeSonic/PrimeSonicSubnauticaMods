@@ -12,10 +12,8 @@
 
         public readonly int InstanceID;
 
-        protected CyclopsManager(UpgradeManager upgradeManager, PowerManager powerManager, SubRoot cyclops)
+        protected CyclopsManager(SubRoot cyclops)
         {
-            this.UpgradeManager = upgradeManager;
-            this.PowerManager = powerManager;
             this.Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
         }
@@ -31,6 +29,9 @@
 
         private static CyclopsManager GetManager(int id, SubRoot cyclops)
         {
+            if (cyclops.isBase || !cyclops.isCyclops)
+                return null;
+
             CyclopsManager mgr = Managers.Find(m => m.InstanceID == cyclops.GetInstanceID());
 
             return mgr ?? CreateNewManagers(cyclops);
@@ -41,14 +42,18 @@
             var upgradeMgr = new UpgradeManager();
             var powerMgr = new PowerManager();
 
-            var mgr = new CyclopsManager(upgradeMgr, powerMgr, cyclops);
+            var mgr = new CyclopsManager(cyclops);
 
-            upgradeMgr.Initialize(mgr);
-            powerMgr.Initialize(mgr);
+            if (powerMgr.Initialize(mgr) && upgradeMgr.Initialize(mgr))
+            {
+                mgr.UpgradeManager = upgradeMgr;
+                mgr.PowerManager = powerMgr;
+                Managers.Add(mgr);
 
-            Managers.Add(mgr);
+                return mgr;
+            }
 
-            return mgr;
+            return null;
         }
     }
 }
