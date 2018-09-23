@@ -84,8 +84,10 @@
         private float BaseForwardForce = -1f;
         private float BaseOnGroundForceMultiplier = -1f;
 
-        // Original value from LiveMixin
-        private float BaseMaxHP = -1f;
+        // Original values from LiveMixin in asset.resources
+        private const float BaseHpSeamoth = 200f;
+        private const float BaseHpExosuit = 600f;
+
 
         public int InstanceID { get; private set; }
 
@@ -102,6 +104,34 @@
         private bool IsSeamoth { get; set; } = false;
         private bool IsExosuit { get; set; } = false;
         private float GeneralDamageReduction { get; set; } = 1f;
+
+        private float MaxHitPoints()
+        {
+            if (this.IsExosuit)
+                return BaseHpExosuit * (1f + this.DepthIndex * 0.25f);
+
+            if (this.IsSeamoth)
+            {
+                float hpBonus = HasModdedDepthModules ? 0.4f : 0.5f;
+                return BaseHpSeamoth * (1f + this.DepthIndex * hpBonus);
+            }
+
+            return 100f;
+        }
+
+        private float BaseHitPoints
+        {
+            get
+            {
+                if (this.IsExosuit)
+                    return BaseHpExosuit;
+
+                if (this.IsSeamoth)
+                    return BaseHpSeamoth;
+
+                return 100f;
+            }
+        }
 
         private float SpeedBonus(int speedBoosterCount)
         {
@@ -194,10 +224,6 @@
                 QuickLogger.Debug("Initialize Vehicle: LiveMixin null");
                 return false;
             }
-            else if (BaseMaxHP == -1f)
-            {
-                BaseMaxHP = this.LifeMix.maxHealth;
-            }
 
             return true;
         }
@@ -251,10 +277,10 @@
             bool updateSpeed = updateHp || upgradeModule == SpeedBooster.SpeedBoosterTechType;
             bool updateEfficiency = updateHp || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
 
+            this.DepthIndex = nextDepthIndex;
+
             if (updateHp) // Hit Points
             {
-                this.DepthIndex = nextDepthIndex;
-
                 UpdateHitPoints();
             }
 
@@ -281,17 +307,22 @@
 
         private void UpdateHitPoints()
         {
-            if (BaseMaxHP == -1f)
-            {
-                QuickLogger.Debug($"VehicleUpgrader BaseMaxHP was not correctly initialized", true);
-                return;
-            }
-
             float originalMaxHp = this.LifeMix.data.maxHealth;
             float originalHp = this.LifeMix.health;
 
-            float nextMaxHp = BaseMaxHP * (1f + this.DepthIndex * 0.5f);
-            float nextHp = originalHp / originalMaxHp * nextMaxHp;
+            float nextMaxHp = MaxHitPoints();
+
+            float nextHp;
+
+            if (originalMaxHp <= originalHp)
+            {
+                nextHp = nextMaxHp;
+            }
+            else
+            {
+                float ratio = originalHp / originalMaxHp;
+                nextHp = Mathf.Min(ratio * nextMaxHp, nextMaxHp);
+            }
 
             this.LifeMix.data.maxHealth = nextMaxHp;
             this.LifeMix.health = nextHp;
