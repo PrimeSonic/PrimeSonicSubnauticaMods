@@ -20,12 +20,16 @@
 
         public const string HandOverText = "UseVModFabricator";
 
+        private readonly ModdedItemsConfig ModdedItems = new ModdedItemsConfig();
+
         internal VModFabricatorModule() : base(NameID, $"{NameID}PreFab")
         {
         }
 
         public void Patch()
         {
+            ModdedItems.Initialize();
+
             // Create new Craft Tree Type
             CreateCustomTree(out CraftTree.Type craftType);
             this.TreeTypeID = craftType;
@@ -75,6 +79,9 @@
 
         private void CreateCustomTree(out CraftTree.Type craftType)
         {
+            if (!ModdedItems.IsInitialized)
+                ModdedItems.Initialize();
+
             ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(NameID, out craftType);
 
             ModCraftTreeTab cyclopsTab = rootNode.AddTabNode("CyclopsModules", "Cyclops Modules", SpriteManager.Get(SpriteManager.Group.Category, "Workbench_CyclopsMenu"));
@@ -84,6 +91,7 @@
                            TechType.CyclopsSeamothRepairModule,
                            TechType.CyclopsFireSuppressionModule,
                            TechType.CyclopsDecoyModule);
+            ModdedItems.AddModdedModules(cyclopsAbilityTab);
 
             cyclopsAbilityTab.AddModdedCraftingNode("CyclopsSpeedModule");
             ModCraftTreeTab cyclopsDepthTab = cyclopsTab.AddTabNode("CyclopsDepthModules", "Depth Modules", SpriteManager.Get(TechType.CyclopsHullModule1));
@@ -92,17 +100,12 @@
                                             TechType.CyclopsHullModule3);
 
             ModCraftTreeTab cyclopsPowerTab = cyclopsTab.AddTabNode("CyclopsPowerModules", "Power Modules", SpriteManager.Get(TechType.PowerUpgradeModule));
-            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule); // Compatible with the MoreCyclopsUpgrades mod whether you have it or not!
-            cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk2");
-            cyclopsPowerTab.AddModdedCraftingNode("PowerUpgradeModuleMk3");
+            cyclopsPowerTab.AddCraftingNode(TechType.PowerUpgradeModule);
+            ModdedItems.AddModdedModules(cyclopsPowerTab);
 
             ModCraftTreeTab cyclopsRechargTab = cyclopsTab.AddTabNode("CyclopsRechargeTab", "Recharge Modules", SpriteManager.Get(TechType.SeamothSolarCharge));
-            cyclopsRechargTab.AddModdedCraftingNode("CyclopsSolarCharger");
-            cyclopsRechargTab.AddModdedCraftingNode("CyclopsSolarChargerMk2");
             cyclopsRechargTab.AddCraftingNode(TechType.CyclopsThermalReactorModule);
-            cyclopsRechargTab.AddModdedCraftingNode("CyclopsThermalChargerMk2");
-            cyclopsRechargTab.AddModdedCraftingNode("CyclopsNuclearModule");
-            //cyclopsPowerTab.AddModdedCraftingNode("CyclopsNuclearModuleRefil"); // Only in the nuclear fabricator
+            ModdedItems.AddModdedModules(cyclopsRechargTab);
 
             ModCraftTreeTab exosuitTab = rootNode.AddTabNode("ExosuitModules", "Prawn Suit Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_ExosuitModules"));
             ModCraftTreeTab exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
@@ -114,36 +117,32 @@
                                        TechType.ExosuitGrapplingArmModule,
                                        TechType.ExosuitDrillArmModule,
                                        TechType.ExosuitTorpedoArmModule);
+            ModdedItems.AddModdedModules(exosuitTab);
 
             ModCraftTreeTab seamothTab = rootNode.AddTabNode("SeamothModules", "Seamoth Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_SeamothModules"));
             ModCraftTreeTab seamothDepthTab = seamothTab.AddTabNode("SeamothDepthModules", "Depth Modules", SpriteManager.Get(TechType.VehicleHullModule1));
             seamothDepthTab.AddCraftingNode(TechType.VehicleHullModule1,
                                             TechType.VehicleHullModule2,
                                             TechType.VehicleHullModule3);
-            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule4"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
+            ModdedItems.AddModdedModules(seamothDepthTab);
 
             ModCraftTreeTab seamothAbilityTab = seamothTab.AddTabNode("SeamothAbilityModules", "Ability Modules", SpriteManager.Get(TechType.SeamothElectricalDefense));
             seamothAbilityTab.AddCraftingNode(TechType.SeamothElectricalDefense,
                                               TechType.SeamothSonarModule);
-            seamothAbilityTab.AddModdedCraftingNode("SeamothDrillModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothAbilityTab.AddModdedCraftingNode("SeamothClawModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-
             seamothTab.AddCraftingNode(TechType.SeamothSolarCharge);
-            seamothTab.AddModdedCraftingNode("SeamothThermalModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
+            ModdedItems.AddModdedModules(seamothAbilityTab);
+            ModdedItems.AddModdedModules(seamothTab);
 
             ModCraftTreeTab commonTab = rootNode.AddTabNode("CommonModules", "Common Modules", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_CommonModules"));
             commonTab.AddCraftingNode(TechType.VehicleArmorPlating,
                                       TechType.VehiclePowerUpgradeModule,
                                       TechType.VehicleStorageModule);
-            commonTab.AddModdedCraftingNode("SpeedModule");
-            commonTab.AddModdedCraftingNode("ScannerModule"); // Compatible with Scanner Module Mod
-            commonTab.AddModdedCraftingNode("RepairModule"); // Compatible with Repair Module Mod
-            commonTab.AddModdedCraftingNode("LaserCannon"); // Compatible with Laser Cannon Mod
+            ModdedItems.AddModdedModules(commonTab);
 
             ModCraftTreeTab torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
             torpedoesTab.AddCraftingNode(TechType.WhirlpoolTorpedo,
                                          TechType.GasTorpedo);
+            ModdedItems.AddModdedModules(torpedoesTab);
         }
 
         public override GameObject GetGameObject()

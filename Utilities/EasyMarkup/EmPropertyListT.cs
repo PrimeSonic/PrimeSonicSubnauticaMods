@@ -9,7 +9,7 @@
     {
         private static HashSet<char> ListDelimeters { get; } = new HashSet<char> { SpChar_ListItemSplitter, SpChar_ValueDelimiter };
 
-        public bool HasValue { get; private set; } = false;
+        public bool HasValue => this.InternalValues.Count > 0;
 
         protected IList<T> InternalValues { get; } = new List<T>();
 
@@ -17,11 +17,9 @@
 
         public int Count => this.InternalValues.Count;
 
-        public void Add(T item)
-        {
-            this.HasValue = true;
-            this.InternalValues.Add(item);
-        }
+        public void Add(T item) => this.InternalValues.Add(item);
+
+        public void Clear() => this.InternalValues.Clear();
 
         public IEnumerable<T> Values => this.InternalValues;
 
@@ -70,8 +68,6 @@
                 serialValues += serialValue + SpChar_ListItemSplitter;
 
             } while (fullString.Count > 0 && fullString.PeekStart() != SpChar_ValueDelimiter);
-
-            this.HasValue = true;
 
             return serialValues.TrimEnd(SpChar_ListItemSplitter);
         }

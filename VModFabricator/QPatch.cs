@@ -9,12 +9,11 @@
         {
             try
             {
-                QuickLogger.Message("Start");
+                QuickLogger.Message("Start patching. Version: " + QuickLogger.GetAssemblyVersion());
                 var vmodFabricator = new VModFabricatorModule();
 
                 vmodFabricator.Patch();
-
-                QuickLogger.Message("Finish");
+                QuickLogger.Message("Finished patching");
             }
             catch (Exception ex)
             {
