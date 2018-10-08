@@ -121,12 +121,13 @@
                                             TechType.VehicleHullModule2,
                                             TechType.VehicleHullModule3);
             seamothDepthTab.AddModdedCraftingNode("SeamothHullModule4"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
-            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!            
+            seamothDepthTab.AddModdedCraftingNode("SeamothHullModule5"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
 
             ModCraftTreeTab seamothAbilityTab = seamothTab.AddTabNode("SeamothAbilityModules", "Ability Modules", SpriteManager.Get(TechType.SeamothElectricalDefense));
             seamothAbilityTab.AddCraftingNode(TechType.SeamothElectricalDefense,
                                               TechType.SeamothSonarModule);
-            seamothAbilityTab.AddModdedCraftingNode("SeamothDrillModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!                        
+            seamothAbilityTab.AddModdedCraftingNode("SeamothDrillModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
+            seamothAbilityTab.AddModdedCraftingNode("SeamothClawModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
 
             seamothTab.AddCraftingNode(TechType.SeamothSolarCharge);
             seamothTab.AddModdedCraftingNode("SeamothThermalModule"); // Compatible with MoreSeamothUpgrades mod whether you have it or not!
@@ -139,7 +140,6 @@
             commonTab.AddModdedCraftingNode("ScannerModule"); // Compatible with Scanner Module Mod
             commonTab.AddModdedCraftingNode("RepairModule"); // Compatible with Repair Module Mod
             commonTab.AddModdedCraftingNode("LaserCannon"); // Compatible with Laser Cannon Mod
-            commonTab.AddModdedCraftingNode("VehiclePowerCore");
 
             ModCraftTreeTab torpedoesTab = rootNode.AddTabNode("TorpedoesModules", "Torpedoes", SpriteManager.Get(SpriteManager.Group.Category, "SeamothUpgrades_Torpedoes"));
             torpedoesTab.AddCraftingNode(TechType.WhirlpoolTorpedo,
