@@ -4,6 +4,7 @@
     using System.Reflection;
     using Common;
     using Harmony;
+    using SMLHelper.V2.Handlers;
 
     public class QPatch
     {
@@ -11,17 +12,20 @@
         {
             try
             {
-                QuickLogger.Message("Started patching");
+                QuickLogger.Message("Started patching - " + QuickLogger.GetAssemblyVersion());
 
-                var speedBoost = Craftable.AddForPatching(new SpeedBooster());
-                var vpowerCore = Craftable.AddForPatching(new VehiclePowerCore(speedBoost));
-                var seamothMk2 = Craftable.AddForPatching(new SeaMothMk2(vpowerCore));
-                var exosuitMk2 = Craftable.AddForPatching(new ExosuitMk2(vpowerCore));
-                var seamothMk3 = Craftable.AddForPatching(new SeaMothMk3(vpowerCore));
+                if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
+                    TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
+                {
+                    VehicleUpgrader.SetModdedDepthModules(vehicleHullModule4, vehicleHullModule5);
+                }
 
-                Craftable.PatchAll();
-                
-                HarmonyInstance harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
+                SpeedBooster speedModule = SpeedBooster.Main;
+                speedModule.Patch();
+
+                VehicleUpgrader.SetSpeedBooster(speedModule);
+
+                var harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
                 QuickLogger.Message("Finished patching");
