@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
     using Harmony;
+    using Caching;
 
     [HarmonyPatch(typeof(CyclopsHelmHUDManager))]
     [HarmonyPatch("Update")]
@@ -16,7 +17,14 @@
                 return;
             }
 
-            PowerManager.UpdateHelmHUD(__instance, ref lastReservePower);
+            PowerManager powerMgr = CyclopsManager.GetPowerManager(__instance.subRoot);
+
+            if (powerMgr == null)
+            {
+                return;
+            }
+
+            powerMgr.UpdateHelmHUD(__instance, ref lastReservePower);
         }
     }
 }

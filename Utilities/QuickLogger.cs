@@ -18,12 +18,14 @@
 
         public static void Debug(string msg, bool showOnScreen = false)
         {
+#if DEBUG
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
             Console.WriteLine($"[{name}] DEBUG: {msg}");
 
             if (showOnScreen)
                 ErrorMessage.AddDebug(msg);
+#endif
         }
 
         public static void Error(string msg, bool showOnScreen = false)

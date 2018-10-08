@@ -1,46 +1,46 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using Common;
     using Caching;
+    using Common;
+    using Modules;
     using SaveData;
     using UnityEngine;
-    using Modules;
-    using Modules.Recharging.Nuclear;
 
-    internal static class PowerManager
+    internal class PowerManager
     {
         private const float MaxSolarDepth = 200f;
         private const float SolarChargingFactor = 0.03f;
         private const float ThermalChargingFactor = 1.5f;
         private const float BatteryDrainRate = 0.01f;
-
         private const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
-
         private const float NuclearDrainRate = 0.15f;
 
-        private const float EnginePowerPenalty = 0.5f; // 50% reduced engine efficiency for each speed booster module
+        private const float EnginePowerPenalty = 0.75f;
 
-        private const int SpeedIndexCount = 6;
+        private const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
 
-        private static readonly float[] SlowSpeedBonuses = new float[SpeedIndexCount]
+        private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.15f, 0.10f, 0.05f, 0f, 0f, 0f // Diminishing returns on speed modules
+            0.30f, 0.15f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
+            // Max +75%
         };
 
-        private static readonly float[] StandardSpeedBonuses = new float[SpeedIndexCount]
+        private static readonly float[] StandardSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.35f, 0.25f, 0.20f, 0.15f, 0.10f, 0.05f // Diminishing returns on speed modules
+            0.45f, 0.35f, 0.25f, 0.20f, 0.15f, 0.10f // Diminishing returns on speed modules
+            // Max +150%
         };
 
-        private static readonly float[] FlankSpeedBonuses = new float[SpeedIndexCount]
+        private static readonly float[] FlankSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.40f, 0.20f, 0.10f, 0.05f, 0.025f, 0f // Diminishing returns on speed modules
+            0.50f, 0.20f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
+            // Max +100%
         };
 
         private static readonly float[] EnginePowerRatings = new float[PowerIndexCount]
         {
-            1f, 3f, 5f, 6f // Lower costs here don't show up until the Mk2
+            1f, 3f, 5f, 6f
         };
 
         private static readonly float[] SilentRunningPowerCosts = new float[PowerIndexCount]
@@ -58,100 +58,120 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
-        private static float LastKnownPowerRating = -1f;
-        private static int LastKnownSpeedIndex = -1;
+        public CyclopsManager Manager { get; private set; }
 
-        private static float[] OriginalSpeeds { get; } = new float[3];
+        public SubRoot Cyclops => this.Manager.Cyclops;
 
-        private static int CurrentReservePower = 0;
-        private static float AvailablePower = 0f;
-        private static float AvailablePowerRatio = 0f;
-        private static int PowerPercentage = 0;
-        private static float CurrentBatteryPower = 0f;
-        private static int TotalPowerUnits = 0;
+        private UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
 
-        private static float PowerDeficit = 0f;
-        private static float AvailableSolarEnergy = 0f;
-        private static float AvailableThermalEnergy = 0f;
-        private static float SurplusPower = 0f;
-        private static bool RenewablePowerAvailable = false;
-        private static bool CyclopsDoneCharging = false;
-        private static Battery LastBatteryToCharge = null;
+        private CyclopsMotorMode motorMode;
+        private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = this.Cyclops.GetComponentInChildren<CyclopsMotorMode>());
+
+        private SubControl subControl;
+        private SubControl SubControl => subControl ?? (subControl = this.Cyclops.GetComponentInChildren<SubControl>());
+
+        private float LastKnownPowerRating { get; set; } = -1f;
+        private int LastKnownSpeedBoosters { get; set; } = -1;
+        private int LastKnownPowerIndex { get; set; } = -1;
+
+        private float[] OriginalSpeeds { get; } = new float[3];
+
+        public bool Initialize(CyclopsManager manager)
+        {
+            if (this.Manager != null)
+                return false; // Already initialized
+
+            this.Manager = manager;
+
+            if (this.MotorMode == null)
+                return false;
+
+            // Store the original values before we start to change them
+            this.OriginalSpeeds[0] = this.MotorMode.motorModeSpeeds[0];
+            this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
+            this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
+
+            return true;
+        }
 
         /// <summary>
-        /// Updates the Cyclops power index. This manages engine efficiency as well as the power cost of using Silent Running, Sonar, and Defense Shield.
+        /// Updates the Cyclops power and speed rating.
+        /// Power Rating manages engine efficiency as well as the power cost of using Silent Running, Sonar, and Defense Shield.
+        /// Speed rating manages bonus speed across all motor modes.
         /// </summary>
-        /// <param name="cyclops">The cyclops.</param>
-        internal static void UpdatePowerSpeedRating(ref SubRoot cyclops)
+        internal void UpdatePowerSpeedRating()
         {
-            Equipment modules = cyclops.upgradeConsole.modules;
+            int powerIndex = this.UpgradeManager.PowerIndex;
+            int speedBoosters = this.UpgradeManager.SpeedBoosters;
 
-            int powerIndex = UpgradeConsoleCache.PowerIndex;
-            int speedIndex = UpgradeConsoleCache.SpeedIndex;
+            if (this.LastKnownPowerIndex != powerIndex)
+            {
+                this.LastKnownPowerIndex = powerIndex;
+
+                this.Cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+                this.Cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
+                this.Cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
+            }
 
             // Speed modules can affect power rating too
-            float nextPowerRating = Mathf.Max(0.01f, EnginePowerRatings[powerIndex] - speedIndex * EnginePowerPenalty);
+            float efficiencyBonus = EnginePowerRatings[powerIndex];
 
-            if (LastKnownPowerRating != nextPowerRating)
+            for (int i = 0; i < speedBoosters; i++)
             {
-                cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
-                cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
-                cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
+                efficiencyBonus *= EnginePowerPenalty;
+            }
 
-                LastKnownPowerRating = nextPowerRating;
+            int cleanRating = Mathf.CeilToInt(100f * efficiencyBonus);
 
-                cyclops.SetPrivateField("currPowerRating", nextPowerRating);
+            while (cleanRating % 5 != 0)
+                cleanRating--;
+
+            float powerRating = cleanRating / 100f;
+
+            if (this.LastKnownPowerRating != powerRating)
+            {
+                this.LastKnownPowerRating = powerRating;
+
+                this.Cyclops.SetPrivateField("currPowerRating", powerRating);
 
                 // Inform the new power rating just like the original method would.
-                ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", nextPowerRating));
+                ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
             }
 
-            if (LastKnownSpeedIndex == -1)
+            if (speedBoosters > MaxSpeedBoosters)
             {
-                // Store the original values before we start to change them
-                // This will only run once
-                var motorMode = cyclops.GetComponentInChildren<CyclopsMotorMode>();
-                OriginalSpeeds[0] = motorMode.motorModeSpeeds[0];
-                OriginalSpeeds[1] = motorMode.motorModeSpeeds[1];
-                OriginalSpeeds[2] = motorMode.motorModeSpeeds[2];
+                ErrorMessage.AddMessage($"Speed rating already at maximum. You have {speedBoosters - MaxSpeedBoosters} too many.");
+                return; // Exit here
             }
 
-            if (speedIndex > SpeedIndexCount)
+            if (this.LastKnownSpeedBoosters != speedBoosters)
             {
-                speedIndex = SpeedIndexCount; // Limit to Max
-                ErrorMessage.AddMessage($"Speed rating already at maximum");
-            }
+                this.LastKnownSpeedBoosters = speedBoosters;
 
-            if (LastKnownSpeedIndex != speedIndex)
-            {
                 float SlowMultiplier = 1f;
                 float StandardMultiplier = 1f;
                 float FlankMultiplier = 1f;
 
                 // Calculate the speed multiplier with diminishing returns
-                for (int s = 0; s < speedIndex; s++)
+                while (--speedBoosters > -1)
                 {
-                    SlowMultiplier += SlowSpeedBonuses[s];
-                    StandardMultiplier += StandardSpeedBonuses[s];
-                    FlankMultiplier += FlankSpeedBonuses[s];
+                    SlowMultiplier += SlowSpeedBonuses[speedBoosters];
+                    StandardMultiplier += StandardSpeedBonuses[speedBoosters];
+                    FlankMultiplier += FlankSpeedBonuses[speedBoosters];
                 }
 
                 // These will apply when changing speed modes
-                var motorMode = cyclops.GetComponentInChildren<CyclopsMotorMode>();
-                motorMode.motorModeSpeeds[0] = OriginalSpeeds[0] * SlowMultiplier;
-                motorMode.motorModeSpeeds[1] = OriginalSpeeds[1] * StandardMultiplier;
-                motorMode.motorModeSpeeds[2] = OriginalSpeeds[2] * FlankMultiplier;
+                this.MotorMode.motorModeSpeeds[0] = this.OriginalSpeeds[0] * SlowMultiplier;
+                this.MotorMode.motorModeSpeeds[1] = this.OriginalSpeeds[1] * StandardMultiplier;
+                this.MotorMode.motorModeSpeeds[2] = this.OriginalSpeeds[2] * FlankMultiplier;
 
                 // These will apply immediately
-                var subControl = cyclops.GetComponentInChildren<SubControl>();
-                CyclopsMotorMode.CyclopsMotorModes currentMode = subControl.cyclopsMotorMode.cyclopsMotorMode;
-                subControl.BaseForwardAccel = motorMode.motorModeSpeeds[(int)currentMode];
+                CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
+                this.SubControl.BaseForwardAccel = this.MotorMode.motorModeSpeeds[(int)currentMode];
 
-                LastKnownSpeedIndex = speedIndex;
+                ErrorMessage.AddMessage($"Speed rating is now at +{this.LastKnownSpeedBoosters} : {StandardMultiplier * 100:00}%");
 
-                ErrorMessage.AddMessage($"Speed rating is now at {(StandardMultiplier * 100):00}%");
-
-                if (speedIndex == SpeedIndexCount)
+                if (this.LastKnownSpeedBoosters == MaxSpeedBoosters)
                 {
                     ErrorMessage.AddMessage($"Maximum speed rating reached");
                 }
@@ -163,11 +183,17 @@
         /// </summary>
         /// <param name="cyclopsHelmHUD">The instance.</param>
         /// <param name="lastReservePower">The last reserve power.</param>
-        internal static void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, ref int lastReservePower)
+        internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, ref int lastReservePower)
         {
-            CurrentReservePower = GetTotalReservePower();
+            if (this.UpgradeManager == null)
+            {
+                ErrorMessage.AddMessage("UpdateHelmHUD: UpgradeManager is null");
+                return;
+            }
 
-            if (CurrentReservePower > 0f)
+            int currentReservePower = GetTotalReservePower();
+
+            if (currentReservePower > 0f)
             {
                 cyclopsHelmHUD.powerText.color = Color.cyan; // Distinct color for when reserve power is available
             }
@@ -176,97 +202,104 @@
                 cyclopsHelmHUD.powerText.color = Color.white; // Normal color
             }
 
-            if (lastReservePower != CurrentReservePower)
+            if (lastReservePower != currentReservePower)
             {
-                AvailablePower = CurrentReservePower + cyclopsHelmHUD.subRoot.powerRelay.GetPower();
+                float availablePower = currentReservePower + this.Cyclops.powerRelay.GetPower();
 
-                AvailablePowerRatio = AvailablePower / cyclopsHelmHUD.subRoot.powerRelay.GetMaxPower();
+                float availablePowerRatio = availablePower / this.Cyclops.powerRelay.GetMaxPower();
 
                 // Min'd with 999 since this textbox can only display 4 characeters
-                PowerPercentage = Mathf.Min(999, Mathf.CeilToInt(AvailablePowerRatio * 100f));
+                int powerPercentage = Mathf.Min(999, Mathf.CeilToInt(availablePowerRatio * 100f));
 
-                cyclopsHelmHUD.powerText.text = $"{PowerPercentage}%";
+                cyclopsHelmHUD.powerText.text = $"{powerPercentage}%";
 
-                lastReservePower = CurrentReservePower;
+                lastReservePower = currentReservePower;
             }
         }
 
         /// <summary>
         /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
         /// </summary>
-        /// <param name="__instance">The instance.</param>
-        internal static void RechargeCyclops(ref SubRoot __instance)
+        internal void RechargeCyclops()
         {
-            if (!UpgradeConsoleCache.HasChargingModules)
+            if (this.UpgradeManager == null)
+            {
+                ErrorMessage.AddMessage("RechargeCyclops: UpgradeManager is null");
+                return;
+            }
+
+            if (!this.UpgradeManager.HasChargingModules)
                 return; // No charging modules, early exit
 
-            PowerDeficit = __instance.powerRelay.GetMaxPower() - __instance.powerRelay.GetPower();
+            float powerDeficit = this.Cyclops.powerRelay.GetMaxPower() - this.Cyclops.powerRelay.GetPower();
 
-            SurplusPower = 0f;
-            LastBatteryToCharge = null;
+            float surplusPower = 0f;
+            Battery lastBatteryToCharge = null;
 
-            RenewablePowerAvailable = false;
+            bool renewablePowerAvailable = false;
 
-            if (UpgradeConsoleCache.HasSolarModules) // Handle solar power
+            if (this.UpgradeManager.HasSolarModules) // Handle solar power
             {
-                AvailableSolarEnergy = GetSolarChargeAmount(ref __instance);
+                float availableSolarEnergy = GetSolarChargeAmount();
 
-                if (UpgradeConsoleCache.SolarModuleCount > 0 && AvailableSolarEnergy > 0f)
+                if (this.UpgradeManager.SolarModuleCount > 0 && availableSolarEnergy > 0f)
                 {
-                    SurplusPower += ChargeFromStandardModule(ref __instance, UpgradeConsoleCache.SolarModuleCount * AvailableSolarEnergy, ref PowerDeficit);
-                    RenewablePowerAvailable = true;
+                    surplusPower += ChargeFromStandardModule(this.UpgradeManager.SolarModuleCount * availableSolarEnergy, ref powerDeficit);
+                    renewablePowerAvailable = true;
                 }
 
-                foreach (Battery battery in UpgradeConsoleCache.SolarMk2Batteries)
+                foreach (Battery battery in this.UpgradeManager.SolarMk2Batteries)
                 {
-                    SurplusPower += ChargeFromModuleMk2(ref __instance, battery, AvailableSolarEnergy, BatteryDrainRate, ref PowerDeficit);
-                    RenewablePowerAvailable |= battery.charge > 0f;
+                    surplusPower += ChargeFromModuleMk2(battery, availableSolarEnergy, BatteryDrainRate, ref powerDeficit);
+                    renewablePowerAvailable |= battery.charge > 0f;
 
                     if (battery.charge < battery.capacity)
-                        LastBatteryToCharge = battery;
+                        lastBatteryToCharge = battery;
                 }
             }
 
-            if (UpgradeConsoleCache.HasThermalModules) // Handle thermal power
+            if (this.UpgradeManager.HasThermalModules) // Handle thermal power
             {
-                AvailableThermalEnergy = GetThermalChargeAmount(ref __instance);
+                float availableThermalEnergy = GetThermalChargeAmount();
 
-                if (UpgradeConsoleCache.ThermalModuleCount > 0 && AvailableThermalEnergy > 0f)
+                if (this.UpgradeManager.ThermalModuleCount > 0 && availableThermalEnergy > 0f)
                 {
-                    SurplusPower += ChargeFromStandardModule(ref __instance, UpgradeConsoleCache.ThermalModuleCount * AvailableThermalEnergy, ref PowerDeficit);
-                    RenewablePowerAvailable = true;
+                    surplusPower += ChargeFromStandardModule(this.UpgradeManager.ThermalModuleCount * availableThermalEnergy, ref powerDeficit);
+                    renewablePowerAvailable = true;
                 }
 
-                foreach (Battery battery in UpgradeConsoleCache.ThermalMk2Batteries)
+                foreach (Battery battery in this.UpgradeManager.ThermalMk2Batteries)
                 {
-                    SurplusPower += ChargeFromModuleMk2(ref __instance, battery, AvailableThermalEnergy, BatteryDrainRate, ref PowerDeficit);
-                    RenewablePowerAvailable |= battery.charge > 0f;
+                    surplusPower += ChargeFromModuleMk2(battery, availableThermalEnergy, BatteryDrainRate, ref powerDeficit);
+                    renewablePowerAvailable |= battery.charge > 0f;
 
                     if (battery.charge < battery.capacity)
-                        LastBatteryToCharge = battery;
+                        lastBatteryToCharge = battery;
                 }
             }
 
-            CyclopsDoneCharging = PowerDeficit <= 0.001f;
+            bool cyclopsDoneCharging = powerDeficit <= 0.001f;
 
-            if (UpgradeConsoleCache.HasNuclearModules && // Handle nuclear power
-                !CyclopsDoneCharging && // Halt charging if Cyclops is on full charge
-                PowerDeficit > NuclearModuleConfig.MinimumEnergyDeficit && // User config for threshold to start charging
-                !RenewablePowerAvailable) // Only if there's no renewable power available
+            if (this.UpgradeManager.HasNuclearModules && // Handle nuclear power
+                !cyclopsDoneCharging && // Halt charging if Cyclops is on full charge
+                powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit && // User config for threshold to start charging
+                !renewablePowerAvailable) // Only if there's no renewable power available
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
-                foreach (NuclearModuleDetails module in UpgradeConsoleCache.NuclearModules)
+                foreach (NuclearModuleDetails module in this.UpgradeManager.NuclearModules)
                 {
-                    ChargeCyclopsFromBattery(ref __instance, module.NuclearBattery, NuclearDrainRate, ref PowerDeficit);
-                    HandleNuclearBatteryDepletion(module.ParentEquipment, module.SlotName, module.NuclearBattery);
+                    ChargeCyclopsFromBattery(module.NuclearBattery, NuclearDrainRate, ref powerDeficit);
+
+                    if (module.NuclearBattery.charge <= 0f)
+                        DepleteNuclearBattery(module.ParentEquipment, module.SlotName, module.NuclearBattery);
                 }
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
-            if (CyclopsDoneCharging && SurplusPower > 0f && LastBatteryToCharge != null)
+            if (cyclopsDoneCharging && surplusPower > 0f && lastBatteryToCharge != null)
             {
                 // Recycle surplus power back into the batteries that need it
-                LastBatteryToCharge.charge = Mathf.Min(LastBatteryToCharge.capacity, LastBatteryToCharge.charge + SurplusPower);
+                lastBatteryToCharge.charge = Mathf.Min(lastBatteryToCharge.capacity, lastBatteryToCharge.charge + surplusPower);
             }
         }
 
@@ -274,13 +307,13 @@
         /// Updates the console HUD using data from all equipment modules across all upgrade consoles.
         /// </summary>
         /// <param name="hudManager">The console HUD manager.</param>
-        internal static void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager hudManager)
+        internal void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager hudManager)
         {
-            CurrentReservePower = GetTotalReservePower();
+            int currentReservePower = GetTotalReservePower();
 
-            CurrentBatteryPower = hudManager.subRoot.powerRelay.GetPower();
+            float currentBatteryPower = this.Cyclops.powerRelay.GetPower();
 
-            if (CurrentReservePower > 0)
+            if (currentReservePower > 0)
             {
                 hudManager.energyCur.color = Color.cyan; // Distinct color for when reserve power is available
             }
@@ -289,50 +322,37 @@
                 hudManager.energyCur.color = Color.white; // Normal color
             }
 
-            TotalPowerUnits = Mathf.CeilToInt(CurrentBatteryPower + CurrentReservePower);
+            int TotalPowerUnits = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
 
             hudManager.energyCur.text = IntStringCache.GetStringForInt(TotalPowerUnits);
 
-            NuclearModuleConfig.SetCyclopsMaxPower(hudManager.subRoot.powerRelay.GetMaxPower());
+            NuclearModuleConfig.SetCyclopsMaxPower(this.Cyclops.powerRelay.GetMaxPower());
         }
 
         /// <summary>
         /// Gets the total available reserve power across all equipment upgrade modules.
         /// </summary>
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
-        private static int GetTotalReservePower()
+        private int GetTotalReservePower()
         {
             float availableReservePower = 0f;
 
-            foreach (Battery battery in UpgradeConsoleCache.ReserveBatteries)
+            foreach (Battery battery in this.UpgradeManager.ReserveBatteries)
                 availableReservePower += battery.charge;
 
             return Mathf.FloorToInt(availableReservePower);
         }
 
         /// <summary>
-        /// Gets the battery of the upgrade module in the specified slot.
-        /// </summary>
-        /// <param name="modules">The equipment modules.</param>
-        /// <param name="slotName">The slot name.</param>
-        /// <returns>The <see cref="Battery"/> component from the upgrade module.</returns>
-        internal static Battery GetBatteryInSlot(Equipment modules, string slotName)
-        {
-            // Get the battery component
-            return modules.GetItemInSlot(slotName).item.GetComponent<Battery>();
-        }
-
-        /// <summary>
         /// Charges the Cyclops using a standard charging module.
         /// </summary>
-        /// <param name="cyclops">The cyclops.</param>
         /// <param name="chargeAmount">The charge amount.</param>
         /// <param name="powerDeficit">The power deficit.</param>
         /// <returns>
         /// The amount of surplus power this cycle.
         /// This value can be <c>0f</c> if all charge was consumed.
         /// </returns>
-        private static float ChargeFromStandardModule(ref SubRoot cyclops, float chargeAmount, ref float powerDeficit)
+        private float ChargeFromStandardModule(float chargeAmount, ref float powerDeficit)
         {
             if (Mathf.Approximately(powerDeficit, 0f))
                 return chargeAmount; // Surplus power
@@ -340,7 +360,7 @@
             if (Mathf.Approximately(chargeAmount, 0f))
                 return 0f;
 
-            cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
+            this.Cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
 
             return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
@@ -349,7 +369,6 @@
         /// <summary>
         /// Charges the Cyclops using a Mk2 charging module.
         /// </summary>
-        /// <param name="cyclops">The cyclops.</param>
         /// <param name="batteryInSlot">The battery of the Mk2 charging module.</param>
         /// <param name="chargeAmount">The charge amount.</param>
         /// <param name="drainingRate">The battery power draining rate.</param>
@@ -358,29 +377,26 @@
         /// The amount of surplus power this cycle.
         /// This value can be <c>0f</c> if all charge was consumed or if the Mk2 module is running on reserver battery power.
         /// </returns>
-        private static float ChargeFromModuleMk2(ref SubRoot cyclops, Battery batteryInSlot, float chargeAmount, float batteryDrainRate, ref float powerDeficit)
+        private float ChargeFromModuleMk2(Battery batteryInSlot, float chargeAmount, float batteryDrainRate, ref float powerDeficit)
         {
             if (Mathf.Approximately(chargeAmount, 0f))
             {
-                ChargeCyclopsFromBattery(ref cyclops, batteryInSlot, batteryDrainRate, ref powerDeficit);
+                ChargeCyclopsFromBattery(batteryInSlot, batteryDrainRate, ref powerDeficit);
                 return 0f;
             }
             else
             {
-                return ChargeCyclopsAndBattery(cyclops, batteryInSlot, ref chargeAmount, ref powerDeficit);
+                return ChargeCyclopsAndBattery(batteryInSlot, ref chargeAmount, ref powerDeficit);
             }
         }
-
-        private static float ChargeAmt = 0;
 
         /// <summary>
         /// Charges the cyclops from the reserve battery of a non-standard charging module.
         /// </summary>
-        /// <param name="cyclops">The cyclops.</param>
         /// <param name="battery">The battery of the non-standard charging module.</param>
         /// <param name="drainingRate">The battery power draining rate.</param>
         /// <param name="powerDeficit">The power deficit.</param>
-        private static void ChargeCyclopsFromBattery(ref SubRoot cyclops, Battery battery, float drainingRate, ref float powerDeficit)
+        private void ChargeCyclopsFromBattery(Battery battery, float drainingRate, ref float powerDeficit)
         {
             if (Mathf.Approximately(powerDeficit, 0f)) // No power deficit left to charge
                 return; // Exit
@@ -389,28 +405,27 @@
                 return; // Skip this battery
 
             // Mathf.Min is to prevent accidentally taking too much power from the battery
-            ChargeAmt = Mathf.Min(powerDeficit, drainingRate);
+            float chargeAmt = Mathf.Min(powerDeficit, drainingRate);
 
-            if (battery.charge > ChargeAmt)
+            if (battery.charge > chargeAmt)
             {
-                battery.charge -= ChargeAmt;
+                battery.charge -= chargeAmt;
             }
             else // Battery about to be fully drained
             {
-                ChargeAmt = battery.charge; // Take what's left
+                chargeAmt = battery.charge; // Take what's left
                 battery.charge = 0f; // Set battery to empty
             }
 
-            powerDeficit -= ChargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
+            powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
 
-            cyclops.powerRelay.AddEnergy(ChargeAmt, out float amtStored);
+            this.Cyclops.powerRelay.AddEnergy(chargeAmt, out float amtStored);
         }
 
         /// <summary>
         /// Charges the cyclops and specified battery.
         /// This happens if a Mk2 charging module with a reserve battery is currently producing power.
         /// </summary>
-        /// <param name="cyclops">The cyclops.</param>
         /// <param name="battery">The battery from the module currently producing power.</param>
         /// <param name="chargeAmount">The charge amount.</param>
         /// <param name="powerDeficit">The power deficit.</param>
@@ -418,11 +433,11 @@
         /// The amount of surplus power this cycle.
         /// This value can be <c>0f</c> if all charge was consumed.
         /// </returns>
-        private static float ChargeCyclopsAndBattery(SubRoot cyclops, Battery battery, ref float chargeAmount, ref float powerDeficit)
+        private float ChargeCyclopsAndBattery(Battery battery, ref float chargeAmount, ref float powerDeficit)
         {
             chargeAmount *= Mk2ChargeRateModifier;
 
-            cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
+            this.Cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
 
             battery.charge = Mathf.Min(battery.capacity, battery.charge + chargeAmount);
@@ -436,41 +451,20 @@
         /// <param name="modules">The equipment modules.</param>
         /// <param name="slotName">Th slot name.</param>
         /// <param name="nuclearBattery">The nuclear battery that just ran out.</param>
-        private static void HandleNuclearBatteryDepletion(Equipment modules, string slotName, Battery nuclearBattery)
+        private void DepleteNuclearBattery(Equipment modules, string slotName, Battery nuclearBattery)
         {
-            if (nuclearBattery.charge > 0f)
-                return; // Still has charge, skip
-
             // Drained nuclear batteries are handled just like how the Nuclear Reactor handles depleated reactor rods
-
             InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
             Object.Destroy(inventoryItem.item.gameObject);
-            modules.AddItem(slotName, SpawnDepletedNuclearModule(), true);
+            modules.AddItem(slotName, CyclopsModule.SpawnCyclopsModule(CyclopsModule.DepletedNuclearModuleID), true);
             ErrorMessage.AddMessage("Nuclear Reactor Module depleted");
-        }
-
-        /// <summary>
-        /// Spawns the depleted nuclear module.
-        /// </summary>
-        /// <returns>Returns a new <see cref="InventoryItem"/> instance of the <see cref="DepletedNuclearModule"/>.</returns>
-        private static InventoryItem SpawnDepletedNuclearModule()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
-            GameObject gameObject = GameObject.Instantiate(prefab);
-
-            gameObject.GetComponent<PrefabIdentifier>().ClassId = DepletedNuclearModule.DepletedNameID;
-            gameObject.GetComponent<TechTag>().type = CyclopsModule.DepletedNuclearModuleID;
-
-            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
-            return new InventoryItem(pickupable);
         }
 
         /// <summary>
         /// Gets the amount of available energy provided by the currently available sunlight.
         /// </summary>
-        /// <param name="cyclops">The cyclops.</param>
         /// <returns>The currently available solar energy.</returns>
-        private static float GetSolarChargeAmount(ref SubRoot cyclops)
+        private float GetSolarChargeAmount()
         {
             // The code here mostly replicates what the UpdateSolarRecharge() method does from the SeaMoth class.
             // Consessions were made for the differences between the Seamoth and Cyclops upgrade modules.
@@ -482,15 +476,14 @@
 
             return SolarChargingFactor *
                    DayNightCycle.main.GetLocalLightScalar() *
-                   Mathf.Clamp01((MaxSolarDepth + cyclops.transform.position.y) / MaxSolarDepth); // Distance to surfuce
+                   Mathf.Clamp01((MaxSolarDepth + this.Cyclops.transform.position.y) / MaxSolarDepth); // Distance to surfuce
         }
 
         /// <summary>
         ///  Gets the amount of available energy provided by the current ambient heat.
         /// </summary>
-        /// <param name="cyclops">The cyclops.</param>
         /// <returns>The currently available thermal energy.</returns>
-        private static float GetThermalChargeAmount(ref SubRoot cyclops)
+        private float GetThermalChargeAmount()
         {
             // This code mostly replicates what the UpdateThermalReactorCharge() method does from the SubRoot class
 
@@ -499,7 +492,7 @@
 
             return ThermalChargingFactor *
                    Time.deltaTime *
-                   cyclops.thermalReactorCharge.Evaluate(WaterTemperatureSimulation.main.GetTemperature(cyclops.transform.position)); // Temperature
+                   this.Cyclops.thermalReactorCharge.Evaluate(WaterTemperatureSimulation.main.GetTemperature(this.Cyclops.transform.position)); // Temperature
         }
     }
 }

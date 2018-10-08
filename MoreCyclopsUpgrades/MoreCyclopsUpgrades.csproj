@@ -60,16 +60,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
+    <Compile Include="Caching\CyclopsManager.cs" />
     <Compile Include="Caching\NuclearModuleDetails.cs" />
     <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
-    <Compile Include="Caching\UpgradeConsoleCache.cs" />
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\AuxUpgradeConsole.cs" />
+    <Compile Include="PowerManager.cs" />
+    <Compile Include="UpgradeManager.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
@@ -78,7 +80,6 @@
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
-    <Compile Include="PowerManager.cs" />
     <Compile Include="SlotHelper.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />

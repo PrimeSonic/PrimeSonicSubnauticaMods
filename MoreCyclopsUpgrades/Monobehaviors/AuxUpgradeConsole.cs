@@ -6,6 +6,7 @@
     using ProtoBuf;
     using SMLHelper.V2.Utility;
     using UnityEngine;
+    using Caching;
 
     [ProtoContract]
     public class AuxUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
@@ -101,7 +102,10 @@
             Buildable.deconstructionAllowed = allEmpty;
         }
 
-        internal void CyclopsUpgradeChange() => ParentCyclops?.SetInstanceField("subModulesDirty", true);
+        internal void CyclopsUpgradeChange()
+        {
+            ParentCyclops?.SetInstanceField("subModulesDirty", true);
+        }
 
         //private void UpdateVisuals()
         //{
