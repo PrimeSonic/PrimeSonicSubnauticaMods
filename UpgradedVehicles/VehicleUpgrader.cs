@@ -161,12 +161,12 @@
                 return 1f;
 
             if (this.IsExosuit)
-                return 1.15f * speedBoosterCount;
+                return 1f + (1.15f * speedBoosterCount);
 
             if (this.IsSeamoth)
-                return 1.10f * speedBoosterCount;
+                return 1f + (1.10f * speedBoosterCount);
 
-            return 1f * speedBoosterCount;
+            return 1f + (1.125f * speedBoosterCount);
         }
 
         private float EfficiencyBonus(int powerModuleCount)
