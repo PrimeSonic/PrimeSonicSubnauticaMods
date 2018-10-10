@@ -28,7 +28,11 @@
             base.OnFinishedPatching += PostPatch;
         }
 
-        private void PostPatch() => CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.VehicleModule);
+        private void PostPatch()
+        {
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.VehicleModule);
+            CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Passive);
+        }
 
         protected override TechData GetBlueprintRecipe() => new TechData()
         {
