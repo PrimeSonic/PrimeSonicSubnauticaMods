@@ -100,8 +100,18 @@
         private bool IsExosuit { get; set; } = false;
         private float GeneralDamageReduction { get; set; } = 1f;
 
+        /// <summary>
+        /// Calculates the new maximum hit points based on the current depth index.
+        /// </summary>
+        /// <returns></returns>
         private float MaxHitPoints()
         {
+            //             Depth Index
+            //              0      1      2      3      4*     5*
+            //  ExoSuit    600    750    900
+            //  Seamoth++  200    280    360    440    520    600
+            //  Seamoth    200    300    400    500
+
             // Original BaseHP values from LiveMixin in asset.resources
 
             float bonusHpRatio = 0f;
@@ -122,6 +132,9 @@
             return baseHp * (1f + this.DepthIndex * bonusHpRatio);
         }
 
+        /// <summary>
+        /// Calculates the speed multiplier based on the number of speed modules and current depth index.
+        /// </summary>
         private float SpeedMultiplierBonus(float speedBoosterCount)
         {
             float speedRatio = 0f;
@@ -129,12 +142,38 @@
 
             if (this.IsExosuit)
             {
+                //                Depth Index
+                //  Speed Modules  0       1       2
+                //        0       100%    125%    150%
+                //        1       145%    170%    195%
+                //        2       190%    215%    240%
+                //        3       235%    260%    285%
+                //        4       280%    305%    330%
+                //        5       325%    350%    375%
+                //        6       370%    395%    420%
+                //        7       415%    440%    465%
+                //        8       460%    485%    510%
+                //        9       505%    530%    555%
+
                 extraSpeedRatio = 0.25f;
                 speedRatio = 0.45f;
             }
 
             if (this.IsSeamoth)
             {
+                //                  Depth Index
+                //  Speed Modules  0       1       2       3       4*      5*
+                //    0           100%    120%    140%    160%    180%    200%
+                //    1           135%    155%    175%    195%    215%    235%
+                //    2           170%    190%    210%    230%    250%    270%
+                //    3           205%    225%    245%    265%    285%    305%
+                //    4           240%    260%    280%    265%    320%    340%
+                //    5           275%    295%    315%    335%    355%    375%
+                //    6           310%    330%    350%    370%    390%    410%
+                //    7           345%    365%    385%    405%    425%    445%
+                //    8           380%    400%    420%    440%    460%    480%
+                //    9           415%    435%    455%    475%    495%    515%
+
                 extraSpeedRatio = 0.20f;
                 speedRatio = 0.35f;
             }
@@ -142,34 +181,65 @@
             return 1f + speedBoosterCount * speedRatio + this.DepthIndex * extraSpeedRatio;
         }
 
+        /// <summary>
+        /// Calculates the engine efficiency penalty based off the number of speed modules and the current depth index.
+        /// </summary>
         private float EfficiencyPentalty(float speedBoosterCount)
         {
-            float penaltyRatio = 1f;
+            //  Speed Modules
+            //    0    100%
+            //    1    210%
+            //    2    320%
+            //    3    430%
+            //    4    540%
+            //    5    650%
+            //    6    760%
+            //    7    870%
+            //    8    980%
+            //    9    1090%
 
-            if (this.IsExosuit)
-                penaltyRatio = 1.15f;
-
-            if (this.IsSeamoth)
-                penaltyRatio = 1.10f;
-
-            return 1f + (penaltyRatio * speedBoosterCount);
+            return 1f + (1.10f * speedBoosterCount);
         }
 
+        /// <summary>
+        /// Calculates the engine efficiency bonus based off the number of power modules and the current depth index.
+        /// </summary>
         private float EfficiencyBonus(float powerModuleCount)
         {
-            float extraBonusRatio = 0f;
+            //                Depth Index
+            //  Power Modules  0       1        2      3       4*      5*
+            //        0       100%    115%    130%    145%    160%    175%
+            //        1       200%    215%    230%    245%    260%    275%
+            //        2       300%    315%    330%    345%    360%    375%
+            //        3       400%    415%    430%    445%    460%    475%
+            //        4       500%    515%    530%    545%    560%    575%
+            //        5       600%    615%    630%    645%    660%    675%
+            //        6       700%    715%    730%    745%    760%    775%
+            //        7       800%    815%    830%    845%    860%    875%
+            //        8       900%    915%    930%    945%    960%    975%
+            //        9       1000%   1015%   1030%   1045%   1060%   1075%
 
-            if (this.IsExosuit)
-                extraBonusRatio = 0.15f;
-
-            if (this.IsSeamoth)
-                extraBonusRatio = 0.10f;
-
-            return 1f + powerModuleCount + this.DepthIndex * extraBonusRatio;
+            return 1f + powerModuleCount + this.DepthIndex * 0.15f;
         }
 
+        /// <summary>
+        /// Calculates the general damage reduction fraction based off the number of hull armor modules and the current depth index.
+        /// </summary>
         private float GeneralArmorFraction(float armorModuleCount)
         {
+            //               Depth Index
+            // Armor Modules  0      1      2      3      4*     5*
+            //      0        100%   95%    90%    85%    80%    75%
+            //      1        90%    85%    80%    75%    70%    65%
+            //      2        82%    77%    72%    67%    62%    57%
+            //      3        76%    71%    66%    61%    56%    51%
+            //      4        70%    65%    60%    55%    50%    45%
+            //      5        66%    61%    56%    51%    46%    41%
+            //      6        64%    59%    54%    49%    44%    39%
+            //      7        63%    58%    53%    48%    43%    38%
+            //      8        62%    57%    52%    47%    42%    37%
+            //      9        61%    56%    51%    46%    41%    36%
+
             float damageReduction = 1f;
 
             float reduction = 0.10f;
@@ -182,7 +252,26 @@
             return damageReduction - (0.05f * this.DepthIndex);
         }
 
-        private float ImpactArmorFraction(float armorModuleCount) => Mathf.Pow(0.5f, armorModuleCount + (this.DepthIndex * 0.75f));
+        /// <summary>
+        /// Calculates the impact damage reduction fraction based off the number of hull armor modules and the current depth index.
+        /// </summary>
+        private float ImpactArmorFraction(float armorModuleCount)
+        {
+            //        Depth Index
+            //  Armor Modules  0         1         2         3         4*        5*
+            //        0      100.00%   87.06%    75.79%    65.98%    57.43%    50.00%
+            //        1      50.00%    43.53%    37.89%    32.99%    28.72%    25.00%
+            //        2      25.00%    21.76%    18.95%    16.49%    14.36%    12.50%
+            //        3      12.50%    10.88%    09.47%    08.25%    07.18%    06.25%
+            //        4      06.25%    05.44%    04.74%    04.12%    03.59%    03.13%
+            //        5      03.13%    02.72%    02.37%    02.06%    01.79%    01.56%
+            //        6      01.56%    01.36%    01.18%    01.03%    00.90%    00.78%
+            //        7      00.78%    00.68%    00.59%    00.52%    00.45%    00.39%
+            //        8      00.39%    00.34%    00.30%    00.26%    00.22%    00.20%
+            //        9      00.20%    00.17%    00.15%    00.13%    00.11%    00.10%
+
+            return Mathf.Pow(0.5f, armorModuleCount + (this.DepthIndex * 0.2f));
+        }
 
         internal bool Initialize<T>(T vehicle) where T : Vehicle
         {
