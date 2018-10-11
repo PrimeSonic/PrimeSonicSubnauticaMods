@@ -1,6 +1,5 @@
 ﻿namespace UpgradedVehicles.Patchers
 {
-    using Common;
     using Harmony;
     using UnityEngine;
 

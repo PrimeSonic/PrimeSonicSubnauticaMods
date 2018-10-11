@@ -84,11 +84,6 @@
         private float BaseForwardForce = -1f;
         private float BaseOnGroundForceMultiplier = -1f;
 
-        // Original values from LiveMixin in asset.resources
-        private const float BaseHpSeamoth = 200f;
-        private const float BaseHpExosuit = 600f;
-
-
         public int InstanceID { get; private set; }
 
         private Vehicle ParentVehicle { get; set; } = null;
@@ -107,86 +102,87 @@
 
         private float MaxHitPoints()
         {
+            // Original BaseHP values from LiveMixin in asset.resources
+
+            float bonusHpRatio = 0f;
+            float baseHp = 100f;
+
             if (this.IsExosuit)
-                return BaseHpExosuit * (1f + this.DepthIndex * 0.25f);
+            {
+                bonusHpRatio = 0.25f;
+                baseHp = 600f;
+            }
 
             if (this.IsSeamoth)
             {
-                float hpBonus = HasModdedDepthModules ? 0.4f : 0.5f;
-                return BaseHpSeamoth * (1f + this.DepthIndex * hpBonus);
+                bonusHpRatio = HasModdedDepthModules ? 0.4f : 0.5f;
+                baseHp = 200f;
             }
 
-            return 100f;
+            return baseHp * (1f + this.DepthIndex * bonusHpRatio);
         }
 
-        private float BaseHitPoints
+        private float SpeedMultiplierBonus(float speedBoosterCount)
         {
-            get
+            float speedRatio = 0f;
+            float extraSpeedRatio = 0f;
+
+            if (this.IsExosuit)
             {
-                if (this.IsExosuit)
-                    return BaseHpExosuit;
-
-                if (this.IsSeamoth)
-                    return BaseHpSeamoth;
-
-                return 100f;
+                extraSpeedRatio = 0.25f;
+                speedRatio = 0.45f;
             }
-        }
-
-        private float SpeedBonus(int speedBoosterCount)
-        {
-            if (this.IsExosuit)
-                return speedBoosterCount * 0.40f;
 
             if (this.IsSeamoth)
-                return speedBoosterCount * 0.30f;
+            {
+                extraSpeedRatio = 0.20f;
+                speedRatio = 0.35f;
+            }
 
-            return 0.35f * speedBoosterCount;
+            return 1f + speedBoosterCount * speedRatio + this.DepthIndex * extraSpeedRatio;
         }
 
-        private float ExtraSpeedBonus()
+        private float EfficiencyPentalty(float speedBoosterCount)
         {
-            if (this.IsExosuit)
-                return this.DepthIndex * 0.25f;
-
-            if (this.IsSeamoth)
-                return this.DepthIndex * 0.20f;
-
-            return 0f;
-        }
-
-        private float EfficiencyPentalty(int speedBoosterCount)
-        {
-            if (speedBoosterCount == 0)
-                return 1f;
+            float penaltyRatio = 1f;
 
             if (this.IsExosuit)
-                return 1f + (1.15f * speedBoosterCount);
+                penaltyRatio = 1.15f;
 
             if (this.IsSeamoth)
-                return 1f + (1.10f * speedBoosterCount);
+                penaltyRatio = 1.10f;
 
-            return 1f + (1.125f * speedBoosterCount);
+            return 1f + (penaltyRatio * speedBoosterCount);
         }
 
-        private float EfficiencyBonus(int powerModuleCount)
+        private float EfficiencyBonus(float powerModuleCount)
         {
-            if (powerModuleCount == 0)
-                return 1f;
+            float extraBonusRatio = 0f;
 
-            return 1f + powerModuleCount;
-        }
-
-        private float ExtraEfficiencyBonus()
-        {
             if (this.IsExosuit)
-                return this.DepthIndex * 0.15f;
+                extraBonusRatio = 0.15f;
 
             if (this.IsSeamoth)
-                return this.DepthIndex * 0.10f;
+                extraBonusRatio = 0.10f;
 
-            return 0f;
+            return 1f + powerModuleCount + this.DepthIndex * extraBonusRatio;
         }
+
+        private float GeneralArmorFraction(float armorModuleCount)
+        {
+            float damageReduction = 1f;
+
+            float reduction = 0.10f;
+            while (armorModuleCount-- > 0f)
+            {
+                damageReduction -= reduction;
+                reduction = Mathf.Max(0.01f, reduction - 0.02f);
+            }
+
+            return damageReduction - (0.05f * this.DepthIndex);
+        }
+
+        private float ImpactArmorFraction(float armorModuleCount) => Mathf.Pow(0.5f, armorModuleCount + (this.DepthIndex * 0.75f));
 
         internal bool Initialize<T>(T vehicle) where T : Vehicle
         {
@@ -330,9 +326,9 @@
             ErrorMessage.AddMessage($"Vehicle durability is now {nextMaxHp}");
         }
 
-        private void UpdateSpeedRating(int speedBoosterCount)
+        private void UpdateSpeedRating(float speedBoosterCount)
         {
-            float speedMultiplier = 1f + SpeedBonus(speedBoosterCount) + ExtraSpeedBonus();
+            float speedMultiplier = SpeedMultiplierBonus(speedBoosterCount);
 
             this.ParentVehicle.forwardForce = speedMultiplier * BaseForwardForce;
             this.ParentVehicle.onGroundForceMultiplier = speedMultiplier * BaseOnGroundForceMultiplier;
@@ -342,11 +338,7 @@
 
         private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)
         {
-            float efficiencyBonus = EfficiencyBonus(powerModuleCount) + ExtraEfficiencyBonus();
-
-            float efficiencyPentalty = EfficiencyPentalty(speedBoosterCount);
-
-            float powerRating = efficiencyBonus / efficiencyPentalty;
+            float powerRating = EfficiencyBonus(powerModuleCount) / EfficiencyPentalty(speedBoosterCount);
 
             this.ParentVehicle.SetPrivateField("enginePowerRating", powerRating);
 
@@ -355,21 +347,11 @@
 
         private void UpdateArmorRating(int armorModuleCount)
         {
-            this.GeneralDamageReduction = 1f - (0.05f * this.DepthIndex);
+            this.GeneralDamageReduction = GeneralArmorFraction(armorModuleCount);
 
-            this.DmgOnImpact.mirroredSelfDamageFraction = Mathf.Pow(0.5f, armorModuleCount + (this.DepthIndex * 0.75f));
-
-            float reduction = 0.10f;
-            while (armorModuleCount-- > 0)
-            {
-                this.GeneralDamageReduction -= Mathf.Max(0.01f, reduction);
-                reduction -= 0.02f;
-            }
+            this.DmgOnImpact.mirroredSelfDamageFraction = ImpactArmorFraction(armorModuleCount);
 
             ErrorMessage.AddMessage($"Armor rating is now {(1f - this.DmgOnImpact.mirroredSelfDamageFraction) * 100f + (1f - this.GeneralDamageReduction) * 100f:00}");
-
-            //ErrorMessage.AddMessage($"Impact damage reduced by {(1f - this.DmgOnImpact.mirroredSelfDamageFraction) * 100f:00}%");
-            //ErrorMessage.AddMessage($"General damage reduced by {(1f - this.GeneralDamageReduction) * 100f:00}%");
         }
 
         internal float ReduceIncomingDamage(float damage) => damage * this.GeneralDamageReduction;
