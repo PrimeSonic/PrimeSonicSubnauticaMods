@@ -6,11 +6,11 @@
 
     internal class VehicleUpgrader
     {
-        internal static TechType SeamothHullModule4 { get; private set; } = TechType.UnusedOld;
-        internal static TechType SeamothHullModule5 { get; private set; } = TechType.UnusedOld;
-        internal static bool HasModdedDepthModules { get; private set; } = false;
+        private static TechType SeamothHullModule4 = TechType.UnusedOld;
+        private static TechType SeamothHullModule5 = TechType.UnusedOld;
+        private static bool HasModdedDepthModules = false;
 
-        internal static readonly HashSet<TechType> CommonUpgradeModules = new HashSet<TechType>()
+        private static readonly HashSet<TechType> CommonUpgradeModules = new HashSet<TechType>()
         {
             TechType.ExoHullModule2,
             TechType.ExoHullModule1,
@@ -86,18 +86,18 @@
 
         public int InstanceID { get; private set; }
 
-        private Vehicle ParentVehicle { get; set; } = null;
-        private Equipment UpgradeModules { get; set; } = null;
+        private Vehicle ParentVehicle = null;
+        private Equipment UpgradeModules = null;
 
         private DealDamageOnImpact _dmgOnImpact;
-        private DealDamageOnImpact DmgOnImpact => _dmgOnImpact ?? (_dmgOnImpact = this.ParentVehicle.GetComponent<DealDamageOnImpact>());
+        private DealDamageOnImpact DmgOnImpact => _dmgOnImpact ?? (_dmgOnImpact = ParentVehicle.GetComponent<DealDamageOnImpact>());
 
         private LiveMixin _lifeMix;
-        private LiveMixin LifeMix => _lifeMix ?? (_lifeMix = this.ParentVehicle.GetComponent<LiveMixin>());
+        private LiveMixin LifeMix => _lifeMix ?? (_lifeMix = ParentVehicle.GetComponent<LiveMixin>());
 
-        private int DepthIndex { get; set; } = -1;
-        private bool IsSeamoth { get; set; } = false;
-        private bool IsExosuit { get; set; } = false;
+        private int DepthIndex = -1;
+        private bool IsSeamoth = false;
+        private bool IsExosuit = false;
         private float GeneralDamageReduction { get; set; } = 1f;
 
         /// <summary>
@@ -117,19 +117,19 @@
             float bonusHpRatio = 0f;
             float baseHp = 100f;
 
-            if (this.IsExosuit)
+            if (IsExosuit)
             {
                 bonusHpRatio = 0.25f;
                 baseHp = 600f;
             }
 
-            if (this.IsSeamoth)
+            if (IsSeamoth)
             {
                 bonusHpRatio = HasModdedDepthModules ? 0.4f : 0.5f;
                 baseHp = 200f;
             }
 
-            return baseHp * (1f + this.DepthIndex * bonusHpRatio);
+            return baseHp * (1f + DepthIndex * bonusHpRatio);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@
             float speedRatio = 0f;
             float extraSpeedRatio = 0f;
 
-            if (this.IsExosuit)
+            if (IsExosuit)
             {
                 //                Depth Index
                 //  Speed Modules  0       1       2
@@ -159,7 +159,7 @@
                 speedRatio = 0.45f;
             }
 
-            if (this.IsSeamoth)
+            if (IsSeamoth)
             {
                 //                  Depth Index
                 //  Speed Modules  0       1       2       3       4*      5*
@@ -178,7 +178,7 @@
                 speedRatio = 0.35f;
             }
 
-            return 1f + speedBoosterCount * speedRatio + this.DepthIndex * extraSpeedRatio;
+            return 1f + speedBoosterCount * speedRatio + DepthIndex * extraSpeedRatio;
         }
 
         /// <summary>
@@ -219,7 +219,7 @@
             //        8       900%    915%    930%    945%    960%    975%
             //        9       1000%   1015%   1030%   1045%   1060%   1075%
 
-            return 1f + powerModuleCount + this.DepthIndex * 0.15f;
+            return 1f + powerModuleCount + DepthIndex * 0.15f;
         }
 
         /// <summary>
@@ -249,7 +249,7 @@
                 reduction = Mathf.Max(0.01f, reduction - 0.02f);
             }
 
-            return damageReduction - (0.05f * this.DepthIndex);
+            return damageReduction - (0.05f * DepthIndex);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@
         /// </summary>
         private float ImpactArmorFraction(float armorModuleCount)
         {
-            //        Depth Index
+            //                Depth Index
             //  Armor Modules  0         1         2         3         4*        5*
             //        0      100.00%   87.06%    75.79%    65.98%    57.43%    50.00%
             //        1      50.00%    43.53%    37.89%    32.99%    28.72%    25.00%
@@ -270,7 +270,7 @@
             //        8      00.39%    00.34%    00.30%    00.26%    00.22%    00.20%
             //        9      00.20%    00.17%    00.15%    00.13%    00.11%    00.10%
 
-            return Mathf.Pow(0.5f, armorModuleCount + (this.DepthIndex * 0.2f));
+            return Mathf.Pow(0.5f, armorModuleCount + (DepthIndex * 0.2f));
         }
 
         internal bool Initialize<T>(T vehicle) where T : Vehicle
@@ -282,10 +282,10 @@
             }
 
             this.InstanceID = vehicle.GetInstanceID();
-            this.ParentVehicle = vehicle;
+            ParentVehicle = vehicle;
 
-            this.IsSeamoth = vehicle is SeaMoth;
-            this.IsExosuit = vehicle is Exosuit;
+            IsSeamoth = vehicle is SeaMoth;
+            IsExosuit = vehicle is Exosuit;
 
             BaseForwardForce = vehicle.forwardForce;
             BaseOnGroundForceMultiplier = vehicle.onGroundForceMultiplier;
@@ -296,7 +296,7 @@
                 return false;
             }
 
-            this.UpgradeModules = vehicle.modules;
+            UpgradeModules = vehicle.modules;
 
             if (this.DmgOnImpact == null)
             {
@@ -315,32 +315,32 @@
 
         private int CalculateDepthModuleIndex()
         {
-            if (this.IsExosuit)
+            if (IsExosuit)
             {
-                if (this.UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
+                if (UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
                     return 2;
 
-                if (this.UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
+                if (UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
                     return 1;
             }
-            else if (this.IsSeamoth)
+            else if (IsSeamoth)
             {
                 if (HasModdedDepthModules)
                 {
-                    if (this.UpgradeModules.GetCount(SeamothHullModule5) > 0)
+                    if (UpgradeModules.GetCount(SeamothHullModule5) > 0)
                         return 5;
 
-                    if (this.UpgradeModules.GetCount(SeamothHullModule4) > 0)
+                    if (UpgradeModules.GetCount(SeamothHullModule4) > 0)
                         return 4;
                 }
 
-                if (this.UpgradeModules.GetCount(TechType.VehicleHullModule3) > 0)
+                if (UpgradeModules.GetCount(TechType.VehicleHullModule3) > 0)
                     return 3;
 
-                if (this.UpgradeModules.GetCount(TechType.VehicleHullModule2) > 0)
+                if (UpgradeModules.GetCount(TechType.VehicleHullModule2) > 0)
                     return 2;
 
-                if (this.UpgradeModules.GetCount(TechType.VehicleHullModule1) > 0)
+                if (UpgradeModules.GetCount(TechType.VehicleHullModule1) > 0)
                     return 1;
             }
 
@@ -357,12 +357,12 @@
 
             int nextDepthIndex = CalculateDepthModuleIndex();
 
-            bool updateHp = this.DepthIndex != nextDepthIndex;
+            bool updateHp = DepthIndex != nextDepthIndex;
             bool updateArmor = updateHp || upgradeModule == TechType.VehicleArmorPlating;
             bool updateSpeed = updateHp || upgradeModule == SpeedBooster.SpeedBoosterTechType;
             bool updateEfficiency = updateHp || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
 
-            this.DepthIndex = nextDepthIndex;
+            DepthIndex = nextDepthIndex;
 
             if (updateHp) // Hit Points
             {
@@ -371,15 +371,15 @@
 
             if (updateArmor) // Armor
             {
-                int armorModuleCount = this.UpgradeModules.GetCount(TechType.VehicleArmorPlating);
+                int armorModuleCount = UpgradeModules.GetCount(TechType.VehicleArmorPlating);
 
                 UpdateArmorRating(armorModuleCount);
             }
 
             if (updateEfficiency) // Efficiency
             {
-                int speedBoosterCount = this.UpgradeModules.GetCount(SpeedBooster.SpeedBoosterTechType);
-                int powerModuleCount = this.UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
+                int speedBoosterCount = UpgradeModules.GetCount(SpeedBooster.SpeedBoosterTechType);
+                int powerModuleCount = UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
 
                 UpdatePowerRating(speedBoosterCount, powerModuleCount);
 
@@ -419,8 +419,8 @@
         {
             float speedMultiplier = SpeedMultiplierBonus(speedBoosterCount);
 
-            this.ParentVehicle.forwardForce = speedMultiplier * BaseForwardForce;
-            this.ParentVehicle.onGroundForceMultiplier = speedMultiplier * BaseOnGroundForceMultiplier;
+            ParentVehicle.forwardForce = speedMultiplier * BaseForwardForce;
+            ParentVehicle.onGroundForceMultiplier = speedMultiplier * BaseOnGroundForceMultiplier;
 
             ErrorMessage.AddMessage($"Now running at {speedMultiplier * 100f:00}% speed");
         }
@@ -429,7 +429,7 @@
         {
             float powerRating = EfficiencyBonus(powerModuleCount) / EfficiencyPentalty(speedBoosterCount);
 
-            this.ParentVehicle.SetPrivateField("enginePowerRating", powerRating);
+            ParentVehicle.SetPrivateField("enginePowerRating", powerRating);
 
             ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
         }
