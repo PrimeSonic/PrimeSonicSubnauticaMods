@@ -128,7 +128,8 @@
 
             ModCraftTreeTab seamothAbilityTab = seamothTab.AddTabNode("SeamothAbilityModules", "Ability Modules", SpriteManager.Get(TechType.SeamothElectricalDefense));
             seamothAbilityTab.AddCraftingNode(TechType.SeamothElectricalDefense,
-                                              TechType.SeamothSonarModule);
+                                              TechType.SeamothSonarModule,
+                                              TechType.SeamothTorpedoModule);
             seamothTab.AddCraftingNode(TechType.SeamothSolarCharge);
             ModdedItems.AddModdedModules(seamothAbilityTab);
             ModdedItems.AddModdedModules(seamothTab);
