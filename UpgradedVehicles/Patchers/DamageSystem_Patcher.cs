@@ -21,7 +21,7 @@
                     return;
                 }
 
-                __result = vehicleUpgrader.ReduceIncomingDamage(__result);
+                __result = vehicleUpgrader.GeneralDamageReduction * __result;
             }
         }
     }

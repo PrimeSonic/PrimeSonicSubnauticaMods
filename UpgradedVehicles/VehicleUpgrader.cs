@@ -54,10 +54,7 @@
 
         private static VehicleUpgrader CreateNewUpgrader<T>(T vehicle) where T : Vehicle
         {
-            var upgrader = new VehicleUpgrader
-            {
-                InstanceID = vehicle.GetInstanceID()
-            };
+            var upgrader = new VehicleUpgrader();
 
             if (upgrader.Initialize(vehicle))
             {
@@ -107,7 +104,7 @@
         private int DepthIndex = -1;
         private bool IsSeamoth = false;
         private bool IsExosuit = false;
-        private float GeneralDamageReduction { get; set; } = 1f;
+        internal float GeneralDamageReduction { get; private set; } = 1f;
 
         private static float _seamothBonusSpeedMultiplier = 0.15f;
         private static float _exosuitBonusSpeedMultiplier = 0.20f;
@@ -431,6 +428,5 @@
             ErrorMessage.AddMessage($"Armor rating is now {(1f - this.DmgOnImpact.mirroredSelfDamageFraction) * 100f + (1f - this.GeneralDamageReduction) * 100f:00}");
         }
 
-        internal float ReduceIncomingDamage(float damage) => damage * this.GeneralDamageReduction;
     }
 }

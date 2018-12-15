@@ -7,14 +7,6 @@
     using Common;
     using Common.EasyMarkup;
 
-    internal enum BonusSpeedStyles : int
-    {
-        Disabled = 0,
-        Slower = 1,
-        Normal = 2,
-        Faster = 3
-    }
-
     internal class ConfigSaveData : EmPropertyCollection
     {
         internal static readonly string[] SpeedSettingLabels = new[]

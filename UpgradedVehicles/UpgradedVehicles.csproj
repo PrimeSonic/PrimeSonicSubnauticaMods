@@ -57,6 +57,7 @@
     <Compile Include="Patchers\SeaMoth_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
+    <Compile Include="SaveData\BonusSpeedStyles.cs" />
     <Compile Include="SaveData\ConfigSaveData.cs" />
     <Compile Include="SaveData\UpgradeOptions.cs" />
     <Compile Include="VehicleUpgrader.cs" />

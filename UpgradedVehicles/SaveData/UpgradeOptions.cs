@@ -23,7 +23,7 @@
                     case BonusSpeedStyles.Faster:
                         return 0.25f;
                     default: // Error
-                        return 0.20f;
+                        return 0.125f;
                 }
             }
         }
@@ -41,7 +41,7 @@
                     case BonusSpeedStyles.Normal:
                         return 0.20f;
                     case BonusSpeedStyles.Faster:
-                        return 0.25f;
+                        return 0.30f;
                     default: // Error
                         return 0.15f;
                 }
