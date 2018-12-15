@@ -83,6 +83,7 @@
             }
 
             VehicleUpgrader.SetBonusSpeedMultipliers(this.SeamothBonusSpeedMultiplier, this.ExosuitBonusSpeedMultiplier);
+            SaveData.Save();
         }
     }
 }

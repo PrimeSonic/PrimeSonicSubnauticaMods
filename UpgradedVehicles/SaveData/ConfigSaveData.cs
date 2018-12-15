@@ -21,7 +21,8 @@
         internal const string SeamothBonusSpeedID = "SeamothBonusSpeed";
         internal const string ExosuitBonusSpeedID = "ExosuitBonusSpeed";
 
-        private const string ConfigFile = "./QMods/UpgradedVehicles/" + ConfigKey + ".txt";
+        private const string ConfigDirectory = "./QMods/UpgradedVehicles";
+        private const string ConfigFile = ConfigDirectory + "/" + ConfigKey + ".txt";
 
         internal bool ValidDataRead = true;
 
@@ -36,8 +37,6 @@
             get => EmExosuitBonus.HasValue ? EmExosuitBonus.Value : BonusSpeedStyles.Normal;
             set => EmExosuitBonus.Value = value;
         }
-
-
 
         internal int SeamothBonusSpeedIndex
         {
@@ -108,16 +107,16 @@
         {
             try
             {
-                LoadFromFile();
+                Load();
             }
             catch (Exception ex)
             {
                 QuickLogger.Message($"Error loading {ConfigKey}: " + ex.ToString());
-                WriteConfigFile();
+                Save();
             }
         }
 
-        private void WriteConfigFile()
+        public void Save()
         {
             File.WriteAllLines(ConfigFile, new[]
             {
@@ -131,12 +130,12 @@
             Encoding.UTF8);
         }
 
-        private void LoadFromFile()
+        private void Load()
         {
             if (!File.Exists(ConfigFile))
             {
                 QuickLogger.Message($"Config file not found. Writing default file.");
-                WriteConfigFile();
+                Save();
                 return;
             }
 
@@ -147,8 +146,7 @@
             if (!readCorrectly || !ValidDataRead)
             {
                 QuickLogger.Message($"Config file contained errors. Writing default file.");
-                WriteConfigFile();
-                return;
+                Save();
             }
         }
     }
