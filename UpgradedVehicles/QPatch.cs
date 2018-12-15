@@ -10,6 +10,9 @@
 
     public class QPatch
     {
+        private static UpgradeOptions configOptions;
+        private static Craftable speedModule;
+
         public static void Patch()
         {
             try
@@ -33,7 +36,7 @@
 
         private static void HandleConfigOptions()
         {
-            var configOptions = new UpgradeOptions();
+            configOptions = new UpgradeOptions();
             configOptions.Initialize();
 
             VehicleUpgrader.SetBonusSpeedMultipliers(configOptions.SeamothBonusSpeedMultiplier, configOptions.ExosuitBonusSpeedMultiplier);
@@ -41,7 +44,7 @@
 
         private static void HandleSpeedBooster()
         {
-            Craftable speedModule = SpeedBooster.GetSpeedBoosterCraftable();
+            speedModule = SpeedBooster.GetSpeedBoosterCraftable();
 
             VehicleUpgrader.SetSpeedBooster(speedModule);
         }
