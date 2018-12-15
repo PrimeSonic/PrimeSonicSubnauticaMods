@@ -34,13 +34,13 @@
         private readonly EmYesNo EmConserve;
         private readonly EmProperty<float> EmDeficit;
 
-        private static ICollection<EmProperty> definitions = new List<EmProperty>()
+        private static ICollection<EmProperty> ConfigDefinitions => new List<EmProperty>()
         {
             new EmYesNo(EmConserveKey, false){ ForceWrite = true },
             new EmProperty<float>(EmDeficitKey, 95f)
         };
 
-        public EmNuclearConfig(float minimumPercent, float maximumPercent, float defaultPercent) : base(ConfigKey, definitions)
+        public EmNuclearConfig(float minimumPercent, float maximumPercent, float defaultPercent) : base(ConfigKey, ConfigDefinitions)
         {
             EmConserve = (EmYesNo)Properties[EmConserveKey];
             EmDeficit = (EmProperty<float>)Properties[EmDeficitKey];

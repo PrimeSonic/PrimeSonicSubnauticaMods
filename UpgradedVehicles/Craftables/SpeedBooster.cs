@@ -8,9 +8,16 @@
 
     internal class SpeedBooster : Craftable
     {
-        internal static SpeedBooster Main { get; } = new SpeedBooster();
+        internal static Craftable GetSpeedBoosterCraftable()
+        {
+            Singleton.Patch();
 
-        internal static TechType SpeedBoosterTechType => Main.TechType;
+            return Singleton;
+        }
+
+        internal static TechType SpeedBoosterTechType => Singleton.TechType;
+
+        private static SpeedBooster Singleton { get; } = new SpeedBooster();
 
         public override CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
         public override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
