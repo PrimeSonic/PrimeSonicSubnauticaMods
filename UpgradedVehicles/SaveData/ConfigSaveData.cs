@@ -38,18 +38,6 @@
             set => EmExosuitBonus.Value = value;
         }
 
-        internal int SeamothBonusSpeedIndex
-        {
-            get => (int)this.SeamothBonusSpeedSetting;
-            set => this.SeamothBonusSpeedSetting = (BonusSpeedStyles)value;
-        }
-
-        internal int ExosuitBonusSpeedIndex
-        {
-            get => (int)this.ExosuitBonusSpeedSetting;
-            set => this.ExosuitBonusSpeedSetting = (BonusSpeedStyles)value;
-        }
-
         private readonly EmProperty<BonusSpeedStyles> EmSeamothBonus;
         private readonly EmProperty<BonusSpeedStyles> EmExosuitBonus;
 

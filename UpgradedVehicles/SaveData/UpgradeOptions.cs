@@ -48,7 +48,19 @@
             }
         }
 
-        public UpgradeOptions() : base("Upgraded Vehicles Settings")
+        internal int SeamothBonusSpeedIndex
+        {
+            get => (int)SaveData.SeamothBonusSpeedSetting;
+            set => SaveData.SeamothBonusSpeedSetting = (BonusSpeedStyles)value;
+        }
+
+        internal int ExosuitBonusSpeedIndex
+        {
+            get => (int)SaveData.ExosuitBonusSpeedSetting;
+            set => SaveData.ExosuitBonusSpeedSetting = (BonusSpeedStyles)value;
+        }
+
+        public UpgradeOptions() : base("Upgraded Vehicles Options")
         {
             ChoiceChanged += OnBonusSpeedStyleChanged;
         }
@@ -62,8 +74,8 @@
 
         public override void BuildModOptions()
         {
-            AddChoiceOption(ConfigSaveData.SeamothBonusSpeedID, "Seamoth Bonus Speed", ConfigSaveData.SpeedSettingLabels, SaveData.SeamothBonusSpeedIndex);
-            AddChoiceOption(ConfigSaveData.ExosuitBonusSpeedID, "Prawn Suit Bonus Speed", ConfigSaveData.SpeedSettingLabels, SaveData.ExosuitBonusSpeedIndex);
+            AddChoiceOption(ConfigSaveData.SeamothBonusSpeedID, "Seamoth Bonus Speed", ConfigSaveData.SpeedSettingLabels, SeamothBonusSpeedIndex);
+            AddChoiceOption(ConfigSaveData.ExosuitBonusSpeedID, "Prawn Suit Bonus Speed", ConfigSaveData.SpeedSettingLabels, ExosuitBonusSpeedIndex);
         }
 
         private void OnBonusSpeedStyleChanged(object sender, ChoiceChangedEventArgs args)
