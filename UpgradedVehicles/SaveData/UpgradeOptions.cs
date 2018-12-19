@@ -83,11 +83,11 @@
             switch (args.Id)
             {
                 case ConfigSaveData.SeamothBonusSpeedID:
-                    SaveData.SeamothBonusSpeedIndex = args.Index;
+                    SeamothBonusSpeedIndex = args.Index;
                     break;
 
                 case ConfigSaveData.ExosuitBonusSpeedID:
-                    SaveData.ExosuitBonusSpeedIndex = args.Index;
+                    ExosuitBonusSpeedIndex = args.Index;
                     break;
 
                 default:
