@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
+    using SMLHelper.V2.Assets;
     using UnityEngine;
 
     internal class VehicleUpgrader
@@ -23,7 +24,7 @@
             // Mk4 and Mk5 Seamoth depth modules optionally added durting patching
         };
 
-        internal static void SetSpeedBooster(SpeedBooster speedModule)
+        internal static void SetSpeedBooster(Craftable speedModule)
         {
             if (!speedModule.IsPatched)
             {
@@ -36,19 +37,24 @@
 
         internal static void SetModdedDepthModules(TechType seamothDepth4, TechType seamothDepth5)
         {
+            QuickLogger.Message("Additional Seamoth Depth Modules from MoreSeamothUpgrades registered");
+
             CommonUpgradeModules.Add(SeamothHullModule4 = seamothDepth4);
             CommonUpgradeModules.Add(SeamothHullModule5 = seamothDepth5);
             HasModdedDepthModules = true;
+        }
+
+        internal static void SetBonusSpeedMultipliers(float seamothMultiplier, float exosuitMultiplier)
+        {
+            _seamothBonusSpeedMultiplier = seamothMultiplier;
+            _exosuitBonusSpeedMultiplier = exosuitMultiplier;
         }
 
         private static List<VehicleUpgrader> Upgraders = new List<VehicleUpgrader>();
 
         private static VehicleUpgrader CreateNewUpgrader<T>(T vehicle) where T : Vehicle
         {
-            var upgrader = new VehicleUpgrader
-            {
-                InstanceID = vehicle.GetInstanceID()
-            };
+            var upgrader = new VehicleUpgrader();
 
             if (upgrader.Initialize(vehicle))
             {
@@ -98,7 +104,10 @@
         private int DepthIndex = -1;
         private bool IsSeamoth = false;
         private bool IsExosuit = false;
-        private float GeneralDamageReduction { get; set; } = 1f;
+        internal float GeneralDamageReduction { get; private set; } = 1f;
+
+        private static float _seamothBonusSpeedMultiplier = 0.15f;
+        private static float _exosuitBonusSpeedMultiplier = 0.20f;
 
         /// <summary>
         /// Calculates the new maximum hit points based on the current depth index.
@@ -137,48 +146,24 @@
         /// </summary>
         private float SpeedMultiplierBonus(float speedBoosterCount)
         {
-            float speedRatio = 0f;
-            float extraSpeedRatio = 0f;
+            float speedBoosterRatio = 0f;
+            float bonusSpeedRatio = 0f;
 
             if (IsExosuit)
             {
-                //                Depth Index
-                //  Speed Modules  0       1       2
-                //        0       100%    125%    150%
-                //        1       145%    170%    195%
-                //        2       190%    215%    240%
-                //        3       235%    260%    285%
-                //        4       280%    305%    330%
-                //        5       325%    350%    375%
-                //        6       370%    395%    420%
-                //        7       415%    440%    465%
-                //        8       460%    485%    510%
-                //        9       505%    530%    555%
-
-                extraSpeedRatio = 0.25f;
-                speedRatio = 0.45f;
+                bonusSpeedRatio = _exosuitBonusSpeedMultiplier;
+                speedBoosterRatio = 0.45f;
             }
 
             if (IsSeamoth)
             {
-                //                  Depth Index
-                //  Speed Modules  0       1       2       3       4*      5*
-                //    0           100%    120%    140%    160%    180%    200%
-                //    1           135%    155%    175%    195%    215%    235%
-                //    2           170%    190%    210%    230%    250%    270%
-                //    3           205%    225%    245%    265%    285%    305%
-                //    4           240%    260%    280%    265%    320%    340%
-                //    5           275%    295%    315%    335%    355%    375%
-                //    6           310%    330%    350%    370%    390%    410%
-                //    7           345%    365%    385%    405%    425%    445%
-                //    8           380%    400%    420%    440%    460%    480%
-                //    9           415%    435%    455%    475%    495%    515%
-
-                extraSpeedRatio = 0.20f;
-                speedRatio = 0.35f;
+                bonusSpeedRatio = _seamothBonusSpeedMultiplier;
+                speedBoosterRatio = 0.35f;
             }
 
-            return 1f + speedBoosterCount * speedRatio + DepthIndex * extraSpeedRatio;
+            return 1f + // Base 100%
+                   speedBoosterCount * speedBoosterRatio + // Bonus from Speed Boosters
+                   DepthIndex * bonusSpeedRatio; // Bonus from Depth Modules
         }
 
         /// <summary>
@@ -443,6 +428,5 @@
             ErrorMessage.AddMessage($"Armor rating is now {(1f - this.DmgOnImpact.mirroredSelfDamageFraction) * 100f + (1f - this.GeneralDamageReduction) * 100f:00}");
         }
 
-        internal float ReduceIncomingDamage(float damage) => damage * this.GeneralDamageReduction;
     }
 }
