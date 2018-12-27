@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="DeepLithiumBattery.cs" />
     <Compile Include="DeepLithiumPowerCell.cs" />
+    <Compile Include="Patchers\Charger_Patchers.cs" />
+    <Compile Include="Patchers\EnergyMixin_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
   </ItemGroup>

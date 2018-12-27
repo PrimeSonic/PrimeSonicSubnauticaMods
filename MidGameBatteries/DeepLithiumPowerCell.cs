@@ -6,6 +6,8 @@
 
     internal class DeepLithiumPowerCell : DeepLithiumBattery
     {
+        internal static TechType PowerCellID { get; private set; }
+
         private const string ClassIDString = "DeepLithiumPowerCell";
         private readonly TechType deepLithiumBattery;
         private readonly int BatteriesRequired = 2;
@@ -16,6 +18,7 @@
                    description: "A stronger power cell created from rare materials.")
         {
             deepLithiumBattery = lithiumBattery.TechType;
+            OnFinishedPatching += SetStaticTechType;
         }
 
         public override GameObject GetGameObject()
@@ -42,5 +45,7 @@
                 }
             };
         }
+
+        private void SetStaticTechType() => PowerCellID = this.TechType;
     }
 }

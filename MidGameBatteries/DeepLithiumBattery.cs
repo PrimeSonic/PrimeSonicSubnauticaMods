@@ -7,6 +7,8 @@
 
     internal class DeepLithiumBattery : Craftable
     {
+        internal static TechType BatteryID { get; private set; }
+
         private const string ClassIDString = "DeepLithiumBattery";
         protected const float BatteryCapacity = 250f;
 
@@ -15,9 +17,10 @@
                    friendlyName: "Deep Lithium Battery",
                    description: "A stronger battery created from rare materials.")
         {
+            OnFinishedPatching += SetStaticTechType;
         }
 
-        protected DeepLithiumBattery(string classId, string friendlyName, string description) 
+        protected DeepLithiumBattery(string classId, string friendlyName, string description)
             : base(classId, friendlyName, description)
         {
         }
@@ -34,7 +37,7 @@
             GameObject prefab = CraftData.GetPrefabForTechType(TechType.LithiumIonBattery);
             var obj = GameObject.Instantiate(prefab);
 
-            var battery = obj.GetComponent<Battery>();
+            Battery battery = obj.GetComponent<Battery>();
             battery._capacity = BatteryCapacity;
             battery.name = ClassIDString;
 
@@ -54,5 +57,7 @@
                 }
             };
         }
+
+        private void SetStaticTechType() => BatteryID = this.TechType;
     }
 }

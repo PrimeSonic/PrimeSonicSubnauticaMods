@@ -1,7 +1,9 @@
 ﻿namespace MidGameBatteries
 {
     using System;
+    using System.Reflection;
     using Common;
+    using Harmony;
 
     public static class QPatch
     {
@@ -16,6 +18,9 @@
 
                 var lithiumPowerCell = new DeepLithiumPowerCell(lithiumBattery);
                 lithiumPowerCell.Patch();
+
+                var harmony = HarmonyInstance.Create("com.midgamebatteries.psmod");
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
 
                 QuickLogger.Message("Finished patching");
             }
