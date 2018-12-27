@@ -1,0 +1,11 @@
+{
+  "Id": "MidGameBatteries",
+  "DisplayName": "MidGameBatteries",
+  "Author": "PrimeSonic",
+  "Version": "1.0.0",
+  "Requires": [ ],
+  "Enable": true,
+  "AssemblyName": "MidGameBatteries.dll",
+  "EntryMethod": "MidGameBatteries.QPatch.Patch",
+  "Config": {}
+}

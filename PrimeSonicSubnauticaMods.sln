@@ -19,12 +19,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCraftSMLTests", "Cust
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBoxScannerFix", "DataBoxScannerFix\DataBoxScannerFix.csproj", "{0FDBC24D-27CF-435F-B49C-D0A8A580971A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MidGameBatteries", "MidGameBatteries\MidGameBatteries.csproj", "{A14A9BD2-6817-4BEB-9664-8B24279A3DAB}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{0fdbc24d-27cf-435f-b49c-d0a8a580971a}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
+		Utilities\Utilities.projitems*{a14a9bd2-6817-4beb-9664-8b24279a3dab}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{c8dc0fc6-b816-4f66-aa20-c1c61f80813f}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
 	EndGlobalSection
@@ -61,6 +64,10 @@ Global
 		{0FDBC24D-27CF-435F-B49C-D0A8A580971A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FDBC24D-27CF-435F-B49C-D0A8A580971A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FDBC24D-27CF-435F-B49C-D0A8A580971A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A14A9BD2-6817-4BEB-9664-8B24279A3DAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A14A9BD2-6817-4BEB-9664-8B24279A3DAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A14A9BD2-6817-4BEB-9664-8B24279A3DAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A14A9BD2-6817-4BEB-9664-8B24279A3DAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
