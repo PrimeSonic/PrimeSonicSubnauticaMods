@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class DeepLithiumBattery : Craftable
@@ -17,7 +18,7 @@
                    friendlyName: "Deep Lithium Battery",
                    description: "A stronger battery created from rare materials.")
         {
-            OnFinishedPatching += SetStaticTechType;
+            OnFinishedPatching += EquipmentPatching;
         }
 
         protected DeepLithiumBattery(string classId, string friendlyName, string description)
@@ -58,6 +59,10 @@
             };
         }
 
-        private void SetStaticTechType() => BatteryID = this.TechType;
+        private void EquipmentPatching()
+        {
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.BatteryCharger);
+            BatteryID = this.TechType;
+        }
     }
 }

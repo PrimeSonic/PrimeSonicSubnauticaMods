@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class DeepLithiumPowerCell : DeepLithiumBattery
@@ -18,7 +19,7 @@
                    description: "A stronger power cell created from rare materials.")
         {
             deepLithiumBattery = lithiumBattery.TechType;
-            OnFinishedPatching += SetStaticTechType;
+            OnFinishedPatching += EquipmentPatching;
         }
 
         public override GameObject GetGameObject()
@@ -46,6 +47,10 @@
             };
         }
 
-        private void SetStaticTechType() => PowerCellID = this.TechType;
+        private void EquipmentPatching()
+        {
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.PowerCellCharger);
+            PowerCellID = this.TechType;
+        }
     }
 }
