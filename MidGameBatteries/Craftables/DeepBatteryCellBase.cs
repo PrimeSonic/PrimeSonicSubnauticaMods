@@ -5,7 +5,7 @@
     using SMLHelper.V2.Utility;
     using UnityEngine;
 
-    internal abstract class DeepLithiumBase : Craftable
+    internal abstract class DeepBatteryCellBase : Craftable
     {
         private const string BatteryPowerCraftingTab = "BatteryPower";
         private const string ElectronicsCraftingTab = "Electronics";
@@ -23,10 +23,10 @@
 
         private static void PatchCraftables()
         {
-            var lithiumBattery = new DeepLithiumBattery();
+            var lithiumBattery = new DeepBattery();
             lithiumBattery.Patch();
 
-            var lithiumPowerCell = new DeepLithiumPowerCell(lithiumBattery);
+            var lithiumPowerCell = new DeepPowerCell(lithiumBattery);
             lithiumPowerCell.Patch();
         }
 
@@ -53,7 +53,7 @@
         protected abstract float PowerCapacity { get; }
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
 
-        protected DeepLithiumBase(string classId, string friendlyName, string description)
+        protected DeepBatteryCellBase(string classId, string friendlyName, string description)
             : base(classId, friendlyName, description)
         {
             // This event will be invoked after all patching done by the Craftable class is complete
@@ -74,7 +74,7 @@
 
             Battery battery = obj.GetComponent<Battery>();
             battery._capacity = this.PowerCapacity;
-            battery.name = $"{this.ClassID}Battery";
+            battery.name = $"{this.ClassID}BatteryCell";
 
             return obj;
         }

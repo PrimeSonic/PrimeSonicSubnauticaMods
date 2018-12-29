@@ -3,12 +3,12 @@
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
 
-    internal class DeepLithiumPowerCell : DeepLithiumBase
+    internal class DeepPowerCell : DeepBatteryCellBase
     {
         // Just like all the other power cells, this is a combination of 2 batteries
         internal const int BatteriesPerPowerCell = 2;
 
-        public DeepLithiumPowerCell(DeepLithiumBattery lithiumBattery)
+        public DeepPowerCell(DeepBattery lithiumBattery)
             : base(classId: "DeepPowerCell",
                    friendlyName: "Deep Power Cell",
                    description: "A longer lasting power cell created from rare materials and stronger chemicals.")
@@ -23,7 +23,7 @@
         }
 
         protected override TechType BaseType { get; } = TechType.PowerCell;
-        protected override float PowerCapacity { get; } = DeepLithiumBattery.BatteryCapacity * BatteriesPerPowerCell;
+        protected override float PowerCapacity { get; } = DeepBattery.BatteryCapacity * BatteriesPerPowerCell;
         protected override EquipmentType ChargerType { get; } = EquipmentType.PowerCellCharger;
 
         protected override TechData GetBlueprintRecipe()

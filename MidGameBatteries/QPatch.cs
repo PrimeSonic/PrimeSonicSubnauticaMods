@@ -14,7 +14,7 @@
 
             try
             {
-                DeepLithiumBase.PatchAll();
+                DeepBatteryCellBase.PatchAll();
 
                 var harmony = HarmonyInstance.Create("com.midgamebatteries.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());

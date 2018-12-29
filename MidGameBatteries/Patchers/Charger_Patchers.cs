@@ -17,9 +17,9 @@
 
             var compatibleTech = (HashSet<TechType>)compatibleTechFieldInfo.GetValue(null);
 
-            // Make sure the Deep Lithium Battery is allowed in the battery charger
-            if (!compatibleTech.Contains(DeepLithiumBase.BatteryID))
-                compatibleTech.Add(DeepLithiumBase.BatteryID);
+            // Make sure the Deep Battery is allowed in the battery charger
+            if (!compatibleTech.Contains(DeepBatteryCellBase.BatteryID))
+                compatibleTech.Add(DeepBatteryCellBase.BatteryID);
 
         }
     }
@@ -36,9 +36,9 @@
 
             var compatibleTech = (HashSet<TechType>)compatibleTechFieldInfo.GetValue(null);
 
-            // Make sure the Deep Lithium Power Cell is allowed in the power cell charger
-            if (!compatibleTech.Contains(DeepLithiumBase.PowerCellID))
-                compatibleTech.Add(DeepLithiumBase.PowerCellID);
+            // Make sure the Deep Power Cell is allowed in the power cell charger
+            if (!compatibleTech.Contains(DeepBatteryCellBase.PowerCellID))
+                compatibleTech.Add(DeepBatteryCellBase.PowerCellID);
         }
     }
 }

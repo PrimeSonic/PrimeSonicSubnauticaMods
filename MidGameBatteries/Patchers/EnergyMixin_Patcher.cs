@@ -19,20 +19,20 @@
             List<TechType> compatibleBatteries = __instance.compatibleBatteries;
 
             if (compatibleBatteries.Contains(TechType.Battery) &&
-                !compatibleBatteries.Contains(DeepLithiumBase.BatteryID))
+                !compatibleBatteries.Contains(DeepBatteryCellBase.BatteryID))
             {
                 // If the regular Battery is compatible with this item,
                 // the Deep Lithium Battery should also be compatible
-                compatibleBatteries.Add(DeepLithiumBase.BatteryID);
+                compatibleBatteries.Add(DeepBatteryCellBase.BatteryID);
                 return;
             }
 
             if (compatibleBatteries.Contains(TechType.PowerCell) &&
-                !compatibleBatteries.Contains(DeepLithiumBase.PowerCellID))
+                !compatibleBatteries.Contains(DeepBatteryCellBase.PowerCellID))
             {
                 // If the regular Power Cell is compatible with this item,
                 // the Deep Lithium Power Cell should also be compatible
-                compatibleBatteries.Add(DeepLithiumBase.PowerCellID);
+                compatibleBatteries.Add(DeepBatteryCellBase.PowerCellID);
                 return;
             }
         }
@@ -49,7 +49,7 @@
             // this will replicate the model for the normal Power Cell so it doesn't look empty
 
             // Null checks added on every step of the way
-            if (item?.item?.GetTechType() == DeepLithiumBase.PowerCellID)
+            if (item?.item?.GetTechType() == DeepBatteryCellBase.PowerCellID)
                 __instance.batteryModels[0].model.SetActive(true);
 
             // Perhaps later a more suiteable model could be added with a more appropriate skin.

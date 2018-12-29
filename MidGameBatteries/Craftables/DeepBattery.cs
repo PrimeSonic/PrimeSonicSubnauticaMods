@@ -3,12 +3,12 @@
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
 
-    internal class DeepLithiumBattery : DeepLithiumBase
+    internal class DeepBattery : DeepBatteryCellBase
     {
         // This battery provides 2.5x the power of a normal battery
         internal const float BatteryCapacity = 250f;
 
-        public DeepLithiumBattery()
+        public DeepBattery()
             : base(classId: "DeepBattery",
                    friendlyName: "Deep Battery",
                    description: "A longer lasting battery created from rare materials and stronger chemicals.")
@@ -17,7 +17,7 @@
             OnFinishedPatching += SetStaticTechType;
         }
 
-        protected override TechType BaseType { get; } = TechType.Battery;
+        protected override TechType BaseType { get; } = TechType.LithiumIonBattery;
         protected override float PowerCapacity { get; } = BatteryCapacity;
         protected override EquipmentType ChargerType { get; } = EquipmentType.BatteryCharger;
 

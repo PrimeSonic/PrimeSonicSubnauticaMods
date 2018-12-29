@@ -42,15 +42,14 @@
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Craftables\DeepLithiumBattery.cs" />
-    <Compile Include="Craftables\DeepLithiumPowerCell.cs" />
-    <Compile Include="Craftables\DeepLithiumBase.cs" />
+    <Compile Include="Craftables\DeepBattery.cs" />
+    <Compile Include="Craftables\DeepPowerCell.cs" />
+    <Compile Include="Craftables\DeepBatteryCellBase.cs" />
     <Compile Include="Patchers\Charger_Patchers.cs" />
     <Compile Include="Patchers\EnergyMixin_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,11 +62,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\CraftingTabIcon.png" />
-    <Content Include="Assets\DeepLithiumBattery.png">
+    <Content Include="Assets\CraftingTabIcon.png" >
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\DeepBattery.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\DeepLithiumPowerCell.png">
+    <Content Include="Assets\DeepPowerCell.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
