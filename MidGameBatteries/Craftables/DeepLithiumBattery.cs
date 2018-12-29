@@ -5,13 +5,15 @@
 
     internal class DeepLithiumBattery : DeepLithiumBase
     {
+        // This battery provides 2.5x the power of a normal battery
         internal const float BatteryCapacity = 250f;
 
         public DeepLithiumBattery()
-            : base(classId: "DeepLithiumBattery",
-                   friendlyName: "Deep Lithium Battery",
-                   description: "A stronger battery created from rare materials.")
+            : base(classId: "DeepBattery",
+                   friendlyName: "Deep Battery",
+                   description: "A longer lasting battery created from rare materials and stronger chemicals.")
         {
+            // This event will be invoked after all patching done by the Craftable class is complete
             OnFinishedPatching += SetStaticTechType;
         }
 

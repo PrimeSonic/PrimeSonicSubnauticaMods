@@ -1,52 +1,59 @@
 ﻿namespace MidGameBatteries.Patchers
 {
-    using Common;
-    using Harmony;
+    using System.Collections.Generic;
     using Craftables;
-    using UnityEngine;
+    using Harmony;
 
-    [HarmonyPatch(typeof(EnergyMixin))]
-    [HarmonyPatch("Start")]
+    [HarmonyPatch(typeof(EnergyMixin))] // Patches the EnergyMixin class
+    [HarmonyPatch("Start")] // Patches the Start method
     internal class EnergyMixin_Initialize_Patcher
     {
-        [HarmonyPostfix]
+        [HarmonyPostfix] // This will run right after the code of the chosen method
         public static void Postfix(ref EnergyMixin __instance)
         {
-            if (!__instance.allowBatteryReplacement)
-                return; // Battery replacement not allowed - Skip
+            // This is necessary to allow the new batteries to be compatible with tools and vehicles
 
-            if (__instance.compatibleBatteries.Contains(TechType.Battery) &&
-                !__instance.compatibleBatteries.Contains(DeepLithiumBase.BatteryID))
+            if (!__instance.allowBatteryReplacement)
+                return; // Battery replacement not allowed - No need to make changes
+
+            List<TechType> compatibleBatteries = __instance.compatibleBatteries;
+
+            if (compatibleBatteries.Contains(TechType.Battery) &&
+                !compatibleBatteries.Contains(DeepLithiumBase.BatteryID))
             {
-                // Make the Deep Lithium Battery compatible with this item
-                __instance.compatibleBatteries.Add(DeepLithiumBase.BatteryID);
-                //QuickLogger.Debug("DeepLithiumBattery now compatible with EnergyMixin");
+                // If the regular Battery is compatible with this item,
+                // the Deep Lithium Battery should also be compatible
+                compatibleBatteries.Add(DeepLithiumBase.BatteryID);
                 return;
             }
 
-            if (__instance.compatibleBatteries.Contains(TechType.PowerCell) &&
-                !__instance.compatibleBatteries.Contains(DeepLithiumBase.PowerCellID))
+            if (compatibleBatteries.Contains(TechType.PowerCell) &&
+                !compatibleBatteries.Contains(DeepLithiumBase.PowerCellID))
             {
-                // Make the Deep Lithium Power Cell compatible with this item
-                __instance.compatibleBatteries.Add(DeepLithiumBase.PowerCellID);
-                //QuickLogger.Debug("DeepLithiumPowerCell now compatible with EnergyMixin");
+                // If the regular Power Cell is compatible with this item,
+                // the Deep Lithium Power Cell should also be compatible
+                compatibleBatteries.Add(DeepLithiumBase.PowerCellID);
                 return;
             }
         }
     }
 
-    [HarmonyPatch(typeof(EnergyMixin))]
-    [HarmonyPatch("NotifyHasBattery")]
+    [HarmonyPatch(typeof(EnergyMixin))] // Patches the EnergyMixin class
+    [HarmonyPatch("NotifyHasBattery")] // Patches the NotifyHasBattery method
     internal class EnergyMixin_NotifyHasBattery_Patcher
     {
-        [HarmonyPostfix]
+        [HarmonyPostfix] // This will run right after the code of the chosen method
         public static void Postfix(ref EnergyMixin __instance, InventoryItem item)
         {
+            // For vehicles that show a battery model when one is equipped,
+            // this will replicate the model for the normal Power Cell so it doesn't look empty
+
+            // Null checks added on every step of the way
             if (item?.item?.GetTechType() == DeepLithiumBase.PowerCellID)
-            {
                 __instance.batteryModels[0].model.SetActive(true);
-                //QuickLogger.Debug("Overiding model on vehicle for DeepLithiumPowerCell");
-            }
+
+            // Perhaps later a more suiteable model could be added with a more appropriate skin.
+            // This is functional for now.
         }
     }
 }

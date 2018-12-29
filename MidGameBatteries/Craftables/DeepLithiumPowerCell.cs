@@ -5,16 +5,20 @@
 
     internal class DeepLithiumPowerCell : DeepLithiumBase
     {
+        // Just like all the other power cells, this is a combination of 2 batteries
         internal const int BatteriesPerPowerCell = 2;
 
         public DeepLithiumPowerCell(DeepLithiumBattery lithiumBattery)
-            : base(classId: "DeepLithiumPowerCell",
-                   friendlyName: "Deep Lithium Power Cell",
-                   description: "A stronger power cell created from rare materials.")
+            : base(classId: "DeepPowerCell",
+                   friendlyName: "Deep Power Cell",
+                   description: "A longer lasting power cell created from rare materials and stronger chemicals.")
         {
+            // Because the DeepLithiumPowerCell is dependent on the DeepLithiumBattery regarding its blueprint,
+            // we'll go ahead and add this little safety check here
             if (!lithiumBattery.IsPatched)
                 lithiumBattery.Patch();
 
+            // This event will be invoked after all patching done by the Craftable class is complete
             OnFinishedPatching += SetStaticTechType;
         }
 
@@ -26,6 +30,7 @@
         {
             return new TechData
             {
+                // This is just like all the other Power Cell blueprints
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(2)
                 {
