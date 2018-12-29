@@ -48,8 +48,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeepLithiumBattery.cs" />
-    <Compile Include="DeepLithiumPowerCell.cs" />
+    <Compile Include="Craftables\DeepLithiumBattery.cs" />
+    <Compile Include="Craftables\DeepLithiumPowerCell.cs" />
+    <Compile Include="Craftables\DeepLithiumBase.cs" />
     <Compile Include="Patchers\Charger_Patchers.cs" />
     <Compile Include="Patchers\EnergyMixin_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

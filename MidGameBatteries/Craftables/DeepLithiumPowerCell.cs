@@ -1,4 +1,4 @@
-﻿namespace MidGameBatteries
+﻿namespace MidGameBatteries.Craftables
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;

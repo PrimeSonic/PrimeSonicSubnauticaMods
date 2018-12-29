@@ -4,6 +4,7 @@
     using System.Reflection;
     using Common;
     using Harmony;
+    using MidGameBatteries.Craftables;
 
     public static class QPatch
     {
