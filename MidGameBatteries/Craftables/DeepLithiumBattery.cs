@@ -2,20 +2,22 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
-    using UnityEngine;
 
     internal class DeepLithiumBattery : DeepLithiumBase
     {
+        internal const float BatteryCapacity = 250f;
+
         public DeepLithiumBattery()
             : base(classId: "DeepLithiumBattery",
                    friendlyName: "Deep Lithium Battery",
                    description: "A stronger battery created from rare materials.")
         {
-            OnFinishedPatching += EquipmentPatching;
+            OnFinishedPatching += SetStaticTechType;
         }
 
-        public override GameObject GetGameObject() => this.CreateBattery(TechType.Battery, BatteryCapacity);
+        protected override TechType BaseType { get; } = TechType.Battery;
+        protected override float PowerCapacity { get; } = BatteryCapacity;
+        protected override EquipmentType ChargerType { get; } = EquipmentType.BatteryCharger;
 
         protected override TechData GetBlueprintRecipe()
         {
@@ -31,10 +33,6 @@
             };
         }
 
-        private void EquipmentPatching()
-        {
-            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.BatteryCharger);
-            BatteryID = this.TechType;
-        }
+        private void SetStaticTechType() => BatteryID = this.TechType;
     }
 }

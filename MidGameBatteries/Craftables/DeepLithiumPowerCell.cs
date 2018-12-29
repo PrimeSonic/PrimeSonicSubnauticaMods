@@ -2,13 +2,10 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
-    using UnityEngine;
 
     internal class DeepLithiumPowerCell : DeepLithiumBase
     {
-        private const int BatteriesRequired = 2;
-        private readonly TechType deepLithiumBattery;
+        internal const int BatteriesPerPowerCell = 2;
 
         public DeepLithiumPowerCell(DeepLithiumBattery lithiumBattery)
             : base(classId: "DeepLithiumPowerCell",
@@ -18,11 +15,12 @@
             if (!lithiumBattery.IsPatched)
                 lithiumBattery.Patch();
 
-            deepLithiumBattery = lithiumBattery.TechType;
-            OnFinishedPatching += EquipmentPatching;
+            OnFinishedPatching += SetStaticTechType;
         }
 
-        public override GameObject GetGameObject() => this.CreateBattery(TechType.PowerCell, BatteryCapacity * BatteriesRequired);
+        protected override TechType BaseType { get; } = TechType.PowerCell;
+        protected override float PowerCapacity { get; } = DeepLithiumBattery.BatteryCapacity * BatteriesPerPowerCell;
+        protected override EquipmentType ChargerType { get; } = EquipmentType.PowerCellCharger;
 
         protected override TechData GetBlueprintRecipe()
         {
@@ -31,16 +29,12 @@
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(2)
                 {
-                    new Ingredient(deepLithiumBattery, BatteriesRequired),
+                    new Ingredient(BatteryID, BatteriesPerPowerCell),
                     new Ingredient(TechType.Silicone, 1),
                 }
             };
         }
 
-        private void EquipmentPatching()
-        {
-            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.PowerCellCharger);
-            PowerCellID = this.TechType;
-        }
+        private void SetStaticTechType() => PowerCellID = this.TechType;
     }
 }

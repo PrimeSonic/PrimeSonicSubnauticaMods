@@ -1,8 +1,6 @@
 ﻿namespace MidGameBatteries.Craftables
 {
-    using System.Collections.Generic;
     using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
@@ -19,12 +17,14 @@
             var lithiumPowerCell = new DeepLithiumPowerCell(lithiumBattery);
             lithiumPowerCell.Patch();
         }
-
-        protected const float BatteryCapacity = 250f;
+        protected abstract TechType BaseType { get; }
+        protected abstract float PowerCapacity { get; }
+        protected abstract EquipmentType ChargerType { get; }
 
         protected DeepLithiumBase(string classId, string friendlyName, string description)
             : base(classId, friendlyName, description)
         {
+            OnFinishedPatching += SetEquipmentType;
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Fabricator;
@@ -34,16 +34,18 @@
         public override string[] StepsToFabricatorTab { get; } = new[] { "Resources", "Electronics" };
         public override TechType RequiredForUnlock { get; } = TechType.WhiteMushroom;
 
-        protected GameObject CreateBattery(TechType prefabType, float capacity)
+        public override GameObject GetGameObject()
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(prefabType);
+            GameObject prefab = CraftData.GetPrefabForTechType(this.BaseType);
             var obj = GameObject.Instantiate(prefab);
 
             Battery battery = obj.GetComponent<Battery>();
-            battery._capacity = capacity;
+            battery._capacity = this.PowerCapacity;
             battery.name = $"{this.ClassID}Battery";
 
             return obj;
         }
+
+        private void SetEquipmentType() => CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
     }
 }
