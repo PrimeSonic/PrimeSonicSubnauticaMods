@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -62,8 +63,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\CraftingTabIcon.png" >
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="Assets\CraftingTabIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\DeepBattery.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
