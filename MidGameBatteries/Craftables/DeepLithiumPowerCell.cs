@@ -5,34 +5,24 @@
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal class DeepLithiumPowerCell : DeepLithiumBattery
+    internal class DeepLithiumPowerCell : DeepLithiumBase
     {
-        internal static TechType PowerCellID { get; private set; }
-
-        private const string ClassIDString = "DeepLithiumPowerCell";
+        private const int BatteriesRequired = 2;
         private readonly TechType deepLithiumBattery;
-        private readonly int BatteriesRequired = 2;
 
         public DeepLithiumPowerCell(DeepLithiumBattery lithiumBattery)
-            : base(classId: ClassIDString,
+            : base(classId: "DeepLithiumPowerCell",
                    friendlyName: "Deep Lithium Power Cell",
                    description: "A stronger power cell created from rare materials.")
         {
+            if (!lithiumBattery.IsPatched)
+                lithiumBattery.Patch();
+
             deepLithiumBattery = lithiumBattery.TechType;
             OnFinishedPatching += EquipmentPatching;
         }
 
-        public override GameObject GetGameObject()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.PowerCell);
-            var obj = GameObject.Instantiate(prefab);
-
-            var battery = obj.GetComponent<Battery>();
-            battery._capacity = BatteryCapacity * BatteriesRequired;
-            battery.name = ClassIDString;
-
-            return obj;
-        }
+        public override GameObject GetGameObject() => this.CreateBattery(TechType.PowerCell, BatteryCapacity * BatteriesRequired);
 
         protected override TechData GetBlueprintRecipe()
         {

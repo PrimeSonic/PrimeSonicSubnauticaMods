@@ -11,6 +11,17 @@
         public static TechType BatteryID { get; protected set; }
         public static TechType PowerCellID { get; protected set; }
 
+        internal static void PatchCraftables()
+        {
+            var lithiumBattery = new DeepLithiumBattery();
+            lithiumBattery.Patch();
+
+            var lithiumPowerCell = new DeepLithiumPowerCell(lithiumBattery);
+            lithiumPowerCell.Patch();
+        }
+
+        protected const float BatteryCapacity = 250f;
+
         protected DeepLithiumBase(string classId, string friendlyName, string description)
             : base(classId, friendlyName, description)
         {

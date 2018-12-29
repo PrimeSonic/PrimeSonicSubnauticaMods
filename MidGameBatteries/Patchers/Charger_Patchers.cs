@@ -2,6 +2,7 @@
 {
     using Common;
     using Harmony;
+    using Craftables;
     using System.Collections.Generic;
     using System.Reflection;
 
@@ -16,9 +17,9 @@
 
             var compatibleTech = (HashSet<TechType>)compatibleTechFieldInfo.GetValue(null);
             
-            if (!compatibleTech.Contains(DeepLithiumBattery.BatteryID))
+            if (!compatibleTech.Contains(DeepLithiumBase.BatteryID))
             {
-                compatibleTech.Add(DeepLithiumBattery.BatteryID);
+                compatibleTech.Add(DeepLithiumBase.BatteryID);
                 QuickLogger.Debug("DeepLithiumBattery added to BatteryCharger");
             }
         }
@@ -35,9 +36,9 @@
 
             var compatibleTech = (HashSet<TechType>)compatibleTechFieldInfo.GetValue(null);
 
-            if (!compatibleTech.Contains(DeepLithiumPowerCell.PowerCellID))
+            if (!compatibleTech.Contains(DeepLithiumBase.PowerCellID))
             {
-                compatibleTech.Add(DeepLithiumPowerCell.PowerCellID);
+                compatibleTech.Add(DeepLithiumBase.PowerCellID);
                 QuickLogger.Debug("DeepLithiumPowerCell added to PowerCellCharger");
             }
         }

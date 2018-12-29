@@ -1,49 +1,21 @@
 ﻿namespace MidGameBatteries.Craftables
 {
     using System.Collections.Generic;
-    using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal class DeepLithiumBattery : Craftable
+    internal class DeepLithiumBattery : DeepLithiumBase
     {
-        internal static TechType BatteryID { get; private set; }
-
-        private const string ClassIDString = "DeepLithiumBattery";
-        protected const float BatteryCapacity = 250f;
-
         public DeepLithiumBattery()
-            : base(classId: ClassIDString,
+            : base(classId: "DeepLithiumBattery",
                    friendlyName: "Deep Lithium Battery",
                    description: "A stronger battery created from rare materials.")
         {
             OnFinishedPatching += EquipmentPatching;
         }
 
-        protected DeepLithiumBattery(string classId, string friendlyName, string description)
-            : base(classId, friendlyName, description)
-        {
-        }
-
-        public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Fabricator;
-        public override TechGroup GroupForPDA { get; } = TechGroup.Resources;
-        public override TechCategory CategoryForPDA { get; } = TechCategory.Electronics;
-        public override string AssetsFolder { get; } = @"MidGameBatteries/Assets";
-        public override string[] StepsToFabricatorTab { get; } = new[] { "Resources", "Electronics" };
-        public override TechType RequiredForUnlock { get; } = TechType.WhiteMushroom;
-
-        public override GameObject GetGameObject()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.LithiumIonBattery);
-            var obj = GameObject.Instantiate(prefab);
-
-            Battery battery = obj.GetComponent<Battery>();
-            battery._capacity = BatteryCapacity;
-            battery.name = ClassIDString;
-
-            return obj;
-        }
+        public override GameObject GetGameObject() => this.CreateBattery(TechType.Battery, BatteryCapacity);
 
         protected override TechData GetBlueprintRecipe()
         {

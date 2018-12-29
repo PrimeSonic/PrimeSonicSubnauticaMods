@@ -2,6 +2,7 @@
 {
     using Common;
     using Harmony;
+    using Craftables;
     using UnityEngine;
 
     [HarmonyPatch(typeof(EnergyMixin))]
@@ -15,19 +16,19 @@
                 return; // Battery replacement not allowed - Skip
 
             if (__instance.compatibleBatteries.Contains(TechType.Battery) &&
-                !__instance.compatibleBatteries.Contains(DeepLithiumBattery.BatteryID))
+                !__instance.compatibleBatteries.Contains(DeepLithiumBase.BatteryID))
             {
                 // Make the Deep Lithium Battery compatible with this item
-                __instance.compatibleBatteries.Add(DeepLithiumBattery.BatteryID);
+                __instance.compatibleBatteries.Add(DeepLithiumBase.BatteryID);
                 //QuickLogger.Debug("DeepLithiumBattery now compatible with EnergyMixin");
                 return;
             }
 
             if (__instance.compatibleBatteries.Contains(TechType.PowerCell) &&
-                !__instance.compatibleBatteries.Contains(DeepLithiumPowerCell.PowerCellID))
+                !__instance.compatibleBatteries.Contains(DeepLithiumBase.PowerCellID))
             {
                 // Make the Deep Lithium Power Cell compatible with this item
-                __instance.compatibleBatteries.Add(DeepLithiumPowerCell.PowerCellID);
+                __instance.compatibleBatteries.Add(DeepLithiumBase.PowerCellID);
                 //QuickLogger.Debug("DeepLithiumPowerCell now compatible with EnergyMixin");
                 return;
             }
@@ -41,7 +42,7 @@
         [HarmonyPostfix]
         public static void Postfix(ref EnergyMixin __instance, InventoryItem item)
         {
-            if (item?.item?.GetTechType() == DeepLithiumPowerCell.PowerCellID)
+            if (item?.item?.GetTechType() == DeepLithiumBase.PowerCellID)
             {
                 __instance.batteryModels[0].model.SetActive(true);
                 //QuickLogger.Debug("Overiding model on vehicle for DeepLithiumPowerCell");
