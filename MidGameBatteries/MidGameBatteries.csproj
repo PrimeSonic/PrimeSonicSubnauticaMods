@@ -63,6 +63,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\CraftingTabIcon.png" />
     <Content Include="Assets\DeepLithiumBattery.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
