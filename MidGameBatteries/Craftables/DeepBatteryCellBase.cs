@@ -33,7 +33,7 @@
         private static void AdjustCraftingTree()
         {
             // Create a new crafting tree tab for batteries and power cells
-            var tabIcon = ImageUtils.LoadSpriteFromFile(MgBatteryAssets + @"/CraftingTabIcon.png");
+            var tabIcon = ImageUtils.LoadSpriteFromFile(@"./Qmods/" + MgBatteryAssets + @"/CraftingTabIcon.png");
             CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, BatteryPowerCraftingTab, "Batteries and Power Cells", tabIcon, ResourcesCraftingTab);
 
             // Remove the original batteries from the Electronics tab
