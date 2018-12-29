@@ -28,9 +28,9 @@
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(3)
                 {
-                    new Ingredient(TechType.WhiteMushroom, 3),
-                    new Ingredient(TechType.Lithium, 1),
-                    new Ingredient(TechType.Magnetite, 1),
+                    new Ingredient(TechType.WhiteMushroom, 2), // Have you gone deep enough?
+                    new Ingredient(TechType.Lithium, 1), // For flavor with the old LithiumIonBattery
+                    new Ingredient(TechType.Nickel, 1), // Have you reached the Lost River?
                 }
             };
         }

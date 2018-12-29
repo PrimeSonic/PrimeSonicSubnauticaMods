@@ -12,6 +12,8 @@
         private const string ResourcesCraftingTab = "Resources";
         private const string MgBatteryAssets = @"MidGameBatteries/Assets";
 
+        // Class level elements
+
         public static TechType BatteryID { get; protected set; }
         public static TechType PowerCellID { get; protected set; }
 
@@ -52,6 +54,8 @@
         protected abstract TechType BaseType { get; } // Should only ever be Battery or PowerCell
         protected abstract float PowerCapacity { get; }
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
+
+        // Instance level elements
 
         protected DeepBatteryCellBase(string classId, string friendlyName, string description)
             : base(classId, friendlyName, description)
