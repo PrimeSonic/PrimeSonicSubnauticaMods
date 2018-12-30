@@ -26,11 +26,12 @@
             return new TechData
             {
                 craftAmount = 1,
-                Ingredients = new List<Ingredient>(3)
+                Ingredients = new List<Ingredient>(4)
                 {
-                    new Ingredient(TechType.WhiteMushroom, 2), // Have you gone deep enough?
+                    new Ingredient(TechType.WhiteMushroom, 3), // Have you gone deep enough?
                     new Ingredient(TechType.Lithium, 1), // For flavor with the old LithiumIonBattery
-                    new Ingredient(TechType.Nickel, 1), // Have you reached the Lost River?
+                    new Ingredient(TechType.AluminumOxide, 1), // Mid-game resource
+                    new Ingredient(TechType.Magnetite, 1), // Mid-game resource
                 }
             };
         }
