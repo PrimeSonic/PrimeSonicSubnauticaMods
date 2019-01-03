@@ -12,9 +12,11 @@
         private const string ResourcesCraftingTab = "Resources";
         private const string MgBatteryAssets = @"MidGameBatteries/Assets";
 
-        // Class level elements
+        private static readonly string[] PathToNewTab = new[] { ResourcesCraftingTab, ElectronicsCraftingTab, BatteryPowerCraftingTab };
 
-        public static TechType BatteryID { get; protected set; }
+    // Class level elements
+
+    public static TechType BatteryID { get; protected set; }
         public static TechType PowerCellID { get; protected set; }
 
         internal static void PatchAll()
@@ -36,7 +38,7 @@
         {
             // Create a new crafting tree tab for batteries and power cells
             var tabIcon = ImageUtils.LoadSpriteFromFile(@"./Qmods/" + MgBatteryAssets + @"/CraftingTabIcon.png");
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, BatteryPowerCraftingTab, "Batteries and Power Cells", tabIcon, ResourcesCraftingTab);
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, BatteryPowerCraftingTab, "Batteries and Power Cells", tabIcon, ResourcesCraftingTab, ElectronicsCraftingTab);
 
             // Remove the original batteries from the Electronics tab
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResourcesCraftingTab, ElectronicsCraftingTab, TechType.Battery.ToString());
@@ -45,10 +47,10 @@
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResourcesCraftingTab, ElectronicsCraftingTab, TechType.PrecursorIonPowerCell.ToString());
 
             // And add them back in on the new Batteries and PowerCells tab
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, ResourcesCraftingTab, BatteryPowerCraftingTab);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, ResourcesCraftingTab, BatteryPowerCraftingTab);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, ResourcesCraftingTab, BatteryPowerCraftingTab);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, ResourcesCraftingTab, BatteryPowerCraftingTab);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, PathToNewTab);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, PathToNewTab);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, PathToNewTab);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, PathToNewTab);
         }
 
         protected abstract TechType BaseType { get; } // Should only ever be Battery or PowerCell
@@ -68,7 +70,7 @@
         public override TechGroup GroupForPDA { get; } = TechGroup.Resources;
         public override TechCategory CategoryForPDA { get; } = TechCategory.Electronics;
         public override string AssetsFolder { get; } = MgBatteryAssets;
-        public override string[] StepsToFabricatorTab { get; } = new[] { ResourcesCraftingTab, BatteryPowerCraftingTab };
+        public override string[] StepsToFabricatorTab { get; } = PathToNewTab;
         public override TechType RequiredForUnlock { get; } = TechType.WhiteMushroom; // These will unlock once the player acquires a Deep Shroom
 
         public override GameObject GetGameObject()
