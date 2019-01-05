@@ -15,7 +15,6 @@
         private const string CustomSizesFile = WorkingFolder + "CustomSizes.txt";
         private const string ModifiedRecipesFile = WorkingFolder + "ModifiedRecipes.txt";
         private const string AddedRecipiesFile = WorkingFolder + "AddedRecipes.txt";
-        private const string AliasRecipiesFile = WorkingFolder + "AliasRecipes.txt";
         private const string CustomBioFuelsFile = WorkingFolder + "CustomBioFuels.txt";
 
         private static readonly IDictionary<TechType, AddedRecipe> addedRecipes = new Dictionary<TechType, AddedRecipe>();
