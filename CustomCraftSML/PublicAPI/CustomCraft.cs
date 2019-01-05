@@ -39,7 +39,7 @@
         {
             Assert.IsTrue(addedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
-            HandleAddedRecipe(addedRecipe, 1);
+            HandleAddedRecipe(addedRecipe);
 
             HandleCraftTreeAddition(addedRecipe);
 
@@ -65,7 +65,7 @@
                 QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemName}'");
             }
 
-            HandleAddedRecipe(aliasRecipe, 0);
+            HandleAddedRecipe(aliasRecipe, 0 /* alias recipes should default to not producing the custom item unless explicitly configured */);
 
             HandleCraftTreeAddition(aliasRecipe);
 
@@ -133,7 +133,7 @@
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID, steps);
         }
 
-        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe, short defaultCraftAmount)
+        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe, short defaultCraftAmount = 1)
         {
             var replacement = new TechData
             {
