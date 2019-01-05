@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
+    using Common;
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -10,17 +11,30 @@
         public const short Max = 25;
         public const short Min = 0;
 
-        protected readonly EmPropertyTechType emTechType;
+        protected readonly EmProperty<string> emTechType;
         protected readonly EmProperty<short> amountCrafted;
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
         protected readonly EmPropertyTechTypeList linkedItems;
         protected readonly EmYesNo unlockedAtStart;
         protected readonly EmPropertyTechTypeList unlocks;
 
-        public TechType ItemID
+        protected TechType internalId;
+
+        public virtual TechType ItemID
         {
-            get => emTechType.Value;
-            set => emTechType.Value = value;
+            get {
+                if (internalId == TechType.None && emTechType.Value.Length > 1)
+                {
+                    if (TechTypeExtensions.FromString(emTechType.Value, out var tType, true))
+                    {
+                        internalId = tType;
+                    }
+                }
+                return internalId;
+            }
+            set {
+                internalId = value;
+            }
         }
 
         public short? AmountCrafted
@@ -103,7 +117,7 @@
 
         protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(7)
         {
-            new EmPropertyTechType("ItemID"),
+            new EmProperty<string>("ItemID"),
             new EmProperty<short>("AmountCrafted", 1),
             new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()),
             new EmPropertyTechTypeList("LinkedItemIDs"),
@@ -129,15 +143,19 @@
 
         public ModifiedRecipe() : this("ModifiedRecipe", ModifiedRecipeProperties)
         {
+            internalId = TechType.None;
         }
 
         public ModifiedRecipe(string key) : this(key, ModifiedRecipeProperties)
         {
+            internalId = TechType.None;
         }
 
         protected ModifiedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emTechType = (EmPropertyTechType)Properties["ItemID"];
+            internalId = TechType.None;
+
+            emTechType = (EmProperty<string>)Properties["ItemID"];
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
             ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
             linkedItems = (EmPropertyTechTypeList)Properties["LinkedItemIDs"];

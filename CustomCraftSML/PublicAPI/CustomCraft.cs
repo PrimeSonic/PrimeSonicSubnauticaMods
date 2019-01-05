@@ -14,6 +14,9 @@
         {
             switch (entry)
             {
+                case IAliasRecipe aliasRecipe:
+                    AliasRecipe(aliasRecipe);
+                    return true;
                 case IAddedRecipe addedRecipe:
                     AddRecipe(addedRecipe);
                     return true;
@@ -41,6 +44,15 @@
             HandleCraftTreeAddition(addedRecipe);
 
             HandleUnlocks(addedRecipe);
+        }
+
+        internal static void AliasRecipe(IAliasRecipe aliasRecipe)
+        {
+            HandleAddedRecipe(aliasRecipe);
+
+            HandleCraftTreeAddition(aliasRecipe);
+
+            HandleUnlocks(aliasRecipe);
         }
 
         internal static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
@@ -92,7 +104,6 @@
                 CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID), craftingTab.StepsToTab);
             }
         }
-
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
         {
             var craftPath = new CraftingPath(addedRecipe.Path);
