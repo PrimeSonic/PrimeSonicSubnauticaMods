@@ -1,0 +1,11 @@
+{
+  "Id": "MoreScannerRoomUpgrades",
+  "DisplayName": "MoreScannerRoomUpgrades",
+  "Author": "PrimeSonic",
+  "Version": "1.0.0",
+  "Requires": [ ],
+  "Enable": true,
+  "AssemblyName": "MoreScannerRoomUpgrades.dll",
+  "EntryMethod": "MoreScannerRoomUpgrades.QPatch.Patch",
+  "Config": {}
+}
