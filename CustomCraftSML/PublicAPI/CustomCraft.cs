@@ -48,11 +48,21 @@
 
         internal static void AliasRecipe(IAliasRecipe aliasRecipe)
         {
-            //  Add the sprite (use first linked item)
-            if (aliasRecipe.LinkedItemsCount > 0)
+            //  See if there is an asset in the asset folder that has the same name
+            var imagePath = @"./Qmods/CustomCraft2SML/Assets/" + aliasRecipe.ItemName + @".png";
+            if (System.IO.File.Exists(imagePath))
+            {
+                var sprite = SMLHelper.V2.Utility.ImageUtils.LoadSpriteFromFile(imagePath);
+                SMLHelper.V2.Handlers.SpriteHandler.RegisterSprite(aliasRecipe.ItemID, sprite);
+            }
+            else if (aliasRecipe.LinkedItemsCount > 0)
             {
                 var sprite = SpriteManager.Get(aliasRecipe.GetLinkedItem(0));
                 SMLHelper.V2.Handlers.SpriteHandler.RegisterSprite(aliasRecipe.ItemID, sprite);
+            }
+            else
+            {
+                QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemName}'");
             }
 
             HandleAddedRecipe(aliasRecipe, 0);

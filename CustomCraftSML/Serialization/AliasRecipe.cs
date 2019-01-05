@@ -11,6 +11,11 @@
         private readonly EmProperty<string> displayName;
         private readonly EmProperty<string> tooltip;
 
+        public string ItemName
+        {
+            get => emTechType.Value;
+        }
+
         public string DisplayName
         {
             get => displayName.Value;
