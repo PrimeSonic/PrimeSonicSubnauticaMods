@@ -29,18 +29,10 @@
             {
                 if (internalId == TechType.None)
                 {
-                    var eLink = LinkedItems.GetEnumerator();
-                    eLink.MoveNext();
-                    TechType firstLinked = eLink.Current;
                     string tAlias = String.Copy(emTechType.Value);
                     if (tAlias.Length > 1)
                     {
                         internalId = SMLHelper.V2.Handlers.TechTypeHandler.AddTechType(tAlias, DisplayName, Tooltip);
-
-                        if (LinkedItemsCount > 0) {
-                            var sprite = SpriteManager.Get(firstLinked);
-                            SMLHelper.V2.Handlers.SpriteHandler.RegisterSprite(internalId, sprite);
-                        }
                     }
                 }
                 return internalId;

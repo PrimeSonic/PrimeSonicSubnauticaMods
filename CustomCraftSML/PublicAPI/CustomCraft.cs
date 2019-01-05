@@ -39,7 +39,7 @@
         {
             Assert.IsTrue(addedRecipe.ItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
 
-            HandleAddedRecipe(addedRecipe);
+            HandleAddedRecipe(addedRecipe, 1);
 
             HandleCraftTreeAddition(addedRecipe);
 
@@ -48,7 +48,14 @@
 
         internal static void AliasRecipe(IAliasRecipe aliasRecipe)
         {
-            HandleAddedRecipe(aliasRecipe);
+            //  Add the sprite (use first linked item)
+            if (aliasRecipe.LinkedItemsCount > 0)
+            {
+                var sprite = SpriteManager.Get(aliasRecipe.GetLinkedItem(0));
+                SMLHelper.V2.Handlers.SpriteHandler.RegisterSprite(aliasRecipe.ItemID, sprite);
+            }
+
+            HandleAddedRecipe(aliasRecipe, 0);
 
             HandleCraftTreeAddition(aliasRecipe);
 
@@ -116,11 +123,11 @@
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID, steps);
         }
 
-        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe)
+        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe, short defaultCraftAmount)
         {
             var replacement = new TechData
             {
-                craftAmount = modifiedRecipe.AmountCrafted ?? 1
+                craftAmount = modifiedRecipe.AmountCrafted ?? defaultCraftAmount
             };
 
             foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)
