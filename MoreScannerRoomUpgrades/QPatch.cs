@@ -2,6 +2,7 @@
 {
     using System;
     using Common;
+    using Craftables;
 
     internal class QPatch
     {
@@ -9,11 +10,12 @@
         {
             try
             {
+                QuickLogger.Message("Started patching. Version:" + QuickLogger.GetAssemblyVersion());
 
-
-
-
+                VehicleMapScannerModule.PatchAll();
                 QuickHarmony.PatchAssembly();
+
+                QuickLogger.Message("Patching finished");
             }
             catch (Exception ex)
             {

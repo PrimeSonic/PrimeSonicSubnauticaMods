@@ -60,17 +60,22 @@
   <ItemGroup>
     <Compile Include="Craftables\VehicleMapScannerModule.cs" />
     <Compile Include="MonoBehaviors\VehicleMapScanner.cs" />
+    <Compile Include="Patchers\ResourceTracker_Patcher.cs" />
+    <Compile Include="Patchers\Vehicle_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Assets\" />
-    <Folder Include="Patchers\" />
+    <Content Include="Assets\VehicleMapScanner.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
