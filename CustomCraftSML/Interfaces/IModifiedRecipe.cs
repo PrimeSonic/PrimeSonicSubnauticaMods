@@ -13,11 +13,11 @@
         EmIngredient GetIngredient(int index);
 
         int? LinkedItemsCount { get; }
-        IEnumerable<TechType> LinkedItems { get; }
-        TechType GetLinkedItem(int index);
+        IEnumerable<string> LinkedItems { get; }
+        string GetLinkedItem(int index);
 
         int? UnlocksCount { get; }
-        IEnumerable<TechType> Unlocks { get; }
-        TechType GetUnlock(int index);
+        IEnumerable<string> Unlocks { get; }
+        string GetUnlock(int index);
     }
 }

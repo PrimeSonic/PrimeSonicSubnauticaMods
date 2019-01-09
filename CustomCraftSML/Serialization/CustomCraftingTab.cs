@@ -11,7 +11,7 @@
 
         private readonly EmProperty<string> emTabID;
         private readonly EmProperty<string> emDisplayName;
-        private readonly EmPropertyTechType emSpriteID;
+        private readonly EmProperty<TechType> emSpriteID;
         private readonly EmProperty<string> emParentTabPath;
         private CraftingPath craftingPath;
 
@@ -19,7 +19,7 @@
         {
             new EmProperty<string>("TabID"),
             new EmProperty<string>("DisplayName"),
-            new EmPropertyTechType("SpriteItemID"),
+            new EmProperty<TechType>("SpriteItemID"),
             new EmProperty<string>("ParentTabPath"),
         };
 
@@ -27,7 +27,7 @@
         {
             emTabID = (EmProperty<string>)Properties["TabID"];
             emDisplayName = (EmProperty<string>)Properties["DisplayName"];
-            emSpriteID = (EmPropertyTechType)Properties["SpriteItemID"];
+            emSpriteID = (EmProperty<TechType>)Properties["SpriteItemID"];
             emParentTabPath = (EmProperty<string>)Properties["ParentTabPath"];
 
             base.OnValueExtractedEvent += ParsePath;

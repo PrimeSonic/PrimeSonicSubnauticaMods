@@ -14,27 +14,14 @@
         protected readonly EmProperty<string> emTechType;
         protected readonly EmProperty<short> amountCrafted;
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
-        protected readonly EmPropertyTechTypeList linkedItems;
+        protected readonly EmPropertyList<string> linkedItems;
         protected readonly EmYesNo unlockedAtStart;
-        protected readonly EmPropertyTechTypeList unlocks;
-
-        protected TechType internalId;
-
-        public virtual TechType ItemID
+        protected readonly EmPropertyList<string> unlocks;
+        
+        public string ItemID
         {
-            get {
-                if (internalId == TechType.None && emTechType.Value.Length > 1)
-                {
-                    if (TechTypeExtensions.FromString(emTechType.Value, out var tType, true))
-                    {
-                        internalId = tType;
-                    }
-                }
-                return internalId;
-            }
-            set {
-                internalId = value;
-            }
+            get => emTechType.Value;
+            set => emTechType.Value = value;
         }
 
         public short? AmountCrafted
@@ -69,7 +56,7 @@
             set => unlockedAtStart.Value = (bool)value;
         }
 
-        public IEnumerable<TechType> Unlocks => unlocks.Values;
+        public IEnumerable<string> Unlocks => unlocks.Values;
 
         public int? UnlocksCount
         {
@@ -95,7 +82,7 @@
             }
         }
 
-        public IEnumerable<TechType> LinkedItems => linkedItems.Values;
+        public IEnumerable<string> LinkedItems => linkedItems.Values;
 
         public int? LinkedItemsCount
         {
@@ -108,59 +95,54 @@
             }
         }
 
-        public void AddIngredient(TechType techType, short count) =>
-    ingredients.Add(new EmIngredient() { ItemID = techType, Required = count });
+        public void AddIngredient(string techType, short count) => ingredients.Add(new EmIngredient() { ItemID = techType, Required = count });
 
-        public void AddLinkedItem(TechType linkedItem) => linkedItems.Add(linkedItem);
+        public void AddLinkedItem(string linkedItem) => linkedItems.Add(linkedItem);
 
-        public void AddUnlock(TechType unlock) => unlocks.Add(unlock);
+        public void AddUnlock(string unlock) => unlocks.Add(unlock);
 
         protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(7)
         {
             new EmProperty<string>("ItemID"),
             new EmProperty<short>("AmountCrafted", 1),
             new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()),
-            new EmPropertyTechTypeList("LinkedItemIDs"),
+            new EmPropertyList<string>("LinkedItemIDs"),
             new EmYesNo("ForceUnlockAtStart"),
-            new EmPropertyTechTypeList("Unlocks"),
+            new EmPropertyList<string>("Unlocks"),
         };
 
         internal ModifiedRecipe(TechType origTechType) : this()
         {
             ITechData origRecipe = CraftData.Get(origTechType);
-            ItemID = origTechType;
+            ItemID = origTechType.ToString();
             AmountCrafted = (short)origRecipe.craftAmount;
 
             for (int i = 0; i < origRecipe.ingredientCount; i++)
             {
                 var origIngredient = origRecipe.GetIngredient(i);
-                AddIngredient(origIngredient.techType, (short)origIngredient.amount);
+                AddIngredient(origIngredient.techType.ToString(), (short)origIngredient.amount);
             }
 
             for (int i = 0; i < origRecipe.linkedItemCount; i++)
-                linkedItems.Add(origRecipe.GetLinkedItem(i));
+                linkedItems.Add(origRecipe.GetLinkedItem(i).ToString());
         }
 
         public ModifiedRecipe() : this("ModifiedRecipe", ModifiedRecipeProperties)
         {
-            internalId = TechType.None;
         }
 
         public ModifiedRecipe(string key) : this(key, ModifiedRecipeProperties)
         {
-            internalId = TechType.None;
         }
 
         protected ModifiedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            internalId = TechType.None;
-
             emTechType = (EmProperty<string>)Properties["ItemID"];
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
             ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
-            linkedItems = (EmPropertyTechTypeList)Properties["LinkedItemIDs"];
+            linkedItems = (EmPropertyList<string>)Properties["LinkedItemIDs"];
             unlockedAtStart = (EmYesNo)Properties["ForceUnlockAtStart"];
-            unlocks = (EmPropertyTechTypeList)Properties["Unlocks"];
+            unlocks = (EmPropertyList<string>)Properties["Unlocks"];
 
             OnValueExtractedEvent += ValueExtracted;
         }
@@ -169,7 +151,7 @@
         {
             foreach (EmIngredient ingredient in ingredients)
             {
-                TechType itemID = (ingredient["ItemID"] as EmPropertyTechType).Value;
+                string itemID = (ingredient["ItemID"] as EmProperty<string>).Value;
                 short required = (ingredient["Required"] as EmProperty<short>).Value;
             }
         }
@@ -178,8 +160,8 @@
 
         public EmIngredient GetIngredient(int index) => ingredients[index];
 
-        public TechType GetLinkedItem(int index) => linkedItems[index];
+        public string GetLinkedItem(int index) => linkedItems[index];
 
-        public TechType GetUnlock(int index) => unlocks[index];
+        public string GetUnlock(int index) => unlocks[index];
     }
 }

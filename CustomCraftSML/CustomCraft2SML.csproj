@@ -78,8 +78,6 @@
     <Compile Include="Serialization\AliasRecipeList.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
     <Compile Include="Serialization\EmPropertyCraftTreeType.cs" />
-    <Compile Include="Serialization\EmPropertyTechType.cs" />
-    <Compile Include="Serialization\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
     <Compile Include="Interfaces\IAddedRecipe.cs" />
     <Compile Include="Interfaces\ICustomBioFuel.cs" />

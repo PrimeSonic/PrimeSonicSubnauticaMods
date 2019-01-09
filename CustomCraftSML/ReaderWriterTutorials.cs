@@ -59,7 +59,7 @@
 
             var bioFuelList = new CustomBioFuelList();
             foreach (TechType bioEnergyKey in allBioFuels.Keys)
-                bioFuelList.Add(new CustomBioFuel { ItemID = bioEnergyKey, Energy = allBioFuels[bioEnergyKey] });
+                bioFuelList.Add(new CustomBioFuel { ItemID = bioEnergyKey.ToString(), Energy = allBioFuels[bioEnergyKey] });
 
             var printyPrints = new List<string>();
             printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]

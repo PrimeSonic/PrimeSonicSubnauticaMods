@@ -20,7 +20,7 @@
 
             size.FromString(serialized);
 
-            Assert.AreEqual(TechType.Aerogel, size.ItemID);
+            Assert.AreEqual(TechType.Aerogel.ToString(), size.ItemID);
             Assert.AreEqual(3, size.Width);
             Assert.AreEqual(4, size.Height);
         }
@@ -46,7 +46,7 @@
 
             Assert.AreEqual(2, sizes.Count);
 
-            Assert.AreEqual(TechType.Aerogel, sizes[0].ItemID);
+            Assert.AreEqual(TechType.Aerogel.ToString(), sizes[0].ItemID);
             Assert.AreEqual(3, sizes[0].Width);
             Assert.AreEqual(4, sizes[0].Height);
         }
@@ -68,7 +68,7 @@
 
             Assert.AreEqual(2, sizes.Count);
 
-            Assert.AreEqual(TechType.Aerogel, sizes[0].ItemID);
+            Assert.AreEqual(TechType.Aerogel.ToString(), sizes[0].ItemID);
             Assert.AreEqual(1, sizes[0].Width);
             Assert.AreEqual(1, sizes[0].Height);
         }

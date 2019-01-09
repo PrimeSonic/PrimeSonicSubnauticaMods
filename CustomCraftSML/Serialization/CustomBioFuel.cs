@@ -6,22 +6,22 @@
 
     internal class CustomBioFuel : EmPropertyCollection, ICustomBioFuel
     {
-        private readonly EmPropertyTechType emTechType;
+        private readonly EmProperty<string> emTechType;
         private readonly EmProperty<float> emEnergy;
 
         protected static List<EmProperty> BioFuelProperties => new List<EmProperty>(2)
         {
-            new EmPropertyTechType("ItemID"),
+            new EmProperty<string>("ItemID"),
             new EmProperty<float>("Energy")
         };
 
         public CustomBioFuel() : base("CustomBioFuel", BioFuelProperties)
         {
-            emTechType = (EmPropertyTechType)Properties["ItemID"];
+            emTechType = (EmProperty<string>)Properties["ItemID"];
             emEnergy = (EmProperty<float>)Properties["Energy"];
         }
 
-        public TechType ItemID
+        public string ItemID
         {
             get => emTechType.Value;
             set => emTechType.Value = value;
