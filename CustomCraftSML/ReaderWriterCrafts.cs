@@ -18,6 +18,7 @@
         private const string CustomBioFuelsFile = WorkingFolder + "CustomBioFuels.txt";
 
         private static readonly IDictionary<TechType, AddedRecipe> addedRecipes = new Dictionary<TechType, AddedRecipe>();
+        private static readonly IDictionary<TechType, AliasRecipe> aliasRecipes = new Dictionary<TechType, AliasRecipe>();
         private static readonly IDictionary<TechType, ModifiedRecipe> modifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
         private static readonly IDictionary<TechType, CustomSize> customSizes = new Dictionary<TechType, CustomSize>();
         private static readonly IDictionary<TechType, CustomBioFuel> customBioFuels = new Dictionary<TechType, CustomBioFuel>();
@@ -32,6 +33,7 @@
 
             SendToSMLHelper(customTabs);
             SendToSMLHelper(addedRecipes);
+            SendToSMLHelper(aliasRecipes);
             SendToSMLHelper(modifiedRecipes);
             SendToSMLHelper(customSizes);
             SendToSMLHelper(customBioFuels);
@@ -67,6 +69,10 @@
                 {
                     case "AddedRecipes":
                         check = ParseEntries<AddedRecipe, AddedRecipeList>(serializedData, addedRecipes);
+                        break;
+
+                    case "AliasRecipes":
+                        check = ParseEntries<AliasRecipe, AliasRecipeList>(serializedData, aliasRecipes);
                         break;
 
                     case "ModifiedRecipes":

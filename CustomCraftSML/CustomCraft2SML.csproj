@@ -38,20 +38,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>C:\Program Files\Epic Games\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>C:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IAliasRecipe.cs" />
     <Compile Include="Serialization\CustomCraftingTabList.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
@@ -73,6 +74,8 @@
     <Compile Include="Serialization\CustomCraftingTab.cs" />
     <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\CustomSizeList.cs" />
+    <Compile Include="Serialization\AliasRecipe.cs" />
+    <Compile Include="Serialization\AliasRecipeList.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
     <Compile Include="Serialization\EmPropertyCraftTreeType.cs" />
     <Compile Include="Serialization\EmPropertyTechType.cs" />

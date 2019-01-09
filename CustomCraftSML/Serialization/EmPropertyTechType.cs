@@ -22,7 +22,15 @@
                 return tType;
             }
             else
+            {
+                //  Not one of the known tech types - is it registered with SMLHelper?
+                TechType custom;
+                if (SMLHelper.V2.Handlers.TechTypeHandler.TryGetModdedTechType(value, out custom))
+                {
+                    return custom;
+                }
                 return TechType.None;
+            }
         }
 
         //private void SetNameAsComment(string value, TechType tType)

@@ -14,6 +14,9 @@
         {
             switch (entry)
             {
+                case IAliasRecipe aliasRecipe:
+                    AliasRecipe(aliasRecipe);
+                    return true;
                 case IAddedRecipe addedRecipe:
                     AddRecipe(addedRecipe);
                     return true;
@@ -41,6 +44,32 @@
             HandleCraftTreeAddition(addedRecipe);
 
             HandleUnlocks(addedRecipe);
+        }
+
+        internal static void AliasRecipe(IAliasRecipe aliasRecipe)
+        {
+            //  See if there is an asset in the asset folder that has the same name
+            var imagePath = @"./Qmods/CustomCraft2SML/Assets/" + aliasRecipe.ItemName + @".png";
+            if (System.IO.File.Exists(imagePath))
+            {
+                var sprite = SMLHelper.V2.Utility.ImageUtils.LoadSpriteFromFile(imagePath);
+                SMLHelper.V2.Handlers.SpriteHandler.RegisterSprite(aliasRecipe.ItemID, sprite);
+            }
+            else if (aliasRecipe.LinkedItemsCount > 0)
+            {
+                var sprite = SpriteManager.Get(aliasRecipe.GetLinkedItem(0));
+                SMLHelper.V2.Handlers.SpriteHandler.RegisterSprite(aliasRecipe.ItemID, sprite);
+            }
+            else
+            {
+                QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemName}'");
+            }
+
+            HandleAddedRecipe(aliasRecipe, 0 /* alias recipes should default to not producing the custom item unless explicitly configured */);
+
+            HandleCraftTreeAddition(aliasRecipe);
+
+            HandleUnlocks(aliasRecipe);
         }
 
         internal static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
@@ -92,7 +121,6 @@
                 CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID), craftingTab.StepsToTab);
             }
         }
-
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
         {
             var craftPath = new CraftingPath(addedRecipe.Path);
@@ -105,11 +133,11 @@
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, addedRecipe.ItemID, steps);
         }
 
-        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe)
+        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe, short defaultCraftAmount = 1)
         {
             var replacement = new TechData
             {
-                craftAmount = modifiedRecipe.AmountCrafted ?? 1
+                craftAmount = modifiedRecipe.AmountCrafted ?? defaultCraftAmount
             };
 
             foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)

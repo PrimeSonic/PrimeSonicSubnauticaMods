@@ -1,0 +1,26 @@
+AliasRecipes: 
+(
+    ItemID: GallonWater;
+    DisplayName: "Water Jug - 1 gallon";
+    Tooltip: "Large water jug.  Useful for storing large quantites of water, but not for consumption";
+    AmountCrafted: 1;
+    Ingredients: 
+    (
+        ItemID: DisinfectedWater;
+        Required: 10;
+    );
+    Path: Fabricator/Survival/Water;
+),
+(
+    ItemID: WaterFromGallon;
+    DisplayName: "Disinfected water (x10)";
+    Tooltip: "Split the water jug into smaller containers";
+    LinkedItemIDs: DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater;
+    AmountCrafted: 0;
+    Ingredients: 
+    (
+        ItemID: GallonWater;
+        Required: 1;
+    );
+    Path: Fabricator/Survival/Water;
+);

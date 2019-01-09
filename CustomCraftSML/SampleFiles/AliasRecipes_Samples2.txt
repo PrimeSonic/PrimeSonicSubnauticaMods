@@ -1,0 +1,26 @@
+AliasRecipes: 
+(
+    ItemID: DummyDisinfectedWater;
+    DisplayName: "Disinfected water";
+    Tooltip: "Craft disinfected water from filtered water";
+    LinkedItemIDs: DisinfectedWater;
+    Ingredients: 
+    (
+        ItemID: FilteredWater;
+        Required: 2;
+    );
+    Path: Fabricator/Survival/Water;
+),
+(
+    ItemID: DummyDisinfectedWater2;
+    DisplayName: "Disinfected water (x2)";
+    Tooltip: "Craft disinfected water from big filtered water";
+    LinkedItemIDs: DisinfectedWater,DisinfectedWater;
+    AmountCrafted: 0;
+    Ingredients: 
+    (
+        ItemID: BigFilteredWater;
+        Required: 1;
+    );
+    Path: Fabricator/Survival/Water;
+);
