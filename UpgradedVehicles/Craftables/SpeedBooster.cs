@@ -23,7 +23,7 @@
         public override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
         public override TechCategory CategoryForPDA => TechCategory.VehicleUpgrades;
         public override string[] StepsToFabricatorTab => new[] { "CommonModules" };
-        public override TechType RequiredForUnlock => TechType.PowerUpgradeModule;
+        public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
 
         public override string AssetsFolder => "UpgradedVehicles/Assets";
 
