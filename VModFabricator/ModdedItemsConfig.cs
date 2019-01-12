@@ -124,7 +124,7 @@
 
             string text = File.ReadAllText(ConfigFile, Encoding.UTF8);
 
-            if (!text.TrimStart().StartsWith(ConfigFile))
+            if (!text.TrimStart('#').Trim().StartsWith(ConfigTopLine))
             {
                 QuickLogger.Message("Config file for VModFabricator was outdated. Overwriting with default file.");
                 SetDefaults();
