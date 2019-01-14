@@ -51,6 +51,7 @@
     <Compile Include="Craftables\DeepBattery.cs" />
     <Compile Include="Craftables\DeepPowerCell.cs" />
     <Compile Include="Craftables\DeepBatteryCellBase.cs" />
+    <Compile Include="DeepConfig.cs" />
     <Compile Include="Patchers\Charger_Patchers.cs" />
     <Compile Include="Patchers\EnergyMixin_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

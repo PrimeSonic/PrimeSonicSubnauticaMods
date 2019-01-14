@@ -27,7 +27,10 @@
 
         private static void PatchCraftables()
         {
-            var lithiumBattery = new DeepBattery();
+            var config = new DeepConfig();
+            config.ReadConfigFile();
+
+            var lithiumBattery = new DeepBattery(config.BatteryCapacity);
             lithiumBattery.Patch();
 
             var lithiumPowerCell = new DeepPowerCell(lithiumBattery);
