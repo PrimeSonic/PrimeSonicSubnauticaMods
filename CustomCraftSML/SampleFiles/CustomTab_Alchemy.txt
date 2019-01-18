@@ -1,0 +1,33 @@
+# This is intended for testing only - all credit for this mod idea goes to thegrandseraph and zachzill04 for updates #
+
+CustomCraftingTabs: 
+(
+    TabID: Alchemy;
+    DisplayName: "Alchemy";
+    SpriteItemID: HatchingEnzymes;
+    ParentTabPath: Fabricator;
+),
+(
+    TabID: Metal;
+    DisplayName: "Metallic Alchemy";
+    SpriteItemID: Titanium;
+    ParentTabPath: Fabricator/Alchemy; 
+),
+(
+    TabID: Crystal;
+    DisplayName: "Crystal Alchemy";
+    SpriteItemID: Quartz;
+    ParentTabPath: Fabricator/Alchemy; 
+),
+(
+    TabID: Energetic;
+    DisplayName: "Energetic Alchemy";
+    SpriteItemID: PrecursorIonCrystal;
+    ParentTabPath: Fabricator/Alchemy; 
+),
+(
+    TabID: Organic;
+    DisplayName: "Organic Alchemy";
+    SpriteItemID: GasPod;
+    ParentTabPath: Fabricator/Alchemy; 
+);
