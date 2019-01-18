@@ -1,0 +1,342 @@
+# this file is intended as a sample/test file for use of the AliasRecipe functionality.  Credit goes to #
+#   "thegrandseraph" for the initial idea of the Alchemy mod and"zachzilla04" for subsequent updates. #
+
+# The path variables are linked to a customtab entry as well - it must be included for this to work #
+
+AliasRecipes:
+(
+    ItemID: AlchemyQuartz;
+    DisplayName: "Craft Quartz (x3)";
+    Tooltip: "Craft Quartz (x3)";
+    LinkedItemIDs: Quartz,Quartz,Quartz;
+    Ingredients:
+    (
+        ItemID: PurpleFanSeed;
+        Required: 1;
+    ),
+    (
+        ItemID: CreepVinePiece;
+        Required: 1;
+    );
+    Path: Fabricator/Alchemy/Crystal;
+    ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyScrapMetal;
+    DisplayName: "Craft Metal Salvage (x2)";
+    Tooltip: "Craft Metal Salvage (x2)";
+    LinkedItemIDs: ScrapMetal,ScrapMetal;
+    Ingredients:
+    (
+        ItemID: Titanium;
+        Required: 1;
+    ),
+    (
+        ItemID: AcidMushroomSpore ;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Metal;
+    ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyLead;
+    DisplayName: "Craft Lead (x3)";
+    Tooltip: "Craft Lead (x3)";
+    LinkedItemIDs: Lead,Lead,Lead;
+    Ingredients:
+    (
+        ItemID: Titanium;
+        Required:1;
+    ),
+    (
+        ItemID: Bluepalmseed;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Metal;
+    ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyCopper;
+    DisplayName: "Craft Copper (x3)";
+    Tooltip: "Craft Copper (x3)";
+    LinkedItemIDs: Copper,Copper,Copper;
+    Ingredients:
+    (
+        ItemID: Titanium;
+        Required:1;
+    ),
+    (
+        ItemID: CreepVinePiece;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Metal;
+    ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemySalt;
+    DisplayName: "Craft Salt (x4)";
+    Tooltip: "Craft Salt (x4)";
+    LinkedItemIDs: Salt,Salt,Salt,Salt;
+    Ingredients:
+    (
+        ItemID: AcidMushroomSpore;
+        Required:1;
+    ),
+    (
+        ItemID: PurpleRattleSpore;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Crystal;
+    ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyGold;
+    DisplayName: "Craft Gold (x2)";
+    Tooltip: "Craft Gold (x2)";
+    LinkedItemIDs: Gold,Gold;
+	Ingredients:
+    (
+        ItemID: Copper;
+        Required:1;
+    ),
+    (
+        ItemID: CreepVineSeedCluster;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Metal;
+    ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemySulphur;
+    DisplayName: "Craft Crystalline Sulphur (x2)";
+    Tooltip: "Craft Crystalline Sulphur (x2)";
+    LinkedItemIDs: Sulphur,Sulphur;
+	Ingredients:
+    (
+        ItemID: CrashPowder;
+        Required:2;
+    );
+    Path: Fabricator/Alchemy/Crystal;
+    ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemySilver;
+    DisplayName: "Craft Silver (x3)";
+    Tooltip: "Craft Silver (x3)";
+    LinkedItemIDs: Silver,Silver,Silver;
+	Ingredients:
+    (
+        ItemID: Copper;
+        Required:1;
+    ),
+    (
+        ItemID: PurpleBrainCoralPiece;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Metal;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyCrashPowder;
+    DisplayName: "Craft Crash Powder (x3)";
+    Tooltip: "Craft Crash Powder (x3)";
+    LinkedItemIDs: CrashPowder,CrashPowder,CrashPowder;
+	Ingredients:
+    (
+        ItemID: CreepVinePiece;
+        Required:1;
+    ),
+    (
+        ItemID: AcidMushroomSpore;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Crystal;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyDiamond;
+    DisplayName: "Craft Diamond";
+    Tooltip: "Craft Diamond";
+    LinkedItemIDs: Diamond;
+    Ingredients:
+    (
+        ItemID: Quartz;
+        Required:1;
+    ),
+    (
+        ItemID: CreepVinePiece;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Crystal;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyLithium;
+    DisplayName: "Craft Lithium (x2)";
+    Tooltip: "Craft Lithium (x2)";
+    LinkedItemIDs: Lithium,Lithium;
+	Ingredients:
+    (
+        ItemID: HangingFruit;
+        Required:1;
+    ),
+    (
+        ItemID: Titanium;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Metal;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyAluminumOxide;
+    DisplayName: "Craft Ruby (x2)";
+    Tooltip: "Craft Ruby (x2)";
+    LinkedItemIDs: AluminumOxide,AluminumOxide;
+	Ingredients:
+    (
+        ItemID: Quartz;
+        Required:1;
+    ),
+    (
+        ItemID: BloodOil;
+        Required:1;
+    );
+	Path: Fabricator/Alchemy/Crystal;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyMagnetite;
+    DisplayName: "Craft Magnetite (x3)";
+    Tooltip: "Craft Magnetite (x3)";
+    LinkedItemIDs: Magnetite,Magnetite,Magnetite;
+	Ingredients:
+    (
+        ItemID: Titanium;
+        Required:1;
+    ),
+    (
+        ItemID: PurpleRattleSpore;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Energetic;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyUraniniteCrystal;
+    DisplayName: "Craft Uraninite (x4)";
+    Tooltip: "Craft Uraninite (x4)";
+    LinkedItemIDs: UraniniteCrystal,UraniniteCrystal,UraniniteCrystal,UraniniteCrystal;
+	Ingredients:
+    (
+        ItemID: SnakeMushroomSpore;
+        Required:1;
+    ),
+    (
+        ItemID: CrashPowder;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Energetic;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyKyanite;
+    DisplayName: "Craft Kyanite (x2)";
+    Tooltip: "Craft Kyanite (x2)";
+    LinkedItemIDs: Kyanite,Kyanite;
+	Ingredients:
+    (
+        ItemID: Quartz;
+        Required:1;
+    ),
+    (
+        ItemID: PurpleRattleSpore;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Energetic;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyPrecursorIonCrystal;
+    DisplayName: "Craft Ion Cube";
+    Tooltip: "Craft Ion Cube";
+    LinkedItemIDs: PrecursorIonCrystal;
+	Ingredients:
+    (
+        ItemID: UraniniteCrystal;
+        Required:2;
+    ),
+    (
+        ItemID: Kyanite;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Energetic;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyNickel;
+    DisplayName: "Craft Nickel (x2)";
+    Tooltip: "Craft Nickel (x2)";
+    LinkedItemIDs: Nickel,Nickel;
+	Ingredients:
+    (
+        ItemID: Lead;
+        Required:1;
+    ),
+    (
+        ItemID: BulboTreePiece;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Metal;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyJeweledDiskPiece;
+    DisplayName: "Craft Table Coral Sample (x2)";
+    Tooltip: "Craft Table Coral Sample (x2)";
+    LinkedItemIDs: JeweledDiskPiece,JeweledDiskPiece;
+	Ingredients:
+    (
+        ItemID: CreepVineseedCluster;
+        Required:1;
+    ),
+    (
+        ItemID: PurpleBrainCoralPiece;
+        Required:1;
+    );
+	Path: Fabricator/Alchemy/Organic;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyCoralChunk;
+    DisplayName: "Craft Coral Tube Sample (x4)";
+    Tooltip: "Craft Coral Tube Sample (x4)";
+    LinkedItemIDs: coralchunk,coralchunk,coralchunk,coralchunk;
+	Ingredients:
+    (
+        ItemID: PurpleFanSeed;
+        Required:1;
+    ),
+    (
+        ItemID: PurpleBrainCoralPiece;
+        Required:1;
+    );
+	Path: Fabricator/Alchemy/Organic;
+	ForceUnlockAtStart: YES;
+),
+(
+    ItemID: AlchemyStalkerTooth;
+    DisplayName: "Craft Stalker Tooth (x4)";
+    Tooltip: "Craft Stalker Tooth (x4)";
+    LinkedItemIDs: StalkerTooth,StalkerTooth,StalkerTooth,StalkerTooth;
+	Ingredients:
+    (
+        ItemID: Quartz;
+        Required:1;
+    ),
+    (
+        ItemID: PurpleRattleSpore;
+        Required:1;
+    );
+    Path: Fabricator/Alchemy/Organic;
+	ForceUnlockAtStart:YES;
+);
