@@ -1,6 +1,9 @@
 # This is a derived work from AlexejheroYTB's mod UnpackIngots, demonstrating a different way of doing the same thing #
 # also includes a recipe for going straight from metal salvage to ingots (preserving the ratio) #
 
+# Note: the path leverages paths created by the MoreIngots mod (also by AlexejheroYTB) - this doesn't impact #
+#        functionality and is done as a fabricator menu simplification.  Change this to suit #
+
  AliasRecipes: 
 (
     ItemID: TitaniumIngotFromSalvage;
