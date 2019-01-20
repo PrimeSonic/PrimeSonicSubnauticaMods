@@ -1,27 +1,27 @@
 ﻿namespace CustomCraft2SML.PublicAPI
 {
+    using System.Collections.Generic;
+    using System.IO;
     using Common;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using UnityEngine.Assertions;
-    using System.Collections.Generic;
-    using System.IO;
 
     public static class CustomCraft
     {
         public static TechType GetTechType(string value)
         {
-            if (TechTypeExtensions.FromString(value, out var tType, true))
+            if (TechTypeExtensions.FromString(value, out TechType tType, true))
             {
                 return tType;
             }
             else
             {
                 //  Not one of the known tech types - is it registered with SMLHelper?
-                TechType custom;
-                if (TechTypeHandler.TryGetModdedTechType(value, out custom))
+                if (TechTypeHandler.TryGetModdedTechType(value, out TechType custom))
                 {
                     return custom;
                 }
@@ -36,10 +36,9 @@
             {
                 case IAliasRecipe aliasRecipe:
                     //  Register the alias TechType
-                    if (aliasRecipe.ItemID.Length >= 1)
-                    {
+                    if (!string.IsNullOrEmpty(aliasRecipe.ItemID))
                         return TechTypeHandler.AddTechType(aliasRecipe.ItemID, aliasRecipe.DisplayName, aliasRecipe.Tooltip);
-                    }
+
                     return TechType.None;
                 case IAddedRecipe addedRecipe:
                     return GetTechType(addedRecipe.ItemID);
@@ -95,27 +94,32 @@
         internal static void AliasRecipe(IAliasRecipe aliasRecipe)
         {
             //  See if there is an asset in the asset folder that has the same name
-            var imagePath = FileReaderWriter.AssetsFolder + aliasRecipe.ItemName + @".png";
-            if (File.Exists(imagePath))
-            {
-                var sprite = SMLHelper.V2.Utility.ImageUtils.LoadSpriteFromFile(imagePath);
-                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
-            }
-            else if (aliasRecipe.LinkedItemsCount > 0)
-            {
-                var sprite = SpriteManager.Get(GetTechType(aliasRecipe.GetLinkedItem(0)));
-                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
-            }
-            else
-            {
-                QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemName}'");
-            }
+            HandleCustomSprite(aliasRecipe);
 
             HandleAddedRecipe(aliasRecipe, 0 /* alias recipes should default to not producing the custom item unless explicitly configured */);
 
             HandleCraftTreeAddition(aliasRecipe);
 
             HandleUnlocks(aliasRecipe);
+        }
+
+        private static void HandleCustomSprite(IAliasRecipe aliasRecipe)
+        {
+            string imagePath = FileReaderWriter.AssetsFolder + aliasRecipe.ItemID + @".png";
+            if (File.Exists(imagePath))
+            {
+                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+            }
+            else if (aliasRecipe.LinkedItemsCount > 0)
+            {
+                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(aliasRecipe.GetLinkedItem(0)));
+                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+            }
+            else
+            {
+                QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemID}'");
+            }
         }
 
         internal static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
@@ -259,7 +263,8 @@
             {
                 var unlocks = new List<TechType>();
 
-                foreach (var value in modifiedRecipe.Unlocks) {
+                foreach (string value in modifiedRecipe.Unlocks)
+                {
                     unlocks.Add(GetTechType(value));
                 }
 

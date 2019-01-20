@@ -2,7 +2,7 @@
 # This recipe format is intended for use with items that do not exist in the base game #
 
 # There are two ways to associate a sprite with the new items - first by having #
-#     an png file in the Assets folder that matches the ItemID (eg - GallonWater.png) #
+#     a png file in the Assets folder that matches the ItemID (eg - GallonWater.png) #
 # If there is no PNG file found, then the sprite of first LinkedItemID will be used #
 
 # There are two common uses for this recipe #

@@ -1,7 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
-    using Common;
-    using System;
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -10,11 +8,6 @@
     {
         private readonly EmProperty<string> displayName;
         private readonly EmProperty<string> tooltip;
-
-        public string ItemName
-        {
-            get => emTechType.Value;
-        }
 
         public string DisplayName
         {
@@ -48,6 +41,6 @@
             tooltip = (EmProperty<string>)Properties["Tooltip"];
         }
 
-        internal override EmProperty Copy() => new AliasRecipe(Key, CopyDefinitions);
+        internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);
     }
 }
