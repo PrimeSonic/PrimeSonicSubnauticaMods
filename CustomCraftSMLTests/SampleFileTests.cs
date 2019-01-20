@@ -41,12 +41,12 @@
             Assert.IsTrue(result);
 
             ModifiedRecipe reactorRodChange = mRecipes[2];
-            Assert.AreEqual(TechType.ReactorRod, reactorRodChange.ItemID);
+            Assert.AreEqual(TechType.ReactorRod.ToString(), reactorRodChange.ItemID);
             Assert.AreEqual(false, reactorRodChange.IngredientsCount.HasValue);
             Assert.AreEqual(false, reactorRodChange.LinkedItemsCount.HasValue);
 
             Assert.AreEqual(1, reactorRodChange.UnlocksCount);
-            Assert.AreEqual(TechType.DepletedReactorRod, reactorRodChange.GetUnlock(0));
+            Assert.AreEqual(TechType.DepletedReactorRod.ToString(), reactorRodChange.GetUnlock(0));
         }
 
         [Test]
@@ -98,23 +98,23 @@
         {
             var nutrientBlockRecipe = new AddedRecipe()
             {
-                ItemID = TechType.NutrientBlock,
+                ItemID = TechType.NutrientBlock.ToString(),
                 AmountCrafted = 1,
                 ForceUnlockAtStart = false,
                 Path = PathHelper.Fabricator.Sustenance.CuredFood.CuredFoodTab.GetCraftingPath.ToString()
             };
-            nutrientBlockRecipe.AddIngredient(TechType.CuredReginald, 1);
-            nutrientBlockRecipe.AddIngredient(TechType.PurpleVegetable, 1);
-            nutrientBlockRecipe.AddIngredient(TechType.HangingFruit, 1);
+            nutrientBlockRecipe.AddIngredient(TechType.CuredReginald.ToString(), 1);
+            nutrientBlockRecipe.AddIngredient(TechType.PurpleVegetable.ToString(), 1);
+            nutrientBlockRecipe.AddIngredient(TechType.HangingFruit.ToString(), 1);
 
             var bigFilterWaterRecipe = new AddedRecipe()
             {
-                ItemID = TechType.BigFilteredWater,
+                ItemID = TechType.BigFilteredWater.ToString(),
                 AmountCrafted = 1,
                 Path = PathHelper.Fabricator.Sustenance.Water.WaterTab.GetCraftingPath.ToString(),
                 ForceUnlockAtStart = false
             };
-            bigFilterWaterRecipe.AddIngredient(TechType.FilteredWater, 2);
+            bigFilterWaterRecipe.AddIngredient(TechType.FilteredWater.ToString(), 2);
 
             var origRecipeList = new AddedRecipeList
             {
@@ -171,12 +171,12 @@
         {
             var curedReginaldRecipe = new ModifiedRecipe()
             {
-                ItemID = TechType.CuredReginald,
+                ItemID = TechType.CuredReginald.ToString(),
                 AmountCrafted = 1,
             };
-            curedReginaldRecipe.AddUnlock(TechType.NutrientBlock);
-            curedReginaldRecipe.AddIngredient(TechType.Reginald, 1);
-            curedReginaldRecipe.AddIngredient(TechType.Salt, 1);
+            curedReginaldRecipe.AddUnlock(TechType.NutrientBlock.ToString());
+            curedReginaldRecipe.AddIngredient(TechType.Reginald.ToString(), 1);
+            curedReginaldRecipe.AddIngredient(TechType.Salt.ToString(), 1);
 
             var origRecipeList = new ModifiedRecipeList
             {
@@ -220,21 +220,21 @@
         {
             var smallBloodOil = new CustomSize()
             {
-                ItemID = TechType.BloodOil,
+                ItemID = TechType.BloodOil.ToString(),
                 Width = 1,
                 Height = 1
             };
 
             var smallMelon = new CustomSize()
             {
-                ItemID = TechType.BulboTreePiece,
+                ItemID = TechType.BulboTreePiece.ToString(),
                 Width = 1,
                 Height = 1
             };
 
             var smallPotatoe = new CustomSize()
             {
-                ItemID = TechType.PurpleVegetable,
+                ItemID = TechType.PurpleVegetable.ToString(),
                 Width = 1,
                 Height = 1
             };
@@ -262,9 +262,9 @@
 
             Assert.AreEqual(origCustSizes.Count, readingSizesList.Count);
 
-            Assert.AreEqual(TechType.BloodOil, readingSizesList[0].ItemID);
-            Assert.AreEqual(TechType.BulboTreePiece, readingSizesList[1].ItemID);
-            Assert.AreEqual(TechType.PurpleVegetable, readingSizesList[2].ItemID);
+            Assert.AreEqual(TechType.BloodOil.ToString(), readingSizesList[0].ItemID);
+            Assert.AreEqual(TechType.BulboTreePiece.ToString(), readingSizesList[1].ItemID);
+            Assert.AreEqual(TechType.PurpleVegetable.ToString(), readingSizesList[2].ItemID);
 
             Assert.AreEqual(1, readingSizesList[0].Width);
             Assert.AreEqual(1, readingSizesList[0].Height);

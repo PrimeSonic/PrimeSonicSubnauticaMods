@@ -2,6 +2,6 @@
 {
     public interface ITechTyped
     {
-        TechType ItemID { get; }
+        string ItemID { get; }
     }
 }

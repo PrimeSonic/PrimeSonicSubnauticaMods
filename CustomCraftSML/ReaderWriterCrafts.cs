@@ -17,12 +17,22 @@
         private const string AddedRecipiesFile = WorkingFolder + "AddedRecipes.txt";
         private const string CustomBioFuelsFile = WorkingFolder + "CustomBioFuels.txt";
 
-        private static readonly IDictionary<TechType, AddedRecipe> addedRecipes = new Dictionary<TechType, AddedRecipe>();
-        private static readonly IDictionary<TechType, AliasRecipe> aliasRecipes = new Dictionary<TechType, AliasRecipe>();
-        private static readonly IDictionary<TechType, ModifiedRecipe> modifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
-        private static readonly IDictionary<TechType, CustomSize> customSizes = new Dictionary<TechType, CustomSize>();
-        private static readonly IDictionary<TechType, CustomBioFuel> customBioFuels = new Dictionary<TechType, CustomBioFuel>();
+        //  Initial storage for the serialization - key is string as we have not resolved the TechType at this point
+        private static List<AddedRecipe> addedRecipes = new List<AddedRecipe>();
+        private static List<AliasRecipe> aliasRecipes = new List<AliasRecipe>();
+        private static List<ModifiedRecipe> modifiedRecipes = new List<ModifiedRecipe>();
+        private static List<CustomSize> customSizes = new List<CustomSize>();
+        private static List<CustomBioFuel> customBioFuels = new List<CustomBioFuel>();
+
+        //  Crafting tabs to not use TechType for key - store these by name
         private static readonly IDictionary<string, CustomCraftingTab> customTabs = new Dictionary<string, CustomCraftingTab>();
+
+        //  After the prepass - we have resolved the TechType and filtered out duplicates.
+        private static IDictionary<TechType, AddedRecipe> uniqueAddedRecipes = new Dictionary<TechType, AddedRecipe>();
+        private static IDictionary<TechType, AliasRecipe> uniqueAliasRecipes = new Dictionary<TechType, AliasRecipe>();
+        private static IDictionary<TechType, ModifiedRecipe> uniqueModifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
+        private static IDictionary<TechType, CustomSize> uniqueCustomSizes = new Dictionary<TechType, CustomSize>();
+        private static IDictionary<TechType, CustomBioFuel> uniqueCustomBioFuels = new Dictionary<TechType, CustomBioFuel>();
 
         private static void HandleWorkingFiles()
         {
@@ -31,12 +41,18 @@
             foreach (string file in workingFiles)
                 DeserializeFile(file);
 
+            PrePassSMLHelper(addedRecipes, ref uniqueAddedRecipes);
+            PrePassSMLHelper(aliasRecipes, ref uniqueAliasRecipes);
+            PrePassSMLHelper(modifiedRecipes, ref uniqueModifiedRecipes);
+            PrePassSMLHelper(customSizes, ref uniqueCustomSizes);
+            PrePassSMLHelper(customBioFuels, ref uniqueCustomBioFuels);
+
             SendToSMLHelper(customTabs);
-            SendToSMLHelper(addedRecipes);
-            SendToSMLHelper(aliasRecipes);
-            SendToSMLHelper(modifiedRecipes);
-            SendToSMLHelper(customSizes);
-            SendToSMLHelper(customBioFuels);
+            SendToSMLHelper(uniqueAddedRecipes);
+            SendToSMLHelper(uniqueAliasRecipes);
+            SendToSMLHelper(uniqueModifiedRecipes);
+            SendToSMLHelper(uniqueCustomSizes);
+            SendToSMLHelper(uniqueCustomBioFuels);
         }
 
         private static void CreateEmptyFile<T>(string filePath) where T : EmProperty, ITutorialText, new()
@@ -68,23 +84,23 @@
                 switch (key)
                 {
                     case "AddedRecipes":
-                        check = ParseEntries<AddedRecipe, AddedRecipeList>(serializedData, addedRecipes);
+                        check = ParseEntries<AddedRecipe, AddedRecipeList>(serializedData, ref addedRecipes);
                         break;
 
                     case "AliasRecipes":
-                        check = ParseEntries<AliasRecipe, AliasRecipeList>(serializedData, aliasRecipes);
+                        check = ParseEntries<AliasRecipe, AliasRecipeList>(serializedData, ref aliasRecipes);
                         break;
 
                     case "ModifiedRecipes":
-                        check = ParseEntries<ModifiedRecipe, ModifiedRecipeList>(serializedData, modifiedRecipes);
+                        check = ParseEntries<ModifiedRecipe, ModifiedRecipeList>(serializedData, ref modifiedRecipes);
                         break;
 
                     case "CustomSizes":
-                        check = ParseEntries<CustomSize, CustomSizeList>(serializedData, customSizes);
+                        check = ParseEntries<CustomSize, CustomSizeList>(serializedData, ref customSizes);
                         break;
 
                     case "CustomBioFuels":
-                        check = ParseEntries<CustomBioFuel, CustomBioFuelList>(serializedData, customBioFuels);
+                        check = ParseEntries<CustomBioFuel, CustomBioFuelList>(serializedData, ref customBioFuels);
                         break;
 
                     case "CustomCraftingTabs":
@@ -115,7 +131,7 @@
             }
         }
 
-        private static int ParseEntries<T, T2>(string serializedData, IDictionary<TechType, T> parsedItems)
+        private static int ParseEntries<T, T2>(string serializedData, ref List<T> parsedItems)
             where T : EmPropertyCollection, ITechTyped
             where T2 : EmPropertyCollectionList<T>, new()
         {
@@ -131,21 +147,14 @@
             if (list.Count == 0)
                 return 0; // No entries
 
-            int unique = 0;
+            int count = 0;
             foreach (T item in list)
             {
-                if (parsedItems.ContainsKey(item.ItemID))
-                {
-                    QuickLogger.Warning($"Duplicate entry for '{item.ItemID}' in '{list.Key}' was already added by another working file. Kept first one. Discarded duplicate.");
-                }
-                else
-                {
-                    parsedItems.Add(item.ItemID, item);
-                    unique++;
-                }
+                parsedItems.Add(item);
+                count++;
             }
 
-            return unique++; // Return the number of unique entries added in this list
+            return count; // Return the number of unique entries added in this list
         }
 
         private static int ParseEntries<T, T2>(string serializedData, IDictionary<string, T> parsedItems)
@@ -181,8 +190,28 @@
             return unique++; // Return the number of unique entries added in this list
         }
 
-        private static void SendToSMLHelper<T>(IDictionary<TechType, T> uniqueEntries)
+        private static void PrePassSMLHelper<T>(List<T> entries, ref IDictionary<TechType, T> uniqueEntries)
             where T : ITechTyped
+        {
+            int successCount = 0;
+            //  Use the ToSet function as a copy constructor - this way we can iterate across the
+            //      temp structure, but change the permanent one in the case of duplicates
+            foreach (var item in entries)
+            {
+                TechType rv = CustomCraft.PrePass(item);
+                if (uniqueEntries.ContainsKey(rv))
+                {
+                    QuickLogger.Warning($"Duplicate entry for '{rv}' was already added by another working file. Kept first one. Discarded duplicate.");
+                }
+                else
+                {
+                    uniqueEntries.Add(rv, item);
+                }
+            }
+        }
+
+        private static void SendToSMLHelper<T>(IDictionary<TechType, T> uniqueEntries)
+        where T : ITechTyped
         {
             int successCount = 0;
             foreach (T item in uniqueEntries.Values)

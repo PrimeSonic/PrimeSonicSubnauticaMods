@@ -32,24 +32,24 @@
 
             recipe.FromString(serialized);
 
-            Assert.LessOrEqual(TechType.Databox, recipe.ItemID);
+            Assert.AreEqual(itemName, recipe.ItemID);
             Assert.AreEqual(0, recipe.AmountCrafted);
 
             Assert.AreEqual(2, recipe.IngredientsCount);
 
 
-            IIngredient item0 = recipe.GetIngredient(0);
-            Assert.AreEqual(TechType.Titanium, item0.techType);
+            EmIngredient item0 = recipe.GetIngredient(0);
+            Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
             Assert.AreEqual(2, item0.amount);
 
-            IIngredient item1 = recipe.GetIngredient(1);
-            Assert.AreEqual(TechType.Copper, item1.techType);
+            EmIngredient item1 = recipe.GetIngredient(1);
+            Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
             Assert.AreEqual(3, item1.amount);
 
             Assert.AreEqual(2, recipe.LinkedItemsCount);
 
-            Assert.AreEqual(TechType.Silver, recipe.GetLinkedItem(0));
-            Assert.AreEqual(TechType.Gold, recipe.GetLinkedItem(1));
+            Assert.AreEqual(TechType.Silver.ToString(), recipe.GetLinkedItem(0));
+            Assert.AreEqual(TechType.Gold.ToString(), recipe.GetLinkedItem(1));
 
             Assert.AreEqual("Custom display name", recipe.DisplayName);
             Assert.AreEqual("Custom tooltip", recipe.Tooltip);
@@ -101,26 +101,28 @@
 
             recipe.FromString(serialized);
 
+            Assert.AreEqual("AliasAerogel2", recipe[0].ItemID);
+            Assert.AreEqual("AliasAerogel3", recipe[1].ItemID);
+
             foreach (var r in recipe)
             {
-                Assert.LessOrEqual(TechType.Databox, r.ItemID);
                 Assert.AreEqual(0, r.AmountCrafted);
 
                 Assert.AreEqual(2, r.IngredientsCount);
 
                 EmIngredient item0 = r.GetIngredient(0);
-                Assert.AreEqual(TechType.Titanium, item0.ItemID);
+                Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
                 Assert.AreEqual(2, item0.Required);
 
                 EmIngredient item1 = r.GetIngredient(1);
-                Assert.AreEqual(TechType.Copper, item1.ItemID);
+                Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
                 Assert.AreEqual(3, item1.Required);
 
                 Assert.AreEqual(2, r.LinkedItemsCount);
 
 
-                Assert.AreEqual(TechType.Silver, r.GetLinkedItem(0));
-                Assert.AreEqual(TechType.Gold, r.GetLinkedItem(1));
+                Assert.AreEqual(TechType.Silver.ToString(), r.GetLinkedItem(0));
+                Assert.AreEqual(TechType.Gold.ToString(), r.GetLinkedItem(1));
 
                 Assert.AreEqual("Craft Aerogel", r.DisplayName);
                 Assert.AreEqual("Custom aerogel tooltip", r.Tooltip);
@@ -154,22 +156,22 @@
 
             recipe.FromString(serialized);
 
-            Assert.LessOrEqual(TechType.Databox, recipe.ItemID);
+            Assert.AreEqual("AliasAerogel4", recipe.ItemID);
             Assert.AreEqual(false, recipe.AmountCrafted.HasValue);
 
             Assert.AreEqual(2, recipe.IngredientsCount);
 
             var item0 = recipe.GetIngredient(0);
-            Assert.AreEqual(TechType.Titanium, item0.ItemID);
+            Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
             Assert.AreEqual(1, item0.Required);
 
             var item1 = recipe.GetIngredient(1);
-            Assert.AreEqual(TechType.Copper, item1.ItemID);
+            Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
             Assert.AreEqual(1, item1.Required);
 
             Assert.AreEqual(2, recipe.LinkedItemsCount);
-            Assert.AreEqual(TechType.Silver, recipe.GetLinkedItem(0));
-            Assert.AreEqual(TechType.Gold, recipe.GetLinkedItem(1));
+            Assert.AreEqual(TechType.Silver.ToString(), recipe.GetLinkedItem(0));
+            Assert.AreEqual(TechType.Gold.ToString(), recipe.GetLinkedItem(1));
 
             Assert.AreEqual("Craft Aerogel", recipe.DisplayName);
             Assert.AreEqual("Custom aerogel tooltip", recipe.Tooltip);
@@ -219,26 +221,27 @@
 
             recipe.FromString(serialized);
 
+            Assert.AreEqual("AliasAerogel5", recipe[0].ItemID);
+            Assert.AreEqual("AliasAerogel6", recipe[1].ItemID);
             foreach (var r in recipe)
             {
-                Assert.LessOrEqual(TechType.Databox, r.ItemID);
                 Assert.AreEqual(false, recipe[0].AmountCrafted.HasValue);
 
                 Assert.AreEqual(2, r.IngredientsCount);
 
                 EmIngredient item0 = r.GetIngredient(0);
-                Assert.AreEqual(TechType.Titanium, item0.ItemID);
+                Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
                 Assert.AreEqual(1, item0.Required);
 
                 EmIngredient item1 = r.GetIngredient(1);
-                Assert.AreEqual(TechType.Copper, item1.ItemID);
+                Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
                 Assert.AreEqual(1, item1.Required);
 
                 Assert.AreEqual(2, r.LinkedItemsCount);
 
 
-                Assert.AreEqual(TechType.Silver, r.GetLinkedItem(0));
-                Assert.AreEqual(TechType.Gold, r.GetLinkedItem(1));
+                Assert.AreEqual(TechType.Silver.ToString(), r.GetLinkedItem(0));
+                Assert.AreEqual(TechType.Gold.ToString(), r.GetLinkedItem(1));
 
                 Assert.AreEqual("Craft Aerogel", r.DisplayName);
                 Assert.AreEqual("Custom aerogel tooltip", r.Tooltip);
