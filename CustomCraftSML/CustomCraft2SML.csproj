@@ -115,6 +115,7 @@
     <Content Include="SampleFiles\AliasRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\AliasRecipe_UnpackIngots.txt" />
     <Content Include="SampleFiles\CustomBioFuels_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

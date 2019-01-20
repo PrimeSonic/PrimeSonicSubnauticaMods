@@ -11,7 +11,8 @@
 
     internal static partial class FileReaderWriter
     {
-        private const string WorkingFolder = FolderRoot + "WorkingFiles/";
+        internal const string WorkingFolder = FolderRoot + "WorkingFiles/";
+        internal const string AssetsFolder = FolderRoot + "Assets/";
         private const string CustomSizesFile = WorkingFolder + "CustomSizes.txt";
         private const string ModifiedRecipesFile = WorkingFolder + "ModifiedRecipes.txt";
         private const string AddedRecipiesFile = WorkingFolder + "AddedRecipes.txt";
@@ -36,6 +37,9 @@
 
         private static void HandleWorkingFiles()
         {
+            if (!Directory.Exists(AssetsFolder))
+                Directory.CreateDirectory(AssetsFolder);
+
             ICollection<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
 
             foreach (string file in workingFiles)
