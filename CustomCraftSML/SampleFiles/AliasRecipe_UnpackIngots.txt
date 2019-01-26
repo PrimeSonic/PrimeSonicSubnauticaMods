@@ -1,0 +1,43 @@
+# This is a derived work from AlexejheroYTB's mod UnpackIngots, demonstrating a different way of doing the same thing #
+# also includes a recipe for going straight from metal salvage to ingots (preserving the ratio) #
+
+# Note: the path leverages paths created by the MoreIngots mod (also by AlexejheroYTB) - this doesn't impact #
+#        functionality and is done as a fabricator menu simplification.  Change this to suit #
+
+ AliasRecipes: 
+(
+    ItemID: TitaniumIngotFromSalvage;
+    DisplayName: "Titanium Ingot (x2)";
+    Tooltip: "Craft titanium ingot from metal salvage";
+    LinkedItemIDs: TitaniumIngot,TitaniumIngot;
+    Ingredients: 
+    (
+        ItemID: scrapmetal;
+        Required: 5;
+    );
+    Path: Fabricator/Resources/Craft;
+),
+(
+    ItemID: UnpackTitaniumIngot;
+    DisplayName: "Unpack titanium ingot";
+    Tooltip: "Unpack titanium ingot";
+    LinkedItemIDs: Titanium,Titanium,Titanium,Titanium,Titanium,Titanium,Titanium,Titanium,Titanium,Titanium;
+    Ingredients: 
+    (
+        ItemID: TitaniumIngot;
+        Required: 1;
+    );
+    Path: Fabricator/Resources/Unpack;
+),
+(
+    ItemID: UnpackPlasteelIngot;
+    DisplayName: "Unpack plasteel ingot";
+    Tooltip: "Unpack titanium ingot";
+    LinkedItemIDs: Lithium,Lithium,TitaniumIngot;
+    Ingredients: 
+    (
+        ItemID: plasteelingot;
+        Required: 1;
+    );
+    Path: Fabricator/Resources/Unpack;
+);

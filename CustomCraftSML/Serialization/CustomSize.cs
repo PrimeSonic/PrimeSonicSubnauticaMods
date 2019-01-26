@@ -10,11 +10,11 @@
         public const short Max = 6;
         public const short Min = 1;
 
-        private readonly EmPropertyTechType emTechType;
+        private readonly EmProperty<string> emTechType;
         private readonly EmProperty<short> emWidth;
         private readonly EmProperty<short> emHeight;
 
-        public TechType ItemID
+        public string ItemID
         {
             get => emTechType.Value;
             set => emTechType.Value = value;
@@ -54,14 +54,14 @@
 
         protected static List<EmProperty> SizeProperties => new List<EmProperty>(3)
         {
-            new EmPropertyTechType("ItemID"),
+            new EmProperty<string>("ItemID"),
             new EmProperty<short>("Width", 1),
             new EmProperty<short>("Height", 1)
         };
 
         public CustomSize() : base("CustomSize", SizeProperties)
         {
-            emTechType = (EmPropertyTechType)Properties["ItemID"];
+            emTechType = (EmProperty<string>)Properties["ItemID"];
             emWidth = (EmProperty<short>)Properties["Width"];
             emHeight = (EmProperty<short>)Properties["Height"];
         }

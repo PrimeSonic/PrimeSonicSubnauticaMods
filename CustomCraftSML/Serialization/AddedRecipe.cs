@@ -12,15 +12,15 @@
         {
             get => path.Value;
             set => path.Value = value;
-        }        
+        }
 
         protected static List<EmProperty> AddedRecipeProperties => new List<EmProperty>(ModifiedRecipeProperties)
-        {          
+        {
             new EmProperty<string>("Path")
         };
 
         public AddedRecipe() : this("AddedRecipe", AddedRecipeProperties)
-        {            
+        {
         }
 
         public AddedRecipe(string key) : this(key, AddedRecipeProperties)
@@ -33,7 +33,7 @@
             DefaultForceUnlock = true;
         }
 
-        internal override EmProperty Copy() => new AddedRecipe(Key, CopyDefinitions);
+        internal override EmProperty Copy() => new AddedRecipe(this.Key, this.CopyDefinitions);
 
     }
 }

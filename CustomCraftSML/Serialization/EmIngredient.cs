@@ -2,17 +2,18 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
     using UnityEngine.Assertions;
 
-    public class EmIngredient : EmPropertyCollection, IIngredient
+    public class EmIngredient : EmPropertyCollection, ITechTyped
     {
         public const short Max = 25;
         public const short Min = 1;
 
-        private readonly EmPropertyTechType emTechType;
+        private readonly EmProperty<string> emTechType;
         private readonly EmProperty<short> required;
 
-        public TechType ItemID
+        public string ItemID
         {
             get => emTechType.Value;
             set => emTechType.Value = value;
@@ -37,36 +38,31 @@
 
         protected static List<EmProperty> IngredientProperties => new List<EmProperty>(2)
         {
-            new EmPropertyTechType("ItemID"),
+            new EmProperty<string>("ItemID"),
             new EmProperty<short>("Required", 1),
         };
-
-        public TechType techType => ItemID;
-
+        
         public int amount => Required;
 
-        internal EmIngredient(TechType item) : this()
+        internal EmIngredient(string item) : this()
         {
             ItemID = item;
         }
 
-        internal EmIngredient(TechType item, short required) : this(item)
+        internal EmIngredient(string item, short required) : this(item)
         {
             Required = required;
         }
 
         internal EmIngredient() : base("Ingredients", IngredientProperties)
         {
-            emTechType = (EmPropertyTechType)Properties["ItemID"];
+            emTechType = (EmProperty<string>)Properties["ItemID"];
             required = (EmProperty<short>)Properties["Required"];
         }
 
         internal override EmProperty Copy()
         {
-            if (ItemID != TechType.None)
-                return new EmIngredient(ItemID, Required);
-
-            return new EmIngredient();
+            return new EmIngredient(ItemID, Required);
         }
     }
 }

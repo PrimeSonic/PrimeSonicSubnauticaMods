@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IAliasRecipe.cs" />
     <Compile Include="Serialization\CustomCraftingTabList.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
@@ -73,10 +74,10 @@
     <Compile Include="Serialization\CustomCraftingTab.cs" />
     <Compile Include="Serialization\CustomSize.cs" />
     <Compile Include="Serialization\CustomSizeList.cs" />
+    <Compile Include="Serialization\AliasRecipe.cs" />
+    <Compile Include="Serialization\AliasRecipeList.cs" />
     <Compile Include="Serialization\EmIngredient.cs" />
     <Compile Include="Serialization\EmPropertyCraftTreeType.cs" />
-    <Compile Include="Serialization\EmPropertyTechType.cs" />
-    <Compile Include="Serialization\EmPropertyTechTypeList.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
     <Compile Include="Interfaces\IAddedRecipe.cs" />
     <Compile Include="Interfaces\ICustomBioFuel.cs" />
@@ -108,6 +109,13 @@
     <Content Include="SampleFiles\AddedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\AliasRecipes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\AliasRecipes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\AliasRecipe_UnpackIngots.txt" />
     <Content Include="SampleFiles\CustomBioFuels_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

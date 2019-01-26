@@ -7,15 +7,14 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
-    using SMLHelper.V2.Utility;
 
     internal static partial class FileReaderWriter
     {
-        private const string RootModName = "CustomCraft2SML";
-        private const string FolderRoot = "./QMods/" + RootModName + "/";
-        private const string SamplesFolder = FolderRoot + "SampleFiles/";
-        private const string OriginalsFolder = FolderRoot + "OriginalRecipes/";
-        private const string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
+        internal const string RootModName = "CustomCraft2SML";
+        internal const string FolderRoot = "./QMods/" + RootModName + "/";
+        internal const string SamplesFolder = FolderRoot + "SampleFiles/";
+        internal const string OriginalsFolder = FolderRoot + "OriginalRecipes/";
+        internal const string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
         private static readonly string ReadMeVersionLine = $"# How to use {RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
 
         private static void GenerateOriginalRecipes()
@@ -59,7 +58,7 @@
 
             var bioFuelList = new CustomBioFuelList();
             foreach (TechType bioEnergyKey in allBioFuels.Keys)
-                bioFuelList.Add(new CustomBioFuel { ItemID = bioEnergyKey, Energy = allBioFuels[bioEnergyKey] });
+                bioFuelList.Add(new CustomBioFuel { ItemID = bioEnergyKey.ToString(), Energy = allBioFuels[bioEnergyKey] });
 
             var printyPrints = new List<string>();
             printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]

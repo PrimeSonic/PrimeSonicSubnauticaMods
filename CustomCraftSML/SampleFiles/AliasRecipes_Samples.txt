@@ -1,0 +1,49 @@
+# This is a sample file for adding new crafting recipes for custom items #
+# This recipe format is intended for use with items that do not exist in the base game #
+
+# There are two ways to associate a sprite with the new items - first by having #
+#     a png file in the Assets folder that matches the ItemID (eg - GallonWater.png) #
+# If there is no PNG file found, then the sprite of first LinkedItemID will be used #
+
+# There are two common uses for this recipe #
+#   1.  To create a custom item and produce that item. #
+#       in this case - you want to add a new sprite asset #
+#       set the AmountCrafted >= 1 and fill in the remaining items #
+#   2.  The second common use is to create ano item that already has a recipe in-game #
+#       (see WaterFromGallon below).  The recipe cannot directly output DisinfectedWater #
+#       as there is already a recipe for that (salt + bleach).  However, we can accomplish #
+#       this by making up a new ItemID, then making the recipe produce 0 of these #
+#       But, we can also have the recipe produce DisinfectedWater via the LinkedItemIDs #
+
+# The format is similar to AddedRecipe - but with a few new fields #
+#       DisplayName = the display name (if using the fabricator this is the larger/bold text) #
+#       Tooltip     = the descriptive text below the DisplayName in the fabricator menu #
+
+# You can use this file as a starting point. The examples here are ready to use. #
+
+AliasRecipes: 
+(
+    ItemID: GallonWater;
+    DisplayName: "Water Jug - 1 gallon";
+    Tooltip: "Large water jug.  Useful for storing large quantites of water, but not for consumption";
+    AmountCrafted: 1;
+    Ingredients: 
+    (
+        ItemID: DisinfectedWater;
+        Required: 10;
+    );
+    Path: Fabricator/Survival/Water;
+),
+(
+    ItemID: WaterFromGallon;
+    DisplayName: "Disinfected water (x10)";
+    Tooltip: "Split the water jug into smaller containers";
+    LinkedItemIDs: DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater,DisinfectedWater;
+    AmountCrafted: 0;
+    Ingredients: 
+    (
+        ItemID: GallonWater;
+        Required: 1;
+    );
+    Path: Fabricator/Survival/Water;
+);
