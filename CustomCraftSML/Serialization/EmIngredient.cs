@@ -2,9 +2,10 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
     using UnityEngine.Assertions;
 
-    public class EmIngredient : EmPropertyCollection
+    public class EmIngredient : EmPropertyCollection, ITechTyped
     {
         public const short Max = 25;
         public const short Min = 1;

@@ -82,8 +82,6 @@
 
         internal static void AddRecipe(IAddedRecipe addedRecipe)
         {
-            Assert.IsTrue(GetTechType(addedRecipe.ItemID) <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
-
             HandleAddedRecipe(addedRecipe);
 
             HandleCraftTreeAddition(addedRecipe);

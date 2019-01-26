@@ -61,7 +61,7 @@
 
         private static void CreateEmptyFile<T>(string filePath) where T : EmProperty, ITutorialText, new()
         {
-            T emptyList = new T();
+            var emptyList = new T();
 
             List<string> tutorialText = emptyList.TutorialText;
 
@@ -139,7 +139,7 @@
             where T : EmPropertyCollection, ITechTyped
             where T2 : EmPropertyCollectionList<T>, new()
         {
-            T2 list = new T2();
+            var list = new T2();
 
             Assert.AreEqual(typeof(T), list.ItemType);
 
@@ -165,7 +165,7 @@
             where T : EmPropertyCollection, ICraftingTab
             where T2 : EmPropertyCollectionList<T>, new()
         {
-            T2 list = new T2();
+            var list = new T2();
 
             Assert.AreEqual(typeof(T), list.ItemType);
 
@@ -197,25 +197,71 @@
         private static void PrePassSMLHelper<T>(List<T> entries, ref IDictionary<TechType, T> uniqueEntries)
             where T : ITechTyped
         {
-            int successCount = 0;
             //  Use the ToSet function as a copy constructor - this way we can iterate across the
             //      temp structure, but change the permanent one in the case of duplicates
-            foreach (var item in entries)
+            foreach (T item in entries)
             {
-                TechType rv = CustomCraft.PrePass(item);
-                if (uniqueEntries.ContainsKey(rv))
+                // Sanity check of the blueprints ingredients and linked items to be sure that it only contains known items
+                // Modded items are okay, but they must be for mods the player already has installed
+                bool internalItemsPassCheck = true;
+
+                if (item is IModifiedRecipe recipe)
                 {
-                    QuickLogger.Warning($"Duplicate entry for '{rv}' was already added by another working file. Kept first one. Discarded duplicate.");
+                    foreach (EmIngredient ingredient in recipe.Ingredients)
+                    {
+                        TechType ingredientID = CustomCraft.GetTechType(ingredient.ItemID);
+
+                        if (ingredientID == TechType.None)
+                        {
+                            QuickLogger.Warning($"Entry with ID of '{item.ItemID}' contained an unknown ingredient '{ingredient.ItemID}'.  Entry will be discarded.");
+                            internalItemsPassCheck = false;
+                            continue;
+                        }
+                    }
+
+                    foreach (string linkedItem in recipe.LinkedItems)
+                    {
+                        TechType linkedItemID = CustomCraft.GetTechType(linkedItem);
+
+                        if (linkedItemID == TechType.None)
+                        {
+                            QuickLogger.Warning($"Entry with ID of '{item.ItemID}' contained an unknown linked item '{linkedItem}'. Entry will be discarded.");
+                            internalItemsPassCheck = false;
+                            continue;
+                        }
+                    }
                 }
-                else
+
+                if (!internalItemsPassCheck)
+                    continue; // item will not be added to the uniqueEntries dictionary
+
+                // Now we can safely do the prepass check in case we need to create a new modded TechType
+                TechType entryId = CustomCraft.PrePass(item);
+
+                if (entryId == TechType.None)
                 {
-                    uniqueEntries.Add(rv, item);
+                    QuickLogger.Warning($"Could not resolve ID of '{item.ItemID}'. Discarded entry.");
+                    continue;
                 }
+
+                if (uniqueEntries.ContainsKey(entryId))
+                {
+                    QuickLogger.Warning($"Duplicate entry for '{item.ItemID}' was already added by another working file. Kept first one. Discarded duplicate.");
+                    continue;
+                }
+
+                // All checks passed
+                uniqueEntries.Add(entryId, item);
             }
+
+            if (entries.Count > 0)
+                QuickLogger.Message($"{uniqueEntries.Count} of {entries.Count} {typeof(T).Name} entries staged for patching");
         }
 
+        //IModifiedRecipe
+
         private static void SendToSMLHelper<T>(IDictionary<TechType, T> uniqueEntries)
-        where T : ITechTyped
+            where T : ITechTyped
         {
             int successCount = 0;
             foreach (T item in uniqueEntries.Values)
@@ -225,7 +271,8 @@
                 if (result) successCount++;
             }
 
-            Logger.Log($"{successCount} of {uniqueEntries.Count} {typeof(T).Name} entries were patched.");
+            if (uniqueEntries.Count > 0)
+                Logger.Log($"{successCount} of {uniqueEntries.Count} {typeof(T).Name} entries were patched");
         }
 
         private static void SendToSMLHelper<T>(IDictionary<string, T> uniqueEntries)
@@ -236,7 +283,8 @@
                 CustomCraft.CustomCraftingTab(item);
             }
 
-            Logger.Log($"Custom Crafting Tabs were patched.");
+            if (uniqueEntries.Count > 0)
+                Logger.Log($"Custom Crafting Tabs were successfully patched");
         }
     }
 }
