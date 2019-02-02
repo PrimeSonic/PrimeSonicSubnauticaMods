@@ -184,7 +184,6 @@
                                       "    Unlocks:ComputerChip,Cyclops;" + "\r\n" +
                                       ");" + "\r\n";
 
-
             var recipeList = new ModifiedRecipeList();
 
             recipeList.FromString(serialized);

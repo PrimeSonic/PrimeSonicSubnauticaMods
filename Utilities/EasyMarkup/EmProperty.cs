@@ -146,12 +146,12 @@
             if (ReferenceEquals(this, other))
                 return true;
 
-            if (this.GetType() != other.GetType())
+            if (GetType() != other.GetType())
                 return false;
 
             return
                 this.Key == other.Key &&
-                this.ValueEquals(other);
+                ValueEquals(other);
         }
 
         private static StringBuffer CleanValue(StringBuffer rawValue, bool stopAtKey = false)

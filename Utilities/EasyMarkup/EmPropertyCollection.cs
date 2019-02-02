@@ -6,6 +6,8 @@
 
     public abstract class EmPropertyCollection : EmProperty
     {
+        internal readonly string UnbalancedContainersError = $"Mismatch detected in number of '{SpChar_BeginComplexValue}' and '{SpChar_FinishComplexValue}' characters.";
+
         public EmProperty this[string key]
         {
             get => Properties[key];
@@ -82,6 +84,8 @@
                         goto default;
                     case SpChar_FinishComplexValue:
                         openParens--;
+                        if (openParens < 0)
+                            throw new FormatException(UnbalancedContainersError);
                         goto default;
                     default:
                         buffer.PushToEnd(fullString.PopFromStart());
@@ -89,6 +93,9 @@
                 }
 
             } while (fullString.Count > 0 && !exit);
+
+            if (openParens != 1)
+                throw new FormatException(UnbalancedContainersError);
 
             return serialValues + SpChar_FinishComplexValue;
         }
