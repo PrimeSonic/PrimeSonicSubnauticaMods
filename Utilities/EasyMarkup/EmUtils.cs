@@ -4,7 +4,7 @@
 
     public static class EmUtils
     {
-        public static bool Deserialize(this EmProperty emProperty, string serializedData)
+        public static bool Deserialize<T>(this T emProperty, string serializedData) where T : EmProperty
         {
             try
             {
@@ -18,7 +18,7 @@
             }
         }
 
-        public static string Serialize(this EmProperty emProperty, bool prettyPrint = true)
+        public static string Serialize<T>(this T emProperty, bool prettyPrint = true) where T : EmProperty
         {
             if (prettyPrint)
                 return emProperty.PrettyPrint();
@@ -26,7 +26,7 @@
             return emProperty.ToString();
         }
 
-        public static bool DeserializeKeyOnly(this EmProperty emProperty, string serializedData, out string foundKey)
+        public static bool DeserializeKeyOnly<T>(this T emProperty, string serializedData, out string foundKey) where T : EmProperty
         {
             try
             {

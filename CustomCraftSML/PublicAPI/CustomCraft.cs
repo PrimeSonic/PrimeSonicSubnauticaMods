@@ -149,7 +149,6 @@
 
         internal static void CustomCraftingTab(ICraftingTab craftingTab)
         {
-            Assert.IsTrue(craftingTab.SpriteItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
             Assert.IsTrue(craftingTab.FabricatorType <= CraftTree.Type.Rocket, "This API in intended only for use with standard, non-modded CraftTree.Types.");
             Assert.IsTrue(craftingTab.FabricatorType > CraftTree.Type.None, "ParentTabPath must identify a fabricator for the custom tab.");
 
@@ -160,13 +159,31 @@
 
         private static void HandleCraftingTab(ICraftingTab craftingTab)
         {
-            if (craftingTab.StepsToTab == null)
+            Atlas.Sprite sprite;
+            string imagePath = FileReaderWriter.AssetsFolder + craftingTab.TabID + @".png";
+            if (File.Exists(imagePath))
             {
-                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID));
+                QuickLogger.Message($"Custom sprite found for CraftingTab '{craftingTab.TabID}'");
+                sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+            }
+            else if (craftingTab.SpriteItemID != TechType.None)
+            {
+                QuickLogger.Message($"SpriteItemID used for CraftingTab '{craftingTab.TabID}'");
+                sprite = SpriteManager.Get(craftingTab.SpriteItemID);
             }
             else
             {
-                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID), craftingTab.StepsToTab);
+                QuickLogger.Warning($"No sprite loaded for CraftingTab '{craftingTab.TabID}'");
+                sprite = SpriteManager.Get(TechType.None);
+            }
+
+            if (craftingTab.StepsToTab == null)
+            {
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite);
+            }
+            else
+            {
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite, craftingTab.StepsToTab);
             }
         }
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
