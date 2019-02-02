@@ -4,5 +4,6 @@
     {
         string DisplayName { get; }
         string Tooltip { get; }
+        string FunctionalID { get; }
     }
 }

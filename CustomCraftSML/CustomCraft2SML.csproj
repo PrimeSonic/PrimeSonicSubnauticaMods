@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctionalClone.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
     <Compile Include="Serialization\CustomCraftingTabList.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />

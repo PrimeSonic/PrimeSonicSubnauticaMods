@@ -201,38 +201,13 @@
             //      temp structure, but change the permanent one in the case of duplicates
             foreach (T item in entries)
             {
+                // The functional item for cloning must be valid.
+                if (!FunctionalItemIsValid(item))
+                    continue;
+
                 // Sanity check of the blueprints ingredients and linked items to be sure that it only contains known items
                 // Modded items are okay, but they must be for mods the player already has installed
-                bool internalItemsPassCheck = true;
-
-                if (item is IModifiedRecipe recipe)
-                {
-                    foreach (EmIngredient ingredient in recipe.Ingredients)
-                    {
-                        TechType ingredientID = CustomCraft.GetTechType(ingredient.ItemID);
-
-                        if (ingredientID == TechType.None)
-                        {
-                            QuickLogger.Warning($"Entry with ID of '{item.ItemID}' contained an unknown ingredient '{ingredient.ItemID}'.  Entry will be discarded.");
-                            internalItemsPassCheck = false;
-                            continue;
-                        }
-                    }
-
-                    foreach (string linkedItem in recipe.LinkedItems)
-                    {
-                        TechType linkedItemID = CustomCraft.GetTechType(linkedItem);
-
-                        if (linkedItemID == TechType.None)
-                        {
-                            QuickLogger.Warning($"Entry with ID of '{item.ItemID}' contained an unknown linked item '{linkedItem}'. Entry will be discarded.");
-                            internalItemsPassCheck = false;
-                            continue;
-                        }
-                    }
-                }
-
-                if (!internalItemsPassCheck)
+                if (!InnerItemsAreValid(item))
                     continue; // item will not be added to the uniqueEntries dictionary
 
                 // Now we can safely do the prepass check in case we need to create a new modded TechType
@@ -256,6 +231,58 @@
 
             if (entries.Count > 0)
                 QuickLogger.Message($"{uniqueEntries.Count} of {entries.Count} {typeof(T).Name} entries staged for patching");
+        }
+
+        private static bool FunctionalItemIsValid<T>(T item) where T : ITechTyped
+        {
+            if (item is IAliasRecipe alias)
+            {
+                if (string.IsNullOrEmpty(alias.FunctionalID))
+                    return true; // No value provided. This is fine.
+
+                TechType functionalCloneId = CustomCraft.GetTechType(alias.FunctionalID);
+                if (functionalCloneId == TechType.None)
+                {
+                    QuickLogger.Warning($"Entry with FunctionalID of '{item.ItemID}' contained an unknown item of '{alias.FunctionalID}'.  Entry will be discarded.");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool InnerItemsAreValid<T>(T item) where T : ITechTyped
+        {
+            bool internalItemsPassCheck = true;
+
+            if (item is IModifiedRecipe recipe)
+            {
+                foreach (EmIngredient ingredient in recipe.Ingredients)
+                {
+                    TechType ingredientID = CustomCraft.GetTechType(ingredient.ItemID);
+
+                    if (ingredientID == TechType.None)
+                    {
+                        QuickLogger.Warning($"Entry with ID of '{item.ItemID}' contained an unknown ingredient '{ingredient.ItemID}'.  Entry will be discarded.");
+                        internalItemsPassCheck = false;
+                        continue;
+                    }
+                }
+
+                foreach (string linkedItem in recipe.LinkedItems)
+                {
+                    TechType linkedItemID = CustomCraft.GetTechType(linkedItem);
+
+                    if (linkedItemID == TechType.None)
+                    {
+                        QuickLogger.Warning($"Entry with ID of '{item.ItemID}' contained an unknown linked item '{linkedItem}'. Entry will be discarded.");
+                        internalItemsPassCheck = false;
+                        continue;
+                    }
+                }
+            }
+
+            return internalItemsPassCheck;
         }
 
         //IModifiedRecipe

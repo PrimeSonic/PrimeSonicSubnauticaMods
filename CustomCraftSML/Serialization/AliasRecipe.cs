@@ -8,6 +8,7 @@
     {
         private readonly EmProperty<string> displayName;
         private readonly EmProperty<string> tooltip;
+        private readonly EmProperty<string> functionalID;
 
         public string DisplayName
         {
@@ -21,10 +22,17 @@
             set => tooltip.Value = value;
         }
 
+        public string FunctionalID
+        {
+            get => functionalID.Value;
+            set => functionalID.Value = value;
+        }
+
         protected static List<EmProperty> AliasRecipeProperties => new List<EmProperty>(AddedRecipeProperties)
         {
             new EmProperty<string>("DisplayName"),
             new EmProperty<string>("Tooltip"),
+            new EmProperty<string>("FunctionalID"),
         };
 
         public AliasRecipe() : this("AliasRecipe", AliasRecipeProperties)
@@ -39,6 +47,7 @@
         {
             displayName = (EmProperty<string>)Properties["DisplayName"];
             tooltip = (EmProperty<string>)Properties["Tooltip"];
+            functionalID = (EmProperty<string>)Properties["FunctionalID"];
         }
 
         internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);

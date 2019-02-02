@@ -14,18 +14,18 @@
     {
         public static TechType GetTechType(string value)
         {
+            // Look for a known TechType
             if (TechTypeExtensions.FromString(value, out TechType tType, true))
             {
                 return tType;
             }
-            else
+
+            //  Not one of the known TechTypes - is it registered with SMLHelper?
+            if (TechTypeHandler.TryGetModdedTechType(value, out TechType custom))
             {
-                //  Not one of the known tech types - is it registered with SMLHelper?
-                if (TechTypeHandler.TryGetModdedTechType(value, out TechType custom))
-                {
-                    return custom;
-                }
+                return custom;
             }
+
             return TechType.None;
         }
 
@@ -99,6 +99,8 @@
             HandleCraftTreeAddition(aliasRecipe);
 
             HandleUnlocks(aliasRecipe);
+
+            HandleFunctionalClone(aliasRecipe);
         }
 
         private static void HandleCustomSprite(IAliasRecipe aliasRecipe)
@@ -286,6 +288,20 @@
                 KnownTechHandler.SetAnalysisTechEntry(GetTechType(modifiedRecipe.ItemID), unlocks);
             }
 
+        }
+
+        private static void HandleFunctionalClone(IAliasRecipe aliasRecipe)
+        {
+            if (string.IsNullOrEmpty(aliasRecipe.FunctionalID))
+                return; // No value provided. This is fine.
+
+            TechType functionalID = GetTechType(aliasRecipe.FunctionalID);
+
+            if (functionalID != TechType.None)
+            {
+                var clone = new FunctionalClone(aliasRecipe, functionalID);
+                PrefabHandler.RegisterPrefab(clone);
+            }
         }
     }
 }
