@@ -10,11 +10,16 @@
         internal static readonly string[] TutorialText = new[]
         {
             "ModifiedRecipe: Modify an existing crafting recipe. ",
-            "    Ingredients: Completely replace a recipe's required ingredients.",
+            "    Ingredients: Completely replace a recipe's required ingredients." +
+            "        This is optional if you don't want to change the required ingredients.",
             "    AmountCrafted: Change how many copies of the item are created when you craft the recipe.",
+            "        This is optional if you don't want to change how many copies of the item are created at once.",
             "    LinkedItemIDs: Add or modify the linked items that are created when the recipe is crafted.",
+            "        This is optional if you don't want to change what items are crafted with this one.",
             "    Unlocks: Set other recipes to be unlocked when you analyze or craft this one.",
+            "        This is optional if you don't want to change what gets unlocked when you scan or craft this item.",
             "    ForceUnlockAtStart: You can also set if this recipe should be unlocked at the start or not. Make sure you have a recipe unlocking this one.",
+            "        This is optional. For Added Recipes, this defaults to 'YES'.",
         };
 
         public const short Max = 25;

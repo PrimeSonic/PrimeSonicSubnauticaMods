@@ -63,17 +63,6 @@
             SendToSMLHelper(uniqueCustomBioFuels);
         }
 
-        private static void CreateEmptyFile<T>(string filePath) where T : EmProperty, ITutorialText, new()
-        {
-            var emptyList = new T();
-
-            List<string> tutorialText = emptyList.TutorialText;
-
-            tutorialText.Add(emptyList.PrettyPrint());
-
-            File.WriteAllLines(filePath, tutorialText.ToArray());
-        }
-
         private static void DeserializeFile(string workingFilePath)
         {
             QuickLogger.Message($"Reading file: {workingFilePath}");
@@ -113,6 +102,10 @@
 
                     case "CustomCraftingTabs":
                         check = ParseEntries<CustomCraftingTab, CustomCraftingTabList>(serializedData, customTabs);
+                        break;
+
+                    case "MovedRecipes":
+                        check = ParseEntries<MovedRecipe, MovedRecipeList>(serializedData, ref movedRecipes);
                         break;
 
                     default:

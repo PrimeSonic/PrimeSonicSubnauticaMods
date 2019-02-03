@@ -58,7 +58,6 @@
     <Compile Include="Serialization\CustomCraftingTabList.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
-    <Compile Include="Interfaces\ITutorialText.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ReaderWriterCrafts.cs" />
     <Compile Include="ReaderWriterManager.cs" />
@@ -88,6 +87,7 @@
     <Compile Include="Serialization\ModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipeList.cs" />
     <Compile Include="Serialization\MovedRecipe.cs" />
+    <Compile Include="Serialization\MovedRecipeList.cs" />
     <Compile Include="ValidBioFuels.cs" />
     <Compile Include="ValidTechTypes.cs" />
   </ItemGroup>

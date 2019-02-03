@@ -15,7 +15,8 @@
             "    Alias recipes have all the same properties of Added Recipes, but when creating your own items, you will want to include these new properties:",
             "        DisplayName: Sets the in-game name for the new item.",
             "        Tooltip: Sets the in-game tooltip text whenever you hover over the item.",
-            "        FunctionalID: Choose an existing item in the game and clone that item's in-game functions into your custom item.",
+            "        FunctionalID: Choose an existing item in the game and clone that item's in-game functions into your custom item." +
+            "            Without this property, any user created item will be non-functional in-game, usable as a crafting component but otherwise useful for nothing else.",
         };
 
         private readonly EmProperty<string> displayName;

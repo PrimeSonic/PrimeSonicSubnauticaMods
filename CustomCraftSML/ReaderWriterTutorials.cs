@@ -29,7 +29,7 @@
             if (!Directory.Exists(OriginalsFolder))
                 Directory.CreateDirectory(OriginalsFolder);
 
-            var allGroups = ValidTechTypes.groups;
+            Dictionary<TechGroup, Dictionary<TechCategory, List<TechType>>> allGroups = ValidTechTypes.groups;
 
             foreach (TechGroup group in allGroups.Keys)
             {
@@ -58,7 +58,7 @@
             if (File.Exists(OriginalsFolder + fileName))
                 return;
 
-            var allBioFuels = ValidBioFuels.charge;
+            Dictionary<TechType, float> allBioFuels = ValidBioFuels.charge;
 
             var bioFuelList = new CustomBioFuelList();
             foreach (TechType bioEnergyKey in allBioFuels.Keys)
@@ -112,71 +112,63 @@
                 $"As of version {QuickLogger.GetAssemblyVersion()}, the following features are supported:",
             };
             tutorialLines.Add(MovedRecipe.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
             tutorialLines.Add(CustomSize.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
             tutorialLines.AddRange(CustomBioFuel.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
             tutorialLines.AddRange(CustomCraftingTab.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
             tutorialLines.AddRange(ModifiedRecipe.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
             tutorialLines.AddRange(AddedRecipe.TutorialText);
-
-
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.AddRange(AliasRecipe.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
             tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("As of version 1.5, you can include modded items in your custom crafts.");
+            tutorialLines.Add("Most modded items should work, but we can only guarantee compatibility with items created using SMLHelper.");
+            tutorialLines.Add("To get the ItemID for modded items, consult with the original mod author.");
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("Additional features may be added in the future so keep an eye on the Nexus mod page.");
+            tutorialLines.Add("After an update, this file will be updated with new info the next time you load the game.");
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("As of version 1.2, file names no longer matter. All files in the WorkingFiles folder will be read and parsed into the game. So name them however you want.");
+            tutorialLines.Add("If you want to be able to easily sahre your custom crafts with others, make sure to chose unique names for your files.");
+            tutorialLines.Add("Remember: For now, each file can only contain one type of entry. The valid entry types are: MovedRecipes, CustomSizes, CustomBioFuels, CustomCraftingTabs, ModifiedRecipes, AddedRecipes, AliasRecipe.");
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add($"Creating the text files that {RootModName} uses can be simple if you're paying attention.");
+            tutorialLines.Add("As easy way to get started is to copy the text from the SampleFiles or OriginalRecipes and then modify the parts you want.");
+            tutorialLines.Add("When you want to add a new item reference, remember that the 'ItemID' is the internal spawn ID of that item.");
+            tutorialLines.Add("    You can visit the Subnautica Wikia for the full list of item IDs at http://subnautica.wikia.com/wiki/Obtainable_Items");
+            tutorialLines.Add("The files in OriginalRecipes are generated automatically when the game first loads if the mod detected that they are missing.");
+            tutorialLines.Add("    If you can see this file, then the OriginalRecipes will be there.");
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("You'll notice that a lot of text is written between these hash signs (or pound sign or hashtag if you prefer).");
+            tutorialLines.Add("Any text in between these symbols is treated as a comment and safely ignored by the mod's text reader.");
+            tutorialLines.Add("Use these hash signs if you want to leave notes or comments in the txt files.");
+            tutorialLines.Add("Extra whitespace that isn't between quotes (\") is also ignored, so feel free to make your files as flat or as indented as you prefer.");
+            tutorialLines.Add("It's just recommended that you make them as readable as possible.");
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("Once you've created your txt files, go ahead and launch the game.");
+            tutorialLines.Add("Assuming you've got everything configured correctly, your customizations will appear on your next game.");
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("Remember: When adding new recipes, you must use the correct path for the crafting tab that the new recipe will be added to.");
+            tutorialLines.Add("Provided here is a list of all the valid paths to all the standard crafting tabs for all available fabricators.");
+            tutorialLines.Add("And don't forget that you can always add your own crafting tabs too.");
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add(PathHelper.GeneratePaths());
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("Enjoy and happy modding");
 
             return EmUtils.CommentTextLinesCentered(tutorialLines.ToArray());
-
-            var builder = new StringBuilder();
-            builder.AppendLine("# 3 - Adding new recipes and placing them into any of the existing fabricators #");
-            builder.AppendLine("#   a - Added recipes work exactly like Modified recipes, with the addition of a Path to where that recipe should go #");
-            builder.AppendLine("# Modded items can't be used at this time #");
-            builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine();
-            builder.AppendLine("# New feature: You can now have multiple files for added recipes, modified recipes, and custom sizes, all living together in the WorkingFiles folder. #");
-            builder.AppendLine("# As of v1.2, the file name no longer matters. All files in the WorkingFiles folder will be read and parsed into the game. So name them however you want. #");
-            builder.AppendLine("# As long as the file contains one, and only one, primary key of 'AddedRecipes:', 'ModifiedRecipes', or 'CustomSizes' with its entries, will be handled correctly. #");
-            builder.AppendLine("# So if you've created your own customized crafts for and want to share them, you can now do so easily. #");
-            builder.AppendLine("# Installation of your custom crafts on another player's system is as simple as copying the txt files into their WorkingFiles folder. #");
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine();
-            builder.AppendLine($"# Writing the text files that {RootModName} uses can be simple if you're paying attention #");
-            builder.AppendLine("# You can even copy the text from the sample files directly and use them right away without any changes #");
-            builder.AppendLine("# When you want to add a new item reference, remember that the 'ItemID' is the internal spawn ID of that item #");
-            builder.AppendLine("# You can visit the Subnautica Wikia for the full list of item IDs at http://subnautica.wikia.com/wiki/Obtainable_Items #");
-            builder.AppendLine("# NEW! As an added bonus, a file containing all the original game's recipes has been generated in the SampleFiles folder #");
-            builder.AppendLine("# You can copy and paste individual recipes from that file into your ModifiedRecipes file and tweak them to your liking #");
-            builder.AppendLine();
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine("# A quick overview of the less obvious keys for Added and Modified recipes #");
-            builder.AppendLine("# LinkedItemIDs: This is the list of items that will be created along side the main item when you craft the recipe #");
-            builder.AppendLine("#     - If you want multiple copies of an item here, you need to write it to this list multiple times #");
-            builder.AppendLine("# AmountCrafted: This is how many copies of the item will be created when you craft the recipe #");
-            builder.AppendLine("#     - You can leave this out of your modified recipes. If you do, the original crafted amount will be used #");
-            builder.AppendLine("# ForceUnlockAtStart: When you set this to 'YES' this item will be forced to be unlocked from the very start of the game #");
-            builder.AppendLine("#     - You can use it to have Modified recipes early or to set if have Added recipes should wait to be unlocked by something else #");
-            builder.AppendLine("#     - If you don't include ForceUnlockAtStart, then default behavior will be used: #");
-            builder.AppendLine("#         - By default, Modified recipes will be unlocked as they normally would be #");
-            builder.AppendLine("#         - By default, Added recipes will be forced to be unlocked at the start of the game as a safety #");
-            builder.AppendLine("# Unlocks: This is a list of other ItemIDs that will be unlocked when you analyze or craft this recipe #");
-            builder.AppendLine("#     - You can use this along with 'ForceUnlockAtStart:NO' to have recipes be unlocked when you want them to be #");
-            builder.AppendLine("# Ingredients: This key is now optional #");
-            builder.AppendLine("#     - You can leave this out of your modified recipes. If you do, the original recipe won't be altered in any way #");
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine();
-            builder.AppendLine("# You'll notice that a lot of text is written between these hash signs (or pound sign or hashtag if you prefer) #");
-            builder.AppendLine("# Any text in between these symbols is safely ignored by the mod's text reader #");
-            builder.AppendLine("# Use these if you want to leave notes or comments for yourself in the txt files #");
-            builder.AppendLine("# Whitespace is also ignored, so feel free to make your files as flat or as indented as you prefer #");
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine();
-            builder.AppendLine("# Once you've created your txt files, go ahead and launch the game #");
-            builder.AppendLine("# Assuming you've got everything configured correctly, your customizations will appear on your next game #");
-            builder.AppendLine();
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine("# Extra tip: When adding recipes, you must use the correct path to the tab you wish to add it to #");
-            builder.AppendLine("# Provided here is a list of all the valid paths to all the standard tabs for all available fabricators #");
-            builder.AppendLine();
-            builder.AppendLine(PathHelper.GeneratePaths());
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine("# Enjoy and happy modding #");
         }
 
         private static void GenerateOriginalsFile(TechGroup group, TechCategory category, List<TechType> list, string fileName)
