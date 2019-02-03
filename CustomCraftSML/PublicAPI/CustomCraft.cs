@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML.PublicAPI
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using Common;
@@ -8,7 +9,6 @@
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
-    using UnityEngine.Assertions;
 
     public static class CustomCraft
     {
@@ -60,20 +60,15 @@
             switch (entry)
             {
                 case IAliasRecipe aliasRecipe:
-                    AliasRecipe(aliasRecipe);
-                    return true;
+                    return AliasRecipe(aliasRecipe);
                 case IAddedRecipe addedRecipe:
-                    AddRecipe(addedRecipe);
-                    return true;
+                    return AddRecipe(addedRecipe);
                 case IModifiedRecipe modifiedRecipe:
-                    ModifyRecipe(modifiedRecipe);
-                    return true;
+                    return ModifyRecipe(modifiedRecipe);
                 case ICustomSize customSize:
-                    CustomizeItemSize(customSize);
-                    return true;
+                    return CustomizeItemSize(customSize);
                 case ICustomBioFuel customBioFuel:
-                    CustomizeBioFuel(customBioFuel);
-                    return true;
+                    return CustomizeBioFuel(customBioFuel);
                 case IMovedRecipe movedRecipe:
                     return MoveRecipe(movedRecipe);
                 default:
@@ -82,81 +77,124 @@
             }
         }
 
-        internal static void AddRecipe(IAddedRecipe addedRecipe)
+        internal static bool AddRecipe(IAddedRecipe addedRecipe)
         {
-            HandleAddedRecipe(addedRecipe);
-
-            HandleCraftTreeAddition(addedRecipe);
-
-            HandleUnlocks(addedRecipe);
-        }
-
-        internal static void AliasRecipe(IAliasRecipe aliasRecipe)
-        {
-            //  See if there is an asset in the asset folder that has the same name
-            HandleCustomSprite(aliasRecipe);
-
-            HandleAddedRecipe(aliasRecipe, 0 /* alias recipes should default to not producing the custom item unless explicitly configured */);
-
-            HandleCraftTreeAddition(aliasRecipe);
-
-            HandleUnlocks(aliasRecipe);
-
-            HandleFunctionalClone(aliasRecipe);
-        }
-
-        private static void HandleCustomSprite(IAliasRecipe aliasRecipe)
-        {
-            string imagePath = FileReaderWriter.AssetsFolder + aliasRecipe.ItemID + @".png";
-            if (File.Exists(imagePath))
+            try
             {
-                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+                HandleAddedRecipe(addedRecipe);
+
+                HandleCraftTreeAddition(addedRecipe);
+
+                HandleUnlocks(addedRecipe);
+
+                return true;
             }
-            else if (aliasRecipe.LinkedItemsCount > 0)
+            catch (Exception ex)
             {
-                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(aliasRecipe.GetLinkedItem(0)));
-                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
-            }
-            else
-            {
-                QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemID}'");
+                QuickLogger.Error($"Exception thrown while handling Added Recipe '{addedRecipe.ItemID}'{Environment.NewLine}{ex}");
+                return false;
             }
         }
 
-        internal static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
+        internal static bool AliasRecipe(IAliasRecipe aliasRecipe)
         {
-            Assert.IsTrue(GetTechType(modifiedRecipe.ItemID) <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+            try
+            {
+                //  See if there is an asset in the asset folder that has the same name
+                HandleCustomSprite(aliasRecipe);
 
-            HandleModifiedRecipe(modifiedRecipe);
+                HandleAddedRecipe(aliasRecipe, 0 /* alias recipes should default to not producing the custom item unless explicitly configured */);
 
-            HandleUnlocks(modifiedRecipe);
+                HandleCraftTreeAddition(aliasRecipe);
+
+                HandleUnlocks(aliasRecipe);
+
+                HandleFunctionalClone(aliasRecipe);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Alias Recipe '{aliasRecipe.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
         }
 
-        internal static void CustomizeItemSize(ICustomSize customSize)
+        internal static bool ModifyRecipe(IModifiedRecipe modifiedRecipe)
         {
-            Assert.IsTrue(GetTechType(customSize.ItemID) <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+            try
+            {
+                HandleModifiedRecipe(modifiedRecipe);
 
-            Assert.IsTrue(customSize.Width > 0 && customSize.Height > 0, "Values must be positive and non-zero");
-            Assert.IsTrue(customSize.Width < 6 && customSize.Height < 6, "Values must be smaller than six to fit");
-            // Value chosen for what should be the standard inventory size
+                HandleUnlocks(modifiedRecipe);
 
-            CraftDataHandler.SetItemSize(GetTechType(customSize.ItemID), customSize.Width, customSize.Height);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{modifiedRecipe.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
         }
 
-        internal static void CustomizeBioFuel(ICustomBioFuel customBioFuel)
+        internal static bool CustomizeItemSize(ICustomSize customSize)
         {
-            Assert.IsTrue(GetTechType(customBioFuel.ItemID) <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+            if (customSize.Width <= 0 || customSize.Height <= 0 || customSize.Width > 6 || customSize.Height > 6)
+            {
+                QuickLogger.Error($"Error in custom size for '{customSize.ItemID}'. Size values must be between 1 and 6.");
+                return false;
+            }
 
-            BioReactorHandler.SetBioReactorCharge(GetTechType(customBioFuel.ItemID), customBioFuel.Energy);
+            try
+            {
+                CraftDataHandler.SetItemSize(GetTechType(customSize.ItemID), customSize.Width, customSize.Height);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Custom Item Size '{customSize.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
         }
 
-        internal static void CustomCraftingTab(ICraftingTab craftingTab)
+        internal static bool CustomizeBioFuel(ICustomBioFuel customBioFuel)
         {
-            Assert.IsTrue(craftingTab.FabricatorType <= CraftTree.Type.Rocket, "This API in intended only for use with standard, non-modded CraftTree.Types.");
-            Assert.IsTrue(craftingTab.FabricatorType > CraftTree.Type.None, "ParentTabPath must identify a fabricator for the custom tab.");
+            try
+            {
+                BioReactorHandler.SetBioReactorCharge(GetTechType(customBioFuel.ItemID), customBioFuel.Energy);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{customBioFuel.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
 
-            HandleCraftingTab(craftingTab);
+        internal static bool AddCustomCraftingTab(ICraftingTab craftingTab)
+        {
+            if (craftingTab.FabricatorType > CraftTree.Type.Rocket)
+            {
+                QuickLogger.Error($"Error on crafting tab '{craftingTab.TabID}'. This API in intended only for use with standard, non-modded CraftTree.Types.");
+                return false;
+            }
+
+            if (craftingTab.FabricatorType == CraftTree.Type.None)
+            {
+                QuickLogger.Error($"Error on crafting tab '{craftingTab.TabID}'. ParentTabPath must identify a fabricator for the custom tab.");
+                return false;
+            }
+            try
+            {
+                HandleCraftingTab(craftingTab);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling crafting tab '{craftingTab.TabID}'{Environment.NewLine}{ex}");
+                return false;
+            }
         }
 
         internal static bool MoveRecipe(IMovedRecipe movedRecipe)
@@ -189,6 +227,41 @@
 
         private static void HandleCraftingTab(ICraftingTab craftingTab)
         {
+            Atlas.Sprite sprite = GetCraftingTabSprite(craftingTab);
+
+            if (craftingTab.StepsToTab == null)
+            {
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite);
+            }
+            else
+            {
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite, craftingTab.StepsToTab);
+            }
+        }
+
+        private static void HandleCustomSprite(IAliasRecipe aliasRecipe)
+        {
+            string imagePath = FileReaderWriter.AssetsFolder + aliasRecipe.ItemID + @".png";
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Message($"Custom sprite found for AliasRecipe '{aliasRecipe.ItemID}'");
+                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+            }
+            else if (aliasRecipe.LinkedItemsCount > 0)
+            {
+                QuickLogger.Message($"First LinkedItemID used for icon of AliasRecipe '{aliasRecipe.ItemID}'");
+                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(aliasRecipe.GetLinkedItem(0)));
+                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+            }
+            else
+            {
+                QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemID}'");
+            }
+        }
+
+        private static Atlas.Sprite GetCraftingTabSprite(ICraftingTab craftingTab)
+        {
             Atlas.Sprite sprite;
             string imagePath = FileReaderWriter.AssetsFolder + craftingTab.TabID + @".png";
             if (File.Exists(imagePath))
@@ -207,14 +280,7 @@
                 sprite = SpriteManager.Get(TechType.None);
             }
 
-            if (craftingTab.StepsToTab == null)
-            {
-                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite);
-            }
-            else
-            {
-                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite, craftingTab.StepsToTab);
-            }
+            return sprite;
         }
 
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
@@ -318,7 +384,6 @@
 
                 KnownTechHandler.SetAnalysisTechEntry(GetTechType(modifiedRecipe.ItemID), unlocks);
             }
-
         }
 
         private static void HandleFunctionalClone(IAliasRecipe aliasRecipe)

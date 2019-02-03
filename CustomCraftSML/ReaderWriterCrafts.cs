@@ -297,9 +297,8 @@
             int successCount = 0;
             foreach (T item in uniqueEntries.Values)
             {
-                bool result = CustomCraft.AddEntry(item);
-
-                if (result) successCount++;
+                if (CustomCraft.AddEntry(item))
+                    successCount++;
             }
 
             if (uniqueEntries.Count > 0)
@@ -309,13 +308,15 @@
         private static void SendToSMLHelper<T>(IDictionary<string, T> uniqueEntries)
             where T : ICraftingTab
         {
+            int successCount = 0;
             foreach (T item in uniqueEntries.Values)
             {
-                CustomCraft.CustomCraftingTab(item);
+                if (CustomCraft.AddCustomCraftingTab(item))
+                    successCount++;
             }
 
             if (uniqueEntries.Count > 0)
-                Logger.Log($"Custom Crafting Tabs were successfully patched");
+                Logger.Log($"{successCount} of {uniqueEntries.Count} Custom Crafting Tabs were successfully patched");
         }
     }
 }
