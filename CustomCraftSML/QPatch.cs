@@ -1,23 +1,23 @@
 ﻿namespace CustomCraft2SML
 {
     using System;
+    using Common;
 
     public static class QPatch
     {
         public static void Patch()
         {
-            Logger.Log("START");
+            QuickLogger.Message($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
 
             try
             {
                 FileReaderWriter.Patch();
+                QuickLogger.Message("Finished patching.");
             }
-            catch (IndexOutOfRangeException outEx)
+            catch (Exception ex)
             {
-                Logger.Log(outEx.ToString());
+                QuickLogger.Error($"Critical error during patching{Environment.NewLine}{ex}");
             }
-
-            Logger.Log("FINISH");
         }
     }
 }

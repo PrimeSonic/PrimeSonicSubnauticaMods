@@ -57,7 +57,6 @@
     <Compile Include="Interfaces\IMovedRecipe.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
-    <Compile Include="Logger.cs" />
     <Compile Include="ReaderWriterCrafts.cs" />
     <Compile Include="ReaderWriterManager.cs" />
     <Compile Include="ReaderWriterTutorials.cs" />

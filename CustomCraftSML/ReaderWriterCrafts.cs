@@ -297,7 +297,7 @@
             }
 
             if (uniqueEntries.Count > 0)
-                Logger.Log($"{successCount} of {uniqueEntries.Count} {typeof(T).Name} entries were patched");
+                QuickLogger.Message($"{successCount} of {uniqueEntries.Count} {typeof(T).Name} entries were patched");
         }
 
         private static void SendToSMLHelper<T>(IDictionary<string, T> uniqueEntries)
@@ -311,7 +311,7 @@
             }
 
             if (uniqueEntries.Count > 0)
-                Logger.Log($"{successCount} of {uniqueEntries.Count} Custom Crafting Tabs were successfully patched");
+                QuickLogger.Message($"{successCount} of {uniqueEntries.Count} Custom Crafting Tabs were successfully patched");
         }
     }
 }

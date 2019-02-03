@@ -76,7 +76,7 @@
 
             File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
 
-            Logger.Log($"{fileName} file not found. File generated.");
+            QuickLogger.Message($"{fileName} file not found. File generated.");
         }
 
         private static void HandleReadMeFile()
@@ -84,7 +84,7 @@
             if (!File.Exists(HowToFile))
             {
                 File.WriteAllLines(HowToFile, ReadMeFileLines());
-                Logger.Log($"{HowToFile} file not found. File created.");
+                QuickLogger.Message($"{HowToFile} file not found. File created.");
             }
             else
             {
@@ -93,7 +93,7 @@
                 if (readmeLines.Length < 1 || readmeLines[0] != ReadMeVersionLine)
                 {
                     File.WriteAllLines(HowToFile, ReadMeFileLines());
-                    Logger.Log($"{HowToFile} out of date. Regenerated with new version.");
+                    QuickLogger.Message($"{HowToFile} out of date. Regenerated with new version.");
                 }
             }
         }
@@ -192,7 +192,7 @@
 
             File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
 
-            Logger.Log($"{fileName} file not found. File generated.");
+            QuickLogger.Message($"{fileName} file not found. File generated.");
         }
 
     }
