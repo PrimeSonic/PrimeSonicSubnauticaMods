@@ -3,6 +3,8 @@
     using System.IO;
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Entries;
+    using CustomCraft2SML.Serialization.Lists;
     using NUnit.Framework;
 
     [TestFixture]

@@ -3,11 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.PublicAPI;
-    using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Entries;
+    using CustomCraft2SML.Serialization.Lists;
 
     internal static partial class FileReaderWriter
     {

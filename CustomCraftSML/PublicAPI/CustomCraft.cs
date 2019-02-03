@@ -6,6 +6,7 @@
     using Common;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Components;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;

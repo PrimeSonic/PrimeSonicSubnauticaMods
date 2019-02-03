@@ -1,6 +1,9 @@
 ﻿namespace CustomCraftSMLTests
 {
     using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Components;
+    using CustomCraft2SML.Serialization.Entries;
+    using CustomCraft2SML.Serialization.Lists;
     using NUnit.Framework;
 
     [TestFixture]
@@ -88,7 +91,7 @@
                                       ");" + "\r\n";
 
 
-            var recipe = new CustomCraft2SML.Serialization.AddedRecipeList();
+            var recipe = new AddedRecipeList();
 
             recipe.FromString(serialized);
 
@@ -223,7 +226,7 @@
                                       ");" + "\r\n";
 
 
-            var recipe = new CustomCraft2SML.Serialization.AddedRecipeList();
+            var recipe = new AddedRecipeList();
 
             recipe.FromString(serialized);
 
@@ -277,7 +280,7 @@
                                         "    Path:Fabricator/Survival/CuredFood;                  " +
                                         ");                                                       ";
 
-            var recipeList = new CustomCraft2SML.Serialization.AddedRecipeList();
+            var recipeList = new AddedRecipeList();
 
             bool success = recipeList.FromString(serialized);
 

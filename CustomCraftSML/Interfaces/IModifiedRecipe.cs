@@ -1,7 +1,7 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
     using System.Collections.Generic;
-    using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Components;
 
     public interface IModifiedRecipe : ITechTyped
     {

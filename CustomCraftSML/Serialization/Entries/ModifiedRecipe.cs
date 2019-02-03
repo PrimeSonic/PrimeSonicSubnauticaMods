@@ -1,8 +1,9 @@
-﻿namespace CustomCraft2SML.Serialization
+﻿namespace CustomCraft2SML.Serialization.Entries
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Serialization.Components;
     using UnityEngine.Assertions;
 
     internal class ModifiedRecipe : EmPropertyCollection, IModifiedRecipe
