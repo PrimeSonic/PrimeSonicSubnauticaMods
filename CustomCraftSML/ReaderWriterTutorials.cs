@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
@@ -11,10 +12,13 @@
     internal static partial class FileReaderWriter
     {
         internal const string RootModName = "CustomCraft2SML";
+        internal const string ModFriendlyName = "Custom Craft 2";
         internal const string FolderRoot = "./QMods/" + RootModName + "/";
         internal const string SamplesFolder = FolderRoot + "SampleFiles/";
         internal const string OriginalsFolder = FolderRoot + "OriginalRecipes/";
         internal const string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
+
+        private const string HorizontalLine = " -------------------------------------------- ";
         private static readonly string ReadMeVersionLine = $"# How to use {RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
 
         private static void GenerateOriginalRecipes()
@@ -40,7 +44,7 @@
 
                     List<TechType> buildablesList = groupCategories[category];
 
-                    GenerateOriginalsFile(category.ToString(), buildablesList, buildablesFile);
+                    GenerateOriginalsFile(group, category, buildablesList, buildablesFile);
                 }
             }
 
@@ -79,7 +83,7 @@
         {
             if (!File.Exists(HowToFile))
             {
-                File.WriteAllText(HowToFile, ReadMeFileText());
+                File.WriteAllLines(HowToFile, ReadMeFileLines());
                 Logger.Log($"{HowToFile} file not found. File created.");
             }
             else
@@ -88,36 +92,40 @@
 
                 if (readmeLines.Length < 1 || readmeLines[0] != ReadMeVersionLine)
                 {
-                    File.WriteAllText(HowToFile, ReadMeFileText());
+                    File.WriteAllLines(HowToFile, ReadMeFileLines());
                     Logger.Log($"{HowToFile} out of date. Regenerated with new version.");
                 }
             }
         }
 
-        private static string ReadMeFileText()
+        private static string[] ReadMeFileLines()
         {
+            var tutorialLines = new List<string>
+            {
+                ReadMeVersionLine,
+                HorizontalLine,
+                Environment.NewLine,
+                $"{ModFriendlyName} uses simple text files to send requests to SMLHelper, no coding required",
+                "This can be great for those who have a specific ideas in mind for custom crafts but don't have the means to code",
+                $"{ModFriendlyName} is dedicated to Nexus modder Iw23J, creator of the original Custom Craft mod, who showed us how much we can empower players to take modding into their own hands",
+                HorizontalLine,
+                $"As of version {QuickLogger.GetAssemblyVersion()}, the following features are supported:",
+            };
+            tutorialLines.Add(MovedRecipe.TutorialText);
+            tutorialLines.Add(CustomSize.TutorialText);
+            tutorialLines.AddRange(CustomBioFuel.TutorialText);
+            tutorialLines.AddRange(CustomCraftingTab.TutorialText);
+            tutorialLines.AddRange(ModifiedRecipe.TutorialText);
+            tutorialLines.AddRange(AddedRecipe.TutorialText);
+
+
+            tutorialLines.Add(HorizontalLine);
+
+            return EmUtils.CommentTextLinesCentered(tutorialLines.ToArray());
+
             var builder = new StringBuilder();
-            builder.AppendLine(ReadMeVersionLine);
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine();
-            builder.AppendLine($"# {RootModName} uses simple text files to send simple requests to SMLHelper, no additional DLLs needed #");
-            builder.AppendLine("# This can be great for those who have a few simple and specific ideas in mind but aren't able to create a whole mod themselves #");
-            builder.AppendLine("# Special thanks to Nexus modder Iw23J, creator of the original Custom Craft mod, who showed us how much we can empower players to take modding into their own hands #");
-            builder.AppendLine("# -------------------------------------------- #");
-            builder.AppendLine("# Currently, this mod includes the following features: #");
-            builder.AppendLine("# 1 - Customize the space occupied by an inventory item #");
-            builder.AppendLine("# 2 - Modify an existing crafting recipe: #");
-            builder.AppendLine("#   a - You can change a recipe's required ingredients in any way #");
-            builder.AppendLine("#   b - You can alter how many copies of the item are created when you craft the recipe #");
-            builder.AppendLine("#   c - You can also modify the recipe's linked items, those being items also created along side the main one #");
-            builder.AppendLine("#   d - You can now also modify what other items will be unlocked when you analyze or craft this one #");
-            builder.AppendLine("#   e - You can now also set if this recipe should be unlocked at the start or not #");
             builder.AppendLine("# 3 - Adding new recipes and placing them into any of the existing fabricators #");
             builder.AppendLine("#   a - Added recipes work exactly like Modified recipes, with the addition of a Path to where that recipe should go #");
-            builder.AppendLine("# 4 - Customize the energy values of items in the BioReactor #");
-            builder.AppendLine("#   a - This can also be used to make items compatible with the BioReactor that originally weren't. #");
-            builder.AppendLine("# 5 - NEW! Add your own custom tabs into the fabricator crafting trees. #");
-            builder.AppendLine($"# Remember that only the standard in-game items can be used with {RootModName} #");
             builder.AppendLine("# Modded items can't be used at this time #");
             builder.AppendLine("# Additional features may be added in the future so keep an eye on the Nexus mod page #");
             builder.AppendLine("# -------------------------------------------- #");
@@ -169,17 +177,17 @@
             builder.AppendLine(PathHelper.GeneratePaths());
             builder.AppendLine("# -------------------------------------------- #");
             builder.AppendLine("# Enjoy and happy modding #");
-
-            return builder.ToString();
         }
 
-        private static void GenerateOriginalsFile(string key, List<TechType> list, string fileName)
+        private static void GenerateOriginalsFile(TechGroup group, TechCategory category, List<TechType> list, string fileName)
         {
             var printyPrints = new List<string>();
             printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]
             {
                 "This file was generated with original recipes in the game",
                 "You can copy individual entries from this file to use in your personal overrides",
+                "--------------------------------------------------------------------------------",
+                $"PdaGroup: {group} - PdaCategory:{category}",
                 "--------------------------------------------------------------------------------",
             }));
 

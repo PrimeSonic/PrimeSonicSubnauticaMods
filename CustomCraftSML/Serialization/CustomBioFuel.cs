@@ -6,6 +6,12 @@
 
     internal class CustomBioFuel : EmPropertyCollection, ICustomBioFuel
     {
+        internal static readonly string[] TutorialText = new[]
+        {
+            "CustomBioFuel: Customize the energy values of items in the BioReactor. ",
+            "This can also be used to make items compatible with the BioReactor that originally weren't."
+        };
+
         private readonly EmProperty<string> emTechType;
         private readonly EmProperty<float> emEnergy;
 

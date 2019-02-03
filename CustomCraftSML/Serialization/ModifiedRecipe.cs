@@ -7,6 +7,16 @@
 
     internal class ModifiedRecipe : EmPropertyCollection, IModifiedRecipe
     {
+        internal static readonly string[] TutorialText = new[]
+        {
+            "ModifiedRecipe: Modify an existing crafting recipe. ",
+            "    Ingredients: Completely replace a recipe's required ingredients.",
+            "    AmountCrafted: Change how many copies of the item are created when you craft the recipe.",
+            "    LinkedItemIDs: Add or modify the linked items that are created when the recipe is crafted.",
+            "    Unlocks: Set other recipes to be unlocked when you analyze or craft this one.",
+            "    ForceUnlockAtStart: You can also set if this recipe should be unlocked at the start or not. Make sure you have a recipe unlocking this one.",
+        };
+
         public const short Max = 25;
         public const short Min = 0;
 

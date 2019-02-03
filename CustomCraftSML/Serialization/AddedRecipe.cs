@@ -6,6 +6,15 @@
 
     internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
+        internal new static readonly string[] TutorialText = new[]
+        {
+            "AddedRecipe: Adding your own recipes into any of the existing fabricators.",
+            "    Added recipes have all the same properties as Modified recipes, with the following additions:",
+            "    Path: Sets the fabricator and crafting tab where the new recipe will be added.",
+            "    PdaGroup: Sets the main group for blueprint shown in the PDA.",
+            "    PdaCategory: Sets the category under the group for blueprint shown in the PDA."
+        };
+
         private readonly EmProperty<string> path;
         private readonly EmProperty<TechGroup> techGroup;
         private readonly EmProperty<TechCategory> techCategory;

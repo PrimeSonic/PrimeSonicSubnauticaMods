@@ -4,6 +4,6 @@
 
     public interface ITutorialText
     {
-        List<string> TutorialText { get; }
+        IList<string> TutorialText { get; }
     }
 }

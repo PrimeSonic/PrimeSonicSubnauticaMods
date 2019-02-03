@@ -7,6 +7,12 @@
 
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab
     {
+        internal static readonly string[] TutorialText = new[]
+        {
+            "CustomCraftingTab: Add your own custom tabs into the fabricator crafting trees. ",
+            "An absolute must for organizing large numbers of crafts."
+        };
+
         private const string KeyName = "CustomTab";
 
         private readonly EmProperty<string> emTabID;

@@ -7,6 +7,8 @@
 
     internal class CustomSize : EmPropertyCollection, ICustomSize
     {
+        internal const string TutorialText = "CustomSize: Customize the space occupied by an inventory item.";
+
         public const short Max = 6;
         public const short Min = 1;
 
