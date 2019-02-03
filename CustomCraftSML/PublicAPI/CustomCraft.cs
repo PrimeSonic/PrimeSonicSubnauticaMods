@@ -297,20 +297,27 @@
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID, steps);
         }
 
-        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe, short defaultCraftAmount = 1)
+        private static void HandleAddedRecipe(IAddedRecipe addedRecipe, short defaultCraftAmount = 1)
         {
             var replacement = new TechData
             {
-                craftAmount = modifiedRecipe.AmountCrafted ?? defaultCraftAmount
+                craftAmount = addedRecipe.AmountCrafted ?? defaultCraftAmount
             };
 
-            foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)
+            foreach (EmIngredient ingredient in addedRecipe.Ingredients)
                 replacement.Ingredients.Add(new Ingredient(GetTechType(ingredient.ItemID), ingredient.Required));
 
-            foreach (string linkedItem in modifiedRecipe.LinkedItems)
+            foreach (string linkedItem in addedRecipe.LinkedItems)
                 replacement.LinkedItems.Add(GetTechType(linkedItem));
 
-            CraftDataHandler.SetTechData(GetTechType(modifiedRecipe.ItemID), replacement);
+            TechType itemID = GetTechType(addedRecipe.ItemID);
+
+            CraftDataHandler.SetTechData(itemID, replacement);
+
+            if (addedRecipe.PdaGroup != TechGroup.Uncategorized)
+            {
+                CraftDataHandler.AddToGroup(addedRecipe.PdaGroup, addedRecipe.PdaCategory, itemID);
+            }
         }
 
         private static void HandleModifiedRecipe(IModifiedRecipe modifiedRecipe)

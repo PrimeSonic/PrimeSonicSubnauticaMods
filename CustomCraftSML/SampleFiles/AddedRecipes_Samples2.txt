@@ -18,6 +18,8 @@ AddedRecipes:
     LinkedItemIDs: ;
     Unlocks: ;
     Path: Fabricator/Survival/CuredFood;
+    PdaGroup: Uncategorized;
+    PdaCategory: Misc;
 ),
 (
     ItemID: BigFilteredWater;
@@ -30,4 +32,6 @@ AddedRecipes:
     LinkedItemIDs: ;
     Unlocks: ;
     Path: Fabricator/Survival/Water;
+    PdaGroup: Uncategorized;
+    PdaCategory: Misc;
 );
