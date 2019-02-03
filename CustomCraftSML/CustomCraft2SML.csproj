@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="FunctionalClone.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
+    <Compile Include="Interfaces\IMovedRecipe.cs" />
     <Compile Include="Serialization\CustomCraftingTabList.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Interfaces\IModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipe.cs" />
     <Compile Include="Serialization\ModifiedRecipeList.cs" />
+    <Compile Include="Serialization\MovedRecipe.cs" />
     <Compile Include="ValidBioFuels.cs" />
     <Compile Include="ValidTechTypes.cs" />
   </ItemGroup>

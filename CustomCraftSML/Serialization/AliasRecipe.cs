@@ -35,21 +35,17 @@
             new EmProperty<string>("FunctionalID"),
         };
 
-        public AliasRecipe() : this("AliasRecipe", AliasRecipeProperties)
+        public AliasRecipe() : this(AliasRecipeProperties)
         {
         }
 
-        public AliasRecipe(string key) : this(key, AliasRecipeProperties)
-        {
-        }
-
-        protected AliasRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
+        protected AliasRecipe(ICollection<EmProperty> definitions) : base("AliasRecipe", definitions)
         {
             displayName = (EmProperty<string>)Properties["DisplayName"];
             tooltip = (EmProperty<string>)Properties["Tooltip"];
             functionalID = (EmProperty<string>)Properties["FunctionalID"];
         }
 
-        internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy() => new AliasRecipe(this.CopyDefinitions);
     }
 }

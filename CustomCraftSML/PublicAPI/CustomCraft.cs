@@ -74,6 +74,8 @@
                 case ICustomBioFuel customBioFuel:
                     CustomizeBioFuel(customBioFuel);
                     return true;
+                case IMovedRecipe movedRecipe:
+                    return MoveRecipe(movedRecipe);
                 default:
                     QuickLogger.Error("Type check failure in CustomCraft.AddEntry");
                     return false;
@@ -157,6 +159,32 @@
             HandleCraftingTab(craftingTab);
         }
 
+        internal static bool MoveRecipe(IMovedRecipe movedRecipe)
+        {
+            if (!movedRecipe.IsComplete)
+            {
+                QuickLogger.Warning($"Error on moved recipe for '{movedRecipe.ItemID}'. Moved recipes require both the Old and New paths.");
+                return false;
+            }
+
+            var oldPath = new CraftingPath(movedRecipe.OldPath);
+            var newPath = new CraftingPath(movedRecipe.NewPath);
+
+            string[] oldSteps = (oldPath.Path + CraftingNode.Splitter + movedRecipe.ItemID).Split(CraftingNode.Splitter);
+            string[] newSteps = newPath.Path.Split(CraftingNode.Splitter);
+
+            CraftTreeHandler.RemoveNode(oldPath.Scheme, oldSteps);
+
+            TechType itemID = GetTechType(movedRecipe.ItemID);
+
+            if (newSteps.Length <= 1)
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID);
+            else
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID, newSteps);
+
+            return true;
+        }
+
         // ----------------------
 
         private static void HandleCraftingTab(ICraftingTab craftingTab)
@@ -188,16 +216,19 @@
                 CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite, craftingTab.StepsToTab);
             }
         }
+
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
         {
             var craftPath = new CraftingPath(addedRecipe.Path);
 
             string[] steps = craftPath.Path.Split(CraftingNode.Splitter);
 
+            TechType itemID = GetTechType(addedRecipe.ItemID);
+
             if (steps.Length <= 1)
-                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, GetTechType(addedRecipe.ItemID));
+                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID);
             else
-                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, GetTechType(addedRecipe.ItemID), steps);
+                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID, steps);
         }
 
         private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe, short defaultCraftAmount = 1)

@@ -1,6 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
-    using Common;
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -131,7 +130,7 @@
         {
         }
 
-        public ModifiedRecipe(string key) : this(key, ModifiedRecipeProperties)
+        protected ModifiedRecipe(string key) : this(key, ModifiedRecipeProperties)
         {
         }
 

@@ -23,7 +23,7 @@
         {
         }
 
-        public AddedRecipe(string key) : this(key, AddedRecipeProperties)
+        protected AddedRecipe(string key) : this(key, AddedRecipeProperties)
         {
         }
 

@@ -19,6 +19,7 @@
         private const string CustomBioFuelsFile = WorkingFolder + "CustomBioFuels.txt";
 
         //  Initial storage for the serialization - key is string as we have not resolved the TechType at this point
+        private static List<MovedRecipe> movedRecipes = new List<MovedRecipe>();
         private static List<AddedRecipe> addedRecipes = new List<AddedRecipe>();
         private static List<AliasRecipe> aliasRecipes = new List<AliasRecipe>();
         private static List<ModifiedRecipe> modifiedRecipes = new List<ModifiedRecipe>();
@@ -29,6 +30,7 @@
         private static readonly IDictionary<string, CustomCraftingTab> customTabs = new Dictionary<string, CustomCraftingTab>();
 
         //  After the prepass - we have resolved the TechType and filtered out duplicates.
+        private static IDictionary<TechType, MovedRecipe> uniqueMovedRecipes = new Dictionary<TechType, MovedRecipe>();
         private static IDictionary<TechType, AddedRecipe> uniqueAddedRecipes = new Dictionary<TechType, AddedRecipe>();
         private static IDictionary<TechType, AliasRecipe> uniqueAliasRecipes = new Dictionary<TechType, AliasRecipe>();
         private static IDictionary<TechType, ModifiedRecipe> uniqueModifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
@@ -45,6 +47,7 @@
             foreach (string file in workingFiles)
                 DeserializeFile(file);
 
+            PrePassSMLHelper(movedRecipes, ref uniqueMovedRecipes);
             PrePassSMLHelper(addedRecipes, ref uniqueAddedRecipes);
             PrePassSMLHelper(aliasRecipes, ref uniqueAliasRecipes);
             PrePassSMLHelper(modifiedRecipes, ref uniqueModifiedRecipes);
@@ -52,6 +55,7 @@
             PrePassSMLHelper(customBioFuels, ref uniqueCustomBioFuels);
 
             SendToSMLHelper(customTabs);
+            SendToSMLHelper(uniqueMovedRecipes);
             SendToSMLHelper(uniqueAddedRecipes);
             SendToSMLHelper(uniqueAliasRecipes);
             SendToSMLHelper(uniqueModifiedRecipes);
