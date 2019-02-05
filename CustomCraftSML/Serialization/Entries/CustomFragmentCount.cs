@@ -1,6 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -8,22 +7,28 @@
     internal class CustomFragmentCount : EmPropertyCollection, ICustomFragmentCount
     {
         private readonly EmProperty<string> emTechType;
-        private readonly EmProperty<short> emFragmentCount;
+        private readonly EmProperty<int> emFragmentCount;
 
         protected static List<EmProperty> FragmentProperties => new List<EmProperty>(3)
         {
             new EmProperty<string>("ItemID"),
-            new EmProperty<short>("FragmentsToScan", 1),
+            new EmProperty<int>("FragmentsToScan", 1),
         };
 
         public CustomFragmentCount() : base("CustomFragments", FragmentProperties)
         {
             emTechType = (EmProperty<string>)Properties["ItemID"];
-            emFragmentCount = (EmProperty<short>)Properties["FragmentsToScan"];
+            emFragmentCount = (EmProperty<int>)Properties["FragmentsToScan"];
+        }
+
+        internal CustomFragmentCount(string itemID, int fragmentsToScan) : this()
+        {
+            this.ItemID = itemID;
+            this.FragmentsToScan = fragmentsToScan;
         }
 
         public string ItemID { get; }
-        public short FragmentsToScan { get; }
+        public int FragmentsToScan { get; }
 
         internal override EmProperty Copy() => new CustomFragmentCount();
     }

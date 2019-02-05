@@ -2,6 +2,6 @@
 {
     interface ICustomFragmentCount : ITechTyped
     {
-        short FragmentsToScan { get; }
+        int FragmentsToScan { get; }
     }
 }

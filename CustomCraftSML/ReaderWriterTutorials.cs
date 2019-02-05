@@ -67,12 +67,41 @@
             var printyPrints = new List<string>();
             printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]
             {
-                "This file was generated with original BIoFuel energy values in the game",
+                "This file was generated with original BioFuel energy values in the game",
                 "You can copy individual entries from this file to use in your personal overrides",
                 "--------------------------------------------------------------------------------",
             }));
 
             printyPrints.Add(bioFuelList.PrettyPrint());
+
+            File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
+
+            QuickLogger.Message($"{fileName} file not found. File generated.");
+        }
+
+        private static void GenerateOriginalScannerFragments()
+        {
+            const string fileName = "FragmentCount_Values.txt";
+
+            if (File.Exists(OriginalsFolder + fileName))
+                return;
+
+            Dictionary<TechType, PDAScanner.EntryData> fragmentMapping = ScannerMappings.BlueprintToFragment;
+
+            var fragmentList = new CustomFragmentCountList();
+
+            foreach (TechType blueprintKey in fragmentMapping.Keys)
+                fragmentList.Add(new CustomFragmentCount(blueprintKey.ToString(), fragmentMapping[blueprintKey].totalFragments));
+
+            var printyPrints = new List<string>();
+            printyPrints.AddRange(EmUtils.CommentTextLinesCentered(new string[]
+            {
+                "This file was generated with original Fragment values in the game",
+                "You can copy individual entries from this file to use in your personal overrides",
+                "--------------------------------------------------------------------------------",
+            }));
+
+            printyPrints.Add(fragmentList.PrettyPrint());
 
             File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
 

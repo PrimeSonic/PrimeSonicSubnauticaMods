@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using Common;
@@ -9,16 +10,11 @@
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
-    using UnityEngine.Assertions;
 
     internal static partial class FileReaderWriter
     {
         internal const string WorkingFolder = FolderRoot + "WorkingFiles/";
         internal const string AssetsFolder = FolderRoot + "Assets/";
-        private const string CustomSizesFile = WorkingFolder + "CustomSizes.txt";
-        private const string ModifiedRecipesFile = WorkingFolder + "ModifiedRecipes.txt";
-        private const string AddedRecipiesFile = WorkingFolder + "AddedRecipes.txt";
-        private const string CustomBioFuelsFile = WorkingFolder + "CustomBioFuels.txt";
 
         //  Initial storage for the serialization - key is string as we have not resolved the TechType at this point
         private static List<MovedRecipe> movedRecipes = new List<MovedRecipe>();
@@ -46,7 +42,11 @@
             if (!Directory.Exists(AssetsFolder))
                 Directory.CreateDirectory(AssetsFolder);
 
+            QuickLogger.Warning("Reading contents of WorkingFiles folder");
+
             ICollection<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
+
+            QuickLogger.Warning($"{workingFiles.Count} files found");
 
             foreach (string file in workingFiles)
                 DeserializeFile(file);
@@ -71,13 +71,13 @@
 
         private static void DeserializeFile(string workingFilePath)
         {
-            QuickLogger.Message($"Reading file: {workingFilePath}");
+            string fileName = Path.GetFileName(workingFilePath);
 
             string serializedData = File.ReadAllText(workingFilePath);
 
             if (string.IsNullOrEmpty(serializedData))
             {
-                QuickLogger.Warning($"File contained no text");
+                QuickLogger.Warning($"File '{fileName}' contained no text");
                 return;
             }
 
@@ -119,26 +119,26 @@
                         break;
 
                     default:
-                        QuickLogger.Error($"Invalid primary key '{key}' detected in file");
+                        QuickLogger.Error($"Invalid primary key '{key}' detected in file '{fileName}'");
                         return;
                 }
 
                 switch (check)
                 {
                     case -1:
-                        QuickLogger.Error($"Unable to parse file");
+                        QuickLogger.Error($"Unable to parse file '{fileName}'");
                         break;
                     case 0:
-                        QuickLogger.Message($"File was parsed but no entries were found");
+                        QuickLogger.Message($"File '{fileName}' was parsed but no entries were found");
                         break;
                     default:
-                        QuickLogger.Message($"{check} entries parsed from file");
+                        QuickLogger.Message($"{check} entries parsed from file '{fileName}'");
                         break;
                 }
             }
             else
             {
-                QuickLogger.Warning("Could not identify primary key in file");
+                QuickLogger.Warning($"Could not identify primary key in file '{fileName}'");
             }
         }
 
@@ -147,8 +147,6 @@
             where T2 : EmPropertyCollectionList<T>, new()
         {
             var list = new T2();
-
-            Assert.AreEqual(typeof(T), list.ItemType);
 
             bool successfullyParsed = list.Deserialize(serializedData);
 
@@ -173,8 +171,6 @@
             where T2 : EmPropertyCollectionList<T>, new()
         {
             var list = new T2();
-
-            Assert.AreEqual(typeof(T), list.ItemType);
 
             bool successfullyParsed = list.Deserialize(serializedData);
 
