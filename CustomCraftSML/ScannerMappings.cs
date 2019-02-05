@@ -9,6 +9,7 @@
         internal static void Load()
         {
             Dictionary<TechType, PDAScanner.EntryData>.Enumerator entries = PDAScanner.GetAllEntriesData();
+
             do
             {
                 KeyValuePair<TechType, PDAScanner.EntryData> entry = entries.Current;

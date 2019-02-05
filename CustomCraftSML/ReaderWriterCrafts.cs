@@ -201,8 +201,7 @@
             return unique++; // Return the number of unique entries added in this list
         }
 
-        private static void PrePassSMLHelper<T>(List<T> entries, ref IDictionary<TechType, T> uniqueEntries)
-            where T : ITechTyped
+        private static void PrePassSMLHelper<T>(List<T> entries, ref IDictionary<TechType, T> uniqueEntries) where T : ITechTyped
         {
             //  Use the ToSet function as a copy constructor - this way we can iterate across the
             //      temp structure, but change the permanent one in the case of duplicates
@@ -294,8 +293,7 @@
 
         //IModifiedRecipe
 
-        private static void SendToSMLHelper<T>(IDictionary<TechType, T> uniqueEntries)
-            where T : ITechTyped
+        private static void SendToSMLHelper<T>(IDictionary<TechType, T> uniqueEntries) where T : ITechTyped
         {
             int successCount = 0;
             foreach (T item in uniqueEntries.Values)
@@ -308,8 +306,7 @@
                 QuickLogger.Message($"{successCount} of {uniqueEntries.Count} {typeof(T).Name} entries were patched");
         }
 
-        private static void SendToSMLHelper<T>(IDictionary<string, T> uniqueEntries)
-            where T : ICraftingTab
+        private static void SendToSMLHelper<T>(IDictionary<string, T> uniqueEntries) where T : ICraftingTab
         {
             int successCount = 0;
             foreach (T item in uniqueEntries.Values)
