@@ -71,8 +71,8 @@
                     return CustomizeBioFuel(customBioFuel);
                 case IMovedRecipe movedRecipe:
                     return MoveRecipe(movedRecipe);
-                case ICustomFragmentCount customFragment:
-                    return CustomizeFragments(customFragment);
+                //case ICustomFragmentCount customFragment:
+                    //return CustomizeFragments(customFragment);
                 default:
                     QuickLogger.Error("Type check failure in CustomCraft.AddEntry");
                     return false;
@@ -314,14 +314,18 @@
         {
             var craftPath = new CraftingPath(addedRecipe.Path);
 
-            string[] steps = craftPath.Path.Split(CraftingNode.Splitter);
-
             TechType itemID = GetTechType(addedRecipe.ItemID);
 
-            if (steps.Length <= 1)
+            if (craftPath.IsAtRoot)
+            {
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID);
+            }
             else
+            {
+                string[] steps = craftPath.Path.Split(CraftingNode.Splitter);
+
                 CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID, steps);
+            }
         }
 
         private static void HandleAddedRecipe(IAddedRecipe addedRecipe, short defaultCraftAmount = 1)

@@ -11,7 +11,7 @@
 
             try
             {
-                ScannerMappings.Load();
+                //ScannerMappings.Load();
                 FileReaderWriter.Patch();
                 QuickLogger.Message("Finished patching.");
             }

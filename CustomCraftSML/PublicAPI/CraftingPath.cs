@@ -7,6 +7,7 @@
         public readonly CraftTree.Type Scheme;
         public readonly string Path;
         public string[] Steps { get; internal set; }
+        public bool IsAtRoot => Steps == null || string.IsNullOrEmpty(Path) || Steps.Length == 0;
 
         internal CraftingPath(CraftTree.Type scheme, string path)
         {
