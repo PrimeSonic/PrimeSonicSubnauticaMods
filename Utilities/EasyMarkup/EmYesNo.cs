@@ -12,22 +12,14 @@
         {
             bool retValue;
 
-            switch (value)
+            switch (value.ToUpperInvariant())
             {
                 case "YES":
-                case "yes":
-                case "Yes":
                 case "TRUE":
-                case "True":
-                case "true":
                     retValue = true;
                     break;
                 case "NO":
-                case "no":
-                case "No":
                 case "FALSE":
-                case "False":
-                case "false":
                     retValue = false;
                     break;
                 default:

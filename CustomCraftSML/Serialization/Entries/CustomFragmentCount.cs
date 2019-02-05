@@ -27,8 +27,16 @@
             this.FragmentsToScan = fragmentsToScan;
         }
 
-        public string ItemID { get; }
-        public int FragmentsToScan { get; }
+        public string ItemID
+        {
+            get => emTechType.Value;
+            set => emTechType.Value = value;
+        }
+        public int FragmentsToScan
+        {
+            get => emFragmentCount.Value;
+            set => emFragmentCount.Value = value;
+        }
 
         internal override EmProperty Copy() => new CustomFragmentCount();
     }

@@ -125,6 +125,7 @@
     <Content Include="SampleFiles\CustomBioFuels_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\CustomFragments_Samples2.txt" />
     <Content Include="SampleFiles\CustomSizes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

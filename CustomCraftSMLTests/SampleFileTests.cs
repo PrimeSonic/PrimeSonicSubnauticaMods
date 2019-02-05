@@ -274,5 +274,56 @@
             Assert.AreEqual(1, readingSizesList[2].Width);
             Assert.AreEqual(1, readingSizesList[2].Height);
         }
+
+        [Test]
+        public void CreateFromClases_ThenTest_SampleCustomFragmentCount()
+        {
+            var seaglideFrag = new CustomFragmentCount
+            {
+                ItemID = TechType.Seaglide.ToString(),
+                FragmentsToScan = 4
+            };
+
+            var beaconFrag = new CustomFragmentCount
+            {
+                ItemID = TechType.Beacon.ToString(),
+                FragmentsToScan = 3
+            };
+
+            var seamothFrag = new CustomFragmentCount
+            {
+                ItemID = TechType.Seamoth.ToString(),
+                FragmentsToScan = 6
+            };
+
+            var origCustomFragList = new CustomFragmentCountList
+            {
+                seaglideFrag, beaconFrag, seamothFrag
+            };
+
+            string serialized = origCustomFragList.PrettyPrint();
+
+            string samples2File = SampleFileDirectory + "CustomFragments_Samples2.txt";
+
+            File.WriteAllText(samples2File, serialized);
+
+            var readingSizesList = new CustomFragmentCountList();
+
+            string reserialized = File.ReadAllText(samples2File);
+
+            bool success = readingSizesList.FromString(reserialized);
+
+            Assert.IsTrue(success);
+
+            Assert.AreEqual(origCustomFragList.Count, readingSizesList.Count);
+
+            Assert.AreEqual(TechType.Seaglide.ToString(), readingSizesList[0].ItemID);
+            Assert.AreEqual(TechType.Beacon.ToString(), readingSizesList[1].ItemID);
+            Assert.AreEqual(TechType.Seamoth.ToString(), readingSizesList[2].ItemID);
+
+            Assert.AreEqual(4, readingSizesList[0].FragmentsToScan);
+            Assert.AreEqual(3, readingSizesList[1].FragmentsToScan);
+            Assert.AreEqual(6, readingSizesList[2].FragmentsToScan);
+        }
     }
 }
