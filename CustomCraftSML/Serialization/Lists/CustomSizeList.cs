@@ -5,7 +5,9 @@
 
     internal class CustomSizeList : EmPropertyCollectionList<CustomSize>
     {
-        public CustomSizeList() : base("CustomSizes", new CustomSize())
+        internal const string ListKey = "CustomSizes";
+
+        public CustomSizeList() : base(ListKey, new CustomSize())
         {
         }
     }

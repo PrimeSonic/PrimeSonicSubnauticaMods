@@ -86,35 +86,35 @@
                 int check = -2;
                 switch (key)
                 {
-                    case "AddedRecipes":
+                    case AddedRecipeList.ListKey:
                         check = ParseEntries<AddedRecipe, AddedRecipeList>(serializedData, ref addedRecipes);
                         break;
 
-                    case "AliasRecipes":
+                    case AliasRecipeList.ListKey:
                         check = ParseEntries<AliasRecipe, AliasRecipeList>(serializedData, ref aliasRecipes);
                         break;
 
-                    case "ModifiedRecipes":
+                    case ModifiedRecipeList.ListKey:
                         check = ParseEntries<ModifiedRecipe, ModifiedRecipeList>(serializedData, ref modifiedRecipes);
                         break;
 
-                    case "CustomSizes":
+                    case CustomSizeList.ListKey:
                         check = ParseEntries<CustomSize, CustomSizeList>(serializedData, ref customSizes);
                         break;
 
-                    case "CustomBioFuels":
+                    case CustomBioFuelList.ListKey:
                         check = ParseEntries<CustomBioFuel, CustomBioFuelList>(serializedData, ref customBioFuels);
                         break;
 
-                    case "CustomCraftingTabs":
+                    case CustomCraftingTabList.ListKey:
                         check = ParseEntries<CustomCraftingTab, CustomCraftingTabList>(serializedData, customTabs);
                         break;
 
-                    case "MovedRecipes":
+                    case MovedRecipeList.ListKey:
                         check = ParseEntries<MovedRecipe, MovedRecipeList>(serializedData, ref movedRecipes);
                         break;
 
-                    case "CustomFragments":
+                    case CustomFragmentCountList.ListKey:
                         check = ParseEntries<CustomFragmentCount, CustomFragmentCountList>(serializedData, ref customFragments);
                         break;
 

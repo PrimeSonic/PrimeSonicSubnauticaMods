@@ -5,7 +5,9 @@
 
     internal class CustomFragmentCountList : EmPropertyCollectionList<CustomFragmentCount>
     {
-        public CustomFragmentCountList() : base("CustomFragmentCounts", new CustomFragmentCount())
+        internal const string ListKey = "CustomFragmentCounts";
+
+        public CustomFragmentCountList() : base(ListKey, new CustomFragmentCount())
         {
         }
     }

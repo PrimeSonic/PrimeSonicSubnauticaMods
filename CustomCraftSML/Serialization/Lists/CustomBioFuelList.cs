@@ -5,7 +5,9 @@
 
     internal class CustomBioFuelList : EmPropertyCollectionList<CustomBioFuel>
     {
-        public CustomBioFuelList() : base("CustomBioFuels", new CustomBioFuel())
+        internal const string ListKey = "CustomBioFuels";
+
+        public CustomBioFuelList() : base(ListKey, new CustomBioFuel())
         {
         }
     }

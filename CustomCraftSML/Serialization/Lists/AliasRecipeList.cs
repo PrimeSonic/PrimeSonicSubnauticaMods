@@ -5,7 +5,9 @@
 
     internal class AliasRecipeList : EmPropertyCollectionList<AliasRecipe>
     {
-        public AliasRecipeList() : base("AliasRecipes", new AliasRecipe())
+        internal const string ListKey = "AliasRecipes";
+
+        public AliasRecipeList() : base(ListKey, new AliasRecipe())
         {
         }
     }

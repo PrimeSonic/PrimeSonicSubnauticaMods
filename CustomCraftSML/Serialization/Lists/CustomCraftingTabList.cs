@@ -5,7 +5,9 @@
 
     internal class CustomCraftingTabList : EmPropertyCollectionList<CustomCraftingTab>
     {
-        public CustomCraftingTabList() : base("CustomCraftingTabs", new CustomCraftingTab())
+        internal const string ListKey = "CustomCraftingTabs";
+
+        public CustomCraftingTabList() : base(ListKey, new CustomCraftingTab())
         {
         }
     }
