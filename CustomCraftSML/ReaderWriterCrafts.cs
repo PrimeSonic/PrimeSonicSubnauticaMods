@@ -27,6 +27,7 @@
         private static List<ModifiedRecipe> modifiedRecipes = new List<ModifiedRecipe>();
         private static List<CustomSize> customSizes = new List<CustomSize>();
         private static List<CustomBioFuel> customBioFuels = new List<CustomBioFuel>();
+        private static List<CustomFragmentCount> customFragments = new List<CustomFragmentCount>();
 
         //  Crafting tabs to not use TechType for key - store these by name
         private static readonly IDictionary<string, CustomCraftingTab> customTabs = new Dictionary<string, CustomCraftingTab>();
@@ -38,6 +39,7 @@
         private static IDictionary<TechType, ModifiedRecipe> uniqueModifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
         private static IDictionary<TechType, CustomSize> uniqueCustomSizes = new Dictionary<TechType, CustomSize>();
         private static IDictionary<TechType, CustomBioFuel> uniqueCustomBioFuels = new Dictionary<TechType, CustomBioFuel>();
+        private static IDictionary<TechType, CustomFragmentCount> uniqueCustomFragments = new Dictionary<TechType, CustomFragmentCount>();
 
         private static void HandleWorkingFiles()
         {
@@ -55,6 +57,7 @@
             PrePassSMLHelper(modifiedRecipes, ref uniqueModifiedRecipes);
             PrePassSMLHelper(customSizes, ref uniqueCustomSizes);
             PrePassSMLHelper(customBioFuels, ref uniqueCustomBioFuels);
+            PrePassSMLHelper(customFragments, ref uniqueCustomFragments);
 
             SendToSMLHelper(customTabs);
             SendToSMLHelper(uniqueMovedRecipes);
@@ -63,6 +66,7 @@
             SendToSMLHelper(uniqueModifiedRecipes);
             SendToSMLHelper(uniqueCustomSizes);
             SendToSMLHelper(uniqueCustomBioFuels);
+            SendToSMLHelper(uniqueCustomFragments);
         }
 
         private static void DeserializeFile(string workingFilePath)
@@ -108,6 +112,10 @@
 
                     case "MovedRecipes":
                         check = ParseEntries<MovedRecipe, MovedRecipeList>(serializedData, ref movedRecipes);
+                        break;
+
+                    case "CustomFragments":
+                        check = ParseEntries<CustomFragmentCount, CustomFragmentCountList>(serializedData, ref customFragments);
                         break;
 
                     default:

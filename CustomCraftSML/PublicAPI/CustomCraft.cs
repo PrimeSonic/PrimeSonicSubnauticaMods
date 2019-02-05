@@ -5,7 +5,6 @@
     using System.IO;
     using Common;
     using CustomCraft2SML.Interfaces;
-    using CustomCraft2SML.Serialization;
     using CustomCraft2SML.Serialization.Components;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -72,6 +71,8 @@
                     return CustomizeBioFuel(customBioFuel);
                 case IMovedRecipe movedRecipe:
                     return MoveRecipe(movedRecipe);
+                case ICustomFragmentCount customFragment:
+                    return CustomizeFragments(customFragment);
                 default:
                     QuickLogger.Error("Type check failure in CustomCraft.AddEntry");
                     return false;
@@ -222,6 +223,31 @@
                 CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID, newSteps);
 
             return true;
+        }
+
+        internal static bool CustomizeFragments(ICustomFragmentCount fragments)
+        {
+            TechType itemID = GetTechType(fragments.ItemID);
+
+            if (itemID == TechType.None)
+                return false;
+
+            int fragCount = fragments.FragmentsToScan;
+            if (fragCount < PDAScanner.EntryData.minFragments || 
+                fragCount > PDAScanner.EntryData.maxFragments)
+            {
+                QuickLogger.Warning($"Invalid number of FragmentsToScan for entry '{fragments.ItemID}'. Must be between {PDAScanner.EntryData.minFragments} and {PDAScanner.EntryData.maxFragments}.");
+                return false;
+            }
+
+            if (ScannerMappings.BlueprintToFragment.TryGetValue(itemID, out PDAScanner.EntryData entryData))
+            {
+                entryData.totalFragments = fragCount;
+                return true;
+            }
+
+            QuickLogger.Warning($"Item '{fragments.ItemID}' for CustomFragmentCount does not have matchign fragments.");
+            return false;
         }
 
         // ----------------------
