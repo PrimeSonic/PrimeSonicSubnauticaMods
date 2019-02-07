@@ -37,7 +37,7 @@
                 case IAliasRecipe aliasRecipe:
                     //  Register the alias TechType
                     if (!string.IsNullOrEmpty(aliasRecipe.ItemID))
-                        return TechTypeHandler.AddTechType(aliasRecipe.ItemID, aliasRecipe.DisplayName, aliasRecipe.Tooltip);
+                        return TechTypeHandler.AddTechType(aliasRecipe.ItemID, aliasRecipe.DisplayName, aliasRecipe.Tooltip, false);
 
                     return TechType.None;
                 case IAddedRecipe addedRecipe:
@@ -72,7 +72,7 @@
                 case IMovedRecipe movedRecipe:
                     return MoveRecipe(movedRecipe);
                 //case ICustomFragmentCount customFragment:
-                    //return CustomizeFragments(customFragment);
+                //return CustomizeFragments(customFragment);
                 default:
                     QuickLogger.Error("Type check failure in CustomCraft.AddEntry");
                     return false;
@@ -233,21 +233,21 @@
                 return false;
 
             int fragCount = fragments.FragmentsToScan;
-            if (fragCount < PDAScanner.EntryData.minFragments || 
+            if (fragCount < PDAScanner.EntryData.minFragments ||
                 fragCount > PDAScanner.EntryData.maxFragments)
             {
                 QuickLogger.Warning($"Invalid number of FragmentsToScan for entry '{fragments.ItemID}'. Must be between {PDAScanner.EntryData.minFragments} and {PDAScanner.EntryData.maxFragments}.");
                 return false;
             }
 
-            if (ScannerMappings.BlueprintToFragment.TryGetValue(itemID, out PDAScanner.EntryData entryData))
+            if (itemID > TechType.Databox)
             {
-                entryData.totalFragments = fragCount;
-                return true;
+                QuickLogger.Warning($"Item '{fragments.ItemID}' appears to be a modded item. CustomFragmentCount can only be applied to existing game items.");
+                return false;
             }
 
-            QuickLogger.Warning($"Item '{fragments.ItemID}' for CustomFragmentCount does not have matchign fragments.");
-            return false;
+            PDAHandler.EditFragmentsToScan(itemID, fragCount);
+            return true;
         }
 
         // ----------------------
@@ -268,23 +268,34 @@
 
         private static void HandleCustomSprite(IAliasRecipe aliasRecipe)
         {
+            TechType itemID = GetTechType(aliasRecipe.ItemID);
+
+            if (aliasRecipe.SpriteItemID > TechType.None)
+            {
+                QuickLogger.Message($"SpriteItemID {aliasRecipe.SpriteItemID} used for AliasRecipe '{aliasRecipe.ItemID}'");
+                Atlas.Sprite sprite = SpriteManager.Get(aliasRecipe.SpriteItemID);
+                SpriteHandler.RegisterSprite(itemID, sprite);
+                return;
+            }
+
             string imagePath = FileReaderWriter.AssetsFolder + aliasRecipe.ItemID + @".png";
             if (File.Exists(imagePath))
             {
                 QuickLogger.Message($"Custom sprite found for AliasRecipe '{aliasRecipe.ItemID}'");
                 Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+                SpriteHandler.RegisterSprite(itemID, sprite);
+                return;
             }
-            else if (aliasRecipe.LinkedItemsCount > 0)
+
+            if (aliasRecipe.LinkedItemsCount > 0)
             {
                 QuickLogger.Message($"First LinkedItemID used for icon of AliasRecipe '{aliasRecipe.ItemID}'");
                 Atlas.Sprite sprite = SpriteManager.Get(GetTechType(aliasRecipe.GetLinkedItem(0)));
-                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+                SpriteHandler.RegisterSprite(itemID, sprite);
+                return;
             }
-            else
-            {
-                QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemID}'");
-            }
+
+            QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemID}'");
         }
 
         private static Atlas.Sprite GetCraftingTabSprite(ICraftingTab craftingTab)

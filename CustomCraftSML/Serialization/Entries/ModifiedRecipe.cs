@@ -68,7 +68,7 @@
                 return DefaultForceUnlock;
             }
 
-            set => unlockedAtStart.Value = (bool)value;
+            set => unlockedAtStart.Value = value;
         }
 
         public IEnumerable<string> Unlocks => unlocks.Values;

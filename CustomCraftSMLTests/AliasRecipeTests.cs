@@ -81,6 +81,7 @@
                                       "    LinkedItemIDs:Silver,Gold;" + "\r\n" +
                                       "    Path:Fabricator/Resources/BasicMaterials;" +
                                       "    FunctionalID:Aerogel;" +
+                                      "    SpriteItemID:Aerogel;" +
                                       ")," + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:AliasAerogel3;" + "\r\n" +
@@ -99,6 +100,7 @@
                                       "    LinkedItemIDs:Silver,Gold;" + "\r\n" +
                                       "    Path:Fabricator/Resources/BasicMaterials;" +
                                       "    FunctionalID:Aerogel;" +
+                                      "    SpriteItemID:Aerogel;" +
                                       ");" + "\r\n";
 
 
@@ -135,6 +137,7 @@
                 Assert.AreEqual("Fabricator/Resources/BasicMaterials", r.Path);
 
                 Assert.AreEqual(TechType.Aerogel.ToString(), r.FunctionalID);
+                Assert.AreEqual(TechType.Aerogel, r.SpriteItemID);
             }
         }
 

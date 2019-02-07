@@ -15,6 +15,8 @@
         internal const char SpChar_LiteralStringBlock = '"';
         internal const char SpChar_EscapeChar = '\\';
 
+        internal readonly string UnbalancedContainersError = $"Mismatch detected in number of '{SpChar_BeginComplexValue}' and '{SpChar_FinishComplexValue}' characters.";
+
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
 
@@ -285,6 +287,7 @@
         }
 
         public override bool Equals(object obj) => base.Equals(obj);
+
         public override int GetHashCode() => base.GetHashCode();
 
         public static bool operator ==(EmProperty a, EmProperty b)

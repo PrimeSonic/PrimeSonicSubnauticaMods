@@ -6,8 +6,6 @@
 
     public abstract class EmPropertyCollection : EmProperty
     {
-        internal readonly string UnbalancedContainersError = $"Mismatch detected in number of '{SpChar_BeginComplexValue}' and '{SpChar_FinishComplexValue}' characters.";
-
         public EmProperty this[string key]
         {
             get => Properties[key];
