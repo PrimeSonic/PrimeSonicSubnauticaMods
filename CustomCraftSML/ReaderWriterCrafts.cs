@@ -42,11 +42,11 @@
             if (!Directory.Exists(AssetsFolder))
                 Directory.CreateDirectory(AssetsFolder);
 
-            QuickLogger.Warning("Reading contents of WorkingFiles folder");
+            QuickLogger.Message("Reading contents of WorkingFiles folder");
 
             ICollection<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
 
-            QuickLogger.Warning($"{workingFiles.Count} files found");
+            QuickLogger.Message($"{workingFiles.Count} files found");
 
             foreach (string file in workingFiles)
                 DeserializeFile(file);

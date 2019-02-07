@@ -1,0 +1,21 @@
+# Equipment Salvage #
+# Created for Custom Craft 2 #
+# Author: PrimeSonic #
+# Text files included in this mod: #
+#      EquipmentSalvage_Tabs.txt #
+#      EquipmentSalvage_Recipes.txt #
+#      EquipmentSalvage_Unlocks.txt #
+# ------------------------------------ #
+CustomCraftingTabs: 
+(
+    TabID: RecycleBatTab;
+    DisplayName: "Recycling and Salvage";
+    SpriteItemID: Trashcans;
+    ParentTabPath: Fabricator/Resources/;
+);
+
+# ------------------------------------ #
+# Published on Nexus #
+#     https://www.nexusmods.com/subnautica/mods/188 #
+# Source code to all my Subnautica mods available on GitHub #
+#     https://github.com/PrimeSonic/PrimeSonicSubnauticaMods #

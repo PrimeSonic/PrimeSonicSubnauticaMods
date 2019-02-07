@@ -1,0 +1,93 @@
+# Equipment Salvage #
+# Created for Custom Craft 2 #
+# Author: PrimeSonic #
+# Text files included in this mod: #
+#      EquipmentSalvage_Tabs.txt #
+#      EquipmentSalvage_Recipes.txt #
+#      EquipmentSalvage_Unlocks.txt #
+# ------------------------------------ #
+AliasRecipes: 
+(
+    ItemID: LeadSalvage;
+    Ingredients: 
+    (
+        ItemID: RadiationSuit;
+        Required: 1;
+    ),
+    (
+        ItemID: RadiationHelmet;
+        Required: 1;
+    ),
+    (
+        ItemID: RadiationGloves;
+        Required: 1;
+    );
+    LinkedItemIDs: Lead,Lead;
+    Path: Fabricator/Resources/RecycleBatTab;
+    PdaGroup: Resources;
+    PdaCategory: BasicMaterials;
+    DisplayName: "Salavage Lead";
+    Tooltip: "Recover the useful lead from a radiation suit no longer in use";
+),
+(
+    ItemID: CopperSalvage;
+    Ingredients: 
+    (
+        ItemID: PowerCell;
+        Required: 1;
+    );
+    LinkedItemIDs: Lead,Lead;
+    Path: Fabricator/Resources/RecycleBatTab;
+    PdaGroup: Resources;
+    PdaCategory: BasicMaterials;
+    DisplayName: "Salavage Copper";
+    Tooltip: "Recover the precious copper from unneeded power cells";
+),
+(
+    ItemID: DeepSalvage;
+    Ingredients: 
+    (
+        ItemID: DeepPowerCell;
+        Required: 1;
+    );
+    LinkedItemIDs: Lithium,Magnetite,Lithium,Magnetite;
+    Path: Fabricator/Resources/RecycleBatTab;
+    PdaGroup: Resources;
+    PdaCategory: AdvancedMaterials;
+    DisplayName: "Salavage Precious Metals";
+    Tooltip: "Recover the lithium and magnetite from unneeded deep power cells";
+),
+(
+    ItemID: IonCubeSalvage;
+    Ingredients: 
+    (
+        ItemID: PrecursorIonPowerCell;
+        Required: 1;
+    );
+    LinkedItemIDs: PrecursorIonCrystal,PrecursorIonCrystal;
+    Path: Fabricator/Resources/RecycleBatTab;
+    PdaGroup: Resources;
+    PdaCategory: AdvancedMaterials;
+    DisplayName: "Salavage Ion Cubes";
+    Tooltip: "Recover the precious ion cubes from unneeded ion power cells";
+),
+(
+    ItemID: DiamondSalvage;
+    Ingredients: 
+    (
+        ItemID: LaserCutter;
+        Required: 1;
+    );
+    LinkedItemIDs: Diamond,Diamond;
+    Path: Fabricator/Resources/RecycleBatTab;
+    PdaGroup: Resources;
+    PdaCategory: AdvancedMaterials;
+    DisplayName: "Salavage Diamonds";
+    Tooltip: "Recover diamonds from retired laser cutters. Don't forget to remove the batteries first.";
+);
+
+# ------------------------------------ #
+# Published on Nexus #
+#     https://www.nexusmods.com/subnautica/mods/188 #
+# Source code to all my Subnautica mods available on GitHub #
+#     https://github.com/PrimeSonic/PrimeSonicSubnauticaMods #

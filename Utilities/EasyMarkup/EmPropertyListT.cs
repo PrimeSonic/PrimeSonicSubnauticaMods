@@ -9,6 +9,8 @@
     {
         private static HashSet<char> ListDelimeters { get; } = new HashSet<char> { SpChar_ListItemSplitter, SpChar_ValueDelimiter };
 
+        public bool Optional { get; set; } = false;
+
         public bool HasValue => this.InternalValues.Count > 0;
 
         protected IList<T> InternalValues { get; } = new List<T>();
@@ -44,6 +46,9 @@
 
         public override string ToString()
         {
+            if (!HasValue && Optional)
+                return string.Empty;
+
             string val = $"{this.Key}{SpChar_KeyDelimiter}";
             foreach (T value in this.InternalValues)
             {

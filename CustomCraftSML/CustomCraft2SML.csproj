@@ -134,11 +134,15 @@
     <Content Include="SampleFiles\CustomTab_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Recipes.txt" />
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Tabs.txt" />
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Unlocks.txt" />
     <Content Include="SampleFiles\Mattus666.txt" />
     <Content Include="SampleFiles\ModifiedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

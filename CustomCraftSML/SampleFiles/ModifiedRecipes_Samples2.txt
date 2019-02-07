@@ -11,6 +11,5 @@ ModifiedRecipes:
         ItemID: Salt;
         Required: 1;
     );
-    LinkedItemIDs: ;
     Unlocks: NutrientBlock;
 );

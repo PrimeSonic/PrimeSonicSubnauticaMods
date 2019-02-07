@@ -15,8 +15,6 @@ AddedRecipes:
         ItemID: HangingFruit;
         Required: 1;
     );
-    LinkedItemIDs: ;
-    Unlocks: ;
     Path: Fabricator/Survival/CuredFood;
     PdaGroup: Uncategorized;
     PdaCategory: Misc;
@@ -29,8 +27,6 @@ AddedRecipes:
         ItemID: FilteredWater;
         Required: 2;
     );
-    LinkedItemIDs: ;
-    Unlocks: ;
     Path: Fabricator/Survival/Water;
     PdaGroup: Uncategorized;
     PdaCategory: Misc;

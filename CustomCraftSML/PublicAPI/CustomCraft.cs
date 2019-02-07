@@ -419,10 +419,12 @@
 
         private static void HandleUnlocks(IModifiedRecipe modifiedRecipe)
         {
-            if (modifiedRecipe.ForceUnlockAtStart)
-                KnownTechHandler.UnlockOnStart(GetTechType(modifiedRecipe.ItemID));
+            TechType itemID = GetTechType(modifiedRecipe.ItemID);
 
-            if (modifiedRecipe.UnlocksCount.HasValue)
+            if (modifiedRecipe.ForceUnlockAtStart)
+                KnownTechHandler.UnlockOnStart(itemID);
+
+            if (modifiedRecipe.UnlocksCount.HasValue && modifiedRecipe.UnlocksCount > 0)
             {
                 var unlocks = new List<TechType>();
 
@@ -431,7 +433,7 @@
                     unlocks.Add(GetTechType(value));
                 }
 
-                KnownTechHandler.SetAnalysisTechEntry(GetTechType(modifiedRecipe.ItemID), unlocks);
+                KnownTechHandler.SetAnalysisTechEntry(itemID, unlocks);
             }
         }
 

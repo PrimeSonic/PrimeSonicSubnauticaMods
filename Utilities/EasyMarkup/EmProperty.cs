@@ -24,7 +24,13 @@
 
         internal string SerializedValue;
 
-        public override string ToString() => $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(SerializedValue))
+                return string.Empty;
+
+            return $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";
+        }
 
         public static bool CheckKey(string rawValue, out string foundKey, string keyToValidate) => CheckKey(rawValue, out foundKey) && foundKey == keyToValidate;
 

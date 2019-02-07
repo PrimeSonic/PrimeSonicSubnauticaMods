@@ -28,8 +28,8 @@
         protected static List<EmProperty> AddedRecipeProperties => new List<EmProperty>(ModifiedRecipeProperties)
         {
             new EmProperty<string>("Path"),
-            new EmProperty<TechGroup>("PdaGroup"),
-            new EmProperty<TechCategory>("PdaCategory")
+            new EmProperty<TechGroup>("PdaGroup") { Optional = true },
+            new EmProperty<TechCategory>("PdaCategory") { Optional = true }
         };
 
         public TechGroup PdaGroup

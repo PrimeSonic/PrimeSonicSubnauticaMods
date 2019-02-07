@@ -8,7 +8,9 @@
     {
         public string InLineComment { get; set; } = null;
 
-        public bool HasValue { get; private set; } = false;
+        public bool Optional { get; set; } = false;
+
+        public bool HasValue { get; set; } = false;
 
         protected T DefaultValue { get; private set; } = default(T);
 
@@ -35,10 +37,10 @@
 
         public override string ToString()
         {
-            if (string.IsNullOrEmpty(InLineComment))
-                return base.ToString();
+            if (!HasValue && Optional)
+                return string.Empty;
 
-            return $"{Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter} {EmUtils.CommentText(InLineComment)}";
+            return $"{base.ToString()}{EmUtils.CommentText(InLineComment)}";
         }
 
         protected override string ExtractValue(StringBuffer fullString)

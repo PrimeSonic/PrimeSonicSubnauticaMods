@@ -1,0 +1,31 @@
+# Equipment Salvage #
+# Created for Custom Craft 2 #
+# Author: PrimeSonic #
+# Text files included in this mod: #
+#      EquipmentSalvage_Tabs.txt #
+#      EquipmentSalvage_Recipes.txt #
+#      EquipmentSalvage_Unlocks.txt #
+# ------------------------------------ #
+ModifiedRecipes: 
+(
+    ItemID: RadiationSuit;
+    Unlocks: LeadSalvage;
+),
+(
+    ItemID: PowerCell;
+    Unlocks: IonCubeSalvage;
+),
+(
+    ItemID: PrecursorIonPowerCell;
+    Unlocks: IonCubeSalvage;
+),
+(
+    ItemID: LaserCutter;
+    Unlocks: DiamondSalvage;
+);
+
+# ------------------------------------ #
+# Published on Nexus #
+#     https://www.nexusmods.com/subnautica/mods/188 #
+# Source code to all my Subnautica mods available on GitHub #
+#     https://github.com/PrimeSonic/PrimeSonicSubnauticaMods #

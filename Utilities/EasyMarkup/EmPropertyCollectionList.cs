@@ -7,6 +7,8 @@
 
     public class EmPropertyCollectionList<T> : EmProperty, IEnumerable<T>, IValueConfirmation where T : EmPropertyCollection
     {
+        public bool Optional { get; set; } = false;
+
         public bool HasValue { get; private set; } = false;
 
         public Type ItemType => typeof(T);
@@ -39,6 +41,9 @@
 
         public override string ToString()
         {
+            if (!HasValue && Optional)
+                return string.Empty;
+
             string val = $"{this.Key}{SpChar_KeyDelimiter}";
             foreach (EmPropertyCollection collection in this.InternalValues)
             {

@@ -43,6 +43,9 @@
 
         public static string CommentText(string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
+
             return $"{EmProperty.SpChar_CommentBlock} {text} {EmProperty.SpChar_CommentBlock}";
         }
 

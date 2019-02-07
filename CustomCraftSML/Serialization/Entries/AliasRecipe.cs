@@ -55,8 +55,8 @@
         {
             new EmProperty<string>("DisplayName"),
             new EmProperty<string>("Tooltip"),
-            new EmProperty<string>("FunctionalID"),
-            new EmProperty<TechType>("SpriteItemID")
+            new EmProperty<string>("FunctionalID") { Optional = true },
+            new EmProperty<TechType>("SpriteItemID") { Optional = true }
         };
 
         public AliasRecipe() : this(AliasRecipeProperties)

@@ -4,7 +4,6 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization.Components;
-    using UnityEngine.Assertions;
 
     internal class ModifiedRecipe : EmPropertyCollection, IModifiedRecipe
     {
@@ -43,16 +42,15 @@
         {
             get
             {
-                if (amountCrafted.HasValue)
+                if (amountCrafted.HasValue && amountCrafted.Value > -1)
                     return amountCrafted.Value;
 
                 return null;
             }
             set
             {
-                Assert.IsTrue(value <= Max, $"Amount crafted value for {ItemID} must be less than {Max}.");
-                Assert.IsTrue(value >= Min, $"Amount crafted value for {ItemID} must be greater than {Min}.");
-                amountCrafted.Value = (short)value;
+                if (amountCrafted.HasValue = value.HasValue)
+                    amountCrafted.Value = value.Value;
             }
         }
 
@@ -110,20 +108,24 @@
             }
         }
 
-        public void AddIngredient(string techType, short count) => ingredients.Add(new EmIngredient() { ItemID = techType, Required = count });
+        public void AddIngredient(string techType, short count = 1) => ingredients.Add(new EmIngredient() { ItemID = techType, Required = count });
+
+        public void AddIngredient(TechType techType, short count = 1) => AddIngredient(techType.ToString(), count);
 
         public void AddLinkedItem(string linkedItem) => linkedItems.Add(linkedItem);
+
+        public void AddLinkedItem(TechType linkedItem) => AddLinkedItem(linkedItem.ToString());
 
         public void AddUnlock(string unlock) => unlocks.Add(unlock);
 
         protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(7)
         {
             new EmProperty<string>("ItemID"),
-            new EmProperty<short>("AmountCrafted", 1),
-            new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()),
-            new EmPropertyList<string>("LinkedItemIDs"),
-            new EmYesNo("ForceUnlockAtStart"),
-            new EmPropertyList<string>("Unlocks"),
+            new EmProperty<short>("AmountCrafted", 1) { Optional = true },
+            new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()) { Optional = true },
+            new EmPropertyList<string>("LinkedItemIDs") { Optional = true },
+            new EmYesNo("ForceUnlockAtStart") { Optional = true },
+            new EmPropertyList<string>("Unlocks") { Optional = true },
         };
 
         internal ModifiedRecipe(TechType origTechType) : this()
