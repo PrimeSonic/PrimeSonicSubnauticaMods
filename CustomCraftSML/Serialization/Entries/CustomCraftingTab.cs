@@ -81,6 +81,7 @@
             get => emParentTabPath.Value;
             set => emParentTabPath.Value = value;
         }
+
         public string[] StepsToTab
         {
             get
@@ -91,6 +92,8 @@
                 return craftingPath.Steps;
             }
         }
+
+        public string FullPath => ParentTabPath + TabID;
 
         internal override EmProperty Copy() => new CustomCraftingTab();
     }

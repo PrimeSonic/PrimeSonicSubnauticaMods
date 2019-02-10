@@ -126,11 +126,9 @@
         {
             try
             {
-                HandleModifiedRecipe(modifiedRecipe);
-
-                HandleUnlocks(modifiedRecipe);
-
-                return true;
+                return
+                    HandleModifiedRecipe(modifiedRecipe) &&
+                    HandleUnlocks(modifiedRecipe);
             }
             catch (Exception ex)
             {
@@ -247,6 +245,7 @@
             }
 
             PDAHandler.EditFragmentsToScan(itemID, fragCount);
+            //QuickLogger.Debug("Placeholder message");
             return true;
         }
 
@@ -362,11 +361,22 @@
             }
         }
 
-        private static void HandleModifiedRecipe(IModifiedRecipe modifiedRecipe)
+        private static bool HandleModifiedRecipe(IModifiedRecipe modifiedRecipe)
         {
             bool overrideRecipe = false;
 
-            ITechData original = CraftData.Get(GetTechType(modifiedRecipe.ItemID));
+            TechType itemID = GetTechType(modifiedRecipe.ItemID);
+
+            if (itemID == TechType.None)
+                return false; // Unknown item
+
+            ITechData original = CraftData.Get(itemID, skipWarnings: true);
+
+            if (original == null) // Possibly a mod recipe
+                original = CraftDataHandler.GetModdedTechData(itemID);
+
+            if (original == null)
+                return false;  // Unknown recipe
 
             var replacement = new TechData();
 
@@ -377,7 +387,9 @@
                 replacement.craftAmount = modifiedRecipe.AmountCrafted.Value;
             }
             else
+            {
                 replacement.craftAmount = original.craftAmount;
+            }
 
             // Ingredients
             if (modifiedRecipe.IngredientsCount.HasValue)
@@ -414,12 +426,17 @@
             }
 
             if (overrideRecipe)
-                CraftDataHandler.SetTechData(GetTechType(modifiedRecipe.ItemID), replacement);
+                CraftDataHandler.SetTechData(itemID, replacement);
+
+            return true;
         }
 
-        private static void HandleUnlocks(IModifiedRecipe modifiedRecipe)
+        private static bool HandleUnlocks(IModifiedRecipe modifiedRecipe)
         {
             TechType itemID = GetTechType(modifiedRecipe.ItemID);
+
+            if (itemID == TechType.None)
+                return false; // Unknown item
 
             if (modifiedRecipe.ForceUnlockAtStart)
                 KnownTechHandler.UnlockOnStart(itemID);
@@ -435,6 +452,8 @@
 
                 KnownTechHandler.SetAnalysisTechEntry(itemID, unlocks);
             }
+
+            return true;
         }
 
         private static void HandleFunctionalClone(IAliasRecipe aliasRecipe)

@@ -33,8 +33,8 @@
 
         private static ICollection<EmProperty> definitions = new List<EmProperty>(2)
         {
-            new EmYesNo(EmAuxEnabledKey, true){ ForceWrite = true },
-            new EmYesNo(EmUpgradesEnabledKey, true){ ForceWrite = true },
+            new EmYesNo(EmAuxEnabledKey, true),
+            new EmYesNo(EmUpgradesEnabledKey, true),
         };
 
         public EmModPatchConfig() : base(ConfigKey, definitions)

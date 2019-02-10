@@ -7,5 +7,6 @@
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
   "EntryMethod": "CustomCraft2SML.QPatch.Patch",
+  "Priority": "Last",
   "Config": {}
 }
