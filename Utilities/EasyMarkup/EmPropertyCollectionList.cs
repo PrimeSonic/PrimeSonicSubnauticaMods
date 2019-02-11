@@ -88,7 +88,7 @@
                     case SpChar_FinishComplexValue:
                         openParens--;
                         if (openParens < 0)
-                            throw new FormatException(UnbalancedContainersError);
+                            throw new EmException(UnbalancedContainersError, buffer);
                         goto default;
                     default:
                         buffer.PushToEnd(fullString.PopFromStart());
@@ -97,7 +97,7 @@
             } while (fullString.Count > 0);
 
             if (openParens != 0)
-                throw new FormatException(UnbalancedContainersError);
+                throw new EmException(UnbalancedContainersError, buffer);
 
             this.HasValue = true;
 

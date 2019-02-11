@@ -10,10 +10,14 @@
             {
                 return emProperty.FromString(serializedData);
             }
+            catch (EmException emEx)
+            {
+                QuickLogger.Error($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}{emEx.ToString()}");
+                return false;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}" +
-                           $"Error reported: {ex}");
+                QuickLogger.Error($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}Error reported: {ex}");
                 return false;
             }
         }

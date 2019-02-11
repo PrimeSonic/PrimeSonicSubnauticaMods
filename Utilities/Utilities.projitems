@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Deque.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollectionList.cs" />

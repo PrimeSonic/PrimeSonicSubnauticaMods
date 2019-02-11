@@ -103,18 +103,24 @@
             Assert.AreEqual(expectedValue, testProp.Value);
         }
 
-        [TestCase("TestAKey:1;")]
-        [TestCase("TestBKey : 1; ")]
-        [TestCase(" TestCKey : 1 ;")]
-        [TestCase("TestDKey:\r\n1\r\n;")]
-        public void EmProperty_FromString_MismatchedKey_Throws(string serialValue)
+        [TestCase("TestAKey:1;", "TestAKey")]
+        [TestCase("TestBKey : 1; ", "TestBKey")]
+        [TestCase(" TestCKey : 1 ;", "TestCKey")]
+        [TestCase("TestDKey:\r\n1\r\n;", "TestDKey")]
+        public void EmProperty_FromString_MismatchedKey_Throws(string serialValue, string badKey)
         {
             var testProp = new TestIntProperty("TestKey");
-            Assert.Throws<AssertionException>(() =>
+            var emEx = Assert.Throws<EmException>(() =>
             {
                 testProp.FromString(serialValue, true);
             });
+
+            Assert.IsNotNull(emEx.CurrentBuffer);
+            Assert.IsFalse(emEx.CurrentBuffer.IsEmpty);
+            Assert.AreEqual(badKey, emEx.CurrentBuffer.ToString());
         }
+
+        // TODO EmException tests for EmPropertyCollection and EmPropertyCollectionList
 
         [TestCase("TestAKey:1;", 1)]
         [TestCase("TestBKey : 1; ", 1)]

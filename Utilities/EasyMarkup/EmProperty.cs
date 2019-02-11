@@ -50,11 +50,11 @@
             if (cleanValue.IsEmpty)
                 return false;
 
-            string key = ExtractKey(cleanValue);
+            StringBuffer keyBuffer = ExtractKey(cleanValue);
             if (string.IsNullOrEmpty(this.Key))
-                this.Key = key;
-            else if (haltOnKeyMismatch && this.Key != key)
-                throw new AssertionException($"Key mismatch. Expected:{this.Key} but was {key}.", $"Wrong key found: {this.Key}=/={key}");
+                this.Key = keyBuffer.ToString();
+            else if (haltOnKeyMismatch && this.Key != keyBuffer.ToString())
+                throw new EmException($"Key mismatch. Expected key {this.Key} was not found", keyBuffer);
 
             if (cleanValue.Count <= 1) // only enough for the final delimiter
                 return true;
@@ -65,7 +65,7 @@
             return true;
         }
 
-        protected virtual string ExtractKey(StringBuffer fullString)
+        protected virtual StringBuffer ExtractKey(StringBuffer fullString)
         {
             var key = new StringBuffer();
             while (fullString.Count > 0 && fullString.PeekStart() != ':')
@@ -73,7 +73,7 @@
 
             fullString.PopFromStart(); // Skip : separator
 
-            return key.ToString();
+            return key;
         }
 
         protected virtual string ExtractValue(StringBuffer fullString) =>
