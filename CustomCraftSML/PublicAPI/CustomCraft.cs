@@ -465,6 +465,7 @@
 
             if (functionalID != TechType.None)
             {
+                QuickLogger.Debug($"Custom item '{aliasRecipe.ItemID}' will be a functional clone of '{aliasRecipe.FunctionalID}'");
                 var clone = new FunctionalClone(aliasRecipe, functionalID);
                 PrefabHandler.RegisterPrefab(clone);
             }

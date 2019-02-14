@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using UnityEngine.Assertions;
 
     public abstract class EmProperty : IEquatable<EmProperty>
     {
