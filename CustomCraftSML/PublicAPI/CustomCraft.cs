@@ -42,14 +42,21 @@
                     return TechType.None;
                 case IAddedRecipe addedRecipe:
                     return GetTechType(addedRecipe.ItemID);
+
                 case IModifiedRecipe modifiedRecipe:
                     return GetTechType(modifiedRecipe.ItemID);
+
                 case ICustomSize customSize:
                     return GetTechType(customSize.ItemID);
+
                 case ICustomBioFuel customBioFuel:
                     return GetTechType(customBioFuel.ItemID);
+
+                case ICustomFragmentCount customFragment:
+                    return GetTechType(customFragment.ItemID);
+
                 default:
-                    QuickLogger.Error("Type check failure in CustomCraft.PrePass");
+                    QuickLogger.Error($"Type check failure in CustomCraft.PrePass on entry for '{entry.ItemID}'");
                     return TechType.None;
             }
         }
@@ -61,20 +68,27 @@
             {
                 case IAliasRecipe aliasRecipe:
                     return AliasRecipe(aliasRecipe);
+
                 case IAddedRecipe addedRecipe:
                     return AddRecipe(addedRecipe);
+
                 case IModifiedRecipe modifiedRecipe:
                     return ModifyRecipe(modifiedRecipe);
+
                 case ICustomSize customSize:
                     return CustomizeItemSize(customSize);
+
                 case ICustomBioFuel customBioFuel:
                     return CustomizeBioFuel(customBioFuel);
+
                 case IMovedRecipe movedRecipe:
                     return MoveRecipe(movedRecipe);
-                //case ICustomFragmentCount customFragment:
-                //return CustomizeFragments(customFragment);
+
+                case ICustomFragmentCount customFragment:
+                    return CustomizeFragments(customFragment);
+
                 default:
-                    QuickLogger.Error("Type check failure in CustomCraft.AddEntry");
+                    QuickLogger.Error($"Type check failure in CustomCraft.AddEntry on entry for '{entry.ItemID}'");
                     return false;
             }
         }
