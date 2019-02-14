@@ -25,6 +25,7 @@
 
         protected MovedRecipe(ICollection<EmProperty> definitions) : base("MovedRecipe", definitions)
         {
+            emTechType = (EmProperty<string>)Properties["ItemID"];
             oldPath = (EmProperty<string>)Properties["OldPath"];
             newPath = (EmProperty<string>)Properties["NewPath"];
         }
