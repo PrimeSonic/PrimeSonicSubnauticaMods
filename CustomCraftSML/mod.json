@@ -2,11 +2,11 @@
   "Id": "CustomCraft2SML",
   "DisplayName": "CustomCraft2SML",
   "Author": "PrimeSonic|Fdiwen",
-  "Version": "1.6.1",
-  "Requires": [ ],
+  "Version": "1.6.2",
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
   "EntryMethod": "CustomCraft2SML.QPatch.Patch",
-  "Priority": "Last",
-  "Config": {}
+  "Game": "Both",
+  "Dependencies": [ "SMLHelper" ],
+  "LoadAfter": [ "MidGameBatteries" ],
 }
