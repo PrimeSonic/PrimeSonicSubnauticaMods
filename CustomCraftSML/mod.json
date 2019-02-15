@@ -2,7 +2,7 @@
   "Id": "CustomCraft2SML",
   "DisplayName": "CustomCraft2SML",
   "Author": "PrimeSonic|Fdiwen",
-  "Version": "1.6.2",
+  "Version": "1.6.3",
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
   "EntryMethod": "CustomCraft2SML.QPatch.Patch",

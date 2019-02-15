@@ -6,6 +6,7 @@
     using System.Reflection;
     using Common;
     using Common.EasyMarkup;
+    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
     using NUnit.Framework;
@@ -25,7 +26,7 @@
         }
 
         private const string Line = "------------------------------------";
-        private const string SalvageTabID = "RecycleBatTab";
+        private const string SalvageTabID = "SalvageTab";
         private const string PathToSalvageTab = "Fabricator/Resources/";
         private const string SalvageCraftingTab = PathToSalvageTab + SalvageTabID;
 
@@ -73,8 +74,7 @@
             var salvageTab = new CustomCraftingTab
             {
                 TabID = SalvageTabID,
-                DisplayName = "Recycling and Salvage",
-                SpriteItemID = TechType.Trashcans,
+                DisplayName = "Salvage and Recycling",
                 ParentTabPath = PathToSalvageTab
             };
 
@@ -84,6 +84,22 @@
             };
 
             WriteFile(tabList, "EquipmentSalvage_Tabs.txt");
+
+            // Move the Metal Salvage into the new tab
+            var moveMetalSalvage = new MovedRecipe
+            {
+                ItemID = TechType.Titanium.ToString(),
+                OldPath = PathHelper.Fabricator.Resources.BasicMaterials.BasicMaterialsTab.GetCraftingPath.ToString(),
+                NewPath = tabList[0].FullPath,
+                Hidden = false
+            };
+
+            var movedList = new MovedRecipeList
+            {
+                moveMetalSalvage
+            };
+
+            WriteFile(movedList, "EquipmentSalvage_Moves.txt");
 
             // RECIPES
             var leadSalvage = new AliasRecipe

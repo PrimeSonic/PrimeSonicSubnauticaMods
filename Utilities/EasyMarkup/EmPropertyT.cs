@@ -16,60 +16,68 @@
 
         private T ObjValue;
 
+        private readonly Type DataType;
+
         public T Value
         {
             get => ObjValue;
             set
             {
                 ObjValue = value;
-                HasValue = true;
+                this.HasValue = true;
                 SerializedValue = ObjValue?.ToString(CultureInfo.InvariantCulture);
             }
         }
 
         public EmProperty(string key, T defaultValue = default(T))
         {
-            Key = key;
+            DataType = typeof(T);
+            this.Key = key;
             ObjValue = defaultValue;
-            DefaultValue = defaultValue;
+            this.DefaultValue = defaultValue;
             SerializedValue = ObjValue?.ToString(CultureInfo.InvariantCulture);
         }
 
         public override string ToString()
         {
-            if (!HasValue && Optional)
+            if (!this.HasValue && this.Optional)
                 return string.Empty;
 
-            return $"{base.ToString()}{EmUtils.CommentText(InLineComment)}";
+            return $"{base.ToString()}{EmUtils.CommentText(this.InLineComment)}";
         }
 
         protected override string ExtractValue(StringBuffer fullString)
         {
             string serialValue = base.ExtractValue(fullString);
 
-            Value = ConvertFromSerial(serialValue);
+            this.Value = ConvertFromSerial(serialValue);
 
-            HasValue = true;
+            this.HasValue = true;
 
             return serialValue;
         }
 
         public virtual T ConvertFromSerial(string value)
         {
-            var type = typeof(T);
-
-            if (type.IsEnum)
-                return (T)Enum.Parse(type, value, true);
-            else
-                return (T)Convert.ChangeType(value, typeof(T));
+            try
+            {
+                return DataType.IsEnum
+                    ? (T)Enum.Parse(DataType, value, true)
+                    : (T)Convert.ChangeType(value, typeof(T));
+            }
+            catch
+            {
+                this.HasValue = false;
+                return DefaultValue;
+            }
         }
 
         internal override EmProperty Copy()
         {
-            if (HasValue)
-                return new EmProperty<T>(Key, ObjValue);
+            if (this.HasValue)
+                return new EmProperty<T>(this.Key, ObjValue);
 
-            return new EmProperty<T>(Key, DefaultValue);
+            return new EmProperty<T>(this.Key, this.DefaultValue);
         }
 
         internal override bool ValueEquals(EmProperty other)

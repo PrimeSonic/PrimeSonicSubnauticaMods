@@ -11,12 +11,14 @@
         protected readonly EmProperty<string> emTechType;
         private readonly EmProperty<string> oldPath;
         private readonly EmProperty<string> newPath;
+        private readonly EmYesNo hidden;
 
         protected static List<EmProperty> MovedRecipeProperties => new List<EmProperty>()
         {
             new EmProperty<string>("ItemID"),
             new EmProperty<string>("OldPath"),
-            new EmProperty<string>("NewPath")
+            new EmProperty<string>("NewPath"),
+            new EmYesNo("Hidden"){ Optional = true }
         };
 
         public MovedRecipe() : this(MovedRecipeProperties)
@@ -28,6 +30,7 @@
             emTechType = (EmProperty<string>)Properties["ItemID"];
             oldPath = (EmProperty<string>)Properties["OldPath"];
             newPath = (EmProperty<string>)Properties["NewPath"];
+            hidden = (EmYesNo)Properties["Hidden"];
         }
 
         public string ItemID
@@ -48,7 +51,11 @@
             set => newPath.Value = value;
         }
 
-        public bool IsComplete => !string.IsNullOrEmpty(OldPath) && !string.IsNullOrEmpty(NewPath);
+        public bool Hidden
+        {
+            get => hidden.Value;
+            set => hidden.Value = value;
+        }
 
         internal override EmProperty Copy() => new MovedRecipe(this.CopyDefinitions);
     }

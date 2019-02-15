@@ -52,6 +52,9 @@
                 case ICustomBioFuel customBioFuel:
                     return GetTechType(customBioFuel.ItemID);
 
+                case IMovedRecipe movedRecipe:
+                    return GetTechType(movedRecipe.ItemID);
+
                 case ICustomFragmentCount customFragment:
                     return GetTechType(customFragment.ItemID);
 
@@ -213,26 +216,35 @@
 
         internal static bool MoveRecipe(IMovedRecipe movedRecipe)
         {
-            if (!movedRecipe.IsComplete)
+            if (string.IsNullOrEmpty(movedRecipe.OldPath))
             {
-                QuickLogger.Warning($"Error on moved recipe for '{movedRecipe.ItemID}'. Moved recipes require both the Old and New paths.");
+                QuickLogger.Warning($"OldPath missing in MovedRecipe for '{movedRecipe.ItemID}'.");
                 return false;
             }
 
             var oldPath = new CraftingPath(movedRecipe.OldPath);
-            var newPath = new CraftingPath(movedRecipe.NewPath);
-
             string[] oldSteps = (oldPath.Path + CraftingNode.Splitter + movedRecipe.ItemID).Split(CraftingNode.Splitter);
-            string[] newSteps = newPath.Path.Split(CraftingNode.Splitter);
 
             CraftTreeHandler.RemoveNode(oldPath.Scheme, oldSteps);
+            if (movedRecipe.Hidden)
+            {
+                QuickLogger.Message($"Recipe for '{movedRecipe.ItemID}' is removed from the {oldPath.Scheme} crafting tree");
+                return true;
+            }
 
-            TechType itemID = GetTechType(movedRecipe.ItemID);
+            if (string.IsNullOrEmpty(movedRecipe.NewPath))
+            {
+                QuickLogger.Warning($"NewPath missing in MovedRecipe for '{movedRecipe.ItemID}' and 'Hidden' was not set to 'YES'.");
+                return false;
+            }
+
+            var newPath = new CraftingPath(movedRecipe.NewPath);
+            string[] newSteps = newPath.Path.Split(CraftingNode.Splitter);
 
             if (newSteps.Length <= 1)
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID);
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, GetTechType(movedRecipe.ItemID));
             else
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID, newSteps);
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, GetTechType(movedRecipe.ItemID), newSteps);
 
             return true;
         }

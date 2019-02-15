@@ -4,6 +4,6 @@
     {
         string OldPath { get; }
         string NewPath { get; }
-        bool IsComplete { get; }
+        bool Hidden { get; }
     }
 }

@@ -6,12 +6,12 @@
 #      EquipmentSalvage_Recipes.txt #
 #      EquipmentSalvage_Unlocks.txt #
 # ------------------------------------ #
-CustomCraftingTabs: 
+MovedRecipes: 
 (
-    TabID: SalvageTab;
-    DisplayName: "Salvage and Recycling";
-    SpriteItemID: None;
-    ParentTabPath: Fabricator/Resources/;
+    ItemID: Titanium;
+    OldPath: Fabricator/Resources/BasicMaterials;
+    NewPath: Fabricator/Resources/SalvageTab;
+    Hidden: NO;
 );
 
 # ------------------------------------ #

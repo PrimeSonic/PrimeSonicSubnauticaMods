@@ -134,6 +134,7 @@
     <Content Include="SampleFiles\CustomTab_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Moves.txt" />
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Recipes.txt" />
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Tabs.txt" />
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Unlocks.txt" />
@@ -141,6 +142,7 @@
     <Content Include="SampleFiles\ModifiedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\MovedRecipes_Samples2.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
