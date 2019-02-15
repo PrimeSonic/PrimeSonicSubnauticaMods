@@ -6,7 +6,15 @@
 
     internal class MovedRecipe : EmPropertyCollection, IMovedRecipe
     {
-        internal const string TutorialText = "MovedRecipe: Move an existing recipe in the crafting tree from one location to another. Great for reorganizing.";
+
+        internal static readonly string[] TutorialText = new[]
+        {
+            "MovedRecipe: Further customize the crafting tree to your liking.",
+            "    OldPath: First locate the crafting node you want to change.",
+            "        NewPath: Set this property to move the recipe to a new location. It could even be a different crafting tree.",
+            "        Hidden: Or you can set this property to 'YES' to simply remove the crafting node instead.",
+            "    Reorganize, rebalance, or both!",
+        };
 
         protected readonly EmProperty<string> emTechType;
         private readonly EmProperty<string> oldPath;
