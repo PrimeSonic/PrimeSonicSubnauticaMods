@@ -82,6 +82,8 @@
                         goto default;
                     case SpChar_FinishComplexValue:
                         openParens--;
+                        if (openParens < 0)
+                            throw new EmException(UnbalancedContainersError, buffer);
                         goto default;
                     default:
                         buffer.PushToEnd(fullString.PopFromStart());
@@ -89,6 +91,9 @@
                 }
 
             } while (fullString.Count > 0 && !exit);
+
+            if (openParens != 1)
+                throw new EmException(UnbalancedContainersError, buffer);
 
             return serialValues + SpChar_FinishComplexValue;
         }

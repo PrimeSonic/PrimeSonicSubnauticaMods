@@ -2,7 +2,8 @@
 {
     using System.IO;
     using CustomCraft2SML.PublicAPI;
-    using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Entries;
+    using CustomCraft2SML.Serialization.Lists;
     using NUnit.Framework;
 
     [TestFixture]
@@ -272,6 +273,107 @@
             Assert.AreEqual(1, readingSizesList[1].Height);
             Assert.AreEqual(1, readingSizesList[2].Width);
             Assert.AreEqual(1, readingSizesList[2].Height);
+        }
+
+        [Test]
+        public void CreateFromClases_ThenTest_SampleCustomFragmentCount()
+        {
+            var seaglideFrag = new CustomFragmentCount
+            {
+                ItemID = TechType.Seaglide.ToString(),
+                FragmentsToScan = 4
+            };
+
+            var beaconFrag = new CustomFragmentCount
+            {
+                ItemID = TechType.Beacon.ToString(),
+                FragmentsToScan = 3
+            };
+
+            var seamothFrag = new CustomFragmentCount
+            {
+                ItemID = TechType.Seamoth.ToString(),
+                FragmentsToScan = 6
+            };
+
+            var origCustomFragList = new CustomFragmentCountList
+            {
+                seaglideFrag, beaconFrag, seamothFrag
+            };
+
+            string serialized = origCustomFragList.PrettyPrint();
+
+            string samples2File = SampleFileDirectory + "CustomFragments_Samples2.txt";
+
+            File.WriteAllText(samples2File, serialized);
+
+            var readingSizesList = new CustomFragmentCountList();
+
+            string reserialized = File.ReadAllText(samples2File);
+
+            bool success = readingSizesList.FromString(reserialized);
+
+            Assert.IsTrue(success);
+
+            Assert.AreEqual(origCustomFragList.Count, readingSizesList.Count);
+
+            Assert.AreEqual(TechType.Seaglide.ToString(), readingSizesList[0].ItemID);
+            Assert.AreEqual(TechType.Beacon.ToString(), readingSizesList[1].ItemID);
+            Assert.AreEqual(TechType.Seamoth.ToString(), readingSizesList[2].ItemID);
+
+            Assert.AreEqual(4, readingSizesList[0].FragmentsToScan);
+            Assert.AreEqual(3, readingSizesList[1].FragmentsToScan);
+            Assert.AreEqual(6, readingSizesList[2].FragmentsToScan);
+        }
+
+        [Test]
+        public void CreateFromClases_ThenTest_SampleMovedRecipes()
+        {
+            var moveTiIngot = new MovedRecipe
+            {
+                ItemID = TechType.TitaniumIngot.ToString(),
+                OldPath = PathHelper.Fabricator.Resources.BasicMaterials.BasicMaterialsTab.GetCraftingPath.ToString(),
+                NewPath = PathHelper.Fabricator.Resources.AdvancedMaterials.AdvancedMaterialsTab.GetCraftingPath.ToString(),
+            };
+
+            var hideRifile = new MovedRecipe
+            {
+                ItemID = TechType.StasisRifle.ToString(),
+                OldPath = PathHelper.Fabricator.Personal.Tools.ToolsTab.GetCraftingPath.ToString(),
+                Hidden = true
+            };
+
+            var origMovedRepList = new MovedRecipeList
+            {
+                moveTiIngot, hideRifile
+            };
+
+            string serialized = origMovedRepList.PrettyPrint();
+
+            string samples2File = SampleFileDirectory + "MovedRecipes_Samples2.txt";
+
+            File.WriteAllText(samples2File, serialized);
+
+            var readingSizesList = new MovedRecipeList();
+
+            string reserialized = File.ReadAllText(samples2File);
+
+            bool success = readingSizesList.FromString(reserialized);
+
+            Assert.IsTrue(success);
+
+            Assert.AreEqual(origMovedRepList.Count, readingSizesList.Count);
+
+            Assert.AreEqual(TechType.TitaniumIngot.ToString(), readingSizesList[0].ItemID);
+            Assert.AreEqual(TechType.StasisRifle.ToString(), readingSizesList[1].ItemID);
+
+            Assert.AreEqual(moveTiIngot.OldPath, readingSizesList[0].OldPath);
+            Assert.AreEqual(moveTiIngot.NewPath, readingSizesList[0].NewPath);
+            Assert.AreEqual(moveTiIngot.Hidden, readingSizesList[0].Hidden);
+
+            Assert.AreEqual(hideRifile.OldPath, readingSizesList[1].OldPath);
+            Assert.AreEqual(hideRifile.NewPath, readingSizesList[1].NewPath);
+            Assert.AreEqual(hideRifile.Hidden, readingSizesList[1].Hidden);
         }
     }
 }

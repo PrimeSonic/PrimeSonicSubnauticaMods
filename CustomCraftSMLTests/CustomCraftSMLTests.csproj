@@ -95,10 +95,12 @@
     <Compile Include="CustomSizeTests.cs" />
     <Compile Include="DequeTests.cs" />
     <Compile Include="EasyMarkupTests.cs" />
+    <Compile Include="EquipmentSalvageFiles.cs" />
     <Compile Include="ModifiedRecipeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleFileTests.cs" />
     <Compile Include="StringBufferTests.cs" />
+    <Compile Include="TechTypeParsingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -116,6 +118,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,12 +1,17 @@
-﻿namespace CustomCraft2SML.Serialization
+﻿namespace CustomCraft2SML.Serialization.Entries
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
-    using UnityEngine.Assertions;
 
     internal class CustomSize : EmPropertyCollection, ICustomSize
     {
+        internal static readonly string[] TutorialText = new[]
+        {
+            "CustomSize: Customize the space occupied by an inventory item.",
+            "    Width: Must be a value between 1 and 6",
+            "    Height: Must be a value between 1 and 6",
+        };
         public const short Max = 6;
         public const short Min = 1;
 
@@ -24,14 +29,13 @@
         {
             get
             {
-                Assert.IsTrue(emWidth.Value <= Max, $"Custom size value for {ItemID} must be less than {Max}.");
-                Assert.IsTrue(emWidth.Value >= Min, $"Custom size value for {ItemID} must be greater than {Min}.");
                 return emWidth.Value;
             }
             set
             {
-                Assert.IsTrue(value <= Max, $"Custom size value for {ItemID} must be less than {Max}.");
-                Assert.IsTrue(value >= Min, $"Custom size value for {ItemID} must be greater than {Min}.");
+                if (value <= Max || value >= Min)
+                    value = emWidth.DefaultValue;
+
                 emWidth.Value = value;
             }
         }
@@ -40,14 +44,13 @@
         {
             get
             {
-                Assert.IsTrue(emHeight.Value <= Max, $"Custom size value for {ItemID} must be less than {Max}.");
-                Assert.IsTrue(emHeight.Value >= Min, $"Custom size value for {ItemID} must be greater than {Min}.");
                 return emHeight.Value;
             }
             set
             {
-                Assert.IsTrue(value <= Max, $"Custom size value for {ItemID} must be less than {Max}.");
-                Assert.IsTrue(value >= Min, $"Custom size value for {ItemID} must be greater than {Min}.");
+                if (value <= Max || value >= Min)
+                    value = emHeight.DefaultValue;
+
                 emHeight.Value = value;
             }
         }

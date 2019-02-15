@@ -7,6 +7,8 @@
 
     public class EmPropertyCollectionList<T> : EmProperty, IEnumerable<T>, IValueConfirmation where T : EmPropertyCollection
     {
+        public bool Optional { get; set; } = false;
+
         public bool HasValue { get; private set; } = false;
 
         public Type ItemType => typeof(T);
@@ -15,36 +17,39 @@
 
         protected EmPropertyCollection Template;
 
-        public T this[int index] => InternalValues[index];
+        public T this[int index] => this.InternalValues[index];
 
-        public int Count => InternalValues.Count;
+        public int Count => this.InternalValues.Count;
 
         public void Add(T item)
         {
-            HasValue = true;
-            InternalValues.Add(item);
+            this.HasValue = true;
+            this.InternalValues.Add(item);
         }
 
-        public IEnumerable<T> Values => InternalValues;
+        public IEnumerable<T> Values => this.InternalValues;
 
-        public IEnumerator<T> GetEnumerator() => InternalValues.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => this.InternalValues.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => InternalValues.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.InternalValues.GetEnumerator();
 
         public EmPropertyCollectionList(string key, T template)
         {
-            Key = key;
+            this.Key = key;
             Template = template;
         }
 
         public override string ToString()
         {
-            var val = $"{Key}{SpChar_KeyDelimiter}";
-            foreach (EmPropertyCollection collection in InternalValues)
+            if (!HasValue && Optional)
+                return string.Empty;
+
+            string val = $"{this.Key}{SpChar_KeyDelimiter}";
+            foreach (EmPropertyCollection collection in this.InternalValues)
             {
                 val += SpChar_BeginComplexValue;
 
-                foreach (var key in collection.Keys)
+                foreach (string key in collection.Keys)
                 {
                     val += $"{collection[key]}";
                 }
@@ -72,8 +77,8 @@
                         fullString.PopFromStart(); // Skip delimiter
 
                         var collection = (T)Template.Copy();
-                        collection.FromString($"{Key}{SpChar_KeyDelimiter}{buffer.ToString()}{SpChar_ValueDelimiter}");
-                        InternalValues.Add(collection);
+                        collection.FromString($"{this.Key}{SpChar_KeyDelimiter}{buffer.ToString()}{SpChar_ValueDelimiter}");
+                        this.InternalValues.Add(collection);
                         buffer.Clear();
                         serialValues += $"{collection.SerializedValue}{SpChar_ListItemSplitter}";
                         break;
@@ -82,6 +87,8 @@
                         goto default;
                     case SpChar_FinishComplexValue:
                         openParens--;
+                        if (openParens < 0)
+                            throw new EmException(UnbalancedContainersError, buffer);
                         goto default;
                     default:
                         buffer.PushToEnd(fullString.PopFromStart());
@@ -89,12 +96,15 @@
                 }
             } while (fullString.Count > 0);
 
-            HasValue = true;
+            if (openParens != 0)
+                throw new EmException(UnbalancedContainersError, buffer);
+
+            this.HasValue = true;
 
             return serialValues.TrimEnd(SpChar_ListItemSplitter) + SpChar_FinishComplexValue;
         }
 
-        internal override EmProperty Copy() => new EmPropertyCollectionList<T>(Key, (T)Template.Copy());
+        internal override EmProperty Copy() => new EmPropertyCollectionList<T>(this.Key, (T)Template.Copy());
 
         internal override bool ValueEquals(EmProperty other)
         {

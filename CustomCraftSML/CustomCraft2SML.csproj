@@ -37,6 +37,9 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -52,12 +55,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctionalClone.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
-    <Compile Include="Serialization\CustomCraftingTabList.cs" />
+    <Compile Include="Interfaces\ICustomFragmentCount.cs" />
+    <Compile Include="Interfaces\IMovedRecipe.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
-    <Compile Include="Interfaces\ITutorialText.cs" />
-    <Compile Include="Logger.cs" />
     <Compile Include="ReaderWriterCrafts.cs" />
     <Compile Include="ReaderWriterManager.cs" />
     <Compile Include="ReaderWriterTutorials.cs" />
@@ -67,24 +70,29 @@
     <Compile Include="PublicAPI\CustomCraft.cs" />
     <Compile Include="PublicAPI\PathHelper.cs" />
     <Compile Include="QPatch.cs" />
-    <Compile Include="Serialization\AddedRecipe.cs" />
-    <Compile Include="Serialization\AddedRecipeList.cs" />
-    <Compile Include="Serialization\CustomBioFuel.cs" />
-    <Compile Include="Serialization\CustomBioFuelList.cs" />
-    <Compile Include="Serialization\CustomCraftingTab.cs" />
-    <Compile Include="Serialization\CustomSize.cs" />
-    <Compile Include="Serialization\CustomSizeList.cs" />
-    <Compile Include="Serialization\AliasRecipe.cs" />
-    <Compile Include="Serialization\AliasRecipeList.cs" />
-    <Compile Include="Serialization\EmIngredient.cs" />
-    <Compile Include="Serialization\EmPropertyCraftTreeType.cs" />
+    <Compile Include="Serialization\Entries\AddedRecipe.cs" />
+    <Compile Include="Serialization\Entries\CustomBioFuel.cs" />
+    <Compile Include="Serialization\Entries\CustomCraftingTab.cs" />
+    <Compile Include="Serialization\Entries\CustomFragmentCount.cs" />
+    <Compile Include="Serialization\Entries\CustomSize.cs" />
+    <Compile Include="Serialization\Entries\AliasRecipe.cs" />
+    <Compile Include="Serialization\Entries\ModifiedRecipe.cs" />
+    <Compile Include="Serialization\Entries\MovedRecipe.cs" />
+    <Compile Include="Serialization\Lists\CustomCraftingTabList.cs" />
+    <Compile Include="Serialization\Lists\CustomFragmentsList.cs" />
+    <Compile Include="Serialization\Lists\MovedRecipeList.cs" />
+    <Compile Include="Serialization\Lists\ModifiedRecipeList.cs" />
+    <Compile Include="Serialization\Lists\AliasRecipeList.cs" />
+    <Compile Include="Serialization\Lists\CustomSizeList.cs" />
+    <Compile Include="Serialization\Lists\CustomBioFuelList.cs" />
+    <Compile Include="Serialization\Lists\AddedRecipeList.cs" />
+    <Compile Include="Serialization\Components\EmIngredient.cs" />
+    <Compile Include="Serialization\Components\EmPropertyCraftTreeType.cs" />
     <Compile Include="Serialization\FileUtils.cs" />
     <Compile Include="Interfaces\IAddedRecipe.cs" />
     <Compile Include="Interfaces\ICustomBioFuel.cs" />
     <Compile Include="Interfaces\ICustomSize.cs" />
     <Compile Include="Interfaces\IModifiedRecipe.cs" />
-    <Compile Include="Serialization\ModifiedRecipe.cs" />
-    <Compile Include="Serialization\ModifiedRecipeList.cs" />
     <Compile Include="ValidBioFuels.cs" />
     <Compile Include="ValidTechTypes.cs" />
   </ItemGroup>
@@ -119,16 +127,22 @@
     <Content Include="SampleFiles\CustomBioFuels_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\CustomFragments_Samples2.txt" />
     <Content Include="SampleFiles\CustomSizes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\CustomTab_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Moves.txt" />
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Recipes.txt" />
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Tabs.txt" />
+    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Unlocks.txt" />
     <Content Include="SampleFiles\Mattus666.txt" />
     <Content Include="SampleFiles\ModifiedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\MovedRecipes_Samples2.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />

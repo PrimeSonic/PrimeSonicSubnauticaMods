@@ -4,21 +4,25 @@
 
     public static class EmUtils
     {
-        public static bool Deserialize(this EmProperty emProperty, string serializedData)
+        public static bool Deserialize<T>(this T emProperty, string serializedData) where T : EmProperty
         {
             try
             {
                 return emProperty.FromString(serializedData);
             }
+            catch (EmException emEx)
+            {
+                QuickLogger.Error($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}{emEx.ToString()}");
+                return false;
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}" +
-                           $"Error reported: {ex}");
+                QuickLogger.Error($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}Error reported: {ex}");
                 return false;
             }
         }
 
-        public static string Serialize(this EmProperty emProperty, bool prettyPrint = true)
+        public static string Serialize<T>(this T emProperty, bool prettyPrint = true) where T : EmProperty
         {
             if (prettyPrint)
                 return emProperty.PrettyPrint();
@@ -26,7 +30,7 @@
             return emProperty.ToString();
         }
 
-        public static bool DeserializeKeyOnly(this EmProperty emProperty, string serializedData, out string foundKey)
+        public static bool DeserializeKeyOnly<T>(this T emProperty, string serializedData, out string foundKey) where T : EmProperty
         {
             try
             {
@@ -43,6 +47,9 @@
 
         public static string CommentText(string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
+
             return $"{EmProperty.SpChar_CommentBlock} {text} {EmProperty.SpChar_CommentBlock}";
         }
 

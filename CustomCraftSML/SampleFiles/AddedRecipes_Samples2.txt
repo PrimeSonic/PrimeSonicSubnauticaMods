@@ -15,9 +15,10 @@ AddedRecipes:
         ItemID: HangingFruit;
         Required: 1;
     );
-    LinkedItemIDs: ;
-    Unlocks: ;
+    ForceUnlockAtStart: NO;
     Path: Fabricator/Survival/CuredFood;
+    PdaGroup: Uncategorized;
+    PdaCategory: Misc;
 ),
 (
     ItemID: BigFilteredWater;
@@ -27,7 +28,8 @@ AddedRecipes:
         ItemID: FilteredWater;
         Required: 2;
     );
-    LinkedItemIDs: ;
-    Unlocks: ;
+    ForceUnlockAtStart: NO;
     Path: Fabricator/Survival/Water;
+    PdaGroup: Uncategorized;
+    PdaCategory: Misc;
 );

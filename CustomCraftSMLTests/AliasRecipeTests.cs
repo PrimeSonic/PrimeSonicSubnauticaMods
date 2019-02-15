@@ -1,6 +1,9 @@
 ﻿namespace CustomCraftSMLTests
 {
-    using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization.Components;
+    using CustomCraft2SML.Serialization.Entries;
+    using CustomCraft2SML.Serialization.Lists;
     using NUnit.Framework;
 
     [TestFixture]
@@ -77,6 +80,8 @@
                                       "        );" + "\r\n" +
                                       "    LinkedItemIDs:Silver,Gold;" + "\r\n" +
                                       "    Path:Fabricator/Resources/BasicMaterials;" +
+                                      "    FunctionalID:Aerogel;" +
+                                      "    SpriteItemID:Aerogel;" +
                                       ")," + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:AliasAerogel3;" + "\r\n" +
@@ -94,17 +99,19 @@
                                       "        );" + "\r\n" +
                                       "    LinkedItemIDs:Silver,Gold;" + "\r\n" +
                                       "    Path:Fabricator/Resources/BasicMaterials;" +
+                                      "    FunctionalID:Aerogel;" +
+                                      "    SpriteItemID:Aerogel;" +
                                       ");" + "\r\n";
 
 
-            var recipe = new CustomCraft2SML.Serialization.AliasRecipeList();
+            var recipe = new AliasRecipeList();
 
             recipe.FromString(serialized);
 
             Assert.AreEqual("AliasAerogel2", recipe[0].ItemID);
             Assert.AreEqual("AliasAerogel3", recipe[1].ItemID);
 
-            foreach (var r in recipe)
+            foreach (AliasRecipe r in recipe)
             {
                 Assert.AreEqual(0, r.AmountCrafted);
 
@@ -128,8 +135,10 @@
                 Assert.AreEqual("Custom aerogel tooltip", r.Tooltip);
 
                 Assert.AreEqual("Fabricator/Resources/BasicMaterials", r.Path);
-            }
 
+                Assert.AreEqual(TechType.Aerogel.ToString(), r.FunctionalID);
+                Assert.AreEqual(TechType.Aerogel, r.SpriteItemID);
+            }
         }
 
         [Test]
@@ -161,11 +170,11 @@
 
             Assert.AreEqual(2, recipe.IngredientsCount);
 
-            var item0 = recipe.GetIngredient(0);
+            EmIngredient item0 = recipe.GetIngredient(0);
             Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
             Assert.AreEqual(1, item0.Required);
 
-            var item1 = recipe.GetIngredient(1);
+            EmIngredient item1 = recipe.GetIngredient(1);
             Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
             Assert.AreEqual(1, item1.Required);
 
@@ -180,7 +189,7 @@
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe.Path);
         }
-        
+
         [Test]
         public void Deserialize_AliasRecipesList_NoAmounts_Defaults()
         {
@@ -217,13 +226,13 @@
                                       ");" + "\r\n";
 
 
-            var recipe = new CustomCraft2SML.Serialization.AliasRecipeList();
+            var recipe = new AliasRecipeList();
 
             recipe.FromString(serialized);
 
             Assert.AreEqual("AliasAerogel5", recipe[0].ItemID);
             Assert.AreEqual("AliasAerogel6", recipe[1].ItemID);
-            foreach (var r in recipe)
+            foreach (AliasRecipe r in recipe)
             {
                 Assert.AreEqual(false, recipe[0].AmountCrafted.HasValue);
 
@@ -297,12 +306,78 @@
                                       "    Path:Fabricator/Survival/Water;" +
                                       ");" + "\r\n";
 
-            var recipeList = new CustomCraft2SML.Serialization.AliasRecipeList();
+            var recipeList = new AliasRecipeList();
 
             bool success = recipeList.FromString(serialized);
 
             Assert.IsTrue(success);
             Assert.AreEqual(3, recipeList.Count);
+        }
+
+        [Test]
+        public void Deserialize_FoodCloneExample()
+        {
+            const string lineBreak = "\r\n";
+            const string displayName = "My Custom Food";
+            const string toolTip = "My Food Tooltip";
+
+            string fabPath = PathHelper.Fabricator.Sustenance.CookedFood.CookedFoodTab.GetCraftingPath.ToString();
+
+            string serialized = "AliasRecipes:" + lineBreak +
+                                "(" + lineBreak +
+                                "    ItemID:CustomFoodExperiment;" + lineBreak +
+                               $"    DisplayName:\"{displayName}\";" + lineBreak +
+                               $"    Tooltip:\"{toolTip}\";" + lineBreak +
+                                "    AmountCrafted:1;" + lineBreak +
+                                "    Ingredients:" + lineBreak +
+                                "        (" + lineBreak +
+                               $"            ItemID:{TechType.Salt};" + lineBreak +
+                                "            Required:2;" + lineBreak +
+                                "        )," + lineBreak +
+                                "        (" + lineBreak +
+                               $"            ItemID:{TechType.CookedPeeper};" + lineBreak +
+                                "            Required:1;" + lineBreak +
+                                "        )," + lineBreak +
+                                "        (" + lineBreak +
+                               $"            ItemID:{TechType.CookedEyeye};" + lineBreak +
+                                "            Required:1;" + lineBreak +
+                                "        );" + lineBreak +
+                               $"    Path:{fabPath};" +
+                                "    FunctionalID:CuredLavaEyeye;" +
+                                ");" + lineBreak;
+
+            var recipe = new AliasRecipeList();
+
+            recipe.FromString(serialized);
+
+            AliasRecipe r = recipe[0];
+
+            Assert.AreEqual("CustomFoodExperiment", r.ItemID);
+
+            Assert.AreEqual(1, r.AmountCrafted);
+
+            Assert.AreEqual(3, r.IngredientsCount);
+
+            EmIngredient item0 = r.GetIngredient(0);
+            Assert.AreEqual(TechType.Salt.ToString(), item0.ItemID);
+            Assert.AreEqual(2, item0.Required);
+
+            EmIngredient item1 = r.GetIngredient(1);
+            Assert.AreEqual(TechType.CookedPeeper.ToString(), item1.ItemID);
+            Assert.AreEqual(1, item1.Required);
+
+            EmIngredient item2 = r.GetIngredient(2);
+            Assert.AreEqual(TechType.CookedEyeye.ToString(), item2.ItemID);
+            Assert.AreEqual(1, item2.Required);
+
+            Assert.IsNull(r.LinkedItemsCount);
+
+            Assert.AreEqual(displayName, r.DisplayName);
+            Assert.AreEqual(toolTip, r.Tooltip);
+
+            Assert.AreEqual(fabPath, r.Path);
+
+            Assert.AreEqual(TechType.CuredLavaEyeye.ToString(), r.FunctionalID);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿namespace CustomCraftSMLTests
 {
-    using Common.EasyMarkup;
     using NUnit.Framework;
     using Common;
 

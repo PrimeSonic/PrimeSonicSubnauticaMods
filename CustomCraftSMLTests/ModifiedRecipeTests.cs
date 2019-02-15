@@ -1,8 +1,8 @@
 ﻿namespace CustomCraftSMLTests
 {
     using System;
-    using Common.EasyMarkup;
-    using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Entries;
+    using CustomCraft2SML.Serialization.Lists;
     using NUnit.Framework;
 
     [TestFixture]
@@ -183,7 +183,6 @@
                                       "    ForceUnlockAtStart:NO;" + "\r\n" +
                                       "    Unlocks:ComputerChip,Cyclops;" + "\r\n" +
                                       ");" + "\r\n";
-
 
             var recipeList = new ModifiedRecipeList();
 

@@ -1,31 +1,31 @@
 ﻿namespace CustomCraft2SML.PublicAPI
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using Common;
     using CustomCraft2SML.Interfaces;
-    using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Components;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
-    using UnityEngine.Assertions;
 
     public static class CustomCraft
     {
         public static TechType GetTechType(string value)
         {
+            // Look for a known TechType
             if (TechTypeExtensions.FromString(value, out TechType tType, true))
             {
                 return tType;
             }
-            else
+
+            //  Not one of the known TechTypes - is it registered with SMLHelper?
+            if (TechTypeHandler.TryGetModdedTechType(value, out TechType custom))
             {
-                //  Not one of the known tech types - is it registered with SMLHelper?
-                if (TechTypeHandler.TryGetModdedTechType(value, out TechType custom))
-                {
-                    return custom;
-                }
+                return custom;
             }
+
             return TechType.None;
         }
 
@@ -37,19 +37,29 @@
                 case IAliasRecipe aliasRecipe:
                     //  Register the alias TechType
                     if (!string.IsNullOrEmpty(aliasRecipe.ItemID))
-                        return TechTypeHandler.AddTechType(aliasRecipe.ItemID, aliasRecipe.DisplayName, aliasRecipe.Tooltip);
+                        return TechTypeHandler.AddTechType(aliasRecipe.ItemID, aliasRecipe.DisplayName, aliasRecipe.Tooltip, false);
 
                     return TechType.None;
                 case IAddedRecipe addedRecipe:
                     return GetTechType(addedRecipe.ItemID);
+
                 case IModifiedRecipe modifiedRecipe:
                     return GetTechType(modifiedRecipe.ItemID);
+
                 case ICustomSize customSize:
                     return GetTechType(customSize.ItemID);
+
                 case ICustomBioFuel customBioFuel:
                     return GetTechType(customBioFuel.ItemID);
+
+                case IMovedRecipe movedRecipe:
+                    return GetTechType(movedRecipe.ItemID);
+
+                case ICustomFragmentCount customFragment:
+                    return GetTechType(customFragment.ItemID);
+
                 default:
-                    QuickLogger.Error("Type check failure in CustomCraft.PrePass");
+                    QuickLogger.Error($"Type check failure in CustomCraft.PrePass on entry for '{entry.ItemID}'");
                     return TechType.None;
             }
         }
@@ -60,148 +70,339 @@
             switch (entry)
             {
                 case IAliasRecipe aliasRecipe:
-                    AliasRecipe(aliasRecipe);
-                    return true;
+                    return AliasRecipe(aliasRecipe);
+
                 case IAddedRecipe addedRecipe:
-                    AddRecipe(addedRecipe);
-                    return true;
+                    return AddRecipe(addedRecipe);
+
                 case IModifiedRecipe modifiedRecipe:
-                    ModifyRecipe(modifiedRecipe);
-                    return true;
+                    return ModifyRecipe(modifiedRecipe);
+
                 case ICustomSize customSize:
-                    CustomizeItemSize(customSize);
-                    return true;
+                    return CustomizeItemSize(customSize);
+
                 case ICustomBioFuel customBioFuel:
-                    CustomizeBioFuel(customBioFuel);
-                    return true;
+                    return CustomizeBioFuel(customBioFuel);
+
+                case IMovedRecipe movedRecipe:
+                    return MoveRecipe(movedRecipe);
+
+                case ICustomFragmentCount customFragment:
+                    return CustomizeFragments(customFragment);
+
                 default:
-                    QuickLogger.Error("Type check failure in CustomCraft.AddEntry");
+                    QuickLogger.Error($"Type check failure in CustomCraft.AddEntry on entry for '{entry.ItemID}'");
                     return false;
             }
         }
 
-        internal static void AddRecipe(IAddedRecipe addedRecipe)
+        internal static bool AddRecipe(IAddedRecipe addedRecipe)
         {
-            HandleAddedRecipe(addedRecipe);
+            try
+            {
+                HandleAddedRecipe(addedRecipe);
 
-            HandleCraftTreeAddition(addedRecipe);
+                HandleCraftTreeAddition(addedRecipe);
 
-            HandleUnlocks(addedRecipe);
+                HandleUnlocks(addedRecipe);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Added Recipe '{addedRecipe.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
         }
 
-        internal static void AliasRecipe(IAliasRecipe aliasRecipe)
+        internal static bool AliasRecipe(IAliasRecipe aliasRecipe)
         {
-            //  See if there is an asset in the asset folder that has the same name
-            HandleCustomSprite(aliasRecipe);
+            try
+            {
+                //  See if there is an asset in the asset folder that has the same name
+                HandleCustomSprite(aliasRecipe);
 
-            HandleAddedRecipe(aliasRecipe, 0 /* alias recipes should default to not producing the custom item unless explicitly configured */);
+                HandleAddedRecipe(aliasRecipe, 0 /* alias recipes should default to not producing the custom item unless explicitly configured */);
 
-            HandleCraftTreeAddition(aliasRecipe);
+                HandleCraftTreeAddition(aliasRecipe);
 
-            HandleUnlocks(aliasRecipe);
+                HandleUnlocks(aliasRecipe);
+
+                HandleFunctionalClone(aliasRecipe);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Alias Recipe '{aliasRecipe.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
         }
 
-        private static void HandleCustomSprite(IAliasRecipe aliasRecipe)
+        internal static bool ModifyRecipe(IModifiedRecipe modifiedRecipe)
         {
-            string imagePath = FileReaderWriter.AssetsFolder + aliasRecipe.ItemID + @".png";
-            if (File.Exists(imagePath))
+            try
             {
-                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+                return
+                    HandleModifiedRecipe(modifiedRecipe) &&
+                    HandleUnlocks(modifiedRecipe);
             }
-            else if (aliasRecipe.LinkedItemsCount > 0)
+            catch (Exception ex)
             {
-                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(aliasRecipe.GetLinkedItem(0)));
-                SpriteHandler.RegisterSprite(GetTechType(aliasRecipe.ItemID), sprite);
+                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{modifiedRecipe.ItemID}'{Environment.NewLine}{ex}");
+                return false;
             }
+        }
+
+        internal static bool CustomizeItemSize(ICustomSize customSize)
+        {
+            if (customSize.Width <= 0 || customSize.Height <= 0 || customSize.Width > 6 || customSize.Height > 6)
+            {
+                QuickLogger.Error($"Error in custom size for '{customSize.ItemID}'. Size values must be between 1 and 6.");
+                return false;
+            }
+
+            try
+            {
+                CraftDataHandler.SetItemSize(GetTechType(customSize.ItemID), customSize.Width, customSize.Height);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Custom Item Size '{customSize.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
+
+        internal static bool CustomizeBioFuel(ICustomBioFuel customBioFuel)
+        {
+            try
+            {
+                BioReactorHandler.SetBioReactorCharge(GetTechType(customBioFuel.ItemID), customBioFuel.Energy);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{customBioFuel.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
+
+        internal static bool AddCustomCraftingTab(ICraftingTab craftingTab)
+        {
+            if (craftingTab.FabricatorType > CraftTree.Type.Rocket)
+            {
+                QuickLogger.Error($"Error on crafting tab '{craftingTab.TabID}'. This API in intended only for use with standard, non-modded CraftTree.Types.");
+                return false;
+            }
+
+            if (craftingTab.FabricatorType == CraftTree.Type.None)
+            {
+                QuickLogger.Error($"Error on crafting tab '{craftingTab.TabID}'. ParentTabPath must identify a fabricator for the custom tab.");
+                return false;
+            }
+            try
+            {
+                HandleCraftingTab(craftingTab);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling crafting tab '{craftingTab.TabID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
+
+        internal static bool MoveRecipe(IMovedRecipe movedRecipe)
+        {
+            if (string.IsNullOrEmpty(movedRecipe.OldPath))
+            {
+                QuickLogger.Warning($"OldPath missing in MovedRecipe for '{movedRecipe.ItemID}'.");
+                return false;
+            }
+
+            var oldPath = new CraftingPath(movedRecipe.OldPath);
+            string[] oldSteps = (oldPath.Path + CraftingNode.Splitter + movedRecipe.ItemID).Split(CraftingNode.Splitter);
+
+            CraftTreeHandler.RemoveNode(oldPath.Scheme, oldSteps);
+            if (movedRecipe.Hidden)
+            {
+                QuickLogger.Message($"Recipe for '{movedRecipe.ItemID}' is removed from the {oldPath.Scheme} crafting tree");
+                return true;
+            }
+
+            if (string.IsNullOrEmpty(movedRecipe.NewPath))
+            {
+                QuickLogger.Warning($"NewPath missing in MovedRecipe for '{movedRecipe.ItemID}' and 'Hidden' was not set to 'YES'.");
+                return false;
+            }
+
+            var newPath = new CraftingPath(movedRecipe.NewPath);
+            string[] newSteps = newPath.Path.Split(CraftingNode.Splitter);
+
+            if (newSteps.Length <= 1)
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, GetTechType(movedRecipe.ItemID));
             else
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, GetTechType(movedRecipe.ItemID), newSteps);
+
+            return true;
+        }
+
+        internal static bool CustomizeFragments(ICustomFragmentCount fragments)
+        {
+            TechType itemID = GetTechType(fragments.ItemID);
+
+            if (itemID == TechType.None)
+                return false;
+
+            int fragCount = fragments.FragmentsToScan;
+            if (fragCount < PDAScanner.EntryData.minFragments ||
+                fragCount > PDAScanner.EntryData.maxFragments)
             {
-                QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemID}'");
+                QuickLogger.Warning($"Invalid number of FragmentsToScan for entry '{fragments.ItemID}'. Must be between {PDAScanner.EntryData.minFragments} and {PDAScanner.EntryData.maxFragments}.");
+                return false;
             }
-        }
 
-        internal static void ModifyRecipe(IModifiedRecipe modifiedRecipe)
-        {
-            Assert.IsTrue(GetTechType(modifiedRecipe.ItemID) <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
+            if (itemID > TechType.Databox)
+            {
+                QuickLogger.Warning($"Item '{fragments.ItemID}' appears to be a modded item. CustomFragmentCount can only be applied to existing game items.");
+                return false;
+            }
 
-            HandleModifiedRecipe(modifiedRecipe);
-
-            HandleUnlocks(modifiedRecipe);
-        }
-
-        internal static void CustomizeItemSize(ICustomSize customSize)
-        {
-            Assert.IsTrue(GetTechType(customSize.ItemID) <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
-
-            Assert.IsTrue(customSize.Width > 0 && customSize.Height > 0, "Values must be positive and non-zero");
-            Assert.IsTrue(customSize.Width < 6 && customSize.Height < 6, "Values must be smaller than six to fit");
-            // Value chosen for what should be the standard inventory size
-
-            CraftDataHandler.SetItemSize(GetTechType(customSize.ItemID), customSize.Width, customSize.Height);
-        }
-
-        internal static void CustomizeBioFuel(ICustomBioFuel customBioFuel)
-        {
-            Assert.IsTrue(GetTechType(customBioFuel.ItemID) <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
-
-            BioReactorHandler.SetBioReactorCharge(GetTechType(customBioFuel.ItemID), customBioFuel.Energy);
-        }
-
-        internal static void CustomCraftingTab(ICraftingTab craftingTab)
-        {
-            Assert.IsTrue(craftingTab.SpriteItemID <= TechType.Databox, "This API in intended only for use with standard, non-modded TechTypes.");
-            Assert.IsTrue(craftingTab.FabricatorType <= CraftTree.Type.Rocket, "This API in intended only for use with standard, non-modded CraftTree.Types.");
-            Assert.IsTrue(craftingTab.FabricatorType > CraftTree.Type.None, "ParentTabPath must identify a fabricator for the custom tab.");
-
-            HandleCraftingTab(craftingTab);
+            PDAHandler.EditFragmentsToScan(itemID, fragCount);
+            //QuickLogger.Debug("Placeholder message");
+            return true;
         }
 
         // ----------------------
 
         private static void HandleCraftingTab(ICraftingTab craftingTab)
         {
+            Atlas.Sprite sprite = GetCraftingTabSprite(craftingTab);
+
             if (craftingTab.StepsToTab == null)
             {
-                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID));
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite);
             }
             else
             {
-                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, SpriteManager.Get(craftingTab.SpriteItemID), craftingTab.StepsToTab);
+                CraftTreeHandler.AddTabNode(craftingTab.FabricatorType, craftingTab.TabID, craftingTab.DisplayName, sprite, craftingTab.StepsToTab);
             }
         }
+
+        private static void HandleCustomSprite(IAliasRecipe aliasRecipe)
+        {
+            TechType itemID = GetTechType(aliasRecipe.ItemID);
+
+            if (aliasRecipe.SpriteItemID > TechType.None)
+            {
+                QuickLogger.Message($"SpriteItemID {aliasRecipe.SpriteItemID} used for AliasRecipe '{aliasRecipe.ItemID}'");
+                Atlas.Sprite sprite = SpriteManager.Get(aliasRecipe.SpriteItemID);
+                SpriteHandler.RegisterSprite(itemID, sprite);
+                return;
+            }
+
+            string imagePath = FileReaderWriter.AssetsFolder + aliasRecipe.ItemID + @".png";
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Message($"Custom sprite found for AliasRecipe '{aliasRecipe.ItemID}'");
+                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                SpriteHandler.RegisterSprite(itemID, sprite);
+                return;
+            }
+
+            if (aliasRecipe.LinkedItemsCount > 0)
+            {
+                QuickLogger.Message($"First LinkedItemID used for icon of AliasRecipe '{aliasRecipe.ItemID}'");
+                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(aliasRecipe.GetLinkedItem(0)));
+                SpriteHandler.RegisterSprite(itemID, sprite);
+                return;
+            }
+
+            QuickLogger.Warning($"No sprite loaded for '{aliasRecipe.ItemID}'");
+        }
+
+        private static Atlas.Sprite GetCraftingTabSprite(ICraftingTab craftingTab)
+        {
+            Atlas.Sprite sprite;
+            string imagePath = FileReaderWriter.AssetsFolder + craftingTab.TabID + @".png";
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Message($"Custom sprite found for CraftingTab '{craftingTab.TabID}'");
+                sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+            }
+            else if (craftingTab.SpriteItemID != TechType.None)
+            {
+                QuickLogger.Message($"SpriteItemID used for CraftingTab '{craftingTab.TabID}'");
+                sprite = SpriteManager.Get(craftingTab.SpriteItemID);
+            }
+            else
+            {
+                QuickLogger.Warning($"No sprite loaded for CraftingTab '{craftingTab.TabID}'");
+                sprite = SpriteManager.Get(TechType.None);
+            }
+
+            return sprite;
+        }
+
         private static void HandleCraftTreeAddition(IAddedRecipe addedRecipe)
         {
             var craftPath = new CraftingPath(addedRecipe.Path);
 
-            string[] steps = craftPath.Path.Split(CraftingNode.Splitter);
+            TechType itemID = GetTechType(addedRecipe.ItemID);
 
-            if (steps.Length <= 1)
-                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, GetTechType(addedRecipe.ItemID));
+            if (craftPath.IsAtRoot)
+            {
+                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID);
+            }
             else
-                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, GetTechType(addedRecipe.ItemID), steps);
+            {
+                string[] steps = craftPath.Path.Split(CraftingNode.Splitter);
+
+                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID, steps);
+            }
         }
 
-        private static void HandleAddedRecipe(IAddedRecipe modifiedRecipe, short defaultCraftAmount = 1)
+        private static void HandleAddedRecipe(IAddedRecipe addedRecipe, short defaultCraftAmount = 1)
         {
             var replacement = new TechData
             {
-                craftAmount = modifiedRecipe.AmountCrafted ?? defaultCraftAmount
+                craftAmount = addedRecipe.AmountCrafted ?? defaultCraftAmount
             };
 
-            foreach (EmIngredient ingredient in modifiedRecipe.Ingredients)
+            foreach (EmIngredient ingredient in addedRecipe.Ingredients)
                 replacement.Ingredients.Add(new Ingredient(GetTechType(ingredient.ItemID), ingredient.Required));
 
-            foreach (string linkedItem in modifiedRecipe.LinkedItems)
+            foreach (string linkedItem in addedRecipe.LinkedItems)
                 replacement.LinkedItems.Add(GetTechType(linkedItem));
 
-            CraftDataHandler.SetTechData(GetTechType(modifiedRecipe.ItemID), replacement);
+            TechType itemID = GetTechType(addedRecipe.ItemID);
+
+            CraftDataHandler.SetTechData(itemID, replacement);
+
+            if (addedRecipe.PdaGroup != TechGroup.Uncategorized)
+            {
+                CraftDataHandler.AddToGroup(addedRecipe.PdaGroup, addedRecipe.PdaCategory, itemID);
+            }
         }
 
-        private static void HandleModifiedRecipe(IModifiedRecipe modifiedRecipe)
+        private static bool HandleModifiedRecipe(IModifiedRecipe modifiedRecipe)
         {
             bool overrideRecipe = false;
 
-            ITechData original = CraftData.Get(GetTechType(modifiedRecipe.ItemID));
+            TechType itemID = GetTechType(modifiedRecipe.ItemID);
+
+            if (itemID == TechType.None)
+                return false; // Unknown item
+
+            ITechData original = CraftData.Get(itemID, skipWarnings: true);
+
+            if (original == null) // Possibly a mod recipe
+                original = CraftDataHandler.GetModdedTechData(itemID);
+
+            if (original == null)
+                return false;  // Unknown recipe
 
             var replacement = new TechData();
 
@@ -212,7 +413,9 @@
                 replacement.craftAmount = modifiedRecipe.AmountCrafted.Value;
             }
             else
+            {
                 replacement.craftAmount = original.craftAmount;
+            }
 
             // Ingredients
             if (modifiedRecipe.IngredientsCount.HasValue)
@@ -249,15 +452,22 @@
             }
 
             if (overrideRecipe)
-                CraftDataHandler.SetTechData(GetTechType(modifiedRecipe.ItemID), replacement);
+                CraftDataHandler.SetTechData(itemID, replacement);
+
+            return true;
         }
 
-        private static void HandleUnlocks(IModifiedRecipe modifiedRecipe)
+        private static bool HandleUnlocks(IModifiedRecipe modifiedRecipe)
         {
-            if (modifiedRecipe.ForceUnlockAtStart)
-                KnownTechHandler.UnlockOnStart(GetTechType(modifiedRecipe.ItemID));
+            TechType itemID = GetTechType(modifiedRecipe.ItemID);
 
-            if (modifiedRecipe.UnlocksCount.HasValue)
+            if (itemID == TechType.None)
+                return false; // Unknown item
+
+            if (modifiedRecipe.ForceUnlockAtStart)
+                KnownTechHandler.UnlockOnStart(itemID);
+
+            if (modifiedRecipe.UnlocksCount.HasValue && modifiedRecipe.UnlocksCount > 0)
             {
                 var unlocks = new List<TechType>();
 
@@ -266,9 +476,25 @@
                     unlocks.Add(GetTechType(value));
                 }
 
-                KnownTechHandler.SetAnalysisTechEntry(GetTechType(modifiedRecipe.ItemID), unlocks);
+                KnownTechHandler.SetAnalysisTechEntry(itemID, unlocks);
             }
 
+            return true;
+        }
+
+        private static void HandleFunctionalClone(IAliasRecipe aliasRecipe)
+        {
+            if (string.IsNullOrEmpty(aliasRecipe.FunctionalID))
+                return; // No value provided. This is fine.
+
+            TechType functionalID = GetTechType(aliasRecipe.FunctionalID);
+
+            if (functionalID != TechType.None)
+            {
+                QuickLogger.Debug($"Custom item '{aliasRecipe.ItemID}' will be a functional clone of '{aliasRecipe.FunctionalID}'");
+                var clone = new FunctionalClone(aliasRecipe, functionalID);
+                PrefabHandler.RegisterPrefab(clone);
+            }
         }
     }
 }

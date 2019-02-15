@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using UnityEngine.Assertions;
 
     public abstract class EmProperty : IEquatable<EmProperty>
     {
@@ -15,6 +14,8 @@
         internal const char SpChar_LiteralStringBlock = '"';
         internal const char SpChar_EscapeChar = '\\';
 
+        internal readonly string UnbalancedContainersError = $"Mismatch detected in number of '{SpChar_BeginComplexValue}' and '{SpChar_FinishComplexValue}' characters.";
+
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
 
@@ -22,7 +23,13 @@
 
         internal string SerializedValue;
 
-        public override string ToString() => $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(SerializedValue))
+                return string.Empty;
+
+            return $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";
+        }
 
         public static bool CheckKey(string rawValue, out string foundKey, string keyToValidate) => CheckKey(rawValue, out foundKey) && foundKey == keyToValidate;
 
@@ -42,11 +49,11 @@
             if (cleanValue.IsEmpty)
                 return false;
 
-            string key = ExtractKey(cleanValue);
+            StringBuffer keyBuffer = ExtractKey(cleanValue);
             if (string.IsNullOrEmpty(this.Key))
-                this.Key = key;
-            else if (haltOnKeyMismatch && this.Key != key)
-                throw new AssertionException($"Key mismatch. Expected:{this.Key} but was {key}.", $"Wrong key found: {this.Key}=/={key}");
+                this.Key = keyBuffer.ToString();
+            else if (haltOnKeyMismatch && this.Key != keyBuffer.ToString())
+                throw new EmException($"Key mismatch. Expected key {this.Key} was not found", keyBuffer);
 
             if (cleanValue.Count <= 1) // only enough for the final delimiter
                 return true;
@@ -57,7 +64,7 @@
             return true;
         }
 
-        protected virtual string ExtractKey(StringBuffer fullString)
+        protected virtual StringBuffer ExtractKey(StringBuffer fullString)
         {
             var key = new StringBuffer();
             while (fullString.Count > 0 && fullString.PeekStart() != ':')
@@ -65,7 +72,7 @@
 
             fullString.PopFromStart(); // Skip : separator
 
-            return key.ToString();
+            return key;
         }
 
         protected virtual string ExtractValue(StringBuffer fullString) =>
@@ -146,12 +153,12 @@
             if (ReferenceEquals(this, other))
                 return true;
 
-            if (this.GetType() != other.GetType())
+            if (GetType() != other.GetType())
                 return false;
 
             return
                 this.Key == other.Key &&
-                this.ValueEquals(other);
+                ValueEquals(other);
         }
 
         private static StringBuffer CleanValue(StringBuffer rawValue, bool stopAtKey = false)
@@ -285,6 +292,7 @@
         }
 
         public override bool Equals(object obj) => base.Equals(obj);
+
         public override int GetHashCode() => base.GetHashCode();
 
         public static bool operator ==(EmProperty a, EmProperty b)

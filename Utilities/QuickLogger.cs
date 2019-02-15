@@ -57,8 +57,14 @@
 
         public static string GetAssemblyVersion()
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            var assembly = Assembly.GetExecutingAssembly();
+            var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return fvi.FileVersion;
+        }
+
+        public static string GetAssemblyVersion(Assembly assembly)
+        {
+            var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             return fvi.FileVersion;
         }
     }

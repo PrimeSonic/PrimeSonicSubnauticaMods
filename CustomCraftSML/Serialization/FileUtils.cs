@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using Common;
 
     public static class FileUtils
     {
@@ -18,7 +19,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Log($"Error on ReadStringFromFile '{fileLocation}':{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Error on ReadStringFromFile '{fileLocation}':{Environment.NewLine}{ex}");
                 return null;
             }
 
@@ -33,7 +34,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Log($"Error on WriteStringToFile '{fileLocation}':{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Error on WriteStringToFile '{fileLocation}':{Environment.NewLine}{ex}");
                 return false;
             }
         }

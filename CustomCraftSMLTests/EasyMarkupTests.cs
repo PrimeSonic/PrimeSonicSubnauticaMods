@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using NUnit.Framework;
-    using AssertionException = UnityEngine.Assertions.AssertionException;
 
     [TestFixture]
     public class EasyMarkupTests
@@ -58,7 +57,7 @@
             {
             }
 
-            internal override EmProperty Copy() => new TestSimpleCollection(Key, CopyDefinitions);
+            internal override EmProperty Copy() => new TestSimpleCollection(this.Key, this.CopyDefinitions);
         }
 
         [Test]
@@ -103,17 +102,18 @@
             Assert.AreEqual(expectedValue, testProp.Value);
         }
 
-        [TestCase("TestAKey:1;")]
-        [TestCase("TestBKey : 1; ")]
-        [TestCase(" TestCKey : 1 ;")]
-        [TestCase("TestDKey:\r\n1\r\n;")]
-        public void EmProperty_FromString_MismatchedKey_Throws(string serialValue)
+        [TestCase("TestAKey:1;", "TestAKey")]
+        [TestCase("TestBKey : 1; ", "TestBKey")]
+        [TestCase(" TestCKey : 1 ;", "TestCKey")]
+        [TestCase("TestDKey:\r\n1\r\n;", "TestDKey")]
+        public void EmProperty_FromString_MismatchedKey_Throws(string serialValue, string badKey)
         {
             var testProp = new TestIntProperty("TestKey");
-            Assert.Throws<AssertionException>(() =>
-            {
-                testProp.FromString(serialValue, true);
-            });
+            EmException emEx = Assert.Throws<EmException>(() => testProp.FromString(serialValue, true));
+
+            Assert.IsNotNull(emEx.CurrentBuffer);
+            Assert.IsFalse(emEx.CurrentBuffer.IsEmpty);
+            Assert.AreEqual(badKey, emEx.CurrentBuffer.ToString());
         }
 
         [TestCase("TestAKey:1;", 1)]
@@ -148,7 +148,7 @@
         public void EmPropertyList_ToString_GetExpected()
         {
             const string key = "TestKey";
-            List<int> values = new List<int>(5)
+            var values = new List<int>(5)
             { 1, 2, 3, 4, 5, };
 
             var testProp = new TestSimpleIntList(key, values);
@@ -491,7 +491,7 @@
             var testProp = new TestSimpleCollection("TestKey", properties);
             testProp.FromString(testValue);
 
-            var actualValue = testProp.PrettyPrint();
+            string actualValue = testProp.PrettyPrint();
 
             Assert.AreEqual(expectedValue, actualValue);
         }
@@ -501,7 +501,7 @@
         {
             var emString = new EmProperty<string>("String", "Value");
 
-            var actualValue = emString.PrettyPrint();
+            string actualValue = emString.PrettyPrint();
 
             Assert.AreEqual("String: Value;\r\n", actualValue);
         }

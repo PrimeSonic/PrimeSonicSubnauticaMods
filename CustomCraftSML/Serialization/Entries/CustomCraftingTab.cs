@@ -1,4 +1,4 @@
-﻿namespace CustomCraft2SML.Serialization
+﻿namespace CustomCraft2SML.Serialization.Entries
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
@@ -7,6 +7,12 @@
 
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab
     {
+        internal static readonly string[] TutorialText = new[]
+        {
+            "CustomCraftingTab: Add your own custom tabs into the fabricator crafting trees. ",
+            "An absolute must for organizing large numbers of crafts."
+        };
+
         private const string KeyName = "CustomTab";
 
         private readonly EmProperty<string> emTabID;
@@ -75,6 +81,7 @@
             get => emParentTabPath.Value;
             set => emParentTabPath.Value = value;
         }
+
         public string[] StepsToTab
         {
             get
@@ -85,6 +92,8 @@
                 return craftingPath.Steps;
             }
         }
+
+        public string FullPath => ParentTabPath + TabID;
 
         internal override EmProperty Copy() => new CustomCraftingTab();
     }

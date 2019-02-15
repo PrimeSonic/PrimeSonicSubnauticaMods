@@ -1,0 +1,11 @@
+MovedRecipes: 
+(
+    ItemID: TitaniumIngot;
+    OldPath: Fabricator/Resources/BasicMaterials;
+    NewPath: Fabricator/Resources/AdvancedMaterials;
+),
+(
+    ItemID: StasisRifle;
+    OldPath: Fabricator/Personal/Tools;
+    Hidden: YES;
+);

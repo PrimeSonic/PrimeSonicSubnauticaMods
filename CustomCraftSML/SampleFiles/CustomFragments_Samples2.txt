@@ -1,0 +1,13 @@
+CustomFragmentCounts: 
+(
+    ItemID: Seaglide;
+    FragmentsToScan: 4;
+),
+(
+    ItemID: Beacon;
+    FragmentsToScan: 3;
+),
+(
+    ItemID: Seamoth;
+    FragmentsToScan: 6;
+);
