@@ -2,9 +2,9 @@
 {
     using System.Text;
 
-    public static class PathHelper
+    internal static class PathHelper
     {
-        public static string GeneratePaths()
+        public static string GeneratePathString()
         {
             var builder = new StringBuilder();
 

@@ -10,7 +10,6 @@ CustomCraftingTabs:
 (
     TabID: SalvageTab;
     DisplayName: "Salvage and Recycling";
-    SpriteItemID: None;
     ParentTabPath: Fabricator/Resources;
 );
 

@@ -6,6 +6,7 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization.Components;
+    using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
 
@@ -13,21 +14,24 @@
     {
         internal static readonly string[] TutorialText = new[]
         {
-            "ModifiedRecipe: Modify an existing crafting recipe. ",
-            "    Ingredients: Completely replace a recipe's required ingredients." +
+           $"{ModifiedRecipeList.ListKey}: Modify an existing crafting recipe. ",
+           $"    {IngredientsKey}: Completely replace a recipe's required ingredients." +
             "        This is optional if you don't want to change the required ingredients.",
-            "    AmountCrafted: Change how many copies of the item are created when you craft the recipe.",
+           $"    {AmountCraftedKey}: Change how many copies of the item are created when you craft the recipe.",
             "        This is optional if you don't want to change how many copies of the item are created at once.",
-            "    LinkedItemIDs: Add or modify the linked items that are created when the recipe is crafted.",
+           $"    {LinkedItemsIdsKey}: Add or modify the linked items that are created when the recipe is crafted.",
             "        This is optional if you don't want to change what items are crafted with this one.",
-            "    Unlocks: Set other recipes to be unlocked when you analyze or craft this one.",
+           $"    {UnlocksKey}: Set other recipes to be unlocked when you analyze or craft this one.",
             "        This is optional if you don't want to change what gets unlocked when you scan or craft this item.",
-            "    ForceUnlockAtStart: You can also set if this recipe should be unlocked at the start or not. Make sure you have a recipe unlocking this one.",
+           $"    {ForceUnlockAtStartKey}: You can also set if this recipe should be unlocked at the start or not. Make sure you have a recipe unlocking this one.",
             "        This is optional. For Added Recipes, this defaults to 'YES'.",
         };
 
-        public const short Max = 25;
-        public const short Min = 0;
+        protected const string AmountCraftedKey = "AmountCrafted";
+        protected const string IngredientsKey = "Ingredients";
+        protected const string LinkedItemsIdsKey = "LinkedItemIDs";
+        protected const string ForceUnlockAtStartKey = "ForceUnlockAtStart";
+        protected const string UnlocksKey = "Unlocks";
 
         protected readonly EmProperty<short> amountCrafted;
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
@@ -119,11 +123,11 @@
 
         protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<short>("AmountCrafted", 1) { Optional = true },
-            new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()) { Optional = true },
-            new EmPropertyList<string>("LinkedItemIDs") { Optional = true },
-            new EmYesNo("ForceUnlockAtStart") { Optional = true },
-            new EmPropertyList<string>("Unlocks") { Optional = true },
+            new EmProperty<short>(AmountCraftedKey, 1) { Optional = true },
+            new EmPropertyCollectionList<EmIngredient>(IngredientsKey, new EmIngredient()) { Optional = true },
+            new EmPropertyList<string>(LinkedItemsIdsKey) { Optional = true },
+            new EmYesNo(ForceUnlockAtStartKey) { Optional = true },
+            new EmPropertyList<string>(UnlocksKey) { Optional = true },
         };
 
         internal ModifiedRecipe(TechType origTechType) : this()
@@ -152,11 +156,11 @@
 
         protected ModifiedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
-            ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
-            linkedItems = (EmPropertyList<string>)Properties["LinkedItemIDs"];
-            unlockedAtStart = (EmYesNo)Properties["ForceUnlockAtStart"];
-            unlocks = (EmPropertyList<string>)Properties["Unlocks"];
+            amountCrafted = (EmProperty<short>)Properties[AmountCraftedKey];
+            ingredients = (EmPropertyCollectionList<EmIngredient>)Properties[IngredientsKey];
+            linkedItems = (EmPropertyList<string>)Properties[LinkedItemsIdsKey];
+            unlockedAtStart = (EmYesNo)Properties[ForceUnlockAtStartKey];
+            unlocks = (EmPropertyList<string>)Properties[UnlocksKey];
 
             OnValueExtractedEvent += ValueExtracted;
         }
@@ -192,7 +196,7 @@
 
                 if (ingredientID == TechType.None)
                 {
-                    QuickLogger.Warning($"Entry with ID of '{this.ItemID}' contained an unknown ingredient '{ingredient.ItemID}'.  Entry will be discarded.");
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown ingredient '{ingredient.ItemID}'.  Entry will be discarded.");
                     internalItemsPassCheck = false;
                     continue;
                 }
@@ -206,7 +210,7 @@
 
                 if (linkedItemID == TechType.None)
                 {
-                    QuickLogger.Warning($"Entry with ID of '{this.ItemID}' contained an unknown linked item '{linkedItem}'. Entry will be discarded.");
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown linked item '{linkedItem}'. Entry will be discarded.");
                     internalItemsPassCheck = false;
                     continue;
                 }
@@ -225,18 +229,13 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling {this.Key} entry '{this.ItemID}'{Environment.NewLine}{ex}");
                 return false;
             }
         }
 
         protected bool HandleModifiedRecipe()
         {
-            bool overrideRecipe = false;
-
-            if (this.TechType == TechType.None)
-                return false; // Unknown item
-
             ITechData original = CraftData.Get(this.TechType, skipWarnings: true);
 
             if (original == null) // Possibly a mod recipe
@@ -247,10 +246,13 @@
 
             var replacement = new TechData();
 
+            bool overrideRecipe = false;
+            string changes = "";
             // Amount
             if (this.AmountCrafted.HasValue)
             {
                 overrideRecipe |= true;
+                changes += $" {AmountCraftedKey} ";
                 replacement.craftAmount = this.AmountCrafted.Value;
             }
             else
@@ -262,6 +264,7 @@
             if (this.IngredientsCount.HasValue)
             {
                 overrideRecipe |= true;
+                changes += $" {IngredientsKey} ";
                 foreach (EmIngredient ingredient in this.Ingredients)
                 {
                     replacement.Ingredients.Add(
@@ -283,6 +286,7 @@
             if (this.LinkedItemsCount.HasValue)
             {
                 overrideRecipe |= true;
+                changes += $" {LinkedItemsIdsKey}";
                 foreach (string linkedItem in this.LinkedItems)
                     replacement.LinkedItems.Add(GetTechType(linkedItem));
             }
@@ -295,7 +299,7 @@
             if (overrideRecipe)
             {
                 CraftDataHandler.SetTechData(this.TechType, replacement);
-                QuickLogger.Message($"Modifying recipe for '{this.ItemID}'");
+                QuickLogger.Message($"Modifying recipe for '{this.ItemID}' withnew values in: {changes}");
             }
 
             return true;
@@ -306,7 +310,7 @@
             if (this.ForceUnlockAtStart)
             {
                 KnownTechHandler.UnlockOnStart(this.TechType);
-                QuickLogger.Message($"Recipe for '{this.ItemID}' will be a unlocked at the start of the game");
+                QuickLogger.Message($"{this.Key} for '{this.ItemID}' will be a unlocked at the start of the game");
             }
 
             if (this.UnlocksCount.HasValue && this.UnlocksCount > 0)
@@ -316,7 +320,7 @@
                 foreach (string value in this.Unlocks)
                 {
                     unlocks.Add(GetTechType(value));
-                    QuickLogger.Message($"Recipe for '{value}' will be a unlocked when '{this.ItemID}' is scanned or picked up");
+                    QuickLogger.Message($"{this.Key} for '{value}' will be a unlocked when '{this.ItemID}' is scanned or picked up");
                 }
 
                 KnownTechHandler.SetAnalysisTechEntry(this.TechType, unlocks);

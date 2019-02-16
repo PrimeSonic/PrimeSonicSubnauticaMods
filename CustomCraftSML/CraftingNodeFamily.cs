@@ -4,7 +4,7 @@
     using CustomCraft2SML.PublicAPI;
     using UnityEngine.Assertions;
 
-    public abstract class CraftingNode
+    internal abstract class CraftingNode
     {
         internal const char Splitter = '/';
         internal readonly CraftingNode Parent = null;
@@ -20,8 +20,7 @@
 
         protected string GetPath()
         {
-            var steps = new Stack<string>(4);
-            // Currently the deepest trees in the standard fabricators only go 3 deep
+            var steps = new Stack<string>();
 
             CraftingNode node = this;
             while (node != null)
@@ -44,7 +43,7 @@
         internal CraftingPath GetCraftingPath => new CraftingPath(Scheme, GetPath());
     }
 
-    public class CraftingRoot : CraftingNode
+    internal class CraftingRoot : CraftingNode
     {
         public static readonly IList<CraftTree.Type> ValidCraftTrees = new List<CraftTree.Type>(6)
         {
@@ -69,7 +68,7 @@
         }
     }
 
-    public class CraftingTab : CraftingNode
+    internal class CraftingTab : CraftingNode
     {
         internal readonly string TabName;
         internal override string Name => TabName;

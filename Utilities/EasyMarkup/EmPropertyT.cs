@@ -12,7 +12,7 @@
 
         public bool HasValue { get; set; } = false;
 
-        public T DefaultValue { get; private set; } = default(T);
+        public T DefaultValue { get; set; } = default;
 
         private T ObjValue;
 

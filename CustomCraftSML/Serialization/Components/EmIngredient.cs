@@ -7,6 +7,7 @@
     {
         public const short Max = 25;
         public const short Min = 1;
+        private const string RequiredKey = "Required";
 
         private readonly EmProperty<short> required;
 
@@ -25,7 +26,7 @@
 
         protected static List<EmProperty> IngredientProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<short>("Required", 1),
+            new EmProperty<short>(RequiredKey, 1),
         };
 
         public int amount => this.Required;
@@ -40,9 +41,9 @@
             this.Required = required;
         }
 
-        internal EmIngredient() : base("Ingredients", IngredientProperties)
+        internal EmIngredient() : base("Ingredient", IngredientProperties)
         {
-            required = (EmProperty<short>)Properties["Required"];
+            required = (EmProperty<short>)Properties[RequiredKey];
         }
 
         internal override EmProperty Copy() => new EmIngredient(this.ItemID, this.Required);

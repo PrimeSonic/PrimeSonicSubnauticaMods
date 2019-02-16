@@ -88,7 +88,6 @@
     <Compile Include="Serialization\Lists\CustomBioFuelList.cs" />
     <Compile Include="Serialization\Lists\AddedRecipeList.cs" />
     <Compile Include="Serialization\Components\EmIngredient.cs" />
-    <Compile Include="Serialization\Components\EmPropertyCraftTreeType.cs" />
     <Compile Include="Interfaces\IAddedRecipe.cs" />
     <Compile Include="Interfaces\ICustomBioFuel.cs" />
     <Compile Include="Interfaces\ICustomSize.cs" />

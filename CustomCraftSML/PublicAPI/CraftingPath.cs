@@ -4,10 +4,13 @@
 
     public class CraftingPath
     {
+        public const char Separator = '/';
+
         public readonly CraftTree.Type Scheme;
         public readonly string Path;
         public string[] Steps { get; internal set; }
-        public bool IsAtRoot => Steps == null || string.IsNullOrEmpty(Path) || Steps.Length == 0;
+        public string[] CraftNodeSteps { get; internal set; }
+        public bool IsAtRoot => this.Steps == null || string.IsNullOrEmpty(Path) || this.Steps.Length == 0;
 
         internal CraftingPath(CraftTree.Type scheme, string path)
         {
@@ -15,7 +18,7 @@
             Path = path;
         }
 
-        internal CraftingPath(string path)
+        internal CraftingPath(string path, string craftNode = null)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -23,7 +26,9 @@
                 return;
             }
 
-            int firstBreak = path.IndexOf('/');
+            path = path.TrimEnd(Separator);
+
+            int firstBreak = path.IndexOf(Separator);
 
             string schemeString;
 
@@ -31,7 +36,7 @@
             {
                 schemeString = path.Substring(0, firstBreak);
                 Path = path.Substring(firstBreak + 1);
-                this.Steps = Path.Split('/');
+                this.Steps = Path.Split(Separator);
             }
             else
             {
@@ -39,8 +44,13 @@
             }
 
             Scheme = (CraftTree.Type)Enum.Parse(typeof(CraftTree.Type), schemeString);
+
+            if (!string.IsNullOrEmpty(craftNode))
+            {
+                CraftNodeSteps = $"{path.TrimEnd(Separator)}/{craftNode}".Split(Separator);
+            }
         }
 
-        public override string ToString() => Path.TrimEnd('/');
+        public override string ToString() => Path.TrimEnd(Separator);
     }
 }

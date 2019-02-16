@@ -7,23 +7,30 @@
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Components;
+    using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
 
     internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
+        protected const string PathKey = "Path";
+        protected const string PdaGroupKey = "PdaGroup";
+        protected const string PdaCategoryKey = "PdaCategory";
+
         internal static new readonly string[] TutorialText = new[]
         {
-            "AddedRecipe: Adding your own recipes into any of the existing fabricators.",
-            "    Added recipes have all the same properties as Modified recipes, with the following additions:",
-            "    Path: Sets the fabricator and crafting tab where the new recipe will be added.",
-            "    PdaGroup: Sets the main group for blueprint shown in the PDA.",
-            "    PdaCategory: Sets the category under the group for blueprint shown in the PDA."
+           $"{AddedRecipeList.ListKey}: Adding your own recipes into any of the existing fabricators.",
+           $"    {AddedRecipeList.ListKey} have all the same properties as {ModifiedRecipeList.ListKey}, with the following additions:",
+           $"    {PathKey}: Sets the fabricator and crafting tab where the new recipe will be added.",
+           $"    {PdaGroupKey}: Sets the main group for blueprint shown in the PDA.",
+           $"        This is optional. If {PdaGroupKey} is set, {PdaCategoryKey} must also be set.",
+           $"    {PdaCategoryKey}: Sets the category under the group for blueprint shown in the PDA.",
+           $"        This is optional. If {PdaCategoryKey} is set, {PdaGroupKey} must also be set."
         };
 
-        private readonly EmProperty<string> path;
-        private readonly EmProperty<TechGroup> techGroup;
-        private readonly EmProperty<TechCategory> techCategory;
+        protected readonly EmProperty<string> path;
+        protected readonly EmProperty<TechGroup> techGroup;
+        protected readonly EmProperty<TechCategory> techCategory;
 
         public string Path
         {
@@ -33,9 +40,9 @@
 
         protected static List<EmProperty> AddedRecipeProperties => new List<EmProperty>(ModifiedRecipeProperties)
         {
-            new EmProperty<string>("Path"),
-            new EmProperty<TechGroup>("PdaGroup") { Optional = true },
-            new EmProperty<TechCategory>("PdaCategory") { Optional = true }
+            new EmProperty<string>(PathKey),
+            new EmProperty<TechGroup>(PdaGroupKey) { Optional = true },
+            new EmProperty<TechCategory>(PdaCategoryKey) { Optional = true }
         };
 
         public TechGroup PdaGroup
@@ -60,9 +67,9 @@
 
         protected AddedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            path = (EmProperty<string>)Properties["Path"];
-            techGroup = (EmProperty<TechGroup>)Properties["PdaGroup"];
-            techCategory = (EmProperty<TechCategory>)Properties["PdaCategory"];
+            path = (EmProperty<string>)Properties[PathKey];
+            techGroup = (EmProperty<TechGroup>)Properties[PdaGroupKey];
+            techCategory = (EmProperty<TechCategory>)Properties[PdaCategoryKey];
             DefaultForceUnlock = true;
             this.PdaGroup = TechGroup.Uncategorized;
             this.PdaCategory = TechCategory.Misc;
@@ -117,7 +124,7 @@
 
         protected void HandleCraftTreeAddition()
         {
-            var craftPath = new CraftingPath(this.Path);
+            var craftPath = new CraftingPath(this.Path, this.ItemID);
 
             AddCraftNode(craftPath, this.TechType);
         }

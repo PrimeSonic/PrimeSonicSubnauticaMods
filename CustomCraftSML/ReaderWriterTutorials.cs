@@ -180,7 +180,7 @@
             tutorialLines.Add("Provided here is a list of all the valid paths to all the standard crafting tabs for all available fabricators.");
             tutorialLines.Add("And don't forget that you can always add your own crafting tabs too.");
             tutorialLines.Add(Environment.NewLine);
-            tutorialLines.Add(PathHelper.GeneratePaths());
+            tutorialLines.Add(PathHelper.GeneratePathString());
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);

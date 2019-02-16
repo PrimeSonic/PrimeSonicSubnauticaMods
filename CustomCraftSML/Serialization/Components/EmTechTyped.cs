@@ -9,11 +9,13 @@
 
     public abstract class EmTechTyped : EmPropertyCollection, ITechTyped
     {
+        protected const string ItemIdKey = "ItemID";
+
         protected readonly EmProperty<string> emTechType;
 
         protected static List<EmProperty> TechTypedProperties => new List<EmProperty>(1)
         {
-            new EmProperty<string>("ItemID"),
+            new EmProperty<string>(ItemIdKey),
         };
 
         public EmTechTyped() : this("TechTyped", TechTypedProperties)
@@ -26,7 +28,7 @@
 
         protected EmTechTyped(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emTechType = (EmProperty<string>)Properties["ItemID"];
+            emTechType = (EmProperty<string>)Properties[ItemIdKey];
         }
 
         public string ItemID
@@ -44,7 +46,7 @@
 
             if (TechType == TechType.None)
             {
-                QuickLogger.Warning($"Could not resolve ID of '{this.ItemID}'. Discarded entry.");
+                QuickLogger.Warning($"Could not resolve {ItemIdKey} value of '{this.ItemID}' for {this.Key}. Discarded entry.");
                 return false;
             }
 

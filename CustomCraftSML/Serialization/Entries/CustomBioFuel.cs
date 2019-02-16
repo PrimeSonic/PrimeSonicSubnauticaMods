@@ -10,17 +10,20 @@
 
     internal class CustomBioFuel : EmTechTyped, ICustomBioFuel, ICustomCraft
     {
+        private const string EnergyKey = "Energy";
+
         internal static readonly string[] TutorialText = new[]
         {
             "CustomBioFuel: Customize the energy values of items in the BioReactor. ",
-            "This can also be used to make items compatible with the BioReactor that originally weren't."
+           $"    {EnergyKey}: Set this to the amount of energy the item provides via the BioReactor",
+            "    This can also be used to make items compatible with the BioReactor that originally weren't."
         };
 
-        private readonly EmProperty<float> emEnergy;
+        protected readonly EmProperty<float> emEnergy;
 
         protected static List<EmProperty> BioFuelProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<float>("Energy")
+            new EmProperty<float>(EnergyKey)
         };
 
         public CustomBioFuel() : this("CustomBioFuel", BioFuelProperties)
@@ -29,7 +32,7 @@
 
         protected CustomBioFuel(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emEnergy = (EmProperty<float>)Properties["Energy"];
+            emEnergy = (EmProperty<float>)Properties[EnergyKey];
         }
 
         public string ID => this.ItemID;
