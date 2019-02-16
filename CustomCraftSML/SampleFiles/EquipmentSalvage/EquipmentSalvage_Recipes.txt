@@ -9,19 +9,6 @@
 AliasRecipes: 
 (
     ItemID: LeadSalvage;
-    Ingredients: 
-    (
-        ItemID: RadiationSuit;
-        Required: 1;
-    ),
-    (
-        ItemID: RadiationHelmet;
-        Required: 1;
-    ),
-    (
-        ItemID: RadiationGloves;
-        Required: 1;
-    );
     LinkedItemIDs: Lead,Lead;
     ForceUnlockAtStart: NO;
     Path: Fabricator/Resources/SalvageTab;
@@ -32,11 +19,6 @@ AliasRecipes:
 ),
 (
     ItemID: CopperSalvage;
-    Ingredients: 
-    (
-        ItemID: PowerCell;
-        Required: 1;
-    );
     LinkedItemIDs: Copper,Copper;
     ForceUnlockAtStart: NO;
     Path: Fabricator/Resources/SalvageTab;
@@ -44,15 +26,9 @@ AliasRecipes:
     PdaCategory: BasicMaterials;
     DisplayName: "Salvage Copper";
     Tooltip: "Recover the precious copper from unneeded power cells";
-    FunctionalID: Copper;
 ),
 (
     ItemID: DeepSalvage;
-    Ingredients: 
-    (
-        ItemID: DeepPowerCell;
-        Required: 1;
-    );
     LinkedItemIDs: Lithium,Magnetite,Lithium,Magnetite;
     ForceUnlockAtStart: NO;
     Path: Fabricator/Resources/SalvageTab;
@@ -63,11 +39,6 @@ AliasRecipes:
 ),
 (
     ItemID: IonCubeSalvage;
-    Ingredients: 
-    (
-        ItemID: PrecursorIonPowerCell;
-        Required: 1;
-    );
     LinkedItemIDs: PrecursorIonCrystal,PrecursorIonCrystal;
     ForceUnlockAtStart: NO;
     Path: Fabricator/Resources/SalvageTab;
@@ -78,11 +49,6 @@ AliasRecipes:
 ),
 (
     ItemID: DiamondSalvage;
-    Ingredients: 
-    (
-        ItemID: LaserCutter;
-        Required: 1;
-    );
     LinkedItemIDs: Diamond,Diamond;
     ForceUnlockAtStart: NO;
     Path: Fabricator/Resources/SalvageTab;

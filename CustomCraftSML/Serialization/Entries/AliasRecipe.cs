@@ -105,6 +105,7 @@
 
             // The functional item for cloning must be valid.
             FunctionalCloneID = GetTechType(this.FunctionalID);
+
             if (FunctionalCloneID == TechType.None)
             {
                 QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
@@ -159,10 +160,10 @@
                 return;
             }
 
-            if (this.LinkedItemsCount > 0)
+            if (this.LinkedItems.Count > 0)
             {
                 QuickLogger.Message($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}'");
-                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(this.LinkedItemIDs[0]));
+                Atlas.Sprite sprite = SpriteManager.Get(this.LinkedItems[0]);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
             }

@@ -7,6 +7,7 @@
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
     using NUnit.Framework;
@@ -111,12 +112,18 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.BasicMaterials,
                 PdaGroup = TechGroup.Resources,
+                Ingredients =
+                {
+                    new EmIngredient(TechType.RadiationSuit),
+                    new EmIngredient(TechType.RadiationHelmet),
+                    new EmIngredient(TechType.RadiationGloves)
+                },
+                LinkedItemIDs =
+                {
+                    TechType.Lead.ToString(),
+                    TechType.Lead.ToString()
+                }
             };
-            leadSalvage.AddLinkedItem(TechType.Lead);
-            leadSalvage.AddLinkedItem(TechType.Lead);
-            leadSalvage.AddIngredient(TechType.RadiationSuit);
-            leadSalvage.AddIngredient(TechType.RadiationHelmet);
-            leadSalvage.AddIngredient(TechType.RadiationGloves);
 
             var copperSalvage = new AliasRecipe
             {
@@ -127,11 +134,16 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.BasicMaterials,
                 PdaGroup = TechGroup.Resources,
-                FunctionalID = TechType.Copper.ToString()
+                Ingredients =
+                {
+                    new EmIngredient(TechType.PowerCell)
+                },
+                LinkedItemIDs =
+                {
+                    TechType.Copper.ToString(),
+                    TechType.Copper.ToString()
+                }
             };
-            copperSalvage.AddLinkedItem(TechType.Copper);
-            copperSalvage.AddLinkedItem(TechType.Copper);
-            copperSalvage.AddIngredient(TechType.PowerCell);
 
             var deepSalvage = new AliasRecipe
             {
@@ -142,12 +154,18 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.AdvancedMaterials,
                 PdaGroup = TechGroup.Resources,
+                Ingredients =
+                {
+                    new EmIngredient("DeepPowerCell")
+                },
+                LinkedItemIDs =
+                {
+                    TechType.Lithium.ToString(),
+                    TechType.Magnetite.ToString(),
+                    TechType.Lithium.ToString(),
+                    TechType.Magnetite.ToString()
+                }
             };
-            deepSalvage.AddLinkedItem(TechType.Lithium);
-            deepSalvage.AddLinkedItem(TechType.Magnetite);
-            deepSalvage.AddLinkedItem(TechType.Lithium);
-            deepSalvage.AddLinkedItem(TechType.Magnetite);
-            deepSalvage.AddIngredient("DeepPowerCell");
 
             var ionSalvage = new AliasRecipe
             {
@@ -158,10 +176,16 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.AdvancedMaterials,
                 PdaGroup = TechGroup.Resources,
+                Ingredients =
+                {
+                    new EmIngredient(TechType.PrecursorIonPowerCell)
+                },
+                LinkedItemIDs =
+                {
+                    TechType.PrecursorIonCrystal.ToString(),
+                    TechType.PrecursorIonCrystal.ToString()
+                }
             };
-            ionSalvage.AddLinkedItem(TechType.PrecursorIonCrystal);
-            ionSalvage.AddLinkedItem(TechType.PrecursorIonCrystal);
-            ionSalvage.AddIngredient(TechType.PrecursorIonPowerCell);
 
             var diamondSalvage = new AliasRecipe
             {
@@ -172,10 +196,16 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.AdvancedMaterials,
                 PdaGroup = TechGroup.Resources,
+                Ingredients =
+                {
+                    new EmIngredient(TechType.LaserCutter)
+                },
+                LinkedItemIDs =
+                {
+                    TechType.Diamond.ToString(),
+                    TechType.Diamond.ToString()
+                }
             };
-            diamondSalvage.AddLinkedItem(TechType.Diamond);
-            diamondSalvage.AddLinkedItem(TechType.Diamond);
-            diamondSalvage.AddIngredient(TechType.LaserCutter);
 
             var aliasList = new AliasRecipeList
             {
@@ -188,20 +218,40 @@
             if (!EnableUnlocking)
                 return;
 
-            var radSuit = new ModifiedRecipe { ItemID = leadSalvage.Ingredients[0].ItemID, AmountCrafted = null };
-            radSuit.AddUnlock(leadSalvage.ItemID);
+            var radSuit = new ModifiedRecipe
+            {
+                ItemID = leadSalvage.Ingredients[0].ItemID,
+                AmountCrafted = null,
+                Unlocks = { leadSalvage.ItemID }
+            };
 
-            var powerCell = new ModifiedRecipe { ItemID = copperSalvage.Ingredients[0].ItemID, AmountCrafted = null };
-            powerCell.AddUnlock(copperSalvage.ItemID);
+            var powerCell = new ModifiedRecipe
+            {
+                ItemID = copperSalvage.Ingredients[0].ItemID,
+                AmountCrafted = null,
+                Unlocks = { copperSalvage.ItemID }
+            };
 
-            var deepPowerCell = new ModifiedRecipe { ItemID = deepSalvage.Ingredients[0].ItemID, AmountCrafted = null };
-            deepPowerCell.AddUnlock(deepSalvage.ItemID);
+            var deepPowerCell = new ModifiedRecipe
+            {
+                ItemID = deepSalvage.Ingredients[0].ItemID,
+                AmountCrafted = null,
+                Unlocks = { deepSalvage.ItemID }
+            };
 
-            var ionPowerCell = new ModifiedRecipe { ItemID = ionSalvage.Ingredients[0].ItemID, AmountCrafted = null };
-            ionPowerCell.AddUnlock(ionSalvage.ItemID);
+            var ionPowerCell = new ModifiedRecipe
+            {
+                ItemID = ionSalvage.Ingredients[0].ItemID,
+                AmountCrafted = null,
+                Unlocks = { ionSalvage.ItemID }
+            };
 
-            var laserCutter = new ModifiedRecipe { ItemID = diamondSalvage.Ingredients[0].ItemID, AmountCrafted = null };
-            laserCutter.AddUnlock(diamondSalvage.ItemID);
+            var laserCutter = new ModifiedRecipe
+            {
+                ItemID = diamondSalvage.Ingredients[0].ItemID,
+                AmountCrafted = null,
+                Unlocks = { diamondSalvage.ItemID }
+            };
 
             var modList = new ModifiedRecipeList
             {

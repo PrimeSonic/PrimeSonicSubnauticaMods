@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
+    using SMLHelper.V2.Crafting;
 
     public class EmIngredient : EmTechTyped
     {
@@ -16,7 +17,6 @@
         {
             get => required.Value;
             set => required.Value = value;
-
         }
 
         protected static List<EmProperty> IngredientProperties => new List<EmProperty>(TechTypedProperties)
@@ -29,9 +29,19 @@
             this.ItemID = item;
         }
 
+        internal EmIngredient(TechType item) : this(item.ToString())
+        {
+            this.TechType = item;
+        }
+
         internal EmIngredient(string item, short required) : this(item)
         {
             this.Required = required;
+        }
+
+        internal EmIngredient(TechType item, short required) : this(item.ToString(), required)
+        {
+            this.TechType = item;
         }
 
         internal EmIngredient() : base("Ingredient", IngredientProperties)
@@ -53,5 +63,7 @@
 
             return true;
         }
+
+        public Ingredient ToSMLHelperIngredient() => new Ingredient(this.TechType, this.Required);
     }
 }

@@ -74,52 +74,15 @@
 
         public IList<string> Unlocks => unlocks.Values;
 
-        public int? UnlocksCount
-        {
-            get
-            {
-                if (unlocks.HasValue)
-                    return unlocks.Count;
-
-                return null;
-            }
-        }
+        protected List<TechType> UnlockingItems { get; } = new List<TechType>();
 
         public IList<EmIngredient> Ingredients => ingredients.Values;
 
-        public int? IngredientsCount
-        {
-            get
-            {
-                if (ingredients.HasValue)
-                    return ingredients.Count;
-
-                return null;
-            }
-        }
+        protected List<Ingredient> SMLHelperIngredients { get; } = new List<Ingredient>();
 
         public IList<string> LinkedItemIDs => linkedItems.Values;
 
-        public int? LinkedItemsCount
-        {
-            get
-            {
-                if (linkedItems.HasValue)
-                    return linkedItems.Count;
-
-                return null;
-            }
-        }
-
-        public void AddIngredient(string techType, short count = 1) => ingredients.Add(new EmIngredient() { ItemID = techType, Required = count });
-
-        public void AddIngredient(TechType techType, short count = 1) => AddIngredient(techType.ToString(), count);
-
-        public void AddLinkedItem(string linkedItem) => linkedItems.Add(linkedItem);
-
-        public void AddLinkedItem(TechType linkedItem) => AddLinkedItem(linkedItem.ToString());
-
-        public void AddUnlock(string unlock) => unlocks.Add(unlock);
+        protected List<TechType> LinkedItems { get; } = new List<TechType>();
 
         protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(TechTypedProperties)
         {
@@ -139,7 +102,7 @@
             for (int i = 0; i < origRecipe.ingredientCount; i++)
             {
                 IIngredient origIngredient = origRecipe.GetIngredient(i);
-                AddIngredient(origIngredient.techType.ToString(), (short)origIngredient.amount);
+                this.Ingredients.Add(new EmIngredient(origIngredient.techType, (short)origIngredient.amount));
             }
 
             for (int i = 0; i < origRecipe.linkedItemCount; i++)
@@ -186,16 +149,10 @@
 
             foreach (EmIngredient ingredient in this.Ingredients)
             {
-                TechType ingredientID = GetTechType(ingredient.ItemID);
-
-                if (ingredientID == TechType.None)
-                {
-                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown ingredient '{ingredient.ItemID}'.  Entry will be discarded.");
+                if (ingredient.PassesPreValidation())
+                    this.SMLHelperIngredients.Add(ingredient.ToSMLHelperIngredient());
+                else
                     internalItemsPassCheck = false;
-                    continue;
-                }
-
-                ingredient.TechType = ingredientID;
             }
 
             foreach (string linkedItem in this.LinkedItemIDs)
@@ -208,6 +165,22 @@
                     internalItemsPassCheck = false;
                     continue;
                 }
+
+                this.LinkedItems.Add(linkedItemID);
+            }
+
+            foreach (string unlockingItem in this.Unlocks)
+            {
+                TechType unlockingItemID = GetTechType(unlockingItem);
+
+                if (unlockingItemID == TechType.None)
+                {
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown Unlocks item '{unlockingItem}'. Entry will be discarded.");
+                    internalItemsPassCheck = false;
+                    continue;
+                }
+
+                this.UnlockingItems.Add(unlockingItemID);
             }
 
             return internalItemsPassCheck;
@@ -255,20 +228,15 @@
             }
 
             // Ingredients
-            if (this.IngredientsCount.HasValue)
+            if (this.Ingredients.Count > 0)
             {
                 overrideRecipe |= true;
                 changes += $" {IngredientsKey} ";
-                foreach (EmIngredient ingredient in this.Ingredients)
-                {
-                    replacement.Ingredients.Add(
-                        new Ingredient(
-                            GetTechType(ingredient.ItemID),
-                            ingredient.Required));
-                }
+                replacement.Ingredients = this.SMLHelperIngredients;
             }
             else
             {
+                // Copy original ingredients
                 for (int i = 0; i < original.ingredientCount; i++)
                     replacement.Ingredients.Add(
                         new Ingredient(
@@ -277,15 +245,15 @@
             }
 
             // Linked Items
-            if (this.LinkedItemsCount.HasValue)
+            if (this.LinkedItems.Count > 0)
             {
                 overrideRecipe |= true;
                 changes += $" {LinkedItemsIdsKey}";
-                foreach (string linkedItem in this.LinkedItemIDs)
-                    replacement.LinkedItems.Add(GetTechType(linkedItem));
+                replacement.LinkedItems = this.LinkedItems;
             }
             else
             {
+                // Copy original linked items
                 for (int i = 0; i < original.linkedItemCount; i++)
                     replacement.LinkedItems.Add(original.GetLinkedItem(i));
             }
@@ -293,7 +261,7 @@
             if (overrideRecipe)
             {
                 CraftDataHandler.SetTechData(this.TechType, replacement);
-                QuickLogger.Message($"Modifying recipe for '{this.ItemID}' withnew values in: {changes}");
+                QuickLogger.Message($"Modifying recipe for '{this.ItemID}' with new values in: {changes}");
             }
 
             return true;
@@ -307,17 +275,9 @@
                 QuickLogger.Message($"{this.Key} for '{this.ItemID}' will be a unlocked at the start of the game");
             }
 
-            if (this.UnlocksCount.HasValue && this.UnlocksCount > 0)
+            if (this.UnlockingItems.Count > 0)
             {
-                var unlocks = new List<TechType>();
-
-                foreach (string value in this.Unlocks)
-                {
-                    unlocks.Add(GetTechType(value));
-                    QuickLogger.Message($"{this.Key} for '{value}' will be a unlocked when '{this.ItemID}' is scanned or picked up");
-                }
-
-                KnownTechHandler.SetAnalysisTechEntry(this.TechType, unlocks);
+                KnownTechHandler.SetAnalysisTechEntry(this.TechType, this.UnlockingItems);
             }
 
             return true;

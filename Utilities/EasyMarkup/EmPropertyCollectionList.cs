@@ -17,7 +17,7 @@
 
         public T this[int index] => this.Values[index];
 
-        public int Count => this.Values.Count;
+        public int Count => HasValue ? this.Values.Count : 0;
 
         public void Add(T item)
         {

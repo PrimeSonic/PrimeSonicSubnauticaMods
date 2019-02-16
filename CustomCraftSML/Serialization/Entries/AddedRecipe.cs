@@ -105,19 +105,17 @@
             };
 
             foreach (EmIngredient ingredient in this.Ingredients)
-                replacement.Ingredients.Add(new Ingredient(GetTechType(ingredient.ItemID), ingredient.Required));
+                replacement.Ingredients.Add(new Ingredient(ingredient.TechType, ingredient.Required));
 
-            foreach (string linkedItem in this.LinkedItemIDs)
-                replacement.LinkedItems.Add(GetTechType(linkedItem));
+            foreach (TechType linkedItem in this.LinkedItems)
+                replacement.LinkedItems.Add(linkedItem);
 
-            TechType itemID = GetTechType(this.ItemID);
-
-            CraftDataHandler.SetTechData(itemID, replacement);
+            CraftDataHandler.SetTechData(this.TechType, replacement);
             QuickLogger.Message($"Adding new recipe for '{this.ItemID}'");
 
             if (this.PdaGroup != TechGroup.Uncategorized)
             {
-                CraftDataHandler.AddToGroup(this.PdaGroup, this.PdaCategory, itemID);
+                CraftDataHandler.AddToGroup(this.PdaGroup, this.PdaCategory, this.TechType);
                 // SMLHelper logs enough here
             }
         }
