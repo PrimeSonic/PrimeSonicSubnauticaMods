@@ -3,8 +3,9 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Serialization.Components;
 
-    internal class CustomBioFuel : EmPropertyCollection, ICustomBioFuel
+    internal class CustomBioFuel : EmTechTyped, ICustomBioFuel
     {
         internal static readonly string[] TutorialText = new[]
         {
@@ -12,25 +13,20 @@
             "This can also be used to make items compatible with the BioReactor that originally weren't."
         };
 
-        private readonly EmProperty<string> emTechType;
         private readonly EmProperty<float> emEnergy;
 
-        protected static List<EmProperty> BioFuelProperties => new List<EmProperty>(2)
+        protected static List<EmProperty> BioFuelProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<string>("ItemID"),
             new EmProperty<float>("Energy")
         };
 
-        public CustomBioFuel() : base("CustomBioFuel", BioFuelProperties)
+        public CustomBioFuel() : this("CustomBioFuel", BioFuelProperties)
         {
-            emTechType = (EmProperty<string>)Properties["ItemID"];
-            emEnergy = (EmProperty<float>)Properties["Energy"];
         }
 
-        public string ItemID
+        protected CustomBioFuel(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            get => emTechType.Value;
-            set => emTechType.Value = value;
+            emEnergy = (EmProperty<float>)Properties["Energy"];
         }
 
         public float Energy
@@ -39,6 +35,6 @@
             set => emEnergy.Value = value;
         }
 
-        internal override EmProperty Copy() => new CustomBioFuel();
+        internal override EmProperty Copy() => new CustomBioFuel(this.Key, this.CopyDefinitions);
     }
 }

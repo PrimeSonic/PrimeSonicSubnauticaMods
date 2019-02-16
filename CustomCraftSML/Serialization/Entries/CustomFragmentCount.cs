@@ -3,21 +3,23 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Serialization.Components;
 
-    internal class CustomFragmentCount : EmPropertyCollection, ICustomFragmentCount
+    internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount
     {
-        private readonly EmProperty<string> emTechType;
         private readonly EmProperty<int> emFragmentCount;
 
-        protected static List<EmProperty> FragmentProperties => new List<EmProperty>(3)
+        protected static List<EmProperty> FragmentProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<string>("ItemID"),
             new EmProperty<int>("FragmentsToScan", 1),
         };
 
-        public CustomFragmentCount() : base("CustomFragments", FragmentProperties)
+        public CustomFragmentCount() : this("CustomFragments", FragmentProperties)
         {
-            emTechType = (EmProperty<string>)Properties["ItemID"];
+        }
+
+        protected CustomFragmentCount(string key, ICollection<EmProperty> definitions) : base(key, definitions)
+        {
             emFragmentCount = (EmProperty<int>)Properties["FragmentsToScan"];
         }
 
@@ -27,17 +29,12 @@
             this.FragmentsToScan = fragmentsToScan;
         }
 
-        public string ItemID
-        {
-            get => emTechType.Value;
-            set => emTechType.Value = value;
-        }
         public int FragmentsToScan
         {
             get => emFragmentCount.Value;
             set => emFragmentCount.Value = value;
         }
 
-        internal override EmProperty Copy() => new CustomFragmentCount();
+        internal override EmProperty Copy() => new CustomFragmentCount(this.Key, this.CopyDefinitions);
     }
 }

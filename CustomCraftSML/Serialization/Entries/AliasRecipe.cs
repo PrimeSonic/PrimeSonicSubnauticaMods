@@ -59,11 +59,11 @@
             new EmProperty<TechType>("SpriteItemID") { Optional = true }
         };
 
-        public AliasRecipe() : this(AliasRecipeProperties)
+        public AliasRecipe() : this("AliasRecipe", AliasRecipeProperties)
         {
         }
 
-        protected AliasRecipe(ICollection<EmProperty> definitions) : base("AliasRecipe", definitions)
+        protected AliasRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             displayName = (EmProperty<string>)Properties["DisplayName"];
             tooltip = (EmProperty<string>)Properties["Tooltip"];
@@ -71,6 +71,6 @@
             spriteID = (EmProperty<TechType>)Properties["SpriteItemID"];
         }
 
-        internal override EmProperty Copy() => new AliasRecipe(this.CopyDefinitions);
+        internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);
     }
 }

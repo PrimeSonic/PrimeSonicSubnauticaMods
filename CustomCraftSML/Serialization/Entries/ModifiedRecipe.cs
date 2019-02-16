@@ -5,7 +5,7 @@
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization.Components;
 
-    internal class ModifiedRecipe : EmPropertyCollection, IModifiedRecipe
+    internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe
     {
         internal static readonly string[] TutorialText = new[]
         {
@@ -25,18 +25,11 @@
         public const short Max = 25;
         public const short Min = 0;
 
-        protected readonly EmProperty<string> emTechType;
         protected readonly EmProperty<short> amountCrafted;
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
         protected readonly EmPropertyList<string> linkedItems;
         protected readonly EmYesNo unlockedAtStart;
         protected readonly EmPropertyList<string> unlocks;
-        
-        public string ItemID
-        {
-            get => emTechType.Value;
-            set => emTechType.Value = value;
-        }
 
         public short? AmountCrafted
         {
@@ -118,9 +111,8 @@
 
         public void AddUnlock(string unlock) => unlocks.Add(unlock);
 
-        protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(7)
+        protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<string>("ItemID"),
             new EmProperty<short>("AmountCrafted", 1) { Optional = true },
             new EmPropertyCollectionList<EmIngredient>("Ingredients", new EmIngredient()) { Optional = true },
             new EmPropertyList<string>("LinkedItemIDs") { Optional = true },
@@ -131,12 +123,12 @@
         internal ModifiedRecipe(TechType origTechType) : this()
         {
             ITechData origRecipe = CraftData.Get(origTechType);
-            ItemID = origTechType.ToString();
-            AmountCrafted = (short)origRecipe.craftAmount;
+            this.ItemID = origTechType.ToString();
+            this.AmountCrafted = (short)origRecipe.craftAmount;
 
             for (int i = 0; i < origRecipe.ingredientCount; i++)
             {
-                var origIngredient = origRecipe.GetIngredient(i);
+                IIngredient origIngredient = origRecipe.GetIngredient(i);
                 AddIngredient(origIngredient.techType.ToString(), (short)origIngredient.amount);
             }
 
@@ -154,7 +146,6 @@
 
         protected ModifiedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emTechType = (EmProperty<string>)Properties["ItemID"];
             amountCrafted = (EmProperty<short>)Properties["AmountCrafted"];
             ingredients = (EmPropertyCollectionList<EmIngredient>)Properties["Ingredients"];
             linkedItems = (EmPropertyList<string>)Properties["LinkedItemIDs"];
@@ -173,7 +164,7 @@
             }
         }
 
-        internal override EmProperty Copy() => new ModifiedRecipe(Key, CopyDefinitions);
+        internal override EmProperty Copy() => new ModifiedRecipe(this.Key, this.CopyDefinitions);
 
         public EmIngredient GetIngredient(int index) => ingredients[index];
 

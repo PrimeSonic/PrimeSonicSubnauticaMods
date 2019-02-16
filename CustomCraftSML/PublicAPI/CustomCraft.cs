@@ -226,6 +226,7 @@
             string[] oldSteps = (oldPath.Path + CraftingNode.Splitter + movedRecipe.ItemID).Split(CraftingNode.Splitter);
 
             CraftTreeHandler.RemoveNode(oldPath.Scheme, oldSteps);
+
             if (movedRecipe.Hidden)
             {
                 QuickLogger.Message($"Recipe for '{movedRecipe.ItemID}' is removed from the {oldPath.Scheme} crafting tree");
@@ -239,13 +240,21 @@
             }
 
             var newPath = new CraftingPath(movedRecipe.NewPath);
-            string[] newSteps = newPath.Path.Split(CraftingNode.Splitter);
 
-            if (newSteps.Length <= 1)
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, GetTechType(movedRecipe.ItemID));
+            TechType itemID = GetTechType(movedRecipe.ItemID);
+
+            if (newPath.IsAtRoot)
+            {
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID);
+            }
             else
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, GetTechType(movedRecipe.ItemID), newSteps);
+            {
+                string[] steps = newPath.Path.Split(CraftingNode.Splitter);
 
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID, steps);
+            }
+
+            QuickLogger.Debug($"'{movedRecipe.ItemID}' moved to {newPath.Path}.");
             return true;
         }
 
@@ -271,7 +280,7 @@
             }
 
             PDAHandler.EditFragmentsToScan(itemID, fragCount);
-            //QuickLogger.Debug("Placeholder message");
+            QuickLogger.Debug($"'{fragments.ItemID}' now requires {fragCount} fragments scanned to unlock.");
             return true;
         }
 

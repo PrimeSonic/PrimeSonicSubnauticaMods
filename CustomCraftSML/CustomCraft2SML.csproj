@@ -70,6 +70,7 @@
     <Compile Include="PublicAPI\CustomCraft.cs" />
     <Compile Include="PublicAPI\PathHelper.cs" />
     <Compile Include="QPatch.cs" />
+    <Compile Include="Serialization\Components\EmTechTyped.cs" />
     <Compile Include="Serialization\Entries\AddedRecipe.cs" />
     <Compile Include="Serialization\Entries\CustomBioFuel.cs" />
     <Compile Include="Serialization\Entries\CustomCraftingTab.cs" />

@@ -6,7 +6,7 @@
 
     internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
-        internal new static readonly string[] TutorialText = new[]
+        internal static new readonly string[] TutorialText = new[]
         {
             "AddedRecipe: Adding your own recipes into any of the existing fabricators.",
             "    Added recipes have all the same properties as Modified recipes, with the following additions:",
@@ -58,8 +58,8 @@
             techGroup = (EmProperty<TechGroup>)Properties["PdaGroup"];
             techCategory = (EmProperty<TechCategory>)Properties["PdaCategory"];
             DefaultForceUnlock = true;
-            PdaGroup = TechGroup.Uncategorized;
-            PdaCategory = TechCategory.Misc;
+            this.PdaGroup = TechGroup.Uncategorized;
+            this.PdaCategory = TechCategory.Misc;
 
         }
 

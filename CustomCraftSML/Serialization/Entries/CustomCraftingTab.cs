@@ -29,7 +29,11 @@
             new EmProperty<string>("ParentTabPath"),
         };
 
-        public CustomCraftingTab() : base(KeyName, CustomCraftingTabProperties)
+        public CustomCraftingTab() : this(KeyName, CustomCraftingTabProperties)
+        {
+        }
+
+        protected CustomCraftingTab(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             emTabID = (EmProperty<string>)Properties["TabID"];
             emDisplayName = (EmProperty<string>)Properties["DisplayName"];
@@ -93,8 +97,8 @@
             }
         }
 
-        public string FullPath => ParentTabPath + TabID;
+        public string FullPath => this.ParentTabPath + this.TabID;
 
-        internal override EmProperty Copy() => new CustomCraftingTab();
+        internal override EmProperty Copy() => new CustomCraftingTab(Key, CopyDefinitions);
     }
 }
