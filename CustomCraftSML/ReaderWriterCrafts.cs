@@ -227,6 +227,8 @@
                     continue;
                 }
 
+                item.TechID = entryId;
+
                 // All checks passed
                 uniqueEntries.Add(entryId, item);
             }
@@ -269,6 +271,8 @@
                         internalItemsPassCheck = false;
                         continue;
                     }
+
+                    ingredient.TechID = ingredientID;
                 }
 
                 foreach (string linkedItem in recipe.LinkedItems)

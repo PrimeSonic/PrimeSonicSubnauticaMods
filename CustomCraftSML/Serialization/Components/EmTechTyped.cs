@@ -4,11 +4,11 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
 
-    internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped
+    public abstract class EmTechTyped : EmPropertyCollection, ITechTyped
     {
         protected readonly EmProperty<string> emTechType;
 
-        protected static List<EmProperty> TechTypedProperties => new List<EmProperty>(7)
+        protected static List<EmProperty> TechTypedProperties => new List<EmProperty>(1)
         {
             new EmProperty<string>("ItemID"),
         };
@@ -31,5 +31,7 @@
             get => emTechType.Value;
             set => emTechType.Value = value;
         }
+
+        public TechType TechID { get; set; }
     }
 }

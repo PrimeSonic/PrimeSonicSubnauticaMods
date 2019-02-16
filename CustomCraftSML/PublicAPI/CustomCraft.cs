@@ -164,7 +164,8 @@
 
             try
             {
-                CraftDataHandler.SetItemSize(GetTechType(customSize.ItemID), customSize.Width, customSize.Height);
+                CraftDataHandler.SetItemSize(customSize.TechID, customSize.Width, customSize.Height);
+                QuickLogger.Message($"'{customSize.ItemID}' was resized to {customSize.Width}x{customSize.Height}");
                 return true;
             }
             catch (Exception ex)
@@ -178,7 +179,8 @@
         {
             try
             {
-                BioReactorHandler.SetBioReactorCharge(GetTechType(customBioFuel.ItemID), customBioFuel.Energy);
+                BioReactorHandler.SetBioReactorCharge(customBioFuel.TechID, customBioFuel.Energy);
+                QuickLogger.Message($"'{customBioFuel.ItemID}' now provides {customBioFuel.Energy} energy in the BioReactor");
                 return true;
             }
             catch (Exception ex)
@@ -218,7 +220,13 @@
         {
             if (string.IsNullOrEmpty(movedRecipe.OldPath))
             {
-                QuickLogger.Warning($"OldPath missing in MovedRecipe for '{movedRecipe.ItemID}'.");
+                QuickLogger.Warning($"OldPath missing in MovedRecipe for '{movedRecipe.ItemID}'");
+                return false;
+            }
+
+            if (!movedRecipe.Hidden && string.IsNullOrEmpty(movedRecipe.NewPath))
+            {
+                QuickLogger.Warning($"NewPath missing in MovedRecipe for '{movedRecipe.ItemID}' while not set as 'Hidden'");
                 return false;
             }
 
@@ -226,45 +234,22 @@
             string[] oldSteps = (oldPath.Path + CraftingNode.Splitter + movedRecipe.ItemID).Split(CraftingNode.Splitter);
 
             CraftTreeHandler.RemoveNode(oldPath.Scheme, oldSteps);
+            QuickLogger.Message($"Recipe for '{movedRecipe.ItemID}' was removed from the {oldPath.Scheme} crafting tree");
 
             if (movedRecipe.Hidden)
             {
-                QuickLogger.Message($"Recipe for '{movedRecipe.ItemID}' is removed from the {oldPath.Scheme} crafting tree");
                 return true;
-            }
-
-            if (string.IsNullOrEmpty(movedRecipe.NewPath))
-            {
-                QuickLogger.Warning($"NewPath missing in MovedRecipe for '{movedRecipe.ItemID}' and 'Hidden' was not set to 'YES'.");
-                return false;
             }
 
             var newPath = new CraftingPath(movedRecipe.NewPath);
 
-            TechType itemID = GetTechType(movedRecipe.ItemID);
+            AddCraftNode(newPath, movedRecipe.TechID);
 
-            if (newPath.IsAtRoot)
-            {
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID);
-            }
-            else
-            {
-                string[] steps = newPath.Path.Split(CraftingNode.Splitter);
-
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID, steps);
-            }
-
-            QuickLogger.Debug($"'{movedRecipe.ItemID}' moved to {newPath.Path}.");
             return true;
         }
 
         internal static bool CustomizeFragments(ICustomFragmentCount fragments)
         {
-            TechType itemID = GetTechType(fragments.ItemID);
-
-            if (itemID == TechType.None)
-                return false;
-
             int fragCount = fragments.FragmentsToScan;
             if (fragCount < PDAScanner.EntryData.minFragments ||
                 fragCount > PDAScanner.EntryData.maxFragments)
@@ -273,18 +258,32 @@
                 return false;
             }
 
-            if (itemID > TechType.Databox)
+            if (fragments.TechID > TechType.Databox)
             {
                 QuickLogger.Warning($"Item '{fragments.ItemID}' appears to be a modded item. CustomFragmentCount can only be applied to existing game items.");
                 return false;
             }
 
-            PDAHandler.EditFragmentsToScan(itemID, fragCount);
-            QuickLogger.Debug($"'{fragments.ItemID}' now requires {fragCount} fragments scanned to unlock.");
+            PDAHandler.EditFragmentsToScan(fragments.TechID, fragCount);
+            QuickLogger.Message($"'{fragments.ItemID}' now requires {fragCount} fragments scanned to unlock.");
             return true;
         }
 
         // ----------------------
+
+        private static void AddCraftNode(CraftingPath newPath, TechType itemID)
+        {
+            if (newPath.IsAtRoot)
+            {
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID);
+                QuickLogger.Message($"New crafting node for '{itemID}' added to the root of the {newPath.Scheme} crafting tree");
+            }
+            else
+            {
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID, newPath.Steps);
+                QuickLogger.Message($"New crafting node for '{itemID}' added to the {newPath.Scheme} crafting tree at {newPath.Path}");
+            }
+        }
 
         private static void HandleCraftingTab(ICraftingTab craftingTab)
         {
@@ -302,13 +301,11 @@
 
         private static void HandleCustomSprite(IAliasRecipe aliasRecipe)
         {
-            TechType itemID = GetTechType(aliasRecipe.ItemID);
-
             if (aliasRecipe.SpriteItemID > TechType.None)
             {
                 QuickLogger.Message($"SpriteItemID {aliasRecipe.SpriteItemID} used for AliasRecipe '{aliasRecipe.ItemID}'");
                 Atlas.Sprite sprite = SpriteManager.Get(aliasRecipe.SpriteItemID);
-                SpriteHandler.RegisterSprite(itemID, sprite);
+                SpriteHandler.RegisterSprite(aliasRecipe.TechID, sprite);
                 return;
             }
 
@@ -317,7 +314,7 @@
             {
                 QuickLogger.Message($"Custom sprite found for AliasRecipe '{aliasRecipe.ItemID}'");
                 Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-                SpriteHandler.RegisterSprite(itemID, sprite);
+                SpriteHandler.RegisterSprite(aliasRecipe.TechID, sprite);
                 return;
             }
 
@@ -325,7 +322,7 @@
             {
                 QuickLogger.Message($"First LinkedItemID used for icon of AliasRecipe '{aliasRecipe.ItemID}'");
                 Atlas.Sprite sprite = SpriteManager.Get(GetTechType(aliasRecipe.GetLinkedItem(0)));
-                SpriteHandler.RegisterSprite(itemID, sprite);
+                SpriteHandler.RegisterSprite(aliasRecipe.TechID, sprite);
                 return;
             }
 
@@ -359,18 +356,7 @@
         {
             var craftPath = new CraftingPath(addedRecipe.Path);
 
-            TechType itemID = GetTechType(addedRecipe.ItemID);
-
-            if (craftPath.IsAtRoot)
-            {
-                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID);
-            }
-            else
-            {
-                string[] steps = craftPath.Path.Split(CraftingNode.Splitter);
-
-                CraftTreeHandler.AddCraftingNode(craftPath.Scheme, itemID, steps);
-            }
+            AddCraftNode(craftPath, addedRecipe.TechID);
         }
 
         private static void HandleAddedRecipe(IAddedRecipe addedRecipe, short defaultCraftAmount = 1)
@@ -389,10 +375,12 @@
             TechType itemID = GetTechType(addedRecipe.ItemID);
 
             CraftDataHandler.SetTechData(itemID, replacement);
+            QuickLogger.Message($"Adding new recipe for '{addedRecipe.ItemID}'");
 
             if (addedRecipe.PdaGroup != TechGroup.Uncategorized)
             {
                 CraftDataHandler.AddToGroup(addedRecipe.PdaGroup, addedRecipe.PdaCategory, itemID);
+                QuickLogger.Message($"'{addedRecipe.ItemID}' categorized in the PDA under {addedRecipe.PdaGroup}/{addedRecipe.PdaCategory}");
             }
         }
 
@@ -461,20 +449,21 @@
             }
 
             if (overrideRecipe)
+            {
                 CraftDataHandler.SetTechData(itemID, replacement);
+                QuickLogger.Message($"Modifying recipe for '{modifiedRecipe.ItemID}'");
+            }
 
             return true;
         }
 
         private static bool HandleUnlocks(IModifiedRecipe modifiedRecipe)
         {
-            TechType itemID = GetTechType(modifiedRecipe.ItemID);
-
-            if (itemID == TechType.None)
-                return false; // Unknown item
-
             if (modifiedRecipe.ForceUnlockAtStart)
-                KnownTechHandler.UnlockOnStart(itemID);
+            {
+                KnownTechHandler.UnlockOnStart(modifiedRecipe.TechID);
+                QuickLogger.Message($"Recipe for '{modifiedRecipe.ItemID}' will be a unlocked at the start of the game");
+            }
 
             if (modifiedRecipe.UnlocksCount.HasValue && modifiedRecipe.UnlocksCount > 0)
             {
@@ -483,9 +472,10 @@
                 foreach (string value in modifiedRecipe.Unlocks)
                 {
                     unlocks.Add(GetTechType(value));
+                    QuickLogger.Message($"Recipe for '{value}' will be a unlocked when '{modifiedRecipe.ItemID}' is scanned or picked up");
                 }
 
-                KnownTechHandler.SetAnalysisTechEntry(itemID, unlocks);
+                KnownTechHandler.SetAnalysisTechEntry(modifiedRecipe.TechID, unlocks);
             }
 
             return true;
@@ -500,9 +490,9 @@
 
             if (functionalID != TechType.None)
             {
-                QuickLogger.Debug($"Custom item '{aliasRecipe.ItemID}' will be a functional clone of '{aliasRecipe.FunctionalID}'");
                 var clone = new FunctionalClone(aliasRecipe, functionalID);
                 PrefabHandler.RegisterPrefab(clone);
+                QuickLogger.Message($"Custom item '{aliasRecipe.ItemID}' will be a functional clone of '{aliasRecipe.FunctionalID}'");
             }
         }
     }

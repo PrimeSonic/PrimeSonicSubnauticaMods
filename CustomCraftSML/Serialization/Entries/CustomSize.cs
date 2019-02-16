@@ -24,7 +24,7 @@
             get => emWidth.Value;
             set
             {
-                if (value <= Max || value >= Min)
+                if (value > Max || value < Min)
                     value = emWidth.DefaultValue;
 
                 emWidth.Value = value;
@@ -36,7 +36,7 @@
             get => emHeight.Value;
             set
             {
-                if (value <= Max || value >= Min)
+                if (value > Max || value < Min)
                     value = emHeight.DefaultValue;
 
                 emHeight.Value = value;
