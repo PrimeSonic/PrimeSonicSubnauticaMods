@@ -79,6 +79,7 @@
     <Compile Include="Serialization\Entries\AliasRecipe.cs" />
     <Compile Include="Serialization\Entries\ModifiedRecipe.cs" />
     <Compile Include="Serialization\Entries\MovedRecipe.cs" />
+    <Compile Include="Serialization\IParsingPackage.cs" />
     <Compile Include="Serialization\Lists\CustomCraftingTabList.cs" />
     <Compile Include="Serialization\Lists\CustomFragmentsList.cs" />
     <Compile Include="Serialization\Lists\MovedRecipeList.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Interfaces\ICustomBioFuel.cs" />
     <Compile Include="Interfaces\ICustomSize.cs" />
     <Compile Include="Interfaces\IModifiedRecipe.cs" />
+    <Compile Include="Serialization\ParsingPackage.cs" />
     <Compile Include="ValidBioFuels.cs" />
     <Compile Include="ValidTechTypes.cs" />
   </ItemGroup>
