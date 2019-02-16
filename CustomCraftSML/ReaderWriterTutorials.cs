@@ -21,7 +21,7 @@
         private const string HorizontalLine = " -------------------------------------------- ";
         private static readonly string ReadMeVersionLine = $"# How to use {RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
 
-        private static void GenerateOriginalRecipes()
+        internal static void GenerateOriginalRecipes()
         {
             if (!Directory.Exists(SamplesFolder))
                 Directory.CreateDirectory(SamplesFolder);
@@ -79,7 +79,7 @@
             QuickLogger.Message($"{fileName} file not found. File generated.");
         }
 
-        private static void HandleReadMeFile()
+        internal static void HandleReadMeFile()
         {
             if (!File.Exists(HowToFile))
             {
@@ -180,7 +180,7 @@
             tutorialLines.Add("Provided here is a list of all the valid paths to all the standard crafting tabs for all available fabricators.");
             tutorialLines.Add("And don't forget that you can always add your own crafting tabs too.");
             tutorialLines.Add(Environment.NewLine);
-            tutorialLines.Add(PathHelper.GeneratePaths());
+            tutorialLines.Add(PathHelper.GeneratePathString());
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);

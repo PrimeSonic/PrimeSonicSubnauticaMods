@@ -1,23 +1,28 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
     using System.Collections.Generic;
+    using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Serialization.Components;
+    using SMLHelper.V2.Handlers;
 
-    internal class CustomFragmentCount : EmPropertyCollection, ICustomFragmentCount
+    internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount
     {
-        private readonly EmProperty<string> emTechType;
         private readonly EmProperty<int> emFragmentCount;
 
-        protected static List<EmProperty> FragmentProperties => new List<EmProperty>(3)
+        protected static List<EmProperty> FragmentProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<string>("ItemID"),
             new EmProperty<int>("FragmentsToScan", 1),
         };
 
-        public CustomFragmentCount() : base("CustomFragments", FragmentProperties)
+        public CustomFragmentCount() : this("CustomFragments", FragmentProperties)
         {
-            emTechType = (EmProperty<string>)Properties["ItemID"];
+        }
+
+        protected CustomFragmentCount(string key, ICollection<EmProperty> definitions) : base(key, definitions)
+        {
             emFragmentCount = (EmProperty<int>)Properties["FragmentsToScan"];
         }
 
@@ -27,17 +32,43 @@
             this.FragmentsToScan = fragmentsToScan;
         }
 
-        public string ItemID
-        {
-            get => emTechType.Value;
-            set => emTechType.Value = value;
-        }
+        public string ID => this.ItemID;
+
         public int FragmentsToScan
         {
             get => emFragmentCount.Value;
             set => emFragmentCount.Value = value;
         }
 
-        internal override EmProperty Copy() => new CustomFragmentCount();
+        internal override EmProperty Copy() => new CustomFragmentCount(this.Key, this.CopyDefinitions);
+
+        public bool SendToSMLHelper()
+        {
+            try
+            {
+                int fragCount = this.FragmentsToScan;
+                if (fragCount < PDAScanner.EntryData.minFragments ||
+                    fragCount > PDAScanner.EntryData.maxFragments)
+                {
+                    QuickLogger.Warning($"Invalid number of FragmentsToScan for entry '{this.ItemID}'. Must be between {PDAScanner.EntryData.minFragments} and {PDAScanner.EntryData.maxFragments}.");
+                    return false;
+                }
+
+                if (this.TechType > TechType.Databox)
+                {
+                    QuickLogger.Warning($"Item '{this.ItemID}' appears to be a modded item. CustomFragmentCount can only be applied to existing game items.");
+                    return false;
+                }
+
+                PDAHandler.EditFragmentsToScan(this.TechType, fragCount);
+                QuickLogger.Message($"'{this.ItemID}' now requires {fragCount} fragments scanned to unlock.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Custom Fragment Count '{this.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
     }
 }

@@ -3,5 +3,7 @@
     public interface ITechTyped
     {
         string ItemID { get; }
+
+        TechType TechType { get; set; }
     }
 }

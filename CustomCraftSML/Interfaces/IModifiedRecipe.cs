@@ -3,21 +3,13 @@
     using System.Collections.Generic;
     using CustomCraft2SML.Serialization.Components;
 
-    public interface IModifiedRecipe : ITechTyped
+    public interface IModifiedRecipe : ITechTyped, ICustomCraft
     {
         short? AmountCrafted { get; }
         bool ForceUnlockAtStart { get; }
 
-        int? IngredientsCount { get; }
-        IEnumerable<EmIngredient> Ingredients { get; }
-        EmIngredient GetIngredient(int index);
-
-        int? LinkedItemsCount { get; }
-        IEnumerable<string> LinkedItems { get; }
-        string GetLinkedItem(int index);
-
-        int? UnlocksCount { get; }
-        IEnumerable<string> Unlocks { get; }
-        string GetUnlock(int index);
+        IList<EmIngredient> Ingredients { get; }
+        IList<string> LinkedItemIDs { get; }
+        IList<string> Unlocks { get; }
     }
 }

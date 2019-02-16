@@ -1,68 +1,69 @@
 ﻿namespace CustomCraft2SML.Serialization.Components
 {
     using System.Collections.Generic;
+    using Common;
     using Common.EasyMarkup;
-    using CustomCraft2SML.Interfaces;
-    using UnityEngine.Assertions;
+    using SMLHelper.V2.Crafting;
 
-    public class EmIngredient : EmPropertyCollection, ITechTyped
+    public class EmIngredient : EmTechTyped
     {
         public const short Max = 25;
         public const short Min = 1;
+        private const string RequiredKey = "Required";
 
-        private readonly EmProperty<string> emTechType;
         private readonly EmProperty<short> required;
-
-        public string ItemID
-        {
-            get => emTechType.Value;
-            set => emTechType.Value = value;
-        }
 
         public short Required
         {
-            get
-            {
-                Assert.IsTrue(required.Value <= Max, $"Amount required value for ingredient {ItemID} must be less than {Max}.");
-                Assert.IsTrue(required.Value >= Min, $"Amount required value for ingredient {ItemID} must be greater than {Min}.");
-                return required.Value;
-            }
-            set
-            {
-                Assert.IsTrue(value <= Max, $"Amount required value for ingredient {ItemID} must be less than {Max}.");
-                Assert.IsTrue(value >= Min, $"Amount required value for ingredient {ItemID} must be greater than {Min}.");
-                required.Value = value;
-            }
-
+            get => required.Value;
+            set => required.Value = value;
         }
 
-        protected static List<EmProperty> IngredientProperties => new List<EmProperty>(2)
+        protected static List<EmProperty> IngredientProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<string>("ItemID"),
-            new EmProperty<short>("Required", 1),
+            new EmProperty<short>(RequiredKey, 1),
         };
-        
-        public int amount => Required;
 
         internal EmIngredient(string item) : this()
         {
-            ItemID = item;
+            this.ItemID = item;
+        }
+
+        internal EmIngredient(TechType item) : this(item.ToString())
+        {
+            this.TechType = item;
         }
 
         internal EmIngredient(string item, short required) : this(item)
         {
-            Required = required;
+            this.Required = required;
         }
 
-        internal EmIngredient() : base("Ingredients", IngredientProperties)
+        internal EmIngredient(TechType item, short required) : this(item.ToString(), required)
         {
-            emTechType = (EmProperty<string>)Properties["ItemID"];
-            required = (EmProperty<short>)Properties["Required"];
+            this.TechType = item;
         }
 
-        internal override EmProperty Copy()
+        internal EmIngredient() : base("Ingredient", IngredientProperties)
         {
-            return new EmIngredient(ItemID, Required);
+            required = (EmProperty<short>)Properties[RequiredKey];
         }
+
+        internal override EmProperty Copy() => new EmIngredient(this.ItemID, this.Required);
+
+        public override bool PassesPreValidation() => base.PassesPreValidation() && RequireValueInRange();
+
+        private bool RequireValueInRange()
+        {
+            if (this.Required > Max || this.Required < Min)
+            {
+                QuickLogger.Error($"Error in {this.Key} {RequiredKey} for '{this.ItemID}'. Required values must be between between {Min} and {Max}.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public Ingredient ToSMLHelperIngredient() => new Ingredient(this.TechType, this.Required);
     }
 }

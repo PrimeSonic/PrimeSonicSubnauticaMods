@@ -59,13 +59,18 @@
         {
             var assembly = Assembly.GetExecutingAssembly();
             var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fvi.FileVersion;
+            return FormatToSimpleVersion(fvi);
         }
 
         public static string GetAssemblyVersion(Assembly assembly)
         {
             var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fvi.FileVersion;
+            return FormatToSimpleVersion(fvi);
+        }
+
+        private static string FormatToSimpleVersion(FileVersionInfo version)
+        {
+            return $"{version.FileMajorPart}.{version.FileMinorPart}.{version.FileBuildPart}";
         }
     }
 }

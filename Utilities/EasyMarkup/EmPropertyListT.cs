@@ -11,23 +11,21 @@
 
         public bool Optional { get; set; } = false;
 
-        public bool HasValue => this.InternalValues.Count > 0;
+        public bool HasValue => this.Values.Count > 0;
 
-        protected IList<T> InternalValues { get; } = new List<T>();
+        public T this[int index] => this.Values[index];
 
-        public T this[int index] => this.InternalValues[index];
+        public int Count => this.Values.Count;
 
-        public int Count => this.InternalValues.Count;
+        public void Add(T item) => this.Values.Add(item);
 
-        public void Add(T item) => this.InternalValues.Add(item);
+        public void Clear() => this.Values.Clear();
 
-        public void Clear() => this.InternalValues.Clear();
+        public IList<T> Values { get; } = new List<T>();
 
-        public IEnumerable<T> Values => this.InternalValues;
+        public IEnumerator<T> GetEnumerator() => this.Values.GetEnumerator();
 
-        public IEnumerator<T> GetEnumerator() => this.InternalValues.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => this.InternalValues.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.Values.GetEnumerator();
 
         public EmPropertyList(string key)
         {
@@ -36,21 +34,21 @@
 
         public EmPropertyList(string key, IEnumerable<T> values) : this(key)
         {
-            this.InternalValues = new List<T>();
+            this.Values = new List<T>();
 
             foreach (T value in values)
             {
-                this.InternalValues.Add(value);
+                this.Values.Add(value);
             }
         }
 
         public override string ToString()
         {
-            if (!HasValue && Optional)
+            if (!this.HasValue && this.Optional)
                 return string.Empty;
 
             string val = $"{this.Key}{SpChar_KeyDelimiter}";
-            foreach (T value in this.InternalValues)
+            foreach (T value in this.Values)
             {
                 val += $"{EscapeSpecialCharacters(value.ToString())}{SpChar_ListItemSplitter}";
             }
@@ -68,7 +66,7 @@
             {
                 string serialValue = ReadUntilDelimiter(fullString, ListDelimeters);
 
-                this.InternalValues.Add(ConvertFromSerial(serialValue));
+                this.Values.Add(ConvertFromSerial(serialValue));
 
                 serialValues += serialValue + SpChar_ListItemSplitter;
 
@@ -77,7 +75,7 @@
             return serialValues.TrimEnd(SpChar_ListItemSplitter);
         }
 
-        internal override EmProperty Copy() => new EmPropertyList<T>(this.Key, this.InternalValues);
+        internal override EmProperty Copy() => new EmPropertyList<T>(this.Key, this.Values);
 
         public virtual T ConvertFromSerial(string value)
         {

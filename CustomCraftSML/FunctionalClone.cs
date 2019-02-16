@@ -1,7 +1,6 @@
 ﻿namespace CustomCraft2SML
 {
     using CustomCraft2SML.Interfaces;
-    using CustomCraft2SML.PublicAPI;
     using SMLHelper.V2.Assets;
     using UnityEngine;
 
@@ -12,10 +11,10 @@
             : base(aliasRecipe.ItemID, $"{aliasRecipe}Prefab", aliasRecipe.Tooltip)
         {
             BaseItem = baseItem;
-            this.TechType = CustomCraft.GetTechType(aliasRecipe.ItemID);
+            this.TechType = aliasRecipe.TechType;
         }
 
-        public override string AssetsFolder { get; } = "CustomCraft2SML/Assets";
+        public override string AssetsFolder { get; } = FileReaderWriter.RootModName + "/Assets";
 
         public override GameObject GetGameObject()
         {
