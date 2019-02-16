@@ -11,7 +11,11 @@
 
             try
             {
-                FileReaderWriter.Patch();
+                FileReaderWriter.HandleReadMeFile();
+
+                FileReaderWriter.GenerateOriginalRecipes();
+
+                FileReaderWriter.HandleWorkingFiles();
 
                 QuickLogger.Message("Finished patching.");
             }

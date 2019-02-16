@@ -14,7 +14,7 @@
             this.TechType = aliasRecipe.TechType;
         }
 
-        public override string AssetsFolder { get; } = "CustomCraft2SML/Assets";
+        public override string AssetsFolder { get; } = FileReaderWriter.RootModName + "/Assets";
 
         public override GameObject GetGameObject()
         {

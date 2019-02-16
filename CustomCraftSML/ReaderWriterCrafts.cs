@@ -4,6 +4,7 @@
     using System.IO;
     using Common;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
@@ -13,40 +14,31 @@
         internal const string WorkingFolder = FolderRoot + "WorkingFiles/";
         internal const string AssetsFolder = FolderRoot + "Assets/";
 
-        private static readonly IParsingPackage CustomCraftingTabs = new ParsingPackage<CustomCraftingTab, CustomCraftingTabList>(CustomCraftingTabList.ListKey);
-        private static readonly IParsingPackage MovedRecipes = new ParsingPackage<MovedRecipe, MovedRecipeList>(MovedRecipeList.ListKey);
-        private static readonly IParsingPackage AddedRecipes = new ParsingPackage<AddedRecipe, AddedRecipeList>(AddedRecipeList.ListKey);
-        private static readonly IParsingPackage AliasRecipes = new ParsingPackage<AliasRecipe, AliasRecipeList>(AliasRecipeList.ListKey);
-        private static readonly IParsingPackage ModifiedRecipes = new ParsingPackage<ModifiedRecipe, ModifiedRecipeList>(ModifiedRecipeList.ListKey);
-        private static readonly IParsingPackage CustomSizes = new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey);
-        private static readonly IParsingPackage CustomBioFuels = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
-        private static readonly IParsingPackage CustomFragmentCounts = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
-
-        private static IList<IParsingPackage> OrderedPackages = new List<IParsingPackage>();
-        private static IDictionary<string, IParsingPackage> LookupPackages = new Dictionary<string, IParsingPackage>();
-
-        private static void HandleWorkingFiles()
+        private static IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
         {
-            OrderedPackages.Add(CustomCraftingTabs);
-            OrderedPackages.Add(MovedRecipes);
-            OrderedPackages.Add(AddedRecipes);
-            OrderedPackages.Add(AliasRecipes);
-            OrderedPackages.Add(ModifiedRecipes);
-            OrderedPackages.Add(CustomSizes);
-            OrderedPackages.Add(CustomBioFuels);
-            OrderedPackages.Add(CustomFragmentCounts);
+            new ParsingPackage<CustomCraftingTab, CustomCraftingTabList>(CustomCraftingTabList.ListKey),
+            new ParsingPackage<MovedRecipe, MovedRecipeList>(MovedRecipeList.ListKey),
+            new ParsingPackage<AddedRecipe, AddedRecipeList>(AddedRecipeList.ListKey),
+            new ParsingPackage<AliasRecipe, AliasRecipeList>(AliasRecipeList.ListKey),
+            new ParsingPackage<ModifiedRecipe, ModifiedRecipeList>(ModifiedRecipeList.ListKey),
+            new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey),
+            new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey),
+            new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey)
+        };
 
+        private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>();
+
+        internal static void HandleWorkingFiles()
+        {
             foreach (IParsingPackage package in OrderedPackages)
-                LookupPackages.Add(package.ListKey, package);
+                PackagesLookup.Add(package.ListKey, package);
 
             if (!Directory.Exists(AssetsFolder))
                 Directory.CreateDirectory(AssetsFolder);
 
-            QuickLogger.Message("Reading contents of WorkingFiles folder");
-
             ICollection<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
 
-            QuickLogger.Message($"{workingFiles.Count} files found");
+            QuickLogger.Message($"{workingFiles.Count} files found in the WorkingFiles folder");
 
             foreach (string file in workingFiles)
                 DeserializeFile(file);
@@ -77,7 +69,7 @@
             if (EmProperty.CheckKey(serializedData, out string key))
             {
                 int check = -2;
-                if (LookupPackages.TryGetValue(key, out IParsingPackage package))
+                if (PackagesLookup.TryGetValue(key, out IParsingPackage package))
                 {
                     check = package.ParseEntries(serializedData);
                 }
