@@ -47,7 +47,7 @@
             Assert.AreEqual(false, reactorRodChange.LinkedItemsCount.HasValue);
 
             Assert.AreEqual(1, reactorRodChange.UnlocksCount);
-            Assert.AreEqual(TechType.DepletedReactorRod.ToString(), reactorRodChange.GetUnlock(0));
+            Assert.AreEqual(TechType.DepletedReactorRod.ToString(), reactorRodChange.Unlocks[0]);
         }
 
         [Test]
@@ -145,12 +145,12 @@
             Assert.AreEqual(nutrientBlock.AmountCrafted, nutrientBlockRecipe.AmountCrafted);
             Assert.AreEqual(nutrientBlock.Path, nutrientBlockRecipe.Path);
             Assert.AreEqual(nutrientBlock.IngredientsCount, nutrientBlockRecipe.IngredientsCount);
-            Assert.AreEqual(nutrientBlock.GetIngredient(0).ItemID, nutrientBlockRecipe.GetIngredient(0).ItemID);
-            Assert.AreEqual(nutrientBlock.GetIngredient(1).ItemID, nutrientBlockRecipe.GetIngredient(1).ItemID);
-            Assert.AreEqual(nutrientBlock.GetIngredient(2).ItemID, nutrientBlockRecipe.GetIngredient(2).ItemID);
-            Assert.AreEqual(nutrientBlock.GetIngredient(0).Required, nutrientBlockRecipe.GetIngredient(0).Required);
-            Assert.AreEqual(nutrientBlock.GetIngredient(1).Required, nutrientBlockRecipe.GetIngredient(1).Required);
-            Assert.AreEqual(nutrientBlock.GetIngredient(2).Required, nutrientBlockRecipe.GetIngredient(2).Required);
+            Assert.AreEqual(nutrientBlock.Ingredients[0].ItemID, nutrientBlockRecipe.Ingredients[0].ItemID);
+            Assert.AreEqual(nutrientBlock.Ingredients[1].ItemID, nutrientBlockRecipe.Ingredients[1].ItemID);
+            Assert.AreEqual(nutrientBlock.Ingredients[2].ItemID, nutrientBlockRecipe.Ingredients[2].ItemID);
+            Assert.AreEqual(nutrientBlock.Ingredients[0].Required, nutrientBlockRecipe.Ingredients[0].Required);
+            Assert.AreEqual(nutrientBlock.Ingredients[1].Required, nutrientBlockRecipe.Ingredients[1].Required);
+            Assert.AreEqual(nutrientBlock.Ingredients[2].Required, nutrientBlockRecipe.Ingredients[2].Required);
             Assert.AreEqual(nutrientBlock.UnlocksCount, nutrientBlockRecipe.UnlocksCount);
             Assert.AreEqual(nutrientBlock.ForceUnlockAtStart, nutrientBlockRecipe.ForceUnlockAtStart);
             Assert.AreEqual("Fabricator/Survival/CuredFood", nutrientBlockRecipe.Path);
@@ -161,8 +161,8 @@
             Assert.AreEqual(bigFilteredWater.AmountCrafted, bigFilterWaterRecipe.AmountCrafted);
             Assert.AreEqual(bigFilteredWater.Path, bigFilterWaterRecipe.Path);
             Assert.AreEqual(bigFilteredWater.IngredientsCount, bigFilterWaterRecipe.IngredientsCount);
-            Assert.AreEqual(bigFilteredWater.GetIngredient(0).ItemID, bigFilterWaterRecipe.GetIngredient(0).ItemID);
-            Assert.AreEqual(bigFilteredWater.GetIngredient(0).Required, bigFilterWaterRecipe.GetIngredient(0).Required);
+            Assert.AreEqual(bigFilteredWater.Ingredients[0].ItemID, bigFilterWaterRecipe.Ingredients[0].ItemID);
+            Assert.AreEqual(bigFilteredWater.Ingredients[0].Required, bigFilterWaterRecipe.Ingredients[0].Required);
             Assert.AreEqual(bigFilteredWater.UnlocksCount, bigFilterWaterRecipe.UnlocksCount);
             Assert.AreEqual(bigFilteredWater.ForceUnlockAtStart, bigFilterWaterRecipe.ForceUnlockAtStart);
         }
@@ -205,13 +205,13 @@
             Assert.AreEqual(curedReginald.ItemID, curedReginaldRecipe.ItemID);
             Assert.AreEqual(curedReginald.AmountCrafted, curedReginaldRecipe.AmountCrafted);
             Assert.AreEqual(curedReginald.IngredientsCount, curedReginaldRecipe.IngredientsCount);
-            Assert.AreEqual(curedReginald.GetIngredient(0).ItemID, curedReginaldRecipe.GetIngredient(0).ItemID);
-            Assert.AreEqual(curedReginald.GetIngredient(1).ItemID, curedReginaldRecipe.GetIngredient(1).ItemID);
-            Assert.AreEqual(curedReginald.GetIngredient(0).Required, curedReginaldRecipe.GetIngredient(0).Required);
-            Assert.AreEqual(curedReginald.GetIngredient(1).Required, curedReginaldRecipe.GetIngredient(1).Required);
+            Assert.AreEqual(curedReginald.Ingredients[0].ItemID, curedReginaldRecipe.Ingredients[0].ItemID);
+            Assert.AreEqual(curedReginald.Ingredients[1].ItemID, curedReginaldRecipe.Ingredients[1].ItemID);
+            Assert.AreEqual(curedReginald.Ingredients[0].Required, curedReginaldRecipe.Ingredients[0].Required);
+            Assert.AreEqual(curedReginald.Ingredients[1].Required, curedReginaldRecipe.Ingredients[1].Required);
             Assert.AreEqual(curedReginald.ForceUnlockAtStart, curedReginaldRecipe.ForceUnlockAtStart);
             Assert.AreEqual(curedReginald.UnlocksCount, curedReginaldRecipe.UnlocksCount);
-            Assert.AreEqual(curedReginald.GetUnlock(0), curedReginaldRecipe.GetUnlock(0));
+            Assert.AreEqual(curedReginald.Unlocks[0], curedReginaldRecipe.Unlocks[0]);
 
 
         }

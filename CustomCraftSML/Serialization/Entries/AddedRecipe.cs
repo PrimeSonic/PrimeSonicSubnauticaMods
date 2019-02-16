@@ -107,7 +107,7 @@
             foreach (EmIngredient ingredient in this.Ingredients)
                 replacement.Ingredients.Add(new Ingredient(GetTechType(ingredient.ItemID), ingredient.Required));
 
-            foreach (string linkedItem in this.LinkedItems)
+            foreach (string linkedItem in this.LinkedItemIDs)
                 replacement.LinkedItems.Add(GetTechType(linkedItem));
 
             TechType itemID = GetTechType(this.ItemID);

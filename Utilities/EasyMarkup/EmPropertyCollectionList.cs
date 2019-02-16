@@ -13,25 +13,23 @@
 
         public Type ItemType => typeof(T);
 
-        protected IList<T> InternalValues { get; } = new List<T>();
-
         protected EmPropertyCollection Template;
 
-        public T this[int index] => this.InternalValues[index];
+        public T this[int index] => this.Values[index];
 
-        public int Count => this.InternalValues.Count;
+        public int Count => this.Values.Count;
 
         public void Add(T item)
         {
             this.HasValue = true;
-            this.InternalValues.Add(item);
+            this.Values.Add(item);
         }
 
-        public IEnumerable<T> Values => this.InternalValues;
+        public IList<T> Values { get; } = new List<T>();
 
-        public IEnumerator<T> GetEnumerator() => this.InternalValues.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => this.Values.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => this.InternalValues.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.Values.GetEnumerator();
 
         public EmPropertyCollectionList(string key, T template)
         {
@@ -41,11 +39,11 @@
 
         public override string ToString()
         {
-            if (!HasValue && Optional)
+            if (!this.HasValue && this.Optional)
                 return string.Empty;
 
             string val = $"{this.Key}{SpChar_KeyDelimiter}";
-            foreach (EmPropertyCollection collection in this.InternalValues)
+            foreach (EmPropertyCollection collection in this.Values)
             {
                 val += SpChar_BeginComplexValue;
 
@@ -78,7 +76,7 @@
 
                         var collection = (T)Template.Copy();
                         collection.FromString($"{this.Key}{SpChar_KeyDelimiter}{buffer.ToString()}{SpChar_ValueDelimiter}");
-                        this.InternalValues.Add(collection);
+                        this.Values.Add(collection);
                         buffer.Clear();
                         serialValues += $"{collection.SerializedValue}{SpChar_ListItemSplitter}";
                         break;

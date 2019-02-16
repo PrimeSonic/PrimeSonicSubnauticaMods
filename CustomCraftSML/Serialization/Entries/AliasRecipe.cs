@@ -32,6 +32,7 @@
            $"        {SpriteItemIdKey}: Use the in-game sprite of an existing item for your custom item.",
            $"            This option will be used only if a png file matching the {ItemIdKey} isn't found in the Assets folder.",
             "            If no file is found with that name, the sprite for the first LinkedItem will be used instead.",
+            "            This should only be used with non-modded item values.",
         };
 
         protected readonly EmProperty<string> displayName;
@@ -62,6 +63,8 @@
             get => spriteID.Value;
             set => spriteID.Value = value;
         }
+
+        public TechType FunctionalCloneID { get; private set; }
 
         protected static List<EmProperty> AliasRecipeProperties => new List<EmProperty>(AddedRecipeProperties)
         {
@@ -101,8 +104,8 @@
                 return true; // No value provided. This is fine.
 
             // The functional item for cloning must be valid.
-            TechType functionalCloneId = GetTechType(this.FunctionalID);
-            if (functionalCloneId == TechType.None)
+            FunctionalCloneID = GetTechType(this.FunctionalID);
+            if (FunctionalCloneID == TechType.None)
             {
                 QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
                 return false;
@@ -148,7 +151,7 @@
                 return;
             }
 
-            if (this.SpriteItemID > TechType.None)
+            if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
             {
                 QuickLogger.Message($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}'");
                 Atlas.Sprite sprite = SpriteManager.Get(this.SpriteItemID);
@@ -159,7 +162,7 @@
             if (this.LinkedItemsCount > 0)
             {
                 QuickLogger.Message($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}'");
-                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(GetLinkedItem(0)));
+                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(this.LinkedItemIDs[0]));
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
             }
@@ -169,14 +172,9 @@
 
         protected void HandleFunctionalClone()
         {
-            if (string.IsNullOrEmpty(this.FunctionalID))
-                return; // No value provided. This is fine.
-
-            TechType functionalID = GetTechType(this.FunctionalID);
-
-            if (functionalID != TechType.None)
+            if (FunctionalCloneID != TechType.None)
             {
-                var clone = new FunctionalClone(this, functionalID);
+                var clone = new FunctionalClone(this, FunctionalCloneID);
                 PrefabHandler.RegisterPrefab(clone);
                 QuickLogger.Message($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}'");
             }

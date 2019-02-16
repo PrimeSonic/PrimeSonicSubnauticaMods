@@ -1,6 +1,7 @@
 ﻿namespace CustomCraft2SML.Serialization.Components
 {
     using System.Collections.Generic;
+    using Common;
     using Common.EasyMarkup;
 
     public class EmIngredient : EmTechTyped
@@ -14,13 +15,7 @@
         public short Required
         {
             get => required.Value;
-            set
-            {
-                if (value > Max || value < Min)
-                    value = required.DefaultValue;
-
-                required.Value = value;
-            }
+            set => required.Value = value;
 
         }
 
@@ -28,8 +23,6 @@
         {
             new EmProperty<short>(RequiredKey, 1),
         };
-
-        public int amount => this.Required;
 
         internal EmIngredient(string item) : this()
         {
@@ -47,5 +40,18 @@
         }
 
         internal override EmProperty Copy() => new EmIngredient(this.ItemID, this.Required);
+
+        public override bool PassesPreValidation() => base.PassesPreValidation() && RequireValueInRange();
+
+        private bool RequireValueInRange()
+        {
+            if (this.Required > Max || this.Required < Min)
+            {
+                QuickLogger.Error($"Error in {this.Key} {RequiredKey} for '{this.ItemID}'. Required values must be between between {Min} and {Max}.");
+                return false;
+            }
+
+            return true;
+        }
     }
 }

@@ -188,19 +188,19 @@
             if (!EnableUnlocking)
                 return;
 
-            var radSuit = new ModifiedRecipe { ItemID = leadSalvage.GetIngredient(0).ItemID, AmountCrafted = null };
+            var radSuit = new ModifiedRecipe { ItemID = leadSalvage.Ingredients[0].ItemID, AmountCrafted = null };
             radSuit.AddUnlock(leadSalvage.ItemID);
 
-            var powerCell = new ModifiedRecipe { ItemID = copperSalvage.GetIngredient(0).ItemID, AmountCrafted = null };
+            var powerCell = new ModifiedRecipe { ItemID = copperSalvage.Ingredients[0].ItemID, AmountCrafted = null };
             powerCell.AddUnlock(copperSalvage.ItemID);
 
-            var deepPowerCell = new ModifiedRecipe { ItemID = deepSalvage.GetIngredient(0).ItemID, AmountCrafted = null };
+            var deepPowerCell = new ModifiedRecipe { ItemID = deepSalvage.Ingredients[0].ItemID, AmountCrafted = null };
             deepPowerCell.AddUnlock(deepSalvage.ItemID);
 
-            var ionPowerCell = new ModifiedRecipe { ItemID = ionSalvage.GetIngredient(0).ItemID, AmountCrafted = null };
+            var ionPowerCell = new ModifiedRecipe { ItemID = ionSalvage.Ingredients[0].ItemID, AmountCrafted = null };
             ionPowerCell.AddUnlock(ionSalvage.ItemID);
 
-            var laserCutter = new ModifiedRecipe { ItemID = diamondSalvage.GetIngredient(0).ItemID, AmountCrafted = null };
+            var laserCutter = new ModifiedRecipe { ItemID = diamondSalvage.Ingredients[0].ItemID, AmountCrafted = null };
             laserCutter.AddUnlock(diamondSalvage.ItemID);
 
             var modList = new ModifiedRecipeList

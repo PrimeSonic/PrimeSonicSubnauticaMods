@@ -38,18 +38,18 @@
 
             Assert.AreEqual(2, recipe.IngredientsCount);
 
-            EmIngredient item0 = recipe.GetIngredient(0);
+            EmIngredient item0 = recipe.Ingredients[0];
             Assert.AreEqual(TechType.Titanium.ToString().ToLower(), item0.ItemID.ToLower());
-            Assert.AreEqual(2, item0.amount);
+            Assert.AreEqual(2, item0.Required);
 
-            EmIngredient item1 = recipe.GetIngredient(1);
+            EmIngredient item1 = recipe.Ingredients[1];
             Assert.AreEqual(TechType.Copper.ToString().ToLower(), item1.ItemID.ToLower());
-            Assert.AreEqual(3, item1.amount);
+            Assert.AreEqual(3, item1.Required);
 
             Assert.AreEqual(2, recipe.LinkedItemsCount);
 
-            Assert.AreEqual(TechType.Silver.ToString().ToLower(), recipe.GetLinkedItem(0).ToLower());
-            Assert.AreEqual(TechType.Gold.ToString().ToLower(), recipe.GetLinkedItem(1).ToLower());
+            Assert.AreEqual(TechType.Silver.ToString().ToLower(), recipe.LinkedItemIDs[0].ToLower());
+            Assert.AreEqual(TechType.Gold.ToString().ToLower(), recipe.LinkedItemIDs[1].ToLower());
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe.Path);
         }
@@ -99,19 +99,19 @@
 
             Assert.AreEqual(2, recipe[0].IngredientsCount);
 
-            EmIngredient item0 = recipe[0].GetIngredient(0);
+            EmIngredient item0 = recipe[0].Ingredients[0];
             Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
             Assert.AreEqual(2, item0.Required);
 
-            EmIngredient item1 = recipe[0].GetIngredient(1);
+            EmIngredient item1 = recipe[0].Ingredients[1];
             Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
             Assert.AreEqual(3, item1.Required);
 
             Assert.AreEqual(2, recipe[0].LinkedItemsCount);
 
 
-            Assert.AreEqual(TechType.Silver.ToString(), recipe[0].GetLinkedItem(0));
-            Assert.AreEqual(TechType.Gold.ToString(), recipe[0].GetLinkedItem(1));
+            Assert.AreEqual(TechType.Silver.ToString(), recipe[0].LinkedItemIDs[0]);
+            Assert.AreEqual(TechType.Gold.ToString(), recipe[0].LinkedItemIDs[1]);
 
             Assert.AreEqual("Fabricator/Resources/BasicMaterials", recipe[0].Path);
         }
@@ -144,11 +144,11 @@
 
             Assert.AreEqual(2, recipe.IngredientsCount);
 
-            var item0 = recipe.GetIngredient(0);
+            var item0 = recipe.Ingredients[0];
             Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
             Assert.AreEqual(2, item0.Required);
 
-            var item1 = recipe.GetIngredient(1);
+            var item1 = recipe.Ingredients[1];
             Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
             Assert.AreEqual(3, item1.Required);
 
@@ -182,11 +182,11 @@
 
             Assert.AreEqual(2, recipe.IngredientsCount);
 
-            var item0 = recipe.GetIngredient(0);
+            var item0 = recipe.Ingredients[0];
             Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
             Assert.AreEqual(1, item0.Required);
 
-            var item1 = recipe.GetIngredient(1);
+            var item1 = recipe.Ingredients[1];
             Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
             Assert.AreEqual(1, item1.Required);
 
@@ -234,11 +234,11 @@
 
             Assert.AreEqual(2, recipe[0].IngredientsCount);
 
-            var item0 = recipe[0].GetIngredient(0);
+            var item0 = recipe[0].Ingredients[0];
             Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
             Assert.AreEqual(1, item0.Required);
 
-            var item1 = recipe[0].GetIngredient(1);
+            var item1 = recipe[0].Ingredients[1];
             Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
             Assert.AreEqual(1, item1.Required);
 

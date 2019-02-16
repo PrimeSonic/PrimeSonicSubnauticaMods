@@ -44,7 +44,7 @@
             // Now we can safely do the prepass check in case we need to create a new modded TechType
             this.TechType = GetTechType(this.ItemID);
 
-            if (TechType == TechType.None)
+            if (this.TechType == TechType.None)
             {
                 QuickLogger.Warning($"Could not resolve {ItemIdKey} value of '{this.ItemID}' for {this.Key}. Discarded entry.");
                 return false;

@@ -41,18 +41,18 @@
             Assert.AreEqual(2, recipe.IngredientsCount);
 
 
-            EmIngredient item0 = recipe.GetIngredient(0);
+            EmIngredient item0 = recipe.Ingredients[0];
             Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
-            Assert.AreEqual(2, item0.amount);
+            Assert.AreEqual(2, item0.Required);
 
-            EmIngredient item1 = recipe.GetIngredient(1);
+            EmIngredient item1 = recipe.Ingredients[1];
             Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
-            Assert.AreEqual(3, item1.amount);
+            Assert.AreEqual(3, item1.Required);
 
             Assert.AreEqual(2, recipe.LinkedItemsCount);
 
-            Assert.AreEqual(TechType.Silver.ToString(), recipe.GetLinkedItem(0));
-            Assert.AreEqual(TechType.Gold.ToString(), recipe.GetLinkedItem(1));
+            Assert.AreEqual(TechType.Silver.ToString(), recipe.LinkedItemIDs[0]);
+            Assert.AreEqual(TechType.Gold.ToString(), recipe.LinkedItemIDs[1]);
 
             Assert.AreEqual("Custom display name", recipe.DisplayName);
             Assert.AreEqual("Custom tooltip", recipe.Tooltip);
@@ -117,19 +117,19 @@
 
                 Assert.AreEqual(2, r.IngredientsCount);
 
-                EmIngredient item0 = r.GetIngredient(0);
+                EmIngredient item0 = r.Ingredients[0];
                 Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
                 Assert.AreEqual(2, item0.Required);
 
-                EmIngredient item1 = r.GetIngredient(1);
+                EmIngredient item1 = r.Ingredients[1];
                 Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
                 Assert.AreEqual(3, item1.Required);
 
                 Assert.AreEqual(2, r.LinkedItemsCount);
 
 
-                Assert.AreEqual(TechType.Silver.ToString(), r.GetLinkedItem(0));
-                Assert.AreEqual(TechType.Gold.ToString(), r.GetLinkedItem(1));
+                Assert.AreEqual(TechType.Silver.ToString(), r.LinkedItemIDs[0]);
+                Assert.AreEqual(TechType.Gold.ToString(), r.LinkedItemIDs[1]);
 
                 Assert.AreEqual("Craft Aerogel", r.DisplayName);
                 Assert.AreEqual("Custom aerogel tooltip", r.Tooltip);
@@ -170,17 +170,17 @@
 
             Assert.AreEqual(2, recipe.IngredientsCount);
 
-            EmIngredient item0 = recipe.GetIngredient(0);
+            EmIngredient item0 = recipe.Ingredients[0];
             Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
             Assert.AreEqual(1, item0.Required);
 
-            EmIngredient item1 = recipe.GetIngredient(1);
+            EmIngredient item1 = recipe.Ingredients[1];
             Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
             Assert.AreEqual(1, item1.Required);
 
             Assert.AreEqual(2, recipe.LinkedItemsCount);
-            Assert.AreEqual(TechType.Silver.ToString(), recipe.GetLinkedItem(0));
-            Assert.AreEqual(TechType.Gold.ToString(), recipe.GetLinkedItem(1));
+            Assert.AreEqual(TechType.Silver.ToString(), recipe.LinkedItemIDs[0]);
+            Assert.AreEqual(TechType.Gold.ToString(), recipe.LinkedItemIDs[1]);
 
             Assert.AreEqual("Craft Aerogel", recipe.DisplayName);
             Assert.AreEqual("Custom aerogel tooltip", recipe.Tooltip);
@@ -238,19 +238,19 @@
 
                 Assert.AreEqual(2, r.IngredientsCount);
 
-                EmIngredient item0 = r.GetIngredient(0);
+                EmIngredient item0 = r.Ingredients[0];
                 Assert.AreEqual(TechType.Titanium.ToString(), item0.ItemID);
                 Assert.AreEqual(1, item0.Required);
 
-                EmIngredient item1 = r.GetIngredient(1);
+                EmIngredient item1 = r.Ingredients[1];
                 Assert.AreEqual(TechType.Copper.ToString(), item1.ItemID);
                 Assert.AreEqual(1, item1.Required);
 
                 Assert.AreEqual(2, r.LinkedItemsCount);
 
 
-                Assert.AreEqual(TechType.Silver.ToString(), r.GetLinkedItem(0));
-                Assert.AreEqual(TechType.Gold.ToString(), r.GetLinkedItem(1));
+                Assert.AreEqual(TechType.Silver.ToString(), r.LinkedItemIDs[0]);
+                Assert.AreEqual(TechType.Gold.ToString(), r.LinkedItemIDs[1]);
 
                 Assert.AreEqual("Craft Aerogel", r.DisplayName);
                 Assert.AreEqual("Custom aerogel tooltip", r.Tooltip);
@@ -358,15 +358,15 @@
 
             Assert.AreEqual(3, r.IngredientsCount);
 
-            EmIngredient item0 = r.GetIngredient(0);
+            EmIngredient item0 = r.Ingredients[0];
             Assert.AreEqual(TechType.Salt.ToString(), item0.ItemID);
             Assert.AreEqual(2, item0.Required);
 
-            EmIngredient item1 = r.GetIngredient(1);
+            EmIngredient item1 = r.Ingredients[1];
             Assert.AreEqual(TechType.CookedPeeper.ToString(), item1.ItemID);
             Assert.AreEqual(1, item1.Required);
 
-            EmIngredient item2 = r.GetIngredient(2);
+            EmIngredient item2 = r.Ingredients[2];
             Assert.AreEqual(TechType.CookedEyeye.ToString(), item2.ItemID);
             Assert.AreEqual(1, item2.Required);
 

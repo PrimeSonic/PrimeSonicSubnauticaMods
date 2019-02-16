@@ -72,7 +72,7 @@
             set => unlockedAtStart.Value = value;
         }
 
-        public IEnumerable<string> Unlocks => unlocks.Values;
+        public IList<string> Unlocks => unlocks.Values;
 
         public int? UnlocksCount
         {
@@ -85,7 +85,7 @@
             }
         }
 
-        public IEnumerable<EmIngredient> Ingredients => ingredients.Values;
+        public IList<EmIngredient> Ingredients => ingredients.Values;
 
         public int? IngredientsCount
         {
@@ -98,7 +98,7 @@
             }
         }
 
-        public IEnumerable<string> LinkedItems => linkedItems.Values;
+        public IList<string> LinkedItemIDs => linkedItems.Values;
 
         public int? LinkedItemsCount
         {
@@ -176,12 +176,6 @@
 
         internal override EmProperty Copy() => new ModifiedRecipe(this.Key, this.CopyDefinitions);
 
-        public EmIngredient GetIngredient(int index) => ingredients[index];
-
-        public string GetLinkedItem(int index) => linkedItems[index];
-
-        public string GetUnlock(int index) => unlocks[index];
-
         public override bool PassesPreValidation() => base.PassesPreValidation() && InnerItemsAreValid();
 
         protected bool InnerItemsAreValid()
@@ -204,7 +198,7 @@
                 ingredient.TechType = ingredientID;
             }
 
-            foreach (string linkedItem in this.LinkedItems)
+            foreach (string linkedItem in this.LinkedItemIDs)
             {
                 TechType linkedItemID = GetTechType(linkedItem);
 
@@ -287,7 +281,7 @@
             {
                 overrideRecipe |= true;
                 changes += $" {LinkedItemsIdsKey}";
-                foreach (string linkedItem in this.LinkedItems)
+                foreach (string linkedItem in this.LinkedItemIDs)
                     replacement.LinkedItems.Add(GetTechType(linkedItem));
             }
             else
