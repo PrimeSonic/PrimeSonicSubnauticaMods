@@ -209,7 +209,10 @@
                 original = CraftDataHandler.GetModdedTechData(this.TechType);
 
             if (original == null)
+            {
+                QuickLogger.Warning($"Original recipe for '{this.ItemID}' could not be found for modification. Entry will be discarded.");
                 return false;  // Unknown recipe
+            }
 
             var replacement = new TechData();
 

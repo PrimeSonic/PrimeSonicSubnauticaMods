@@ -26,7 +26,7 @@
             new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey)
         };
 
-        private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>();
+        private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(8);
 
         internal static void HandleWorkingFiles()
         {
