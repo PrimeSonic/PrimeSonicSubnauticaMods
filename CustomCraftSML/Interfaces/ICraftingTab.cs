@@ -1,6 +1,6 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    interface ICraftingTab
+    interface ICraftingTab : ICustomCraft
     {
         string TabID { get; }
         string DisplayName { get; }

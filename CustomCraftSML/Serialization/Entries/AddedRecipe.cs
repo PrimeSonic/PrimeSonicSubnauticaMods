@@ -1,8 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
     using System.Collections.Generic;
+    using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization.Components;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
 
     internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
@@ -65,5 +71,55 @@
 
         internal override EmProperty Copy() => new AddedRecipe(this.Key, this.CopyDefinitions);
 
+        public override bool SendToSMLHelper()
+        {
+            try
+            {
+                HandleAddedRecipe();
+
+                HandleCraftTreeAddition();
+
+                HandleUnlocks();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Added Recipe '{this.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
+
+        protected void HandleAddedRecipe(short defaultCraftAmount = 1)
+        {
+            var replacement = new TechData
+            {
+                craftAmount = this.AmountCrafted ?? defaultCraftAmount
+            };
+
+            foreach (EmIngredient ingredient in this.Ingredients)
+                replacement.Ingredients.Add(new Ingredient(GetTechType(ingredient.ItemID), ingredient.Required));
+
+            foreach (string linkedItem in this.LinkedItems)
+                replacement.LinkedItems.Add(GetTechType(linkedItem));
+
+            TechType itemID = GetTechType(this.ItemID);
+
+            CraftDataHandler.SetTechData(itemID, replacement);
+            QuickLogger.Message($"Adding new recipe for '{this.ItemID}'");
+
+            if (this.PdaGroup != TechGroup.Uncategorized)
+            {
+                CraftDataHandler.AddToGroup(this.PdaGroup, this.PdaCategory, itemID);
+                // SMLHelper logs enough here
+            }
+        }
+
+        protected void HandleCraftTreeAddition()
+        {
+            var craftPath = new CraftingPath(this.Path);
+
+            AddCraftNode(craftPath, this.TechType);
+        }
     }
 }

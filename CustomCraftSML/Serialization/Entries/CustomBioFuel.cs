@@ -1,11 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
     using System.Collections.Generic;
+    using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization.Components;
+    using SMLHelper.V2.Handlers;
 
-    internal class CustomBioFuel : EmTechTyped, ICustomBioFuel
+    internal class CustomBioFuel : EmTechTyped, ICustomBioFuel, ICustomCraft
     {
         internal static readonly string[] TutorialText = new[]
         {
@@ -29,6 +32,8 @@
             emEnergy = (EmProperty<float>)Properties["Energy"];
         }
 
+        public string ID => this.ItemID;
+
         public float Energy
         {
             get => emEnergy.Value;
@@ -36,5 +41,20 @@
         }
 
         internal override EmProperty Copy() => new CustomBioFuel(this.Key, this.CopyDefinitions);
+
+        public bool SendToSMLHelper()
+        {
+            try
+            {
+                BioReactorHandler.SetBioReactorCharge(this.TechType, this.Energy);
+                QuickLogger.Message($"'{this.ItemID}' now provides {this.Energy} energy in the BioReactor");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{this.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
     }
 }

@@ -1,9 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
+    using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.PublicAPI;
+    using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
 
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab
     {
@@ -19,6 +24,7 @@
         private readonly EmProperty<string> emDisplayName;
         private readonly EmProperty<TechType> emSpriteID;
         private readonly EmProperty<string> emParentTabPath;
+
         private CraftingPath craftingPath;
 
         protected static ICollection<EmProperty> CustomCraftingTabProperties => new List<EmProperty>(4)
@@ -47,9 +53,23 @@
         {
             this.ParentTabPath = path;
             ParsePath();
+
+
         }
 
-        private void ParsePath() => craftingPath = new CraftingPath(this.ParentTabPath);
+        private void ParsePath()
+        {
+            try
+            {
+                craftingPath = new CraftingPath(this.ParentTabPath);
+            }
+            catch
+            {
+                craftingPath = null;
+            }
+        }
+
+        public string ID => FullPath;
 
         public string TabID
         {
@@ -97,8 +117,79 @@
             }
         }
 
-        public string FullPath => this.ParentTabPath + this.TabID;
+        public string FullPath => $"{this.ParentTabPath}{"/"}{this.TabID}";
 
-        internal override EmProperty Copy() => new CustomCraftingTab(Key, CopyDefinitions);
+        internal override EmProperty Copy() => new CustomCraftingTab(this.Key, this.CopyDefinitions);
+
+        public bool PassesPreValidation() => craftingPath != null && ValidFabricator();
+
+        private bool ValidFabricator()
+        {
+            if (this.FabricatorType > CraftTree.Type.Rocket)
+            {
+                QuickLogger.Error($"Error on crafting tab '{this.TabID}'. This API in intended only for use with standard, non-modded CraftTree.Types.");
+                return false;
+            }
+
+            if (this.FabricatorType == CraftTree.Type.None)
+            {
+                QuickLogger.Error($"Error on crafting tab '{this.TabID}'. ParentTabPath must identify a fabricator for the custom tab.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool SendToSMLHelper()
+        {
+            try
+            {
+                HandleCraftingTab();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling crafting tab '{this.TabID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
+
+        protected void HandleCraftingTab()
+        {
+            Atlas.Sprite sprite = GetCraftingTabSprite();
+
+            if (this.StepsToTab == null)
+            {
+                CraftTreeHandler.AddTabNode(this.FabricatorType, this.TabID, this.DisplayName, sprite);
+            }
+            else
+            {
+                CraftTreeHandler.AddTabNode(this.FabricatorType, this.TabID, this.DisplayName, sprite, this.StepsToTab);
+            }
+        }
+
+        protected Atlas.Sprite GetCraftingTabSprite()
+        {
+            Atlas.Sprite sprite;
+            string imagePath = FileReaderWriter.AssetsFolder + this.TabID + @".png";
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Message($"Custom sprite found for CraftingTab '{this.TabID}'");
+                sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+            }
+            else if (this.SpriteItemID != TechType.None)
+            {
+                QuickLogger.Message($"SpriteItemID used for CraftingTab '{this.TabID}'");
+                sprite = SpriteManager.Get(this.SpriteItemID);
+            }
+            else
+            {
+                QuickLogger.Warning($"No sprite loaded for CraftingTab '{this.TabID}'");
+                sprite = SpriteManager.Get(TechType.None);
+            }
+
+            return sprite;
+        }
     }
 }

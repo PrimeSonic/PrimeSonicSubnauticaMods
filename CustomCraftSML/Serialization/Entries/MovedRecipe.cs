@@ -1,9 +1,12 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
     using System.Collections.Generic;
+    using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Components;
+    using SMLHelper.V2.Handlers;
 
     internal class MovedRecipe : EmTechTyped, IMovedRecipe
     {
@@ -56,7 +59,47 @@
             get => hidden.Value;
             set => hidden.Value = value;
         }
+        public string ID => this.ItemID;
 
         internal override EmProperty Copy() => new MovedRecipe(this.Key, this.CopyDefinitions);
+
+        public override bool PassesPreValidation() => base.PassesPreValidation() && IsValidState();
+
+        private bool IsValidState()
+        {
+            if (string.IsNullOrEmpty(this.OldPath))
+            {
+                QuickLogger.Warning($"OldPath missing in MovedRecipe for '{this.ItemID}'");
+                return false;
+            }
+
+            if (!this.Hidden && string.IsNullOrEmpty(this.NewPath))
+            {
+                QuickLogger.Warning($"NewPath missing in MovedRecipe for '{this.ItemID}' while not set as 'Hidden'");
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool SendToSMLHelper()
+        {
+            var oldPath = new CraftingPath(this.OldPath);
+            string[] oldSteps = (oldPath.Path + CraftingNode.Splitter + this.ItemID).Split(CraftingNode.Splitter);
+
+            CraftTreeHandler.RemoveNode(oldPath.Scheme, oldSteps);
+            QuickLogger.Message($"Recipe for '{this.ItemID}' was removed from the {oldPath.Scheme} crafting tree");
+
+            if (this.Hidden)
+            {
+                return true;
+            }
+
+            var newPath = new CraftingPath(this.NewPath);
+
+            AddCraftNode(newPath, this.TechType);
+
+            return true;
+        }
     }
 }

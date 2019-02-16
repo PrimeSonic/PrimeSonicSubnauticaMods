@@ -1,6 +1,6 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    interface IMovedRecipe : ITechTyped
+    interface IMovedRecipe : ITechTyped, ICustomCraft
     {
         string OldPath { get; }
         string NewPath { get; }

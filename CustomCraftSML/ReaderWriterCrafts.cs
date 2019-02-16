@@ -1,13 +1,10 @@
 ﻿namespace CustomCraft2SML
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
-    using CustomCraft2SML.PublicAPI;
-    using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
 
@@ -17,25 +14,23 @@
         internal const string AssetsFolder = FolderRoot + "Assets/";
 
         //  Initial storage for the serialization - key is string as we have not resolved the TechType at this point
-        private static List<MovedRecipe> movedRecipes = new List<MovedRecipe>();
-        private static List<AddedRecipe> addedRecipes = new List<AddedRecipe>();
-        private static List<AliasRecipe> aliasRecipes = new List<AliasRecipe>();
-        private static List<ModifiedRecipe> modifiedRecipes = new List<ModifiedRecipe>();
-        private static List<CustomSize> customSizes = new List<CustomSize>();
-        private static List<CustomBioFuel> customBioFuels = new List<CustomBioFuel>();
-        private static List<CustomFragmentCount> customFragments = new List<CustomFragmentCount>();
+        private static readonly IList<MovedRecipe> movedRecipes = new List<MovedRecipe>();
+        private static readonly IList<AddedRecipe> addedRecipes = new List<AddedRecipe>();
+        private static readonly IList<AliasRecipe> aliasRecipes = new List<AliasRecipe>();
+        private static readonly IList<ModifiedRecipe> modifiedRecipes = new List<ModifiedRecipe>();
+        private static readonly IList<CustomSize> customSizes = new List<CustomSize>();
+        private static readonly IList<CustomBioFuel> customBioFuels = new List<CustomBioFuel>();
+        private static readonly IList<CustomFragmentCount> customFragments = new List<CustomFragmentCount>();
+        private static readonly IList<CustomCraftingTab> customTabs = new List<CustomCraftingTab>();
 
-        //  Crafting tabs to not use TechType for key - store these by name
-        private static readonly IDictionary<string, CustomCraftingTab> customTabs = new Dictionary<string, CustomCraftingTab>();
-
-        //  After the prepass - we have resolved the TechType and filtered out duplicates.
-        private static IDictionary<TechType, MovedRecipe> uniqueMovedRecipes = new Dictionary<TechType, MovedRecipe>();
-        private static IDictionary<TechType, AddedRecipe> uniqueAddedRecipes = new Dictionary<TechType, AddedRecipe>();
-        private static IDictionary<TechType, AliasRecipe> uniqueAliasRecipes = new Dictionary<TechType, AliasRecipe>();
-        private static IDictionary<TechType, ModifiedRecipe> uniqueModifiedRecipes = new Dictionary<TechType, ModifiedRecipe>();
-        private static IDictionary<TechType, CustomSize> uniqueCustomSizes = new Dictionary<TechType, CustomSize>();
-        private static IDictionary<TechType, CustomBioFuel> uniqueCustomBioFuels = new Dictionary<TechType, CustomBioFuel>();
-        private static IDictionary<TechType, CustomFragmentCount> uniqueCustomFragments = new Dictionary<TechType, CustomFragmentCount>();
+        private static readonly IDictionary<string, CustomCraftingTab> uniqueCustomTabs = new Dictionary<string, CustomCraftingTab>();
+        private static readonly IDictionary<string, MovedRecipe> uniqueMovedRecipes = new Dictionary<string, MovedRecipe>();
+        private static readonly IDictionary<string, AddedRecipe> uniqueAddedRecipes = new Dictionary<string, AddedRecipe>();
+        private static readonly IDictionary<string, AliasRecipe> uniqueAliasRecipes = new Dictionary<string, AliasRecipe>();
+        private static readonly IDictionary<string, ModifiedRecipe> uniqueModifiedRecipes = new Dictionary<string, ModifiedRecipe>();
+        private static readonly IDictionary<string, CustomSize> uniqueCustomSizes = new Dictionary<string, CustomSize>();
+        private static readonly IDictionary<string, CustomBioFuel> uniqueCustomBioFuels = new Dictionary<string, CustomBioFuel>();
+        private static readonly IDictionary<string, CustomFragmentCount> uniqueCustomFragments = new Dictionary<string, CustomFragmentCount>();
 
         private static void HandleWorkingFiles()
         {
@@ -51,22 +46,23 @@
             foreach (string file in workingFiles)
                 DeserializeFile(file);
 
-            PrePassSMLHelper(movedRecipes, ref uniqueMovedRecipes);
-            PrePassSMLHelper(addedRecipes, ref uniqueAddedRecipes);
-            PrePassSMLHelper(aliasRecipes, ref uniqueAliasRecipes);
-            PrePassSMLHelper(modifiedRecipes, ref uniqueModifiedRecipes);
-            PrePassSMLHelper(customSizes, ref uniqueCustomSizes);
-            PrePassSMLHelper(customBioFuels, ref uniqueCustomBioFuels);
-            PrePassSMLHelper(customFragments, ref uniqueCustomFragments);
+            PrePassValidation(customTabs, uniqueCustomTabs);
+            PrePassValidation(movedRecipes, uniqueMovedRecipes);
+            PrePassValidation(addedRecipes, uniqueAddedRecipes);
+            PrePassValidation(aliasRecipes, uniqueAliasRecipes);
+            PrePassValidation(modifiedRecipes, uniqueModifiedRecipes);
+            PrePassValidation(customSizes, uniqueCustomSizes);
+            PrePassValidation(customBioFuels, uniqueCustomBioFuels);
+            PrePassValidation(customFragments, uniqueCustomFragments);
 
-            SendToSMLHelper(customTabs);
-            SendToSMLHelper(uniqueMovedRecipes);
-            SendToSMLHelper(uniqueAddedRecipes);
-            SendToSMLHelper(uniqueAliasRecipes);
-            SendToSMLHelper(uniqueModifiedRecipes);
-            SendToSMLHelper(uniqueCustomSizes);
-            SendToSMLHelper(uniqueCustomBioFuels);
-            SendToSMLHelper(uniqueCustomFragments);
+            SendToSMLHelper(uniqueCustomTabs.Values);
+            SendToSMLHelper(uniqueMovedRecipes.Values);
+            SendToSMLHelper(uniqueAddedRecipes.Values);
+            SendToSMLHelper(uniqueAliasRecipes.Values);
+            SendToSMLHelper(uniqueModifiedRecipes.Values);
+            SendToSMLHelper(uniqueCustomSizes.Values);
+            SendToSMLHelper(uniqueCustomBioFuels.Values);
+            SendToSMLHelper(uniqueCustomFragments.Values);
         }
 
         private static void DeserializeFile(string workingFilePath)
@@ -87,23 +83,23 @@
                 switch (key)
                 {
                     case AddedRecipeList.ListKey:
-                        check = ParseEntries<AddedRecipe, AddedRecipeList>(serializedData, ref addedRecipes);
+                        check = ParseEntries<AddedRecipe, AddedRecipeList>(serializedData, addedRecipes);
                         break;
 
                     case AliasRecipeList.ListKey:
-                        check = ParseEntries<AliasRecipe, AliasRecipeList>(serializedData, ref aliasRecipes);
+                        check = ParseEntries<AliasRecipe, AliasRecipeList>(serializedData, aliasRecipes);
                         break;
 
                     case ModifiedRecipeList.ListKey:
-                        check = ParseEntries<ModifiedRecipe, ModifiedRecipeList>(serializedData, ref modifiedRecipes);
+                        check = ParseEntries<ModifiedRecipe, ModifiedRecipeList>(serializedData, modifiedRecipes);
                         break;
 
                     case CustomSizeList.ListKey:
-                        check = ParseEntries<CustomSize, CustomSizeList>(serializedData, ref customSizes);
+                        check = ParseEntries<CustomSize, CustomSizeList>(serializedData, customSizes);
                         break;
 
                     case CustomBioFuelList.ListKey:
-                        check = ParseEntries<CustomBioFuel, CustomBioFuelList>(serializedData, ref customBioFuels);
+                        check = ParseEntries<CustomBioFuel, CustomBioFuelList>(serializedData, customBioFuels);
                         break;
 
                     case CustomCraftingTabList.ListKey:
@@ -111,15 +107,15 @@
                         break;
 
                     case MovedRecipeList.ListKey:
-                        check = ParseEntries<MovedRecipe, MovedRecipeList>(serializedData, ref movedRecipes);
+                        check = ParseEntries<MovedRecipe, MovedRecipeList>(serializedData, movedRecipes);
                         break;
 
                     case CustomFragmentCountList.ListKey:
-                        check = ParseEntries<CustomFragmentCount, CustomFragmentCountList>(serializedData, ref customFragments);
+                        check = ParseEntries<CustomFragmentCount, CustomFragmentCountList>(serializedData, customFragments);
                         break;
 
                     default:
-                        QuickLogger.Error($"Invalid primary key '{key}' detected in file '{fileName}'");
+                        QuickLogger.Error($"Unknown primary key '{key}' detected in file '{fileName}'");
                         return;
                 }
 
@@ -142,8 +138,8 @@
             }
         }
 
-        private static int ParseEntries<T, T2>(string serializedData, ref List<T> parsedItems)
-            where T : EmPropertyCollection, ITechTyped
+        private static int ParseEntries<T, T2>(string serializedData, ICollection<T> parsedItems)
+            where T : EmPropertyCollection, ICustomCraft
             where T2 : EmPropertyCollectionList<T>, new()
         {
             var list = new T2();
@@ -166,157 +162,44 @@
             return count; // Return the number of unique entries added in this list
         }
 
-        private static int ParseEntries<T, T2>(string serializedData, IDictionary<string, T> parsedItems)
-            where T : EmPropertyCollection, ICraftingTab
-            where T2 : EmPropertyCollectionList<T>, new()
+        private static void PrePassValidation<T>(ICollection<T> entries, IDictionary<string, T> uniqueEntries) where T : ICustomCraft
         {
-            var list = new T2();
+            string typeName = typeof(T).Name;
 
-            bool successfullyParsed = list.Deserialize(serializedData);
-
-            if (!successfullyParsed)
-                return -1; // Error case
-
-            if (list.Count == 0)
-                return 0; // No entries
-
-            int unique = 0;
-            foreach (T item in list)
-            {
-                if (parsedItems.ContainsKey(item.TabID))
-                {
-                    QuickLogger.Warning($"Duplicate entry for '{item.TabID}' in '{list.Key}' was already added by another working file. Kept first one. Discarded duplicate.");
-                }
-                else
-                {
-                    parsedItems.Add(item.TabID, item);
-                    unique++;
-                }
-            }
-
-            return unique++; // Return the number of unique entries added in this list
-        }
-
-        private static void PrePassSMLHelper<T>(List<T> entries, ref IDictionary<TechType, T> uniqueEntries) where T : ITechTyped
-        {
             //  Use the ToSet function as a copy constructor - this way we can iterate across the
             //      temp structure, but change the permanent one in the case of duplicates
             foreach (T item in entries)
             {
-                // The functional item for cloning must be valid.
-                if (!FunctionalItemIsValid(item))
+                if (!item.PassesPreValidation())
                     continue;
 
-                // Sanity check of the blueprints ingredients and linked items to be sure that it only contains known items
-                // Modded items are okay, but they must be for mods the player already has installed
-                if (!InnerItemsAreValid(item))
-                    continue; // item will not be added to the uniqueEntries dictionary
-
-                // Now we can safely do the prepass check in case we need to create a new modded TechType
-                TechType entryId = CustomCraft.PrePass(item);
-
-                if (entryId == TechType.None)
+                if (uniqueEntries.ContainsKey(item.ID))
                 {
-                    QuickLogger.Warning($"Could not resolve ID of '{item.ItemID}'. Discarded entry.");
+                    QuickLogger.Warning($"Duplicate entry for {typeName} '{item.ID}' was already added by another working file. Kept first one. Discarded duplicate.");
                     continue;
                 }
-
-                if (uniqueEntries.ContainsKey(entryId))
-                {
-                    QuickLogger.Warning($"Duplicate entry for '{item.ItemID}' was already added by another working file. Kept first one. Discarded duplicate.");
-                    continue;
-                }
-
-                item.TechID = entryId;
 
                 // All checks passed
-                uniqueEntries.Add(entryId, item);
+                uniqueEntries.Add(item.ID, item);
             }
 
             if (entries.Count > 0)
-                QuickLogger.Message($"{uniqueEntries.Count} of {entries.Count} {typeof(T).Name} entries staged for patching");
-        }
-
-        private static bool FunctionalItemIsValid<T>(T item) where T : ITechTyped
-        {
-            if (item is IAliasRecipe alias)
             {
-                if (string.IsNullOrEmpty(alias.FunctionalID))
-                    return true; // No value provided. This is fine.
-
-                TechType functionalCloneId = CustomCraft.GetTechType(alias.FunctionalID);
-                if (functionalCloneId == TechType.None)
-                {
-                    QuickLogger.Warning($"Entry with FunctionalID of '{item.ItemID}' contained an unknown item of '{alias.FunctionalID}'.  Entry will be discarded.");
-                    return false;
-                }
+                QuickLogger.Message($"{uniqueEntries.Count} of {entries.Count} {typeName} entries staged for patching");
             }
-
-            return true;
         }
 
-        private static bool InnerItemsAreValid<T>(T item) where T : ITechTyped
-        {
-            bool internalItemsPassCheck = true;
-
-            if (item is IModifiedRecipe recipe)
-            {
-                foreach (EmIngredient ingredient in recipe.Ingredients)
-                {
-                    TechType ingredientID = CustomCraft.GetTechType(ingredient.ItemID);
-
-                    if (ingredientID == TechType.None)
-                    {
-                        QuickLogger.Warning($"Entry with ID of '{item.ItemID}' contained an unknown ingredient '{ingredient.ItemID}'.  Entry will be discarded.");
-                        internalItemsPassCheck = false;
-                        continue;
-                    }
-
-                    ingredient.TechID = ingredientID;
-                }
-
-                foreach (string linkedItem in recipe.LinkedItems)
-                {
-                    TechType linkedItemID = CustomCraft.GetTechType(linkedItem);
-
-                    if (linkedItemID == TechType.None)
-                    {
-                        QuickLogger.Warning($"Entry with ID of '{item.ItemID}' contained an unknown linked item '{linkedItem}'. Entry will be discarded.");
-                        internalItemsPassCheck = false;
-                        continue;
-                    }
-                }
-            }
-
-            return internalItemsPassCheck;
-        }
-
-        //IModifiedRecipe
-
-        private static void SendToSMLHelper<T>(IDictionary<TechType, T> uniqueEntries) where T : ITechTyped
+        private static void SendToSMLHelper<T>(ICollection<T> uniqueEntries) where T : ICustomCraft
         {
             int successCount = 0;
-            foreach (T item in uniqueEntries.Values)
+            foreach (T item in uniqueEntries)
             {
-                if (CustomCraft.AddEntry(item))
+                if (item.SendToSMLHelper())
                     successCount++;
             }
 
             if (uniqueEntries.Count > 0)
                 QuickLogger.Message($"{successCount} of {uniqueEntries.Count} {typeof(T).Name} entries were patched");
-        }
-
-        private static void SendToSMLHelper<T>(IDictionary<string, T> uniqueEntries) where T : ICraftingTab
-        {
-            int successCount = 0;
-            foreach (T item in uniqueEntries.Values)
-            {
-                if (CustomCraft.AddCustomCraftingTab(item))
-                    successCount++;
-            }
-
-            if (uniqueEntries.Count > 0)
-                QuickLogger.Message($"{successCount} of {uniqueEntries.Count} Custom Crafting Tabs were successfully patched");
         }
     }
 }

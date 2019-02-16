@@ -1,9 +1,13 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
     using System.Collections.Generic;
+    using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization.Components;
+    using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
 
     internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe
     {
@@ -30,6 +34,8 @@
         protected readonly EmPropertyList<string> linkedItems;
         protected readonly EmYesNo unlockedAtStart;
         protected readonly EmPropertyList<string> unlocks;
+
+        public string ID => this.ItemID;
 
         public short? AmountCrafted
         {
@@ -171,5 +177,152 @@
         public string GetLinkedItem(int index) => linkedItems[index];
 
         public string GetUnlock(int index) => unlocks[index];
+
+        public override bool PassesPreValidation() => base.PassesPreValidation() && InnerItemsAreValid();
+
+        protected bool InnerItemsAreValid()
+        {
+            // Sanity check of the blueprints ingredients and linked items to be sure that it only contains known items
+            // Modded items are okay, but they must be for mods the player already has installed
+            bool internalItemsPassCheck = true;
+
+            foreach (EmIngredient ingredient in this.Ingredients)
+            {
+                TechType ingredientID = GetTechType(ingredient.ItemID);
+
+                if (ingredientID == TechType.None)
+                {
+                    QuickLogger.Warning($"Entry with ID of '{this.ItemID}' contained an unknown ingredient '{ingredient.ItemID}'.  Entry will be discarded.");
+                    internalItemsPassCheck = false;
+                    continue;
+                }
+
+                ingredient.TechType = ingredientID;
+            }
+
+            foreach (string linkedItem in this.LinkedItems)
+            {
+                TechType linkedItemID = GetTechType(linkedItem);
+
+                if (linkedItemID == TechType.None)
+                {
+                    QuickLogger.Warning($"Entry with ID of '{this.ItemID}' contained an unknown linked item '{linkedItem}'. Entry will be discarded.");
+                    internalItemsPassCheck = false;
+                    continue;
+                }
+            }
+
+            return internalItemsPassCheck;
+        }
+
+        public virtual bool SendToSMLHelper()
+        {
+            try
+            {
+                return
+                    HandleModifiedRecipe() &&
+                    HandleUnlocks();
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{this.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
+
+        protected bool HandleModifiedRecipe()
+        {
+            bool overrideRecipe = false;
+
+            if (this.TechType == TechType.None)
+                return false; // Unknown item
+
+            ITechData original = CraftData.Get(this.TechType, skipWarnings: true);
+
+            if (original == null) // Possibly a mod recipe
+                original = CraftDataHandler.GetModdedTechData(this.TechType);
+
+            if (original == null)
+                return false;  // Unknown recipe
+
+            var replacement = new TechData();
+
+            // Amount
+            if (this.AmountCrafted.HasValue)
+            {
+                overrideRecipe |= true;
+                replacement.craftAmount = this.AmountCrafted.Value;
+            }
+            else
+            {
+                replacement.craftAmount = original.craftAmount;
+            }
+
+            // Ingredients
+            if (this.IngredientsCount.HasValue)
+            {
+                overrideRecipe |= true;
+                foreach (EmIngredient ingredient in this.Ingredients)
+                {
+                    replacement.Ingredients.Add(
+                        new Ingredient(
+                            GetTechType(ingredient.ItemID),
+                            ingredient.Required));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < original.ingredientCount; i++)
+                    replacement.Ingredients.Add(
+                        new Ingredient(
+                        original.GetIngredient(i).techType,
+                        original.GetIngredient(i).amount));
+            }
+
+            // Linked Items
+            if (this.LinkedItemsCount.HasValue)
+            {
+                overrideRecipe |= true;
+                foreach (string linkedItem in this.LinkedItems)
+                    replacement.LinkedItems.Add(GetTechType(linkedItem));
+            }
+            else
+            {
+                for (int i = 0; i < original.linkedItemCount; i++)
+                    replacement.LinkedItems.Add(original.GetLinkedItem(i));
+            }
+
+            if (overrideRecipe)
+            {
+                CraftDataHandler.SetTechData(this.TechType, replacement);
+                QuickLogger.Message($"Modifying recipe for '{this.ItemID}'");
+            }
+
+            return true;
+        }
+
+        protected bool HandleUnlocks()
+        {
+            if (this.ForceUnlockAtStart)
+            {
+                KnownTechHandler.UnlockOnStart(this.TechType);
+                QuickLogger.Message($"Recipe for '{this.ItemID}' will be a unlocked at the start of the game");
+            }
+
+            if (this.UnlocksCount.HasValue && this.UnlocksCount > 0)
+            {
+                var unlocks = new List<TechType>();
+
+                foreach (string value in this.Unlocks)
+                {
+                    unlocks.Add(GetTechType(value));
+                    QuickLogger.Message($"Recipe for '{value}' will be a unlocked when '{this.ItemID}' is scanned or picked up");
+                }
+
+                KnownTechHandler.SetAnalysisTechEntry(this.TechType, unlocks);
+            }
+
+            return true;
+        }
     }
 }

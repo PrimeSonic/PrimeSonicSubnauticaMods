@@ -1,8 +1,13 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
+    using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
 
     internal class AliasRecipe : AddedRecipe, IAliasRecipe
     {
@@ -72,5 +77,98 @@
         }
 
         internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);
+
+        public override bool PassesPreValidation()
+        {
+            this.TechType = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
+
+            return InnerItemsAreValid() && FunctionalItemIsValid();
+        }
+
+        private bool FunctionalItemIsValid()
+        {
+            if (string.IsNullOrEmpty(this.FunctionalID))
+                return true; // No value provided. This is fine.
+
+            // The functional item for cloning must be valid.
+            TechType functionalCloneId = GetTechType(this.FunctionalID);
+            if (functionalCloneId == TechType.None)
+            {
+                QuickLogger.Warning($"Entry with FunctionalID of '{this.ItemID}' contained an unknown item of '{this.FunctionalID}'.  Entry will be discarded.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public override bool SendToSMLHelper()
+        {
+            try
+            {
+                //  See if there is an asset in the asset folder that has the same name
+                HandleCustomSprite();
+
+                // Alias recipes should default to not producing the custom item unless explicitly configured
+                HandleAddedRecipe(0);
+
+                HandleCraftTreeAddition();
+
+                HandleUnlocks();
+
+                HandleFunctionalClone();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling Alias Recipe '{this.ItemID}'{Environment.NewLine}{ex}");
+                return false;
+            }
+        }
+
+        protected void HandleCustomSprite()
+        {
+            if (this.SpriteItemID > TechType.None)
+            {
+                QuickLogger.Message($"SpriteItemID {this.SpriteItemID} used for AliasRecipe '{this.ItemID}'");
+                Atlas.Sprite sprite = SpriteManager.Get(this.SpriteItemID);
+                SpriteHandler.RegisterSprite(this.TechType, sprite);
+                return;
+            }
+
+            string imagePath = FileReaderWriter.AssetsFolder + this.ItemID + @".png";
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Message($"Custom sprite found for AliasRecipe '{this.ItemID}'");
+                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                SpriteHandler.RegisterSprite(this.TechType, sprite);
+                return;
+            }
+
+            if (this.LinkedItemsCount > 0)
+            {
+                QuickLogger.Message($"First LinkedItemID used for icon of AliasRecipe '{this.ItemID}'");
+                Atlas.Sprite sprite = SpriteManager.Get(GetTechType(GetLinkedItem(0)));
+                SpriteHandler.RegisterSprite(this.TechType, sprite);
+                return;
+            }
+
+            QuickLogger.Warning($"No sprite loaded for '{this.ItemID}'");
+        }
+
+        protected void HandleFunctionalClone()
+        {
+            if (string.IsNullOrEmpty(this.FunctionalID))
+                return; // No value provided. This is fine.
+
+            TechType functionalID = GetTechType(this.FunctionalID);
+
+            if (functionalID != TechType.None)
+            {
+                var clone = new FunctionalClone(this, functionalID);
+                PrefabHandler.RegisterPrefab(clone);
+                QuickLogger.Message($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}'");
+            }
+        }
     }
 }

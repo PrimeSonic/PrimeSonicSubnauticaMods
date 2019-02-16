@@ -4,6 +4,6 @@
     {
         string ItemID { get; }
 
-        TechType TechID { get; set; }
+        TechType TechType { get; set; }
     }
 }

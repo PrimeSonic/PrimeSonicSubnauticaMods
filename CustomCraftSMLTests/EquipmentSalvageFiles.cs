@@ -27,8 +27,8 @@
 
         private const string Line = "------------------------------------";
         private const string SalvageTabID = "SalvageTab";
-        private const string PathToSalvageTab = "Fabricator/Resources/";
-        private const string SalvageCraftingTab = PathToSalvageTab + SalvageTabID;
+        private const string PathToSalvageTab = "Fabricator/Resources";
+        private const string SalvageCraftingTab = PathToSalvageTab + "/" + SalvageTabID;
 
         private static readonly string Today = DateTime.Today.ToString("dd/MMMM/yyyy");
         private static readonly string CC2Version = QuickLogger.GetAssemblyVersion(Assembly.GetAssembly(typeof(CustomCraft2SML.QPatch)));
@@ -105,7 +105,7 @@
             var leadSalvage = new AliasRecipe
             {
                 ItemID = "LeadSalvage",
-                DisplayName = "Salavage Lead",
+                DisplayName = "Salvage Lead",
                 Tooltip = "Recover the useful lead from a radiation suit no longer in use",
                 Path = tabList[0].FullPath,
                 ForceUnlockAtStart = !EnableUnlocking,
@@ -121,21 +121,22 @@
             var copperSalvage = new AliasRecipe
             {
                 ItemID = "CopperSalvage",
-                DisplayName = "Salavage Copper",
+                DisplayName = "Salvage Copper",
                 Tooltip = "Recover the precious copper from unneeded power cells",
                 Path = tabList[0].FullPath,
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.BasicMaterials,
                 PdaGroup = TechGroup.Resources,
+                FunctionalID = TechType.Copper.ToString()
             };
-            copperSalvage.AddLinkedItem(TechType.Lead);
-            copperSalvage.AddLinkedItem(TechType.Lead);
+            copperSalvage.AddLinkedItem(TechType.Copper);
+            copperSalvage.AddLinkedItem(TechType.Copper);
             copperSalvage.AddIngredient(TechType.PowerCell);
 
             var deepSalvage = new AliasRecipe
             {
                 ItemID = "DeepSalvage",
-                DisplayName = "Salavage Precious Metals",
+                DisplayName = "Salvage Precious Metals",
                 Tooltip = "Recover the lithium and magnetite from unneeded deep power cells",
                 Path = tabList[0].FullPath,
                 ForceUnlockAtStart = !EnableUnlocking,
@@ -151,7 +152,7 @@
             var ionSalvage = new AliasRecipe
             {
                 ItemID = "IonCubeSalvage",
-                DisplayName = "Salavage Ion Cubes",
+                DisplayName = "Salvage Ion Cubes",
                 Tooltip = "Recover the precious ion cubes from unneeded ion power cells",
                 Path = tabList[0].FullPath,
                 ForceUnlockAtStart = !EnableUnlocking,
@@ -165,7 +166,7 @@
             var diamondSalvage = new AliasRecipe
             {
                 ItemID = "DiamondSalvage",
-                DisplayName = "Salavage Diamonds",
+                DisplayName = "Salvage Diamonds",
                 Tooltip = "Recover diamonds from retired laser cutters. Don't forget to remove the batteries first.",
                 Path = tabList[0].FullPath,
                 ForceUnlockAtStart = !EnableUnlocking,
