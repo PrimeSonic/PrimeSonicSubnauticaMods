@@ -75,18 +75,14 @@
             return TechType.None;
         }
 
-        protected static void AddCraftNode(CraftingPath newPath, TechType itemID)
+        protected static void AddCraftNode(CraftingPath newPath, TechType techType)
         {
             if (newPath.IsAtRoot)
-            {
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID);
-                QuickLogger.Message($"New crafting node for '{itemID}' added to the root of the {newPath.Scheme} crafting tree");
-            }
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, techType);
             else
-            {
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, itemID, newPath.Steps);
-                QuickLogger.Message($"New crafting node for '{itemID}' added to the {newPath.Scheme} crafting tree at {newPath.Path}");
-            }
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, techType, newPath.Steps);
+
+            QuickLogger.Message($"New crafting node for '{techType}' added at '{newPath.Path}'");
         }
     }
 }

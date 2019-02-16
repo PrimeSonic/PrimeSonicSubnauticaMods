@@ -88,10 +88,9 @@
         public bool SendToSMLHelper()
         {
             var oldPath = new CraftingPath(this.OldPath, this.ItemID);
-            
-            CraftTreeHandler.RemoveNode(oldPath.Scheme, oldPath.CraftNodeSteps);
-            QuickLogger.Message($"Recipe for '{this.ItemID}' was removed from the {oldPath.Scheme} crafting tree");
 
+            CraftTreeHandler.RemoveNode(oldPath.Scheme, oldPath.CraftNodeSteps);
+            QuickLogger.Message($"Removed crafting node at '{this.ItemID}'");
             if (this.Hidden)
             {
                 return true;
