@@ -51,9 +51,6 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="Utilites">
-      <HintPath>..\..\QModManager-Utilites\Utilites\bin\Debug\Utilites.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ModdedItemsConfig.cs" />

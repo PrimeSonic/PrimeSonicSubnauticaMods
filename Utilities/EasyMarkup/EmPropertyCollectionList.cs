@@ -9,7 +9,7 @@
     {
         public bool Optional { get; set; } = false;
 
-        public bool HasValue { get; private set; } = false;
+        public bool HasValue => Count > 0;
 
         public Type ItemType => typeof(T);
 
@@ -17,11 +17,10 @@
 
         public T this[int index] => this.Values[index];
 
-        public int Count => HasValue ? this.Values.Count : 0;
+        public int Count => this.Values.Count;
 
         public void Add(T item)
         {
-            this.HasValue = true;
             this.Values.Add(item);
         }
 
@@ -96,8 +95,6 @@
 
             if (openParens != 0)
                 throw new EmException(UnbalancedContainersError, buffer);
-
-            this.HasValue = true;
 
             return serialValues.TrimEnd(SpChar_ListItemSplitter) + SpChar_FinishComplexValue;
         }

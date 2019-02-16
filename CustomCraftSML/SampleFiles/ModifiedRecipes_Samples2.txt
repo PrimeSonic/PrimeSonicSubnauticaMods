@@ -2,5 +2,14 @@ ModifiedRecipes:
 (
     ItemID: CuredReginald;
     AmountCrafted: 1;
+    Ingredients: 
+    (
+        ItemID: Reginald;
+        Required: 1;
+    ),
+    (
+        ItemID: Salt;
+        Required: 1;
+    );
     Unlocks: NutrientBlock;
 );
