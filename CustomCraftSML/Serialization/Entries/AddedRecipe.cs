@@ -99,6 +99,20 @@
 
         protected void HandleAddedRecipe(short defaultCraftAmount = 1)
         {
+            TechData replacement = CreateRecipeTechData(defaultCraftAmount);
+
+            CraftDataHandler.SetTechData(this.TechType, replacement);
+            QuickLogger.Message($"Adding new recipe for '{this.ItemID}'");
+
+            if (this.PdaGroup != TechGroup.Uncategorized)
+            {
+                CraftDataHandler.AddToGroup(this.PdaGroup, this.PdaCategory, this.TechType);
+                // SMLHelper logs enough here
+            }
+        }
+
+        internal TechData CreateRecipeTechData(short defaultCraftAmount = 1)
+        {
             var replacement = new TechData
             {
                 craftAmount = this.AmountCrafted ?? defaultCraftAmount
@@ -109,15 +123,7 @@
 
             foreach (TechType linkedItem in this.LinkedItems)
                 replacement.LinkedItems.Add(linkedItem);
-
-            CraftDataHandler.SetTechData(this.TechType, replacement);
-            QuickLogger.Message($"Adding new recipe for '{this.ItemID}'");
-
-            if (this.PdaGroup != TechGroup.Uncategorized)
-            {
-                CraftDataHandler.AddToGroup(this.PdaGroup, this.PdaCategory, this.TechType);
-                // SMLHelper logs enough here
-            }
+            return replacement;
         }
 
         protected void HandleCraftTreeAddition()

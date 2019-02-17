@@ -1,7 +1,8 @@
-﻿namespace CustomCraft2SML.PublicAPI
-{
-    using System;
+﻿using System;
+using System.Collections.Generic;
 
+namespace CustomCraft2SML.PublicAPI
+{
     public class CraftingPath
     {
         public const char Separator = '/';
@@ -12,10 +13,9 @@
         public string[] CraftNodeSteps { get; internal set; }
         public bool IsAtRoot => this.Steps == null || string.IsNullOrEmpty(this.Path) || this.Steps.Length == 0;
 
-        internal CraftingPath(CraftTree.Type scheme, string path)
+        internal CraftingPath(CraftTree.Type scheme, string path) : this(scheme.ToString(), path)
         {
             this.Scheme = scheme;
-            this.Path = path;
         }
 
         internal CraftingPath(string path, string craftNode = null)
@@ -42,7 +42,8 @@
                 schemeString = path;
             }
 
-            this.Scheme = (CraftTree.Type)Enum.Parse(typeof(CraftTree.Type), schemeString);
+            if (this.Scheme == CraftTree.Type.None)
+                this.Scheme = GetCraftTreeType(schemeString);
 
             if (!string.IsNullOrEmpty(craftNode))
             {
@@ -56,5 +57,29 @@
         }
 
         public override string ToString() => this.Path.TrimEnd(Separator);
+
+        internal static readonly Dictionary<string, CraftTree.Type> CraftTreeLookup = new Dictionary<string, CraftTree.Type>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            { "Fabricator", CraftTree.Type.Fabricator },
+            { "Constructor", CraftTree.Type.Constructor },
+            { "MobileVehicleBay", CraftTree.Type.Constructor },
+            { "Workbench", CraftTree.Type.Workbench },
+            { "ModificationStation", CraftTree.Type.Workbench },
+            { "SeamothUpgrades", CraftTree.Type.SeamothUpgrades },
+            { "VehicleUpgradeConsole", CraftTree.Type.SeamothUpgrades },
+            { "MapRoom", CraftTree.Type.MapRoom },
+            { "ScannerRoom", CraftTree.Type.MapRoom },
+            { "CyclopsFabricator", CraftTree.Type.CyclopsFabricator },
+        };
+
+        internal static CraftTree.Type GetCraftTreeType(string schemeString)
+        {
+            if (CraftTreeLookup.TryGetValue(schemeString, out CraftTree.Type type))
+            {
+                return type;
+            }
+
+            return CraftTree.Type.None;
+        }
     }
 }

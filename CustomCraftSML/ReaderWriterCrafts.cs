@@ -13,6 +13,7 @@
     {
         internal const string WorkingFolder = FolderRoot + "WorkingFiles/";
         internal const string AssetsFolder = FolderRoot + "Assets/";
+        
 
         private static IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
         {

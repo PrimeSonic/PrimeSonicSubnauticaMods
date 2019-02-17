@@ -133,7 +133,7 @@
 
         internal override EmProperty Copy() => new CustomCraftingTab(this.Key, this.CopyDefinitions);
 
-        public bool PassesPreValidation() => craftingPath != null && ValidFabricator();
+        public bool PassesPreValidation() => craftingPath != null & ValidFabricator();
 
         private bool ValidFabricator()
         {

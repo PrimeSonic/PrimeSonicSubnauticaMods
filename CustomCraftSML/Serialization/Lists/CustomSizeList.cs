@@ -7,7 +7,7 @@
     {
         internal const string ListKey = "CustomSizes";
 
-        public CustomSizeList() : base(ListKey, new CustomSize())
+        public CustomSizeList() : base(ListKey)
         {
         }
     }

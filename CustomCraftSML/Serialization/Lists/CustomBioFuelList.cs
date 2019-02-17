@@ -7,7 +7,7 @@
     {
         internal const string ListKey = "CustomBioFuels";
 
-        public CustomBioFuelList() : base(ListKey, new CustomBioFuel())
+        public CustomBioFuelList() : base(ListKey)
         {
         }
     }

@@ -71,7 +71,7 @@
 
         internal override EmProperty Copy() => new CustomSize(this.Key, this.CopyDefinitions);
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() && ValidateSizes();
+        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidateSizes();
 
         private bool ValidateSizes()
         {

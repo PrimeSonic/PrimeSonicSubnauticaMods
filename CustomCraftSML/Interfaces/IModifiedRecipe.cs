@@ -11,5 +11,6 @@
         IList<EmIngredient> Ingredients { get; }
         IList<string> LinkedItemIDs { get; }
         IList<string> Unlocks { get; }
+        IList<string> UnlockedBy { get; }
     }
 }

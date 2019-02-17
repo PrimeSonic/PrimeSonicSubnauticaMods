@@ -66,7 +66,7 @@
 
         internal override EmProperty Copy() => new MovedRecipe(this.Key, this.CopyDefinitions);
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() && IsValidState();
+        public override bool PassesPreValidation() => base.PassesPreValidation() & IsValidState();
 
         private bool IsValidState()
         {

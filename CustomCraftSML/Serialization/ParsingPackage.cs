@@ -6,7 +6,7 @@
     using CustomCraft2SML.Interfaces;
 
     internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPackage
-            where CustomCraftEntry : EmPropertyCollection, ICustomCraft
+            where CustomCraftEntry : EmPropertyCollection, ICustomCraft, new()
             where EmCollectionListT : EmPropertyCollectionList<CustomCraftEntry>, new()
     {
         public string ListKey { get; }

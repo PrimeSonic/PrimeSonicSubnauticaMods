@@ -142,7 +142,7 @@
 
         protected void HandleCustomSprite()
         {
-            string imagePath = IOPath.Combine(FileReaderWriter.AssetsFolder, this.ItemID + @".png");
+            string imagePath = IOPath.Combine(FileReaderWriter.AssetsFolder, $"{this.ItemID}.png");
 
             if (File.Exists(imagePath))
             {

@@ -25,6 +25,8 @@
             "        This is optional if you don't want to change what gets unlocked when you scan or craft this item.",
            $"    {ForceUnlockAtStartKey}: You can also set if this recipe should be unlocked at the start or not. Make sure you have a recipe unlocking this one.",
             "        This is optional. For Added Recipes, this defaults to 'YES'.",
+            $"    {UnlockedByKey}: Set this recipe to be unlocked when any one of the items listed here gets unlocked.",
+            "        This is optional. If this is for an existing recipe, note that the original unlocks will not be affected.",
         };
 
         protected const string AmountCraftedKey = "AmountCrafted";
@@ -32,12 +34,14 @@
         protected const string LinkedItemsIdsKey = "LinkedItemIDs";
         protected const string ForceUnlockAtStartKey = "ForceUnlockAtStart";
         protected const string UnlocksKey = "Unlocks";
+        protected const string UnlockedByKey = "UnlockedBy";
 
         protected readonly EmProperty<short> amountCrafted;
         protected readonly EmPropertyCollectionList<EmIngredient> ingredients;
         protected readonly EmPropertyList<string> linkedItems;
         protected readonly EmYesNo unlockedAtStart;
         protected readonly EmPropertyList<string> unlocks;
+        protected readonly EmPropertyList<string> unlockedBy;
 
         public string ID => this.ItemID;
 
@@ -73,24 +77,25 @@
         }
 
         public IList<string> Unlocks => unlocks.Values;
-
         protected List<TechType> UnlockingItems { get; } = new List<TechType>();
 
-        public IList<EmIngredient> Ingredients => ingredients.Values;
+        public IList<string> UnlockedBy => unlockedBy.Values;
+        protected List<TechType> UnlockedByItems { get; } = new List<TechType>();
 
+        public IList<EmIngredient> Ingredients => ingredients.Values;
         protected List<Ingredient> SMLHelperIngredients { get; } = new List<Ingredient>();
 
         public IList<string> LinkedItemIDs => linkedItems.Values;
-
         protected List<TechType> LinkedItems { get; } = new List<TechType>();
 
         protected static List<EmProperty> ModifiedRecipeProperties => new List<EmProperty>(TechTypedProperties)
         {
             new EmProperty<short>(AmountCraftedKey, 1) { Optional = true },
-            new EmPropertyCollectionList<EmIngredient>(IngredientsKey, new EmIngredient()) { Optional = true },
+            new EmPropertyCollectionList<EmIngredient>(IngredientsKey) { Optional = true },
             new EmPropertyList<string>(LinkedItemsIdsKey) { Optional = true },
             new EmYesNo(ForceUnlockAtStartKey) { Optional = true },
             new EmPropertyList<string>(UnlocksKey) { Optional = true },
+            new EmPropertyList<string>(UnlockedByKey) { Optional = true },
         };
 
         internal ModifiedRecipe(TechType origTechType) : this()
@@ -124,6 +129,7 @@
             linkedItems = (EmPropertyList<string>)Properties[LinkedItemsIdsKey];
             unlockedAtStart = (EmYesNo)Properties[ForceUnlockAtStartKey];
             unlocks = (EmPropertyList<string>)Properties[UnlocksKey];
+            unlockedBy = (EmPropertyList<string>)Properties[UnlockedByKey];
 
             OnValueExtractedEvent += ValueExtracted;
         }
@@ -139,7 +145,7 @@
 
         internal override EmProperty Copy() => new ModifiedRecipe(this.Key, this.CopyDefinitions);
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() && InnerItemsAreValid();
+        public override bool PassesPreValidation() => base.PassesPreValidation() & InnerItemsAreValid();
 
         protected bool InnerItemsAreValid()
         {
@@ -147,27 +153,41 @@
             // Modded items are okay, but they must be for mods the player already has installed
             bool internalItemsPassCheck = true;
 
-            foreach (EmIngredient ingredient in this.Ingredients)
-            {
-                if (ingredient.PassesPreValidation())
-                    this.SMLHelperIngredients.Add(ingredient.ToSMLHelperIngredient());
-                else
-                    internalItemsPassCheck = false;
-            }
+            internalItemsPassCheck &= ValidateIngredients();
 
-            foreach (string linkedItem in this.LinkedItemIDs)
-            {
-                TechType linkedItemID = GetTechType(linkedItem);
+            internalItemsPassCheck &= ValidateLinkedItems();
 
-                if (linkedItemID == TechType.None)
+            internalItemsPassCheck &= ValidateUnlocks();
+
+            internalItemsPassCheck &= ValidateUnlockedBy();
+
+            return internalItemsPassCheck;
+        }
+
+        private bool ValidateUnlockedBy()
+        {
+            bool unlockedByValid = true;
+
+            foreach (string unlockedBy in this.UnlockedBy)
+            {
+                TechType unlockByItemID = GetTechType(unlockedBy);
+
+                if (unlockByItemID == TechType.None)
                 {
-                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown linked item '{linkedItem}'. Entry will be discarded.");
-                    internalItemsPassCheck = false;
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlockedBy} '{unlockedBy}'. Entry will be discarded.");
+                    unlockedByValid = false;
                     continue;
                 }
 
-                this.LinkedItems.Add(linkedItemID);
+                this.UnlockedByItems.Add(unlockByItemID);
             }
+
+            return unlockedByValid;
+        }
+
+        private bool ValidateUnlocks()
+        {
+            bool unlocksValid = true;
 
             foreach (string unlockingItem in this.Unlocks)
             {
@@ -175,15 +195,51 @@
 
                 if (unlockingItemID == TechType.None)
                 {
-                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown Unlocks item '{unlockingItem}'. Entry will be discarded.");
-                    internalItemsPassCheck = false;
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlocksKey} '{unlockingItem}'. Entry will be discarded.");
+                    unlocksValid = false;
                     continue;
                 }
 
                 this.UnlockingItems.Add(unlockingItemID);
             }
 
-            return internalItemsPassCheck;
+            return unlocksValid;
+        }
+
+        private bool ValidateLinkedItems()
+        {
+            bool linkedItemsValid = true;
+
+            foreach (string linkedItem in this.LinkedItemIDs)
+            {
+                TechType linkedItemID = GetTechType(linkedItem);
+
+                if (linkedItemID == TechType.None)
+                {
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {LinkedItemsIdsKey} '{linkedItem}'. Entry will be discarded.");
+                    linkedItemsValid = false;
+                    continue;
+                }
+
+                this.LinkedItems.Add(linkedItemID);
+            }
+
+            return linkedItemsValid;
+        }
+
+        private bool ValidateIngredients()
+        {
+            bool ingredientsValid = true;
+
+            foreach (EmIngredient ingredient in this.Ingredients)
+            {
+                if (ingredient.PassesPreValidation())
+                    this.SMLHelperIngredients.Add(ingredient.ToSMLHelperIngredient());
+                else
+                    ingredientsValid = false;
+            }
+
+            return ingredientsValid;
         }
 
         public virtual bool SendToSMLHelper()

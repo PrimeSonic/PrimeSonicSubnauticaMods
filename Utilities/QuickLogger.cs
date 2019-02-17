@@ -38,6 +38,13 @@
                 ErrorMessage.AddError(msg);
         }
 
+        public static void Error(string msg, Exception ex)
+        {
+            string name = Assembly.GetCallingAssembly().GetName().Name;
+
+            Console.WriteLine($"[{name}] ERROR: {msg}{Environment.NewLine}{ex.ToString()}");
+        }
+
         public static void Error(Exception ex)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
