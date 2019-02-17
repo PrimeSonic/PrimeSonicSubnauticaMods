@@ -31,7 +31,7 @@
             emTechType = (EmProperty<string>)Properties[ItemIdKey];
         }
 
-        public string ItemID
+        public virtual string ItemID
         {
             get => emTechType.Value;
             set => emTechType.Value = value;

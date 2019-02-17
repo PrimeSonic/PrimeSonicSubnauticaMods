@@ -69,7 +69,7 @@
             ParsePath();
         }
 
-        private void ParsePath()
+        protected void ParsePath()
         {
             try
             {
@@ -95,7 +95,7 @@
             set => emDisplayName.Value = value;
         }
 
-        public CraftTree.Type FabricatorType
+        public virtual CraftTree.Type FabricatorType
         {
             get
             {
@@ -135,7 +135,7 @@
 
         public bool PassesPreValidation() => craftingPath != null & ValidFabricator();
 
-        private bool ValidFabricator()
+        protected virtual bool ValidFabricator()
         {
             if (this.FabricatorType > CraftTree.Type.Rocket)
             {

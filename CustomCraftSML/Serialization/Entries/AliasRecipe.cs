@@ -98,7 +98,7 @@
             return InnerItemsAreValid() && FunctionalItemIsValid();
         }
 
-        private bool FunctionalItemIsValid()
+        protected virtual bool FunctionalItemIsValid()
         {
             if (string.IsNullOrEmpty(this.FunctionalID))
                 return true; // No value provided. This is fine.

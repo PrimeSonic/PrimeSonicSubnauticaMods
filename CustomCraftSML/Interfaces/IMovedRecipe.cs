@@ -5,5 +5,6 @@
         string OldPath { get; }
         string NewPath { get; }
         bool Hidden { get; }
+        bool CopyToNewPath { get; }
     }
 }

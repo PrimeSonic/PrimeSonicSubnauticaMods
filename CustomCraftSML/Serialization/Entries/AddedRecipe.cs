@@ -126,7 +126,7 @@
             return replacement;
         }
 
-        protected void HandleCraftTreeAddition()
+        protected virtual void HandleCraftTreeAddition()
         {
             var craftPath = new CraftingPath(this.Path, this.ItemID);
 

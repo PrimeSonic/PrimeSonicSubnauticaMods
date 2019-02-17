@@ -6,26 +6,52 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Fabricators;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Serialization.Lists;
 
-    internal enum ModelTypes : byte
+    internal enum ModelTypes
     {
-        Fabricator = (byte)'F',
-        Workbench = (byte)'W',
-        MoonPool = (byte)'M',
+        Fabricator,
+        Workbench,
+        MoonPool,
     }
 
-    internal class CustomFabricator : AliasRecipe, ICustomFabricator
+    internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfAliasRecipe, CfAddedRecipe, CfMovedRecipe>
     {
         protected const string ModelKey = "Model";
         protected const string HueOffsetKey = "Color";
+        protected const string AllowedInBaseKey = "AllowedInBase";
+        protected const string AllowedInCyclopsKey = "AllowedInCyclops";
+        protected const string CfCustomCraftingTabListKey = CustomCraftingTabList.ListKey;
+        protected const string CfAliasRecipeListKey = AliasRecipeList.ListKey;
+        protected const string CfAddedRecipeListKey = AddedRecipeList.ListKey;
+        protected const string CfMovedRecipeListKey = MovedRecipeList.ListKey;
+
+        internal static new readonly string[] TutorialText = new[]
+        {
+            "TODO"
+        };
 
         protected readonly EmProperty<ModelTypes> model;
         protected readonly EmProperty<int> hueOffset;
 
+        protected readonly EmYesNo allowedInBase;
+        protected readonly EmYesNo allowedInCyclops;
+
+        protected readonly EmPropertyCollectionList<CfCustomCraftingTab> craftingTabs;
+        protected readonly EmPropertyCollectionList<CfAliasRecipe> aliasRecipes;
+        protected readonly EmPropertyCollectionList<CfAddedRecipe> addedRecipes;
+        protected readonly EmPropertyCollectionList<CfMovedRecipe> movedRecipes;
+
         protected static List<EmProperty> CustomFabricatorProperties => new List<EmProperty>(AliasRecipeProperties)
         {
             new EmProperty<ModelTypes>(ModelKey, ModelTypes.Fabricator),
-            new EmProperty<int>(HueOffsetKey, 0),
+            new EmProperty<int>(HueOffsetKey, 0) { Optional = true },
+            new EmYesNo(AllowedInBaseKey, true) { Optional = true },
+            new EmYesNo(AllowedInCyclopsKey, true) { Optional = true },
+            new EmPropertyCollectionList<CfCustomCraftingTab>(CfCustomCraftingTabListKey) { Optional = true },
+            new EmPropertyCollectionList<CfAddedRecipe>(CfAddedRecipeListKey) { Optional = true },
+            new EmPropertyCollectionList<CfAddedRecipe>(CfAddedRecipeListKey) { Optional = true },
+            new EmPropertyCollectionList<CfMovedRecipe>(CfMovedRecipeListKey) { Optional = true },
         };
 
         public CustomFabricator() : this("CustomFabricator", CustomFabricatorProperties)
@@ -36,6 +62,12 @@
         {
             model = (EmProperty<ModelTypes>)Properties[ModelKey];
             hueOffset = (EmProperty<int>)Properties[HueOffsetKey];
+            allowedInBase = (EmYesNo)Properties[AllowedInBaseKey];
+            allowedInCyclops = (EmYesNo)Properties[AllowedInCyclopsKey];
+            craftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
+            aliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
+            addedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
+            movedRecipes = (EmPropertyCollectionList<CfMovedRecipe>)Properties[CfMovedRecipeListKey];
 
             (Properties[PathKey] as EmProperty<string>).Optional = true;
         }
@@ -52,9 +84,26 @@
             set => hueOffset.Value = value;
         }
 
-        protected CustomFabricatorBuildable BuildableFabricator { get; set; }
+        public bool AllowedInBase
+        {
+            get => allowedInBase.Value;
+            set => allowedInBase.Value = value;
+        }
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidFabricatorValues();
+        public bool AllowedInCyclops
+        {
+            get => allowedInCyclops.Value;
+            set => allowedInCyclops.Value = value;
+        }
+
+        internal CustomFabricatorBuildable BuildableFabricator { get; set; }
+
+        public IList<CfCustomCraftingTab> CustomCraftingTabs => craftingTabs.Values;
+        public IList<CfAliasRecipe> AliasRecipes => aliasRecipes.Values;
+        public IList<CfAddedRecipe> AddedRecipes => addedRecipes.Values;
+        public IList<CfMovedRecipe> MovedRecipes => movedRecipes.Values;        
+
+        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidFabricatorValues() & AllInternalItemsValid();
 
         private bool ValidFabricatorValues()
         {
@@ -68,6 +117,34 @@
                 default:
                     QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}|{ModelTypes.MoonPool}");
                     return false;
+            }
+
+            return true;
+        }
+
+        private bool AllInternalItemsValid()
+        {
+            bool internalItemsValid = true;
+
+            foreach (CfMovedRecipe move in this.MovedRecipes)
+                internalItemsValid &= move.PassesPreValidation();
+
+            foreach (CfAddedRecipe added in this.AddedRecipes)
+                internalItemsValid &= added.PassesPreValidation();
+
+            foreach (CfAliasRecipe alias in this.AliasRecipes)
+                internalItemsValid &= alias.PassesPreValidation();
+
+            return internalItemsValid;
+        }
+
+        protected override bool FunctionalItemIsValid()
+        {
+            if (!string.IsNullOrEmpty(this.FunctionalID))
+            {
+                this.FunctionalID = string.Empty;
+                QuickLogger.Warning($"{FunctionalIdKey} is not valid for {this.Key} entries. Was detected on '{this.ItemID}'. Please remove and try again.");
+                return false;
             }
 
             return true;

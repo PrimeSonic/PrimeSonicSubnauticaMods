@@ -61,6 +61,7 @@
     <Compile Include="Interfaces\IAliasRecipe.cs" />
     <Compile Include="Interfaces\ICustomCraft.cs" />
     <Compile Include="Interfaces\ICustomFabricator.cs" />
+    <Compile Include="Interfaces\ICustomFabricatorEntry.cs" />
     <Compile Include="Interfaces\ICustomFragmentCount.cs" />
     <Compile Include="Interfaces\IMovedRecipe.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
@@ -74,6 +75,10 @@
     <Compile Include="QPatch.cs" />
     <Compile Include="Serialization\Components\EmTechTyped.cs" />
     <Compile Include="Serialization\Entries\AddedRecipe.cs" />
+    <Compile Include="Serialization\Entries\CfAddedRecipe.cs" />
+    <Compile Include="Serialization\Entries\CfAliasRecipe.cs" />
+    <Compile Include="Serialization\Entries\CfCustomCraftingTab.cs" />
+    <Compile Include="Serialization\Entries\CfMovedRecipe.cs" />
     <Compile Include="Serialization\Entries\CustomBioFuel.cs" />
     <Compile Include="Serialization\Entries\CustomCraftingTab.cs" />
     <Compile Include="Serialization\Entries\CustomFabricator.cs" />

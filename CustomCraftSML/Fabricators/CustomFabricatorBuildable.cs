@@ -32,7 +32,26 @@
 
             this.TreeTypeID = craftType;
 
+            foreach (CfCustomCraftingTab tab in FabricatorDetails.CustomCraftingTabs)
+            {
+                // TODO
+            }
 
+            foreach (CfMovedRecipe moved in FabricatorDetails.MovedRecipes)
+            {
+                moved.SendToSMLHelper();
+                // TODO
+            }
+
+            foreach (CfAddedRecipe added in FabricatorDetails.AddedRecipes)
+            {
+                // TODO
+            }
+
+            foreach (CfAliasRecipe alias in FabricatorDetails.AliasRecipes)
+            {
+                // TODO
+            }
         }
 
         public override GameObject GetGameObject()
@@ -106,12 +125,12 @@
             if (constructible is null)
                 constructible = prefab.GetComponent<Constructable>();
 
-            constructible.allowedInBase = true;
-            constructible.allowedInSub = true;
+            constructible.allowedInBase = FabricatorDetails.AllowedInBase;
+            constructible.allowedInSub = FabricatorDetails.AllowedInCyclops;
             constructible.allowedOutside = false;
             constructible.allowedOnCeiling = false;
-            constructible.allowedOnGround = false;
-            constructible.allowedOnWall = true;
+            constructible.allowedOnGround = FabricatorDetails.Model == ModelTypes.Workbench;
+            constructible.allowedOnWall = FabricatorDetails.Model != ModelTypes.Workbench;
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
             constructible.rotationEnabled = false;
@@ -133,7 +152,6 @@
 
             return prefab;
         }
-
 
         protected override TechData GetBlueprintRecipe() => FabricatorDetails.CreateRecipeTechData();
     }

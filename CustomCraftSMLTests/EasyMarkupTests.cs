@@ -53,6 +53,19 @@
 
         private class TestSimpleCollection : EmPropertyCollection
         {
+            public static List<EmProperty> DefaultComplexStructure => new List<EmProperty>
+            {
+                new EmProperty<string>("Nstring"),
+                new EmProperty<int>("Nint"),
+            };
+
+            public static string DefaultKey = "NestedComplexList";
+
+
+            public TestSimpleCollection() :this(DefaultKey, DefaultComplexStructure)
+            {
+            }
+
             public TestSimpleCollection(string key, ICollection<EmProperty> definitions) : base(key, definitions)
             {
             }
@@ -425,16 +438,9 @@
                                             "Nstring:Val3;," +
                                             "Nint:4;" +
                                         ");";
+            
 
-            var complexStructure = new List<EmProperty>
-            {
-                new EmProperty<string>("Nstring"),
-                new EmProperty<int>("Nint"),
-            };
-
-            var twoKeyCollection = new TestSimpleCollection("NestedComplexList", complexStructure);
-
-            var compList = new EmPropertyCollectionList<TestSimpleCollection>("NestedComplexList", twoKeyCollection);
+            var compList = new EmPropertyCollectionList<TestSimpleCollection>("NestedComplexList");
 
             compList.FromString(testValue);
 

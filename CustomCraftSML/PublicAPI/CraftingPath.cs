@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace CustomCraft2SML.PublicAPI
+﻿namespace CustomCraft2SML.PublicAPI
 {
+    using System;
+    using System.Collections.Generic;
+
     public class CraftingPath
     {
         public const char Separator = '/';
@@ -13,7 +13,7 @@ namespace CustomCraft2SML.PublicAPI
         public string[] CraftNodeSteps { get; internal set; }
         public bool IsAtRoot => this.Steps == null || string.IsNullOrEmpty(this.Path) || this.Steps.Length == 0;
 
-        internal CraftingPath(CraftTree.Type scheme, string path) : this(scheme.ToString(), path)
+        internal CraftingPath(CraftTree.Type scheme, string path, string craftNode = null) : this(path, craftNode)
         {
             this.Scheme = scheme;
         }
