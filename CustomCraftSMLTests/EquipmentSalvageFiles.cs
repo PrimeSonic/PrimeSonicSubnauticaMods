@@ -112,6 +112,7 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.BasicMaterials,
                 PdaGroup = TechGroup.Resources,
+                SpriteItemID = TechType.Lead,
                 Ingredients =
                 {
                     new EmIngredient(TechType.RadiationSuit),
@@ -134,6 +135,7 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.BasicMaterials,
                 PdaGroup = TechGroup.Resources,
+                SpriteItemID = TechType.Copper,
                 Ingredients =
                 {
                     new EmIngredient(TechType.PowerCell)
@@ -154,6 +156,7 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.AdvancedMaterials,
                 PdaGroup = TechGroup.Resources,
+                SpriteItemID = TechType.Magnetite,
                 Ingredients =
                 {
                     new EmIngredient("DeepPowerCell")
@@ -176,6 +179,7 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.AdvancedMaterials,
                 PdaGroup = TechGroup.Resources,
+                SpriteItemID = TechType.PrecursorIonCrystal,
                 Ingredients =
                 {
                     new EmIngredient(TechType.PrecursorIonPowerCell)
@@ -196,6 +200,7 @@
                 ForceUnlockAtStart = !EnableUnlocking,
                 PdaCategory = TechCategory.AdvancedMaterials,
                 PdaGroup = TechGroup.Resources,
+                SpriteItemID = TechType.Diamond,
                 Ingredients =
                 {
                     new EmIngredient(TechType.LaserCutter)
@@ -207,9 +212,29 @@
                 }
             };
 
+            var wireSalvage = new AliasRecipe
+            {
+                ItemID = "WireSalvage",
+                DisplayName = "Salvage Copper Wire",
+                Tooltip = "Recover copper wire from retired seaglide. Don't forget to remove the batteries first.",
+                Path = tabList[0].FullPath,
+                ForceUnlockAtStart = !EnableUnlocking,
+                PdaCategory = TechCategory.Electronics,
+                PdaGroup = TechGroup.Resources,
+                SpriteItemID = TechType.CopperWire,
+                Ingredients =
+                {
+                    new EmIngredient(TechType.Seaglide)
+                },
+                LinkedItemIDs =
+                {
+                    TechType.CopperWire.ToString(),
+                }
+            };
+
             var aliasList = new AliasRecipeList
             {
-                leadSalvage, copperSalvage, deepSalvage, ionSalvage, diamondSalvage
+                leadSalvage, copperSalvage, deepSalvage, ionSalvage, diamondSalvage, wireSalvage
             };
 
             WriteFile(aliasList, "EquipmentSalvage_Recipes.txt");

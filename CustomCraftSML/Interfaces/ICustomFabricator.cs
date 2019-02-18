@@ -1,6 +1,5 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Serialization.Entries;
 

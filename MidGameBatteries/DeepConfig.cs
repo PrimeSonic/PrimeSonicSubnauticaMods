@@ -29,13 +29,12 @@
 
         private static ICollection<EmProperty> DeepConfigDefinitions => new List<EmProperty>
         {
-            new EmProperty<PowerStyle>(PowerStyleKey),
+            new EmProperty<PowerStyle>(PowerStyleKey, PowerStyle.Normal),
         };
 
         public DeepConfig() : base(MainKey, DeepConfigDefinitions)
         {
             PowerStyleConfig = (EmProperty<PowerStyle>)Properties[PowerStyleKey];
-            PowerStyleConfig.Value = PowerStyle.Normal;
         }
 
         public PowerStyle SelectedPowerStyle

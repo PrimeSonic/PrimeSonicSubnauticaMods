@@ -13,7 +13,7 @@
     {
         internal const string WorkingFolder = FolderRoot + "WorkingFiles/";
         internal const string AssetsFolder = FolderRoot + "Assets/";
-        
+
 
         private static IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
         {
@@ -37,9 +37,9 @@
             if (!Directory.Exists(AssetsFolder))
                 Directory.CreateDirectory(AssetsFolder);
 
-            ICollection<string> workingFiles = new List<string>(Directory.GetFiles(WorkingFolder));
+            string[] workingFiles = Directory.GetFiles(WorkingFolder);
 
-            QuickLogger.Message($"{workingFiles.Count} files found in the WorkingFiles folder");
+            QuickLogger.Message($"{workingFiles.Length} files found in the WorkingFiles folder");
 
             foreach (string file in workingFiles)
                 DeserializeFile(file);
