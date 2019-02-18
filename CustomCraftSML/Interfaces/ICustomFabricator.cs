@@ -4,11 +4,11 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Serialization.Entries;
 
-    internal interface ICustomFabricator<Tab, Alias, Added, Moved> : IAliasRecipe
+    internal interface ICustomFabricator<Tab, Moved, Added, Alias> : IAliasRecipe
         where Tab : CustomCraftingTab, new()
-        where Alias : AliasRecipe, new()
+        where Moved : MovedRecipe, new()        
         where Added : AddedRecipe, new()
-        where Moved : MovedRecipe, new()
+        where Alias : AliasRecipe, new()
     {
         ModelTypes Model { get; }
         int HueOffset { get; }
@@ -16,8 +16,8 @@
         bool AllowedInCyclops { get; }
 
         EmPropertyCollectionList<Tab> CustomCraftingTabs { get; }
-        EmPropertyCollectionList<Alias> AliasRecipes { get; }
-        EmPropertyCollectionList<Added> AddedRecipes { get; }
         EmPropertyCollectionList<Moved> MovedRecipes { get; }
+        EmPropertyCollectionList<Added> AddedRecipes { get; }
+        EmPropertyCollectionList<Alias> AliasRecipes { get; }
     }
 }

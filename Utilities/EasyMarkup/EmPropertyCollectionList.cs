@@ -5,7 +5,8 @@
     using System.Collections.Generic;
     using Common;
 
-    public class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation where ListedType : EmPropertyCollection, new()
+    public class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation 
+        where ListedType : EmPropertyCollection, new()
     {
         public bool Optional { get; set; } = false;
 

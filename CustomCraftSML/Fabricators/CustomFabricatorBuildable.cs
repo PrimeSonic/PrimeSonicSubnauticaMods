@@ -6,61 +6,23 @@
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class CustomFabricatorBuildable : Buildable
     {
         protected readonly CustomFabricator FabricatorDetails;
 
-        public CraftTree.Type TreeTypeID { get; private set; }
-
-        public ModCraftTreeRoot RootNode { get; private set; }
-
         public CustomFabricatorBuildable(CustomFabricator customFabricator)
             : base(customFabricator.ItemID, customFabricator.DisplayName, customFabricator.Tooltip)
         {
             FabricatorDetails = customFabricator;
-            OnStartedPatching += PatchCustomTree;
+            OnStartedPatching += FabricatorDetails.StartCustomCraftingTree;
+            OnFinishedPatching += FabricatorDetails.FinishCustomCraftingTree;
         }
 
         public override TechGroup GroupForPDA { get; } = TechGroup.Miscellaneous;
         public override TechCategory CategoryForPDA { get; } = TechCategory.Misc;
         public override string AssetsFolder { get; } = FileReaderWriter.RootModName + "/Assets";
-
-        private void PatchCustomTree()
-        {
-            this.RootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(this.ClassID, out CraftTree.Type craftType);
-            this.TreeTypeID = craftType;
-
-            int successCount = 0;
-            foreach (CfCustomCraftingTab entry in FabricatorDetails.CustomCraftingTabs)
-            {
-                if (entry.SendToSMLHelper())
-                    successCount++;
-            }
-
-            successCount = 0;
-            foreach (CfMovedRecipe entry in FabricatorDetails.MovedRecipes)
-            {
-                if (entry.SendToSMLHelper())
-                    successCount++;
-            }
-
-            successCount = 0;
-            foreach (CfAddedRecipe entry in FabricatorDetails.AddedRecipes)
-            {
-                if (entry.SendToSMLHelper())
-                    successCount++;
-            }
-
-            successCount = 0;
-            foreach (CfAliasRecipe entry in FabricatorDetails.AliasRecipes)
-            {
-                if (entry.SendToSMLHelper())
-                    successCount++;
-            }
-        }
 
         public override GameObject GetGameObject()
         {
@@ -125,7 +87,7 @@
 
             // Associate custom craft tree to the fabricator
             Fabricator fabricator = prefab.GetComponent<Fabricator>();
-            fabricator.craftTree = this.TreeTypeID;
+            fabricator.craftTree = FabricatorDetails.TreeTypeID;
             fabricator.handOverText = this.HandOverText;
 
             if (constructible is null)

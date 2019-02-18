@@ -6,9 +6,9 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Fabricators;
     using CustomCraft2SML.Interfaces;
-    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
 
     internal enum ModelTypes
     {
@@ -17,7 +17,7 @@
         MoonPool,
     }
 
-    internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfAliasRecipe, CfAddedRecipe, CfMovedRecipe>
+    internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe>
     {
         protected const string ModelKey = "Model";
         protected const string HueOffsetKey = "Color";
@@ -61,10 +61,10 @@
             hueOffset = (EmProperty<int>)Properties[HueOffsetKey];
             allowedInBase = (EmYesNo)Properties[AllowedInBaseKey];
             allowedInCyclops = (EmYesNo)Properties[AllowedInCyclopsKey];
-            CustomCraftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
-            AliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
-            AddedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
-            MovedRecipes = (EmPropertyCollectionList<CfMovedRecipe>)Properties[CfMovedRecipeListKey];
+            this.CustomCraftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
+            this.AliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
+            this.AddedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
+            this.MovedRecipes = (EmPropertyCollectionList<CfMovedRecipe>)Properties[CfMovedRecipeListKey];
 
             (Properties[PathKey] as EmProperty<string>).Optional = true;
         }
@@ -96,11 +96,22 @@
         internal CustomFabricatorBuildable BuildableFabricator { get; set; }
 
         public EmPropertyCollectionList<CfCustomCraftingTab> CustomCraftingTabs { get; private set; }
-        public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; private set; }
-        public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }
         public EmPropertyCollectionList<CfMovedRecipe> MovedRecipes { get; private set; }
+        public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }
+        public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; private set; }
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidFabricatorValues() & AllInternalItemsValid();
+        internal IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
+        internal IDictionary<string, CfMovedRecipe> UniqueMovedRecipes { get; } = new Dictionary<string, CfMovedRecipe>();
+        internal IDictionary<string, CfAddedRecipe> UniqueAddedRecipes { get; } = new Dictionary<string, CfAddedRecipe>();
+        internal IDictionary<string, CfAliasRecipe> UniqueAliasRecipes { get; } = new Dictionary<string, CfAliasRecipe>();
+
+        public string ListKey { get; }
+
+        public CraftTree.Type TreeTypeID { get; set; }
+
+        public ModCraftTreeRoot RootNode { get; set; }
+
+        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidFabricatorValues() & ValidateInternalEntries();
 
         private bool ValidFabricatorValues()
         {
@@ -119,35 +130,14 @@
             return true;
         }
 
-        private bool AllInternalItemsValid()
+        private bool ValidateInternalEntries()
         {
-            bool internalItemsValid = true;
+            ValidateUniqueEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);
+            ValidateUniqueEntries(this.MovedRecipes, this.UniqueMovedRecipes);
+            ValidateUniqueEntries(this.AddedRecipes, this.UniqueAddedRecipes);
+            ValidateUniqueEntries(this.AliasRecipes, this.UniqueAliasRecipes);
 
-            foreach (CfCustomCraftingTab tab in this.CustomCraftingTabs)
-            {
-                tab.ParentFabricator = this;
-                internalItemsValid &= tab.PassesPreValidation();
-            }
-
-            foreach (CfMovedRecipe move in this.MovedRecipes)
-            {
-                move.ParentFabricator = this;
-                internalItemsValid &= move.PassesPreValidation();
-            }
-
-            foreach (CfAddedRecipe added in this.AddedRecipes)
-            {
-                added.ParentFabricator = this;
-                internalItemsValid &= added.PassesPreValidation();
-            }
-
-            foreach (CfAliasRecipe alias in this.AliasRecipes)
-            {
-                alias.ParentFabricator = this;
-                internalItemsValid &= alias.PassesPreValidation();
-            }
-
-            return internalItemsValid;
+            return true;
         }
 
         protected override bool FunctionalItemIsValid()
@@ -169,6 +159,7 @@
                 try
                 {
                     this.BuildableFabricator.Patch();
+
                     return true;
                 }
                 catch (Exception ex)
@@ -182,17 +173,32 @@
             return false;
         }
 
-        internal void HandleCraftTreeAddition(ICustomFabCraftingNode entry)
+        internal void StartCustomCraftingTree()
+        {
+            this.RootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(this.ItemID, out CraftTree.Type craftType);
+            this.TreeTypeID = craftType;
+        }
+
+        internal void FinishCustomCraftingTree()
+        {
+            SendToSMLHelper(this.UniqueCustomTabs);
+            SendToSMLHelper(this.UniqueMovedRecipes);
+            SendToSMLHelper(this.UniqueAddedRecipes);
+            SendToSMLHelper(this.UniqueAliasRecipes);
+        }
+
+        internal void HandleCraftTreeAddition<CraftingNode>(CraftingNode entry)
+            where CraftingNode : ICustomFabricatorEntry, ITechTyped
         {
             try
             {
                 if (entry.IsAtRoot)
                 {
-                    entry.RootNode.AddCraftingNode(entry.TechType);
+                    this.RootNode.AddCraftingNode(entry.TechType);
                 }
                 else
                 {
-                    ModCraftTreeTab otherTab = entry.RootNode.GetTabNode(entry.CraftingNodePath.Steps);
+                    ModCraftTreeTab otherTab = this.RootNode.GetTabNode(entry.CraftingNodePath.Steps);
                     otherTab.AddCraftingNode(entry.TechType);
                 }
             }
@@ -201,6 +207,44 @@
                 QuickLogger.Error($"Exception thrown while handling {entry.Key} '{entry.ItemID}'", ex);
 
             }
+        }
+
+        internal void ValidateUniqueEntries<CustomCraftEntry>(EmPropertyCollectionList<CustomCraftEntry> collectionList, IDictionary<string, CustomCraftEntry> uniqueEntries)
+            where CustomCraftEntry : EmPropertyCollection, ICustomCraft, ICustomFabricatorEntry, new()
+        {
+            foreach (CustomCraftEntry entry in collectionList)
+            {
+                entry.ParentFabricator = this;
+                if (!entry.PassesPreValidation())
+                    continue;
+
+                if (uniqueEntries.ContainsKey(entry.ID))
+                {
+                    QuickLogger.Warning($"Duplicate entry for {entry.Key} '{entry.ID}' was already added by another working file. Kept first one. Discarded duplicate.");
+                }
+                else
+                {
+                    // All checks passed
+                    uniqueEntries.Add(entry.ID, entry);
+                }
+            }
+
+            if (collectionList.Count > 0)
+                QuickLogger.Message($"{uniqueEntries.Count} of {collectionList.Count} {this.Key}:{typeof(CustomCraftEntry).Name} entries for {this.Key} staged for patching");
+        }
+
+        internal void SendToSMLHelper<CustomCraftEntry>(IDictionary<string, CustomCraftEntry> uniqueEntries)
+            where CustomCraftEntry : ICustomCraft
+        {
+            int successCount = 0;
+            foreach (CustomCraftEntry item in uniqueEntries.Values)
+            {
+                if (item.SendToSMLHelper())
+                    successCount++;
+            }
+
+            if (uniqueEntries.Count > 0)
+                QuickLogger.Message($"{successCount} of {uniqueEntries.Count} {typeof(CustomCraftEntry).Name} entries were patched");
         }
     }
 }

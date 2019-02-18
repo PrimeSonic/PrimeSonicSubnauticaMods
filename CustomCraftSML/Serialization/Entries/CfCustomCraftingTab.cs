@@ -15,20 +15,22 @@
 
         public CustomFabricator ParentFabricator { get; set; }
 
-        public CraftTree.Type TreeTypeID => this.ParentFabricator.BuildableFabricator.TreeTypeID;
-
-        public ModCraftTreeRoot RootNode => this.ParentFabricator.BuildableFabricator.RootNode;
+        public CraftTree.Type TreeTypeID => this.ParentFabricator.TreeTypeID;
 
         public bool IsAtRoot => this.ParentTabPath == this.ParentFabricator.ItemID;
 
-        public string[] StepsToParentNode => craftingPath.CraftNodeSteps;
+        public CraftingPath CraftingNodePath
+        {
+            get
+            {
+                string trimmedPath = this.ParentTabPath.Replace($"{this.ParentFabricator.ItemID}", string.Empty).TrimStart('/');
+                return new CraftingPath(this.TreeTypeID, trimmedPath);
+            }
+        }
 
         protected override bool ValidFabricator()
         {
-            string trimmedPath = this.ParentTabPath.Replace($"{this.ParentFabricator.ItemID}", string.Empty).TrimStart('/');
-            craftingPath = new CraftingPath(this.TreeTypeID, trimmedPath);
-
-            if (!this.ParentTabPath.StartsWith(this.ParentFabricator.ItemID) || craftingPath.Scheme != this.TreeTypeID)
+            if (!this.ParentTabPath.StartsWith(this.ParentFabricator.ItemID))
             {
                 QuickLogger.Warning($"Inner {this.Key} for {this.ParentFabricator.Key} appears to have a {ParentTabPathKey} for another fabricator '{this.ParentTabPath}'");
                 return false;
@@ -43,11 +45,11 @@
             {
                 if (this.IsAtRoot)
                 {
-                    RootNode.AddTabNode(this.TabID, this.DisplayName, GetCraftingTabSprite());
+                    this.ParentFabricator.RootNode.AddTabNode(this.TabID, this.DisplayName, GetCraftingTabSprite());
                 }
                 else
                 {
-                    ModCraftTreeTab otherTab = RootNode.GetTabNode(this.StepsToParentNode);
+                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(this.CraftingNodePath.CraftNodeSteps);
                     otherTab.AddTabNode(this.TabID, this.DisplayName, GetCraftingTabSprite());
                 }
 

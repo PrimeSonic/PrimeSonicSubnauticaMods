@@ -2,15 +2,12 @@
 {
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.PublicAPI;
-    using SMLHelper.V2.Crafting;
 
-    internal class CfMovedRecipe : MovedRecipe, ICustomFabCraftingNode
+    internal class CfMovedRecipe : MovedRecipe, ICustomFabricatorEntry
     {
         public CustomFabricator ParentFabricator { get; set; }
 
-        public CraftTree.Type TreeTypeID => this.ParentFabricator.BuildableFabricator.TreeTypeID;
-
-        public ModCraftTreeRoot RootNode => this.ParentFabricator.BuildableFabricator.RootNode;
+        public CraftTree.Type TreeTypeID => this.ParentFabricator.TreeTypeID;
 
         public bool IsAtRoot => this.NewPath == this.ParentFabricator.ItemID;
 

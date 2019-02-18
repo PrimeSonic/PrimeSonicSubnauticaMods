@@ -55,11 +55,12 @@
                 if (this.UniqueEntries.ContainsKey(item.ID))
                 {
                     QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' was already added by another working file. Kept first one. Discarded duplicate.");
-                    continue;
                 }
-
-                // All checks passed
-                this.UniqueEntries.Add(item.ID, item);
+                else
+                {
+                    // All checks passed
+                    this.UniqueEntries.Add(item.ID, item);
+                }
             }
 
             if (this.ParsedEntries.Count > 0)
