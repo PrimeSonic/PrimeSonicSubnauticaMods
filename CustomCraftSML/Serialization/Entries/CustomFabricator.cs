@@ -6,7 +6,9 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Fabricators;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Lists;
+    using SMLHelper.V2.Crafting;
 
     internal enum ModelTypes
     {
@@ -37,11 +39,6 @@
         protected readonly EmYesNo allowedInBase;
         protected readonly EmYesNo allowedInCyclops;
 
-        protected readonly EmPropertyCollectionList<CfCustomCraftingTab> craftingTabs;
-        protected readonly EmPropertyCollectionList<CfAliasRecipe> aliasRecipes;
-        protected readonly EmPropertyCollectionList<CfAddedRecipe> addedRecipes;
-        protected readonly EmPropertyCollectionList<CfMovedRecipe> movedRecipes;
-
         protected static List<EmProperty> CustomFabricatorProperties => new List<EmProperty>(AliasRecipeProperties)
         {
             new EmProperty<ModelTypes>(ModelKey, ModelTypes.Fabricator),
@@ -64,10 +61,10 @@
             hueOffset = (EmProperty<int>)Properties[HueOffsetKey];
             allowedInBase = (EmYesNo)Properties[AllowedInBaseKey];
             allowedInCyclops = (EmYesNo)Properties[AllowedInCyclopsKey];
-            craftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
-            aliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
-            addedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
-            movedRecipes = (EmPropertyCollectionList<CfMovedRecipe>)Properties[CfMovedRecipeListKey];
+            CustomCraftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
+            AliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
+            AddedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
+            MovedRecipes = (EmPropertyCollectionList<CfMovedRecipe>)Properties[CfMovedRecipeListKey];
 
             (Properties[PathKey] as EmProperty<string>).Optional = true;
         }
@@ -98,10 +95,10 @@
 
         internal CustomFabricatorBuildable BuildableFabricator { get; set; }
 
-        public IList<CfCustomCraftingTab> CustomCraftingTabs => craftingTabs.Values;
-        public IList<CfAliasRecipe> AliasRecipes => aliasRecipes.Values;
-        public IList<CfAddedRecipe> AddedRecipes => addedRecipes.Values;
-        public IList<CfMovedRecipe> MovedRecipes => movedRecipes.Values;        
+        public EmPropertyCollectionList<CfCustomCraftingTab> CustomCraftingTabs { get; private set; }
+        public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; private set; }
+        public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }
+        public EmPropertyCollectionList<CfMovedRecipe> MovedRecipes { get; private set; }
 
         public override bool PassesPreValidation() => base.PassesPreValidation() & ValidFabricatorValues() & AllInternalItemsValid();
 
@@ -126,14 +123,29 @@
         {
             bool internalItemsValid = true;
 
+            foreach (CfCustomCraftingTab tab in this.CustomCraftingTabs)
+            {
+                tab.ParentFabricator = this;
+                internalItemsValid &= tab.PassesPreValidation();
+            }
+
             foreach (CfMovedRecipe move in this.MovedRecipes)
+            {
+                move.ParentFabricator = this;
                 internalItemsValid &= move.PassesPreValidation();
+            }
 
             foreach (CfAddedRecipe added in this.AddedRecipes)
+            {
+                added.ParentFabricator = this;
                 internalItemsValid &= added.PassesPreValidation();
+            }
 
             foreach (CfAliasRecipe alias in this.AliasRecipes)
+            {
+                alias.ParentFabricator = this;
                 internalItemsValid &= alias.PassesPreValidation();
+            }
 
             return internalItemsValid;
         }
@@ -168,6 +180,27 @@
             }
 
             return false;
+        }
+
+        internal void HandleCraftTreeAddition(ICustomFabCraftingNode entry)
+        {
+            try
+            {
+                if (entry.IsAtRoot)
+                {
+                    entry.RootNode.AddCraftingNode(entry.TechType);
+                }
+                else
+                {
+                    ModCraftTreeTab otherTab = entry.RootNode.GetTabNode(entry.CraftingNodePath.Steps);
+                    otherTab.AddCraftingNode(entry.TechType);
+                }
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling {entry.Key} '{entry.ItemID}'", ex);
+
+            }
         }
     }
 }

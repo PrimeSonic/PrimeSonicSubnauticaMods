@@ -39,7 +39,7 @@
         protected readonly EmProperty<TechType> emSpriteID;
         protected readonly EmProperty<string> emParentTabPath;
 
-        private CraftingPath craftingPath;
+        protected CraftingPath craftingPath;
 
         protected static ICollection<EmProperty> CustomCraftingTabProperties => new List<EmProperty>(4)
         {
@@ -152,7 +152,7 @@
             return true;
         }
 
-        public bool SendToSMLHelper()
+        public virtual bool SendToSMLHelper()
         {
             try
             {
@@ -162,7 +162,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling crafting tab '{this.TabID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.TabID}'{Environment.NewLine}{ex}");
                 return false;
             }
         }
@@ -187,17 +187,17 @@
 
             if (File.Exists(imagePath))
             {
-                QuickLogger.Message($"Custom sprite found in Assets folder for CraftingTab '{this.TabID}'");
+                QuickLogger.Message($"Custom sprite found in Assets folder for {this.Key} '{this.TabID}'");
                 return ImageUtils.LoadSpriteFromFile(imagePath);
             }
 
             if (this.SpriteItemID != TechType.None)
             {
-                QuickLogger.Message($"SpriteItemID used for CraftingTab '{this.TabID}'");
+                QuickLogger.Message($"SpriteItemID used for {this.Key} '{this.TabID}'");
                 return SpriteManager.Get(this.SpriteItemID);
             }
 
-            QuickLogger.Warning($"No sprite loaded for CraftingTab '{this.TabID}'");
+            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.TabID}'");
             return SpriteManager.Get(TechType.None);
         }
     }

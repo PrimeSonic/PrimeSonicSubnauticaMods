@@ -60,6 +60,7 @@
     <Compile Include="FunctionalClone.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
     <Compile Include="Interfaces\ICustomCraft.cs" />
+    <Compile Include="Interfaces\ICustomFabCraftingNode.cs" />
     <Compile Include="Interfaces\ICustomFabricator.cs" />
     <Compile Include="Interfaces\ICustomFabricatorEntry.cs" />
     <Compile Include="Interfaces\ICustomFragmentCount.cs" />

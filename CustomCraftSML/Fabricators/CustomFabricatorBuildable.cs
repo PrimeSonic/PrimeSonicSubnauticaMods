@@ -15,6 +15,8 @@
 
         public CraftTree.Type TreeTypeID { get; private set; }
 
+        public ModCraftTreeRoot RootNode { get; private set; }
+
         public CustomFabricatorBuildable(CustomFabricator customFabricator)
             : base(customFabricator.ItemID, customFabricator.DisplayName, customFabricator.Tooltip)
         {
@@ -28,29 +30,35 @@
 
         private void PatchCustomTree()
         {
-            ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(this.ClassID, out CraftTree.Type craftType);
-
+            this.RootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(this.ClassID, out CraftTree.Type craftType);
             this.TreeTypeID = craftType;
 
-            foreach (CfCustomCraftingTab tab in FabricatorDetails.CustomCraftingTabs)
+            int successCount = 0;
+            foreach (CfCustomCraftingTab entry in FabricatorDetails.CustomCraftingTabs)
             {
-                // TODO
+                if (entry.SendToSMLHelper())
+                    successCount++;
             }
 
-            foreach (CfMovedRecipe moved in FabricatorDetails.MovedRecipes)
+            successCount = 0;
+            foreach (CfMovedRecipe entry in FabricatorDetails.MovedRecipes)
             {
-                moved.SendToSMLHelper();
-                // TODO
+                if (entry.SendToSMLHelper())
+                    successCount++;
             }
 
-            foreach (CfAddedRecipe added in FabricatorDetails.AddedRecipes)
+            successCount = 0;
+            foreach (CfAddedRecipe entry in FabricatorDetails.AddedRecipes)
             {
-                // TODO
+                if (entry.SendToSMLHelper())
+                    successCount++;
             }
 
-            foreach (CfAliasRecipe alias in FabricatorDetails.AliasRecipes)
+            successCount = 0;
+            foreach (CfAliasRecipe entry in FabricatorDetails.AliasRecipes)
             {
-                // TODO
+                if (entry.SendToSMLHelper())
+                    successCount++;
             }
         }
 
@@ -58,8 +66,9 @@
         {
             GameObject prefab;
             Constructable constructible = null;
-            PrefabIdentifier prefabId = null;
             TechTag techTag = null;
+            PrefabIdentifier prefabId = null;
+
             switch (FabricatorDetails.Model)
             {
                 case ModelTypes.Fabricator:
@@ -71,10 +80,7 @@
                 case ModelTypes.MoonPool:
                     prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
 
-                    // Add prefab ID
                     prefabId = prefab.AddComponent<PrefabIdentifier>();
-
-                    // Add tech tag
                     techTag = prefab.AddComponent<TechTag>();
 
                     // Retrieve sub game objects
@@ -136,6 +142,7 @@
             constructible.rotationEnabled = false;
             constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time
 
+            // TODO
             // Set the custom texture
             //Texture2D customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorT.png");
             //SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
