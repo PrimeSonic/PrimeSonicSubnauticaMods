@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
-    using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.PublicAPI;
 
     internal class CfAliasRecipe : AliasRecipe, ICustomFabricatorEntry

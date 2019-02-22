@@ -6,6 +6,7 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Fabricators;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;

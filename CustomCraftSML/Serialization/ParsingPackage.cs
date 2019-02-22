@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
-    using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
 
     internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPackage
             where CustomCraftEntry : EmPropertyCollection, ICustomCraft, new()

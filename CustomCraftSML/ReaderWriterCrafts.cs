@@ -5,7 +5,7 @@
     using System.IO;
     using Common;
     using Common.EasyMarkup;
-    using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;

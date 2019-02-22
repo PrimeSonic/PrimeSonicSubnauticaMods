@@ -6,6 +6,7 @@
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.PublicAPI;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;

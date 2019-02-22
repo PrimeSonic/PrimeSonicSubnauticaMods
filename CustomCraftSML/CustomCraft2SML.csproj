@@ -58,15 +58,20 @@
   <ItemGroup>
     <Compile Include="Fabricators\CustomFabricatorBuildable.cs" />
     <Compile Include="FunctionalClone.cs" />
-    <Compile Include="Interfaces\IFabricatorEntries.cs" />
+    <Compile Include="Interfaces\InternalUse\IFabricatorEntries.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
-    <Compile Include="Interfaces\ICustomCraft.cs" />
+    <Compile Include="Interfaces\InternalUse\ICustomCraft.cs" />
     <Compile Include="Interfaces\ICustomFabricator.cs" />
-    <Compile Include="Interfaces\ICustomFabricatorEntry.cs" />
+    <Compile Include="Interfaces\InternalUse\ICustomFabricatorEntry.cs" />
     <Compile Include="Interfaces\ICustomFragmentCount.cs" />
     <Compile Include="Interfaces\IMovedRecipe.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
+    <Compile Include="Interfaces\InternalUse\IParsingPackage.cs" />
+    <Compile Include="Interfaces\IAddedRecipe.cs" />
+    <Compile Include="Interfaces\ICustomBioFuel.cs" />
+    <Compile Include="Interfaces\ICustomSize.cs" />
+    <Compile Include="Interfaces\IModifiedRecipe.cs" />
     <Compile Include="ReaderWriterCrafts.cs" />
     <Compile Include="ReaderWriterTutorials.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,7 +93,6 @@
     <Compile Include="Serialization\Entries\AliasRecipe.cs" />
     <Compile Include="Serialization\Entries\ModifiedRecipe.cs" />
     <Compile Include="Serialization\Entries\MovedRecipe.cs" />
-    <Compile Include="Interfaces\IParsingPackage.cs" />
     <Compile Include="Serialization\Lists\CustomCraftingTabList.cs" />
     <Compile Include="Serialization\Lists\CustomFabricatorList.cs" />
     <Compile Include="Serialization\Lists\CustomFragmentsList.cs" />
@@ -99,10 +103,6 @@
     <Compile Include="Serialization\Lists\CustomBioFuelList.cs" />
     <Compile Include="Serialization\Lists\AddedRecipeList.cs" />
     <Compile Include="Serialization\Components\EmIngredient.cs" />
-    <Compile Include="Interfaces\IAddedRecipe.cs" />
-    <Compile Include="Interfaces\ICustomBioFuel.cs" />
-    <Compile Include="Interfaces\ICustomSize.cs" />
-    <Compile Include="Interfaces\IModifiedRecipe.cs" />
     <Compile Include="Serialization\OriginFile.cs" />
     <Compile Include="Serialization\ParsingPackage.cs" />
     <Compile Include="ValidBioFuels.cs" />
