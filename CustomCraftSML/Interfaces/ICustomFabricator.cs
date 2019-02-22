@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
+    using Common.EasyMarkup;
     using CustomCraft2SML.Serialization.Entries;
 
     internal interface ICustomFabricator<Tab, Moved, Added, Alias> : IAliasRecipe
@@ -12,5 +13,10 @@
         int HueOffset { get; }
         bool AllowedInBase { get; }
         bool AllowedInCyclops { get; }
+
+        EmPropertyCollectionList<Tab> CustomCraftingTabs { get; }
+        EmPropertyCollectionList<Moved> MovedRecipes { get; }
+        EmPropertyCollectionList<Added> AddedRecipes { get; }
+        EmPropertyCollectionList<Alias> AliasRecipes { get; }
     }
 }
