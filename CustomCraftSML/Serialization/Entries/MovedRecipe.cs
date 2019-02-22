@@ -97,19 +97,19 @@
         {
             if (string.IsNullOrEmpty(this.OldPath))
             {
-                QuickLogger.Warning($"{OldPathKey} missing in {this.Key} for '{this.ItemID}'");
+                QuickLogger.Warning($"{OldPathKey} missing in {this.Key} for '{this.ItemID}' from {this.Origin}");
                 return false;
             }
 
             if (this.CopyToNewPath && this.Hidden)
             {
-                QuickLogger.Warning($"Invalid request in {this.Key} for '{this.ItemID}'. {CopyKey} and {HiddenKey} cannot both be set to 'YES'");
+                QuickLogger.Warning($"Invalid request in {this.Key} for '{this.ItemID}' from {this.Origin}. {CopyKey} and {HiddenKey} cannot both be set to 'YES'");
                 return false;
             }
 
             if (string.IsNullOrEmpty(this.NewPath) && (this.CopyToNewPath || !this.Hidden))
             {
-                QuickLogger.Warning($"{NewPathKey} value missing in {this.Key} for '{this.ItemID}'");
+                QuickLogger.Warning($"{NewPathKey} value missing in {this.Key} for '{this.ItemID}' from {this.Origin}");
                 return false;
             }
 
@@ -121,7 +121,7 @@
             var oldPath = new CraftingPath(this.OldPath, this.ItemID);
 
             CraftTreeHandler.RemoveNode(oldPath.Scheme, oldPath.CraftNodeSteps);
-            QuickLogger.Message($"Removed crafting node at '{this.ItemID}'");
+            QuickLogger.Message($"Removed crafting node at '{this.ItemID}' - Entry from {this.Origin}");
             if (this.Hidden)
             {
                 return true;

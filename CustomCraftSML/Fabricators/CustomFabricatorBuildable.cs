@@ -23,40 +23,37 @@
         public override TechGroup GroupForPDA { get; } = TechGroup.Miscellaneous;
         public override TechCategory CategoryForPDA { get; } = TechCategory.Misc;
         public override string AssetsFolder { get; } = FileReaderWriter.RootModName + "/Assets";
+        public override string IconFileName => $"{FabricatorDetails.Model}.png";
 
         public override GameObject GetGameObject()
         {
             GameObject prefab;
             Constructable constructible = null;
-            TechTag techTag = null;
-            PrefabIdentifier prefabId = null;
-
+            GhostCrafter crafter;
             switch (FabricatorDetails.Model)
             {
                 case ModelTypes.Fabricator:
                     prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Fabricator));
+                    crafter = prefab.GetComponent<Fabricator>();
                     break;
                 case ModelTypes.Workbench:
                     prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Workbench));
+                    crafter = prefab.GetComponent<Workbench>();
                     break;
                 case ModelTypes.MoonPool:
                     prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
-
-                    prefabId = prefab.AddComponent<PrefabIdentifier>();
-                    techTag = prefab.AddComponent<TechTag>();
+                    crafter = prefab.GetComponent<Fabricator>();
 
                     // Retrieve sub game objects
                     GameObject cyclopsFabLight = prefab.FindChild("fabricatorLight");
                     GameObject cyclopsFabModel = prefab.FindChild("submarine_fabricator_03");
                     // Translate CyclopsFabricator model and light
-                    prefab.transform.localPosition = new Vector3(
-                                                                cyclopsFabModel.transform.localPosition.x, // Same X position
-                                                                cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
-                                                                cyclopsFabModel.transform.localPosition.z); // Same Z position
-                    prefab.transform.localPosition = new Vector3(
-                                                                cyclopsFabLight.transform.localPosition.x, // Same X position
-                                                                cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
-                                                                cyclopsFabLight.transform.localPosition.z); // Same Z position
+                    prefab.transform.localPosition = new Vector3(cyclopsFabModel.transform.localPosition.x, // Same X position
+                                                                 cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                                 cyclopsFabModel.transform.localPosition.z); // Same Z position
+                    prefab.transform.localPosition = new Vector3(cyclopsFabLight.transform.localPosition.x, // Same X position
+                                                                 cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                                 cyclopsFabLight.transform.localPosition.z); // Same Z position
                     // Add constructable - This prefab normally isn't constructed.
                     constructible = prefab.AddComponent<Constructable>();
                     constructible.model = cyclopsFabModel;
@@ -65,30 +62,7 @@
                     throw new InvalidOperationException("ModelType in CustomFabricator does not correspond to a valid fabricator type");
             }
 
-            // Update prefab name
-            prefab.name = this.ClassID;
-
-            // Update prefab ID
-            if (prefabId is null)
-                prefabId = prefab.GetComponent<PrefabIdentifier>();
-
-            if (prefabId != null)
-            {
-                prefabId.ClassId = this.ClassID;
-                prefabId.name = this.FriendlyName;
-            }
-
-            // Update tech tag            
-            if (techTag is null)
-                techTag = prefab.GetComponent<TechTag>();
-
-            if (techTag != null)
-                techTag.type = this.TechType;
-
-            // Associate custom craft tree to the fabricator
-            Fabricator fabricator = prefab.GetComponent<Fabricator>();
-            fabricator.craftTree = FabricatorDetails.TreeTypeID;
-            fabricator.handOverText = this.HandOverText;
+            crafter.craftTree = FabricatorDetails.TreeTypeID;
 
             if (constructible is null)
                 constructible = prefab.GetComponent<Constructable>();
@@ -117,7 +91,7 @@
             // The problem is that the parent SubRoot isn't correctly associated at this time.
             // The power relay should be getting set in the GhostCrafter Start() method.
             // But the parent components are coming up null.
-            (fabricator as GhostCrafter).SetPrivateField("powerRelay", powerRelay, BindingFlags.Instance);
+            crafter.SetPrivateField("powerRelay", powerRelay, BindingFlags.Instance);
 
             return prefab;
         }

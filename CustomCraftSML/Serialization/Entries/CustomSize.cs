@@ -79,7 +79,7 @@
         {
             if (this.Width < Min || this.Height < Min || this.Width > Max || this.Height > Max)
             {
-                QuickLogger.Error($"Error in {this.Key} for '{this.ItemID}'. Size values must be between between {Min} and {Max}.");
+                QuickLogger.Error($"Error in {this.Key} for '{this.ItemID}' from {this.Origin}. Size values must be between between {Min} and {Max}.");
                 return false;
             }
 
@@ -91,12 +91,12 @@
             try
             {
                 CraftDataHandler.SetItemSize(this.TechType, this.Width, this.Height);
-                QuickLogger.Message($"'{this.ItemID}' was resized to {this.Width}x{this.Height}");
+                QuickLogger.Message($"'{this.ItemID}' from {this.Origin} was resized to {this.Width}x{this.Height}");
                 return true;
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.ItemID}' from {this.Origin}", ex);
                 return false;
             }
         }

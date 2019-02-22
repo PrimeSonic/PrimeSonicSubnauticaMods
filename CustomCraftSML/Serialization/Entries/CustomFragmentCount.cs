@@ -58,17 +58,17 @@
 
                 if (this.TechType > TechType.Databox)
                 {
-                    QuickLogger.Warning($"Item '{this.ItemID}' appears to be a modded item. CustomFragmentCount can only be applied to existing game items.");
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} appears to be a modded item. {this.Key} can only be applied to existing game items.");
                     return false;
                 }
 
                 PDAHandler.EditFragmentsToScan(this.TechType, fragCount);
-                QuickLogger.Message($"'{this.ItemID}' now requires {fragCount} fragments scanned to unlock.");
+                QuickLogger.Message($"'{this.ItemID}' from {this.Origin} now requires {fragCount} fragments scanned to unlock.");
                 return true;
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling Custom Fragment Count '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling Custom Fragment Count '{this.ItemID}' from {this.Origin}", ex);
                 return false;
             }
         }

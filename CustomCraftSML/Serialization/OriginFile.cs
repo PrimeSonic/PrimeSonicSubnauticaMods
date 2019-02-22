@@ -27,6 +27,6 @@
             FileName = fileName;
         }
 
-        public override string ToString() => $"OriginFile:{FileName}";
+        public override string ToString() => $"WorkingFiles:{FileName}";
     }
 }

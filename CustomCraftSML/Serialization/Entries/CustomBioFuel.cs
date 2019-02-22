@@ -52,12 +52,12 @@
             try
             {
                 BioReactorHandler.SetBioReactorCharge(this.TechType, this.Energy);
-                QuickLogger.Message($"'{this.ItemID}' now provides {this.Energy} energy in the BioReactor");
+                QuickLogger.Message($"'{this.ItemID}' now provides {this.Energy} energy in the BioReactor - Entry from {this.Origin}");
                 return true;
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling Modified Recipe '{this.ItemID} from {this.Origin}'", ex);
                 return false;
             }
         }

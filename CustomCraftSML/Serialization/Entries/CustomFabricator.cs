@@ -116,7 +116,7 @@
         public ICollection<string> AddedRecipeIDs => this.UniqueAddedRecipes.Keys;
         public ICollection<string> AliasRecipesIDs => this.UniqueAliasRecipes.Keys;
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidFabricatorValues() & ValidateInternalEntries();
+        public override bool PassesPreValidation() => InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues() & ValidateInternalEntries();
 
         private bool ValidFabricatorValues()
         {
@@ -128,7 +128,7 @@
                     this.BuildableFabricator = new CustomFabricatorBuildable(this);
                     break;
                 default:
-                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}|{ModelTypes.MoonPool}");
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}|{ModelTypes.MoonPool}");
                     return false;
             }
 
@@ -150,7 +150,7 @@
             if (!string.IsNullOrEmpty(this.FunctionalID))
             {
                 this.FunctionalID = string.Empty;
-                QuickLogger.Warning($"{FunctionalIdKey} is not valid for {this.Key} entries. Was detected on '{this.ItemID}'. Please remove and try again.");
+                QuickLogger.Warning($"{FunctionalIdKey} is not valid for {this.Key} entries. Was detected on '{this.ItemID}' from {this.Origin}. Please remove and try again.");
                 return false;
             }
 
@@ -169,7 +169,7 @@
                 }
                 catch (Exception ex)
                 {
-                    QuickLogger.Error($"Exception thrown while handling {this.Key} entry '{this.ItemID}'", ex);
+                    QuickLogger.Error($"Exception thrown while handling {this.Key} entry '{this.ItemID}' from {this.Origin}", ex);
                     return false;
                 }
 
@@ -209,7 +209,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling {entry.Key} '{entry.ItemID}'", ex);
+                QuickLogger.Error($"Exception thrown while handling {entry.Key} '{entry.ItemID}' from {this.Origin}", ex);
 
             }
         }
@@ -225,7 +225,7 @@
 
                 if (uniqueEntries.ContainsKey(entry.ID))
                 {
-                    QuickLogger.Warning($"Duplicate entry for {entry.Key} '{entry.ID}' was already added by another working file. Kept first one. Discarded duplicate.");
+                    QuickLogger.Warning($"Duplicate entry for {entry.Key} '{entry.ID}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
                 }
                 else
                 {
@@ -254,25 +254,25 @@
 
         public void DuplicateCustomTabDiscovered(string id)
         {
-            QuickLogger.Warning($"Duplicate entry for {CustomCraftingTabList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            QuickLogger.Warning($"Duplicate entry for {CustomCraftingTabList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
             this.UniqueCustomTabs.Remove(id);
         }
 
         public void DuplicateMovedRecipeDiscovered(string id)
         {
-            QuickLogger.Warning($"Duplicate entry for {MovedRecipeList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            QuickLogger.Warning($"Duplicate entry for {MovedRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
             this.UniqueMovedRecipes.Remove(id);
         }
 
         public void DuplicateAddedRecipeDiscovered(string id)
         {
-            QuickLogger.Warning($"Duplicate entry for {AddedRecipeList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            QuickLogger.Warning($"Duplicate entry for {AddedRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
             this.UniqueAddedRecipes.Remove(id);
         }
 
         public void DuplicateAliasRecipesDiscovered(string id)
         {
-            QuickLogger.Warning($"Duplicate entry for {AliasRecipeList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            QuickLogger.Warning($"Duplicate entry for {AliasRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
             this.UniqueAliasRecipes.Remove(id);
         }
 

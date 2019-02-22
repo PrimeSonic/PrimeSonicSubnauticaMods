@@ -148,7 +148,7 @@
 
             if (this.FabricatorType == CraftTree.Type.None)
             {
-                QuickLogger.Error($"Error on crafting tab '{this.TabID}'. ParentTabPath must identify a fabricator for the custom tab.");
+                QuickLogger.Error($"Error on crafting tab '{this.TabID}'. {ParentTabPathKey} must identify a fabricator for the custom tab.");
                 return false;
             }
 
@@ -165,7 +165,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.TabID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.TabID}' from {this.Origin}", ex);
                 return false;
             }
         }
@@ -190,17 +190,17 @@
 
             if (File.Exists(imagePath))
             {
-                QuickLogger.Message($"Custom sprite found in Assets folder for {this.Key} '{this.TabID}'");
+                QuickLogger.Message($"Custom sprite found in Assets folder for {this.Key} '{this.TabID}' from {this.Origin}");
                 return ImageUtils.LoadSpriteFromFile(imagePath);
             }
 
             if (this.SpriteItemID != TechType.None)
             {
-                QuickLogger.Message($"SpriteItemID used for {this.Key} '{this.TabID}'");
+                QuickLogger.Message($"SpriteItemID used for {this.Key} '{this.TabID}' from {this.Origin}");
                 return SpriteManager.Get(this.SpriteItemID);
             }
 
-            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.TabID}'");
+            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.TabID}' from {this.Origin}");
             return SpriteManager.Get(TechType.None);
         }
     }

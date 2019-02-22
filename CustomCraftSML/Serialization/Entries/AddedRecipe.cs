@@ -91,7 +91,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling Added Recipe '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling Added Recipe '{this.ItemID}' from  from {this.Origin}", ex);
                 return false;
             }
         }

@@ -39,7 +39,7 @@
         {
             if (!this.ParentTabPath.StartsWith(this.ParentFabricator.ItemID))
             {
-                QuickLogger.Warning($"Inner {this.Key} for {this.ParentFabricator.Key} appears to have a {ParentTabPathKey} for another fabricator '{this.ParentTabPath}'");
+                QuickLogger.Warning($"Inner {this.Key} for {this.ParentFabricator.Key} from {this.Origin} appears to have a {ParentTabPathKey} for another fabricator '{this.ParentTabPath}'");
                 return false;
             }
 
@@ -65,7 +65,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.TabID}'", ex);
+                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.TabID}' from {this.Origin}", ex);
                 return false;
             }
         }

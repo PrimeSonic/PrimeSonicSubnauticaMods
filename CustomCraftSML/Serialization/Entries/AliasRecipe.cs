@@ -110,7 +110,7 @@
 
             if (FunctionalCloneID == TechType.None)
             {
-                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
                 return false;
             }
 
@@ -137,7 +137,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.ItemID}' from {this.Origin}", ex);
                 return false;
             }
         }
@@ -148,7 +148,7 @@
 
             if (File.Exists(imagePath))
             {
-                QuickLogger.Message($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}'");
+                QuickLogger.Message($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
@@ -156,7 +156,7 @@
 
             if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
             {
-                QuickLogger.Message($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}'");
+                QuickLogger.Message($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = SpriteManager.Get(this.SpriteItemID);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
@@ -164,13 +164,13 @@
 
             if (this.LinkedItems.Count > 0)
             {
-                QuickLogger.Message($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}'");
+                QuickLogger.Message($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = SpriteManager.Get(this.LinkedItems[0]);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
             }
 
-            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}'");
+            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
         }
 
         protected void HandleFunctionalClone()
@@ -179,7 +179,7 @@
             {
                 var clone = new FunctionalClone(this, FunctionalCloneID);
                 PrefabHandler.RegisterPrefab(clone);
-                QuickLogger.Message($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}'");
+                QuickLogger.Message($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}' - Entry from {this.Origin}");
             }
         }
     }
