@@ -35,6 +35,8 @@
             emEnergy = (EmProperty<float>)Properties[EnergyKey];
         }
 
+        public OriginFile Origin { get; set; }
+
         public string ID => this.ItemID;
 
         public float Energy

@@ -1,6 +1,6 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    public interface IAddedRecipe : IModifiedRecipe
+    internal interface IAddedRecipe : IModifiedRecipe
     {
         string Path { get; }
         TechGroup PdaGroup { get; }

@@ -14,14 +14,14 @@
         internal IList<CustomCraftEntry> ParsedEntries { get; } = new List<CustomCraftEntry>();
         internal IDictionary<string, CustomCraftEntry> UniqueEntries { get; } = new Dictionary<string, CustomCraftEntry>();
 
-        internal string TypeName { get; } = typeof(CustomCraftEntry).Name;
+        public string TypeName { get; } = typeof(CustomCraftEntry).Name;
 
         public ParsingPackage(string listKey)
         {
             this.ListKey = listKey;
         }
 
-        public int ParseEntries(string serializedData)
+        public int ParseEntries(string serializedData, OriginFile file)
         {
             var list = new EmCollectionListT();
 
@@ -36,6 +36,7 @@
             int count = 0;
             foreach (CustomCraftEntry item in list)
             {
+                item.Origin = file;
                 this.ParsedEntries.Add(item);
                 count++;
             }
@@ -54,7 +55,7 @@
 
                 if (this.UniqueEntries.ContainsKey(item.ID))
                 {
-                    QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' was already added by another working file. Kept first one. Discarded duplicate.");
+                    QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
                 }
                 else
                 {

@@ -59,6 +59,8 @@
             new EmProperty<short>(HeightKey, 1)
         };
 
+        public OriginFile Origin { get; set; }
+
         public CustomSize() : this("CustomSize", SizeProperties)
         {
         }

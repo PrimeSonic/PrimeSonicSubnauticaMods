@@ -98,6 +98,8 @@
             new EmPropertyList<string>(UnlockedByKey) { Optional = true },
         };
 
+        public OriginFile Origin { get; set; }
+
         internal ModifiedRecipe(TechType origTechType) : this()
         {
             ITechData origRecipe = CraftData.Get(origTechType);

@@ -26,6 +26,8 @@
             emFragmentCount = (EmProperty<int>)Properties["FragmentsToScan"];
         }
 
+        public OriginFile Origin { get; set; }
+
         internal CustomFragmentCount(string itemID, int fragmentsToScan) : this()
         {
             this.ItemID = itemID;

@@ -29,11 +29,12 @@
             "        If a custom tab goes inside another custom tab, then the parent tab must be placed above the child tab.",
         };
 
+        public const string TypeName = "CustomTab";
         protected const string TabIdKey = "TabID";
         protected const string DisplayNameKey = "DisplayName";
         protected const string SpriteItemIdKey = "SpriteItemID";
         protected const string ParentTabPathKey = "ParentTabPath";
-
+        
         protected readonly EmProperty<string> emTabID;
         protected readonly EmProperty<string> emDisplayName;
         protected readonly EmProperty<TechType> emSpriteID;
@@ -49,7 +50,7 @@
             new EmProperty<string>(ParentTabPathKey),
         };
 
-        public CustomCraftingTab() : this("CustomTab", CustomCraftingTabProperties)
+        public CustomCraftingTab() : this(TypeName, CustomCraftingTabProperties)
         {
         }
 
@@ -62,6 +63,8 @@
 
             base.OnValueExtractedEvent += ParsePath;
         }
+
+        public OriginFile Origin { get; set; }
 
         internal CustomCraftingTab(string path) : this()
         {

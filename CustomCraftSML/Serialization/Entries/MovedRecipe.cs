@@ -15,6 +15,9 @@
         private const string NewPathKey = "NewPath";
         private const string HiddenKey = "Hidden";
         private const string CopyKey = "CopyToNewPath";
+
+        public const string TypeName = "MovedRecipe";
+
         internal static readonly string[] TutorialText = new[]
         {
            $"{MovedRecipeList.ListKey}: Further customize the crafting tree to your liking. Move a crafting node or get rid of it.",
@@ -46,7 +49,9 @@
             new EmYesNo(CopyKey, false){ Optional = true }
         };
 
-        public MovedRecipe() : this("MovedRecipe", MovedRecipeProperties)
+        public OriginFile Origin { get; set; }
+
+        public MovedRecipe() : this(TypeName, MovedRecipeProperties)
         {
         }
 

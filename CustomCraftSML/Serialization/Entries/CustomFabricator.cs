@@ -17,7 +17,7 @@
         MoonPool,
     }
 
-    internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe>
+    internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe>, IFabricatorEntries
     {
         protected const string ModelKey = "Model";
         protected const string HueOffsetKey = "Color";
@@ -100,16 +100,21 @@
         public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }
         public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; private set; }
 
-        internal IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
-        internal IDictionary<string, CfMovedRecipe> UniqueMovedRecipes { get; } = new Dictionary<string, CfMovedRecipe>();
-        internal IDictionary<string, CfAddedRecipe> UniqueAddedRecipes { get; } = new Dictionary<string, CfAddedRecipe>();
-        internal IDictionary<string, CfAliasRecipe> UniqueAliasRecipes { get; } = new Dictionary<string, CfAliasRecipe>();
+        public IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
+        public IDictionary<string, CfMovedRecipe> UniqueMovedRecipes { get; } = new Dictionary<string, CfMovedRecipe>();
+        public IDictionary<string, CfAddedRecipe> UniqueAddedRecipes { get; } = new Dictionary<string, CfAddedRecipe>();
+        public IDictionary<string, CfAliasRecipe> UniqueAliasRecipes { get; } = new Dictionary<string, CfAliasRecipe>();
 
         public string ListKey { get; }
 
         public CraftTree.Type TreeTypeID { get; set; }
 
         public ModCraftTreeRoot RootNode { get; set; }
+
+        public ICollection<string> CustomTabIDs => this.UniqueCustomTabs.Keys;
+        public ICollection<string> MovedRecipeIDs => this.UniqueMovedRecipes.Keys;
+        public ICollection<string> AddedRecipeIDs => this.UniqueAddedRecipes.Keys;
+        public ICollection<string> AliasRecipesIDs => this.UniqueAliasRecipes.Keys;
 
         public override bool PassesPreValidation() => base.PassesPreValidation() & ValidFabricatorValues() & ValidateInternalEntries();
 
@@ -245,6 +250,30 @@
 
             if (uniqueEntries.Count > 0)
                 QuickLogger.Message($"{successCount} of {uniqueEntries.Count} {typeof(CustomCraftEntry).Name} entries were patched");
+        }
+
+        public void DuplicateCustomTabDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {CustomCraftingTabList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            this.UniqueCustomTabs.Remove(id);
+        }
+
+        public void DuplicateMovedRecipeDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {MovedRecipeList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            this.UniqueMovedRecipes.Remove(id);
+        }
+
+        public void DuplicateAddedRecipeDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {AddedRecipeList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            this.UniqueAddedRecipes.Remove(id);
+        }
+
+        public void DuplicateAliasRecipesDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {AliasRecipeList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            this.UniqueAliasRecipes.Remove(id);
         }
     }
 }

@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Fabricators\CustomFabricatorBuildable.cs" />
     <Compile Include="FunctionalClone.cs" />
+    <Compile Include="Interfaces\IFabricatorEntries.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
     <Compile Include="Interfaces\ICustomCraft.cs" />
     <Compile Include="Interfaces\ICustomFabricator.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Interfaces\ICustomBioFuel.cs" />
     <Compile Include="Interfaces\ICustomSize.cs" />
     <Compile Include="Interfaces\IModifiedRecipe.cs" />
+    <Compile Include="Serialization\OriginFile.cs" />
     <Compile Include="Serialization\ParsingPackage.cs" />
     <Compile Include="ValidBioFuels.cs" />
     <Compile Include="ValidTechTypes.cs" />

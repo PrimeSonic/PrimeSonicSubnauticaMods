@@ -18,6 +18,8 @@
         protected const string FunctionalIdKey = "FunctionalID";
         protected const string SpriteItemIdKey = "SpriteItemID";
 
+        public new const string TypeName = "AliasRecipe";
+
         internal static new readonly string[] TutorialText = new[]
         {
            $"{AliasRecipeList.ListKey}: A powerful tool with multiple applications.",
@@ -74,7 +76,7 @@
             new EmProperty<TechType>(SpriteItemIdKey) { Optional = true }
         };
 
-        public AliasRecipe() : this("AliasRecipe", AliasRecipeProperties)
+        public AliasRecipe() : this(TypeName, AliasRecipeProperties)
         {
         }
 
@@ -88,7 +90,7 @@
             amountCrafted.DefaultValue = 0;
         }
 
-        internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy() => new AliasRecipe(AliasRecipe.TypeName, this.CopyDefinitions);
 
         public override bool PassesPreValidation()
         {

@@ -17,6 +17,8 @@
         protected const string PdaGroupKey = "PdaGroup";
         protected const string PdaCategoryKey = "PdaCategory";
 
+        public const string TypeName = "AddedRecipe";
+
         internal static new readonly string[] TutorialText = new[]
         {
            $"{AddedRecipeList.ListKey}: Adding your own recipes into any of the existing fabricators.",
@@ -57,7 +59,7 @@
             set => techCategory.Value = value;
         }
 
-        public AddedRecipe() : this("AddedRecipe", AddedRecipeProperties)
+        public AddedRecipe() : this(TypeName, AddedRecipeProperties)
         {
         }
 
