@@ -1,16 +1,23 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
     using System;
+    using System.Collections.Generic;
     using Common;
+    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.PublicAPI;
     using SMLHelper.V2.Crafting;
 
     internal class CfCustomCraftingTab : CustomCraftingTab, ICustomFabricatorEntry
     {
-        public CfCustomCraftingTab()
+        public CfCustomCraftingTab() : this(TypeName, CustomCraftingTabProperties)
         {
             base.OnValueExtractedEvent -= ParsePath;
+        }
+
+        protected CfCustomCraftingTab(string key, ICollection<EmProperty> definitions) : base()
+        {
+
         }
 
         public CustomFabricator ParentFabricator { get; set; }
@@ -41,6 +48,7 @@
 
         public override bool SendToSMLHelper()
         {
+
             try
             {
                 if (this.IsAtRoot)
@@ -61,5 +69,7 @@
                 return false;
             }
         }
+
+        internal override EmProperty Copy() => new CfCustomCraftingTab(this.Key, this.CopyDefinitions);
     }
 }

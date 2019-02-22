@@ -100,7 +100,7 @@
             return serialValues.TrimEnd(SpChar_ListItemSplitter) + SpChar_FinishComplexValue;
         }
 
-        internal override EmProperty Copy() => new EmPropertyCollectionList<ListedType>(this.Key);
+        internal override EmProperty Copy() => new EmPropertyCollectionList<ListedType>(this.Key) { Optional = this.Optional };
 
         internal override bool ValueEquals(EmProperty other)
         {

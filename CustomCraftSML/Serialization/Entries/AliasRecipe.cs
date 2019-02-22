@@ -90,7 +90,7 @@
             amountCrafted.DefaultValue = 0;
         }
 
-        internal override EmProperty Copy() => new AliasRecipe(AliasRecipe.TypeName, this.CopyDefinitions);
+        internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);
 
         public override bool PassesPreValidation()
         {

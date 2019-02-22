@@ -46,9 +46,9 @@
             new EmYesNo(AllowedInBaseKey, true) { Optional = true },
             new EmYesNo(AllowedInCyclopsKey, true) { Optional = true },
             new EmPropertyCollectionList<CfCustomCraftingTab>(CfCustomCraftingTabListKey) { Optional = true },
-            new EmPropertyCollectionList<CfAddedRecipe>(CfAddedRecipeListKey) { Optional = true },
-            new EmPropertyCollectionList<CfAddedRecipe>(CfAddedRecipeListKey) { Optional = true },
             new EmPropertyCollectionList<CfMovedRecipe>(CfMovedRecipeListKey) { Optional = true },
+            new EmPropertyCollectionList<CfAddedRecipe>(CfAddedRecipeListKey) { Optional = true },
+            new EmPropertyCollectionList<CfAliasRecipe>(CfAliasRecipeListKey) { Optional = true },
         };
 
         public CustomFabricator() : this("CustomFabricator", CustomFabricatorProperties)
@@ -62,9 +62,9 @@
             allowedInBase = (EmYesNo)Properties[AllowedInBaseKey];
             allowedInCyclops = (EmYesNo)Properties[AllowedInCyclopsKey];
             this.CustomCraftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
-            this.AliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
-            this.AddedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
             this.MovedRecipes = (EmPropertyCollectionList<CfMovedRecipe>)Properties[CfMovedRecipeListKey];
+            this.AddedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
+            this.AliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
 
             (Properties[PathKey] as EmProperty<string>).Optional = true;
         }
@@ -100,16 +100,16 @@
         public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }
         public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; private set; }
 
-        public IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
-        public IDictionary<string, CfMovedRecipe> UniqueMovedRecipes { get; } = new Dictionary<string, CfMovedRecipe>();
-        public IDictionary<string, CfAddedRecipe> UniqueAddedRecipes { get; } = new Dictionary<string, CfAddedRecipe>();
-        public IDictionary<string, CfAliasRecipe> UniqueAliasRecipes { get; } = new Dictionary<string, CfAliasRecipe>();
+        private IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
+        private IDictionary<string, CfMovedRecipe> UniqueMovedRecipes { get; } = new Dictionary<string, CfMovedRecipe>();
+        private IDictionary<string, CfAddedRecipe> UniqueAddedRecipes { get; } = new Dictionary<string, CfAddedRecipe>();
+        private IDictionary<string, CfAliasRecipe> UniqueAliasRecipes { get; } = new Dictionary<string, CfAliasRecipe>();
 
         public string ListKey { get; }
 
-        public CraftTree.Type TreeTypeID { get; set; }
+        public CraftTree.Type TreeTypeID { get; private set; }
 
-        public ModCraftTreeRoot RootNode { get; set; }
+        public ModCraftTreeRoot RootNode { get; private set; }
 
         public ICollection<string> CustomTabIDs => this.UniqueCustomTabs.Keys;
         public ICollection<string> MovedRecipeIDs => this.UniqueMovedRecipes.Keys;
@@ -275,5 +275,7 @@
             QuickLogger.Warning($"Duplicate entry for {AliasRecipeList.ListKey} '{id}' in {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
             this.UniqueAliasRecipes.Remove(id);
         }
+
+        internal override EmProperty Copy() => new CustomFabricator(this.Key, this.CopyDefinitions);
     }
 }

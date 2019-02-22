@@ -75,7 +75,7 @@
             return serialValues.TrimEnd(SpChar_ListItemSplitter);
         }
 
-        internal override EmProperty Copy() => new EmPropertyList<T>(this.Key, this.Values);
+        internal override EmProperty Copy() => new EmPropertyList<T>(this.Key, this.Values) { Optional = this.Optional };
 
         public virtual T ConvertFromSerial(string value)
         {

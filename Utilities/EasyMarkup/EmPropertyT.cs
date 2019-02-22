@@ -75,9 +75,9 @@
         internal override EmProperty Copy()
         {
             if (this.HasValue)
-                return new EmProperty<T>(this.Key, ObjValue);
+                return new EmProperty<T>(this.Key, ObjValue) { Optional = this.Optional };
 
-            return new EmProperty<T>(this.Key, this.DefaultValue);
+            return new EmProperty<T>(this.Key, this.DefaultValue) { Optional = this.Optional };
         }
 
         internal override bool ValueEquals(EmProperty other)

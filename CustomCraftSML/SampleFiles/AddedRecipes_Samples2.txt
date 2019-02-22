@@ -17,8 +17,6 @@ AddedRecipes:
     );
     ForceUnlockAtStart: NO;
     Path: Fabricator/Survival/CuredFood;
-    PdaGroup: Uncategorized;
-    PdaCategory: Misc;
 ),
 (
     ItemID: BigFilteredWater;
@@ -30,6 +28,4 @@ AddedRecipes:
     );
     ForceUnlockAtStart: NO;
     Path: Fabricator/Survival/Water;
-    PdaGroup: Uncategorized;
-    PdaCategory: Misc;
 );

@@ -43,8 +43,8 @@
         protected static List<EmProperty> AddedRecipeProperties => new List<EmProperty>(ModifiedRecipeProperties)
         {
             new EmProperty<string>(PathKey),
-            new EmProperty<TechGroup>(PdaGroupKey) { Optional = true },
-            new EmProperty<TechCategory>(PdaCategoryKey) { Optional = true }
+            new EmProperty<TechGroup>(PdaGroupKey, TechGroup.Uncategorized) { Optional = true },
+            new EmProperty<TechCategory>(PdaCategoryKey, TechCategory.Misc) { Optional = true }
         };
 
         public TechGroup PdaGroup
@@ -73,9 +73,6 @@
             techGroup = (EmProperty<TechGroup>)Properties[PdaGroupKey];
             techCategory = (EmProperty<TechCategory>)Properties[PdaCategoryKey];
             DefaultForceUnlock = true;
-            this.PdaGroup = TechGroup.Uncategorized;
-            this.PdaCategory = TechCategory.Misc;
-
         }
 
         internal override EmProperty Copy() => new AddedRecipe(this.Key, this.CopyDefinitions);
