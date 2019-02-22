@@ -10,7 +10,7 @@
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
 
-    internal enum ModelTypes
+    public enum ModelTypes
     {
         Fabricator,
         Workbench,

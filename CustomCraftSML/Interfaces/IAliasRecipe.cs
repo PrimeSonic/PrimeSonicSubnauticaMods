@@ -1,6 +1,6 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    internal interface IAliasRecipe : IAddedRecipe
+    public interface IAliasRecipe : IAddedRecipe
     {
         string DisplayName { get; }
         string Tooltip { get; }

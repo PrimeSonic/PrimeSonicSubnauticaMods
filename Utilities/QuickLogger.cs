@@ -6,6 +6,18 @@
 
     internal static class QuickLogger
     {
+        internal static bool DebugLogsEnabled = false;
+
+        public static void Info(string msg, bool showOnScreen = false)
+        {
+            string name = Assembly.GetCallingAssembly().GetName().Name;
+
+            Console.WriteLine($"[{name}](INFO) {msg}");
+
+            if (showOnScreen)
+                ErrorMessage.AddMessage(msg);
+        }
+
         public static void Message(string msg, bool showOnScreen = false)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
@@ -18,21 +30,23 @@
 
         public static void Debug(string msg, bool showOnScreen = false)
         {
-#if DEBUG
+            if (!DebugLogsEnabled)
+                return;
+
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
-            Console.WriteLine($"[{name}] DEBUG: {msg}");
+            Console.WriteLine($"[{name}](DEBUG) {msg}");
 
             if (showOnScreen)
                 ErrorMessage.AddDebug(msg);
-#endif
+
         }
 
         public static void Error(string msg, bool showOnScreen = false)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
-            Console.WriteLine($"[{name}] ERROR: {msg}");
+            Console.WriteLine($"[{name}](ERROR) {msg}");
 
             if (showOnScreen)
                 ErrorMessage.AddError(msg);
@@ -42,21 +56,21 @@
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
-            Console.WriteLine($"[{name}] ERROR: {msg}{Environment.NewLine}{ex.ToString()}");
+            Console.WriteLine($"[{name}](ERROR) {msg}{Environment.NewLine}{ex.ToString()}");
         }
 
         public static void Error(Exception ex)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
-            Console.WriteLine($"[{name}] ERROR: {ex.ToString()}");
+            Console.WriteLine($"[{name}](ERROR) {ex.ToString()}");
         }
 
         public static void Warning(string msg, bool showOnScreen = false)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
 
-            Console.WriteLine($"[{name}] WARN: {msg}");
+            Console.WriteLine($"[{name}](WARN) {msg}");
 
             if (showOnScreen)
                 ErrorMessage.AddWarning(msg);
@@ -75,9 +89,6 @@
             return FormatToSimpleVersion(fvi);
         }
 
-        private static string FormatToSimpleVersion(FileVersionInfo version)
-        {
-            return $"{version.FileMajorPart}.{version.FileMinorPart}.{version.FileBuildPart}";
-        }
+        private static string FormatToSimpleVersion(FileVersionInfo version) => $"{version.FileMajorPart}.{version.FileMinorPart}.{version.FileBuildPart}";
     }
 }

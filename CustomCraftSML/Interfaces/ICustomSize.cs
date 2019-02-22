@@ -1,6 +1,6 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    internal interface ICustomSize : ITechTyped, ICustomCraft
+    public interface ICustomSize : ITechTyped
     {
         short Height { get; }
         short Width { get; }

@@ -50,24 +50,27 @@
 
             string[] workingFiles = Directory.GetFiles(WorkingFolder);
 
-            QuickLogger.Message($"{workingFiles.Length} files found in the WorkingFiles folder");
-            foreach (string file in workingFiles)
-                DeserializeFile(file);
+            QuickLogger.Info($"{workingFiles.Length} files found in the WorkingFiles folder");
 
-            QuickLogger.Message($"Validating entries - First Pass");
+            int rollingCount = 0;
+            foreach (string file in workingFiles)
+                rollingCount+= DeserializeFile(file);
+
+            QuickLogger.Info($"{rollingCount} total entries discovered across all files.");
+
+            QuickLogger.Debug($"Validating entries - First Pass");
             foreach (IParsingPackage package in OrderedPackages)
                 package.PrePassValidation();
 
-            QuickLogger.Message($"Validating entries - Second Pass");
+            QuickLogger.Debug($"Validating entries - Second Pass");
             MasterUniquenessValidation();
 
-
-            QuickLogger.Message($"Sending requests to SMLHelper");
+            QuickLogger.Debug($"Sending requests to SMLHelper");
             foreach (IParsingPackage package in OrderedPackages)
                 package.SendToSMLHelper();
         }
 
-        private static void DeserializeFile(string workingFilePath)
+        private static int DeserializeFile(string workingFilePath)
         {
             string fileName = Path.GetFileName(workingFilePath);
 
@@ -76,7 +79,7 @@
             if (string.IsNullOrEmpty(serializedData))
             {
                 QuickLogger.Warning($"File '{fileName}' contained no text");
-                return;
+                return 0;
             }
 
             if (EmProperty.CheckKey(serializedData, out string key))
@@ -88,8 +91,8 @@
                 }
                 else
                 {
-                    QuickLogger.Error($"Unknown primary key '{key}' detected in file '{fileName}'");
-                    return;
+                    QuickLogger.Warning($"Unknown primary key '{key}' detected in file '{fileName}'");
+                    return 0;
                 }
 
                 switch (check)
@@ -98,20 +101,22 @@
                         QuickLogger.Error($"Unexpected error when attempting to parse file '{fileName}'");
                         break;
                     case -1:
-                        QuickLogger.Error($"Unable to parse file '{fileName}'");
+                        QuickLogger.Warning($"Unable to parse file '{fileName}'");
                         break;
                     case 0:
-                        QuickLogger.Message($"File '{fileName}' was parsed but no entries were found");
+                        QuickLogger.Warning($"File '{fileName}' was parsed but no entries were found");
                         break;
                     default:
-                        QuickLogger.Message($"{check} entries parsed from file '{fileName}'");
-                        break;
+                        QuickLogger.Debug($"{check} entries parsed from file '{fileName}'");
+                        return check;
                 }
             }
             else
             {
-                QuickLogger.Warning($"Could not identify primary key in file '{fileName}'");
+                QuickLogger.Warning($"Could not identify primary key in file '{fileName}'");                
             }
+
+            return 0;
         }
 
         private static void MasterUniquenessValidation()
@@ -122,41 +127,23 @@
             var allAlias = new HashSet<string>(AliasRecipes.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
 
             foreach (IFabricatorEntries entries in CustomFabricatorParser.UniqueEntries.Values)
-            {
-                foreach (string tabID in entries.CustomTabIDs)
-                {
-                    if (allTabs.Contains(tabID))
-                        entries.DuplicateCustomTabDiscovered(tabID);
-                    else
-                        allTabs.Add(tabID);
-                }
-
-                foreach (string moveID in entries.MovedRecipeIDs)
-                {
-                    if (allMoves.Contains(moveID))
-                        entries.DuplicateMovedRecipeDiscovered(moveID);
-                    else
-                        allMoves.Add(moveID);
-                }
-
-                foreach (string addID in entries.AddedRecipeIDs)
-                {
-                    if (allAdded.Contains(addID))
-                        entries.DuplicateAddedRecipeDiscovered(addID);
-                    else
-                        allAdded.Add(addID);
-                }
-
-                foreach (string aliasID in entries.AliasRecipesIDs)
-                {
-                    if (allAlias.Contains(aliasID))
-                        entries.DuplicateAliasRecipesDiscovered(aliasID);
-                    else
-                        allAlias.Add(aliasID);
-                }
+            {                
+                ValidateSets(allTabs, entries.CustomTabIDs, entries.DuplicateCustomTabDiscovered);
+                ValidateSets(allMoves, entries.MovedRecipeIDs, entries.DuplicateMovedRecipeDiscovered);
+                ValidateSets(allAdded, entries.AddedRecipeIDs, entries.DuplicateAddedRecipeDiscovered);
+                ValidateSets(allAlias, entries.AliasRecipesIDs, entries.DuplicateAliasRecipesDiscovered);                                
             }
         }
 
-
+        private static void ValidateSets(HashSet<string> masterSet, ICollection<string> setToCheck, Action<string> informDuplicate)
+        {
+            foreach (string id in setToCheck)
+            {
+                if (masterSet.Contains(id))
+                    informDuplicate.Invoke(id);
+                else
+                    masterSet.Add(id);
+            }
+        }
     }
 }

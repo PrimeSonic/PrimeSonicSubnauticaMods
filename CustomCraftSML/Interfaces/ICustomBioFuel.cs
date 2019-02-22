@@ -1,6 +1,6 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    internal interface ICustomBioFuel : ITechTyped, ICustomCraft
+    public interface ICustomBioFuel : ITechTyped
     {
         float Energy { get; }
     }

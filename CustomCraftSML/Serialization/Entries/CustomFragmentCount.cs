@@ -8,7 +8,7 @@
     using CustomCraft2SML.Serialization.Components;
     using SMLHelper.V2.Handlers;
 
-    internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount
+    internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount, ICustomCraft
     {
         private readonly EmProperty<int> emFragmentCount;
 

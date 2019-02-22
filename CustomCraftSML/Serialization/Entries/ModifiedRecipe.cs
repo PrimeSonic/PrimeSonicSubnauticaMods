@@ -10,7 +10,7 @@
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
 
-    internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe
+    internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     {
         internal static readonly string[] TutorialText = new[]
         {

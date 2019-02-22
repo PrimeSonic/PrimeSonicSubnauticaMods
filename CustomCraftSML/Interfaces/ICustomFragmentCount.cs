@@ -1,6 +1,6 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    interface ICustomFragmentCount : ITechTyped, ICustomCraft
+    public interface ICustomFragmentCount : ITechTyped
     {
         int FragmentsToScan { get; }
     }

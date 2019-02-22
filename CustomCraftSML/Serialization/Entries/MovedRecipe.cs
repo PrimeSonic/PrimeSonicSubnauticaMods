@@ -9,7 +9,7 @@
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
 
-    internal class MovedRecipe : EmTechTyped, IMovedRecipe
+    internal class MovedRecipe : EmTechTyped, IMovedRecipe, ICustomCraft
     {
         private const string OldPathKey = "OldPath";
         private const string NewPathKey = "NewPath";

@@ -3,11 +3,11 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Serialization.Entries;
 
-    internal interface ICustomFabricator<Tab, Moved, Added, Alias> : IAliasRecipe
-        where Tab : CustomCraftingTab, new()
-        where Moved : MovedRecipe, new()        
-        where Added : AddedRecipe, new()
-        where Alias : AliasRecipe, new()
+    public interface ICustomFabricator<Tab, Moved, Added, Alias> : IAliasRecipe
+        where Tab : EmPropertyCollection, ICraftingTab, new()
+        where Moved : EmPropertyCollection, IMovedRecipe, new()        
+        where Added : EmPropertyCollection, IAddedRecipe, new()
+        where Alias : EmPropertyCollection, IAliasRecipe, new()
     {
         ModelTypes Model { get; }
         int HueOffset { get; }

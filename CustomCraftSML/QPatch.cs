@@ -7,7 +7,7 @@
     {
         public static void Patch()
         {
-            QuickLogger.Message($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
+            QuickLogger.Info($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
 
             try
             {
@@ -17,7 +17,7 @@
 
                 FileReaderWriter.HandleWorkingFiles();
 
-                QuickLogger.Message("Finished patching.");
+                QuickLogger.Info("Finished patching.");
             }
             catch (Exception ex)
             {

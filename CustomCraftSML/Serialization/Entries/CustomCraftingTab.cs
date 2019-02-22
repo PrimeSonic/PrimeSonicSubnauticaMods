@@ -11,7 +11,7 @@
     using SMLHelper.V2.Utility;
     using IOPath = System.IO.Path;
 
-    internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab
+    internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCraft
     {
         internal static readonly string[] TutorialText = new[]
         {
