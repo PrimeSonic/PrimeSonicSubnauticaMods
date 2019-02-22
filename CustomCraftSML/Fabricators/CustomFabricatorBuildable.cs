@@ -20,8 +20,8 @@
             OnFinishedPatching += FabricatorDetails.FinishCustomCraftingTree;
         }
 
-        public override TechGroup GroupForPDA { get; } = TechGroup.Miscellaneous;
-        public override TechCategory CategoryForPDA { get; } = TechCategory.Misc;
+        public override TechGroup GroupForPDA => FabricatorDetails.PdaGroup;
+        public override TechCategory CategoryForPDA => FabricatorDetails.PdaCategory;
         public override string AssetsFolder { get; } = FileReaderWriter.RootModName + "/Assets";
         public override string IconFileName => $"{FabricatorDetails.Model}.png";
 

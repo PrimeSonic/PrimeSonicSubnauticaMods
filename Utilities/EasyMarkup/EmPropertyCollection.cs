@@ -19,7 +19,7 @@
 
         public readonly ICollection<EmProperty> Definitions;
 
-        public EmPropertyCollection(string key, ICollection<EmProperty> definitions)
+        protected EmPropertyCollection(string key, ICollection<EmProperty> definitions)
         {
             this.Key = key;
             Definitions = definitions;

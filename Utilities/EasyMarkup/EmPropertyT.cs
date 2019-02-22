@@ -6,9 +6,7 @@
 
     public class EmProperty<T> : EmProperty, IValueConfirmation where T : IConvertible
     {
-        public string InLineComment { get; set; } = null;
-
-        public bool Optional { get; set; } = false;
+        public string InLineComment { get; set; } = null;        
 
         public bool HasValue { get; set; } = false;
 

@@ -8,8 +8,6 @@
     public class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation 
         where ListedType : EmPropertyCollection, new()
     {
-        public bool Optional { get; set; } = false;
-
         public bool HasValue => Count > 0;
 
         public Type ItemType => typeof(ListedType);

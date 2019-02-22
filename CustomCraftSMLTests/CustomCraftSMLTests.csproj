@@ -102,6 +102,7 @@
     <Compile Include="SampleFileTests.cs" />
     <Compile Include="StringBufferTests.cs" />
     <Compile Include="TechTypeParsingTests.cs" />
+    <Compile Include="VModFabricatorFiles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
