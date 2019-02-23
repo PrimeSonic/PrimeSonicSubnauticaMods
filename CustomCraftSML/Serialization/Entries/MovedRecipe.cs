@@ -15,7 +15,7 @@
         private const string OldPathKey = "OldPath";
         private const string NewPathKey = "NewPath";
         private const string HiddenKey = "Hidden";
-        private const string CopyKey = "CopyToNewPath";
+        private const string CopyKey = "Copied";
 
         public const string TypeName = "MovedRecipe";
 
@@ -83,7 +83,7 @@
             set => hidden.Value = value;
         }
 
-        public bool CopyToNewPath
+        public bool Copied
         {
             get => copyToNewPath.Value;
             set => copyToNewPath.Value = value;
@@ -97,19 +97,19 @@
 
         private bool IsValidState()
         {
-            if (!this.CopyToNewPath && string.IsNullOrEmpty(this.OldPath))
+            if (!this.Copied && string.IsNullOrEmpty(this.OldPath))
             {
                 QuickLogger.Warning($"{OldPathKey} missing while {CopyKey} was not set to 'YES' in {this.Key} for '{this.ItemID}' from {this.Origin}");
                 return false;
             }
 
-            if (this.CopyToNewPath && this.Hidden)
+            if (this.Copied && this.Hidden)
             {
                 QuickLogger.Warning($"Invalid request in {this.Key} for '{this.ItemID}' from {this.Origin}. {CopyKey} and {HiddenKey} cannot both be set to 'YES'");
                 return false;
             }
 
-            if (string.IsNullOrEmpty(this.NewPath) && (this.CopyToNewPath || !this.Hidden))
+            if (string.IsNullOrEmpty(this.NewPath) && (this.Copied || !this.Hidden))
             {
                 QuickLogger.Warning($"{NewPathKey} value missing in {this.Key} for '{this.ItemID}' from {this.Origin}");
                 return false;
@@ -120,7 +120,7 @@
 
         public bool SendToSMLHelper()
         {
-            if (this.Hidden || !this.CopyToNewPath)
+            if (this.Hidden || !this.Copied)
             {
                 var oldPath = new CraftingPath(this.OldPath, this.ItemID);
 

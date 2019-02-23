@@ -147,280 +147,280 @@
                     // Cyclops ability modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsShieldModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsAbilityTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsSonarModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsAbilityTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsSeamothRepairModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsAbilityTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsFireSuppressionModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsAbilityTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsDecoyModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsAbilityTabID}",
                     },
                     // Cyclops depth modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsHullModule1.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsDepthTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsHullModule2.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsDepthTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsHullModule3.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsDepthTabID}",
                     },
                     // Cyclops power modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.PowerUpgradeModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsPowerTabID}",
                     },
                     // Cyclops power modules - modded
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "PowerUpgradeModuleMk2",
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsPowerTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "PowerUpgradeModuleMk3",
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsPowerTabID}",
                     },
                     // Cyclops Recharge modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.CyclopsThermalReactorModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsRechargeTabID}",
                     },
                     // Cyclops Recharge modules - Modded
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "CyclopsThermalChargerMk2",
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsRechargeTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "CyclopsSolarCharger",
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsRechargeTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "CyclopsSolarChargerMk2",
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsRechargeTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "CyclopsNuclearModule",
                         NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsRechargeTabID}",
                     },
                     // Exosuit modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.ExosuitJetUpgradeModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{exosuitTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.ExosuitPropulsionArmModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{exosuitTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.ExosuitGrapplingArmModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{exosuitTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.ExosuitDrillArmModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{exosuitTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.ExosuitTorpedoArmModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{exosuitTabID}",
                     },
                     // Exosuit depth modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.ExoHullModule1.ToString(),
                         NewPath = $"{vmodFabricatorID}/{exosuitTabID}/{exosuitDepthTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.ExoHullModule2.ToString(),
                         NewPath = $"{vmodFabricatorID}/{exosuitTabID}/{exosuitDepthTabID}",
                     },
                     // Seamoth modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.SeamothSolarCharge.ToString(),
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "SeamothThermalModule",
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}",
                     },
                     // Seamoth depth modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.VehicleHullModule1.ToString(),
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothDepthTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.VehicleHullModule2.ToString(),
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothDepthTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.VehicleHullModule3.ToString(),
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothDepthTabID}",
                     },
                     // Seamoth depth modules - modded
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "SeamothHullModule4",
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothDepthTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "SeamothHullModule5",
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothDepthTabID}",
                     },
                     // Seamoth ability modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.SeamothElectricalDefense.ToString(),
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothAbilityTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.SeamothSonarModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothAbilityTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.SeamothTorpedoModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothAbilityTabID}",
                     },
                     // Seamoth ability modules - modded
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "SeamothDrillModule",
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothAbilityTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "SeamothClawModule",
                         NewPath = $"{vmodFabricatorID}/{seamothTabID}/{seamothAbilityTabID}",
                     },
                     // Common modules
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.VehicleArmorPlating.ToString(),
                         NewPath = $"{vmodFabricatorID}/{commonModulesTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.VehiclePowerUpgradeModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{commonModulesTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.VehicleStorageModule.ToString(),
                         NewPath = $"{vmodFabricatorID}/{commonModulesTabID}",
                     },
                     // Common modules - modded
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "SpeedModule",
                         NewPath = $"{vmodFabricatorID}/{commonModulesTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "ScannerModule",
                         NewPath = $"{vmodFabricatorID}/{commonModulesTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "RepairModule",
                         NewPath = $"{vmodFabricatorID}/{commonModulesTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = "LaserCannon",
                         NewPath = $"{vmodFabricatorID}/{commonModulesTabID}",
                     },
                     // Torpedoes
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.WhirlpoolTorpedo.ToString(),
                         NewPath = $"{vmodFabricatorID}/{torpedoesTabID}",
                     },
                     new CfMovedRecipe
                     {
-                        CopyToNewPath = true,
+                        Copied = true,
                         ItemID = TechType.GasTorpedo.ToString(),
                         NewPath = $"{vmodFabricatorID}/{torpedoesTabID}",
                     },
