@@ -64,7 +64,7 @@
                 }
 
                 PDAHandler.EditFragmentsToScan(this.TechType, fragCount);
-                QuickLogger.Message($"'{this.ItemID}' from {this.Origin} now requires {fragCount} fragments scanned to unlock.");
+                QuickLogger.Debug($"'{this.ItemID}' from {this.Origin} now requires {fragCount} fragments scanned to unlock.");
                 return true;
             }
             catch (Exception ex)

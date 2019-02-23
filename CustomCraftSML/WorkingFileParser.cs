@@ -10,11 +10,8 @@
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
 
-    internal static partial class FileReaderWriter
+    internal static class WorkingFileParser
     {
-        internal const string WorkingFolder = FolderRoot + "WorkingFiles/";
-        internal const string AssetsFolder = FolderRoot + "Assets/";
-
         internal static readonly ParsingPackage<CustomCraftingTab, CustomCraftingTabList> CustomTabs = new ParsingPackage<CustomCraftingTab, CustomCraftingTabList>(CustomCraftingTabList.ListKey);
         internal static readonly ParsingPackage<MovedRecipe, MovedRecipeList> MovedRecipes = new ParsingPackage<MovedRecipe, MovedRecipeList>(MovedRecipeList.ListKey);
         internal static readonly ParsingPackage<AddedRecipe, AddedRecipeList> AddedRecipes = new ParsingPackage<AddedRecipe, AddedRecipeList>(AddedRecipeList.ListKey);
@@ -25,7 +22,7 @@
         internal static readonly ParsingPackage<CustomBioFuel, CustomBioFuelList> CustomBioFuelParser = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
         internal static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCountParser = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
 
-        private static IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
+        private static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
         {
             CustomFabricatorParser,
             CustomTabs,
@@ -45,10 +42,10 @@
             foreach (IParsingPackage package in OrderedPackages)
                 PackagesLookup.Add(package.ListKey, package);
 
-            if (!Directory.Exists(AssetsFolder))
-                Directory.CreateDirectory(AssetsFolder);
+            if (!Directory.Exists(FileLocations.AssetsFolder))
+                Directory.CreateDirectory(FileLocations.AssetsFolder);
 
-            string[] workingFiles = Directory.GetFiles(WorkingFolder);
+            string[] workingFiles = Directory.GetFiles(FileLocations.WorkingFolder);
 
             QuickLogger.Info($"{workingFiles.Length} files found in the WorkingFiles folder");
 

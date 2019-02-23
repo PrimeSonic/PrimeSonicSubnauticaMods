@@ -101,7 +101,7 @@
             TechData replacement = CreateRecipeTechData(defaultCraftAmount);
 
             CraftDataHandler.SetTechData(this.TechType, replacement);
-            QuickLogger.Message($"Adding new recipe for '{this.ItemID}'");
+            QuickLogger.Debug($"Adding new recipe for '{this.ItemID}'");
 
             if (this.PdaGroup != TechGroup.Uncategorized)
             {

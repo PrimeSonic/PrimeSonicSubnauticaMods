@@ -10,4 +10,5 @@
   "Dependencies": [ "SMLHelper" ],
   "Priority": "Last",
   "LoadAfter": [ "MidGameBatteries",  "UpgradedVehicles", "MoreCyclopsUpgrades", "MoreSeamothUpgrades", "ScannerModule", "RepairModule", "LaserCannon" ],
+  "DebugLogsEnabled": false,
 }

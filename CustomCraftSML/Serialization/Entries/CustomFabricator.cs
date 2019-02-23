@@ -236,7 +236,7 @@
             }
 
             if (collectionList.Count > 0)
-                QuickLogger.Message($"{uniqueEntries.Count} of {collectionList.Count} {this.Key}:{typeof(CustomCraftEntry).Name} entries for {this.Key} staged for patching");
+                QuickLogger.Info($"{uniqueEntries.Count} of {collectionList.Count} {this.Key}:{typeof(CustomCraftEntry).Name} entries for {this.Key} staged for patching");
         }
 
         internal void SendToSMLHelper<CustomCraftEntry>(IDictionary<string, CustomCraftEntry> uniqueEntries)
@@ -250,7 +250,7 @@
             }
 
             if (uniqueEntries.Count > 0)
-                QuickLogger.Message($"{successCount} of {uniqueEntries.Count} {typeof(CustomCraftEntry).Name} entries were patched");
+                QuickLogger.Info($"{successCount} of {uniqueEntries.Count} {typeof(CustomCraftEntry).Name} entries were patched");
         }
 
         public void DuplicateCustomTabDiscovered(string id)

@@ -144,11 +144,11 @@
 
         protected void HandleCustomSprite()
         {
-            string imagePath = IOPath.Combine(FileReaderWriter.AssetsFolder, $"{this.ItemID}.png");
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
 
             if (File.Exists(imagePath))
             {
-                QuickLogger.Message($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
+                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
@@ -156,7 +156,7 @@
 
             if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
             {
-                QuickLogger.Message($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
+                QuickLogger.Debug($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = SpriteManager.Get(this.SpriteItemID);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
@@ -164,7 +164,7 @@
 
             if (this.LinkedItems.Count > 0)
             {
-                QuickLogger.Message($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}' from {this.Origin}");
+                QuickLogger.Debug($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = SpriteManager.Get(this.LinkedItems[0]);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
@@ -179,7 +179,7 @@
             {
                 var clone = new FunctionalClone(this, FunctionalCloneID);
                 PrefabHandler.RegisterPrefab(clone);
-                QuickLogger.Message($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}' - Entry from {this.Origin}");
+                QuickLogger.Debug($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}' - Entry from {this.Origin}");
             }
         }
     }

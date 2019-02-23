@@ -122,7 +122,7 @@
             var oldPath = new CraftingPath(this.OldPath, this.ItemID);
 
             CraftTreeHandler.RemoveNode(oldPath.Scheme, oldPath.CraftNodeSteps);
-            QuickLogger.Message($"Removed crafting node at '{this.ItemID}' - Entry from {this.Origin}");
+            QuickLogger.Debug($"Removed crafting node at '{this.ItemID}' - Entry from {this.Origin}");
             if (this.Hidden)
             {
                 return true;

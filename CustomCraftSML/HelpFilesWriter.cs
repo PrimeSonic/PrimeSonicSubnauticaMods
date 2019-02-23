@@ -9,25 +9,23 @@
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
 
-    internal static partial class FileReaderWriter
+    internal static partial class HelpFilesWriter
     {
-        internal const string RootModName = "CustomCraft2SML";
-        internal const string ModFriendlyName = "Custom Craft 2";
-        internal const string FolderRoot = "./QMods/" + RootModName + "/";
-        internal const string SamplesFolder = FolderRoot + "SampleFiles/";
-        internal const string OriginalsFolder = FolderRoot + "OriginalRecipes/";
-        internal const string HowToFile = FolderRoot + "README_HowToUseThisMod.txt";
+
+        
 
         private const string HorizontalLine = " -------------------------------------------- ";
-        private static readonly string ReadMeVersionLine = $"# How to use {RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
+        private static readonly string ReadMeVersionLine = $"# How to use {FileLocations.RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
+
+        
 
         internal static void GenerateOriginalRecipes()
         {
-            if (!Directory.Exists(SamplesFolder))
-                Directory.CreateDirectory(SamplesFolder);
+            if (!Directory.Exists(FileLocations.SamplesFolder))
+                Directory.CreateDirectory(FileLocations.SamplesFolder);
 
-            if (!Directory.Exists(OriginalsFolder))
-                Directory.CreateDirectory(OriginalsFolder);
+            if (!Directory.Exists(FileLocations.OriginalsFolder))
+                Directory.CreateDirectory(FileLocations.OriginalsFolder);
 
             Dictionary<TechGroup, Dictionary<TechCategory, List<TechType>>> allGroups = ValidTechTypes.groups;
 
@@ -39,7 +37,7 @@
                 {
                     string buildablesFile = $"{group}_{category}.txt";
 
-                    if (File.Exists(OriginalsFolder + buildablesFile))
+                    if (File.Exists(FileLocations.OriginalsFolder + buildablesFile))
                         continue;
 
                     List<TechType> buildablesList = groupCategories[category];
@@ -55,7 +53,7 @@
         {
             const string fileName = "BioReactor_Values.txt";
 
-            if (File.Exists(OriginalsFolder + fileName))
+            if (File.Exists(FileLocations.OriginalsFolder + fileName))
                 return;
 
             Dictionary<TechType, float> allBioFuels = ValidBioFuels.charge;
@@ -74,26 +72,26 @@
 
             printyPrints.Add(bioFuelList.PrettyPrint());
 
-            File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
+            File.WriteAllLines(FileLocations.OriginalsFolder + fileName, printyPrints.ToArray());
 
-            QuickLogger.Message($"{fileName} file not found. File generated.");
+            QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
 
         internal static void HandleReadMeFile()
         {
-            if (!File.Exists(HowToFile))
+            if (!File.Exists(FileLocations.HowToFile))
             {
-                File.WriteAllLines(HowToFile, ReadMeFileLines());
-                QuickLogger.Message($"{HowToFile} file not found. File created.");
+                File.WriteAllLines(FileLocations.HowToFile, ReadMeFileLines());
+                QuickLogger.Debug($"{FileLocations.HowToFile} file not found. File created.");
             }
             else
             {
-                string[] readmeLines = File.ReadAllLines(HowToFile);
+                string[] readmeLines = File.ReadAllLines(FileLocations.HowToFile);
 
                 if (readmeLines.Length < 1 || readmeLines[0] != ReadMeVersionLine)
                 {
-                    File.WriteAllLines(HowToFile, ReadMeFileLines());
-                    QuickLogger.Message($"{HowToFile} out of date. Regenerated with new version.");
+                    File.WriteAllLines(FileLocations.HowToFile, ReadMeFileLines());
+                    QuickLogger.Info($"{FileLocations.HowToFile} out of date. Regenerated with new version.");
                 }
             }
         }
@@ -105,9 +103,9 @@
                 ReadMeVersionLine,
                 HorizontalLine,
                 Environment.NewLine,
-                $"{ModFriendlyName} uses simple text files to send requests to SMLHelper, no coding required",
+                $"{FileLocations.ModFriendlyName} uses simple text files to send requests to SMLHelper, no coding required",
                 "This can be great for those who have a specific ideas in mind for custom crafts but don't have the means to code",
-                $"{ModFriendlyName} is dedicated to Nexus modder Iw23J, creator of the original Custom Craft mod, ",
+                $"{FileLocations.ModFriendlyName} is dedicated to Nexus modder Iw23J, creator of the original Custom Craft mod, ",
                 $"who showed us how much we can empower players to take modding into their own hands",
                 HorizontalLine,
                 $"As of version {QuickLogger.GetAssemblyVersion()}, the following features are supported:",
@@ -139,7 +137,7 @@
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add($"Creating the text files that {RootModName} uses can be simple if you're paying attention.");
+            tutorialLines.Add($"Creating the text files that {FileLocations.RootModName} uses can be simple if you're paying attention.");
             tutorialLines.Add("As easy way to get started is to copy the text from the SampleFiles or OriginalRecipes and then modify the parts you want.");
             tutorialLines.Add("When you want to add a new item reference, remember that the 'ItemID' is the internal spawn ID of that item.");
             tutorialLines.Add("    You can visit the Subnautica Wikia for the full list of item IDs at http://subnautica.wikia.com/wiki/Obtainable_Items");
@@ -208,10 +206,11 @@
 
             printyPrints.Add(originals.PrettyPrint());
 
-            File.WriteAllLines(OriginalsFolder + fileName, printyPrints.ToArray());
+            File.WriteAllLines(FileLocations.OriginalsFolder + fileName, printyPrints.ToArray());
 
-            QuickLogger.Message($"{fileName} file not found. File generated.");
+            QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
 
+        
     }
 }

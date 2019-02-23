@@ -65,7 +65,7 @@
             }
 
             if (this.ParsedEntries.Count > 0)
-                QuickLogger.Message($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
+                QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
         }
 
         public void SendToSMLHelper()
@@ -78,7 +78,7 @@
             }
 
             if (this.UniqueEntries.Count > 0)
-                QuickLogger.Message($"{successCount} of {this.UniqueEntries.Count} {this.TypeName} entries were patched");
+                QuickLogger.Info($"{successCount} of {this.UniqueEntries.Count} {this.TypeName} entries were patched");
         }
     }
 }

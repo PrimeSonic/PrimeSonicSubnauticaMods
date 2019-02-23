@@ -187,17 +187,17 @@
 
         protected Atlas.Sprite GetCraftingTabSprite()
         {
-            string imagePath = IOPath.Combine(FileReaderWriter.AssetsFolder, this.TabID + @".png");
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, this.TabID + @".png");
 
             if (File.Exists(imagePath))
             {
-                QuickLogger.Message($"Custom sprite found in Assets folder for {this.Key} '{this.TabID}' from {this.Origin}");
+                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.TabID}' from {this.Origin}");
                 return ImageUtils.LoadSpriteFromFile(imagePath);
             }
 
             if (this.SpriteItemID != TechType.None)
             {
-                QuickLogger.Message($"SpriteItemID used for {this.Key} '{this.TabID}' from {this.Origin}");
+                QuickLogger.Debug($"SpriteItemID used for {this.Key} '{this.TabID}' from {this.Origin}");
                 return SpriteManager.Get(this.SpriteItemID);
             }
 

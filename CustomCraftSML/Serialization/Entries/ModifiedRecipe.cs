@@ -323,7 +323,7 @@
             if (overrideRecipe)
             {
                 CraftDataHandler.SetTechData(this.TechType, replacement);
-                QuickLogger.Message($"Modifying recipe for '{this.ItemID}' from {this.Origin} with new values in: {changes}");
+                QuickLogger.Debug($"Modifying recipe for '{this.ItemID}' from {this.Origin} with new values in: {changes}");
             }
 
             return true;
@@ -334,7 +334,7 @@
             if (this.ForceUnlockAtStart)
             {
                 KnownTechHandler.UnlockOnStart(this.TechType);
-                QuickLogger.Message($"{this.Key} for '{this.ItemID}' from {this.Origin} will be a unlocked at the start of the game");
+                QuickLogger.Debug($"{this.Key} for '{this.ItemID}' from {this.Origin} will be a unlocked at the start of the game");
             }
 
             if (this.UnlockingItems.Count > 0)

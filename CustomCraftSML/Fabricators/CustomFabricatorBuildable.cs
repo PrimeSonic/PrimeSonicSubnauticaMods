@@ -22,7 +22,7 @@
 
         public override TechGroup GroupForPDA => FabricatorDetails.PdaGroup;
         public override TechCategory CategoryForPDA => FabricatorDetails.PdaCategory;
-        public override string AssetsFolder { get; } = FileReaderWriter.RootModName + "/Assets";
+        public override string AssetsFolder { get; } = FileLocations.RootModName + "/Assets";
         public override string IconFileName => $"{FabricatorDetails.Model}.png";
 
         public override GameObject GetGameObject()

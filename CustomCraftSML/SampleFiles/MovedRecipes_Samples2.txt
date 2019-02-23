@@ -7,5 +7,6 @@ MovedRecipes:
 (
     ItemID: StasisRifle;
     OldPath: Fabricator/Personal/Tools;
+    NewPath: ;
     Hidden: YES;
 );

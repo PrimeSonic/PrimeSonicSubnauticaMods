@@ -92,7 +92,7 @@
             try
             {
                 CraftDataHandler.SetItemSize(this.TechType, this.Width, this.Height);
-                QuickLogger.Message($"'{this.ItemID}' from {this.Origin} was resized to {this.Width}x{this.Height}");
+                QuickLogger.Debug($"'{this.ItemID}' from {this.Origin} was resized to {this.Width}x{this.Height}");
                 return true;
             }
             catch (Exception ex)
