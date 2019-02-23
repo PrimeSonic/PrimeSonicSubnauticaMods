@@ -26,14 +26,7 @@
 
         public bool IsAtRoot => this.ParentTabPath == this.ParentFabricator.ItemID;
 
-        public CraftingPath CraftingNodePath
-        {
-            get
-            {
-                string trimmedPath = this.ParentTabPath.Replace($"{this.ParentFabricator.ItemID}", string.Empty).TrimStart('/');
-                return new CraftingPath(this.TreeTypeID, trimmedPath);
-            }
-        }
+        public CraftingPath CraftingNodePath => new CraftingPath(this.ParentTabPath);
 
         protected override bool ValidFabricator()
         {
@@ -48,7 +41,7 @@
 
         public override bool SendToSMLHelper()
         {
-
+            QuickLogger.Debug($"CraftingNodePath for {this.Key} '{this.TabID}' set to {this.ParentTabPath}");
             try
             {
                 if (this.IsAtRoot)
@@ -57,7 +50,7 @@
                 }
                 else
                 {
-                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(this.CraftingNodePath.CraftNodeSteps);
+                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(this.CraftingNodePath.Steps);
                     otherTab.AddTabNode(this.TabID, this.DisplayName, GetCraftingTabSprite());
                 }
 

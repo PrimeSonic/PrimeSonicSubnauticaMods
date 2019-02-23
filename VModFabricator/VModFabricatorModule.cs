@@ -111,8 +111,7 @@
             ModCraftTreeTab exosuitDepthTab = exosuitTab.AddTabNode("ExosuitDepthModules", "Depth Modules", SpriteManager.Get(TechType.ExoHullModule1));
             exosuitDepthTab.AddCraftingNode(TechType.ExoHullModule1,
                                             TechType.ExoHullModule2);
-            exosuitTab.AddCraftingNode(TechType.ExosuitThermalReactorModule,
-                                       TechType.ExosuitJetUpgradeModule,
+            exosuitTab.AddCraftingNode(TechType.ExosuitJetUpgradeModule,
                                        TechType.ExosuitPropulsionArmModule,
                                        TechType.ExosuitGrapplingArmModule,
                                        TechType.ExosuitDrillArmModule,

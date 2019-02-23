@@ -20,9 +20,8 @@
 
         internal CraftingPath(string path, string craftNode = null)
         {
-            if (string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path) && this.Scheme == CraftTree.Type.None)
             {
-                this.Scheme = CraftTree.Type.None;
                 return;
             }
 
@@ -40,6 +39,7 @@
             else
             {
                 schemeString = path;
+                this.Steps = new[] { path };
             }
 
             if (this.Scheme == CraftTree.Type.None)

@@ -196,6 +196,8 @@
         internal void HandleCraftTreeAddition<CraftingNode>(CraftingNode entry)
             where CraftingNode : ICustomFabricatorEntry, ITechTyped
         {
+            QuickLogger.Debug($"Sending {entry.Key} '{entry.ItemID}' to be added to the crafting tree at {entry.CraftingNodePath.ToString()}");
+
             try
             {
                 if (entry.IsAtRoot)
@@ -204,6 +206,7 @@
                 }
                 else
                 {
+                    
                     ModCraftTreeTab otherTab = this.RootNode.GetTabNode(entry.CraftingNodePath.Steps);
                     otherTab.AddCraftingNode(entry.TechType);
                 }
@@ -221,6 +224,7 @@
             foreach (CustomCraftEntry entry in collectionList)
             {
                 entry.ParentFabricator = this;
+                entry.Origin = this.Origin;
                 if (!entry.PassesPreValidation())
                     continue;
 

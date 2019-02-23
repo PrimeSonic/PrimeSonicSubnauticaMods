@@ -22,8 +22,9 @@
         internal static readonly string[] TutorialText = new[]
         {
            $"{MovedRecipeList.ListKey}: Further customize the crafting tree to your liking. Move a crafting node or get rid of it.",
-           $"    {OldPathKey}: First locate the crafting node you want to change.",
-           $"        This node must always be present.",
+           $"    {OldPathKey}: If you want to move a craft node from its original location, this must be set.",
+           $"        This node is optional if {CopyKey} is set to 'YES'.",
+           $"        This node must be present if {HiddenKey} is set to 'YES'.",
            $"        This cannot be used to access paths in modded or custom fabricators.",
            $"    {NewPathKey}: If you want to move or copy the recipe to a new location, set the path here. It could even be a different (non-custom) crafting tree.",
            $"        This node is optional if {HiddenKey} is set to 'YES'.",
@@ -44,8 +45,8 @@
 
         protected static List<EmProperty> MovedRecipeProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<string>(OldPathKey),
-            new EmProperty<string>(NewPathKey),
+            new EmProperty<string>(OldPathKey){ Optional = true },
+            new EmProperty<string>(NewPathKey){ Optional = true },
             new EmYesNo(HiddenKey, false){ Optional = true },
             new EmYesNo(CopyKey, false){ Optional = true }
         };
@@ -96,9 +97,9 @@
 
         private bool IsValidState()
         {
-            if (string.IsNullOrEmpty(this.OldPath))
+            if (!this.CopyToNewPath && string.IsNullOrEmpty(this.OldPath))
             {
-                QuickLogger.Warning($"{OldPathKey} missing in {this.Key} for '{this.ItemID}' from {this.Origin}");
+                QuickLogger.Warning($"{OldPathKey} missing while {CopyKey} was not set to 'YES' in {this.Key} for '{this.ItemID}' from {this.Origin}");
                 return false;
             }
 
@@ -119,10 +120,14 @@
 
         public bool SendToSMLHelper()
         {
-            var oldPath = new CraftingPath(this.OldPath, this.ItemID);
+            if (this.Hidden || !this.CopyToNewPath)
+            {
+                var oldPath = new CraftingPath(this.OldPath, this.ItemID);
 
-            CraftTreeHandler.RemoveNode(oldPath.Scheme, oldPath.CraftNodeSteps);
-            QuickLogger.Debug($"Removed crafting node at '{this.ItemID}' - Entry from {this.Origin}");
+                CraftTreeHandler.RemoveNode(oldPath.Scheme, oldPath.CraftNodeSteps);
+                QuickLogger.Debug($"Removed crafting node at '{this.ItemID}' - Entry from {this.Origin}");
+            }
+
             if (this.Hidden)
             {
                 return true;

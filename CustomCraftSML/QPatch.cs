@@ -7,7 +7,7 @@
 
     public static class QPatch
     {        
-        private static readonly Regex LogLevel = new Regex("\"DebugLogsEnabled\"\\s*:\\s*(?<value>false|true),", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex LogLevel = new Regex("\"DebugLogsEnabled\"[ \f\n\r\t\v]*:[ \f\n\r\t\v]*(false|true),"); // Oldschool whitespace checks for .NET 3.5
 
         public static void Patch()
         {
@@ -35,15 +35,20 @@
 
             Match match = LogLevel.Match(jsonText);
 
-            if (match.Success)
+            if (match.Success && match.Groups.Count > 1)
             {
-                Group capturedValue = match.Groups["value"];
+                Group capturedValue = match.Groups[1];
 
                 if (bool.TryParse(capturedValue.Value, out bool result))
                 {
-                    QuickLogger.DebugLogsEnabled = result;
+                    QuickLogger.DebugLogsEnabled = result;                    
                 }
             }
+
+            if (QuickLogger.DebugLogsEnabled)
+                QuickLogger.Debug("Debug logging is enable");
+            else
+                QuickLogger.Info("To enable Debug logging, change the \"DebugLogsEnabled\" attribute in the mod.json file to true");
         }
     }
 }

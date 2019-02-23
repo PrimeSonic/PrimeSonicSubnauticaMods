@@ -21,18 +21,10 @@
 
         public bool IsAtRoot => this.Path == this.ParentFabricator.ItemID;
 
-        public CraftingPath CraftingNodePath
-        {
-            get
-            {
-                string trimmedPath = this.Path.Replace($"{this.ParentFabricator.ItemID}", string.Empty).TrimStart('/');
-
-                return new CraftingPath(this.TreeTypeID, this.Path);
-            }
-        }
+        public CraftingPath CraftingNodePath => new CraftingPath(this.Path);
 
         protected override void HandleCraftTreeAddition() => this.ParentFabricator.HandleCraftTreeAddition(this);
 
-        internal override EmProperty Copy() => new CfAddedRecipe(this.Key, CopyDefinitions);
+        internal override EmProperty Copy() => new CfAddedRecipe(this.Key, this.CopyDefinitions);
     }
 }
