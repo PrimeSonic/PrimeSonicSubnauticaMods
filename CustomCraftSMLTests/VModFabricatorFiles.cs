@@ -199,7 +199,7 @@
                     {
                         CopyToNewPath = true,
                         ItemID = TechType.PowerUpgradeModule.ToString(),
-                        NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsDepthTabID}",
+                        NewPath = $"{vmodFabricatorID}/{cyclopsTabID}/{cyclopsPowerTabID}",
                     },
                     // Cyclops power modules - modded
                     new CfMovedRecipe
