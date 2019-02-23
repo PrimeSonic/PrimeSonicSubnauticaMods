@@ -96,6 +96,8 @@
 
         internal CustomFabricatorBuildable BuildableFabricator { get; set; }
 
+        internal string HandOverText => $"Use {this.DisplayName}";
+
         public EmPropertyCollectionList<CfCustomCraftingTab> CustomCraftingTabs { get; private set; }
         public EmPropertyCollectionList<CfMovedRecipe> MovedRecipes { get; private set; }
         public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }

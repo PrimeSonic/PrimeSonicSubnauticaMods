@@ -56,9 +56,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fabricators\CustomFabricatorBuildable.cs" />
+    <Compile Include="SMLHelperItems\CustomFabricatorBuildable.cs" />
     <Compile Include="FileLocations.cs" />
-    <Compile Include="FunctionalClone.cs" />
+    <Compile Include="SMLHelperItems\FunctionalClone.cs" />
     <Compile Include="Interfaces\InternalUse\IFabricatorEntries.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
     <Compile Include="Interfaces\InternalUse\ICustomCraft.cs" />

@@ -24,6 +24,7 @@
         public override TechCategory CategoryForPDA => FabricatorDetails.PdaCategory;
         public override string AssetsFolder { get; } = FileLocations.RootModName + "/Assets";
         public override string IconFileName => $"{FabricatorDetails.Model}.png";
+        public override string HandOverText => FabricatorDetails.HandOverText;
 
         public override GameObject GetGameObject()
         {
@@ -63,6 +64,7 @@
             }
 
             crafter.craftTree = FabricatorDetails.TreeTypeID;
+            crafter.handOverText = FabricatorDetails.HandOverText;
 
             if (constructible is null)
                 constructible = prefab.GetComponent<Constructable>();
