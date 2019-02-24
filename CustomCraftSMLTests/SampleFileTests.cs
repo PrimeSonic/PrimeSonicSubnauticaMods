@@ -296,7 +296,7 @@
                 ItemID = TechType.Seaglide.ToString(),
                 FragmentsToScan = 4
             };
-
+            
             var beaconFrag = new CustomFragmentCount
             {
                 ItemID = TechType.Beacon.ToString(),

@@ -5,8 +5,8 @@
     using Common;
 
     public class EmProperty<T> : EmProperty, IValueConfirmation where T : IConvertible
-    {
-        public string InLineComment { get; set; } = null;        
+    {        
+        public string InLineComment { get; set; } = null;
 
         public bool HasValue { get; set; } = false;
 
@@ -27,7 +27,7 @@
             }
         }
 
-        public EmProperty(string key, T defaultValue = default(T))
+        public EmProperty(string key, T defaultValue = default)
         {
             DataType = typeof(T);
             this.Key = key;
@@ -66,7 +66,7 @@
             catch
             {
                 this.HasValue = false;
-                return DefaultValue;
+                return this.DefaultValue;
             }
         }
 
