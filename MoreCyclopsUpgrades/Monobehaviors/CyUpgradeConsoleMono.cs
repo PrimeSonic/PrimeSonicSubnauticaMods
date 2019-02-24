@@ -6,10 +6,9 @@
     using ProtoBuf;
     using SMLHelper.V2.Utility;
     using UnityEngine;
-    using Caching;
 
     [ProtoContract]
-    public class AuxUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
+    public class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
         // This will be set externally
         public SubRoot ParentCyclops = null;

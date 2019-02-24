@@ -7,14 +7,14 @@
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal class AuxCyUpgradeConsole : ModPrefab
+    internal class CyUpgradeConsole : ModPrefab
     {
         public const string NameID = "AuxCyUpgradeConsole";
         public const string FriendlyName = "Auxiliary Upgrade Console";
         public const string HandOverText = "UseAuxConsole";
         public const string Description = "A secondary upgrade console to connect a greater number of upgrades to your Cyclops.";
 
-        internal AuxCyUpgradeConsole() : base(NameID, $"{NameID}PreFab")
+        internal CyUpgradeConsole() : base(NameID, $"{NameID}PreFab")
         {
         }
 
@@ -62,7 +62,7 @@
             GameObject.DestroyImmediate(prefab.GetComponent<StorageContainer>()); // Don't need this
 
             // Add the custom component
-            var auxConsole = prefab.AddComponent<AuxUpgradeConsole>();
+            var auxConsole = prefab.AddComponent<CyUpgradeConsoleMono>();
 
             // This is to tie the model to the prefab
             consoleModel.transform.SetParent(prefab.transform);

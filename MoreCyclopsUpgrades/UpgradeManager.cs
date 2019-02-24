@@ -37,7 +37,7 @@
         private readonly IList<Battery> ThermalBatteries = new List<Battery>();
         private readonly IList<NuclearModuleDetails> NuclearReactorModules = new List<NuclearModuleDetails>();
 
-        private List<AuxUpgradeConsole> TempCache = new List<AuxUpgradeConsole>();
+        private List<CyUpgradeConsoleMono> TempCache = new List<CyUpgradeConsoleMono>();
 
         internal float BonusCrushDepth { get; private set; } = 0f;
 
@@ -80,7 +80,7 @@
                     foreach (string slot in SlotHelper.SlotNames)
                         yield return new UpgradeSlot(this.Cyclops.upgradeConsole.modules, slot);
 
-                foreach (AuxUpgradeConsole aux in this.AuxUpgradeConsoles)
+                foreach (CyUpgradeConsoleMono aux in this.AuxUpgradeConsoles)
                     foreach (string slot in SlotHelper.SlotNames)
                         yield return new UpgradeSlot(aux.Modules, slot);
             }
@@ -90,7 +90,7 @@
 
         public SubRoot Cyclops => Manager.Cyclops;
 
-        private List<AuxUpgradeConsole> AuxUpgradeConsoles { get; } = new List<AuxUpgradeConsole>();
+        private List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
         private CyclopsHolographicHUD holographicHUD = null;
         private CyclopsHolographicHUD HolographicHUD => holographicHUD ?? (holographicHUD = this.Cyclops.GetComponentInChildren<CyclopsHolographicHUD>());
 
@@ -128,9 +128,9 @@
             ChargingModules.Add(CyclopsModule.ThermalChargerMk2ID);
             ChargingModules.Add(CyclopsModule.NuclearChargerID);
 
-            AuxUpgradeConsole[] auxUpgradeConsoles = manager.Cyclops.GetAllComponentsInChildren<AuxUpgradeConsole>();
+            CyUpgradeConsoleMono[] auxUpgradeConsoles = manager.Cyclops.GetAllComponentsInChildren<CyUpgradeConsoleMono>();
 
-            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+            foreach (CyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
             {
                 if (this.AuxUpgradeConsoles.Contains(auxConsole))
                     continue; // This is a workaround because of the object references being returned twice in this array.
@@ -152,9 +152,9 @@
         {
             TempCache.Clear();
 
-            AuxUpgradeConsole[] auxUpgradeConsoles = this.Cyclops.GetAllComponentsInChildren<AuxUpgradeConsole>();
+            CyUpgradeConsoleMono[] auxUpgradeConsoles = this.Cyclops.GetAllComponentsInChildren<CyUpgradeConsoleMono>();
 
-            foreach (AuxUpgradeConsole auxConsole in auxUpgradeConsoles)
+            foreach (CyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
             {
                 if (TempCache.Contains(auxConsole))
                     continue; // This is a workaround because of the object references being returned twice in this array.

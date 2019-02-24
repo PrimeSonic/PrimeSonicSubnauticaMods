@@ -60,7 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
+    <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\CyclopsManager.cs" />
     <Compile Include="Caching\NuclearModuleDetails.cs" />
@@ -71,7 +71,7 @@
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
-    <Compile Include="Monobehaviors\AuxUpgradeConsole.cs" />
+    <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="PowerManager.cs" />
     <Compile Include="UpgradeManager.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
