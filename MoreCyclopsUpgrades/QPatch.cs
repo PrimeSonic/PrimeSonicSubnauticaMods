@@ -14,6 +14,14 @@
     {
         public static void Patch()
         {
+#if RELEASE
+                QuickLogger.DebugLogsEnabled = false;
+#endif
+
+#if DEBUG
+                QuickLogger.DebugLogsEnabled = true;
+#endif
+
             try
             {
                 QuickLogger.Message("Started patching " + QuickLogger.GetAssemblyVersion());
@@ -30,7 +38,7 @@
 
                 PatchAuxUpgradeConsole(modConfig);
 
-                PatchBioEnergy(modConfig);
+                //PatchBioEnergy(modConfig);
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());

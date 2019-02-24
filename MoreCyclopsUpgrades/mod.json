@@ -2,10 +2,11 @@
   "Id": "MoreCyclopsUpgrades",
   "DisplayName": "MoreCyclopsUpgrades",
   "Author": "PrimeSonic",
-  "Version": "2.1.9",
-  "Requires": [ ],
+  "Version": "2.2.0",
   "Enable": true,
+  "Game": "Subnautica",
+  "AssemblyName": "CustomCraft2SML.dll",
+  "Dependencies": [ "SMLHelper" ],  
   "AssemblyName": "MoreCyclopsUpgrades.dll",
   "EntryMethod": "MoreCyclopsUpgrades.QPatch.Patch",
-  "Config": {}
 }

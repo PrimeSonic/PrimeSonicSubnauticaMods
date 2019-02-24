@@ -1,11 +1,13 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
     using System;
+    using Common;
     using Modules;
-    using SaveData;
     using ProtoBuf;
+    using SaveData;
     using SMLHelper.V2.Utility;
     using UnityEngine;
+    using UnityEngine.UI;
 
     [ProtoContract]
     public class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
@@ -49,10 +51,63 @@
 
             this.Modules = new Equipment(base.gameObject, ModulesRoot.transform);
             this.Modules.SetLabel("CyclopsUpgradesStorageLabel");
-            //this.UpdateVisuals();
+            UpdateVisuals();
             this.Modules.onEquip += OnEquip;
             this.Modules.onUnequip += OnUnequip;
             UnlockDefaultModuleSlots();
+        }
+
+        private void AddModuleSpriteHandlers()
+        {
+            const float topRowY = 1.15f;//-0.109f;
+            const float botRowY = 1.075f;//-0.239f;
+
+            const float leftColX = 0.15f;//0.159f;
+            const float middColX = 0f;//0f;
+            const float rightColX = -0.15f;//-0.152f;
+
+            const float topRowZ = 0.11f;// 1.146f;
+            const float botRowZ = 0.270f;//1.06f;
+
+            var rotation = Quaternion.Euler(60f, 180, 0);
+
+            Module1 = CreateModuleDisplay(new Vector3(rightColX, botRowY, botRowZ), rotation);
+            Module2 = CreateModuleDisplay(new Vector3(middColX, botRowY, botRowZ), rotation);
+            Module3 = CreateModuleDisplay(new Vector3(leftColX, botRowY, botRowZ), rotation);
+            Module4 = CreateModuleDisplay(new Vector3(rightColX, topRowY, topRowZ), rotation);
+            Module5 = CreateModuleDisplay(new Vector3(middColX, topRowY, topRowZ), rotation);
+            Module6 = CreateModuleDisplay(new Vector3(leftColX, topRowY, topRowZ), rotation);
+        }
+
+        private GameObject CreateModuleDisplay(Vector3 position, Quaternion rotation)
+        {
+            const float scale = 0.215f;
+
+            Canvas canvas = new GameObject("Canvas", typeof(RectTransform)).AddComponent<Canvas>();
+            Transform t = canvas.transform;
+            t.SetParent(this.transform, false);
+            canvas.sortingLayerID = 1;
+
+            uGUI_GraphicRaycaster raycaster = canvas.gameObject.AddComponent<uGUI_GraphicRaycaster>();
+
+            var rt = t as RectTransform;
+            RectTransformExtensions.SetParams(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f));
+            RectTransformExtensions.SetSize(rt, 0.5f, 0.5f);
+
+            t.localPosition = position;
+            t.localRotation = rotation;
+            t.localScale = new Vector3(scale, scale, scale);
+
+            canvas.scaleFactor = 0.01f;
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.referencePixelsPerUnit = 100;
+
+            CanvasScaler scaler = canvas.gameObject.AddComponent<CanvasScaler>();
+            scaler.dynamicPixelsPerUnit = 20;
+
+            uGUI_Icon icon = canvas.gameObject.AddComponent<uGUI_Icon>();
+
+            return canvas.gameObject;
         }
 
         private void UnlockDefaultModuleSlots() => this.Modules.AddSlots(SlotHelper.SlotNames);
@@ -74,14 +129,17 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText("UseAuxConsole");
+            main.SetInteractText("Use Auxiliary Cyclop Upgrade Console");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
+#if DEBUG
+            PositionStuff(Module4.GetComponent<Canvas>().gameObject);
+#endif
         }
 
         private void OnEquip(string slot, InventoryItem item)
         {
             CyclopsUpgradeChange();
-            //this.UpdateVisuals();
+            UpdateVisuals();
 
             // Disallow deconstruction while there are modules in here
             Buildable.deconstructionAllowed = false;
@@ -90,7 +148,7 @@
         private void OnUnequip(string slot, InventoryItem item)
         {
             CyclopsUpgradeChange();
-            //this.UpdateVisuals();
+            UpdateVisuals();
 
             bool allEmpty = true;
 
@@ -101,35 +159,56 @@
             Buildable.deconstructionAllowed = allEmpty;
         }
 
-        internal void CyclopsUpgradeChange()
+        internal void CyclopsUpgradeChange() => ParentCyclops?.SetInstanceField("subModulesDirty", true);
+
+        private static readonly Vector2 SpritePivot = new Vector2(0.5f, 0.5f);
+
+        private void UpdateVisuals()
         {
-            ParentCyclops?.SetInstanceField("subModulesDirty", true);
+            if (Module1 is null)
+            {
+                AddModuleSpriteHandlers();
+            }
+
+            SetModuleVisibility("Module1", Module1);
+            SetModuleVisibility("Module2", Module2);
+            SetModuleVisibility("Module3", Module3);
+            SetModuleVisibility("Module4", Module4);
+            SetModuleVisibility("Module5", Module5);
+            SetModuleVisibility("Module6", Module6);
         }
 
-        //private void UpdateVisuals()
-        //{
-        //    this.SetModuleVisibility("Module1", this.Module1);
-        //    this.SetModuleVisibility("Module2", this.Module2);
-        //    this.SetModuleVisibility("Module3", this.Module3);
-        //    this.SetModuleVisibility("Module4", this.Module4);
-        //    this.SetModuleVisibility("Module5", this.Module5);
-        //    this.SetModuleVisibility("Module6", this.Module6);
-        //}
+        private void SetModuleVisibility(string slot, GameObject module)
+        {
+            if (module is null)
+            {
+                QuickLogger.Debug($"SetModuleVisibility in slot {slot} module was null", true);
+                return;
+            }
 
-        //private bool SetModuleVisibility(string slot, GameObject module)
-        //{
-        //    if (module == null)
-        //    {
-        //        ErrorMessage.AddMessage($"SetModuleVisibility in slot {slot} module was null");
-        //        return false;
-        //    }
+            TechType techType = this.Modules.GetTechTypeInSlot(slot);
 
-        //    bool hasItem = this.Modules.GetTechTypeInSlot(slot) != TechType.None;
+            bool hasItem = techType != TechType.None;
 
-        //    module.SetActive(hasItem);
+            uGUI_Icon icon = module.GetComponent<uGUI_Icon>();
 
-        //    return hasItem;
-        //}
+            if (hasItem)
+            {
+                Atlas.Sprite atlasSprite = SpriteManager.Get(techType);
+
+                if (atlasSprite is null)
+                    QuickLogger.Debug($"sprite for {module.name} was null when it should not have been", true);
+
+                icon.sprite = atlasSprite;
+            }
+            else
+            {
+                icon.sprite = null; // Clear the sprite when empty                
+            }
+
+            module.SetActive(hasItem);
+            icon.enabled = hasItem;
+        }
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
@@ -214,17 +293,17 @@
             }
         }
 
-        //public GameObject Module1;
+        public GameObject Module1;
 
-        //public GameObject Module2;
+        public GameObject Module2;
 
-        //public GameObject Module3;
+        public GameObject Module3;
 
-        //public GameObject Module4;
+        public GameObject Module4;
 
-        //public GameObject Module5;
+        public GameObject Module5;
 
-        //public GameObject Module6;
+        public GameObject Module6;
 
         public ChildObjectIdentifier ModulesRoot;
 
@@ -237,6 +316,61 @@
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         public AuxUpgradeConsoleSaveData SaveData;
+#if DEBUG
+        public void PositionStuff(GameObject thing)
+        {
+            Transform t = thing.transform;
+            float amount = 0.005f;
+
+            if (Input.GetKeyDown(KeyCode.Keypad8))
+            {
+                t.localPosition += new Vector3(0, amount, 0);
+                PrintStuff(thing);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad5))
+            {
+                t.localPosition += new Vector3(0, -amount, 0);
+                PrintStuff(thing);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad6))
+            {
+                t.localPosition += new Vector3(amount, 0, 0);
+                PrintStuff(thing);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad4))
+            {
+                t.localPosition += new Vector3(-amount, 0, 0);
+                PrintStuff(thing);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad1))
+            {
+                t.localPosition += new Vector3(0, 0, amount);
+                PrintStuff(thing);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad7))
+            {
+                t.localPosition += new Vector3(0, 0, -amount);
+                PrintStuff(thing);
+            }
+
+            if (Input.GetKeyDown(KeyCode.KeypadPlus))
+            {
+                t.localScale += new Vector3(amount, amount, amount);
+                PrintStuff(thing);
+            }
+            else if (Input.GetKeyDown(KeyCode.KeypadMinus))
+            {
+                t.localScale -= new Vector3(amount, amount, amount);
+                PrintStuff(thing);
+            }
+        }
+
+        private void PrintStuff(GameObject thing)
+        {
+            Transform t = thing.transform;
+            QuickLogger.Debug(thing.name + " p=" + t.localPosition.ToString("G5") + "s=" + t.localScale.ToString("G5"), true);
+        }
+#endif
     }
 }
 
