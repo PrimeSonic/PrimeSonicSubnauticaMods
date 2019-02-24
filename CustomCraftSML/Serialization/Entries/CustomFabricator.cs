@@ -31,7 +31,22 @@
 
         internal static new readonly string[] TutorialText = new[]
         {
-            "TODO"
+            $"{CustomFabricatorList.ListKey}: Create your own fabricator with your own completely custom crafting tree!",
+            $"    Custom fabricators have all the same properties as {AliasRecipeList.ListKey} with the following additions.",
+            $"    {ModelKey}: Choose from one of three visual styles for your fabricator.",
+            $"        Valid options are: {ModelTypes.Fabricator}|{ModelTypes.MoonPool}|{ModelTypes.Workbench}",
+            $"        This property is optional. Defaults to {ModelTypes.Fabricator}.",
+            $"    {AllowedInBaseKey}: Determines if your fabricator can or can't be built inside a stationary base. ",
+            $"        This property is optional. Defaults to YES.",
+            $"    {AllowedInCyclopsKey}: Determines if your fabricator can or can't be built inside a Cyclops. ",
+            $"        This property is optional. Defaults to YES.",
+            $"    Everything to be added to the custom fabricator's crafting tree must be specified as a list inside the custom fabricator entry.",
+            $"    Every entry will still need to specify a full path that includes the new fabricator as the starting point for the path.",
+            $"    The lists you can add are as follows.",
+            $"        {CfCustomCraftingTabListKey}: List of crafting tabs to be added to the custom fabricator.",            
+            $"        {CfAddedRecipeListKey}: List of added recipes for the custom fabricator.",
+            $"        {CfAliasRecipeListKey}: List of alias recipes for the custom fabricator.",
+            $"        {CfMovedRecipeListKey}: List of moved recipes for the custom fabricator.",
         };
 
         protected readonly EmProperty<ModelTypes> model;
@@ -135,15 +150,21 @@
                     return false;
             }
 
+            if (!this.AllowedInBase && this.AllowedInCyclops)
+            {
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} is denied from being built anywhere as both {AllowedInBaseKey} and {AllowedInCyclopsKey} are set to NO. Entry will be removed.");
+                return false;
+            }
+
             return true;
         }
 
         private bool ValidateInternalEntries()
         {
-            ValidateUniqueEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);
-            ValidateUniqueEntries(this.MovedRecipes, this.UniqueMovedRecipes);
+            ValidateUniqueEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);            
             ValidateUniqueEntries(this.AddedRecipes, this.UniqueAddedRecipes);
             ValidateUniqueEntries(this.AliasRecipes, this.UniqueAliasRecipes);
+            ValidateUniqueEntries(this.MovedRecipes, this.UniqueMovedRecipes);
 
             return true;
         }
@@ -189,10 +210,10 @@
 
         internal void FinishCustomCraftingTree()
         {
-            SendToSMLHelper(this.UniqueCustomTabs);
-            SendToSMLHelper(this.UniqueMovedRecipes);
+            SendToSMLHelper(this.UniqueCustomTabs);            
             SendToSMLHelper(this.UniqueAddedRecipes);
             SendToSMLHelper(this.UniqueAliasRecipes);
+            SendToSMLHelper(this.UniqueMovedRecipes);
         }
 
         internal void HandleCraftTreeAddition<CraftingNode>(CraftingNode entry)

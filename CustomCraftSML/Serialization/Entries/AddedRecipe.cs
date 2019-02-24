@@ -24,10 +24,12 @@
            $"{AddedRecipeList.ListKey}: Adding your own recipes into any of the existing fabricators.",
            $"    {AddedRecipeList.ListKey} have all the same properties as {ModifiedRecipeList.ListKey}, with the following additions:",
            $"    {PathKey}: Sets the fabricator and crafting tab where the new recipe will be added.",
+            "        Remember, this must be a valid path to an existing tab or to a custom tab you've created.",
+            "        You can find a full list of all original crafting paths for all the standard fabricators in the OriginalRecipes folder.",
            $"    {PdaGroupKey}: Sets the main group for blueprint shown in the PDA.",
            $"        This is optional. If {PdaGroupKey} is set, {PdaCategoryKey} must also be set.",
            $"    {PdaCategoryKey}: Sets the category under the group for blueprint shown in the PDA.",
-           $"        This is optional. If {PdaCategoryKey} is set, {PdaGroupKey} must also be set."
+           $"        This is optional. If {PdaCategoryKey} is set, {PdaGroupKey} must also be set.",           
         };
 
         protected readonly EmProperty<string> path;

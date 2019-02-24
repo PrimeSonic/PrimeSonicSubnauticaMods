@@ -16,7 +16,7 @@
         internal static readonly string[] TutorialText = new[]
         {
            $"{ModifiedRecipeList.ListKey}: Modify an existing crafting recipe. ",
-           $"    {IngredientsKey}: Completely replace a recipe's required ingredients." +
+           $"    {IngredientsKey}: Completely replace a recipe's required ingredients.",
             "        This is optional if you don't want to change the required ingredients.",
            $"    {AmountCraftedKey}: Change how many copies of the item are created when you craft the recipe.",
             "        This is optional if you don't want to change how many copies of the item are created at once.",

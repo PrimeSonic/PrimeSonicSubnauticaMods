@@ -11,15 +11,16 @@
 
     internal static partial class HelpFilesWriter
     {
-
-        
-
         private const string HorizontalLine = " -------------------------------------------- ";
-        private static readonly string ReadMeVersionLine = $"# How to use {FileLocations.RootModName} (Revision {QuickLogger.GetAssemblyVersion()}) #";
+        private static readonly string ReadMeVersionLine = $"How to use {FileLocations.RootModName} (Version {QuickLogger.GetAssemblyVersion()})";
 
-        
+        internal static void HandleHelpFiles()
+        {
+            HandleReadMeFile();
+            GenerateOriginalRecipes();
+        }
 
-        internal static void GenerateOriginalRecipes()
+        private static void GenerateOriginalRecipes()
         {
             if (!Directory.Exists(FileLocations.SamplesFolder))
                 Directory.CreateDirectory(FileLocations.SamplesFolder);
@@ -47,6 +48,8 @@
             }
 
             GenerateOriginalBioFuels();
+
+            GenerateOriginalCraftingPaths();
         }
 
         private static void GenerateOriginalBioFuels()
@@ -77,7 +80,19 @@
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
 
-        internal static void HandleReadMeFile()
+        private static void GenerateOriginalCraftingPaths()
+        {
+            const string fileName = "CraftingPaths.txt";
+
+            if (File.Exists(FileLocations.OriginalsFolder + fileName))
+                return;
+            
+            File.WriteAllText(FileLocations.OriginalsFolder + fileName, PathHelper.GeneratePathString());
+
+            QuickLogger.Debug($"{fileName} file not found. File generated.");
+        }
+
+        private static void HandleReadMeFile()
         {
             if (!File.Exists(FileLocations.HowToFile))
             {
@@ -108,32 +123,78 @@
                 $"{FileLocations.ModFriendlyName} is dedicated to Nexus modder Iw23J, creator of the original Custom Craft mod, ",
                 $"who showed us how much we can empower players to take modding into their own hands",
                 HorizontalLine,
-                $"As of version {QuickLogger.GetAssemblyVersion()}, the following features are supported:",
-                HorizontalLine,
                 Environment.NewLine
             };
 
-            tutorialLines.Add("As of version 1.6, introduces powerful tools that let you further create your own crafting experience.");
-            tutorialLines.Add("AliasRecipes receive the new FunctionalityI, letting these items use in-game model while crafting and even mimic their in-game functions.");
-            tutorialLines.Add("MovedRecipes now let you move things around the crafting tree, or start removing parts of it entirely.");
             tutorialLines.Add(HorizontalLine);
+            AddGettingStarted(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add("As of version 1.5, you can include modded items in your custom crafts.");
-            tutorialLines.Add("Most modded items should work, but we can only guarantee compatibility with items created using SMLHelper.");
-            tutorialLines.Add("To get the ItemID for modded items, consult with the original mod author.");
+            AddNonCraftingEntries(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add("Additional features may be added in the future so keep an eye on the Nexus mod page.");
-            tutorialLines.Add("After an update, this file will be updated with new info the next time you load the game.");
+            AddCraftingEntries(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add("As of version 1.2, file names no longer matter. All files in the WorkingFiles folder will be read and parsed into the game. So name them however you want.");
-            tutorialLines.Add("If you want to be able to easily sahre your custom crafts with others, make sure to chose unique names for your files.");
-            tutorialLines.Add("Remember: For now, each file can only contain one type of entry. The valid entry types are: MovedRecipes, CustomSizes, CustomBioFuels, CustomCraftingTabs, ModifiedRecipes, AddedRecipes, AliasRecipe.");
+            AddChangeLog(tutorialLines);
+            tutorialLines.Add(Environment.NewLine);
+
+            return tutorialLines.ToArray();
+        }
+
+        private static void AddCraftingEntries(List<string> tutorialLines)
+        {
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("--- Crafting Entries ---");
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(ModifiedRecipe.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(AddedRecipe.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(AliasRecipe.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(MovedRecipe.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(CustomCraftingTab.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
+        }
+
+        private static void AddNonCraftingEntries(List<string> tutorialLines)
+        {
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("--- Non-Crafting Entries ---");
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(CustomSize.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(CustomBioFuel.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(CustomFragmentCount.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
+        }
+
+        private static void AddGettingStarted(List<string> tutorialLines)
+        {
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("--- Getting Starts ---");
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
@@ -156,35 +217,46 @@
             tutorialLines.Add(HorizontalLine);
             tutorialLines.Add("Once you've created your txt files, go ahead and launch the game.");
             tutorialLines.Add("Assuming you've got everything configured correctly, your customizations will appear on your next game.");
+            tutorialLines.Add("Good luck and happy modding!");
             tutorialLines.Add(Environment.NewLine);
+        }
 
-            tutorialLines.AddRange(MovedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-            tutorialLines.AddRange(CustomSize.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-            tutorialLines.AddRange(CustomBioFuel.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-            tutorialLines.AddRange(CustomCraftingTab.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-            tutorialLines.AddRange(ModifiedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-            tutorialLines.AddRange(AddedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-            tutorialLines.AddRange(AliasRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
+        private static void AddChangeLog(List<string> tutorialLines)
+        {
             tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add(Environment.NewLine);
-            tutorialLines.Add("Remember: When adding new recipes, you must use the correct path for the crafting tab that the new recipe will be added to.");
-            tutorialLines.Add("Provided here is a list of all the valid paths to all the standard crafting tabs for all available fabricators.");
-            tutorialLines.Add("And don't forget that you can always add your own crafting tabs too.");
-            tutorialLines.Add(Environment.NewLine);
-            tutorialLines.Add(PathHelper.GeneratePathString());
+            tutorialLines.Add("--- Change Log ---");
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add("Enjoy and happy modding");
+            tutorialLines.Add("Version 1.7 adds some very big additions to really help make your crafting.");
+            tutorialLines.Add("You can now make your own Custom Fabricators and set up your own crafting tree in them from scratch.");
+            tutorialLines.Add("MovedRecipes can now copy an existing crafting node into another fabricator, even a custom one, without removing the original.");
+            tutorialLines.Add("Everything that derives from ModifiedRecipes (which includes AddedRecipes, AliasRecipes, and now CustomFabricators) now has the 'UnlockedBy' property.");
+            tutorialLines.Add("UnlockedBy lets you specify a list of TechTypes that will be updated to unlock your main item whenever you discover any of those.");            
+            tutorialLines.Add(Environment.NewLine);
 
-            return tutorialLines.ToArray();
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("As of version 1.6, introduces powerful tools that let you further create your own crafting experience.");
+            tutorialLines.Add("AliasRecipes receive the new FunctionalityI, letting these items use in-game model while crafting and even mimic their in-game functions.");
+            tutorialLines.Add("MovedRecipes now let you move things around the crafting tree, or start removing parts of it entirely.");
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("As of version 1.5, you can include modded items in your custom crafts.");
+            tutorialLines.Add("Most modded items should work, but we can only guarantee compatibility with items created using SMLHelper.");
+            tutorialLines.Add("To get the ItemID for modded items, consult with the original mod author.");
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("Additional features may be added in the future so keep an eye on the Nexus mod page.");
+            tutorialLines.Add("After an update, this file will be updated with new info the next time you load the game.");
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("As of version 1.2, file names no longer matter. All files in the WorkingFiles folder will be read and parsed into the game. So name them however you want.");
+            tutorialLines.Add("If you want to be able to easily sahre your custom crafts with others, make sure to chose unique names for your files.");
+            tutorialLines.Add("Remember: For now, each file can only contain one type of entry. The valid entry types are: MovedRecipes, CustomSizes, CustomBioFuels, CustomCraftingTabs, ModifiedRecipes, AddedRecipes, AliasRecipe.");
+            tutorialLines.Add(Environment.NewLine);
         }
 
         private static void GenerateOriginalsFile(TechGroup group, TechCategory category, List<TechType> list, string fileName)
@@ -211,6 +283,6 @@
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
 
-        
+
     }
 }

@@ -7,24 +7,35 @@
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Components;
+    using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
 
     internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount, ICustomCraft
     {
+        private const string FragmentsToScanKey = "FragmentsToScan";
+        private const string TypeName = "CustomFragments";
+
+        internal static readonly string[] TutorialText = new[]
+{
+            $"{CustomFragmentCountList.ListKey}: Change how many fragments must be scanned to unlock recipes/blueprints",
+            $"    In addition to the usual {ItemIdKey}, you only need one more property for this one:",
+            $"        {FragmentsToScanKey}: Simply set this to the total number of fragments that must be scanned to unlock the item in question.",
+        };
+
         private readonly EmProperty<int> emFragmentCount;
 
         protected static List<EmProperty> FragmentProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<int>("FragmentsToScan", 1),
+            new EmProperty<int>(FragmentsToScanKey, 1),
         };
 
-        public CustomFragmentCount() : this("CustomFragments", FragmentProperties)
+        public CustomFragmentCount() : this(TypeName, FragmentProperties)
         {
         }
 
         protected CustomFragmentCount(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emFragmentCount = (EmProperty<int>)Properties["FragmentsToScan"];
+            emFragmentCount = (EmProperty<int>)Properties[FragmentsToScanKey];
         }
 
         public OriginFile Origin { get; set; }

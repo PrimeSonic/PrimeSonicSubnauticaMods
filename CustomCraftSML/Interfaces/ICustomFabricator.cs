@@ -10,7 +10,7 @@
         where Alias : EmPropertyCollection, IAliasRecipe, new()
     {
         ModelTypes Model { get; }
-        int HueOffset { get; }
+        int HueOffset { get; } // For future use
         bool AllowedInBase { get; }
         bool AllowedInCyclops { get; }
 

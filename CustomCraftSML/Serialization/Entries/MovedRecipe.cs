@@ -21,7 +21,9 @@
 
         internal static readonly string[] TutorialText = new[]
         {
-           $"{MovedRecipeList.ListKey}: Further customize the crafting tree to your liking. Move a crafting node or get rid of it.",
+           $"{MovedRecipeList.ListKey}: Further customize the crafting tree to your liking.",
+           $"    All moved recipes work with existing crafting nodes. So all moved recipe entries should be for items that can already be crafted.",           
+           $"    {OldPathKey}: If you want to move a craft node from its original location, this must be set.",
            $"    {OldPathKey}: If you want to move a craft node from its original location, this must be set.",
            $"        This node is optional if {CopyKey} is set to 'YES'.",
            $"        This node must be present if {HiddenKey} is set to 'YES'.",
@@ -33,15 +35,18 @@
            $"    {CopyKey}: If you want, you can copy the recipe to the new path without removing the original by setting this to 'YES'.",
            $"        This node is optional and will default to 'NO' when not present.",
            $"        {CopyKey} cannot be set to 'YES' if {HiddenKey} is also set to 'YES'.",
+           $"        Moved recipes will be handled after all other crafts, so if you added a new recipe, you can copy it to more than one fabricator.",
            $"    {HiddenKey}: Or you can set this property to 'YES' to simply remove the crafting node instead.",
            $"        This node is optional and will default to 'NO' when not present.",
            $"        {HiddenKey} cannot be set to 'YES' if {CopyKey} is also set to 'YES'.",
+            "    Remember, all paths must be valid and point to existing tab or to a custom tab you've created.",
+            "    You can find a full list of all original crafting paths for all the standard fabricators in the OriginalRecipes folder.",
         };
 
         private readonly EmProperty<string> oldPath;
         private readonly EmProperty<string> newPath;
         private readonly EmYesNo hidden;
-        private readonly EmYesNo copyToNewPath;
+        private readonly EmYesNo copied;
 
         protected static List<EmProperty> MovedRecipeProperties => new List<EmProperty>(TechTypedProperties)
         {
@@ -62,7 +67,7 @@
             oldPath = (EmProperty<string>)Properties[OldPathKey];
             newPath = (EmProperty<string>)Properties[NewPathKey];
             hidden = (EmYesNo)Properties[HiddenKey];
-            copyToNewPath = (EmYesNo)Properties[CopyKey];
+            copied = (EmYesNo)Properties[CopyKey];
         }
 
         public string OldPath
@@ -85,8 +90,8 @@
 
         public bool Copied
         {
-            get => copyToNewPath.Value;
-            set => copyToNewPath.Value = value;
+            get => copied.Value;
+            set => copied.Value = value;
         }
 
         public string ID => this.ItemID;

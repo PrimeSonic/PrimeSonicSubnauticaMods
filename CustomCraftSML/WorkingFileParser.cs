@@ -25,11 +25,11 @@
         private static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
         {
             CustomFabricatorParser,
-            CustomTabs,
-            MovedRecipes,
+            CustomTabs,            
             AddedRecipes,
             AliasRecipes,
             ModifiedRecipeParser,
+            MovedRecipes,
             CustomSizeParser,
             CustomBioFuelParser,
             CustomFragCountParser

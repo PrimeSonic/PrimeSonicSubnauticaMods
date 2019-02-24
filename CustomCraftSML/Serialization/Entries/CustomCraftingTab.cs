@@ -28,6 +28,7 @@
             "        You can have as many custom tabs as you want, and even include custom tabs inside other custom tabs.",
             "        Just make sure you add your custom tabs to the file in the correct order, from inside to outside.",
             "        If a custom tab goes inside another custom tab, then the parent tab must be placed above the child tab.",
+            "        You can find a full list of all original crafting paths for all the standard fabricators in the OriginalRecipes folder.",
         };
 
         public const string TypeName = "CustomTab";

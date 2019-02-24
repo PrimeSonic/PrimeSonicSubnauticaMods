@@ -17,8 +17,8 @@
             {
                 CheckLogLevel();
 
-                HelpFilesWriter.HandleReadMeFile();
-                HelpFilesWriter.GenerateOriginalRecipes();
+                HelpFilesWriter.HandleHelpFiles();
+                
                 WorkingFileParser.HandleWorkingFiles();
 
                 QuickLogger.Info("Finished patching.");
