@@ -1,20 +1,20 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
+    using MoreCyclopsUpgrades.SaveData;
     using ProtoBuf;
     using UnityEngine;
-    using UWE;
 
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ISubRootConnection
     {
-        internal const int StorageWidth = 3;
-        internal const int StorageHeight = 3;
-        internal const float ChargeRatio = 0.80f;
+        internal const int StorageWidth = 2;
+        internal const int StorageHeight = 2;
+        internal const int TotalContainerSpaces = StorageHeight * StorageWidth;
+        internal const float ChargePerSecond = 0.40f;
         internal const float MaxPower = 400;
 
         // This will be set externally
@@ -65,7 +65,7 @@
             }
         }
 
-        public bool ProducingPower => _constructed >= 1f && this.Container.count > 0;
+        public bool ProducingPower => _constructed >= 1f && this.MaterialsProcessing.Count > 0;
 
         public int CurrentPower => Mathf.RoundToInt(this.Battery.charge);
 
@@ -92,6 +92,17 @@
         {
             base.Awake();
 
+            InitializeStorage();
+
+            if (SaveData == null)
+            {
+                string id = GetComponentInParent<PrefabIdentifier>().Id;
+                SaveData = new CyBioReactorSaveData(id);
+            }
+        }
+
+        private void InitializeStorage()
+        {
             if (storageRoot is null)
             {
                 var storeRoot = new GameObject("StorageRoot");
@@ -108,7 +119,7 @@
 
                 if (powerDeficit > 0f)
                 {
-                    float chargeOverTime = ChargeRatio * DayNightCycle.main.deltaTime;
+                    float chargeOverTime = ChargePerSecond * DayNightCycle.main.deltaTime;
 
                     chargeOverTime = Mathf.Min(chargeOverTime, powerDeficit);
 
@@ -140,9 +151,20 @@
 
         private void OnAddItem(InventoryItem item)
         {
+            if (isLoadingSaveData)
+                return;
+
             if (BioReactorCharges.ContainsKey(item.item.GetTechType()))
             {
                 item.isEnabled = false;
+                if (BioReactorCharges.TryGetValue(item.item.GetTechType(), out float bioEnergyValue) && bioEnergyValue > 0f)
+                {
+                    this.MaterialsProcessing.Add(new PotentialEnergy(item.item, bioEnergyValue));
+                }
+                else
+                {
+                    Destroy(item.item.gameObject); // Failsafe
+                }
             }
         }
 
@@ -153,6 +175,9 @@
 
         private bool IsAllowedToAdd(Pickupable pickupable, bool verbose)
         {
+            if (isLoadingSaveData)
+                return true;
+
             bool canAdd = false;
             if (pickupable != null)
             {
@@ -174,36 +199,35 @@
 
         private bool IsAllowedToRemove(Pickupable pickupable, bool verbose) => false;
 
-        private float ProducePower(float requested)
+        private float ProducePower(float powerDrawnPerItem)
         {
-            if (requested > 0f && this.Container.count > 0)
+            float powerProduced = 0f;
+
+            if (powerDrawnPerItem > 0f && this.Container.count > 0)
             {
-                _toConsume += requested;
-                foreach (InventoryItem inventoryItem in this.Container)
+                float availablePowerPerItem;
+
+                foreach (PotentialEnergy material in this.MaterialsProcessing)
                 {
-                    Pickupable item = inventoryItem.item;
-                    TechType techType = item.GetTechType();
-                    if (BioReactorCharges.TryGetValue(techType, out float bioEnergyValue) && _toConsume >= bioEnergyValue)
-                    {
-                        _toConsume -= bioEnergyValue;
-                        toRemove.Add(item);
-                    }
+                    availablePowerPerItem = Mathf.Max(0f, material.Energy - powerDrawnPerItem);
+                    powerProduced += availablePowerPerItem;
+                    material.Energy -= availablePowerPerItem;
+
+                    if (material.FullyConsumed)
+                        this.FullyConsumed.Add(material);
                 }
-                for (int i = toRemove.Count - 1; i >= 0; i--)
+
+                foreach (PotentialEnergy material in this.FullyConsumed)
                 {
-                    Pickupable pickupable = toRemove[i];
-                    this.Container.RemoveItem(pickupable, true);
-                    Destroy(pickupable.gameObject);
+                    this.MaterialsProcessing.Remove(material);
+                    this.Container.RemoveItem(material.Item, true);
+                    Destroy(material.Item.gameObject);
                 }
-                toRemove.Clear();
-                if (this.Container.count == 0)
-                {
-                    requested -= _toConsume;
-                    _toConsume = 0f;
-                }
+
+                this.FullyConsumed.Clear();
             }
 
-            return requested;
+            return powerProduced;
         }
 
         public float Constructed
@@ -228,21 +252,20 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
+            SaveData.SaveMaterialsProcessing(MaterialsProcessing);
+
+            SaveData.Save();
         }
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
-            this.Container.Clear(false);
-            if (_protoVersion < 2)
-            {
-                //if (this._serializedStorage != null)
-                //{
-                //    StorageHelper.RestoreItems(serializer, this._serializedStorage, this.container);
-                //    this._serializedStorage = null;
-                //}
+            isLoadingSaveData = true;
 
-                _protoVersion = 2;
-            }
+            InitializeStorage();
+
+            this.Container.Clear(false);
+
+            isLoadingSaveData = false;
         }
 
         public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
@@ -251,19 +274,27 @@
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
-            StorageHelper.TransferItems(storageRoot.gameObject, this.Container);
-            if (_protoVersion < 3)
+            isLoadingSaveData = true;
+
+            bool hasSaveData = SaveData.Load();
+
+            if (hasSaveData)
             {
-                CoroutineHost.StartCoroutine(CleanUpDuplicatedStorage());
+                this.Battery.charge = SaveData.ReactorBatterCharge;
+
+                List<PotentialEnergy> materials = SaveData.GetMaterialsInProcessing();
+
+                foreach (PotentialEnergy item in materials)
+                {
+                    this.Container.AddItem(item.Item);                    
+                }
+
+                this.MaterialsProcessing.AddRange(materials);
             }
+
+            isLoadingSaveData = false;
         }
 
-        private IEnumerator CleanUpDuplicatedStorage()
-        {
-            yield return StorageHelper.DestroyDuplicatedItems(storageRoot.transform.parent.gameObject);
-            _protoVersion = Mathf.Max(_protoVersion, 3);
-            yield break;
-        }
 
         public void ConnectToCyclops(SubRoot parentCyclops)
         {
@@ -272,36 +303,33 @@
             this.transform.SetParent(parentCyclops.transform);
         }
 
-        private const float powerPerSecond = ChargeRatio;
-
-        private const float chargeMultiplier = 7f;
-
-        private const float storageMaxDistance = 4f;
-
-        private const int _currentVersion = 3;
-
-        [ProtoMember(1)]
-        [NonSerialized]
-        public int _protoVersion = 3;
-
-        [ProtoMember(2)]
-        [NonSerialized]
-        public Base.Face _moduleFace;
-
         [ProtoMember(3)]
         [NonSerialized]
         public float _constructed = 1f;
-
-        [ProtoMember(5)]
-        [NonSerialized]
-        public float _toConsume;
 
         [AssertNotNull]
         public ChildObjectIdentifier storageRoot;
 
         private ItemsContainer _container;
 
+        internal List<PotentialEnergy> MaterialsProcessing { get; } = new List<PotentialEnergy>();
+        private List<PotentialEnergy> FullyConsumed { get; } = new List<PotentialEnergy>(TotalContainerSpaces);
 
-        private List<Pickupable> toRemove = new List<Pickupable>();
+        private bool isLoadingSaveData = false;
+        private CyBioReactorSaveData SaveData;
+    }
+
+    internal class PotentialEnergy
+    {
+        public bool FullyConsumed => Mathf.Approximately(Energy, 0f);
+
+        public Pickupable Item;
+        public float Energy;
+
+        public PotentialEnergy(Pickupable item, float energy)
+        {
+            Item = item;
+            Energy = energy;
+        }
     }
 }

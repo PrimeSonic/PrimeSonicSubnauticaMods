@@ -74,10 +74,12 @@
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
+    <Compile Include="SaveData\CyBioReactorSaveData.cs" />
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="PowerManager.cs" />
+    <Compile Include="SaveData\SaveDataExtensions.cs" />
     <Compile Include="UpgradeManager.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />

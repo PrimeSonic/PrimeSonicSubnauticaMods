@@ -219,8 +219,6 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            version = 2;
-
             foreach (string slot in SlotHelper.SlotNames)
             {
                 EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
@@ -229,7 +227,7 @@
                 if (item == null)
                 {
                     savedModule.ItemID = (int)TechType.None;
-                    savedModule.BatteryCharge = -1f;
+                    savedModule.RemainingCharge = -1f;
                 }
                 else
                 {
@@ -239,11 +237,11 @@
 
                     if (battery == null)
                     {
-                        savedModule.BatteryCharge = -1f;
+                        savedModule.RemainingCharge = -1f;
                     }
                     else
                     {
-                        savedModule.BatteryCharge = battery.charge;
+                        savedModule.RemainingCharge = battery.charge;
                     }
                 }
 
@@ -288,8 +286,8 @@
                     if (spanwedItem is null)
                         continue;
 
-                    if (savedModule.BatteryCharge > 0f) // Modules without batteries are stored with a -1 value for charge
-                        spanwedItem.item.GetComponent<Battery>().charge = savedModule.BatteryCharge;
+                    if (savedModule.RemainingCharge > 0f) // Modules without batteries are stored with a -1 value for charge
+                        spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;
 
                     this.Modules.AddItem(slot, spanwedItem, true);
                 }
@@ -313,13 +311,7 @@
         public GameObject Module6;
 
         public ChildObjectIdentifier ModulesRoot;
-
-        private const int currentVersion = 2;
-
-        [ProtoMember(1)]
-        [NonSerialized]
-        public int version;
-
+        
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         public AuxUpgradeConsoleSaveData SaveData;

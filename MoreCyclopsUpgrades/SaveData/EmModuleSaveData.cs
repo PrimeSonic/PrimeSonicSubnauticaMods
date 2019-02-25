@@ -6,11 +6,11 @@
     public class EmModuleSaveData : EmPropertyCollection
     {
         private const string ItemIDKey = "ID";
-        private const string BatteryChargeKey = "B";
+        private const string RemainingChargeKey = "B";
         private const string KeyName = "MDS";
 
         private EmProperty<int> _itemID;
-        private EmProperty<float> _batteryCharge;
+        private EmProperty<float> _remainingCharge;
 
         public int ItemID
         {
@@ -18,31 +18,32 @@
             set => _itemID.Value = value;
         }
 
-        public float BatteryCharge
+        public float RemainingCharge
         {
-            get => _batteryCharge.Value;
-            set => _batteryCharge.Value = value;
+            get => _remainingCharge.Value;
+            set => _remainingCharge.Value = value;
         }
 
-        private static ICollection<EmProperty> GetDefinitions
+        private static ICollection<EmProperty> GetDefinitions => new List<EmProperty>()
         {
-            get => new List<EmProperty>()
-            {
-                new EmProperty<int>(ItemIDKey, 0),
-                new EmProperty<float>(BatteryChargeKey, -1f)
-            };
-        }
+            new EmProperty<int>(ItemIDKey, 0),
+            new EmProperty<float>(RemainingChargeKey, -1f)
+        };
 
-        public EmModuleSaveData() : this(KeyName)
+        public EmModuleSaveData(string keyName) : this(keyName, GetDefinitions)
         {
         }
 
-        public EmModuleSaveData(string keyName) : base(keyName, GetDefinitions)
+        public EmModuleSaveData() : this(KeyName, GetDefinitions)
+        {
+        }
+
+        public EmModuleSaveData(string keyName, ICollection<EmProperty> definitions) : base(keyName, definitions)
         {
             _itemID = (EmProperty<int>)Properties[ItemIDKey];
-            _batteryCharge = (EmProperty<float>)Properties[BatteryChargeKey];
+            _remainingCharge = (EmProperty<float>)Properties[RemainingChargeKey];
         }
 
-        internal override EmProperty Copy() => new EmModuleSaveData();
+        internal override EmProperty Copy() => new EmModuleSaveData(this.Key, CopyDefinitions);
     }
 }
