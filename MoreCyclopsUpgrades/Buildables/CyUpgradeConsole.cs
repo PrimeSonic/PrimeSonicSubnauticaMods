@@ -82,7 +82,7 @@
             constructible.allowedInSub = true; // Only allowed in Cyclops
             constructible.allowedOutside = false;
             constructible.allowedOnCeiling = false;
-            constructible.allowedOnGround = true;
+            constructible.allowedOnGround = true; // Only on ground
             constructible.allowedOnWall = false;
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;

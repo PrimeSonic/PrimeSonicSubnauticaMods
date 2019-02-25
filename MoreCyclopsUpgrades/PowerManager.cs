@@ -1,8 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades
 {
+    using System.Collections.Generic;
     using Caching;
     using Common;
     using Modules;
+    using MoreCyclopsUpgrades.Monobehaviors;
     using SaveData;
     using UnityEngine;
 
@@ -58,6 +60,11 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
+        private List<CyBioReactorMono> CyBioReactors { get; } = new List<CyBioReactorMono>();
+        private List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
+
+        internal bool HasBioReactors => this.CyBioReactors.Count > 0;
+
         public CyclopsManager Manager { get; private set; }
 
         public SubRoot Cyclops => this.Manager.Cyclops;
@@ -91,7 +98,50 @@
             this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
             this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
 
+            CyBioReactorMono[] cyBioReactors = manager.Cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
+
+            foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
+            {
+                if (this.CyBioReactors.Contains(cyBioReactor))
+                    continue; // This is a workaround because of the object references being returned twice in this array.
+
+                this.CyBioReactors.Add(cyBioReactor);
+
+                if (cyBioReactor.ParentCyclops == null)
+                {
+                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
+                    cyBioReactor.ConnectToCyclops(this.Cyclops);
+                }
+            }
+
             return true;
+        }
+
+        internal void SyncBioReactors()
+        {
+            TempCache.Clear();
+
+            CyBioReactorMono[] cyBioReactors = this.Cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
+
+            foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
+            {
+                if (TempCache.Contains(cyBioReactor))
+                    continue; // This is a workaround because of the object references being returned twice in this array.
+
+                TempCache.Add(cyBioReactor);
+
+                if (cyBioReactor.ParentCyclops == null)
+                {
+                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
+                    cyBioReactor.ConnectToCyclops(this.Cyclops);
+                }
+            }
+
+            if (TempCache.Count != this.CyBioReactors.Count)
+            {
+                this.CyBioReactors.Clear();
+                this.CyBioReactors.AddRange(TempCache);
+            }
         }
 
         /// <summary>
@@ -228,7 +278,7 @@
                 return;
             }
 
-            if (!this.UpgradeManager.HasChargingModules)
+            if (!this.UpgradeManager.HasChargingModules && !this.HasBioReactors)
                 return; // No charging modules, early exit
 
             float powerDeficit = this.Cyclops.powerRelay.GetMaxPower() - this.Cyclops.powerRelay.GetPower();
@@ -276,6 +326,12 @@
                     if (battery.charge < battery.capacity)
                         lastBatteryToCharge = battery;
                 }
+            }
+
+            foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
+            {
+                if (reactor.ProducingPower)
+                    ChargeCyclopsFromBattery(reactor.Battery, BatteryDrainRate, ref powerDeficit);
             }
 
             bool cyclopsDoneCharging = powerDeficit <= 0.001f;
@@ -339,6 +395,9 @@
 
             foreach (Battery battery in this.UpgradeManager.ReserveBatteries)
                 availableReservePower += battery.charge;
+
+            foreach (CyBioReactorMono reactor in this.CyBioReactors)
+                availableReservePower += reactor.Battery.charge;
 
             return Mathf.FloorToInt(availableReservePower);
         }

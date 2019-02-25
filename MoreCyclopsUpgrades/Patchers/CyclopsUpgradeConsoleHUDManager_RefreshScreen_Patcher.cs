@@ -18,7 +18,7 @@
             }
 
             cyclopsManager.UpgradeManager.SyncUpgradeConsoles();
-
+            cyclopsManager.PowerManager.SyncBioReactors();
             cyclopsManager.PowerManager.UpdateConsoleHUD(__instance);
         }
     }

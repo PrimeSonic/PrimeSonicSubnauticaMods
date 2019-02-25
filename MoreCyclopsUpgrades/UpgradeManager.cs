@@ -140,8 +140,7 @@
                 if (auxConsole.ParentCyclops == null)
                 {
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    auxConsole.ParentCyclops = this.Cyclops;
-                    ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
+                    auxConsole.ConnectToCyclops(this.Cyclops);                    
                 }
             }
 
@@ -164,8 +163,7 @@
                 if (auxConsole.ParentCyclops == null)
                 {
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    auxConsole.ParentCyclops = this.Cyclops;
-                    ErrorMessage.AddMessage("Auxiliary Upgrade Console has been connected");
+                    auxConsole.ConnectToCyclops(this.Cyclops);
                 }
             }
 

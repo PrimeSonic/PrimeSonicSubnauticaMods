@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Buildables
 {
     using System.Reflection;
+    using MoreCyclopsUpgrades.Monobehaviors;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -28,24 +29,11 @@
         {
             // Instantiate Fabricator object
             var prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.SpecimenAnalyzer));
+            GameObject.DestroyImmediate(prefab.GetComponentInChildren<SpecimenAnalyzerBase>()); // Don't need this
             GameObject.DestroyImmediate(prefab.GetComponent<SpecimenAnalyzer>()); // Don't need this
-            //GameObject model = prefab.FindChild("model");
+            GameObject model = prefab.FindChild("model");
 
-            // Update prefab name
-            prefab.name = this.ClassID;
-
-            // Add prefab ID
-            PrefabIdentifier prefabId = prefab.GetComponent<PrefabIdentifier>();
-            if (prefabId != null)
-            {
-                prefabId.ClassId = this.ClassID;
-                prefabId.name = this.FriendlyName;
-            }
-
-            // Add tech tag
-            TechTag techTag = prefab.GetComponent<TechTag>();
-            if (techTag != null)
-                techTag.type = this.TechType;
+            model.transform.localScale -= new Vector3(0.2f, 0.2f, 0.2f);
 
             // Update sky applier
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
@@ -59,29 +47,16 @@
             constructible.allowedInSub = true; // Only allowed in Cyclops
             constructible.allowedOutside = false;
             constructible.allowedOnCeiling = false;
-            constructible.allowedOnGround = true;
+            constructible.allowedOnGround = true; // Only on ground
             constructible.allowedOnWall = false;
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
             constructible.rotationEnabled = true;
             constructible.techType = this.TechType;
 
-            prefab.transform.SetParent(Player.main.currentSub.transform);
-
-            BaseBioReactor bioReactorComponent = prefab.AddComponent<BaseBioReactor>();
-            bioReactorComponent.name = CyBioReactorID;
-
-            var storeRoot = new GameObject("StorageRoot");
-            storeRoot.transform.SetParent(bioReactorComponent.transform, false);
-            bioReactorComponent.storageRoot = storeRoot.AddComponent<ChildObjectIdentifier>();
-
-            PowerSource powerSource = prefab.AddComponent<PowerSource>();
-            powerSource.maxPower = 400;
-            
-            powerSourceInfo.SetValue(bioReactorComponent, powerSource);
+            CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>();            
 
             return prefab;
-
         }
 
         protected override TechData GetBlueprintRecipe()

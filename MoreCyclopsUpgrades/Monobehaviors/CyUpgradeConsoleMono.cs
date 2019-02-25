@@ -10,10 +10,10 @@
     using UnityEngine.UI;
 
     [ProtoContract]
-    public class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
+    public class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ISubRootConnection
     {
         // This will be set externally
-        public SubRoot ParentCyclops = null;
+        public SubRoot ParentCyclops { get; private set; }
 
         public Equipment Modules { get; private set; }
 
@@ -111,18 +111,7 @@
         }
 
         private void UnlockDefaultModuleSlots() => this.Modules.AddSlots(SlotHelper.SlotNames);
-
-        public void OnHandClick(GUIHand guiHand)
-        {
-            if (!Buildable.constructed)
-                return;
-
-            Player main = Player.main;
-            PDA pda = main.GetPDA();
-            Inventory.main.SetUsedStorage(this.Modules, false);
-            pda.Open(PDATab.Inventory, null, null, -1f);
-        }
-
+        
         public void OnHandHover(GUIHand guiHand)
         {
             if (!Buildable.constructed)
@@ -134,6 +123,17 @@
 #if DEBUG
             PositionStuff(Module4.GetComponent<Canvas>().gameObject);
 #endif
+        }
+
+        public void OnHandClick(GUIHand guiHand)
+        {
+            if (!Buildable.constructed)
+                return;
+
+            Player main = Player.main;
+            PDA pda = main.GetPDA();
+            Inventory.main.SetUsedStorage(this.Modules, false);
+            pda.Open(PDATab.Inventory, null, null, -1f);
         }
 
         private void OnEquip(string slot, InventoryItem item)
@@ -157,6 +157,13 @@
 
             // Deconstruction only allowed if all slots are empty
             Buildable.deconstructionAllowed = allEmpty;
+        }
+
+        public void ConnectToCyclops(SubRoot parentCyclops)
+        {
+            this.ParentCyclops = parentCyclops;
+            this.transform.SetParent(parentCyclops.transform);
+            QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
         }
 
         internal void CyclopsUpgradeChange() => ParentCyclops?.SetInstanceField("subModulesDirty", true);
@@ -317,6 +324,8 @@
         [NonSerialized]
         public AuxUpgradeConsoleSaveData SaveData;
 #if DEBUG
+        // Also shamelessly copied from RandyKnapp
+        // https://github.com/RandyKnapp/SubnauticaModSystem/blob/master/SubnauticaModSystem/HabitatControlPanel/HabitatControlPanel.cs#L711
         public void PositionStuff(GameObject thing)
         {
             Transform t = thing.transform;

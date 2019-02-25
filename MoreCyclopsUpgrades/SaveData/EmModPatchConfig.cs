@@ -133,7 +133,7 @@
         {
             if (!File.Exists(ConfigFile))
             {
-                QuickLogger.Message("Mod config file not found. Writing default file.");
+                QuickLogger.Debug("Mod config file not found. Writing default file.");
                 WriteConfigFile();
                 return;
             }
@@ -144,7 +144,7 @@
 
             if (!readCorrectly || !ValidDataRead)
             {
-                QuickLogger.Warning("Mod config file contained error. Writing default file.");
+                QuickLogger.Debug("Mod config file contained error. Writing default file.");
                 WriteConfigFile();
                 return;
             }

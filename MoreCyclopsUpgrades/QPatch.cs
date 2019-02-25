@@ -24,12 +24,12 @@
 
             try
             {
-                QuickLogger.Message("Started patching " + QuickLogger.GetAssemblyVersion());
+                QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
                 OtherMods.VehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
 
                 if (OtherMods.VehicleUpgradesInCyclops)
-                    QuickLogger.Message("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");
+                    QuickLogger.Debug("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");
 
                 var modConfig = new EmModPatchConfig();
                 modConfig.Initialize();
@@ -38,12 +38,12 @@
 
                 PatchAuxUpgradeConsole(modConfig);
 
-                //PatchBioEnergy(modConfig);
+                PatchBioEnergy(modConfig);
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-                QuickLogger.Message("Finished Patching");
+                QuickLogger.Info("Finished Patching");
 
             }
             catch (Exception ex)
@@ -55,9 +55,9 @@
         private static void PatchUpgradeModules(EmModPatchConfig modConfig)
         {
             if (modConfig.EnableNewUpgradeModules)
-                QuickLogger.Message("Patching new upgrade modules");
+                QuickLogger.Info("Patching new upgrade modules");
             else
-                QuickLogger.Message("New upgrade modules disabled by config settings");
+                QuickLogger.Info("New upgrade modules disabled by config settings");
 
             CyclopsModule.PatchAllModules(modConfig.EnableNewUpgradeModules);
         }
@@ -65,9 +65,9 @@
         private static void PatchAuxUpgradeConsole(EmModPatchConfig modConfig)
         {
             if (modConfig.EnableAuxiliaryUpgradeConsoles)
-                QuickLogger.Message("Patching Auxiliary Upgrade Console");
+                QuickLogger.Info("Patching Auxiliary Upgrade Console");
             else
-                QuickLogger.Message("Auxiliary Upgrade Console disabled by config settings");
+                QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
 
             var auxConsole = new CyUpgradeConsole();
 
@@ -77,9 +77,9 @@
         private static void PatchBioEnergy(EmModPatchConfig modConfig)
         {
             if (modConfig.EnableBioEnergy)
-                QuickLogger.Message("Patching Cyclops BioReactor");
+                QuickLogger.Info("Patching Cyclops BioReactor");
             else
-                QuickLogger.Message("Cyclops BioReactor disabled by config settings");
+                QuickLogger.Info("Cyclops BioReactor disabled by config settings");
 
             var cyBioEnergy = new CyBioReactor();
 
