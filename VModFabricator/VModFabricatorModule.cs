@@ -154,15 +154,12 @@
             GameObject cyclopsFabLight = cyclopsFabPrefab.FindChild("fabricatorLight");
             GameObject cyclopsFabModel = cyclopsFabPrefab.FindChild("submarine_fabricator_03");
 
-            // Update prefab name
-            cyclopsFabPrefab.name = NameID;
-
-            // Add prefab ID
+            // Add prefab ID because CyclopsFabricator normaly doesn't have one
             PrefabIdentifier prefabId = cyclopsFabPrefab.AddComponent<PrefabIdentifier>();
             prefabId.ClassId = NameID;
             prefabId.name = FriendlyName;
 
-            // Add tech tag
+            // Add tech tag because CyclopsFabricator normaly doesn't have one
             TechTag techTag = cyclopsFabPrefab.AddComponent<TechTag>();
             techTag.type = this.TechType;
 

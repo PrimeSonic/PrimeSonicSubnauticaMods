@@ -45,6 +45,15 @@
                     prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
                     crafter = prefab.GetComponent<Fabricator>();
 
+                    // Add prefab ID because CyclopsFabricator normaly doesn't have one
+                    PrefabIdentifier prefabId = prefab.AddComponent<PrefabIdentifier>();
+                    prefabId.ClassId = this.FabricatorDetails.ItemID;
+                    prefabId.name = FriendlyName;
+
+                    // Add tech tag because CyclopsFabricator normaly doesn't have one
+                    TechTag techTag = prefab.AddComponent<TechTag>();
+                    techTag.type = this.TechType;
+
                     // Retrieve sub game objects
                     GameObject cyclopsFabLight = prefab.FindChild("fabricatorLight");
                     GameObject cyclopsFabModel = prefab.FindChild("submarine_fabricator_03");
@@ -79,6 +88,10 @@
             constructible.controlModelState = true;
             constructible.rotationEnabled = false;
             constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time
+
+            SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
+            skyApplier.renderers = prefab.GetComponentsInChildren<Renderer>();
+            skyApplier.anchorSky = Skies.Auto;
 
             // TODO
             // Set the custom texture
