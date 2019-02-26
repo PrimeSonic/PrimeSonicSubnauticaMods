@@ -154,7 +154,6 @@
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Moves.txt" />
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Recipes.txt" />
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Tabs.txt" />
-    <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Unlocks.txt" />
     <Content Include="SampleFiles\ModifiedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

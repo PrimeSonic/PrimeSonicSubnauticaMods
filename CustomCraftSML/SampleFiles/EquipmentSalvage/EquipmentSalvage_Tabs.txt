@@ -3,13 +3,14 @@
 # Author: PrimeSonic #
 # Text files included in this mod: #
 #      EquipmentSalvage_Tabs.txt #
+#      EquipmentSalvage_Moves.txt #
 #      EquipmentSalvage_Recipes.txt #
-#      EquipmentSalvage_Unlocks.txt #
 # ------------------------------------ #
 CustomCraftingTabs: 
 (
     TabID: SalvageTab;
     DisplayName: "Salvage and Recycling";
+    SpriteItemID: Trashcans;
     ParentTabPath: Fabricator/Resources;
 );
 

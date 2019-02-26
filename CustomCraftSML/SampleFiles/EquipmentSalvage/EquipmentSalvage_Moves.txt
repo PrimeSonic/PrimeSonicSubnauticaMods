@@ -3,8 +3,8 @@
 # Author: PrimeSonic #
 # Text files included in this mod: #
 #      EquipmentSalvage_Tabs.txt #
+#      EquipmentSalvage_Moves.txt #
 #      EquipmentSalvage_Recipes.txt #
-#      EquipmentSalvage_Unlocks.txt #
 # ------------------------------------ #
 MovedRecipes: 
 (
@@ -12,6 +12,7 @@ MovedRecipes:
     OldPath: Fabricator/Resources/BasicMaterials;
     NewPath: Fabricator/Resources/SalvageTab;
     Hidden: NO;
+    Copied: YES;
 );
 
 # ------------------------------------ #

@@ -41,8 +41,8 @@
             "Author: PrimeSonic",
             "Text files included in this mod:",
             "     EquipmentSalvage_Tabs.txt",
+            "     EquipmentSalvage_Moves.txt",
             "     EquipmentSalvage_Recipes.txt",
-            "     EquipmentSalvage_Unlocks.txt",
         };
 
         private static readonly string[] BottomLines = new[]
@@ -76,7 +76,8 @@
             {
                 TabID = SalvageTabID,
                 DisplayName = "Salvage and Recycling",
-                ParentTabPath = PathToSalvageTab
+                ParentTabPath = PathToSalvageTab,
+                SpriteItemID = TechType.Trashcans
             };
 
             var tabList = new CustomCraftingTabList
@@ -92,7 +93,8 @@
                 ItemID = TechType.Titanium.ToString(),
                 OldPath = PathHelper.Fabricator.Resources.BasicMaterials.BasicMaterialsTab.GetCraftingPath.ToString(),
                 NewPath = tabList[0].FullPath,
-                Hidden = false
+                Hidden = false,
+                Copied = true
             };
 
             var movedList = new MovedRecipeList
@@ -123,7 +125,8 @@
                 {
                     TechType.Lead.ToString(),
                     TechType.Lead.ToString()
-                }
+                },
+                UnlockedBy = { TechType.RadiationSuit.ToString() }
             };
 
             var copperSalvage = new AliasRecipe
@@ -144,7 +147,8 @@
                 {
                     TechType.Copper.ToString(),
                     TechType.Copper.ToString()
-                }
+                },
+                UnlockedBy = { TechType.PowerCell.ToString() }
             };
 
             var deepSalvage = new AliasRecipe
@@ -167,7 +171,8 @@
                     TechType.Magnetite.ToString(),
                     TechType.Lithium.ToString(),
                     TechType.Magnetite.ToString()
-                }
+                },
+                UnlockedBy = { "DeepPowerCell" }
             };
 
             var ionSalvage = new AliasRecipe
@@ -188,7 +193,8 @@
                 {
                     TechType.PrecursorIonCrystal.ToString(),
                     TechType.PrecursorIonCrystal.ToString()
-                }
+                },
+                UnlockedBy = { TechType.PrecursorIonPowerCell.ToString() }
             };
 
             var diamondSalvage = new AliasRecipe
@@ -209,7 +215,8 @@
                 {
                     TechType.Diamond.ToString(),
                     TechType.Diamond.ToString()
-                }
+                },
+                UnlockedBy = { TechType.Diamond.ToString() }
             };
 
             var wireSalvage = new AliasRecipe
@@ -229,7 +236,8 @@
                 LinkedItemIDs =
                 {
                     TechType.CopperWire.ToString(),
-                }
+                },
+                UnlockedBy = { TechType.Seaglide.ToString() }
             };
 
             var aliasList = new AliasRecipeList
@@ -238,52 +246,6 @@
             };
 
             WriteFile(aliasList, "EquipmentSalvage_Recipes.txt");
-
-            // UNLOCKS
-            if (!EnableUnlocking)
-                return;
-
-            var radSuit = new ModifiedRecipe
-            {
-                ItemID = leadSalvage.Ingredients[0].ItemID,
-                AmountCrafted = null,
-                Unlocks = { leadSalvage.ItemID }
-            };
-
-            var powerCell = new ModifiedRecipe
-            {
-                ItemID = copperSalvage.Ingredients[0].ItemID,
-                AmountCrafted = null,
-                Unlocks = { copperSalvage.ItemID }
-            };
-
-            var deepPowerCell = new ModifiedRecipe
-            {
-                ItemID = deepSalvage.Ingredients[0].ItemID,
-                AmountCrafted = null,
-                Unlocks = { deepSalvage.ItemID }
-            };
-
-            var ionPowerCell = new ModifiedRecipe
-            {
-                ItemID = ionSalvage.Ingredients[0].ItemID,
-                AmountCrafted = null,
-                Unlocks = { ionSalvage.ItemID }
-            };
-
-            var laserCutter = new ModifiedRecipe
-            {
-                ItemID = diamondSalvage.Ingredients[0].ItemID,
-                AmountCrafted = null,
-                Unlocks = { diamondSalvage.ItemID }
-            };
-
-            var modList = new ModifiedRecipeList
-            {
-                radSuit, powerCell, deepPowerCell, ionPowerCell, laserCutter
-            };
-
-            WriteFile(modList, "EquipmentSalvage_Unlocks.txt");
         }
     }
 }

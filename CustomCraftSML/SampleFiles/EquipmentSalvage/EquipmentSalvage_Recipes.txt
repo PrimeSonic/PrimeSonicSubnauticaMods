@@ -3,8 +3,8 @@
 # Author: PrimeSonic #
 # Text files included in this mod: #
 #      EquipmentSalvage_Tabs.txt #
+#      EquipmentSalvage_Moves.txt #
 #      EquipmentSalvage_Recipes.txt #
-#      EquipmentSalvage_Unlocks.txt #
 # ------------------------------------ #
 AliasRecipes: 
 (
@@ -24,6 +24,7 @@ AliasRecipes:
     );
     LinkedItemIDs: Lead,Lead;
     ForceUnlockAtStart: NO;
+    UnlockedBy: RadiationSuit;
     Path: Fabricator/Resources/SalvageTab;
     PdaGroup: Resources;
     PdaCategory: BasicMaterials;
@@ -40,6 +41,7 @@ AliasRecipes:
     );
     LinkedItemIDs: Copper,Copper;
     ForceUnlockAtStart: NO;
+    UnlockedBy: PowerCell;
     Path: Fabricator/Resources/SalvageTab;
     PdaGroup: Resources;
     PdaCategory: BasicMaterials;
@@ -56,6 +58,7 @@ AliasRecipes:
     );
     LinkedItemIDs: Lithium,Magnetite,Lithium,Magnetite;
     ForceUnlockAtStart: NO;
+    UnlockedBy: DeepPowerCell;
     Path: Fabricator/Resources/SalvageTab;
     PdaGroup: Resources;
     PdaCategory: AdvancedMaterials;
@@ -72,6 +75,7 @@ AliasRecipes:
     );
     LinkedItemIDs: PrecursorIonCrystal,PrecursorIonCrystal;
     ForceUnlockAtStart: NO;
+    UnlockedBy: PrecursorIonPowerCell;
     Path: Fabricator/Resources/SalvageTab;
     PdaGroup: Resources;
     PdaCategory: AdvancedMaterials;
@@ -88,6 +92,7 @@ AliasRecipes:
     );
     LinkedItemIDs: Diamond,Diamond;
     ForceUnlockAtStart: NO;
+    UnlockedBy: Diamond;
     Path: Fabricator/Resources/SalvageTab;
     PdaGroup: Resources;
     PdaCategory: AdvancedMaterials;
@@ -104,6 +109,7 @@ AliasRecipes:
     );
     LinkedItemIDs: CopperWire;
     ForceUnlockAtStart: NO;
+    UnlockedBy: Seaglide;
     Path: Fabricator/Resources/SalvageTab;
     PdaGroup: Resources;
     PdaCategory: Electronics;
