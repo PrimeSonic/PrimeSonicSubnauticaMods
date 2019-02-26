@@ -1,0 +1,24 @@
+MovedRecipes help you move, hide, or copy Recipes to a new location CustomTab or Fabricator
+
+MovedRecipes:
+(
+    # How to hide a crafting recipe #
+    ItemID: Titanium; # ItemID is used to define an item you wish to move. You can get them from the OriginalRecipes folder.#
+    OldPath: Fabricator/Resources/BasicMaterials; # Where to find the  #
+    Hidden: YES; # When you set Hidden to YES, it will hide this item from the OldPath. Setting Hidden to NO has no effect. #
+    # Use this to remove recipes. #
+),
+(
+    # How to move a crafting recipe to another location #
+    ItemID: TitaniumIngot;
+    OldPath: Fabricator/Resources/BasicMaterials; # OldPath is the path this crafting node was originally located in.#
+    NewPath: Fabricator/MoreIngots/packed/metallic; # NewPath is where you want the crafting node to go to. #
+    # Use this to reorganize recipes into other tabs or other fabricators. #
+),
+(
+    # How to copy a crafting recipe to another location #
+    ItemID:HeatBlade;
+    NewPath:Fabricator/Personal/Tools; # NewPath is where you want the crafting node to be copied to. #
+    Copied:YES; # When you set Copied to YES, the crafting node will be to the new path while leaving the old one untouched. #
+    # Use this to duplicate recipes onto other fabricators. #
+);

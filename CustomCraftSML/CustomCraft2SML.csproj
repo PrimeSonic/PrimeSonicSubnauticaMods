@@ -139,6 +139,9 @@
     <Content Include="SampleFiles\CustomBioFuels_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SampleFiles\CustomFabricator_Sample.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SampleFiles\CustomFragments_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -153,6 +156,9 @@
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Tabs.txt" />
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Unlocks.txt" />
     <Content Include="SampleFiles\ModifiedRecipes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\MovedRecipes_Sample.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\MovedRecipes_Samples2.txt">

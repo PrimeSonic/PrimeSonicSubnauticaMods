@@ -52,17 +52,6 @@
         }
 
         [Test]
-        public void Sample_ModifiedRecipes2_Ok()
-        {
-            var mRecipes = new ModifiedRecipeList();
-
-            string sample = File.ReadAllText(SampleFileDirectory + "Mattus666.txt");
-
-            bool result = mRecipes.FromString(sample);
-            Assert.IsTrue(result);
-        }
-
-        [Test]
         public void Sample_AddedRecipes_Ok()
         {
             var aRecipes = new AddedRecipeList();
@@ -356,9 +345,16 @@
                 Hidden = true
             };
 
+            var copyUltraFins = new MovedRecipe
+            {
+                ItemID = TechType.UltraGlideFins.ToString(),
+                NewPath = PathHelper.Fabricator.Personal.Tools.ToolsTab.GetCraftingPath.ToString(),
+                Copied = true
+            };
+
             var origMovedRepList = new MovedRecipeList
             {
-                moveTiIngot, hideRifile
+                moveTiIngot, hideRifile, copyUltraFins
             };
 
             string serialized = origMovedRepList.PrettyPrint();
@@ -379,14 +375,22 @@
 
             Assert.AreEqual(TechType.TitaniumIngot.ToString(), readingSizesList[0].ItemID);
             Assert.AreEqual(TechType.StasisRifle.ToString(), readingSizesList[1].ItemID);
+            Assert.AreEqual(TechType.UltraGlideFins.ToString(), readingSizesList[2].ItemID);
 
             Assert.AreEqual(moveTiIngot.OldPath, readingSizesList[0].OldPath);
             Assert.AreEqual(moveTiIngot.NewPath, readingSizesList[0].NewPath);
             Assert.AreEqual(moveTiIngot.Hidden, readingSizesList[0].Hidden);
+            Assert.AreEqual(moveTiIngot.Copied, readingSizesList[0].Copied);
 
             Assert.AreEqual(hideRifile.OldPath, readingSizesList[1].OldPath);
             Assert.AreEqual(hideRifile.NewPath, readingSizesList[1].NewPath);
             Assert.AreEqual(hideRifile.Hidden, readingSizesList[1].Hidden);
+            Assert.AreEqual(hideRifile.Copied, readingSizesList[1].Copied);
+
+            Assert.AreEqual(copyUltraFins.OldPath, readingSizesList[2].OldPath);
+            Assert.AreEqual(copyUltraFins.NewPath, readingSizesList[2].NewPath);
+            Assert.AreEqual(copyUltraFins.Hidden, readingSizesList[2].Hidden);
+            Assert.AreEqual(copyUltraFins.Copied, readingSizesList[2].Copied);
         }
     }
 }
