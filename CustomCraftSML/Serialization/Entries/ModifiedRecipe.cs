@@ -264,8 +264,17 @@
         {
             ITechData original = CraftData.Get(this.TechType, skipWarnings: true);
 
-            if (original == null) // Possibly a mod recipe
-                original = CraftDataHandler.GetModdedTechData(this.TechType);
+            try
+            {
+                if (original == null) // Possibly a mod recipe
+                    original = CraftDataHandler.GetModdedTechData(this.TechType);
+            }
+            catch (MissingMethodException mme)
+            {
+                QuickLogger.Error($"Error while trying to access new SMLHelper method for {this.Key} entry '{this.ItemID}' from {this.Origin}.{Environment.NewLine}" +
+                                  $"    Please update your copy of Modding Helper (SMLHelper).{Environment.NewLine}", mme);
+                return false;
+            }            
 
             if (original == null)
             {
