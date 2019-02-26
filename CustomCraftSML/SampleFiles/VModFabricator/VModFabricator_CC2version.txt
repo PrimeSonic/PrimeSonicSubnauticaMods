@@ -1,0 +1,77 @@
+CustomFabricators:
+(
+    ItemID:VModFabricatorCC2;
+    Ingredients:
+        (ItemID:Titanium;Required:2;),
+        (ItemID:ComputerChip;Required:1;),
+        (ItemID:Diamond;Required:1;),
+        (ItemID:Lead;Required:1;);
+    ForceUnlockAtStart:NO;
+    UnlockedBy:Workbench,BaseUpgradeConsole,Cyclops;
+    PdaGroup:InteriorModules;
+    PdaCategory:InteriorModule;
+    DisplayName:"Vehicle Module Fabricator";
+    Tooltip:"Construct vehicle upgrade modules from the comfort of your favorite habitat or cyclops.";
+    Model:MoonPool;
+    AllowedInBase:YES;
+    AllowedInCyclops:YES;
+    CustomCraftingTabs:
+        (TabID:CyclopsModulesCC2;DisplayName:"Cyclops Modules";SpriteItemID:Cyclops;ParentTabPath:VModFabricatorCC2;),
+        (TabID:CyclopsAbilityModulesCC2;DisplayName:"Ability Modules";SpriteItemID:CyclopsShieldModule;ParentTabPath:VModFabricatorCC2/CyclopsModulesCC2;),
+        (TabID:CyclopsDepthModulesCC2;DisplayName:"Depth Modules";SpriteItemID:CyclopsHullModule1;ParentTabPath:VModFabricatorCC2/CyclopsModulesCC2;),
+        (TabID:CyclopsPowerModulesCC2;DisplayName:"Power Modules";SpriteItemID:PowerUpgradeModule;ParentTabPath:VModFabricatorCC2/CyclopsModulesCC2;),
+        (TabID:CyclopsRechargeTabCC2;DisplayName:"Recharge Modules";SpriteItemID:CyclopsThermalReactorModule;ParentTabPath:VModFabricatorCC2/CyclopsModulesCC2;),
+        (TabID:ExosuitModulesCC2;DisplayName:"Prawn Suit Modules";SpriteItemID:Exosuit;ParentTabPath:VModFabricatorCC2;),
+        (TabID:ExosuitDepthModulesCC2;DisplayName:"Depth Modules";SpriteItemID:ExoHullModule1;ParentTabPath:VModFabricatorCC2/ExosuitModulesCC2;),
+        (TabID:SeamothModulesCC2;DisplayName:"Seamoth Modules";SpriteItemID:Seamoth;ParentTabPath:VModFabricatorCC2;),
+        (TabID:SeamothDepthModulesCC2;DisplayName:"Depth Modules";SpriteItemID:VehicleHullModule1;ParentTabPath:VModFabricatorCC2/SeamothModulesCC2;),
+        (TabID:SeamothAbilityModulesCC2;DisplayName:"Ability Modules";SpriteItemID:SeamothElectricalDefense;ParentTabPath:VModFabricatorCC2/SeamothModulesCC2;),
+        (TabID:CommonModulesCC2;DisplayName:"Common Modules";SpriteItemID:VehicleArmorPlating;ParentTabPath:VModFabricatorCC2;),
+        (TabID:TorpedoesModulesCC2;DisplayName:Torpedoes;SpriteItemID:WhirlpoolTorpedo;ParentTabPath:VModFabricatorCC2;);
+    MovedRecipes:(ItemID:CyclopsShieldModule;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsAbilityModulesCC2;Copied:YES;),
+        (ItemID:CyclopsSonarModule;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsAbilityModulesCC2;Copied:YES;),
+        (ItemID:CyclopsSeamothRepairModule;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsAbilityModulesCC2;Copied:YES;),
+        (ItemID:CyclopsFireSuppressionModule;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsAbilityModulesCC2;Copied:YES;),
+        (ItemID:CyclopsDecoyModule;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsAbilityModulesCC2;Copied:YES;),
+        (ItemID:CyclopsHullModule1;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsDepthModulesCC2;Copied:YES;),
+        (ItemID:CyclopsHullModule2;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsDepthModulesCC2;Copied:YES;),
+        (ItemID:CyclopsHullModule3;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsDepthModulesCC2;Copied:YES;),
+        (ItemID:PowerUpgradeModule;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsPowerModulesCC2;Copied:YES;),
+        (ItemID:PowerUpgradeModuleMk2;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsPowerModulesCC2;Copied:YES;),
+        (ItemID:PowerUpgradeModuleMk3;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsPowerModulesCC2;Copied:YES;),
+        (ItemID:CyclopsThermalReactorModule;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsRechargeTabCC2;Copied:YES;),
+        (ItemID:CyclopsThermalChargerMk2;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsRechargeTabCC2;Copied:YES;),
+        (ItemID:CyclopsSolarCharger;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsRechargeTabCC2;Copied:YES;),
+        (ItemID:CyclopsSolarChargerMk2;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsRechargeTabCC2;Copied:YES;),
+        (ItemID:CyclopsNuclearModule;NewPath:VModFabricatorCC2/CyclopsModulesCC2/CyclopsRechargeTabCC2;Copied:YES;),
+        (ItemID:ExosuitJetUpgradeModule;NewPath:VModFabricatorCC2/ExosuitModulesCC2;Copied:YES;),
+        (ItemID:ExosuitPropulsionArmModule;NewPath:VModFabricatorCC2/ExosuitModulesCC2;Copied:YES;),
+        (ItemID:ExosuitGrapplingArmModule;NewPath:VModFabricatorCC2/ExosuitModulesCC2;Copied:YES;),
+        (ItemID:ExosuitDrillArmModule;NewPath:VModFabricatorCC2/ExosuitModulesCC2;Copied:YES;),
+        (ItemID:ExosuitTorpedoArmModule;NewPath:VModFabricatorCC2/ExosuitModulesCC2;Copied:YES;),
+        (ItemID:ExoHullModule1;NewPath:VModFabricatorCC2/ExosuitModulesCC2/ExosuitDepthModulesCC2;Copied:YES;),
+        (ItemID:ExoHullModule2;NewPath:VModFabricatorCC2/ExosuitModulesCC2/ExosuitDepthModulesCC2;Copied:YES;),
+        (ItemID:SeamothSolarCharge;NewPath:VModFabricatorCC2/SeamothModulesCC2;Copied:YES;),
+        (ItemID:SeamothThermalModule;NewPath:VModFabricatorCC2/SeamothModulesCC2;Copied:YES;),
+        (ItemID:VehicleHullModule1;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothDepthModulesCC2;Copied:YES;),
+        (ItemID:VehicleHullModule2;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothDepthModulesCC2;Copied:YES;),
+        (ItemID:VehicleHullModule3;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothDepthModulesCC2;Copied:YES;),
+        (ItemID:SeamothHullModule4;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothDepthModulesCC2;Copied:YES;),
+        (ItemID:SeamothHullModule5;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothDepthModulesCC2;Copied:YES;),
+        (ItemID:SeamothElectricalDefense;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothAbilityModulesCC2;Copied:YES;),
+        (ItemID:SeamothSonarModule;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothAbilityModulesCC2;Copied:YES;),
+        (ItemID:SeamothTorpedoModule;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothAbilityModulesCC2;Copied:YES;),
+        (ItemID:SeamothDrillModule;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothAbilityModulesCC2;Copied:YES;),
+        (ItemID:SeamothClawModule;NewPath:VModFabricatorCC2/SeamothModulesCC2/SeamothAbilityModulesCC2;Copied:YES;),
+        (ItemID:VehicleArmorPlating;NewPath:VModFabricatorCC2/CommonModulesCC2;Copied:YES;),
+        (ItemID:VehiclePowerUpgradeModule;NewPath:VModFabricatorCC2/CommonModulesCC2;Copied:YES;),
+        (ItemID:VehicleStorageModule;NewPath:VModFabricatorCC2/CommonModulesCC2;Copied:YES;),
+        (ItemID:SpeedModule;NewPath:VModFabricatorCC2/CommonModulesCC2;Copied:YES;),
+        (ItemID:ScannerModule;NewPath:VModFabricatorCC2/CommonModulesCC2;Copied:YES;),
+        (ItemID:RepairModule;NewPath:VModFabricatorCC2/CommonModulesCC2;Copied:YES;),
+        (ItemID:LaserCannon;NewPath:VModFabricatorCC2/CommonModulesCC2;Copied:YES;),
+        (ItemID:WhirlpoolTorpedo;NewPath:VModFabricatorCC2/TorpedoesModulesCC2;Copied:YES;),
+        (ItemID:GasTorpedo;NewPath:VModFabricatorCC2/TorpedoesModulesCC2;Copied:YES;);
+);
+
+
