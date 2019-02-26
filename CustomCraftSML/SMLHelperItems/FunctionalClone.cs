@@ -11,10 +11,10 @@
             : base(aliasRecipe.ItemID, $"{aliasRecipe}Prefab", aliasRecipe.Tooltip)
         {
             BaseItem = baseItem;
-            this.TechType = aliasRecipe.TechType;
+            this.TechType = aliasRecipe.TechType; // TechType already handled by this point
         }
 
-        public override string AssetsFolder { get; } = FileReaderWriter.RootModName + "/Assets";
+        public override string AssetsFolder { get; } = FileLocations.RootModName + "/Assets";
 
         public override GameObject GetGameObject()
         {

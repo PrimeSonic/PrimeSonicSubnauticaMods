@@ -18,6 +18,8 @@
         protected const string FunctionalIdKey = "FunctionalID";
         protected const string SpriteItemIdKey = "SpriteItemID";
 
+        public new const string TypeName = "AliasRecipe";
+
         internal static new readonly string[] TutorialText = new[]
         {
            $"{AliasRecipeList.ListKey}: A powerful tool with multiple applications.",
@@ -74,7 +76,7 @@
             new EmProperty<TechType>(SpriteItemIdKey) { Optional = true }
         };
 
-        public AliasRecipe() : this("AliasRecipe", AliasRecipeProperties)
+        public AliasRecipe() : this(TypeName, AliasRecipeProperties)
         {
         }
 
@@ -98,7 +100,7 @@
             return InnerItemsAreValid() && FunctionalItemIsValid();
         }
 
-        private bool FunctionalItemIsValid()
+        protected virtual bool FunctionalItemIsValid()
         {
             if (string.IsNullOrEmpty(this.FunctionalID))
                 return true; // No value provided. This is fine.
@@ -108,7 +110,7 @@
 
             if (FunctionalCloneID == TechType.None)
             {
-                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
                 return false;
             }
 
@@ -135,18 +137,18 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.ItemID}' from {this.Origin}", ex);
                 return false;
             }
         }
 
         protected void HandleCustomSprite()
         {
-            string imagePath = IOPath.Combine(FileReaderWriter.AssetsFolder, this.ItemID + @".png");
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
 
             if (File.Exists(imagePath))
             {
-                QuickLogger.Message($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}'");
+                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
@@ -154,7 +156,7 @@
 
             if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
             {
-                QuickLogger.Message($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}'");
+                QuickLogger.Debug($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = SpriteManager.Get(this.SpriteItemID);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
@@ -162,13 +164,13 @@
 
             if (this.LinkedItems.Count > 0)
             {
-                QuickLogger.Message($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}'");
+                QuickLogger.Debug($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}' from {this.Origin}");
                 Atlas.Sprite sprite = SpriteManager.Get(this.LinkedItems[0]);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
             }
 
-            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}'");
+            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
         }
 
         protected void HandleFunctionalClone()
@@ -177,7 +179,7 @@
             {
                 var clone = new FunctionalClone(this, FunctionalCloneID);
                 PrefabHandler.RegisterPrefab(clone);
-                QuickLogger.Message($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}'");
+                QuickLogger.Debug($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}' - Entry from {this.Origin}");
             }
         }
     }

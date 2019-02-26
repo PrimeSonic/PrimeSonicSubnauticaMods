@@ -8,4 +8,9 @@ MovedRecipes:
     ItemID: StasisRifle;
     OldPath: Fabricator/Personal/Tools;
     Hidden: YES;
+),
+(
+    ItemID: UltraGlideFins;
+    NewPath: Fabricator/Personal/Tools;
+    Copied: YES;
 );

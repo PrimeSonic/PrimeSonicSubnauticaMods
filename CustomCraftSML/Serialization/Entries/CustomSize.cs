@@ -5,6 +5,7 @@
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
@@ -59,6 +60,8 @@
             new EmProperty<short>(HeightKey, 1)
         };
 
+        public OriginFile Origin { get; set; }
+
         public CustomSize() : this("CustomSize", SizeProperties)
         {
         }
@@ -71,13 +74,13 @@
 
         internal override EmProperty Copy() => new CustomSize(this.Key, this.CopyDefinitions);
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() && ValidateSizes();
+        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidateSizes();
 
         private bool ValidateSizes()
         {
             if (this.Width < Min || this.Height < Min || this.Width > Max || this.Height > Max)
             {
-                QuickLogger.Error($"Error in {this.Key} for '{this.ItemID}'. Size values must be between between {Min} and {Max}.");
+                QuickLogger.Error($"Error in {this.Key} for '{this.ItemID}' from {this.Origin}. Size values must be between between {Min} and {Max}.");
                 return false;
             }
 
@@ -89,12 +92,12 @@
             try
             {
                 CraftDataHandler.SetItemSize(this.TechType, this.Width, this.Height);
-                QuickLogger.Message($"'{this.ItemID}' was resized to {this.Width}x{this.Height}");
+                QuickLogger.Debug($"'{this.ItemID}' from {this.Origin} was resized to {this.Width}x{this.Height}");
                 return true;
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.ItemID}' from {this.Origin}", ex);
                 return false;
             }
         }

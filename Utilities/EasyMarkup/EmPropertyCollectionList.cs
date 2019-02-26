@@ -5,35 +5,34 @@
     using System.Collections.Generic;
     using Common;
 
-    public class EmPropertyCollectionList<T> : EmProperty, IEnumerable<T>, IValueConfirmation where T : EmPropertyCollection
+    public class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation 
+        where ListedType : EmPropertyCollection, new()
     {
-        public bool Optional { get; set; } = false;
-
         public bool HasValue => Count > 0;
 
-        public Type ItemType => typeof(T);
+        public Type ItemType => typeof(ListedType);
 
         protected EmPropertyCollection Template;
 
-        public T this[int index] => this.Values[index];
+        public ListedType this[int index] => this.Values[index];
 
         public int Count => this.Values.Count;
 
-        public void Add(T item)
+        public void Add(ListedType item)
         {
             this.Values.Add(item);
         }
 
-        public IList<T> Values { get; } = new List<T>();
+        public IList<ListedType> Values { get; } = new List<ListedType>();
 
-        public IEnumerator<T> GetEnumerator() => this.Values.GetEnumerator();
+        public IEnumerator<ListedType> GetEnumerator() => this.Values.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.Values.GetEnumerator();
 
-        public EmPropertyCollectionList(string key, T template)
+        public EmPropertyCollectionList(string key)
         {
             this.Key = key;
-            Template = template;
+            Template = new ListedType();
         }
 
         public override string ToString()
@@ -73,7 +72,7 @@
                     case SpChar_ListItemSplitter when openParens == 0 && fullString.Count > 0: // End of a nested property belonging to this collection
                         fullString.PopFromStart(); // Skip delimiter
 
-                        var collection = (T)Template.Copy();
+                        var collection = (ListedType)Template.Copy();
                         collection.FromString($"{this.Key}{SpChar_KeyDelimiter}{buffer.ToString()}{SpChar_ValueDelimiter}");
                         this.Values.Add(collection);
                         buffer.Clear();
@@ -99,11 +98,11 @@
             return serialValues.TrimEnd(SpChar_ListItemSplitter) + SpChar_FinishComplexValue;
         }
 
-        internal override EmProperty Copy() => new EmPropertyCollectionList<T>(this.Key, (T)Template.Copy());
+        internal override EmProperty Copy() => new EmPropertyCollectionList<ListedType>(this.Key) { Optional = this.Optional };
 
         internal override bool ValueEquals(EmProperty other)
         {
-            if (other is EmPropertyCollectionList<T> otherTyped)
+            if (other is EmPropertyCollectionList<ListedType> otherTyped)
             {
                 if (this.Count != otherTyped.Count)
                     return false;

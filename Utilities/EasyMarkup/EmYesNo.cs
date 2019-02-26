@@ -40,9 +40,9 @@
         internal override EmProperty Copy()
         {
             if (HasValue)
-                return new EmYesNo(this.Key, this.Value);
+                return new EmYesNo(this.Key, this.Value) { Optional = this.Optional };
 
-            return new EmYesNo(this.Key, this.DefaultValue);
+            return new EmYesNo(this.Key, this.DefaultValue) { Optional = this.Optional };
         }
     }
 }

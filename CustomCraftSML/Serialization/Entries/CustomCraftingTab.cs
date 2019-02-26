@@ -6,12 +6,13 @@
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.PublicAPI;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
     using IOPath = System.IO.Path;
 
-    internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab
+    internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCraft
     {
         internal static readonly string[] TutorialText = new[]
         {
@@ -27,19 +28,21 @@
             "        You can have as many custom tabs as you want, and even include custom tabs inside other custom tabs.",
             "        Just make sure you add your custom tabs to the file in the correct order, from inside to outside.",
             "        If a custom tab goes inside another custom tab, then the parent tab must be placed above the child tab.",
+            "        You can find a full list of all original crafting paths for all the standard fabricators in the OriginalRecipes folder.",
         };
 
+        public const string TypeName = "CustomTab";
         protected const string TabIdKey = "TabID";
         protected const string DisplayNameKey = "DisplayName";
         protected const string SpriteItemIdKey = "SpriteItemID";
         protected const string ParentTabPathKey = "ParentTabPath";
-
+        
         protected readonly EmProperty<string> emTabID;
         protected readonly EmProperty<string> emDisplayName;
         protected readonly EmProperty<TechType> emSpriteID;
         protected readonly EmProperty<string> emParentTabPath;
 
-        private CraftingPath craftingPath;
+        protected CraftingPath craftingPath;
 
         protected static ICollection<EmProperty> CustomCraftingTabProperties => new List<EmProperty>(4)
         {
@@ -49,7 +52,7 @@
             new EmProperty<string>(ParentTabPathKey),
         };
 
-        public CustomCraftingTab() : this("CustomTab", CustomCraftingTabProperties)
+        public CustomCraftingTab() : this(TypeName, CustomCraftingTabProperties)
         {
         }
 
@@ -63,13 +66,15 @@
             base.OnValueExtractedEvent += ParsePath;
         }
 
+        public OriginFile Origin { get; set; }
+
         internal CustomCraftingTab(string path) : this()
         {
             this.ParentTabPath = path;
             ParsePath();
         }
 
-        private void ParsePath()
+        protected void ParsePath()
         {
             try
             {
@@ -95,7 +100,7 @@
             set => emDisplayName.Value = value;
         }
 
-        public CraftTree.Type FabricatorType
+        public virtual CraftTree.Type FabricatorType
         {
             get
             {
@@ -133,9 +138,9 @@
 
         internal override EmProperty Copy() => new CustomCraftingTab(this.Key, this.CopyDefinitions);
 
-        public bool PassesPreValidation() => craftingPath != null && ValidFabricator();
+        public bool PassesPreValidation() => craftingPath != null & ValidFabricator();
 
-        private bool ValidFabricator()
+        protected virtual bool ValidFabricator()
         {
             if (this.FabricatorType > CraftTree.Type.Rocket)
             {
@@ -145,14 +150,14 @@
 
             if (this.FabricatorType == CraftTree.Type.None)
             {
-                QuickLogger.Error($"Error on crafting tab '{this.TabID}'. ParentTabPath must identify a fabricator for the custom tab.");
+                QuickLogger.Error($"Error on crafting tab '{this.TabID}'. {ParentTabPathKey} must identify a fabricator for the custom tab.");
                 return false;
             }
 
             return true;
         }
 
-        public bool SendToSMLHelper()
+        public virtual bool SendToSMLHelper()
         {
             try
             {
@@ -162,7 +167,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling crafting tab '{this.TabID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling {this.Key} '{this.TabID}' from {this.Origin}", ex);
                 return false;
             }
         }
@@ -183,21 +188,21 @@
 
         protected Atlas.Sprite GetCraftingTabSprite()
         {
-            string imagePath = IOPath.Combine(FileReaderWriter.AssetsFolder, this.TabID + @".png");
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, this.TabID + @".png");
 
             if (File.Exists(imagePath))
             {
-                QuickLogger.Message($"Custom sprite found in Assets folder for CraftingTab '{this.TabID}'");
+                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.TabID}' from {this.Origin}");
                 return ImageUtils.LoadSpriteFromFile(imagePath);
             }
 
             if (this.SpriteItemID != TechType.None)
             {
-                QuickLogger.Message($"SpriteItemID used for CraftingTab '{this.TabID}'");
+                QuickLogger.Debug($"SpriteItemID used for {this.Key} '{this.TabID}' from {this.Origin}");
                 return SpriteManager.Get(this.SpriteItemID);
             }
 
-            QuickLogger.Warning($"No sprite loaded for CraftingTab '{this.TabID}'");
+            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.TabID}' from {this.Origin}");
             return SpriteManager.Get(TechType.None);
         }
     }

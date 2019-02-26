@@ -3,10 +3,10 @@
     using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
-    using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
 
     internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPackage
-            where CustomCraftEntry : EmPropertyCollection, ICustomCraft
+            where CustomCraftEntry : EmPropertyCollection, ICustomCraft, new()
             where EmCollectionListT : EmPropertyCollectionList<CustomCraftEntry>, new()
     {
         public string ListKey { get; }
@@ -14,14 +14,14 @@
         internal IList<CustomCraftEntry> ParsedEntries { get; } = new List<CustomCraftEntry>();
         internal IDictionary<string, CustomCraftEntry> UniqueEntries { get; } = new Dictionary<string, CustomCraftEntry>();
 
-        internal string TypeName { get; } = typeof(CustomCraftEntry).Name;
+        public string TypeName { get; } = typeof(CustomCraftEntry).Name;
 
         public ParsingPackage(string listKey)
         {
             this.ListKey = listKey;
         }
 
-        public int ParseEntries(string serializedData)
+        public int ParseEntries(string serializedData, OriginFile file)
         {
             var list = new EmCollectionListT();
 
@@ -36,6 +36,7 @@
             int count = 0;
             foreach (CustomCraftEntry item in list)
             {
+                item.Origin = file;
                 this.ParsedEntries.Add(item);
                 count++;
             }
@@ -54,16 +55,17 @@
 
                 if (this.UniqueEntries.ContainsKey(item.ID))
                 {
-                    QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' was already added by another working file. Kept first one. Discarded duplicate.");
-                    continue;
+                    QuickLogger.Warning($"Duplicate entry for {this.TypeName} '{item.ID}' in {item.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
                 }
-
-                // All checks passed
-                this.UniqueEntries.Add(item.ID, item);
+                else
+                {
+                    // All checks passed
+                    this.UniqueEntries.Add(item.ID, item);
+                }
             }
 
             if (this.ParsedEntries.Count > 0)
-                QuickLogger.Message($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
+                QuickLogger.Info($"{this.UniqueEntries.Count} of {this.ParsedEntries.Count} {this.TypeName} entries staged for patching");
         }
 
         public void SendToSMLHelper()
@@ -76,7 +78,7 @@
             }
 
             if (this.UniqueEntries.Count > 0)
-                QuickLogger.Message($"{successCount} of {this.UniqueEntries.Count} {this.TypeName} entries were patched");
+                QuickLogger.Info($"{successCount} of {this.UniqueEntries.Count} {this.TypeName} entries were patched");
         }
     }
 }

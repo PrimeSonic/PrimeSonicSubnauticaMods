@@ -7,7 +7,7 @@
     {
         internal const string ListKey = "CustomFragmentCounts";
 
-        public CustomFragmentCountList() : base(ListKey, new CustomFragmentCount())
+        public CustomFragmentCountList() : base(ListKey)
         {
         }
     }

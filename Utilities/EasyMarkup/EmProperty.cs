@@ -19,13 +19,15 @@
         protected delegate void OnValueExtracted();
         protected OnValueExtracted OnValueExtractedEvent;
 
+        public bool Optional { get; set; } = false;
+
         public string Key { get; protected set; }
 
         internal string SerializedValue;
 
         public override string ToString()
         {
-            if (string.IsNullOrEmpty(SerializedValue))
+            if (string.IsNullOrEmpty(SerializedValue) && Optional)
                 return string.Empty;
 
             return $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";

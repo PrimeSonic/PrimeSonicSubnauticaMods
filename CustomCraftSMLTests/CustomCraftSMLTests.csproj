@@ -92,6 +92,7 @@
     <Compile Include="AddedRecipeTests.cs" />
     <Compile Include="AliasRecipeTests.cs" />
     <Compile Include="CraftingTabTests.cs" />
+    <Compile Include="CustomFabricatorTests.cs" />
     <Compile Include="CustomSizeTests.cs" />
     <Compile Include="DequeTests.cs" />
     <Compile Include="EasyMarkupTests.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="SampleFileTests.cs" />
     <Compile Include="StringBufferTests.cs" />
     <Compile Include="TechTypeParsingTests.cs" />
+    <Compile Include="VModFabricatorFiles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

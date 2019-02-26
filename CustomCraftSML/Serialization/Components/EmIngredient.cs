@@ -44,7 +44,7 @@
             this.TechType = item;
         }
 
-        internal EmIngredient() : base("Ingredient", IngredientProperties)
+        public EmIngredient() : base("Ingredient", IngredientProperties)
         {
             required = (EmProperty<short>)Properties[RequiredKey];
         }

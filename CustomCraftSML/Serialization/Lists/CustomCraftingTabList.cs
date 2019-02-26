@@ -7,7 +7,7 @@
     {
         internal const string ListKey = "CustomCraftingTabs";
 
-        public CustomCraftingTabList() : base(ListKey, new CustomCraftingTab())
+        public CustomCraftingTabList() : base(ListKey)
         {
         }
     }

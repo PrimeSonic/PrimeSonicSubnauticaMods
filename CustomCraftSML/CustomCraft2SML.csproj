@@ -50,20 +50,31 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FunctionalClone.cs" />
+    <Compile Include="SMLHelperItems\CustomFabricatorBuildable.cs" />
+    <Compile Include="FileLocations.cs" />
+    <Compile Include="SMLHelperItems\FunctionalClone.cs" />
+    <Compile Include="Interfaces\InternalUse\IFabricatorEntries.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
-    <Compile Include="Interfaces\ICustomCraft.cs" />
+    <Compile Include="Interfaces\InternalUse\ICustomCraft.cs" />
+    <Compile Include="Interfaces\ICustomFabricator.cs" />
+    <Compile Include="Interfaces\InternalUse\ICustomFabricatorEntry.cs" />
     <Compile Include="Interfaces\ICustomFragmentCount.cs" />
     <Compile Include="Interfaces\IMovedRecipe.cs" />
     <Compile Include="Interfaces\ICraftingTab.cs" />
     <Compile Include="Interfaces\ITechTyped.cs" />
-    <Compile Include="ReaderWriterCrafts.cs" />
-    <Compile Include="ReaderWriterTutorials.cs" />
+    <Compile Include="Interfaces\InternalUse\IParsingPackage.cs" />
+    <Compile Include="Interfaces\IAddedRecipe.cs" />
+    <Compile Include="Interfaces\ICustomBioFuel.cs" />
+    <Compile Include="Interfaces\ICustomSize.cs" />
+    <Compile Include="Interfaces\IModifiedRecipe.cs" />
+    <Compile Include="WorkingFileParser.cs" />
+    <Compile Include="HelpFilesWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CraftingNodeFamily.cs" />
     <Compile Include="PublicAPI\CraftingPath.cs" />
@@ -71,15 +82,20 @@
     <Compile Include="QPatch.cs" />
     <Compile Include="Serialization\Components\EmTechTyped.cs" />
     <Compile Include="Serialization\Entries\AddedRecipe.cs" />
+    <Compile Include="Serialization\Entries\CfAddedRecipe.cs" />
+    <Compile Include="Serialization\Entries\CfAliasRecipe.cs" />
+    <Compile Include="Serialization\Entries\CfCustomCraftingTab.cs" />
+    <Compile Include="Serialization\Entries\CfMovedRecipe.cs" />
     <Compile Include="Serialization\Entries\CustomBioFuel.cs" />
     <Compile Include="Serialization\Entries\CustomCraftingTab.cs" />
+    <Compile Include="Serialization\Entries\CustomFabricator.cs" />
     <Compile Include="Serialization\Entries\CustomFragmentCount.cs" />
     <Compile Include="Serialization\Entries\CustomSize.cs" />
     <Compile Include="Serialization\Entries\AliasRecipe.cs" />
     <Compile Include="Serialization\Entries\ModifiedRecipe.cs" />
     <Compile Include="Serialization\Entries\MovedRecipe.cs" />
-    <Compile Include="Interfaces\IParsingPackage.cs" />
     <Compile Include="Serialization\Lists\CustomCraftingTabList.cs" />
+    <Compile Include="Serialization\Lists\CustomFabricatorList.cs" />
     <Compile Include="Serialization\Lists\CustomFragmentsList.cs" />
     <Compile Include="Serialization\Lists\MovedRecipeList.cs" />
     <Compile Include="Serialization\Lists\ModifiedRecipeList.cs" />
@@ -88,10 +104,7 @@
     <Compile Include="Serialization\Lists\CustomBioFuelList.cs" />
     <Compile Include="Serialization\Lists\AddedRecipeList.cs" />
     <Compile Include="Serialization\Components\EmIngredient.cs" />
-    <Compile Include="Interfaces\IAddedRecipe.cs" />
-    <Compile Include="Interfaces\ICustomBioFuel.cs" />
-    <Compile Include="Interfaces\ICustomSize.cs" />
-    <Compile Include="Interfaces\IModifiedRecipe.cs" />
+    <Compile Include="Serialization\OriginFile.cs" />
     <Compile Include="Serialization\ParsingPackage.cs" />
     <Compile Include="ValidBioFuels.cs" />
     <Compile Include="ValidTechTypes.cs" />
@@ -123,8 +136,10 @@
     <Content Include="SampleFiles\AliasRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SampleFiles\AliasRecipe_UnpackIngots.txt" />
     <Content Include="SampleFiles\CustomBioFuels_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomFabricator_Sample.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\CustomFragments_Samples2.txt">
@@ -140,8 +155,10 @@
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Recipes.txt" />
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Tabs.txt" />
     <Content Include="SampleFiles\EquipmentSalvage\EquipmentSalvage_Unlocks.txt" />
-    <Content Include="SampleFiles\Mattus666.txt" />
     <Content Include="SampleFiles\ModifiedRecipes_Samples2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\MovedRecipes_Sample.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\MovedRecipes_Samples2.txt">

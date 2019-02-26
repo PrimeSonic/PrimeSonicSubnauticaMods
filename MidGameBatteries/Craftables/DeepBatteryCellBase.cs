@@ -21,24 +21,6 @@
 
         internal static void PatchAll()
         {
-            AdjustCraftingTree();
-            PatchCraftables();
-        }
-
-        private static void PatchCraftables()
-        {
-            var config = new DeepConfig();
-            config.ReadConfigFile();
-
-            var lithiumBattery = new DeepBattery(config.BatteryCapacity);
-            lithiumBattery.Patch();
-
-            var lithiumPowerCell = new DeepPowerCell(lithiumBattery);
-            lithiumPowerCell.Patch();
-        }
-
-        private static void AdjustCraftingTree()
-        {
             // Create a new crafting tree tab for batteries and power cells
             var tabIcon = ImageUtils.LoadSpriteFromFile(@"./Qmods/" + MgBatteryAssets + @"/CraftingTabIcon.png");
             CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, BatteryPowerCraftingTab, "Batteries and Power Cells", tabIcon, ResourcesCraftingTab, ElectronicsCraftingTab);
@@ -48,10 +30,21 @@
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResourcesCraftingTab, ElectronicsCraftingTab, TechType.PowerCell.ToString());
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResourcesCraftingTab, ElectronicsCraftingTab, TechType.PrecursorIonBattery.ToString());
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResourcesCraftingTab, ElectronicsCraftingTab, TechType.PrecursorIonPowerCell.ToString());
-
+            
             // And add them back in on the new Batteries and PowerCells tab
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, PathToNewTab);
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, PathToNewTab);
+            
+            var config = new DeepConfig();
+            config.ReadConfigFile();
+
+            var lithiumBattery = new DeepBattery(config.BatteryCapacity);
+            lithiumBattery.Patch();
+
+            var lithiumPowerCell = new DeepPowerCell(lithiumBattery);
+            lithiumPowerCell.Patch();
+
+            // Add the Ion Batteries after the Deep Batteries
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, PathToNewTab);
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, PathToNewTab);
         }

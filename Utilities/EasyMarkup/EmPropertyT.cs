@@ -5,10 +5,8 @@
     using Common;
 
     public class EmProperty<T> : EmProperty, IValueConfirmation where T : IConvertible
-    {
+    {        
         public string InLineComment { get; set; } = null;
-
-        public bool Optional { get; set; } = false;
 
         public bool HasValue { get; set; } = false;
 
@@ -29,7 +27,7 @@
             }
         }
 
-        public EmProperty(string key, T defaultValue = default(T))
+        public EmProperty(string key, T defaultValue = default)
         {
             DataType = typeof(T);
             this.Key = key;
@@ -68,16 +66,16 @@
             catch
             {
                 this.HasValue = false;
-                return DefaultValue;
+                return this.DefaultValue;
             }
         }
 
         internal override EmProperty Copy()
         {
             if (this.HasValue)
-                return new EmProperty<T>(this.Key, ObjValue);
+                return new EmProperty<T>(this.Key, ObjValue) { Optional = this.Optional };
 
-            return new EmProperty<T>(this.Key, this.DefaultValue);
+            return new EmProperty<T>(this.Key, this.DefaultValue) { Optional = this.Optional };
         }
 
         internal override bool ValueEquals(EmProperty other)

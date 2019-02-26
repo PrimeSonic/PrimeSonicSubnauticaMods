@@ -7,7 +7,7 @@
     {
         internal const string ListKey = "AddedRecipes";
 
-        public AddedRecipeList() : base(ListKey, new AddedRecipe())
+        public AddedRecipeList() : base(ListKey)
         {
         }
     }

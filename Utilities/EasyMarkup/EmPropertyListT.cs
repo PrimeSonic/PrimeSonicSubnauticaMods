@@ -9,8 +9,6 @@
     {
         private static HashSet<char> ListDelimeters { get; } = new HashSet<char> { SpChar_ListItemSplitter, SpChar_ValueDelimiter };
 
-        public bool Optional { get; set; } = false;
-
         public bool HasValue => this.Values.Count > 0;
 
         public T this[int index] => this.Values[index];
@@ -75,7 +73,7 @@
             return serialValues.TrimEnd(SpChar_ListItemSplitter);
         }
 
-        internal override EmProperty Copy() => new EmPropertyList<T>(this.Key, this.Values);
+        internal override EmProperty Copy() => new EmPropertyList<T>(this.Key, this.Values) { Optional = this.Optional };
 
         public virtual T ConvertFromSerial(string value)
         {

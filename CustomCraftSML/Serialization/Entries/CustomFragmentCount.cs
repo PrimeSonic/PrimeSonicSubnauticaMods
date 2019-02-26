@@ -5,26 +5,40 @@
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Components;
+    using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
 
-    internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount
+    internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount, ICustomCraft
     {
+        private const string FragmentsToScanKey = "FragmentsToScan";
+        private const string TypeName = "CustomFragments";
+
+        internal static readonly string[] TutorialText = new[]
+{
+            $"{CustomFragmentCountList.ListKey}: Change how many fragments must be scanned to unlock recipes/blueprints",
+            $"    In addition to the usual {ItemIdKey}, you only need one more property for this one:",
+            $"        {FragmentsToScanKey}: Simply set this to the total number of fragments that must be scanned to unlock the item in question.",
+        };
+
         private readonly EmProperty<int> emFragmentCount;
 
         protected static List<EmProperty> FragmentProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<int>("FragmentsToScan", 1),
+            new EmProperty<int>(FragmentsToScanKey, 1),
         };
 
-        public CustomFragmentCount() : this("CustomFragments", FragmentProperties)
+        public CustomFragmentCount() : this(TypeName, FragmentProperties)
         {
         }
 
         protected CustomFragmentCount(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emFragmentCount = (EmProperty<int>)Properties["FragmentsToScan"];
+            emFragmentCount = (EmProperty<int>)Properties[FragmentsToScanKey];
         }
+
+        public OriginFile Origin { get; set; }
 
         internal CustomFragmentCount(string itemID, int fragmentsToScan) : this()
         {
@@ -56,17 +70,17 @@
 
                 if (this.TechType > TechType.Databox)
                 {
-                    QuickLogger.Warning($"Item '{this.ItemID}' appears to be a modded item. CustomFragmentCount can only be applied to existing game items.");
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} appears to be a modded item. {this.Key} can only be applied to existing game items.");
                     return false;
                 }
 
                 PDAHandler.EditFragmentsToScan(this.TechType, fragCount);
-                QuickLogger.Message($"'{this.ItemID}' now requires {fragCount} fragments scanned to unlock.");
+                QuickLogger.Debug($"'{this.ItemID}' from {this.Origin} now requires {fragCount} fragments scanned to unlock.");
                 return true;
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Exception thrown while handling Custom Fragment Count '{this.ItemID}'{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Exception thrown while handling Custom Fragment Count '{this.ItemID}' from {this.Origin}", ex);
                 return false;
             }
         }

@@ -130,7 +130,7 @@
             Assert.AreEqual("Custom Tab", tab.DisplayName);
             Assert.AreEqual(TechType.ComputerChip, tab.SpriteItemID);
             Assert.AreEqual(CraftTree.Type.Workbench, tab.FabricatorType);
-            Assert.AreEqual(null, tab.StepsToTab);
+            Assert.AreEqual(1, tab.StepsToTab.Length);
         }
 
         [Test]
