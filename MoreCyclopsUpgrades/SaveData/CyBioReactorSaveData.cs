@@ -34,11 +34,11 @@
             ID = preFabID;
         }
 
-        public void SaveMaterialsProcessing(IEnumerable<PotentialEnergy> materialsInProcessor)
+        public void SaveMaterialsProcessing(IEnumerable<BioEnergy> materialsInProcessor)
         {
             _materials.Values.Clear();
 
-            foreach (PotentialEnergy item in materialsInProcessor)
+            foreach (BioEnergy item in materialsInProcessor)
             {
                 _materials.Add(new EmModuleSaveData
                 {
@@ -48,9 +48,9 @@
             }
         }
 
-        public List<PotentialEnergy> GetMaterialsInProcessing()
+        public List<BioEnergy> GetMaterialsInProcessing()
         {
-            var list = new List<PotentialEnergy>();
+            var list = new List<BioEnergy>();
 
             foreach (EmModuleSaveData savedItem in _materials.Values)
             {
@@ -59,7 +59,7 @@
 
                 Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
 
-                list.Add(new PotentialEnergy(pickupable, savedItem.RemainingCharge));
+                list.Add(new BioEnergy(pickupable, savedItem.RemainingCharge));
             }
 
             return list;

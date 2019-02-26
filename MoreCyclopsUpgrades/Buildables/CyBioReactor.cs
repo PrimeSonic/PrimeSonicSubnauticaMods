@@ -33,7 +33,9 @@
             GameObject.DestroyImmediate(prefab.GetComponent<SpecimenAnalyzer>()); // Don't need this
             GameObject model = prefab.FindChild("model");
 
-            model.transform.localScale -= new Vector3(0.2f, 0.2f, 0.2f);
+            const float modelScaling = 0.18f;
+
+            model.transform.localScale -= new Vector3(modelScaling, modelScaling, modelScaling);
 
             // Update sky applier
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
@@ -65,9 +67,10 @@
             {
                 Ingredients =
                 {
-                    new Ingredient(TechType.Titanium, 2),
+                    new Ingredient(TechType.Titanium, 1),
                     new Ingredient(TechType.WiringKit, 1),
                     new Ingredient(TechType.Lubricant, 1),
+                    new Ingredient(TechType.PowerCell, 1),
                 }
             };
         }

@@ -14,8 +14,8 @@
         internal const int StorageWidth = 2;
         internal const int StorageHeight = 2;
         internal const int TotalContainerSpaces = StorageHeight * StorageWidth;
-        internal const float ChargePerSecond = 0.40f;
-        internal const float MaxPower = 400;
+        internal const float ChargePerSecondPerItem = 0.82f / TotalContainerSpaces * 2;
+        internal const float MaxPower = 200;
 
         // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
@@ -49,9 +49,7 @@
         }
 
         private static Dictionary<TechType, float> _bioReactorCharges;
-
         internal static readonly FieldInfo BioEnergyLookupInfo = typeof(BaseBioReactor).GetField("charge", BindingFlags.Static | BindingFlags.NonPublic);
-
         internal static Dictionary<TechType, float> BioReactorCharges
         {
             get
@@ -119,7 +117,7 @@
 
                 if (powerDeficit > 0f)
                 {
-                    float chargeOverTime = ChargePerSecond * DayNightCycle.main.deltaTime;
+                    float chargeOverTime = ChargePerSecondPerItem * DayNightCycle.main.deltaTime;
 
                     chargeOverTime = Mathf.Min(chargeOverTime, powerDeficit);
 
@@ -152,20 +150,21 @@
         private void OnAddItem(InventoryItem item)
         {
             if (isLoadingSaveData)
-                return;
-
-            if (BioReactorCharges.ContainsKey(item.item.GetTechType()))
             {
                 item.isEnabled = false;
-                if (BioReactorCharges.TryGetValue(item.item.GetTechType(), out float bioEnergyValue) && bioEnergyValue > 0f)
-                {
-                    this.MaterialsProcessing.Add(new PotentialEnergy(item.item, bioEnergyValue));
-                }
-                else
-                {
-                    Destroy(item.item.gameObject); // Failsafe
-                }
+                return;
             }
+
+            if (BioReactorCharges.TryGetValue(item.item.GetTechType(), out float bioEnergyValue) && bioEnergyValue > 0f)
+            {
+                item.isEnabled = false;
+                this.MaterialsProcessing.Add(new BioEnergy(item.item, bioEnergyValue, bioEnergyValue));
+            }
+            else
+            {
+                Destroy(item.item.gameObject); // Failsafe
+            }
+
         }
 
         private void OnRemoveItem(InventoryItem item)
@@ -203,11 +202,13 @@
         {
             float powerProduced = 0f;
 
-            if (powerDrawnPerItem > 0f && this.Container.count > 0)
+            if (powerDrawnPerItem > 0f && // More than zero energy being produced per item per time delta
+                this.MaterialsProcessing.Count > 0 && // There should be materials in the reactor to process
+                this.Battery.charge < this.Battery.capacity) // Stop producing power if the battery is full
             {
                 float availablePowerPerItem;
 
-                foreach (PotentialEnergy material in this.MaterialsProcessing)
+                foreach (BioEnergy material in this.MaterialsProcessing)
                 {
                     availablePowerPerItem = Mathf.Max(0f, material.Energy - powerDrawnPerItem);
                     powerProduced += availablePowerPerItem;
@@ -216,8 +217,11 @@
                     if (material.FullyConsumed)
                         this.FullyConsumed.Add(material);
                 }
+            }
 
-                foreach (PotentialEnergy material in this.FullyConsumed)
+            if (this.FullyConsumed.Count > 1)
+            {
+                foreach (BioEnergy material in this.FullyConsumed)
                 {
                     this.MaterialsProcessing.Remove(material);
                     this.Container.RemoveItem(material.Item, true);
@@ -252,7 +256,8 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            SaveData.SaveMaterialsProcessing(MaterialsProcessing);
+            SaveData.ReactorBatterCharge = this.Battery.charge;
+            SaveData.SaveMaterialsProcessing(this.MaterialsProcessing);
 
             SaveData.Save();
         }
@@ -280,13 +285,15 @@
 
             if (hasSaveData)
             {
+                this.Container.Clear();
+
                 this.Battery.charge = SaveData.ReactorBatterCharge;
 
-                List<PotentialEnergy> materials = SaveData.GetMaterialsInProcessing();
+                List<BioEnergy> materials = SaveData.GetMaterialsInProcessing();
 
-                foreach (PotentialEnergy item in materials)
+                foreach (BioEnergy item in materials)
                 {
-                    this.Container.AddItem(item.Item);                    
+                    this.Container.AddItem(item.Item);
                 }
 
                 this.MaterialsProcessing.AddRange(materials);
@@ -294,7 +301,6 @@
 
             isLoadingSaveData = false;
         }
-
 
         public void ConnectToCyclops(SubRoot parentCyclops)
         {
@@ -312,24 +318,10 @@
 
         private ItemsContainer _container;
 
-        internal List<PotentialEnergy> MaterialsProcessing { get; } = new List<PotentialEnergy>();
-        private List<PotentialEnergy> FullyConsumed { get; } = new List<PotentialEnergy>(TotalContainerSpaces);
+        internal List<BioEnergy> MaterialsProcessing { get; } = new List<BioEnergy>();
+        private List<BioEnergy> FullyConsumed { get; } = new List<BioEnergy>(TotalContainerSpaces);
 
         private bool isLoadingSaveData = false;
         private CyBioReactorSaveData SaveData;
-    }
-
-    internal class PotentialEnergy
-    {
-        public bool FullyConsumed => Mathf.Approximately(Energy, 0f);
-
-        public Pickupable Item;
-        public float Energy;
-
-        public PotentialEnergy(Pickupable item, float energy)
-        {
-            Item = item;
-            Energy = energy;
-        }
     }
 }

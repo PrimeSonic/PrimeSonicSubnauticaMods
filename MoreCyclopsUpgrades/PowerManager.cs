@@ -330,7 +330,7 @@
 
             foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
             {
-                if (reactor.ProducingPower)
+                if (reactor.ProducingPower && reactor.CurrentPower > 1)
                     ChargeCyclopsFromBattery(reactor.Battery, BatteryDrainRate, ref powerDeficit);
             }
 
