@@ -56,7 +56,10 @@
             constructible.rotationEnabled = true;
             constructible.techType = this.TechType;
 
-            CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>();            
+            CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>();
+            Battery battery = bioReactorComponent.gameObject.AddComponent<Battery>();
+            battery._capacity = CyBioReactorMono.MaxPower;
+            battery._charge = 0;
 
             return prefab;
         }

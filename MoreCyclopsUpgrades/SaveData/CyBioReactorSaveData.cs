@@ -74,9 +74,9 @@
         private string SaveDirectory => Path.Combine(SaveUtils.GetCurrentSaveDataDir(), "CyBioReactor");
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
-        public void Save() => this.Save(this.SaveDirectory, this.SaveDirectory);
+        public void Save() => this.Save(this.SaveDirectory, this.SaveFile);
 
-        public bool Load() => this.Load(this.SaveDirectory, this.SaveDirectory);
+        public bool Load() => this.Load(this.SaveDirectory, this.SaveFile);
 
         internal override EmProperty Copy() => new CyBioReactorSaveData(this.CopyDefinitions);
     }

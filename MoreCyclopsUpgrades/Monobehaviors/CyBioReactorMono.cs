@@ -14,39 +14,17 @@
         internal const int StorageWidth = 2;
         internal const int StorageHeight = 2;
         internal const int TotalContainerSpaces = StorageHeight * StorageWidth;
-        internal const float ChargePerSecondPerItem = 0.82f / TotalContainerSpaces * 2;
+        internal const float ChargePerSecondPerItem = 0.80f / TotalContainerSpaces;
         internal const float MaxPower = 200;
 
         // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
+        public Constructable Buildable { get; private set; }
+        internal ItemsContainer Container { get; private set; }
 
-        private Constructable _buildable;
-        public Constructable Buildable
-        {
-            get
-            {
-                if (_buildable is null)
-                    _buildable = this.gameObject.GetComponent<Constructable>();
 
-                return _buildable;
-            }
-        }
 
-        private Battery _battery;
-        public Battery Battery
-        {
-            get
-            {
-                if (_battery is null)
-                {
-                    _battery = this.gameObject.AddComponent<Battery>();
-                    _battery.transform.SetParent(this.transform, false);
-                    _battery._capacity = MaxPower;
-                }
-
-                return _battery;
-            }
-        }
+        public Battery Battery { get; private set; }
 
         private static Dictionary<TechType, float> _bioReactorCharges;
         internal static readonly FieldInfo BioEnergyLookupInfo = typeof(BaseBioReactor).GetField("charge", BindingFlags.Static | BindingFlags.NonPublic);
@@ -67,39 +45,58 @@
 
         public int CurrentPower => Mathf.RoundToInt(this.Battery.charge);
 
-        internal ItemsContainer Container
+
+
+        private void InitializeContainer()
         {
-            get
+            if (this.Container == null)
             {
-                if (_container == null)
-                {
-                    _container = new ItemsContainer(StorageWidth, StorageHeight, storageRoot.transform, "CyBioReactorStorageLabel", null);
+                this.Container = new ItemsContainer(StorageWidth, StorageHeight, storageRoot.transform, "CyBioReactorStorageLabel", null);
 
-                    _container.isAllowedToAdd += IsAllowedToAdd;
-                    _container.isAllowedToRemove += IsAllowedToRemove;
+                this.Container.isAllowedToAdd += IsAllowedToAdd;
+                this.Container.isAllowedToRemove += IsAllowedToRemove;
 
-                    _container.onAddItem += OnAddItem;
-                    _container.onRemoveItem += OnRemoveItem;
-                }
-
-                return _container;
+                this.Container.onAddItem += OnAddItem;
+                this.Container.onRemoveItem += OnRemoveItem;
             }
         }
 
         public override void Awake()
         {
             base.Awake();
+            InitializeConstructible();
+            InitializeStorageRoot();
+            InitializeContainer();
+            InitializeBattery();
+            InitializeSaveData();
+        }
 
-            InitializeStorage();
-
-            if (SaveData == null)
+        private void InitializeSaveData()
+        {
+            if (SaveData is null)
             {
                 string id = GetComponentInParent<PrefabIdentifier>().Id;
                 SaveData = new CyBioReactorSaveData(id);
             }
+
+            if (SaveData is null)
+                QuickLogger.Debug("SaveData still null after initialization", true);
         }
 
-        private void InitializeStorage()
+        private void InitializeBattery()
+        {
+            if (this.Battery is null)
+            {
+                this.Battery = this.gameObject.GetComponent<Battery>();
+                this.Battery._capacity = MaxPower;
+                this.Battery._charge = 0; // Starts empty
+            }
+
+            if (this.Battery is null)
+                QuickLogger.Debug("Battery still null after initialization", true);
+        }
+
+        private void InitializeStorageRoot()
         {
             if (storageRoot is null)
             {
@@ -107,6 +104,18 @@
                 storeRoot.transform.SetParent(this.transform, false);
                 storageRoot = storeRoot.AddComponent<ChildObjectIdentifier>();
             }
+
+            if (storageRoot is null)
+                QuickLogger.Debug("StorageRoot still null after initialization", true);
+        }
+
+        private void InitializeConstructible()
+        {
+            if (this.Buildable is null)
+                this.Buildable = this.gameObject.GetComponent<Constructable>();
+
+            if (this.Buildable is null)
+                QuickLogger.Debug("Buildable still null after initialization", true);
         }
 
         private void Update()
@@ -119,9 +128,7 @@
                 {
                     float chargeOverTime = ChargePerSecondPerItem * DayNightCycle.main.deltaTime;
 
-                    chargeOverTime = Mathf.Min(chargeOverTime, powerDeficit);
-
-                    float powerProduced = ProducePower(chargeOverTime);
+                    float powerProduced = ProducePower(Mathf.Min(powerDeficit, chargeOverTime));
 
                     this.Battery.charge += powerProduced;
                 }
@@ -203,16 +210,14 @@
             float powerProduced = 0f;
 
             if (powerDrawnPerItem > 0f && // More than zero energy being produced per item per time delta
-                this.MaterialsProcessing.Count > 0 && // There should be materials in the reactor to process
-                this.Battery.charge < this.Battery.capacity) // Stop producing power if the battery is full
+                this.MaterialsProcessing.Count > 0) // There should be materials in the reactor to process
             {
-                float availablePowerPerItem;
-
                 foreach (BioEnergy material in this.MaterialsProcessing)
                 {
-                    availablePowerPerItem = Mathf.Max(0f, material.Energy - powerDrawnPerItem);
-                    powerProduced += availablePowerPerItem;
+                    float availablePowerPerItem = Mathf.Min(material.Energy, powerDrawnPerItem);
+
                     material.Energy -= availablePowerPerItem;
+                    powerProduced += availablePowerPerItem;
 
                     if (material.FullyConsumed)
                         this.FullyConsumed.Add(material);
@@ -266,7 +271,7 @@
         {
             isLoadingSaveData = true;
 
-            InitializeStorage();
+            InitializeStorageRoot();
 
             this.Container.Clear(false);
 
@@ -315,8 +320,6 @@
 
         [AssertNotNull]
         public ChildObjectIdentifier storageRoot;
-
-        private ItemsContainer _container;
 
         internal List<BioEnergy> MaterialsProcessing { get; } = new List<BioEnergy>();
         private List<BioEnergy> FullyConsumed { get; } = new List<BioEnergy>(TotalContainerSpaces);
