@@ -34,7 +34,7 @@
             GameObject model = prefab.FindChild("model");
 
             const float modelScaling = 0.18f;
-            model.transform.localScale -= new Vector3(modelScaling, modelScaling, modelScaling);
+            model.transform.localScale -= new Vector3(modelScaling, modelScaling, modelScaling);            
 
             // Update sky applier
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
@@ -56,6 +56,7 @@
             constructible.techType = this.TechType;
 
             CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>();
+            Battery battery = prefab.AddComponent<Battery>();
 
             return prefab;
         }

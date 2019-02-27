@@ -14,7 +14,7 @@
         internal const int StorageWidth = 2;
         internal const int StorageHeight = 2;
         internal const int TotalContainerSpaces = StorageHeight * StorageWidth;
-        internal const float ChargePerSecondPerItem = 0.80f / TotalContainerSpaces;
+        internal const float ChargePerSecondPerItem = 0.85f / TotalContainerSpaces;
         internal const float MaxPower = 200;
 
         public SubRoot ParentCyclops { get; private set; }
@@ -42,15 +42,14 @@
 
         public int CurrentPower => Mathf.RoundToInt(this.Battery.charge);
 
-        public string PowerString => $"{this.CurrentPower}/{MaxPower}";
-
         public override void Awake()
         {
             base.Awake();
-            InitializeBattery();
+
             InitializeConstructible();
             InitializeStorageRoot();
-            InitializeContainer();            
+            InitializeContainer();
+            InitializeBattery();
             InitializeSaveData();
         }
 
@@ -81,7 +80,17 @@
         {
             if (this.Battery is null)
             {
-                this.Battery = this.GetComponent<Battery>();
+                this.Battery = GetComponent<Battery>();
+
+                if (this.Battery is null)
+                {
+                    QuickLogger.Debug("Battery was still null", true);
+                    this.Battery = new Battery(); // Failsafe
+                }
+                else
+                {
+                    QuickLogger.Debug("Battery was found", true);
+                }
 
                 this.Battery._capacity = MaxPower;
                 this.Battery._charge = 0; // Starts empty
@@ -129,7 +138,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText($"Use Cyclops BioReacactor {this.PowerString}");
+            main.SetInteractText($"Use Cyclops BioReacactor {this.Battery.GetChargeValueText()}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -151,9 +160,15 @@
 
             if (BioReactorCharges.TryGetValue(item.item.GetTechType(), out float bioEnergyValue) && bioEnergyValue > 0f)
             {
-                var bioenergy = new BioEnergy(item.item, bioEnergyValue, bioEnergyValue);
+#if DEBUG
+                bioEnergyValue *= 0.20f; // For testing
+#endif
+                var bioenergy = new BioEnergy(item.item, bioEnergyValue, bioEnergyValue)
+                {
+                    Size = item.width * item.height
+                };
 
-                this.MaterialsProcessing.Add(bioenergy);
+                this.MaterialsProcessing.Add(bioenergy);                
             }
             else
             {
@@ -202,7 +217,7 @@
             {
                 foreach (BioEnergy material in this.MaterialsProcessing)
                 {
-                    float availablePowerPerItem = Mathf.Min(material.RemainingEnergy, powerDrawnPerItem);
+                    float availablePowerPerItem = Mathf.Min(material.RemainingEnergy, material.Size * powerDrawnPerItem);
 
                     material.RemainingEnergy -= availablePowerPerItem;
                     powerProduced += availablePowerPerItem;
@@ -284,10 +299,11 @@
 
                 List<BioEnergy> materials = SaveData.GetMaterialsInProcessing();
 
-                foreach (BioEnergy item in materials)
+                foreach (BioEnergy material in materials)
                 {
-                    this.Container.AddItem(item.Pickupable);
-                    this.MaterialsProcessing.Add(item);
+                    InventoryItem inventoryItem = this.Container.AddItem(material.Pickupable);
+                    this.MaterialsProcessing.Add(material);
+                    material.Size = inventoryItem.width * inventoryItem.height;
                 }
             }
 

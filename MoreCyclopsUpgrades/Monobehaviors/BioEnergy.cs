@@ -11,6 +11,7 @@
         public Pickupable Pickupable;
         public float RemainingEnergy;
         public readonly float MaxEnergy;
+        public int Size = 1;
 
         public BioEnergy(Pickupable pickupable, float currentEnergy, float originalEnergy)
         {
