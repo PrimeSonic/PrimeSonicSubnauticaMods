@@ -206,6 +206,7 @@
                 if (atlasSprite is null)
                     QuickLogger.Debug($"sprite for {module.name} was null when it should not have been", true);
 
+                icon.color = Color.black;
                 icon.sprite = atlasSprite;
             }
             else

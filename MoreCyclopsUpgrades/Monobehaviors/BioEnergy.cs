@@ -4,24 +4,26 @@
 
     internal class BioEnergy
     {
-        public bool FullyConsumed => Mathf.Approximately(Energy, 0f);
+        public bool FullyConsumed => RemainingEnergy <= 0f;
 
-        public Pickupable Item;
-        public float Energy;
+        public string EnergyString => $"{Mathf.FloorToInt(RemainingEnergy)}/{MaxEnergy}";
+
+        public Pickupable Pickupable;
+        public float RemainingEnergy;
         public readonly float MaxEnergy;
 
-        public BioEnergy(Pickupable item, float currentEnergy, float originalEnergy)
+        public BioEnergy(Pickupable pickupable, float currentEnergy, float originalEnergy)
         {
-            Item = item;
-            Energy = currentEnergy;
+            Pickupable = pickupable;
+            RemainingEnergy = currentEnergy;
             MaxEnergy = originalEnergy;
         }
 
-        internal BioEnergy(Pickupable item, float energy)
+        internal BioEnergy(Pickupable pickupable, float energy)
         {
-            Item = item;
-            Energy = energy;
-            MaxEnergy = CyBioReactorMono.BioReactorCharges[item.GetTechType()];
-        }
+            Pickupable = pickupable;
+            RemainingEnergy = energy;
+            MaxEnergy = CyBioReactorMono.GetChargeValue(pickupable.GetTechType());
+        }        
     }
 }

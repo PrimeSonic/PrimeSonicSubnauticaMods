@@ -34,7 +34,6 @@
             GameObject model = prefab.FindChild("model");
 
             const float modelScaling = 0.18f;
-
             model.transform.localScale -= new Vector3(modelScaling, modelScaling, modelScaling);
 
             // Update sky applier
@@ -57,9 +56,6 @@
             constructible.techType = this.TechType;
 
             CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>();
-            Battery battery = bioReactorComponent.gameObject.AddComponent<Battery>();
-            battery._capacity = CyBioReactorMono.MaxPower;
-            battery._charge = 0;
 
             return prefab;
         }

@@ -17,13 +17,9 @@
         internal const float ChargePerSecondPerItem = 0.80f / TotalContainerSpaces;
         internal const float MaxPower = 200;
 
-        // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
         public Constructable Buildable { get; private set; }
         internal ItemsContainer Container { get; private set; }
-
-
-
         public Battery Battery { get; private set; }
 
         private static Dictionary<TechType, float> _bioReactorCharges;
@@ -40,16 +36,27 @@
                 return _bioReactorCharges;
             }
         }
+        public static float GetChargeValue(TechType techType) => BioReactorCharges.GetOrDefault(techType, -1f);
 
         public bool ProducingPower => _constructed >= 1f && this.MaterialsProcessing.Count > 0;
 
         public int CurrentPower => Mathf.RoundToInt(this.Battery.charge);
 
+        public string PowerString => $"{this.CurrentPower}/{MaxPower}";
 
+        public override void Awake()
+        {
+            base.Awake();
+            InitializeBattery();
+            InitializeConstructible();
+            InitializeStorageRoot();
+            InitializeContainer();            
+            InitializeSaveData();
+        }
 
         private void InitializeContainer()
         {
-            if (this.Container == null)
+            if (this.Container is null)
             {
                 this.Container = new ItemsContainer(StorageWidth, StorageHeight, storageRoot.transform, "CyBioReactorStorageLabel", null);
 
@@ -61,16 +68,6 @@
             }
         }
 
-        public override void Awake()
-        {
-            base.Awake();
-            InitializeConstructible();
-            InitializeStorageRoot();
-            InitializeContainer();
-            InitializeBattery();
-            InitializeSaveData();
-        }
-
         private void InitializeSaveData()
         {
             if (SaveData is null)
@@ -78,22 +75,17 @@
                 string id = GetComponentInParent<PrefabIdentifier>().Id;
                 SaveData = new CyBioReactorSaveData(id);
             }
-
-            if (SaveData is null)
-                QuickLogger.Debug("SaveData still null after initialization", true);
         }
 
         private void InitializeBattery()
         {
             if (this.Battery is null)
             {
-                this.Battery = this.gameObject.GetComponent<Battery>();
+                this.Battery = this.GetComponent<Battery>();
+
                 this.Battery._capacity = MaxPower;
                 this.Battery._charge = 0; // Starts empty
             }
-
-            if (this.Battery is null)
-                QuickLogger.Debug("Battery still null after initialization", true);
         }
 
         private void InitializeStorageRoot()
@@ -104,18 +96,14 @@
                 storeRoot.transform.SetParent(this.transform, false);
                 storageRoot = storeRoot.AddComponent<ChildObjectIdentifier>();
             }
-
-            if (storageRoot is null)
-                QuickLogger.Debug("StorageRoot still null after initialization", true);
         }
 
         private void InitializeConstructible()
         {
             if (this.Buildable is null)
+            {
                 this.Buildable = this.gameObject.GetComponent<Constructable>();
-
-            if (this.Buildable is null)
-                QuickLogger.Debug("Buildable still null after initialization", true);
+            }
         }
 
         private void Update()
@@ -141,7 +129,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText($"Use Cyclops BioReacactor {this.CurrentPower}/{MaxPower}");
+            main.SetInteractText($"Use Cyclops BioReacactor {this.PowerString}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -152,20 +140,20 @@
             pda.Open(PDATab.Inventory, null, null, 4f);
         }
 
-        public static float GetChargeValue(TechType techType) => BioReactorCharges.GetOrDefault(techType, -1f);
-
         private void OnAddItem(InventoryItem item)
         {
+            item.isEnabled = false;
+
             if (isLoadingSaveData)
             {
-                item.isEnabled = false;
                 return;
             }
 
             if (BioReactorCharges.TryGetValue(item.item.GetTechType(), out float bioEnergyValue) && bioEnergyValue > 0f)
             {
-                item.isEnabled = false;
-                this.MaterialsProcessing.Add(new BioEnergy(item.item, bioEnergyValue, bioEnergyValue));
+                var bioenergy = new BioEnergy(item.item, bioEnergyValue, bioEnergyValue);
+
+                this.MaterialsProcessing.Add(bioenergy);
             }
             else
             {
@@ -214,9 +202,9 @@
             {
                 foreach (BioEnergy material in this.MaterialsProcessing)
                 {
-                    float availablePowerPerItem = Mathf.Min(material.Energy, powerDrawnPerItem);
+                    float availablePowerPerItem = Mathf.Min(material.RemainingEnergy, powerDrawnPerItem);
 
-                    material.Energy -= availablePowerPerItem;
+                    material.RemainingEnergy -= availablePowerPerItem;
                     powerProduced += availablePowerPerItem;
 
                     if (material.FullyConsumed)
@@ -229,8 +217,8 @@
                 foreach (BioEnergy material in this.FullyConsumed)
                 {
                     this.MaterialsProcessing.Remove(material);
-                    this.Container.RemoveItem(material.Item, true);
-                    Destroy(material.Item.gameObject);
+                    this.Container.RemoveItem(material.Pickupable, true);
+                    Destroy(material.Pickupable.gameObject);
                 }
 
                 this.FullyConsumed.Clear();
@@ -298,10 +286,9 @@
 
                 foreach (BioEnergy item in materials)
                 {
-                    this.Container.AddItem(item.Item);
+                    this.Container.AddItem(item.Pickupable);
+                    this.MaterialsProcessing.Add(item);
                 }
-
-                this.MaterialsProcessing.AddRange(materials);
             }
 
             isLoadingSaveData = false;

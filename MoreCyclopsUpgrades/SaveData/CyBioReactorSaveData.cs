@@ -42,8 +42,8 @@
             {
                 _materials.Add(new EmModuleSaveData
                 {
-                    ItemID = (int)item.Item.GetTechType(),
-                    RemainingCharge = item.Energy
+                    ItemID = (int)item.Pickupable.GetTechType(),
+                    RemainingCharge = item.RemainingEnergy
                 });
             }
         }
