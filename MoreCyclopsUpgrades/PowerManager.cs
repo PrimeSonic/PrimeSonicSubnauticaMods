@@ -60,7 +60,7 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
-        private List<CyBioReactorMono> CyBioReactors { get; } = new List<CyBioReactorMono>();
+        public List<CyBioReactorMono> CyBioReactors { get; } = new List<CyBioReactorMono>();
         private List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
 
         internal bool HasBioReactors => this.CyBioReactors.Count > 0;
@@ -98,6 +98,13 @@
             this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
             this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
 
+            FirstConnectBioReactors(manager);
+
+            return true;
+        }
+
+        private void FirstConnectBioReactors(CyclopsManager manager)
+        {
             CyBioReactorMono[] cyBioReactors = manager.Cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
 
             foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
@@ -113,8 +120,6 @@
                     cyBioReactor.ConnectToCyclops(this.Cyclops);
                 }
             }
-
-            return true;
         }
 
         internal void SyncBioReactors()
@@ -330,7 +335,7 @@
 
             foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
             {
-                if (reactor.ProducingPower && reactor.CurrentPower > 1)
+                if (reactor.HasPower)
                     ChargeCyclopsFromBattery(reactor.Battery, BatteryDrainRate, ref powerDeficit);
             }
 

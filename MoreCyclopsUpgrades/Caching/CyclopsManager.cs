@@ -1,12 +1,15 @@
 ﻿namespace MoreCyclopsUpgrades.Caching
 {
     using System.Collections.Generic;
+    using MoreCyclopsUpgrades.Monobehaviors;
 
     internal class CyclopsManager
     {
         public UpgradeManager UpgradeManager { get; private set; }
 
         public PowerManager PowerManager { get; private set; }
+
+        public List<CyBioReactorMono> BioReactors => PowerManager.CyBioReactors;
 
         public SubRoot Cyclops { get; private set; }
 
@@ -26,6 +29,8 @@
         public static UpgradeManager GetUpgradeManager(SubRoot cyclops) => GetManager(cyclops.GetInstanceID(), cyclops)?.UpgradeManager;
 
         public static PowerManager GetPowerManager(SubRoot cyclops) => GetManager(cyclops.GetInstanceID(), cyclops)?.PowerManager;
+
+        public static List<CyBioReactorMono> GetBioReactors(ItemsContainer container, SubRoot cyclops) => GetManager(cyclops.GetInstanceID(), cyclops)?.BioReactors;
 
         private static CyclopsManager GetManager(int id, SubRoot cyclops)
         {

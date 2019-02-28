@@ -7,6 +7,7 @@
     using MoreCyclopsUpgrades.SaveData;
     using ProtoBuf;
     using UnityEngine;
+    using UnityEngine.UI;
 
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ISubRootConnection
@@ -14,13 +15,23 @@
         internal const int StorageWidth = 2;
         internal const int StorageHeight = 2;
         internal const int TotalContainerSpaces = StorageHeight * StorageWidth;
-        internal const float ChargePerSecondPerItem = 0.85f / TotalContainerSpaces;
+        internal const float ChargePerSecondPerItem = 0.83f / TotalContainerSpaces * 2;
         internal const float MaxPower = 200;
+        internal const string StorageLabel = "Cyclops BioReactor Materials";
+
+        private const int TextDelayTicks = 60;
+        private int textDelay = TextDelayTicks;
+
+        private bool pdaIsOpen = false;
 
         public SubRoot ParentCyclops { get; private set; }
         public Constructable Buildable { get; private set; }
-        internal ItemsContainer Container { get; private set; }
+        public ItemsContainer Container { get; private set; }
         public Battery Battery { get; private set; }
+        public string PrefabID { get; private set; }
+
+        // Careful, this map only exists while the PDA screen is open
+        public Dictionary<InventoryItem, uGUI_ItemIcon> InventoryMapping { get; private set; }
 
         private static Dictionary<TechType, float> _bioReactorCharges;
         internal static readonly FieldInfo BioEnergyLookupInfo = typeof(BaseBioReactor).GetField("charge", BindingFlags.Static | BindingFlags.NonPublic);
@@ -39,25 +50,24 @@
         public static float GetChargeValue(TechType techType) => BioReactorCharges.GetOrDefault(techType, -1f);
 
         public bool ProducingPower => _constructed >= 1f && this.MaterialsProcessing.Count > 0;
-
-        public int CurrentPower => Mathf.RoundToInt(this.Battery.charge);
+        public bool HasPower => this.Battery.charge > 0f;
 
         public override void Awake()
         {
             base.Awake();
 
             InitializeConstructible();
+            InitializeSaveData();
             InitializeStorageRoot();
             InitializeContainer();
             InitializeBattery();
-            InitializeSaveData();
         }
 
         private void InitializeContainer()
         {
             if (this.Container is null)
             {
-                this.Container = new ItemsContainer(StorageWidth, StorageHeight, storageRoot.transform, "CyBioReactorStorageLabel", null);
+                this.Container = new ItemsContainer(StorageWidth, StorageHeight, storageRoot.transform, StorageLabel, null);
 
                 this.Container.isAllowedToAdd += IsAllowedToAdd;
                 this.Container.isAllowedToRemove += IsAllowedToRemove;
@@ -71,8 +81,8 @@
         {
             if (SaveData is null)
             {
-                string id = GetComponentInParent<PrefabIdentifier>().Id;
-                SaveData = new CyBioReactorSaveData(id);
+                this.PrefabID = GetComponentInParent<PrefabIdentifier>().Id;
+                SaveData = new CyBioReactorSaveData(this.PrefabID);
             }
         }
 
@@ -121,7 +131,7 @@
             {
                 float powerDeficit = this.Battery.capacity - this.Battery.charge;
 
-                if (powerDeficit > 0f)
+                if (powerDeficit > 0.001f)
                 {
                     float chargeOverTime = ChargePerSecondPerItem * DayNightCycle.main.deltaTime;
 
@@ -130,6 +140,9 @@
                     this.Battery.charge += powerProduced;
                 }
             }
+
+            if (pdaIsOpen)
+                UpdateDisplayText();
         }
 
         public void OnHandHover(GUIHand guiHand)
@@ -138,15 +151,31 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText($"Use Cyclops BioReacactor {this.Battery.GetChargeValueText()}");
+            main.SetInteractText($"Use Cyclops BioReacactor {Mathf.FloorToInt(this.Battery.charge)}/{MaxPower}{(HasPower ? "+" : "")}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
         public void OnHandClick(GUIHand guiHand)
         {
             PDA pda = Player.main.GetPDA();
-            Inventory.main.SetUsedStorage(this.Container, false);
-            pda.Open(PDATab.Inventory, null, null, 4f);
+            Inventory.main.SetUsedStorage(this.Container);
+            pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
+
+            pdaIsOpen = true;
+        }
+
+        internal void CyOnPdaClose(PDA pda)
+        {
+            this.InventoryMapping = null;
+
+            foreach (BioEnergy item in this.MaterialsProcessing)
+            {
+                item.DisplayText = null;
+            }
+
+            pdaIsOpen = false;
+
+            this.Container.onAddItem -= OnAddItemLate;
         }
 
         private void OnAddItem(InventoryItem item)
@@ -160,21 +189,36 @@
 
             if (BioReactorCharges.TryGetValue(item.item.GetTechType(), out float bioEnergyValue) && bioEnergyValue > 0f)
             {
-#if DEBUG
-                bioEnergyValue *= 0.20f; // For testing
-#endif
                 var bioenergy = new BioEnergy(item.item, bioEnergyValue, bioEnergyValue)
                 {
                     Size = item.width * item.height
                 };
 
-                this.MaterialsProcessing.Add(bioenergy);                
+                this.MaterialsProcessing.Add(bioenergy);
             }
             else
             {
                 Destroy(item.item.gameObject); // Failsafe
             }
+        }
 
+        private void OnAddItemLate(InventoryItem item)
+        {
+            if (this.InventoryMapping is null)
+                return;
+
+            if (this.InventoryMapping.TryGetValue(item, out uGUI_ItemIcon icon))
+            {
+                BioEnergy bioEnergy = this.MaterialsProcessing.Find(m => m.Pickupable == item.item);
+
+                if (bioEnergy is null)
+                {
+                    QuickLogger.Debug("Matching pickable in bioreactor not found", true);
+                    return;
+                }
+
+                AddDisplayText(bioEnergy, icon);
+            }
         }
 
         private void OnRemoveItem(InventoryItem item)
@@ -240,6 +284,17 @@
             }
 
             return powerProduced;
+        }
+
+        private void UpdateDisplayText()
+        {
+            if (textDelay-- > 0)
+                return; // Slow down the text update
+
+            textDelay = TextDelayTicks;
+
+            foreach (BioEnergy material in this.MaterialsProcessing)
+                material.UpdateInventoryText();
         }
 
         public float Constructed
@@ -313,8 +368,66 @@
         public void ConnectToCyclops(SubRoot parentCyclops)
         {
             QuickLogger.Debug("BioReactor has been connected to Cyclops", true);
+
             this.ParentCyclops = parentCyclops;
+
             this.transform.SetParent(parentCyclops.transform);
+        }
+
+        public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
+        {
+            if (this.InventoryMapping is null)
+            {
+                this.InventoryMapping = lookup;
+
+                this.Container.onAddItem += OnAddItemLate;
+
+                if (this.MaterialsProcessing.Count == 0)
+                    return;
+
+                foreach (KeyValuePair<InventoryItem, uGUI_ItemIcon> pair in lookup)
+                {
+                    InventoryItem item = pair.Key;
+                    uGUI_ItemIcon icon = pair.Value;
+
+                    BioEnergy bioEnergy = this.MaterialsProcessing.Find(m => m.Pickupable == item.item);
+
+                    if (bioEnergy is null)
+                    {
+                        QuickLogger.Debug("Matching pickable in bioreactor not found", true);
+                        continue;
+                    }
+
+                    AddDisplayText(bioEnergy, icon);
+                }
+            }
+        }
+
+        private void AddDisplayText(BioEnergy bioEnergy, uGUI_ItemIcon icon)
+        {
+            var arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+
+            var textGO = new GameObject("EnergyLabel");
+
+            textGO.transform.parent = icon.transform;
+            textGO.AddComponent<Text>();
+
+            Text text = textGO.GetComponent<Text>();
+            text.font = arial;
+            text.material = arial.material;
+            text.text = string.Empty;
+            text.fontSize = 13 + bioEnergy.Size;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.color = Color.yellow;
+
+            Outline outline = textGO.AddComponent<Outline>();
+            outline.effectColor = Color.black;
+
+            RectTransform rectTransform = text.GetComponent<RectTransform>();
+            rectTransform.localScale = Vector3.one;
+            rectTransform.anchoredPosition3D = Vector3.zero;
+
+            bioEnergy.DisplayText = text;
         }
 
         [ProtoMember(3)]
