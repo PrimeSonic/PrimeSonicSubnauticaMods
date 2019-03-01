@@ -17,6 +17,9 @@
         [HarmonyPostfix]
         public static void Postfix(uGUI_InventoryTab __instance)
         {
+            // This event happens whenever the player opens their PDA.
+            // We will make a series of checks to see if what they have opened is the Cyclops BioReactor item container.
+
             if (__instance is null)
                 return; // Safety check
 
@@ -38,18 +41,17 @@
 
             List<CyBioReactorMono> reactors = CyclopsManager.GetBioReactors(container, Player.main.currentSub);
 
-            if (reactors is null)
-                return; // Cyclops has no bioreactors?
+            if (reactors is null || reactors.Count == 0)
+                return; // Cyclops has no bioreactors
 
-            foreach (CyBioReactorMono reactor in reactors)
-            {
-                if (container == reactor.Container)
-                {
-                    var lookup = (Dictionary<InventoryItem, uGUI_ItemIcon>)itemsInfo.GetValue(__instance.storage);
-                    reactor.ConnectToInventory(lookup); // Found!
-                    return;
-                }
-            }
+            // Look for the reactor that matches the container we just opened.
+            CyBioReactorMono reactor = reactors.Find(r => r.Container == container);
+
+            if (reactor is null)
+                return; // Didn't find the reactor we were looking for. Could it be on another cyclops?
+
+            var lookup = (Dictionary<InventoryItem, uGUI_ItemIcon>)itemsInfo.GetValue(__instance.storage);
+            reactor.ConnectToInventory(lookup); // Found!
         }
     }
 }

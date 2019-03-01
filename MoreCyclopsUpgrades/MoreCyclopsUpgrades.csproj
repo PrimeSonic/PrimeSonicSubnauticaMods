@@ -81,7 +81,7 @@
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="PowerManager.cs" />
     <Compile Include="SaveData\SaveDataExtensions.cs" />
-    <Compile Include="SaveData\uGUI_Patches.cs" />
+    <Compile Include="Patchers\uGUI_Patches.cs" />
     <Compile Include="UpgradeManager.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />

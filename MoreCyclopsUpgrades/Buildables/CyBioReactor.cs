@@ -34,14 +34,14 @@
             GameObject model = prefab.FindChild("model");
 
             const float modelScaling = 0.18f;
-            model.transform.localScale -= new Vector3(modelScaling, modelScaling, modelScaling);            
+            model.transform.localScale -= new Vector3(modelScaling, modelScaling, modelScaling);
 
             // Update sky applier
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
             skyApplier.renderers = prefab.GetComponentsInChildren<Renderer>();
             skyApplier.anchorSky = Skies.Auto;
 
-            // Modify existing constructable - This is just a modified Fabricator which already had a Constructible component.
+            // Modify existing constructable - This is just a modified SpecimenAnalyzer which already had a Constructible component.
             Constructable constructible = prefab.GetComponent<Constructable>();
 
             constructible.allowedInBase = false;
@@ -54,8 +54,9 @@
             constructible.controlModelState = true;
             constructible.rotationEnabled = true;
             constructible.techType = this.TechType;
+            constructible.model = model;
 
-            CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>();
+            CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>(); // The component that makes the magic happen
             Battery battery = prefab.AddComponent<Battery>();
 
             return prefab;
