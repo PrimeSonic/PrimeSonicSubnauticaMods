@@ -83,6 +83,8 @@
 
         private float[] OriginalSpeeds { get; } = new float[3];
 
+        private int lastReservePower = -1;
+
         public bool Initialize(CyclopsManager manager)
         {
             if (this.Manager != null)
@@ -238,7 +240,7 @@
         /// </summary>
         /// <param name="cyclopsHelmHUD">The instance.</param>
         /// <param name="lastReservePower">The last reserve power.</param>
-        internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, ref int lastReservePower)
+        internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
             if (this.UpgradeManager == null)
             {
