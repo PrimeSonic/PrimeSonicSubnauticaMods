@@ -114,7 +114,7 @@
 
             foreach (CyclopsModule module in ModulesToPatch)
             {
-                QuickLogger.Message($"Patching {module.NameID}");
+                QuickLogger.Debug($"Patching {module.NameID}");
                 module.Patch();
                 CyclopsModulesByTechType.Add(module.TechType, module);
             }

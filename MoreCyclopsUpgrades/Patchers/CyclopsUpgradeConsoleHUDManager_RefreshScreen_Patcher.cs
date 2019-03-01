@@ -10,16 +10,7 @@
         [HarmonyPostfix]
         public static void Postfix(ref CyclopsUpgradeConsoleHUDManager __instance)
         {
-            var cyclopsManager = CyclopsManager.GetAllManagers(__instance.subRoot);
-
-            if (cyclopsManager == null)
-            {
-                return;
-            }
-
-            cyclopsManager.UpgradeManager.SyncUpgradeConsoles();
-
-            cyclopsManager.PowerManager.UpdateConsoleHUD(__instance);
+            CyclopsManager.SyncronizeAll(__instance);
         }
     }
 }

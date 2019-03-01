@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using Common;
     using Common.EasyMarkup;
 
     internal class EmModPatchConfig : EmPropertyCollection
@@ -15,6 +16,7 @@
 
         private const string EmAuxEnabledKey = "EnableAuxiliaryUpgradeConsoles";
         private const string EmUpgradesEnabledKey = "EnableNewUpgradeModules";
+        private const string EmBioEnergyEnabledKey = "EnableCyclopsBioReactor";
 
         internal bool EnableAuxiliaryUpgradeConsoles
         {
@@ -28,19 +30,28 @@
             set => EmUpgradesEnabled.Value = value;
         }
 
+        internal bool EnableBioEnergy
+        {
+            get => EmBioEnergyEnabled.Value;
+            set => EmBioEnergyEnabled.Value = value;
+        }
+
         private readonly EmYesNo EmAuxEnabled;
         private readonly EmYesNo EmUpgradesEnabled;
+        private readonly EmYesNo EmBioEnergyEnabled;
 
         private static ICollection<EmProperty> definitions = new List<EmProperty>(2)
         {
             new EmYesNo(EmAuxEnabledKey, true),
             new EmYesNo(EmUpgradesEnabledKey, true),
+            new EmYesNo(EmBioEnergyEnabledKey, true),
         };
 
         public EmModPatchConfig() : base(ConfigKey, definitions)
         {
             EmAuxEnabled = (EmYesNo)Properties[EmAuxEnabledKey];
             EmUpgradesEnabled = (EmYesNo)Properties[EmUpgradesEnabledKey];
+            EmBioEnergyEnabled = (EmYesNo)Properties[EmBioEnergyEnabledKey];
 
             OnValueExtractedEvent += Validate;
         }
@@ -53,7 +64,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Error loading {ConfigKey}: " + ex.ToString());
+                QuickLogger.Warning("Error loading {ConfigKey}: " + ex.ToString());
                 WriteConfigFile();
             }
         }
@@ -62,13 +73,19 @@
         {
             if (!EmAuxEnabled.HasValue)
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmAuxEnabled.Key} was out of range. Replaced with default.");
+                QuickLogger.Warning($"Config value for {ConfigKey}>{EmAuxEnabled.Key} was out of range. Replaced with default.");
                 ValidDataRead &= false;
             }
 
             if (!EmUpgradesEnabled.HasValue)
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Config value for {ConfigKey}>{EmUpgradesEnabled.Key} was out of range. Replaced with default.");
+                QuickLogger.Warning($"Config value for {ConfigKey}>{EmUpgradesEnabled.Key} was out of range. Replaced with default.");
+                ValidDataRead &= false;
+            }
+
+            if (!EmBioEnergyEnabled.HasValue)
+            {
+                QuickLogger.Warning($"Config value for {ConfigKey}>{EmBioEnergyEnabled.Key} was out of range. Replaced with default.");
                 ValidDataRead &= false;
             }
         }
@@ -84,7 +101,7 @@
                 "#                 This config file was built using EasyMarkup                   #",
                 "# ----------------------------------------------------------------------------- #",
                 "",
-                base.PrettyPrint(),
+                PrettyPrint(),
                 "",
                 "# Here's the full details on what these configurations do: #",
                 "",
@@ -99,6 +116,11 @@
                 "# Set this to 'NO' if you want a closer to vanilla experience. #",
                 "# Set this to 'YES' if you want to unleash the full potential of your cyclops. #",
                 "",
+                $"# 'Enable Cyclops BioReactor' #",
+                "# When this option is enabled, the Cyclops Bioreactor will be patched into the game. #",
+                "# Set this to 'NO' if you want a closer to vanilla experience. #",
+                "# Set this to 'YES' if you want additional power options for your Cyclops. #",
+                "",
                 "# ----------------------------------------------------------------------------- #",
                 "# Because of how the Auxiliary Upgrade Console interacts with the new upgrade modules, #",
                 "# it was not possible to separate these two options into two distinct mods. #",
@@ -111,7 +133,7 @@
         {
             if (!File.Exists(ConfigFile))
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Mod config file not found. Writing default file.");
+                QuickLogger.Debug("Mod config file not found. Writing default file.");
                 WriteConfigFile();
                 return;
             }
@@ -122,7 +144,7 @@
 
             if (!readCorrectly || !ValidDataRead)
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Mod config file contained error. Writing default file.");
+                QuickLogger.Debug("Mod config file contained error. Writing default file.");
                 WriteConfigFile();
                 return;
             }

@@ -105,4 +105,33 @@
             // The original method execution sucked anyways :P
         }
     }
+
+    [HarmonyPatch(typeof(SubRoot))]
+    [HarmonyPatch("OnPlayerEntered")]
+    internal class SubRoot_OnPlayerEntered_BeQuiet
+    {
+        private static bool firstEventDone = false;
+        private static VoiceNotificationManager reference;
+
+        [HarmonyPrefix]
+        public static void Prefix(ref SubRoot __instance)
+        {
+            if (firstEventDone)
+                return;
+
+            reference = __instance.voiceNotificationManager;
+            __instance.voiceNotificationManager = null;
+            
+        }
+
+        [HarmonyPostfix]
+        public static void Postfix(ref SubRoot __instance)
+        {
+            if (!firstEventDone && __instance.voiceNotificationManager is null)
+            {
+                __instance.voiceNotificationManager = reference;
+                firstEventDone = true;
+            }
+        }
+    }
 }

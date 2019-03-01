@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,13 +37,16 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony-1.2.0.1, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\0Harmony-1.2.0.1.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp">
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -59,18 +63,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Buildables\AuxCyUpgradeConsole.cs" />
+    <Compile Include="Buildables\CyUpgradeConsole.cs" />
+    <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\CyclopsManager.cs" />
     <Compile Include="Caching\NuclearModuleDetails.cs" />
     <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
+    <Compile Include="Monobehaviors\BioEnergy.cs" />
+    <Compile Include="Monobehaviors\CyBioReactorMono.cs" />
+    <Compile Include="Monobehaviors\ISubRootConnection.cs" />
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
+    <Compile Include="SaveData\CyBioReactorSaveData.cs" />
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
-    <Compile Include="Monobehaviors\AuxUpgradeConsole.cs" />
+    <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="PowerManager.cs" />
+    <Compile Include="SaveData\SaveDataExtensions.cs" />
+    <Compile Include="Patchers\uGUI_Patches.cs" />
     <Compile Include="UpgradeManager.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
