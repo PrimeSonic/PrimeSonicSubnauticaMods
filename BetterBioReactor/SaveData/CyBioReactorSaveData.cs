@@ -1,32 +1,29 @@
-﻿namespace MoreCyclopsUpgrades.SaveData
+﻿namespace BetterBioReactor.SaveData
 {
     using System.Collections.Generic;
     using System.IO;
     using Common;
     using Common.EasyMarkup;
-    using MoreCyclopsUpgrades.Monobehaviors;
-    using SMLHelper.V2.Utility;
     using UnityEngine;
 
     internal class CyBioReactorSaveData : EmPropertyCollection
     {
-        private const string KeyName = "CBR";
+        internal const float MaxPower = 500;
         private const string ReactorBatterChargeKey = "BRP";
         private const string MaterialsKey = "MAT";
+        private const string MainKey = "BBR";
         private readonly string ID;
 
-        private readonly EmProperty<float> _batteryCharge;
         private EmPropertyCollectionList<EmModuleSaveData> _materials;
 
         private static ICollection<EmProperty> GetDefinitions => new List<EmProperty>()
         {
-            new EmProperty<float>(ReactorBatterChargeKey, 0),
+            new EmProperty<float>(ReactorBatterChargeKey, 0){ Optional = true },
             new EmPropertyCollectionList<EmModuleSaveData>(MaterialsKey)
         };
 
-        public CyBioReactorSaveData(ICollection<EmProperty> definitions) : base("CyBioReactor", definitions)
+        public CyBioReactorSaveData(ICollection<EmProperty> definitions) : base(MainKey, definitions)
         {
-            _batteryCharge = (EmProperty<float>)Properties[ReactorBatterChargeKey];
             _materials = (EmPropertyCollectionList<EmModuleSaveData>)Properties[MaterialsKey];
         }
 
@@ -47,12 +44,12 @@
                     RemainingCharge = item.RemainingEnergy
                 });
             }
+
+            this.Save(this.SaveDirectory, this.SaveFile);
         }
 
-        public List<BioEnergy> GetMaterialsInProcessing()
+        public IEnumerable<BioEnergy> GetMaterialsInProcessing()
         {
-            var list = new List<BioEnergy>();
-
             foreach (EmModuleSaveData savedItem in _materials.Values)
             {
                 var techTypeID = (TechType)savedItem.ItemID;
@@ -60,25 +57,21 @@
 
                 Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
 
-                list.Add(new BioEnergy(pickupable, savedItem.RemainingCharge));
+                yield return new BioEnergy(pickupable, savedItem.RemainingCharge);
             }
-
-            return list;
         }
 
-        public float ReactorBatterCharge
-        {
-            get => _batteryCharge.HasValue ? Mathf.Min(_batteryCharge.Value, CyBioReactorMono.MaxPower) : 0;
-            set => _batteryCharge.Value = Mathf.Min(value, CyBioReactorMono.MaxPower);
-        }
-
-        private string SaveDirectory => Path.Combine(SaveUtils.GetCurrentSaveDataDir(), "CyBioReactor");
+        private string SaveDirectory => Path.Combine(Path.Combine(SNUtils.savedGamesDir, Utils.GetSavegameDir()), MainKey);
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
-        public void Save() => this.Save(this.SaveDirectory, this.SaveFile);
+        public bool LoadSaveFile()
+        {
+            return this.Load(this.SaveDirectory, this.SaveFile);
+        }
 
-        public bool Load() => this.Load(this.SaveDirectory, this.SaveFile);
-
-        internal override EmProperty Copy() => new CyBioReactorSaveData(this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CyBioReactorSaveData(this.CopyDefinitions);
+        }
     }
 }

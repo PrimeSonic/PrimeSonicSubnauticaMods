@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QuickLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RefHelp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveDataExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
   </ItemGroup>
 </Project>

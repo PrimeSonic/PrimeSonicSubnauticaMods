@@ -26,11 +26,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterBioReactor", "BetterBioReactor\BetterBioReactor.csproj", "{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{0fdbc24d-27cf-435f-b49c-d0a8a580971a}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 4
+		Utilities\Utilities.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
 		Utilities\Utilities.projitems*{a14a9bd2-6817-4beb-9664-8b24279a3dab}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{c8dc0fc6-b816-4f66-aa20-c1c61f80813f}*SharedItemsImports = 4
@@ -73,6 +76,10 @@ Global
 		{A14A9BD2-6817-4BEB-9664-8B24279A3DAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A14A9BD2-6817-4BEB-9664-8B24279A3DAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A14A9BD2-6817-4BEB-9664-8B24279A3DAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7219CBF2-DA8A-45C3-AEE9-9651B8F1F5FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,7 +5,7 @@
   "Version": "2.2.2",
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "CustomCraft2SML.dll",
+  "AssemblyName": "MoreCyclopsUpgrades.dll",
   "Dependencies": [ "SMLHelper" ],  
   "AssemblyName": "MoreCyclopsUpgrades.dll",
   "EntryMethod": "MoreCyclopsUpgrades.QPatch.Patch",
