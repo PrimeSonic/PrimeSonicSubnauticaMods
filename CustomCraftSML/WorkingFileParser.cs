@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
@@ -71,7 +72,7 @@
         {
             string fileName = Path.GetFileName(workingFilePath);
 
-            string serializedData = File.ReadAllText(workingFilePath);
+            string serializedData = File.ReadAllText(workingFilePath, Encoding.UTF8);
 
             if (string.IsNullOrEmpty(serializedData))
             {
