@@ -46,6 +46,9 @@
             if (!Directory.Exists(FileLocations.AssetsFolder))
                 Directory.CreateDirectory(FileLocations.AssetsFolder);
 
+            if (!Directory.Exists(FileLocations.WorkingFolder))
+                Directory.CreateDirectory(FileLocations.WorkingFolder);
+
             string[] workingFiles = Directory.GetFiles(FileLocations.WorkingFolder);
 
             QuickLogger.Info($"{workingFiles.Length} files found in the WorkingFiles folder");
