@@ -32,8 +32,11 @@
 
             Eatable eatable = obj.GetComponent<Eatable>();
                         
-            //eatable.foodValue = food;
-            //eatable.waterValue = water;
+            eatable.foodValue = FoodEntry.FoodValue;
+            eatable.waterValue = FoodEntry.WaterValue;
+            eatable.decomposes = FoodEntry.Decomposes ?? true;
+            eatable.kDecayRate = FoodEntry.DecayRate ?? 1;
+
             // ADD MORE OPTIONS!
 
             return obj;

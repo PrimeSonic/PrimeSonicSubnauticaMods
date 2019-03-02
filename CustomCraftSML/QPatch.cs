@@ -7,7 +7,7 @@
 
     public static class QPatch
     {        
-        private static readonly Regex LogLevel = new Regex("\"DebugLogsEnabled\"[ \f\n\r\t\v]*:[ \f\n\r\t\v]*(false|true),", RegexOptions.IgnoreCase | RegexOptions.Compiled); // Oldschool whitespace checks for .NET 3.5
+        private static readonly Regex LogLevel = new Regex("\"DebugLogsEnabled\"[ \f\n\r\t\v]*:[ \f\n\r\t\v]*(false|true),", RegexOptions.IgnoreCase); // Oldschool whitespace checks for .NET 3.5
 
         public static void Patch()
         {

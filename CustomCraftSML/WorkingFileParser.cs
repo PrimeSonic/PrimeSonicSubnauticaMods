@@ -22,6 +22,7 @@
         internal static readonly ParsingPackage<CustomSize, CustomSizeList> CustomSizeParser = new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey);
         internal static readonly ParsingPackage<CustomBioFuel, CustomBioFuelList> CustomBioFuelParser = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
         internal static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCountParser = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
+        internal static readonly ParsingPackage<CustomFood, CustomFoodList> CustomFoodCountParser = new ParsingPackage<CustomFood, CustomFoodList>(CustomFoodList.ListKey);
 
         private static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
         {
@@ -33,7 +34,8 @@
             MovedRecipes,
             CustomSizeParser,
             CustomBioFuelParser,
-            CustomFragCountParser
+            CustomFragCountParser,
+            CustomFoodCountParser
         };
 
         private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(9);
