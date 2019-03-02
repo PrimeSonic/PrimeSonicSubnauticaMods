@@ -6,6 +6,8 @@
     using ProtoBuf;
     using UnityEngine;
 
+    // The immediate access to the internals of the BaseBioReactor (without the use of Reflection) was made possible thanks to the AssemblyPublicizer
+    // https://github.com/CabbageCrow/AssemblyPublicizer
     [ProtoContract]
     internal class CyBioReactorMini
     {
