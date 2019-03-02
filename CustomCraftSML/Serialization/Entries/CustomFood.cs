@@ -1,20 +1,19 @@
-﻿using Common;
-using Common.EasyMarkup;
-using CustomCraft2SML.Serialization.Lists;
-using CustomCraft2SML.SMLHelperItems;
-using SMLHelper.V2.Handlers;
+﻿
 
 namespace CustomCraft2SML.Serialization.Entries
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
+    using Common;
+    using Common.EasyMarkup;
+    using CustomCraft2SML.Serialization.Lists;
+    using CustomCraft2SML.SMLHelperItems;
+    using SMLHelper.V2.Handlers;
     using CustomCraft2SML.Interfaces;
 
     internal class CustomFood : AliasRecipe, ICustomFood
     {
-        internal static readonly string[] TutorialText = new[]
+        internal new static readonly string[] TutorialText = new[]
         {
             $"{CustomFoodList.ListKey}: Create a custom Eatable.",
             $"    FoodValue: Must be a value between {Min} and {Max}",
@@ -100,8 +99,6 @@ namespace CustomCraft2SML.Serialization.Entries
             new EmProperty<short>(DecayRateKey, 1)
         };
 
-        public OriginFile Origin { get; set; }
-
         public CustomFood() : this("CustomFood", FoodProperties)
         {
         }
@@ -116,7 +113,7 @@ namespace CustomCraft2SML.Serialization.Entries
 
         internal override EmProperty Copy() => new CustomFood(this.Key, this.CopyDefinitions);
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidateFoods();
+        public override bool PassesPreValidation() => InnerItemsAreValid() && FunctionalItemIsValid() & ValidateFoods();
 
         private bool ValidateFoods()
         {
@@ -135,6 +132,7 @@ namespace CustomCraft2SML.Serialization.Entries
             try
             {
                 HandleCustomFood();
+
                 //  See if there is an asset in the asset folder that has the same name
                 HandleCustomSprite();
 
@@ -144,7 +142,6 @@ namespace CustomCraft2SML.Serialization.Entries
                 HandleCraftTreeAddition();
 
                 HandleUnlocks();
-
 
                 return true;
             }
@@ -157,10 +154,11 @@ namespace CustomCraft2SML.Serialization.Entries
 
         protected void HandleCustomFood()
         {
-            var food = new CustomFoodCraftable(this, this.TechType);
+            var food = new CustomFoodCraftable(this, TechType.CookedPeeper);
             food.Patch();
+
             QuickLogger.Debug(
-                $"Custom item '{this.ItemID}' will be a custom item cloned of '{this.FunctionalID}' - Entry from {this.Origin}");
+                $"{this.Key} '{this.ItemID}' will be a custom item cloned of '{this.FunctionalID}' - Entry from {this.Origin}");
         }
     }
 }

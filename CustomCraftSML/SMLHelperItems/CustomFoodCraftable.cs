@@ -22,7 +22,6 @@
         {
             FoodEntry = customFood;
             FoodItemOriginal = baseItem;
-            this.TechType = customFood.TechType; // TechType should already be handled by this point
         }
 
         public override GameObject GetGameObject()
