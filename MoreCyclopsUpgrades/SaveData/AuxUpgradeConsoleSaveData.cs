@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using Common;
     using Common.EasyMarkup;
     using SMLHelper.V2.Utility;
 
@@ -64,8 +65,6 @@
         public bool Load() => this.Load(this.SaveDirectory, this.SaveFile);
 
         internal override EmProperty Copy() => new AuxUpgradeConsoleSaveData(ID, this.CopyDefinitions);
-
-
     }
 }
 
