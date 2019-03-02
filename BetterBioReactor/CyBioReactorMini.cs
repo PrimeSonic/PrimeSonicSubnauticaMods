@@ -7,18 +7,31 @@
     using UnityEngine;
 
     [ProtoContract]
-    internal class CyBioReactorMini : MonoBehaviour, IProtoEventListener, IProtoTreeEventListener
+    internal class CyBioReactorMini
     {
-        internal static readonly Dictionary<BaseBioReactor, CyBioReactorMini> LookupMiniReactor = new Dictionary<BaseBioReactor, CyBioReactorMini>();
+        private static readonly Dictionary<BaseBioReactor, CyBioReactorMini> LookupMiniReactor = new Dictionary<BaseBioReactor, CyBioReactorMini>();
+        internal static CyBioReactorMini GetMiniReactor(BaseBioReactor bioReactor)
+        {
+            if (LookupMiniReactor.TryGetValue(bioReactor, out CyBioReactorMini existingBioMini))
+                return existingBioMini;
+
+            QuickLogger.Debug("CyBioReactorMini Connected");
+
+            var createdBioMini = new CyBioReactorMini(bioReactor);
+            LookupMiniReactor.Add(bioReactor, createdBioMini);
+
+            return createdBioMini;
+        }
 
         private const int TextDelayTicks = 60;
         private int textDelay = TextDelayTicks;
         private bool pdaIsOpen = false;
         private bool isLoadingSaveData = false;
-        private float numberOfContainerSlots;
+        private float numberOfContainerSlots = 12;
         private CyBioReactorSaveData SaveData;
-        private List<BioEnergy> MaterialsProcessing;
-        private List<BioEnergy> FullyConsumed;
+        private readonly List<BioEnergy> MaterialsProcessing = new List<BioEnergy>();
+        private readonly List<BioEnergy> FullyConsumed = new List<BioEnergy>();        
+
         public int MaxPower = -1;
 
         public BaseBioReactor BioReactor { get; private set; }
@@ -26,33 +39,25 @@
         // Careful, this map only exists while the PDA screen is open
         public Dictionary<InventoryItem, uGUI_ItemIcon> InventoryMapping { get; private set; }
 
-        public void Awake()
+        public CyBioReactorMini(BaseBioReactor bioReactor)
         {
-            if (BioReactor is null)
-            {
-                BioReactor = GetComponentInParent<BaseBioReactor>();
-            }
+            this.BioReactor = bioReactor;
 
-            if (SaveData is null)
-            {
-                string id = BioReactor.GetComponentInParent<PrefabIdentifier>().Id;
-                SaveData = new CyBioReactorSaveData(id);
-            }
+            string id = this.BioReactor.GetComponentInParent<PrefabIdentifier>().Id;
+            SaveData = new CyBioReactorSaveData(id);
         }
 
-        public void ConnectToBioRector(BaseBioReactor bioReactor)
+        public void UpdateInternals()
         {
-            BioReactor = bioReactor;
-            if (!LookupMiniReactor.ContainsKey(BioReactor))
-                LookupMiniReactor.Add(BioReactor, this);
+            (this.BioReactor.container as IItemsContainer).onAddItem += OnAddItem;
+            this.BioReactor.container.Clear();
 
-            (BioReactor.container as IItemsContainer).onAddItem += OnAddItem;
-            BioReactor.container.Clear();
+            MaxPower = Mathf.RoundToInt(this.BioReactor._powerSource.GetMaxPower());
 
-            int totalContainerSpaces = BioReactor.container.sizeX * BioReactor.container.sizeY;
+            int totalContainerSpaces = this.BioReactor.container.sizeX * this.BioReactor.container.sizeY;
             numberOfContainerSlots = totalContainerSpaces;
-            MaterialsProcessing = new List<BioEnergy>(totalContainerSpaces);
-            FullyConsumed = new List<BioEnergy>(totalContainerSpaces);
+
+            RestoreItemsFromSaveData();
         }
 
         #region Player interaction
@@ -61,9 +66,10 @@
         internal void OnHover()
         {
             HandReticle main = HandReticle.main;
-            int currentPower = Mathf.RoundToInt(BioReactor._powerSource.GetPower());
-            string maxPowerText = $"{MaxPower}{(BioReactor.producingPower ? "+" : "")}";
+            int currentPower = Mathf.RoundToInt(this.BioReactor._powerSource.GetPower());
+            string maxPowerText = $"{MaxPower}{(this.BioReactor.producingPower ? "+" : "")}";
 
+            // All this is getting updated in Unity 2018
             main.SetInteractText(Language.main.GetFormat("UseBaseBioReactor", currentPower, maxPowerText), "Tooltip_UseBaseBioReactor", false, true, true);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
@@ -74,7 +80,7 @@
             pdaIsOpen = true;
 
             PDA pda = Player.main.GetPDA();
-            Inventory.main.SetUsedStorage(BioReactor.container, false);
+            Inventory.main.SetUsedStorage(this.BioReactor.container, false);
             pda.Open(PDATab.Inventory, model.storagePivot, new PDA.OnClose(OnPdaClose), 4f);
         }
 
@@ -89,7 +95,7 @@
 
             pdaIsOpen = false;
 
-            (BioReactor.container as IItemsContainer).onAddItem -= OnAddItemLate;
+            (this.BioReactor.container as IItemsContainer).onAddItem -= OnAddItemLate;
         }
 
         private void OnAddItem(InventoryItem item)
@@ -105,6 +111,10 @@
                 };
 
                 MaterialsProcessing.Add(bioenergy);
+            }
+            else
+            {
+                GameObject.Destroy(item.item);
             }
         }
 
@@ -153,8 +163,8 @@
                 foreach (BioEnergy material in FullyConsumed)
                 {
                     MaterialsProcessing.Remove(material);
-                    BioReactor.container.RemoveItem(material.Pickupable, true);
-                    Destroy(material.Pickupable.gameObject);
+                    this.BioReactor.container.RemoveItem(material.Pickupable, true);
+                    GameObject.Destroy(material.Pickupable.gameObject);
                 }
 
                 FullyConsumed.Clear();
@@ -181,21 +191,12 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            SaveData.ReactorBatterCharge = BioReactor._powerSource.power;
             SaveData.SaveMaterialsProcessing(MaterialsProcessing);
-
-            SaveData.Save();
         }
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
-            QuickLogger.Debug("Looking for save data");
-
-            isLoadingSaveData = true;
-
-            BioReactor.container.Clear();
-
-            isLoadingSaveData = false;
+            QuickLogger.Debug("Preventing original RestoreItems call");
         }
 
         public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
@@ -203,41 +204,42 @@
         }
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
-        {
+        {            
             QuickLogger.Debug("Looking for save data for object tree");
 
-            isLoadingSaveData = true;
+            this.BioReactor.container.Clear();
 
-            bool hasSaveData = SaveData.Load();
-
-            BioReactor.container.Clear();
-
-            if (hasSaveData)
+            if (SaveData.LoadSaveFile())
             {
+                isLoadingSaveData = true;
                 QuickLogger.Debug("Save data found");
+            }            
+        }
 
-                BioReactor._powerSource.power = SaveData.ReactorBatterCharge;
+        private void RestoreItemsFromSaveData()
+        {
+            if (!isLoadingSaveData || SaveData is null)
+                return;
 
-                List<BioEnergy> materials = SaveData.GetMaterialsInProcessing();
-
-                foreach (BioEnergy material in materials)
-                {
-                    InventoryItem inventoryItem = BioReactor.container.AddItem(material.Pickupable);
-                    MaterialsProcessing.Add(material);
-                    material.Size = inventoryItem.width * inventoryItem.height;
-                }
+            foreach (BioEnergy material in SaveData.GetMaterialsInProcessing())
+            {
+                InventoryItem inventoryItem = this.BioReactor.container.AddItem(material.Pickupable);
+                MaterialsProcessing.Add(material);
+                material.Size = inventoryItem.width * inventoryItem.height;
             }
+
+            QuickLogger.Debug("Original items restored");
 
             isLoadingSaveData = false;
         }
 
-        #endregion 
+        #endregion
 
         public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
         {
             this.InventoryMapping = lookup;
 
-            (BioReactor.container as IItemsContainer).onAddItem += OnAddItemLate;
+            (this.BioReactor.container as IItemsContainer).onAddItem += OnAddItemLate;
 
             if (MaterialsProcessing.Count == 0)
                 return;

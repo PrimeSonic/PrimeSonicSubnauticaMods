@@ -6,7 +6,7 @@
     internal class BioEnergy
     {
         public bool FullyConsumed => RemainingEnergy <= 0f;
-        public string EnergyString => $"{Mathf.FloorToInt(RemainingEnergy)}/{MaxEnergy}";
+        public string EnergyString => $"{Mathf.RoundToInt(RemainingEnergy)}/{MaxEnergy}";
 
         public Pickupable Pickupable;
         public float RemainingEnergy;

@@ -40,10 +40,7 @@
                 if (reactor.container != currentContainer)
                     continue;
 
-                if (CyBioReactorMini.LookupMiniReactor.TryGetValue(reactor, out CyBioReactorMini bioMini))
-                {
-                    bioMini.ConnectToInventory(__instance.storage.items); // Found!
-                }
+                CyBioReactorMini.GetMiniReactor(reactor).ConnectToInventory(__instance.storage.items);
             }
         }
     }
