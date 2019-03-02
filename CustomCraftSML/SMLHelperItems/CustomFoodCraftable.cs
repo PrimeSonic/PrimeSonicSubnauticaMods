@@ -1,13 +1,13 @@
 ﻿namespace CustomCraft2SML.SMLHelperItems
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
+    using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using UnityEngine;
 
-    internal class CustomFoodCraftable : Craftable
+    internal class CustomFoodCraftable : Craftable        
     {
         public override CraftTree.Type FabricatorType { get; }
         public override TechGroup GroupForPDA { get; }
@@ -15,19 +15,23 @@
         public override string AssetsFolder { get; }
 
         public readonly TechType FoodItemOriginal;
+        public readonly CustomFood FoodEntry;
 
+        public CustomFoodCraftable(CustomFood customFood, TechType baseItem)
+            : base(customFood.ItemID, $"{customFood.ItemID}Prefab", customFood.Tooltip)
+        {
+            FoodEntry = customFood;
+            FoodItemOriginal = baseItem;
+            this.TechType = customFood.TechType; // TechType should already be handled by this point
+        }
 
         public override GameObject GetGameObject()
         {
-            var prefab = CraftData.GetPrefabForTechType(FoodItemOriginal);
-            var obj = UnityEngine.Object.Instantiate(prefab);
+            GameObject prefab = CraftData.GetPrefabForTechType(FoodItemOriginal);
+            GameObject obj = UnityEngine.Object.Instantiate(prefab);
 
-            var identifier = obj.GetComponent<PrefabIdentifier>();
-            var techTag = obj.GetComponent<TechTag>();
-            var eatable = obj.GetComponent<Eatable>();
-
-            //identifier.ClassId = ItemID;
-            //techTag.type = Alias TechType;
+            Eatable eatable = obj.GetComponent<Eatable>();
+                        
             //eatable.foodValue = food;
             //eatable.waterValue = water;
             // ADD MORE OPTIONS!
@@ -37,7 +41,7 @@
 
         protected override TechData GetBlueprintRecipe()
         {
-            throw new NotImplementedException();
+            return FoodEntry.CreateRecipeTechData();
         }
     }
 }

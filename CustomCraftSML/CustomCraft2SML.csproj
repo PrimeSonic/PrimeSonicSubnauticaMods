@@ -56,6 +56,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\ICustomFood.cs" />
+    <Compile Include="Serialization\Entries\CustomFood.cs" />
+    <Compile Include="Serialization\Lists\CustomFoodList.cs" />
     <Compile Include="SMLHelperItems\CustomFabricatorBuildable.cs" />
     <Compile Include="FileLocations.cs" />
     <Compile Include="SMLHelperItems\CustomFoodCraftable.cs" />
