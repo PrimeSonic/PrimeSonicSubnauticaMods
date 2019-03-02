@@ -24,7 +24,7 @@ namespace CustomCraft2SML.Serialization.Entries
         };
 
         public const short Max = 100;
-        public const short Min = 1;
+        public const short Min = 0;
 
         private const string FoodValueKey = "FoodValue";
         private const string WaterValueKey = "WaterValue";
@@ -92,10 +92,10 @@ namespace CustomCraft2SML.Serialization.Entries
             }
         }
 
-        protected static List<EmProperty> FoodProperties => new List<EmProperty>(TechTypedProperties)
+        protected static List<EmProperty> FoodProperties => new List<EmProperty>(AliasRecipeProperties)
         {
-            new EmProperty<short>(FoodValueKey, 1),
-            new EmProperty<short>(WaterValueKey, 1),
+            new EmProperty<short>(FoodValueKey, 0),
+            new EmProperty<short>(WaterValueKey, 0),
             new EmProperty<bool>(DecomposesKey, true),
             new EmProperty<short>(DecayRateKey, 1)
         };
@@ -134,6 +134,7 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             try
             {
+                HandleCustomFood();
                 //  See if there is an asset in the asset folder that has the same name
                 HandleCustomSprite();
 
@@ -144,7 +145,6 @@ namespace CustomCraft2SML.Serialization.Entries
 
                 HandleUnlocks();
 
-                HandleCustomFood();
 
                 return true;
             }
@@ -157,8 +157,8 @@ namespace CustomCraft2SML.Serialization.Entries
 
         protected void HandleCustomFood()
         {
-            var food = new CustomFoodCraftable(this, TechType.FilteredWater);
-            PrefabHandler.RegisterPrefab(food);
+            var food = new CustomFoodCraftable(this, this.TechType);
+            food.Patch();
             QuickLogger.Debug(
                 $"Custom item '{this.ItemID}' will be a custom item cloned of '{this.FunctionalID}' - Entry from {this.Origin}");
         }

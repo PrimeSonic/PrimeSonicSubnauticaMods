@@ -10,7 +10,7 @@
         [Test]
         public void Deserialize_CustomFood_FullDetails()
         {
-            const string serialized = "CustomFood:" + "\r\n" +
+            const string serialized = "CustomFoods:" + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:verybigwater;" + "\r\n" +
                                       "    DisplayName:\"Very Big Water\";" + "\r\n" +
@@ -22,6 +22,8 @@
                                       "            Required:5;" + "\r\n" +
                                       "        );" + "\r\n" +
                                       "    Path:Fabricator;" + "\r\n" +
+                                      "    FoodValue:0;" + "\r\n" +
+                                      "    WaterValue:100;" + "\r\n" +
                                       ");" + "\r\n";
 
             var food = new CustomFood();
@@ -36,7 +38,7 @@
         [Test]
         public void Deserialize_CustomFoodsList_FullDetails()
         {
-            const string serialized = "CustomFood:" + "\r\n" +
+            const string serialized = "CustomFoods:" + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:verybigwater;" + "\r\n" +
                                       "    DisplayName:\"Very Big Water\";" + "\r\n" +
@@ -48,6 +50,8 @@
                                       "            Required:5;" + "\r\n" +
                                       "        );" + "\r\n" +
                                       "    Path:Fabricator;" + "\r\n" +
+                                      "    FoodValue:0;" + "\r\n" +
+                                      "    WaterValue:100;" + "\r\n" +
                                       ")," + "\r\n" +
                                       "(" + "\r\n" +
                                       "    ItemID:verybigwater;" + "\r\n" +
@@ -60,6 +64,8 @@
                                       "            Required:5;" + "\r\n" +
                                       "        );" + "\r\n" +
                                       "    Path:Fabricator;" + "\r\n" +
+                                      "    FoodValue:0;" + "\r\n" +
+                                      "    WaterValue:100;" + "\r\n" +
                                       ");" + "\r\n";
 
             var foods = new CustomFoodList();

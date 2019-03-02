@@ -8,7 +8,7 @@
 
     internal class CustomFoodList : EmPropertyCollectionList<CustomFood>
     {
-        internal const string ListKey = "CustomFood";
+        internal const string ListKey = "CustomFoods";
 
         public CustomFoodList() : base(ListKey)
         {
