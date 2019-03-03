@@ -95,8 +95,8 @@
                 this.Container.isAllowedToAdd += IsAllowedToAdd;
                 this.Container.isAllowedToRemove += IsAllowedToRemove;
 
-                this.Container.onAddItem += OnAddItem;
-                this.Container.onRemoveItem += OnRemoveItem;
+                (this.Container as IItemsContainer).onAddItem += OnAddItem;
+                (this.Container as IItemsContainer).onRemoveItem += OnRemoveItem;
             }
         }
 
@@ -178,7 +178,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText($"Use Cyclops BioReacactor {Mathf.FloorToInt(this.Battery.charge)}/{MaxPower}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
+            main.SetInteractText($"Use Cyclops BioReactor {Mathf.FloorToInt(this.Battery.charge)}/{MaxPower}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -202,7 +202,7 @@
 
             pdaIsOpen = false;
 
-            this.Container.onAddItem -= OnAddItemLate;
+            (this.Container as IItemsContainer).onAddItem -= OnAddItemLate;
         }
 
         private void OnAddItem(InventoryItem item)
@@ -415,7 +415,7 @@
         {
             this.InventoryMapping = lookup;
 
-            this.Container.onAddItem += OnAddItemLate;
+            (this.Container as IItemsContainer).onAddItem += OnAddItemLate;
 
             if (this.MaterialsProcessing.Count == 0)
                 return;

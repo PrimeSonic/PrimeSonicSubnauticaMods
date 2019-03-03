@@ -13,8 +13,6 @@
 
         public static TechType TechTypeID { get; private set; } = TechType.UnusedOld;
 
-        private static readonly FieldInfo powerSourceInfo = typeof(BaseBioReactor).GetField("_powerSource", BindingFlags.NonPublic | BindingFlags.Instance);
-
         public CyBioReactor()
             : base(CyBioReactorID, "Cyclops Bioreactor", "Composts organic matter into electrical energy.")
         {
