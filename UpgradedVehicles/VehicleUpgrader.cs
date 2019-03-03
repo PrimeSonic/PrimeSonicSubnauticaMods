@@ -414,7 +414,7 @@
         {
             float powerRating = EfficiencyBonus(powerModuleCount) / EfficiencyPentalty(speedBoosterCount);
 
-            ParentVehicle.SetPrivateField("enginePowerRating", powerRating);
+            ParentVehicle.enginePowerRating = powerRating;
 
             ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
         }

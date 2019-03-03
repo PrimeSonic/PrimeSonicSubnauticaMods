@@ -1,11 +1,12 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
-    using System;
     using Common;
     using Modules;
     using ProtoBuf;
     using SaveData;
     using SMLHelper.V2.Utility;
+    using System;
+    using System.Reflection;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -52,8 +53,21 @@
             this.Modules = new Equipment(base.gameObject, ModulesRoot.transform);
             this.Modules.SetLabel("CyclopsUpgradesStorageLabel");
             UpdateVisuals();
-            this.Modules.onEquip += OnEquip;
-            this.Modules.onUnequip += OnUnequip;
+
+            Type equipmentType = typeof(Equipment);
+            EventInfo onEquipInfo = equipmentType.GetEvent("onEquip", BindingFlags.Public | BindingFlags.Instance);
+            EventInfo onUnequipInfo = equipmentType.GetEvent("onUnequip", BindingFlags.Public | BindingFlags.Instance);
+
+            Type cyConsoleType = typeof(CyUpgradeConsoleMono);
+            MethodInfo myOnEquipMethod = cyConsoleType.GetMethod("OnEquip", BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo myOnUnequipMethod = cyConsoleType.GetMethod("OnUnequip", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            var onEquipDelegate = Delegate.CreateDelegate(typeof(Equipment.OnEquip), this, myOnEquipMethod);
+            var onUnequipDelegate = Delegate.CreateDelegate(typeof(Equipment.OnUnequip), this, myOnUnequipMethod);
+
+            onEquipInfo.AddEventHandler(this.Modules, onEquipDelegate);
+            onUnequipInfo.AddEventHandler(this.Modules, onUnequipDelegate);
+
             UnlockDefaultModuleSlots();
         }
 
@@ -110,8 +124,11 @@
             return canvas.gameObject;
         }
 
-        private void UnlockDefaultModuleSlots() => this.Modules.AddSlots(SlotHelper.SlotNames);
-        
+        private void UnlockDefaultModuleSlots()
+        {
+            this.Modules.AddSlots(SlotHelper.SlotNames);
+        }
+
         public void OnHandHover(GUIHand guiHand)
         {
             if (!Buildable.constructed)
@@ -166,7 +183,10 @@
             QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
         }
 
-        internal void CyclopsUpgradeChange() => ParentCyclops?.SetInstanceField("subModulesDirty", true);
+        internal void CyclopsUpgradeChange()
+        {
+            this.ParentCyclops.subModulesDirty = true;
+        }
 
         private static readonly Vector2 SpritePivot = new Vector2(0.5f, 0.5f);
 
@@ -311,7 +331,7 @@
         public GameObject Module6;
 
         public ChildObjectIdentifier ModulesRoot;
-        
+
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         public AuxUpgradeConsoleSaveData SaveData;

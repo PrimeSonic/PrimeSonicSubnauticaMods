@@ -109,7 +109,7 @@
             skyApplier.anchorSky = Skies.Auto;
 
             // Associate custom craft tree to the fabricator
-            Fabricator fabricator = prefab.GetComponent<Fabricator>();
+            GhostCrafter fabricator = prefab.GetComponent<Fabricator>();
             fabricator.craftTree = this.TreeTypeID;
             fabricator.handOverText = HandOverText;
 
@@ -139,7 +139,7 @@
             // The problem is that the parent SubRoot isn't correctly associated at this time.
             // The power relay should be getting set in the GhostCrafter Start() method.
             // But the parent components are coming up null.
-            (fabricator as GhostCrafter).SetPrivateField("powerRelay", powerRelay, BindingFlags.Instance);
+            fabricator.powerRelay = powerRelay;
 
             return prefab;
         }

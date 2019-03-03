@@ -187,7 +187,7 @@
             GhostCrafter ghost = fabricator.GetComponent<GhostCrafter>();
             var powerRelay = new PowerRelay(); // This isn't correct, but nothing else seems to work.
 
-            ghost.SetPrivateField("powerRelay", powerRelay);
+            ghost.powerRelay = powerRelay;
 
             // Add constructable - This prefab normally isn't constructed.
             Constructable constructible = cyclopsFabPrefab.AddComponent<Constructable>();

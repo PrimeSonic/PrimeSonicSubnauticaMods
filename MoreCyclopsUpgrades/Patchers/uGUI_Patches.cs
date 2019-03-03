@@ -18,7 +18,7 @@
         public static void Postfix(uGUI_InventoryTab __instance)
         {
             // This event happens whenever the player opens their PDA.
-            // We will make a series of checks to see if what they have opened is the Cyclops BioReactor item container.
+            // We will make a series of checks to see if what they have opened is the Cyclops Bioreactor item container.
 
             if (__instance is null)
                 return; // Safety check
@@ -37,7 +37,7 @@
             string label = (string)labelInfo.GetValue(container);
 
             if (label != CyBioReactorMono.StorageLabel)
-                return; // Not a Cyclops BioReactor storage
+                return; // Not a Cyclops Bioreactor storage
 
             List<CyBioReactorMono> reactors = CyclopsManager.GetBioReactors(container, Player.main.currentSub);
 
