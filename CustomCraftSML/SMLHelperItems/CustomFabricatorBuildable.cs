@@ -106,7 +106,7 @@
             // The problem is that the parent SubRoot isn't correctly associated at this time.
             // The power relay should be getting set in the GhostCrafter Start() method.
             // But the parent components are coming up null.
-            crafter.SetPrivateField("powerRelay", powerRelay, BindingFlags.Instance);
+            crafter.powerRelay = powerRelay;
 
             return prefab;
         }

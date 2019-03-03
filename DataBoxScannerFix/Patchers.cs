@@ -11,7 +11,7 @@
         internal static void PostFix(ref ResourceTracker __instance)
         {
             bool isDataBox = __instance.overrideTechType == TechType.Databox ||
-                (TechType)__instance.GetPrivateField("techType") == TechType.Databox;
+                __instance.techType == TechType.Databox;
 
             if (!isDataBox)
                 return; // Not a data box, early exit

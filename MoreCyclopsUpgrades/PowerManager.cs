@@ -187,7 +187,7 @@
             {
                 this.LastKnownPowerRating = powerRating;
 
-                this.Cyclops.SetPrivateField("currPowerRating", powerRating);
+                this.Cyclops.currPowerRating = powerRating;
 
                 // Inform the new power rating just like the original method would.
                 ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
