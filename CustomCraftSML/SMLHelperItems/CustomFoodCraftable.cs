@@ -1,7 +1,6 @@
 ﻿namespace CustomCraft2SML.SMLHelperItems
 {
-    using System;
-    using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -9,24 +8,22 @@
 
     internal class CustomFoodCraftable : Craftable
     {
-        public override CraftTree.Type FabricatorType => _fabricatortype;
-        public override TechGroup GroupForPDA => _techgroup;
-        public override TechCategory CategoryForPDA => _techcategory;
+        public override CraftTree.Type FabricatorType => Path.Scheme;
+        public override TechGroup GroupForPDA => FoodEntry.PdaGroup;
+        public override TechCategory CategoryForPDA => FoodEntry.PdaCategory;
 
-        public override string AssetsFolder => _assetsfolder;
+        public override string AssetsFolder => FileLocations.AssetsFolder;
+        // TODO Unlocks will need to be handled
 
         public readonly TechType FoodItemOriginal;
         public readonly CustomFood FoodEntry;
+        public readonly CraftingPath Path;
 
-        public string _assetsfolder = "";
-        public CraftTree.Type _fabricatortype;
-        public TechGroup _techgroup;
-        public TechCategory _techcategory;
-
-        public CustomFoodCraftable(CustomFood customFood, TechType baseItem)
+        public CustomFoodCraftable(CustomFood customFood, CraftingPath path, TechType baseItem)
             : base(customFood.ItemID, $"{customFood.ItemID}Prefab", customFood.Tooltip)
         {
             FoodEntry = customFood;
+            Path = path;
             FoodItemOriginal = baseItem;
         }
 
@@ -36,11 +33,11 @@
             GameObject obj = UnityEngine.Object.Instantiate(prefab);
 
             Eatable eatable = obj.GetComponent<Eatable>();
-                        
+
             eatable.foodValue = FoodEntry.FoodValue;
             eatable.waterValue = FoodEntry.WaterValue;
-            eatable.decomposes = FoodEntry.Decomposes ?? true;
-            eatable.kDecayRate = FoodEntry.DecayRate ?? 1;
+            eatable.decomposes = FoodEntry.Decomposes;
+            eatable.kDecayRate = FoodEntry.DecayRate;
 
             // ADD MORE OPTIONS!
 

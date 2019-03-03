@@ -1,19 +1,17 @@
-﻿
-
-namespace CustomCraft2SML.Serialization.Entries
+﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Lists;
     using CustomCraft2SML.SMLHelperItems;
-    using SMLHelper.V2.Handlers;
-    using CustomCraft2SML.Interfaces;
+    using System;
+    using System.Collections.Generic;
 
     internal class CustomFood : AliasRecipe, ICustomFood
     {
-        internal new static readonly string[] TutorialText = new[]
+        internal static new readonly string[] TutorialText = new[]
         {
             $"{CustomFoodList.ListKey}: Create a custom Eatable.",
             $"    FoodValue: Must be a value between {Min} and {Max}",
@@ -59,44 +57,36 @@ namespace CustomCraft2SML.Serialization.Entries
             }
         }
 
-        public bool? Decomposes
+        public bool Decomposes
         {
             get
             {
                 if (emDecomp.HasValue)
                     return emDecomp.Value;
 
-                return null;
+                return emDecomp.DefaultValue;
             }
-            set
-            {
-                if (emDecomp.HasValue = value.HasValue)
-                    emDecomp.Value = value.Value;
-            }
+            set => emDecomp.Value = value;
         }
 
-        public short? DecayRate
+        public short DecayRate
         {
             get
             {
                 if (emDecayR.HasValue)
                     return emDecayR.Value;
 
-                return null;
+                return emDecayR.DefaultValue;
             }
-            set
-            {
-                if (emDecayR.HasValue = value.HasValue)
-                    emDecayR.Value = value.Value;
-            }
+            set => emDecayR.Value = value;
         }
 
         protected static List<EmProperty> FoodProperties => new List<EmProperty>(AliasRecipeProperties)
         {
             new EmProperty<short>(FoodValueKey, 0),
             new EmProperty<short>(WaterValueKey, 0),
-            new EmYesNo(DecomposesKey, true),
-            new EmProperty<short>(DecayRateKey, 1)
+            new EmYesNo(DecomposesKey, false) { Optional = true },
+            new EmProperty<short>(DecayRateKey, 1) { Optional = true } // TODO find out what this actually is
         };
 
         public CustomFood() : this("CustomFood", FoodProperties)
@@ -105,10 +95,10 @@ namespace CustomCraft2SML.Serialization.Entries
 
         protected CustomFood(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emFood = (EmProperty<short>) Properties[FoodValueKey];
-            emWater = (EmProperty<short>) Properties[WaterValueKey];
-            emDecomp = (EmYesNo) Properties[DecomposesKey];
-            emDecayR = (EmProperty<short>) Properties[DecayRateKey];
+            emFood = (EmProperty<short>)Properties[FoodValueKey];
+            emWater = (EmProperty<short>)Properties[WaterValueKey];
+            emDecomp = (EmYesNo)Properties[DecomposesKey];
+            emDecayR = (EmProperty<short>)Properties[DecayRateKey];
         }
 
         internal override EmProperty Copy() => new CustomFood(this.Key, this.CopyDefinitions);
@@ -131,18 +121,11 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             try
             {
+                TechType baseType = this.Decomposes ? TechType.CookedPeeper : TechType.CuredPeeper;
+                var craftPath = new CraftingPath(this.Path, this.ItemID);
 
-                //  See if there is an asset in the asset folder that has the same name
-
-                // Alias recipes should default to not producing the custom item unless explicitly configured
-                HandleAddedRecipe(0);
-
-                HandleCraftTreeAddition();
-
-                HandleUnlocks();
-                HandleCustomSprite();
-
-                HandleCustomFood();
+                var food = new CustomFoodCraftable(this, craftPath, baseType);
+                food.Patch();
 
                 return true;
             }
@@ -153,17 +136,5 @@ namespace CustomCraft2SML.Serialization.Entries
             }
         }
 
-        protected void HandleCustomFood()
-        {
-            var food = new CustomFoodCraftable(this, TechType.CookedPeeper);
-            food._assetsfolder = FileLocations.AssetsFolder;
-            food._fabricatortype = CraftTree.Type.Fabricator;
-            food._techgroup = this.PdaGroup;
-            food._techcategory = this.PdaCategory;
-            food.Patch();
-
-            QuickLogger.Debug(
-                $"{this.Key} '{this.ItemID}' will be a custom item cloned of '{this.FunctionalID}' - Entry from {this.Origin}");
-        }
     }
 }
