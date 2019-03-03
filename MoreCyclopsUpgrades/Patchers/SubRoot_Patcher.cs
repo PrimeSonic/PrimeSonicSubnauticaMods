@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
     using Caching;
-    using Common;
     using Harmony;
     using SMLHelper.V2.Utility;
 

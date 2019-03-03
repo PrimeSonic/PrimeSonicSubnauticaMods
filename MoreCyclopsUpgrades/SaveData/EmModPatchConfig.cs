@@ -116,7 +116,7 @@
                 "# Set this to 'NO' if you want a closer to vanilla experience. #",
                 "# Set this to 'YES' if you want to unleash the full potential of your cyclops. #",
                 "",
-                $"# 'Enable Cyclops BioReactor' #",
+                $"# 'Enable Cyclops Bioreactor' #",
                 "# When this option is enabled, the Cyclops Bioreactor will be patched into the game. #",
                 "# Set this to 'NO' if you want a closer to vanilla experience. #",
                 "# Set this to 'YES' if you want additional power options for your Cyclops. #",

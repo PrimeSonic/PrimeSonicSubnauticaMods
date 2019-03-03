@@ -1,11 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System.Collections.Generic;
     using Caching;
     using Common;
     using Modules;
     using MoreCyclopsUpgrades.Monobehaviors;
     using SaveData;
+    using System.Collections.Generic;
     using UnityEngine;
 
     internal class PowerManager
@@ -82,8 +82,6 @@
         private int LastKnownPowerIndex { get; set; } = -1;
 
         private float[] OriginalSpeeds { get; } = new float[3];
-
-        private int lastReservePower = -1;
 
         public bool Initialize(CyclopsManager manager)
         {
@@ -248,30 +246,100 @@
                 return;
             }
 
-            int currentReservePower = GetTotalReservePower();
+            bool isCyclopsAlive = cyclopsHelmHUD.subLiveMixin.IsAlive();
+            if (isCyclopsAlive)
+            {
+                // Update Health
+                float healthFraction = cyclopsHelmHUD.subLiveMixin.GetHealthFraction();
+                cyclopsHelmHUD.hpBar.fillAmount = Mathf.Lerp(cyclopsHelmHUD.hpBar.fillAmount, healthFraction, Time.deltaTime * 2f);
 
-            if (currentReservePower > 0f)
-            {
-                cyclopsHelmHUD.powerText.color = Color.cyan; // Distinct color for when reserve power is available
-            }
-            else
-            {
-                cyclopsHelmHUD.powerText.color = Color.white; // Normal color
-            }
+                // Update Noise
+                float noisePercent = cyclopsHelmHUD.noiseManager.GetNoisePercent();
+                cyclopsHelmHUD.noiseBar.fillAmount = Mathf.Lerp(cyclopsHelmHUD.noiseBar.fillAmount, noisePercent, Time.deltaTime);
 
-            if (lastReservePower != currentReservePower)
-            {
+                // Update Power (this one is different)
+                int currentReservePower = GetTotalReservePower();
+                cyclopsHelmHUD.powerText.color = currentReservePower > 0f ? Color.cyan : Color.white;                
+
                 float availablePower = currentReservePower + this.Cyclops.powerRelay.GetPower();
-
                 float availablePowerRatio = availablePower / this.Cyclops.powerRelay.GetMaxPower();
 
                 // Min'd with 999 since this textbox can only display 4 characeters
                 int powerPercentage = Mathf.Min(999, Mathf.CeilToInt(availablePowerRatio * 100f));
 
-                cyclopsHelmHUD.powerText.text = $"{powerPercentage}%";
+                if (cyclopsHelmHUD.lastPowerPctUsedForString != powerPercentage)
+                {
+                    cyclopsHelmHUD.powerText.text = $"{powerPercentage}%";
+                    cyclopsHelmHUD.lastPowerPctUsedForString = powerPercentage;
+                }
 
-                lastReservePower = currentReservePower;
+                int currentDepth = (int)cyclopsHelmHUD.crushDamage.GetDepth();
+                int currentMaxDepth = (int)cyclopsHelmHUD.crushDamage.crushDepth;
+
+                Color color = currentDepth >= currentMaxDepth ? Color.red : Color.white;
+
+                if (cyclopsHelmHUD.lastDepthUsedForString != currentDepth || cyclopsHelmHUD.lastCrushDepthUsedForString != currentMaxDepth)
+                {
+                    cyclopsHelmHUD.lastDepthUsedForString = currentDepth;
+                    cyclopsHelmHUD.lastCrushDepthUsedForString = currentMaxDepth;
+                    cyclopsHelmHUD.depthText.text = string.Format("{0}m / {1}m", currentDepth, currentMaxDepth);
+                }
+                cyclopsHelmHUD.depthText.color = color;
+                cyclopsHelmHUD.engineOffText.gameObject.SetActive(!cyclopsHelmHUD.motorMode.engineOn);
+                cyclopsHelmHUD.fireWarningSprite.gameObject.SetActive(cyclopsHelmHUD.fireWarning);
+                cyclopsHelmHUD.creatureAttackSprite.gameObject.SetActive(cyclopsHelmHUD.creatureAttackWarning);
+                cyclopsHelmHUD.hullDamageWarning = (cyclopsHelmHUD.subLiveMixin.GetHealthFraction() < 0.8f);
             }
+
+            if (Player.main.currentSub == cyclopsHelmHUD.subRoot && !cyclopsHelmHUD.subRoot.subDestroyed)
+            {
+                if (cyclopsHelmHUD.fireWarning && cyclopsHelmHUD.creatureAttackWarning)
+                {
+                    cyclopsHelmHUD.subRoot.voiceNotificationManager.PlayVoiceNotification(cyclopsHelmHUD.subRoot.creatureAttackNotification, true, false);
+                }
+                else if (cyclopsHelmHUD.creatureAttackWarning)
+                {
+                    cyclopsHelmHUD.subRoot.voiceNotificationManager.PlayVoiceNotification(cyclopsHelmHUD.subRoot.creatureAttackNotification, cyclopsHelmHUD.subRoot, false);
+                }
+                else if (cyclopsHelmHUD.fireWarning)
+                {
+                    cyclopsHelmHUD.subRoot.voiceNotificationManager.PlayVoiceNotification(cyclopsHelmHUD.subRoot.fireNotification, true, false);
+                }
+                else if (cyclopsHelmHUD.noiseManager.GetNoisePercent() > 0.9f && !(cyclopsHelmHUD as MonoBehaviour).IsInvoking("PlayCavitationWarningAfterSeconds"))
+                {
+                    (cyclopsHelmHUD as MonoBehaviour).Invoke("PlayCavitationWarningAfterSeconds", 2f);
+                }
+                else if (cyclopsHelmHUD.hullDamageWarning)
+                {
+                    cyclopsHelmHUD.subRoot.voiceNotificationManager.PlayVoiceNotification(cyclopsHelmHUD.subRoot.hullDamageNotification, true, false);
+                }
+
+                cyclopsHelmHUD.subRoot.subWarning = cyclopsHelmHUD.fireWarning || cyclopsHelmHUD.creatureAttackWarning;
+
+                cyclopsHelmHUD.warningAlpha = Mathf.PingPong(Time.time * 5f, 1f);
+                cyclopsHelmHUD.fireWarningSprite.color = new Color(1f, 1f, 1f, cyclopsHelmHUD.warningAlpha);
+                cyclopsHelmHUD.creatureAttackSprite.color = new Color(1f, 1f, 1f, cyclopsHelmHUD.warningAlpha);
+                if (cyclopsHelmHUD.hudActive)
+                {
+                    cyclopsHelmHUD.canvasGroup.alpha = Mathf.Lerp(cyclopsHelmHUD.canvasGroup.alpha, 1f, Time.deltaTime * 3f);
+                    cyclopsHelmHUD.canvasGroup.interactable = true;
+                }
+                else
+                {
+                    cyclopsHelmHUD.canvasGroup.alpha = Mathf.Lerp(cyclopsHelmHUD.canvasGroup.alpha, 0f, Time.deltaTime * 3f);
+                    cyclopsHelmHUD.canvasGroup.interactable = false;
+                }
+            }
+            else
+            {
+                cyclopsHelmHUD.subRoot.subWarning = false;
+            }
+            if (cyclopsHelmHUD.oldWarningState != cyclopsHelmHUD.subRoot.subWarning)
+            {
+                cyclopsHelmHUD.subRoot.BroadcastMessage("NewAlarmState", null, SendMessageOptions.DontRequireReceiver);
+            }
+
+            cyclopsHelmHUD.oldWarningState = cyclopsHelmHUD.subRoot.subWarning;
         }
 
         /// <summary>

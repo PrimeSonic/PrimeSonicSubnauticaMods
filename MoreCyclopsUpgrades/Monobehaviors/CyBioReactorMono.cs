@@ -19,7 +19,7 @@
         // When at full capacity, charging rates will nearly double.
         internal const float ChargePerSecondPerItem = 0.83f / TotalContainerSpaces * 2;
         internal const float MaxPower = 200;
-        internal const string StorageLabel = "Cyclops BioReactor Materials";
+        internal const string StorageLabel = "Cyclops Bioreactor Materials";
 
         private const int TextDelayTicks = 60;
 
@@ -178,7 +178,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText($"Use Cyclops BioReactor {Mathf.FloorToInt(this.Battery.charge)}/{MaxPower}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
+            main.SetInteractText($"Use Cyclops Bioreactor {Mathf.FloorToInt(this.Battery.charge)}/{MaxPower}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -404,7 +404,7 @@
 
         public void ConnectToCyclops(SubRoot parentCyclops)
         {
-            QuickLogger.Debug("BioReactor has been connected to Cyclops", true);
+            QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
 
             this.ParentCyclops = parentCyclops;
 
