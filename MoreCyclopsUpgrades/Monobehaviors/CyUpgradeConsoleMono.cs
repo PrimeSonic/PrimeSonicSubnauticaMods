@@ -185,7 +185,7 @@
 
         internal void CyclopsUpgradeChange()
         {
-            this.ParentCyclops?.SetInstanceField("subModulesDirty", true);
+            this.ParentCyclops.subModulesDirty = true;
         }
 
         private static readonly Vector2 SpritePivot = new Vector2(0.5f, 0.5f);
