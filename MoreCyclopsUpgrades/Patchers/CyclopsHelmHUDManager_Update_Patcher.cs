@@ -2,8 +2,6 @@
 {
     using Harmony;
     using Caching;
-    using System.Collections.Generic;
-    using System.Reflection.Emit;
 
     [HarmonyPatch(typeof(CyclopsHelmHUDManager))]
     [HarmonyPatch("Update")]

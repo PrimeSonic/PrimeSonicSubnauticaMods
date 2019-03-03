@@ -115,7 +115,7 @@
         [HarmonyPrefix]
         public static void Prefix(ref SubRoot __instance)
         {
-            if (firstEventDone)
+            if (firstEventDone || __instance.voiceNotificationManager is null)
                 return;
 
             reference = __instance.voiceNotificationManager;
