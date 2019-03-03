@@ -32,7 +32,7 @@ namespace CustomCraft2SML.Serialization.Entries
 
         protected readonly EmProperty<short> emFood;
         protected readonly EmProperty<short> emWater;
-        protected readonly EmProperty<bool> emDecomp;
+        protected readonly EmYesNo emDecomp;
         protected readonly EmProperty<short> emDecayR;
 
         public short FoodValue
@@ -95,7 +95,7 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             new EmProperty<short>(FoodValueKey, 0),
             new EmProperty<short>(WaterValueKey, 0),
-            new EmProperty<bool>(DecomposesKey, true),
+            new EmYesNo(DecomposesKey, true),
             new EmProperty<short>(DecayRateKey, 1)
         };
 
@@ -107,7 +107,7 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             emFood = (EmProperty<short>) Properties[FoodValueKey];
             emWater = (EmProperty<short>) Properties[WaterValueKey];
-            emDecomp = (EmProperty<bool>) Properties[DecomposesKey];
+            emDecomp = (EmYesNo) Properties[DecomposesKey];
             emDecayR = (EmProperty<short>) Properties[DecayRateKey];
         }
 
@@ -131,10 +131,8 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             try
             {
-                HandleCustomFood();
 
                 //  See if there is an asset in the asset folder that has the same name
-                HandleCustomSprite();
 
                 // Alias recipes should default to not producing the custom item unless explicitly configured
                 HandleAddedRecipe(0);
@@ -142,6 +140,9 @@ namespace CustomCraft2SML.Serialization.Entries
                 HandleCraftTreeAddition();
 
                 HandleUnlocks();
+                HandleCustomSprite();
+
+                HandleCustomFood();
 
                 return true;
             }
@@ -155,6 +156,10 @@ namespace CustomCraft2SML.Serialization.Entries
         protected void HandleCustomFood()
         {
             var food = new CustomFoodCraftable(this, TechType.CookedPeeper);
+            food._assetsfolder = FileLocations.AssetsFolder;
+            food._fabricatortype = CraftTree.Type.Fabricator;
+            food._techgroup = this.PdaGroup;
+            food._techcategory = this.PdaCategory;
             food.Patch();
 
             QuickLogger.Debug(

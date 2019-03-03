@@ -1,10 +1,12 @@
-﻿namespace CustomCraft2SML.Interfaces
+﻿using Common.EasyMarkup;
+
+namespace CustomCraft2SML.Interfaces
 {
     interface ICustomFood : IAliasRecipe
     {
         short FoodValue { get; }
         short WaterValue { get; }
-        bool? Decomposes { get; }
+        bool? Decomposes{ get; }
         short? DecayRate { get; }
     }
 }

@@ -7,15 +7,21 @@
     using SMLHelper.V2.Crafting;
     using UnityEngine;
 
-    internal class CustomFoodCraftable : Craftable        
+    internal class CustomFoodCraftable : Craftable
     {
-        public override CraftTree.Type FabricatorType { get; }
-        public override TechGroup GroupForPDA { get; }
-        public override TechCategory CategoryForPDA { get; }
-        public override string AssetsFolder { get; }
+        public override CraftTree.Type FabricatorType => _fabricatortype;
+        public override TechGroup GroupForPDA => _techgroup;
+        public override TechCategory CategoryForPDA => _techcategory;
+
+        public override string AssetsFolder => _assetsfolder;
 
         public readonly TechType FoodItemOriginal;
         public readonly CustomFood FoodEntry;
+
+        public string _assetsfolder = "";
+        public CraftTree.Type _fabricatortype;
+        public TechGroup _techgroup;
+        public TechCategory _techcategory;
 
         public CustomFoodCraftable(CustomFood customFood, TechType baseItem)
             : base(customFood.ItemID, $"{customFood.ItemID}Prefab", customFood.Tooltip)
