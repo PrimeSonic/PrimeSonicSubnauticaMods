@@ -26,7 +26,8 @@ namespace CustomCraft2SML.Interfaces
 
         short FoodValue { get; }
         short WaterValue { get; }
-        bool Decomposes{ get; }
+        //bool Decomposes{ get; }
         short DecayRate { get; }
+        bool Overfill { get; }
     }
 }

@@ -1,7 +1,10 @@
-﻿using CustomCraft2SML.Interfaces.InternalUse;
+﻿using System.IO;
+using IOPath = System.IO.Path;
+using CustomCraft2SML.Interfaces.InternalUse;
 using CustomCraft2SML.Serialization.Components;
 using SMLHelper.V2.Crafting;
 using SMLHelper.V2.Handlers;
+using SMLHelper.V2.Utility;
 
 namespace CustomCraft2SML.Serialization.Entries
 {
@@ -51,6 +54,22 @@ namespace CustomCraft2SML.Serialization.Entries
         protected const string UnlocksKey = "Unlocks";
 
         public IList<string> UnlockedBy => emUnlockedby.Values;
+
+        public TechType UnlockedBy_
+        {
+            get
+            {
+                if (!ForceUnlockAtStart && UnlockedBy.Count > 0)
+                {
+                    TechType item = GetTechType(UnlockedBy[0]);
+                    return item;
+                }
+                else
+                {
+                    return TechType.None;
+                }
+            }
+        }
         protected readonly EmPropertyList<string> emUnlockedby;
         protected List<TechType> UnlockedByItems { get; } = new List<TechType>();
         protected const string UnlockedbyKey = "UnlockedBy";
@@ -121,11 +140,12 @@ namespace CustomCraft2SML.Serialization.Entries
 
         public bool Decomposes
         {
-            get => emDecomposes.Value;
-            set => emDecomposes.Value = value;
+            //get => emDecomposes.Value;
+            //set => emDecomposes.Value = value;
+            get { return emDecayrate.Value > 0; }
         }
-        protected readonly EmYesNo emDecomposes;
-        protected const string DecomposesKey = "Decomposes";
+        //protected readonly EmYesNo emDecomposes;
+        //protected const string DecomposesKey = "Decomposes";
 
         public short DecayRate
         {
@@ -134,6 +154,14 @@ namespace CustomCraft2SML.Serialization.Entries
         }
         protected readonly EmProperty<short> emDecayrate;
         protected const string DecayrateKey = "DecayRate";
+
+        public bool Overfill
+        {
+            get => emOverfill.Value;
+            set => emOverfill.Value = value;
+        }
+        protected readonly EmYesNo emOverfill;
+        protected const string OverfillKey = "Overfill";
 
         public string ID => this.ItemID;
         //protected readonly EmProperty<string> emId;
@@ -145,8 +173,8 @@ namespace CustomCraft2SML.Serialization.Entries
 
         protected static List<EmProperty> CustomFoodProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<short>(AmountCraftedKey, 1) { Optional = true },
-            new EmYesNo(ForceUnlockKey, true) { Optional = true },
+            new EmProperty<short>(AmountCraftedKey,1) { Optional = true },
+            new EmYesNo(ForceUnlockKey,true) { Optional = true },
             new EmPropertyCollectionList<EmIngredient>(IngredientsKey) { Optional = true },
             new EmPropertyList<string>(LinkedKey) { Optional = true },
             new EmPropertyList<string>(UnlocksKey) { Optional = true },
@@ -155,12 +183,13 @@ namespace CustomCraft2SML.Serialization.Entries
             new EmProperty<string>(TooltipKey) { Optional = true },
             new EmProperty<TechType>(SpriteKey) { Optional = true },
             new EmProperty<string>(PathKey) { Optional = true },
-            new EmProperty<TechGroup>(PdagroupKey) { Optional = true },
-            new EmProperty<TechCategory>(PdacategoryKey) { Optional = true },
-            new EmProperty<short>(FoodKey) { Optional = false },
-            new EmProperty<short>(WaterKey) { Optional = false },
-            new EmYesNo(DecomposesKey) { Optional = true },
-            new EmProperty<short>(DecayrateKey) { Optional = true },
+            new EmProperty<TechGroup>(PdagroupKey,TechGroup.Survival) { Optional = true },
+            new EmProperty<TechCategory>(PdacategoryKey,TechCategory.CookedFood) { Optional = true },
+            new EmProperty<short>(FoodKey,0) { Optional = false },
+            new EmProperty<short>(WaterKey,0) { Optional = false },
+            //new EmYesNo(DecomposesKey,true) { Optional = true },
+            new EmProperty<short>(DecayrateKey,150) { Optional = true },
+            new EmYesNo(OverfillKey,true) { Optional = true },
         };
 
 
@@ -204,8 +233,9 @@ namespace CustomCraft2SML.Serialization.Entries
             emPdacategory = (EmProperty<TechCategory>) Properties[PdacategoryKey];
             emFood = (EmProperty<short>) Properties[FoodKey];
             emWater = (EmProperty<short>) Properties[WaterKey];
-            emDecomposes = (EmYesNo) Properties[DecomposesKey];
+            //emDecomposes = (EmYesNo) Properties[DecomposesKey];
             emDecayrate = (EmProperty<short>) Properties[DecayrateKey];
+            emOverfill = (EmYesNo) Properties[OverfillKey];
 
             OnValueExtractedEvent += ValueExtracted;
         }
@@ -227,11 +257,18 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             try
             {
-                TechType baseType = this.Decomposes ? TechType.CookedPeeper : TechType.CuredPeeper;
+                ValidateIngredients();
+                ValidateLinkedItems();
+                ValidateUnlockedBy();
+                ValidateUnlocks();
+                //HandleCraftTreeAddition();
+
+                TechType baseType = /*this.Decomposes ? TechType.CookedPeeper : TechType.CuredPeeper*/TechType.Seaglide;
                 var craftPath = new CraftingPath(this.Path, this.ItemID);
 
                 var food = new CustomFoodCraftable(this, craftPath, baseType);
                 food.Patch();
+                HandleCustomSprite();
 
                 return true;
             }
@@ -253,7 +290,7 @@ namespace CustomCraft2SML.Serialization.Entries
 
                 if (unlockByItemID == TechType.None)
                 {
-                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlockedBy} '{unlockedBy}'. Entry will be discarded.");
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlockedbyKey} '{unlockedBy}'. Entry will be discarded.");
                     unlockedByValid = false;
                     continue;
                 }
@@ -295,7 +332,7 @@ namespace CustomCraft2SML.Serialization.Entries
 
                 if (linkedItemID == TechType.None)
                 {
-                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {LinkedItemsIdsKey} '{linkedItem}'. Entry will be discarded.");
+                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {LinkedKey} '{linkedItem}'. Entry will be discarded.");
                     linkedItemsValid = false;
                     continue;
                 }
@@ -336,5 +373,42 @@ namespace CustomCraft2SML.Serialization.Entries
             return replacement;
         }
 
+        protected void HandleCustomSprite()
+        {
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
+
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
+                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                SpriteHandler.RegisterSprite(this.TechType, sprite);
+                return;
+            }
+
+            if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
+            {
+                QuickLogger.Debug($"{SpriteKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
+                Atlas.Sprite sprite = SpriteManager.Get(this.SpriteItemID);
+                SpriteHandler.RegisterSprite(this.TechType, sprite);
+                return;
+            }
+
+            if (this.LinkedItems.Count > 0)
+            {
+                QuickLogger.Debug($"First entry in {LinkedKey} used for icon of {this.Key} '{this.ItemID}' from {this.Origin}");
+                Atlas.Sprite sprite = SpriteManager.Get(this.LinkedItems[0]);
+                SpriteHandler.RegisterSprite(this.TechType, sprite);
+                return;
+            }
+
+            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
+        }
+
+        protected virtual void HandleCraftTreeAddition()
+        {
+            var craftPath = new CraftingPath(this.Path, this.ItemID);
+
+            AddCraftNode(craftPath, this.TechType);
+        }
     }
 }

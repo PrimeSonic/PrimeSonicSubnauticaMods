@@ -30,12 +30,12 @@
             CustomTabs,            
             AddedRecipes,
             AliasRecipes,
+            CustomFoodCountParser,
             ModifiedRecipeParser,
             MovedRecipes,
             CustomSizeParser,
             CustomBioFuelParser,
             CustomFragCountParser,
-            CustomFoodCountParser
         };
 
         private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(9);
