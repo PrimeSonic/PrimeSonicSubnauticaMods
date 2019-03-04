@@ -227,7 +227,13 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             try
             {
-                
+                TechType baseType = this.Decomposes ? TechType.CookedPeeper : TechType.CuredPeeper;
+                var craftPath = new CraftingPath(this.Path, this.ItemID);
+
+                var food = new CustomFoodCraftable(this, craftPath, baseType);
+                food.Patch();
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -313,6 +319,21 @@ namespace CustomCraft2SML.Serialization.Entries
             }
 
             return ingredientsValid;
+        }
+
+        internal TechData CreateRecipeTechData(short defaultCraftAmount = 1)
+        {
+            var replacement = new TechData
+            {
+                craftAmount = this.AmountCrafted
+            };
+
+            foreach (EmIngredient ingredient in this.Ingredients)
+                replacement.Ingredients.Add(new Ingredient(ingredient.TechType, ingredient.Required));
+
+            foreach (TechType linkedItem in this.LinkedItems)
+                replacement.LinkedItems.Add(linkedItem);
+            return replacement;
         }
 
     }
