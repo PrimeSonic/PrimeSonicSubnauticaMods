@@ -1,19 +1,13 @@
-﻿using System.IO;
-using IOPath = System.IO.Path;
-using CustomCraft2SML.Interfaces.InternalUse;
-using CustomCraft2SML.Serialization.Components;
-using SMLHelper.V2.Crafting;
-using SMLHelper.V2.Handlers;
-using SMLHelper.V2.Utility;
-
-namespace CustomCraft2SML.Serialization.Entries
+﻿namespace CustomCraft2SML.Serialization.Entries
 {
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.PublicAPI;
-    using CustomCraft2SML.Serialization.Lists;
+    using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.SMLHelperItems;
+    using SMLHelper.V2.Crafting;
     using System;
     using System.Collections.Generic;
 
@@ -59,9 +53,9 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             get
             {
-                if (!ForceUnlockAtStart && UnlockedBy.Count > 0)
+                if (!this.ForceUnlockAtStart && this.UnlockedBy.Count > 0)
                 {
-                    TechType item = GetTechType(UnlockedBy[0]);
+                    TechType item = GetTechType(this.UnlockedBy[0]);
                     return item;
                 }
                 else
@@ -90,14 +84,6 @@ namespace CustomCraft2SML.Serialization.Entries
         protected readonly EmProperty<string> emTooltip;
         protected const string TooltipKey = "Tooltip";
 
-        public TechType SpriteItemID
-        {
-            get => emSpriteID.Value;
-            set => emSpriteID.Value = value;
-        }
-        protected readonly EmProperty<TechType> emSpriteID;
-        protected const string SpriteKey = "SpriteItemID";
-
         public string Path
         {
             get => emPath.Value;
@@ -105,14 +91,6 @@ namespace CustomCraft2SML.Serialization.Entries
         }
         protected readonly EmProperty<string> emPath;
         protected const string PathKey = "Path";
-
-        public TechGroup PdaGroup
-        {
-            get => emPdagroup.Value;
-            set => emPdagroup.Value = value;
-        }
-        protected readonly EmProperty<TechGroup> emPdagroup;
-        protected const string PdagroupKey = "PdaGroup";
 
         public TechCategory PdaCategory
         {
@@ -138,21 +116,12 @@ namespace CustomCraft2SML.Serialization.Entries
         protected readonly EmProperty<short> emWater;
         protected const string WaterKey = "WaterValue";
 
-        public bool Decomposes
-        {
-            get => emDecomposes.Value;
-            set => emDecomposes.Value = value;
-            //get { return emDecayrate.Value > 0; }
-        }
-        protected readonly EmYesNo emDecomposes;
-        protected const string DecomposesKey = "Decomposes";
-
-        public short DecayRate
+        public float DecayRate
         {
             get => emDecayrate.Value;
             set => emDecayrate.Value = value;
         }
-        protected readonly EmProperty<short> emDecayrate;
+        protected readonly EmProperty<float> emDecayrate;
         protected const string DecayrateKey = "DecayRate";
 
         public bool Overfill
@@ -163,35 +132,29 @@ namespace CustomCraft2SML.Serialization.Entries
         protected readonly EmYesNo emOverfill;
         protected const string OverfillKey = "Overfill";
 
-        public string ID => this.ItemID;
-        //protected readonly EmProperty<string> emId;
-        //protected const string IdKey = "ID";
+        public bool Decomposes => this.DecayRate > 0f;
 
+        public string ID => this.ItemID;
 
         public const string TypeName = "CustomFood";
 
-
         protected static List<EmProperty> CustomFoodProperties => new List<EmProperty>(TechTypedProperties)
         {
-            new EmProperty<short>(AmountCraftedKey,1) { Optional = true },
-            new EmYesNo(ForceUnlockKey,true) { Optional = true },
+            new EmProperty<short>(AmountCraftedKey, 1) { Optional = true },
+            new EmYesNo(ForceUnlockKey, true) { Optional = true },
             new EmPropertyCollectionList<EmIngredient>(IngredientsKey) { Optional = true },
             new EmPropertyList<string>(LinkedKey) { Optional = true },
             new EmPropertyList<string>(UnlocksKey) { Optional = true },
             new EmPropertyList<string>(UnlockedbyKey) { Optional = true },
-            new EmProperty<string>(DisplayNameKey) { Optional = false },
-            new EmProperty<string>(TooltipKey) { Optional = false },
-            new EmProperty<TechType>(SpriteKey) { Optional = true },
+            new EmProperty<string>(DisplayNameKey),
+            new EmProperty<string>(TooltipKey),
             new EmProperty<string>(PathKey) { Optional = false },
-            new EmProperty<TechGroup>(PdagroupKey,TechGroup.Survival) { Optional = true },
-            new EmProperty<TechCategory>(PdacategoryKey,TechCategory.CookedFood) { Optional = true },
-            new EmProperty<short>(FoodKey,0) { Optional = false },
-            new EmProperty<short>(WaterKey,0) { Optional = false },
-            new EmYesNo(DecomposesKey,true) { Optional = true },
-            new EmProperty<short>(DecayrateKey,150) { Optional = true },
-            new EmYesNo(OverfillKey,true) { Optional = true },
+            new EmProperty<TechCategory>(PdacategoryKey, TechCategory.CookedFood) { Optional = true },
+            new EmProperty<short>(FoodKey, 0) { Optional = false },
+            new EmProperty<short>(WaterKey, 0) { Optional = false },
+            new EmProperty<short>(DecayrateKey, 0) { Optional = true },
+            new EmYesNo(OverfillKey, true) { Optional = true },
         };
-
 
         internal CustomFood(TechType origTechType) : this()
         {
@@ -219,23 +182,20 @@ namespace CustomCraft2SML.Serialization.Entries
 
         protected CustomFood(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emAmount = (EmProperty<short>) Properties[AmountCraftedKey];
-            emForceAtStart = (EmYesNo) Properties[ForceUnlockKey];
-            emIngredient = (EmPropertyCollectionList<EmIngredient>) Properties[IngredientsKey];
-            emLinked = (EmPropertyList<string>) Properties[LinkedKey];
-            emUnlocks = (EmPropertyList<string>) Properties[UnlocksKey];
-            emUnlockedby = (EmPropertyList<string>) Properties[UnlockedbyKey];
-            emDisplayname = (EmProperty<string>) Properties[DisplayNameKey];
-            emTooltip = (EmProperty<string>) Properties[TooltipKey];
-            emSpriteID = (EmProperty<TechType>) Properties[SpriteKey];
-            emPath = (EmProperty<string>) Properties[PathKey];
-            emPdagroup = (EmProperty<TechGroup>) Properties[PdagroupKey];
-            emPdacategory = (EmProperty<TechCategory>) Properties[PdacategoryKey];
-            emFood = (EmProperty<short>) Properties[FoodKey];
-            emWater = (EmProperty<short>) Properties[WaterKey];
-            emDecomposes = (EmYesNo) Properties[DecomposesKey];
-            emDecayrate = (EmProperty<short>) Properties[DecayrateKey];
-            emOverfill = (EmYesNo) Properties[OverfillKey];
+            emAmount = (EmProperty<short>)Properties[AmountCraftedKey];
+            emForceAtStart = (EmYesNo)Properties[ForceUnlockKey];
+            emIngredient = (EmPropertyCollectionList<EmIngredient>)Properties[IngredientsKey];
+            emLinked = (EmPropertyList<string>)Properties[LinkedKey];
+            emUnlocks = (EmPropertyList<string>)Properties[UnlocksKey];
+            emUnlockedby = (EmPropertyList<string>)Properties[UnlockedbyKey];
+            emDisplayname = (EmProperty<string>)Properties[DisplayNameKey];
+            emTooltip = (EmProperty<string>)Properties[TooltipKey];
+            emPath = (EmProperty<string>)Properties[PathKey];
+            emPdacategory = (EmProperty<TechCategory>)Properties[PdacategoryKey];
+            emFood = (EmProperty<short>)Properties[FoodKey];
+            emWater = (EmProperty<short>)Properties[WaterKey];
+            emDecayrate = (EmProperty<float>)Properties[DecayrateKey];
+            emOverfill = (EmYesNo)Properties[OverfillKey];
 
             OnValueExtractedEvent += ValueExtracted;
         }
@@ -249,26 +209,20 @@ namespace CustomCraft2SML.Serialization.Entries
             }
         }
 
-        internal override EmProperty Copy() => new CustomFood(this.Key, this.CopyDefinitions);
-
-
+        internal override EmProperty Copy()
+        {
+            return new CustomFood(this.Key, this.CopyDefinitions);
+        }
 
         public bool SendToSMLHelper()
         {
             try
             {
-                ValidateIngredients();
-                ValidateLinkedItems();
-                ValidateUnlockedBy();
-                ValidateUnlocks();
-                //HandleCraftTreeAddition();
-
                 TechType baseType = /*this.Decomposes ? TechType.CookedPeeper : TechType.CuredPeeper*/TechType.Seaglide;
                 var craftPath = new CraftingPath(this.Path, this.ItemID);
 
                 var food = new CustomFoodCraftable(this, craftPath, baseType);
                 food.Patch();
-                HandleCustomSprite();
 
                 return true;
             }
@@ -278,7 +232,6 @@ namespace CustomCraft2SML.Serialization.Entries
                 return false;
             }
         }
-
 
         private bool ValidateUnlockedBy()
         {
@@ -373,37 +326,6 @@ namespace CustomCraft2SML.Serialization.Entries
             return replacement;
         }
 
-        protected void HandleCustomSprite()
-        {
-            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
-
-            if (File.Exists(imagePath))
-            {
-                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
-                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-                SpriteHandler.RegisterSprite(this.TechType, sprite);
-                return;
-            }
-
-            if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
-            {
-                QuickLogger.Debug($"{SpriteKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
-                Atlas.Sprite sprite = SpriteManager.Get(this.SpriteItemID);
-                SpriteHandler.RegisterSprite(this.TechType, sprite);
-                return;
-            }
-
-            if (this.LinkedItems.Count > 0)
-            {
-                QuickLogger.Debug($"First entry in {LinkedKey} used for icon of {this.Key} '{this.ItemID}' from {this.Origin}");
-                Atlas.Sprite sprite = SpriteManager.Get(this.LinkedItems[0]);
-                SpriteHandler.RegisterSprite(this.TechType, sprite);
-                return;
-            }
-
-            QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
-        }
-
         protected virtual void HandleCraftTreeAddition()
         {
             var craftPath = new CraftingPath(this.Path, this.ItemID);
@@ -411,23 +333,13 @@ namespace CustomCraft2SML.Serialization.Entries
             AddCraftNode(craftPath, this.TechType);
         }
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & InnerItemsAreValid();
-
-        protected bool InnerItemsAreValid()
+        public override bool PassesPreValidation()
         {
-            // Sanity check of the blueprints ingredients and linked items to be sure that it only contains known items
-            // Modded items are okay, but they must be for mods the player already has installed
-            bool internalItemsPassCheck = true;
-
-            internalItemsPassCheck &= ValidateIngredients();
-
-            internalItemsPassCheck &= ValidateLinkedItems();
-
-            internalItemsPassCheck &= ValidateUnlocks();
-
-            internalItemsPassCheck &= ValidateUnlockedBy();
-
-            return internalItemsPassCheck;
+            return (GetTechType(this.ItemID) == TechType.None) & // Confirm that no other item is currently using this ID.
+                    ValidateIngredients() &
+                    ValidateLinkedItems() &
+                    ValidateUnlocks() &
+                    ValidateUnlockedBy();
         }
     }
 }

@@ -8,15 +8,17 @@
 
     internal class CustomFoodCraftable : Craftable
     {
+        public const float StandardDecayRate = 0.015f;
+
         public override CraftTree.Type FabricatorType => Path.Scheme;
         public override string[] StepsToFabricatorTab => Path.Steps;
-        public override TechGroup GroupForPDA => /*FoodEntry.PdaGroup*/TechGroup.Survival;
+        public override TechGroup GroupForPDA { get; } = TechGroup.Survival;
         public override TechCategory CategoryForPDA => FoodEntry.PdaCategory;
 
         public override TechType RequiredForUnlock => FoodEntry.UnlockedBy_;
 
         public override string AssetsFolder => FileLocations.AssetsFolder;
-        
+
         // TODO Unlocks will need to be handled
 
         public readonly TechType FoodItemOriginal;
@@ -29,7 +31,7 @@
             FoodEntry = customFood;
             Path = path;
             FoodItemOriginal = baseItem;
-            
+
         }
 
         public override GameObject GetGameObject()
@@ -41,10 +43,11 @@
 
             if (eatable is null)
                 eatable = obj.AddComponent<Eatable>();
+
             eatable.foodValue = FoodEntry.FoodValue;
             eatable.waterValue = FoodEntry.WaterValue;
             eatable.decomposes = FoodEntry.Decomposes;
-            eatable.kDecayRate = FoodEntry.DecayRate / 10000f;
+            eatable.kDecayRate = FoodEntry.DecayRate * StandardDecayRate;
             eatable.allowOverfill = FoodEntry.Overfill;
 
             // ADD MORE OPTIONS!

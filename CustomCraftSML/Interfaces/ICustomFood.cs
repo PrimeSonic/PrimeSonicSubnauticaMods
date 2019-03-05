@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Common.EasyMarkup;
-using CustomCraft2SML.Serialization.Components;
-
-namespace CustomCraft2SML.Interfaces
+﻿namespace CustomCraft2SML.Interfaces
 {
+    using System.Collections.Generic;
+    using CustomCraft2SML.Serialization.Components;
+
     public interface ICustomFood : ITechTyped
     {
         short AmountCrafted { get; }
@@ -16,18 +15,15 @@ namespace CustomCraft2SML.Interfaces
 
         string DisplayName { get; }
         string Tooltip { get; }
-        TechType SpriteItemID { get; }
 
         string Path { get; }
-        TechGroup PdaGroup { get; }
         TechCategory PdaCategory { get; }
 
         //FOOD SPECIFIC VALUES
 
         short FoodValue { get; }
         short WaterValue { get; }
-        bool Decomposes{ get; }
-        short DecayRate { get; }
+        float DecayRate { get; }
         bool Overfill { get; }
     }
 }
