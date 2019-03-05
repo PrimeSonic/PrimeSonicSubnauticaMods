@@ -140,12 +140,12 @@ namespace CustomCraft2SML.Serialization.Entries
 
         public bool Decomposes
         {
-            //get => emDecomposes.Value;
-            //set => emDecomposes.Value = value;
-            get { return emDecayrate.Value > 0; }
+            get => emDecomposes.Value;
+            set => emDecomposes.Value = value;
+            //get { return emDecayrate.Value > 0; }
         }
-        //protected readonly EmYesNo emDecomposes;
-        //protected const string DecomposesKey = "Decomposes";
+        protected readonly EmYesNo emDecomposes;
+        protected const string DecomposesKey = "Decomposes";
 
         public short DecayRate
         {
@@ -179,15 +179,15 @@ namespace CustomCraft2SML.Serialization.Entries
             new EmPropertyList<string>(LinkedKey) { Optional = true },
             new EmPropertyList<string>(UnlocksKey) { Optional = true },
             new EmPropertyList<string>(UnlockedbyKey) { Optional = true },
-            new EmProperty<string>(DisplayNameKey) { Optional = true },
-            new EmProperty<string>(TooltipKey) { Optional = true },
+            new EmProperty<string>(DisplayNameKey) { Optional = false },
+            new EmProperty<string>(TooltipKey) { Optional = false },
             new EmProperty<TechType>(SpriteKey) { Optional = true },
-            new EmProperty<string>(PathKey) { Optional = true },
+            new EmProperty<string>(PathKey) { Optional = false },
             new EmProperty<TechGroup>(PdagroupKey,TechGroup.Survival) { Optional = true },
             new EmProperty<TechCategory>(PdacategoryKey,TechCategory.CookedFood) { Optional = true },
             new EmProperty<short>(FoodKey,0) { Optional = false },
             new EmProperty<short>(WaterKey,0) { Optional = false },
-            //new EmYesNo(DecomposesKey,true) { Optional = true },
+            new EmYesNo(DecomposesKey,true) { Optional = true },
             new EmProperty<short>(DecayrateKey,150) { Optional = true },
             new EmYesNo(OverfillKey,true) { Optional = true },
         };
@@ -233,7 +233,7 @@ namespace CustomCraft2SML.Serialization.Entries
             emPdacategory = (EmProperty<TechCategory>) Properties[PdacategoryKey];
             emFood = (EmProperty<short>) Properties[FoodKey];
             emWater = (EmProperty<short>) Properties[WaterKey];
-            //emDecomposes = (EmYesNo) Properties[DecomposesKey];
+            emDecomposes = (EmYesNo) Properties[DecomposesKey];
             emDecayrate = (EmProperty<short>) Properties[DecayrateKey];
             emOverfill = (EmYesNo) Properties[OverfillKey];
 
@@ -409,6 +409,25 @@ namespace CustomCraft2SML.Serialization.Entries
             var craftPath = new CraftingPath(this.Path, this.ItemID);
 
             AddCraftNode(craftPath, this.TechType);
+        }
+
+        public override bool PassesPreValidation() => base.PassesPreValidation() & InnerItemsAreValid();
+
+        protected bool InnerItemsAreValid()
+        {
+            // Sanity check of the blueprints ingredients and linked items to be sure that it only contains known items
+            // Modded items are okay, but they must be for mods the player already has installed
+            bool internalItemsPassCheck = true;
+
+            internalItemsPassCheck &= ValidateIngredients();
+
+            internalItemsPassCheck &= ValidateLinkedItems();
+
+            internalItemsPassCheck &= ValidateUnlocks();
+
+            internalItemsPassCheck &= ValidateUnlockedBy();
+
+            return internalItemsPassCheck;
         }
     }
 }

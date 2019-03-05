@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\ICustomFood.cs" />
+    <Compile Include="Serialization\Entries\CfCustomFood.cs" />
     <Compile Include="Serialization\Entries\CustomFood.cs" />
     <Compile Include="Serialization\Lists\CustomFoodList.cs" />
     <Compile Include="SMLHelperItems\CustomFabricatorBuildable.cs" />

@@ -18,7 +18,7 @@
         MoonPool,
     }
 
-    internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe>, IFabricatorEntries
+    internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe, CfCustomFood>, IFabricatorEntries
     {
         protected const string ModelKey = "Model";
         protected const string HueOffsetKey = "Color";
@@ -28,6 +28,7 @@
         protected const string CfAliasRecipeListKey = AliasRecipeList.ListKey;
         protected const string CfAddedRecipeListKey = AddedRecipeList.ListKey;
         protected const string CfMovedRecipeListKey = MovedRecipeList.ListKey;
+        protected const string CfCustomFoodListKey = CustomFoodList.ListKey;
 
         internal static new readonly string[] TutorialText = new[]
         {
@@ -47,6 +48,7 @@
             $"        {CfAddedRecipeListKey}: List of added recipes for the custom fabricator.",
             $"        {CfAliasRecipeListKey}: List of alias recipes for the custom fabricator.",
             $"        {CfMovedRecipeListKey}: List of moved recipes for the custom fabricator.",
+            $"        {CfCustomFoodListKey}: List of custom foods for the custom fabricator.",
         };
 
         protected readonly EmProperty<ModelTypes> model;
@@ -65,6 +67,7 @@
             new EmPropertyCollectionList<CfMovedRecipe>(CfMovedRecipeListKey) { Optional = true },
             new EmPropertyCollectionList<CfAddedRecipe>(CfAddedRecipeListKey) { Optional = true },
             new EmPropertyCollectionList<CfAliasRecipe>(CfAliasRecipeListKey) { Optional = true },
+            new EmPropertyCollectionList<CfCustomFood>(CfCustomFoodListKey) { Optional = true },
         };
 
         public CustomFabricator() : this("CustomFabricator", CustomFabricatorProperties)
@@ -81,6 +84,7 @@
             this.MovedRecipes = (EmPropertyCollectionList<CfMovedRecipe>)Properties[CfMovedRecipeListKey];
             this.AddedRecipes = (EmPropertyCollectionList<CfAddedRecipe>)Properties[CfAddedRecipeListKey];
             this.AliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
+            this.CustomFoods = (EmPropertyCollectionList<CfCustomFood>)Properties[CfCustomFoodListKey];
 
             (Properties[PathKey] as EmProperty<string>).Optional = true;
         }
@@ -117,11 +121,13 @@
         public EmPropertyCollectionList<CfMovedRecipe> MovedRecipes { get; private set; }
         public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }
         public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; private set; }
+        public EmPropertyCollectionList<CfCustomFood> CustomFoods { get; private set; }
 
         private IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
         private IDictionary<string, CfMovedRecipe> UniqueMovedRecipes { get; } = new Dictionary<string, CfMovedRecipe>();
         private IDictionary<string, CfAddedRecipe> UniqueAddedRecipes { get; } = new Dictionary<string, CfAddedRecipe>();
         private IDictionary<string, CfAliasRecipe> UniqueAliasRecipes { get; } = new Dictionary<string, CfAliasRecipe>();
+        private IDictionary<string, CfCustomFood> UniqueCustomFoods { get; } = new Dictionary<string, CfCustomFood>();
 
         public string ListKey { get; }
 
@@ -133,6 +139,7 @@
         public ICollection<string> MovedRecipeIDs => this.UniqueMovedRecipes.Keys;
         public ICollection<string> AddedRecipeIDs => this.UniqueAddedRecipes.Keys;
         public ICollection<string> AliasRecipesIDs => this.UniqueAliasRecipes.Keys;
+        public ICollection<string> CustomFoodIDs => this.UniqueCustomFoods.Keys;
 
         public override bool PassesPreValidation() => InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues() & ValidateInternalEntries();
 
@@ -165,6 +172,7 @@
             ValidateUniqueEntries(this.AddedRecipes, this.UniqueAddedRecipes);
             ValidateUniqueEntries(this.AliasRecipes, this.UniqueAliasRecipes);
             ValidateUniqueEntries(this.MovedRecipes, this.UniqueMovedRecipes);
+            ValidateUniqueEntries(this.CustomFoods, this.UniqueCustomFoods);
 
             return true;
         }
@@ -214,6 +222,7 @@
             SendToSMLHelper(this.UniqueAddedRecipes);
             SendToSMLHelper(this.UniqueAliasRecipes);
             SendToSMLHelper(this.UniqueMovedRecipes);
+            SendToSMLHelper(this.UniqueCustomFoods);
         }
 
         internal void HandleCraftTreeAddition<CraftingNode>(CraftingNode entry)
@@ -301,6 +310,12 @@
         public void DuplicateAliasRecipesDiscovered(string id)
         {
             QuickLogger.Warning($"Duplicate entry for {AliasRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
+            this.UniqueAliasRecipes.Remove(id);
+        }
+
+        public void DuplicateCustomFoodDiscovered(string id)
+        {
+            QuickLogger.Warning($"Duplicate entry for {CustomFoodList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
             this.UniqueAliasRecipes.Remove(id);
         }
 

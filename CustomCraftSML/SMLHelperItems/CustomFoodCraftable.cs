@@ -10,7 +10,7 @@
     {
         public override CraftTree.Type FabricatorType => Path.Scheme;
         public override string[] StepsToFabricatorTab => Path.Steps;
-        public override TechGroup GroupForPDA => FoodEntry.PdaGroup;
+        public override TechGroup GroupForPDA => /*FoodEntry.PdaGroup*/TechGroup.Survival;
         public override TechCategory CategoryForPDA => FoodEntry.PdaCategory;
 
         public override TechType RequiredForUnlock => FoodEntry.UnlockedBy_;
@@ -38,35 +38,14 @@
             GameObject obj = UnityEngine.Object.Instantiate(prefab);
 
             Eatable eatable = obj.GetComponent<Eatable>();
-            if (eatable != null)
-            {
-                eatable.foodValue = FoodEntry.FoodValue;
-                eatable.waterValue = FoodEntry.WaterValue;
-                eatable.decomposes = FoodEntry.Decomposes;
-                eatable.kDecayRate = FoodEntry.DecayRate / 10000f;
-                eatable.allowOverfill = FoodEntry.Overfill;
-            }
-            else
-            {
-                /*foreach (Component component in obj.GetComponents<Component>())
-                {
-                    if (component is Transform || component is MeshRenderer || component is MeshFilter)
-                    {
 
-                    }
-                    else
-                    {
-                        GameObject.Destroy(component);
-                    }
-                }*/
-                obj.AddComponent<Eatable>();
-                eatable = obj.GetComponent<Eatable>();
-                eatable.foodValue = FoodEntry.FoodValue;
-                eatable.waterValue = FoodEntry.WaterValue;
-                eatable.decomposes = FoodEntry.Decomposes;
-                eatable.kDecayRate = FoodEntry.DecayRate / 10000f;
-                eatable.allowOverfill = FoodEntry.Overfill;
-            }
+            if (eatable is null)
+                eatable = obj.AddComponent<Eatable>();
+            eatable.foodValue = FoodEntry.FoodValue;
+            eatable.waterValue = FoodEntry.WaterValue;
+            eatable.decomposes = FoodEntry.Decomposes;
+            eatable.kDecayRate = FoodEntry.DecayRate / 10000f;
+            eatable.allowOverfill = FoodEntry.Overfill;
 
             // ADD MORE OPTIONS!
 

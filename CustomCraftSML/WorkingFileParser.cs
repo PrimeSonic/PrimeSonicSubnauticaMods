@@ -22,7 +22,7 @@
         internal static readonly ParsingPackage<CustomSize, CustomSizeList> CustomSizeParser = new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey);
         internal static readonly ParsingPackage<CustomBioFuel, CustomBioFuelList> CustomBioFuelParser = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
         internal static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCountParser = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
-        internal static readonly ParsingPackage<CustomFood, CustomFoodList> CustomFoodCountParser = new ParsingPackage<CustomFood, CustomFoodList>(CustomFoodList.ListKey);
+        internal static readonly ParsingPackage<CustomFood, CustomFoodList> CustomFoods = new ParsingPackage<CustomFood, CustomFoodList>(CustomFoodList.ListKey);
 
         private static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
         {
@@ -30,12 +30,12 @@
             CustomTabs,            
             AddedRecipes,
             AliasRecipes,
-            CustomFoodCountParser,
+            CustomFoods,
             ModifiedRecipeParser,
             MovedRecipes,
+            CustomFragCountParser,
             CustomSizeParser,
             CustomBioFuelParser,
-            CustomFragCountParser,
         };
 
         private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(9);
@@ -128,6 +128,7 @@
             var allMoves = new HashSet<string>(MovedRecipes.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
             var allAdded = new HashSet<string>(AddedRecipes.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
             var allAlias = new HashSet<string>(AliasRecipes.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
+            var allFoods = new HashSet<string>(CustomFoods.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
 
             foreach (IFabricatorEntries entries in CustomFabricatorParser.UniqueEntries.Values)
             {                
@@ -135,6 +136,7 @@
                 ValidateSets(allMoves, entries.MovedRecipeIDs, entries.DuplicateMovedRecipeDiscovered);
                 ValidateSets(allAdded, entries.AddedRecipeIDs, entries.DuplicateAddedRecipeDiscovered);
                 ValidateSets(allAlias, entries.AliasRecipesIDs, entries.DuplicateAliasRecipesDiscovered);                                
+                ValidateSets(allFoods, entries.CustomFoodIDs, entries.DuplicateCustomFoodsDiscovered);                                
             }
         }
 

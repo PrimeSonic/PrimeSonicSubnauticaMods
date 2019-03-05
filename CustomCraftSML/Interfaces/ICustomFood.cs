@@ -4,7 +4,7 @@ using CustomCraft2SML.Serialization.Components;
 
 namespace CustomCraft2SML.Interfaces
 {
-    interface ICustomFood : ITechTyped
+    public interface ICustomFood : ITechTyped
     {
         short AmountCrafted { get; }
         bool ForceUnlockAtStart { get; }
@@ -26,7 +26,7 @@ namespace CustomCraft2SML.Interfaces
 
         short FoodValue { get; }
         short WaterValue { get; }
-        //bool Decomposes{ get; }
+        bool Decomposes{ get; }
         short DecayRate { get; }
         bool Overfill { get; }
     }
