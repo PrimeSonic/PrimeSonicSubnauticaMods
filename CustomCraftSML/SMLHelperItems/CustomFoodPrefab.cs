@@ -1,31 +1,19 @@
 ﻿namespace CustomCraft2SML.SMLHelperItems
 {
-    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Crafting;
     using UnityEngine;
 
-    internal class CustomFoodCraftable : Craftable
+    internal class CustomFoodPrefab : ModPrefab
     {
         public const float StandardDecayRate = 0.015f;
 
-        public override CraftTree.Type FabricatorType => Path.Scheme;
-        public override string[] StepsToFabricatorTab => Path.Steps;
-        public override TechGroup GroupForPDA { get; } = TechGroup.Survival;
-        public override TechCategory CategoryForPDA => FoodEntry.PdaCategory;
-        public override TechType RequiredForUnlock => FoodEntry.UnlockedByItem;
-        public override string AssetsFolder => FileLocations.AssetsFolder;
-        public override string IconFileName => FoodEntry.IconName;
-
         public readonly CustomFood FoodEntry;
-        public readonly CraftingPath Path;
 
-        public CustomFoodCraftable(CustomFood customFood, CraftingPath path)
-            : base(customFood.ItemID, $"{customFood.ItemID}Prefab", customFood.Tooltip)
+        public CustomFoodPrefab(CustomFood customFood)
+            : base(customFood.ItemID, $"{customFood.ItemID}Prefab", customFood.TechType)
         {
             FoodEntry = customFood;
-            Path = path;
         }
 
         public override GameObject GetGameObject()
@@ -47,9 +35,6 @@
             return obj;
         }
 
-        protected override TechData GetBlueprintRecipe()
-        {
-            return FoodEntry.CreateRecipeTechData();
-        }
+
     }
 }

@@ -23,6 +23,8 @@
 
         public CraftingPath CraftingNodePath => new CraftingPath(this.Path);
 
+        protected override void HandleCraftTreeAddition() => this.ParentFabricator.HandleCraftTreeAddition(this);
+
         internal override EmProperty Copy() => new CfCustomFood(this.Key, this.CopyDefinitions);
     }
 }

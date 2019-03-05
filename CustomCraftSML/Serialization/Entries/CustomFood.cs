@@ -8,6 +8,8 @@
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.SMLHelperItems;
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -60,6 +62,8 @@
 
     internal class CustomFood : EmTechTyped, ICustomFood, ICustomCraft
     {
+        // TODO - Make this cleanly inherit from Alias recipe again. Reduce the code duplication.
+
         internal static bool IsMappedFoodType(TechType techType)
         {
             switch ((int)techType)
@@ -127,6 +131,7 @@
         protected const string PdacategoryKey = "PdaCategory";
         protected const string FoodModelKey = "FoodType";
         protected const string FoodKey = "FoodValue";
+        protected const string SpriteItemIdKey = "SpriteItemID";
         protected const string WaterKey = "WaterValue";
         protected const string DecayrateKey = "DecayRate";
         protected const string OverfillKey = "Overfill";
@@ -142,6 +147,7 @@
         protected readonly EmProperty<string> emPath;
         protected readonly EmProperty<TechCategory> emPdacategory;
         protected readonly EmProperty<FoodModel> emFoodModel;
+        protected readonly EmProperty<TechType> emSpriteItemId;
         protected readonly EmProperty<short> emFood;
         protected readonly EmProperty<short> emWater;
         protected readonly EmProperty<float> emDecayrate;
@@ -159,15 +165,15 @@
             set => emForceAtStart.Value = value;
         }
 
-        public IList<EmIngredient> Ingredients => emIngredient.Values;        
-        protected List<Ingredient> IngredientsItems { get; } = new List<Ingredient>();        
+        public IList<EmIngredient> Ingredients => emIngredient.Values;
+        protected List<Ingredient> IngredientsItems { get; } = new List<Ingredient>();
 
-        public IList<string> LinkedItemIDs => emLinked.Values;        
+        public IList<string> LinkedItemIDs => emLinked.Values;
         protected List<TechType> LinkedItems { get; } = new List<TechType>();
-        
-        public IList<string> Unlocks => emUnlocks.Values;        
+
+        public IList<string> Unlocks => emUnlocks.Values;
         protected List<TechType> UnlocksItems { get; } = new List<TechType>();
-        
+
         public IList<string> UnlockedBy => emUnlockedby.Values;
         public TechType UnlockedByItem
         {
@@ -184,8 +190,8 @@
                 }
             }
         }
-        
-        protected List<TechType> UnlockedByItems { get; } = new List<TechType>();        
+
+        protected List<TechType> UnlockedByItems { get; } = new List<TechType>();
 
         public string DisplayName
         {
@@ -217,6 +223,12 @@
             set => emFoodModel.Value = value;
         }
 
+        public TechType SpriteItemID
+        {
+            get => emSpriteItemId.Value;
+            set => emSpriteItemId.Value = value;
+        }
+
         public short FoodValue
         {
             get => emFood.Value;
@@ -239,13 +251,11 @@
         {
             get => emOverfill.Value;
             set => emOverfill.Value = value;
-        }        
+        }
 
         internal bool Decomposes => this.DecayRate > 0f;
 
         public string ID => this.ItemID;
-
-        internal CustomFoodCraftable FoodCraftable { get; set; }
 
         protected static List<EmProperty> CustomFoodProperties => new List<EmProperty>(TechTypedProperties)
         {
@@ -260,6 +270,7 @@
             new EmProperty<string>(PathKey) { Optional = false },
             new EmProperty<TechCategory>(PdacategoryKey, TechCategory.CookedFood) { Optional = true },
             new EmProperty<FoodModel>(FoodModelKey, FoodModel.None) { Optional = true },
+            new EmProperty<TechType>(SpriteItemIdKey, TechType.None) { Optional = true },
             new EmProperty<short>(FoodKey, 0) { Optional = false },
             new EmProperty<short>(WaterKey, 0) { Optional = false },
             new EmProperty<short>(DecayrateKey, 0) { Optional = true },
@@ -320,6 +331,7 @@
             emTooltip = (EmProperty<string>)Properties[TooltipKey];
             emPath = (EmProperty<string>)Properties[PathKey];
             emPdacategory = (EmProperty<TechCategory>)Properties[PdacategoryKey];
+            emSpriteItemId = (EmProperty<TechType>)Properties[SpriteItemIdKey];
             emFood = (EmProperty<short>)Properties[FoodKey];
             emWater = (EmProperty<short>)Properties[WaterKey];
             emDecayrate = (EmProperty<float>)Properties[DecayrateKey];
@@ -342,24 +354,15 @@
             return new CustomFood(this.Key, this.CopyDefinitions);
         }
 
-        public bool SendToSMLHelper()
+        public override bool PassesPreValidation()
         {
-            try
-            {
-                var craftPath = new CraftingPath(this.Path, this.ItemID);
-
-                FoodCraftable = new CustomFoodCraftable(this, craftPath);
-
-                FoodCraftable.Patch();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                QuickLogger.Error($"Exception thrown while handling {this.Key} entry '{this.ItemID}' from {this.Origin}", ex);
-                return false;
-            }
-        }        
+            return (GetTechType(this.ItemID) == TechType.None) & // Confirm that no other item is currently using this ID.
+                                                                 // TODO = Log when the above check fails
+                    ValidateIngredients() &
+                    ValidateLinkedItems() &
+                    ValidateUnlocks() &
+                    ValidateUnlockedBy();
+        }
 
         private bool ValidateUnlockedBy()
         {
@@ -456,8 +459,64 @@
                 return false;
             }
 
-
             return true;
+        }
+
+        public bool SendToSMLHelper()
+        {
+            try
+            {
+                this.TechType = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
+
+                HandleCustomSprite();
+
+                HandleAddedRecipe();
+
+                HandleUnlocks();
+
+                HandleCraftTreeAddition();
+
+                RegisterPreFab();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Exception thrown while handling {this.Key} entry '{this.ItemID}' from {this.Origin}", ex);
+                return false;
+            }
+        }
+
+        protected void HandleCustomSprite()
+        {
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
+
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
+                SpriteHandler.RegisterSprite(this.TechType, ImageUtils.LoadSpriteFromFile(imagePath));
+                return;
+            }
+
+            if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
+            {
+                QuickLogger.Debug($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
+                SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(this.SpriteItemID));
+                return;
+            }
+
+            if (this.FoodValue >= this.WaterValue)
+            {
+                SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.NutrientBlock));
+                return;
+            }
+            else
+            {
+                SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.FilteredWater));
+                return;
+            }
+
+            //QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
         }
 
         internal TechData CreateRecipeTechData(short defaultCraftAmount = 1)
@@ -475,14 +534,43 @@
             return replacement;
         }
 
-        public override bool PassesPreValidation()
+        protected virtual void HandleCraftTreeAddition()
         {
-            return (GetTechType(this.ItemID) == TechType.None) & // Confirm that no other item is currently using this ID.
-                    // TODO = Log when the above check fails
-                    ValidateIngredients() &
-                    ValidateLinkedItems() &
-                    ValidateUnlocks() &
-                    ValidateUnlockedBy();
+            var craftPath = new CraftingPath(this.Path, this.ItemID);
+
+            AddCraftNode(craftPath, this.TechType);
+        }
+
+        private void RegisterPreFab()
+        {
+            PrefabHandler.RegisterPrefab(new CustomFoodPrefab(this));
+        }
+
+        protected bool HandleUnlocks()
+        {
+            if (this.ForceUnlockAtStart)
+            {
+                KnownTechHandler.UnlockOnStart(this.TechType);
+                QuickLogger.Debug($"{this.Key} for '{this.ItemID}' from {this.Origin} will be a unlocked at the start of the game");
+            }
+
+            if (this.UnlockingItems.Count > 0)
+            {
+                KnownTechHandler.SetAnalysisTechEntry(this.TechType, this.UnlockingItems);
+            }
+
+            return true;
+        }
+
+
+        protected void HandleAddedRecipe(short defaultCraftAmount = 1)
+        {
+            TechData replacement = CreateRecipeTechData(defaultCraftAmount);
+
+            CraftDataHandler.SetTechData(this.TechType, replacement);
+            QuickLogger.Debug($"Adding new recipe for '{this.ItemID}'");
+
+            CraftDataHandler.AddToGroup(TechGroup.Survival, this.PdaCategory, this.TechType);
         }
     }
 }

@@ -75,7 +75,7 @@
     <Compile Include="Serialization\Lists\CustomFoodList.cs" />
     <Compile Include="SMLHelperItems\CustomFabricatorBuildable.cs" />
     <Compile Include="FileLocations.cs" />
-    <Compile Include="SMLHelperItems\CustomFoodCraftable.cs" />
+    <Compile Include="SMLHelperItems\CustomFoodPrefab.cs" />
     <Compile Include="SMLHelperItems\FunctionalClone.cs" />
     <Compile Include="Interfaces\InternalUse\IFabricatorEntries.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />

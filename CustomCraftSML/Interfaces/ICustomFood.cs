@@ -22,6 +22,7 @@
 
         //FOOD SPECIFIC VALUES
         FoodModel FoodType { get; }
+        TechType SpriteItemID { get; }
 
         short FoodValue { get; }
         short WaterValue { get; }
