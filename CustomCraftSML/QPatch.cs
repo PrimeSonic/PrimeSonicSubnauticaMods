@@ -1,4 +1,7 @@
-﻿namespace CustomCraft2SML
+﻿using System.Linq;
+using System.Reflection;
+
+namespace CustomCraft2SML
 {
     using System;
     using System.IO;
@@ -16,6 +19,8 @@
             try
             {
                 CheckLogLevel();
+
+                RestoreAssets();
 
                 HelpFilesWriter.HandleHelpFiles();
                 
@@ -49,6 +54,27 @@
                 QuickLogger.Debug("Debug logging is enable");
             else
                 QuickLogger.Info("To enable Debug logging, change the \"DebugLogsEnabled\" attribute in the mod.json file to true");
+        }
+
+        internal static void RestoreAssets()
+        {
+            string prefix = "CustomCraft2SML.SpriteAssets.";
+
+            Assembly ass = Assembly.GetExecutingAssembly();
+            var resources = ass.GetManifestResourceNames().Where(name => name.StartsWith(prefix));
+
+            foreach (var resource in resources)
+            {
+                string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);
+                //Console.WriteLine(file);
+                string outFile = System.IO.Path.Combine(FileLocations.AssetsFolder, file);
+                if (!File.Exists(outFile))
+                {
+                    Stream s = ass.GetManifestResourceStream(resource);
+                    BinaryReader r = new BinaryReader(s);
+                    File.WriteAllBytes(outFile,r.ReadBytes((int)s.Length));
+                }
+            }
         }
     }
 }

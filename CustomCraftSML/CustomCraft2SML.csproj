@@ -187,6 +187,9 @@
     <Content Include="SampleFiles\MovedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="SpriteAssets\Fabricator.png" />
+    <EmbeddedResource Include="SpriteAssets\MoonPool.png" />
+    <EmbeddedResource Include="SpriteAssets\Workbench.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
