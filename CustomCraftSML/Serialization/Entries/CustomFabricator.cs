@@ -121,7 +121,7 @@
         public EmPropertyCollectionList<CfMovedRecipe> MovedRecipes { get; private set; }
         public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }
         public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; private set; }
-        public EmPropertyCollectionList<CfCustomFood> CustomFoods { get; private set; }
+        public EmPropertyCollectionList<CfCustomFood> CustomFoods { get; }
 
         private IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
         private IDictionary<string, CfMovedRecipe> UniqueMovedRecipes { get; } = new Dictionary<string, CfMovedRecipe>();
@@ -313,10 +313,10 @@
             this.UniqueAliasRecipes.Remove(id);
         }
 
-        public void DuplicateCustomFoodDiscovered(string id)
+        public void DuplicateCustomFoodsDiscovered(string id)
         {
             QuickLogger.Warning($"Duplicate entry for {CustomFoodList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-            this.UniqueAliasRecipes.Remove(id);
+            this.UniqueCustomFoods.Remove(id);
         }
 
         internal override EmProperty Copy() => new CustomFabricator(this.Key, this.CopyDefinitions);

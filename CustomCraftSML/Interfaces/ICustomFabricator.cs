@@ -19,6 +19,6 @@
         EmPropertyCollectionList<Moved> MovedRecipes { get; }
         EmPropertyCollectionList<Added> AddedRecipes { get; }
         EmPropertyCollectionList<Alias> AliasRecipes { get; }
-        EmPropertyCollectionList<Food> CustomFood { get; }
+        EmPropertyCollectionList<Food> CustomFoods { get; }
     }
 }
