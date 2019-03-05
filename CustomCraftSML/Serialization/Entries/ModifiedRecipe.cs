@@ -167,7 +167,7 @@
             return internalItemsPassCheck;
         }
 
-        private bool ValidateUnlockedBy()
+        protected bool ValidateUnlockedBy()
         {
             bool unlockedByValid = true;
 
@@ -188,7 +188,7 @@
             return unlockedByValid;
         }
 
-        private bool ValidateUnlocks()
+        protected bool ValidateUnlocks()
         {
             bool unlocksValid = true;
 
@@ -209,7 +209,7 @@
             return unlocksValid;
         }
 
-        private bool ValidateLinkedItems()
+        protected bool ValidateLinkedItems()
         {
             bool linkedItemsValid = true;
 
@@ -230,7 +230,7 @@
             return linkedItemsValid;
         }
 
-        private bool ValidateIngredients()
+        protected bool ValidateIngredients()
         {
             bool ingredientsValid = true;
 

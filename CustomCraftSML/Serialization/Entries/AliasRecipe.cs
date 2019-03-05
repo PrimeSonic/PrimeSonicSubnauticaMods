@@ -1,14 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using IOPath = System.IO.Path;
 
     internal class AliasRecipe : AddedRecipe, IAliasRecipe
@@ -73,7 +73,7 @@
             new EmProperty<string>(DisplayNameKey),
             new EmProperty<string>(ToolTipKey),
             new EmProperty<string>(FunctionalIdKey) { Optional = true },
-            new EmProperty<TechType>(SpriteItemIdKey) { Optional = true }
+            new EmProperty<TechType>(SpriteItemIdKey, TechType.None) { Optional = true }
         };
 
         public AliasRecipe() : this(TypeName, AliasRecipeProperties)
@@ -90,14 +90,27 @@
             amountCrafted.DefaultValue = 0;
         }
 
-        internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new AliasRecipe(this.Key, this.CopyDefinitions);
+        }
 
         public override bool PassesPreValidation()
         {
-            return (GetTechType(this.ItemID) == TechType.None) & // Confirm that no other item is currently using this ID.
-                   // TODO = Log when the above check fails
-                InnerItemsAreValid() & 
+            return ItemIDisUnique() & // Confirm that no other item is currently using this ID.                                 
+                InnerItemsAreValid() &
                 FunctionalItemIsValid();
+        }
+
+        protected bool ItemIDisUnique()
+        {
+            if (GetTechType(this.ItemID) != TechType.None)
+            {
+                QuickLogger.Warning($"{ItemIdKey} '{this.ItemID}' for entry {this.Key} from {this.Origin} is specifies an {ItemIdKey} that is already in use. Entry will be discarded.");
+                return false;
+            }
+
+            return true;
         }
 
         protected virtual bool FunctionalItemIsValid()
@@ -106,9 +119,9 @@
                 return true; // No value provided. This is fine.
 
             // The functional item for cloning must be valid.
-            FunctionalCloneID = GetTechType(this.FunctionalID);
+            this.FunctionalCloneID = GetTechType(this.FunctionalID);
 
-            if (FunctionalCloneID == TechType.None)
+            if (this.FunctionalCloneID == TechType.None)
             {
                 QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
                 return false;
@@ -134,7 +147,7 @@
 
                 HandleUnlocks();
 
-                HandleFunctionalClone();
+                HandleCustomPrefab();
 
                 return true;
             }
@@ -145,7 +158,7 @@
             }
         }
 
-        protected void HandleCustomSprite()
+        protected virtual void HandleCustomSprite()
         {
             string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
 
@@ -176,11 +189,11 @@
             QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
         }
 
-        protected void HandleFunctionalClone()
+        protected virtual void HandleCustomPrefab()
         {
-            if (FunctionalCloneID != TechType.None)
+            if (this.FunctionalCloneID != TechType.None)
             {
-                var clone = new FunctionalClone(this, FunctionalCloneID);
+                var clone = new FunctionalClone(this, this.FunctionalCloneID);
                 PrefabHandler.RegisterPrefab(clone);
                 QuickLogger.Debug($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}' - Entry from {this.Origin}");
             }

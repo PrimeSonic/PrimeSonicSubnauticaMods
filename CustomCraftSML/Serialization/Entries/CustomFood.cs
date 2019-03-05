@@ -4,10 +4,7 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.PublicAPI;
-    using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.SMLHelperItems;
-    using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
     using System;
@@ -60,10 +57,9 @@
         CuredLavaBoomerang = TechType.CuredLavaBoomerang,
     }
 
-    internal class CustomFood : EmTechTyped, ICustomFood, ICustomCraft
+    internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
     {
-        // TODO - Make this cleanly inherit from Alias recipe again. Reduce the code duplication.
-
+        // We may need this later.
         internal static bool IsMappedFoodType(TechType techType)
         {
             switch ((int)techType)
@@ -118,162 +114,59 @@
         internal const short MaxValue = 100;
         internal const short MinValue = -99;
 
-        public const string TypeName = "CustomFood";
-        protected const string AmountCraftedKey = "AmountCrafted";
-        protected const string ForceUnlockKey = "ForceUnlockAtStart";
-        protected const string IngredientsKey = "Ingredients";
-        protected const string LinkedKey = "LinkedItemIDs";
-        protected const string UnlocksKey = "Unlocks";
-        protected const string UnlockedbyKey = "UnlockedBy";
-        protected const string DisplayNameKey = "DisplayName";
-        protected const string TooltipKey = "Tooltip";
-        protected const string PathKey = "Path";
-        protected const string PdacategoryKey = "PdaCategory";
+        public new const string TypeName = "CustomFood";
+
         protected const string FoodModelKey = "FoodType";
         protected const string FoodKey = "FoodValue";
-        protected const string SpriteItemIdKey = "SpriteItemID";
         protected const string WaterKey = "WaterValue";
-        protected const string DecayrateKey = "DecayRate";
-        protected const string OverfillKey = "Overfill";
+        protected const string DecayRateKey = "DecayRateMod";
+        protected const string OverfillKey = "AllowOverfill";
 
-        protected readonly EmProperty<short> emAmount;
-        protected readonly EmYesNo emForceAtStart;
-        protected readonly EmPropertyCollectionList<EmIngredient> emIngredient;
-        protected readonly EmPropertyList<string> emLinked;
-        protected readonly EmPropertyList<string> emUnlocks;
-        protected readonly EmPropertyList<string> emUnlockedby;
-        protected readonly EmProperty<string> emDisplayname;
-        protected readonly EmProperty<string> emTooltip;
-        protected readonly EmProperty<string> emPath;
-        protected readonly EmProperty<TechCategory> emPdacategory;
-        protected readonly EmProperty<FoodModel> emFoodModel;
-        protected readonly EmProperty<TechType> emSpriteItemId;
-        protected readonly EmProperty<short> emFood;
-        protected readonly EmProperty<short> emWater;
-        protected readonly EmProperty<float> emDecayrate;
-        protected readonly EmYesNo emOverfill;
-
-        public short AmountCrafted
-        {
-            get => emAmount.Value;
-            set => emAmount.Value = value;
-        }
-
-        public bool ForceUnlockAtStart
-        {
-            get => emForceAtStart.Value;
-            set => emForceAtStart.Value = value;
-        }
-
-        public IList<EmIngredient> Ingredients => emIngredient.Values;
-        protected List<Ingredient> IngredientsItems { get; } = new List<Ingredient>();
-
-        public IList<string> LinkedItemIDs => emLinked.Values;
-        protected List<TechType> LinkedItems { get; } = new List<TechType>();
-
-        public IList<string> Unlocks => emUnlocks.Values;
-        protected List<TechType> UnlocksItems { get; } = new List<TechType>();
-
-        public IList<string> UnlockedBy => emUnlockedby.Values;
-        public TechType UnlockedByItem
-        {
-            get
-            {
-                if (!this.ForceUnlockAtStart && this.UnlockedBy.Count > 0)
-                {
-                    TechType item = GetTechType(this.UnlockedBy[0]);
-                    return item;
-                }
-                else
-                {
-                    return TechType.None;
-                }
-            }
-        }
-
-        protected List<TechType> UnlockedByItems { get; } = new List<TechType>();
-
-        public string DisplayName
-        {
-            get => emDisplayname.Value;
-            set => emDisplayname.Value = value;
-        }
-
-        public string Tooltip
-        {
-            get => emTooltip.Value;
-            set => emTooltip.Value = value;
-        }
-
-        public string Path
-        {
-            get => emPath.Value;
-            set => emPath.Value = value;
-        }
-
-        public TechCategory PdaCategory
-        {
-            get => emPdacategory.Value;
-            set => emPdacategory.Value = value;
-        }
+        protected readonly EmProperty<FoodModel> foodModel;
+        protected readonly EmProperty<short> foodValue;
+        protected readonly EmProperty<short> waterValue;
+        protected readonly EmProperty<float> decayrate;
+        protected readonly EmYesNo allowOverfill;
 
         public FoodModel FoodType
         {
-            get => emFoodModel.Value;
-            set => emFoodModel.Value = value;
-        }
-
-        public TechType SpriteItemID
-        {
-            get => emSpriteItemId.Value;
-            set => emSpriteItemId.Value = value;
+            get => foodModel.Value;
+            set => foodModel.Value = value;
         }
 
         public short FoodValue
         {
-            get => emFood.Value;
-            set => emFood.Value = value;
+            get => foodValue.Value;
+            set => foodValue.Value = value;
         }
 
         public short WaterValue
         {
-            get => emWater.Value;
-            set => emWater.Value = value;
+            get => waterValue.Value;
+            set => waterValue.Value = value;
         }
 
-        public float DecayRate
+        public float DecayRateMod
         {
-            get => emDecayrate.Value;
-            set => emDecayrate.Value = value;
+            get => decayrate.Value;
+            set => decayrate.Value = value;
         }
 
-        public bool Overfill
+        public bool AllowOverfill
         {
-            get => emOverfill.Value;
-            set => emOverfill.Value = value;
+            get => allowOverfill.Value;
+            set => allowOverfill.Value = value;
         }
 
-        internal bool Decomposes => this.DecayRate > 0f;
+        internal bool Decomposes => this.DecayRateMod > 0f;
 
-        public string ID => this.ItemID;
-
-        protected static List<EmProperty> CustomFoodProperties => new List<EmProperty>(TechTypedProperties)
+        protected static List<EmProperty> CustomFoodProperties => new List<EmProperty>(AliasRecipeProperties)
         {
-            new EmProperty<short>(AmountCraftedKey, 1) { Optional = true },
-            new EmYesNo(ForceUnlockKey, true) { Optional = true },
-            new EmPropertyCollectionList<EmIngredient>(IngredientsKey) { Optional = true },
-            new EmPropertyList<string>(LinkedKey) { Optional = true },
-            new EmPropertyList<string>(UnlocksKey) { Optional = true },
-            new EmPropertyList<string>(UnlockedbyKey) { Optional = true },
-            new EmProperty<string>(DisplayNameKey),
-            new EmProperty<string>(TooltipKey),
-            new EmProperty<string>(PathKey) { Optional = false },
-            new EmProperty<TechCategory>(PdacategoryKey, TechCategory.CookedFood) { Optional = true },
             new EmProperty<FoodModel>(FoodModelKey, FoodModel.None) { Optional = true },
             new EmProperty<TechType>(SpriteItemIdKey, TechType.None) { Optional = true },
             new EmProperty<short>(FoodKey, 0) { Optional = false },
             new EmProperty<short>(WaterKey, 0) { Optional = false },
-            new EmProperty<short>(DecayrateKey, 0) { Optional = true },
+            new EmProperty<float>(DecayRateKey, 0) { Optional = true },
             new EmYesNo(OverfillKey, true) { Optional = true },
         };
 
@@ -309,8 +202,6 @@
             }
         }
 
-        public OriginFile Origin { get; set; }
-
         public CustomFood() : this(TypeName, CustomFoodProperties)
         {
         }
@@ -321,32 +212,13 @@
 
         protected CustomFood(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
-            emAmount = (EmProperty<short>)Properties[AmountCraftedKey];
-            emForceAtStart = (EmYesNo)Properties[ForceUnlockKey];
-            emIngredient = (EmPropertyCollectionList<EmIngredient>)Properties[IngredientsKey];
-            emLinked = (EmPropertyList<string>)Properties[LinkedKey];
-            emUnlocks = (EmPropertyList<string>)Properties[UnlocksKey];
-            emUnlockedby = (EmPropertyList<string>)Properties[UnlockedbyKey];
-            emDisplayname = (EmProperty<string>)Properties[DisplayNameKey];
-            emTooltip = (EmProperty<string>)Properties[TooltipKey];
-            emPath = (EmProperty<string>)Properties[PathKey];
-            emPdacategory = (EmProperty<TechCategory>)Properties[PdacategoryKey];
-            emSpriteItemId = (EmProperty<TechType>)Properties[SpriteItemIdKey];
-            emFood = (EmProperty<short>)Properties[FoodKey];
-            emWater = (EmProperty<short>)Properties[WaterKey];
-            emDecayrate = (EmProperty<float>)Properties[DecayrateKey];
-            emOverfill = (EmYesNo)Properties[OverfillKey];
+            foodValue = (EmProperty<short>)Properties[FoodKey];
+            waterValue = (EmProperty<short>)Properties[WaterKey];
+            decayrate = (EmProperty<float>)Properties[DecayRateKey];
+            allowOverfill = (EmYesNo)Properties[OverfillKey];
 
-            OnValueExtractedEvent += ValueExtracted;
-        }
-
-        private void ValueExtracted()
-        {
-            foreach (EmIngredient ingredient in emIngredient)
-            {
-                string itemID = (ingredient["ItemID"] as EmProperty<string>).Value;
-                short required = (ingredient["Required"] as EmProperty<short>).Value;
-            }
+            techGroup.Value = TechGroup.Survival;
+            techCategory.DefaultValue = TechCategory.CookedFood;
         }
 
         internal override EmProperty Copy()
@@ -356,93 +228,7 @@
 
         public override bool PassesPreValidation()
         {
-            return (GetTechType(this.ItemID) == TechType.None) & // Confirm that no other item is currently using this ID.
-                                                                 // TODO = Log when the above check fails
-                    ValidateIngredients() &
-                    ValidateLinkedItems() &
-                    ValidateUnlocks() &
-                    ValidateUnlockedBy();
-        }
-
-        private bool ValidateUnlockedBy()
-        {
-            bool unlockedByValid = true;
-
-            foreach (string unlockedBy in this.UnlockedBy)
-            {
-                TechType unlockByItemID = GetTechType(unlockedBy);
-
-                if (unlockByItemID == TechType.None)
-                {
-                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlockedbyKey} '{unlockedBy}'. Entry will be discarded.");
-                    unlockedByValid = false;
-                    continue;
-                }
-
-                this.UnlockedByItems.Add(unlockByItemID);
-            }
-
-            return unlockedByValid;
-        }
-
-        private bool ValidateUnlocks()
-        {
-            bool unlocksValid = true;
-
-            foreach (string unlockingItem in this.Unlocks)
-            {
-                TechType unlockingItemID = GetTechType(unlockingItem);
-
-                if (unlockingItemID == TechType.None)
-                {
-                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlocksKey} '{unlockingItem}'. Entry will be discarded.");
-                    unlocksValid = false;
-                    continue;
-                }
-
-                this.UnlocksItems.Add(unlockingItemID);
-            }
-
-            return unlocksValid;
-        }
-
-        private bool ValidateLinkedItems()
-        {
-            bool linkedItemsValid = true;
-
-            foreach (string linkedItem in this.LinkedItemIDs)
-            {
-                TechType linkedItemID = GetTechType(linkedItem);
-
-                if (linkedItemID == TechType.None)
-                {
-                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {LinkedKey} '{linkedItem}'. Entry will be discarded.");
-                    linkedItemsValid = false;
-                    continue;
-                }
-
-                this.LinkedItems.Add(linkedItemID);
-            }
-
-            return linkedItemsValid;
-        }
-
-        private bool ValidateIngredients()
-        {
-            bool ingredientsValid = true;
-
-            foreach (EmIngredient ingredient in this.Ingredients)
-            {
-                if (ingredient.PassesPreValidation())
-                    this.IngredientsItems.Add(ingredient.ToSMLHelperIngredient());
-                else
-                {
-                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {IngredientsKey} '{ingredient.ItemID}'. Entry will be discarded.");
-                    ingredientsValid = false;
-                }
-            }
-
-            return ingredientsValid;
+            return base.PassesPreValidation() & ValidateCustomFoodValues();
         }
 
         private bool ValidateCustomFoodValues()
@@ -462,32 +248,7 @@
             return true;
         }
 
-        public bool SendToSMLHelper()
-        {
-            try
-            {
-                this.TechType = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
-
-                HandleCustomSprite();
-
-                HandleAddedRecipe();
-
-                HandleUnlocks();
-
-                HandleCraftTreeAddition();
-
-                RegisterPreFab();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                QuickLogger.Error($"Exception thrown while handling {this.Key} entry '{this.ItemID}' from {this.Origin}", ex);
-                return false;
-            }
-        }
-
-        protected void HandleCustomSprite()
+        protected override void HandleCustomSprite()
         {
             string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
 
@@ -505,6 +266,8 @@
                 return;
             }
 
+            // TODO - Handle more custom icons
+
             if (this.FoodValue >= this.WaterValue)
             {
                 SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.NutrientBlock));
@@ -519,58 +282,12 @@
             //QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
         }
 
-        internal TechData CreateRecipeTechData(short defaultCraftAmount = 1)
+        protected override void HandleCustomPrefab()
         {
-            var replacement = new TechData
-            {
-                craftAmount = this.AmountCrafted
-            };
+            if (this.TechType == TechType.None)
+                throw new InvalidOperationException("TechTypeHandler.AddTechType must be called before PrefabHandler.RegisterPrefab.");
 
-            foreach (EmIngredient ingredient in this.Ingredients)
-                replacement.Ingredients.Add(new Ingredient(ingredient.TechType, ingredient.Required));
-
-            foreach (TechType linkedItem in this.LinkedItems)
-                replacement.LinkedItems.Add(linkedItem);
-            return replacement;
-        }
-
-        protected virtual void HandleCraftTreeAddition()
-        {
-            var craftPath = new CraftingPath(this.Path, this.ItemID);
-
-            AddCraftNode(craftPath, this.TechType);
-        }
-
-        private void RegisterPreFab()
-        {
             PrefabHandler.RegisterPrefab(new CustomFoodPrefab(this));
-        }
-
-        protected bool HandleUnlocks()
-        {
-            if (this.ForceUnlockAtStart)
-            {
-                KnownTechHandler.UnlockOnStart(this.TechType);
-                QuickLogger.Debug($"{this.Key} for '{this.ItemID}' from {this.Origin} will be a unlocked at the start of the game");
-            }
-
-            if (this.UnlockingItems.Count > 0)
-            {
-                KnownTechHandler.SetAnalysisTechEntry(this.TechType, this.UnlockingItems);
-            }
-
-            return true;
-        }
-
-
-        protected void HandleAddedRecipe(short defaultCraftAmount = 1)
-        {
-            TechData replacement = CreateRecipeTechData(defaultCraftAmount);
-
-            CraftDataHandler.SetTechData(this.TechType, replacement);
-            QuickLogger.Debug($"Adding new recipe for '{this.ItemID}'");
-
-            CraftDataHandler.AddToGroup(TechGroup.Survival, this.PdaCategory, this.TechType);
         }
     }
 }
