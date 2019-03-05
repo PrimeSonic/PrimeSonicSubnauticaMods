@@ -1,4 +1,6 @@
-﻿namespace CustomCraft2SML.SMLHelperItems
+﻿using SMLHelper.V2.Handlers;
+
+namespace CustomCraft2SML.SMLHelperItems
 {
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
@@ -18,7 +20,8 @@
 
         public override GameObject GetGameObject()
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(FoodEntry.FoodPrefab);
+            TechType _type = FoodEntry.FoodPrefab;
+            GameObject prefab = CraftData.GetPrefabForTechType(_type != null & _type != TechType.None & CustomFood.IsMappedFoodType(_type) ? _type : TechType.NutrientBlock);
             GameObject obj = UnityEngine.Object.Instantiate(prefab);
 
             Eatable eatable = obj.GetComponent<Eatable>();
@@ -31,7 +34,7 @@
             eatable.decomposes = FoodEntry.Decomposes;
             eatable.kDecayRate = FoodEntry.DecayRateMod * StandardDecayRate;
             eatable.allowOverfill = FoodEntry.AllowOverfill;
-
+            
             return obj;
         }
 

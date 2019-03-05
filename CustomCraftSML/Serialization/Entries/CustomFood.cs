@@ -177,9 +177,13 @@
                 if (this.FoodType == FoodModel.None)
                 {
                     if (this.FoodValue >= this.WaterValue)
+                    {
                         return TechType.NutrientBlock;
+                    }
                     else
+                    {
                         return TechType.FilteredWater;
+                    }
                 }
 
                 return (TechType)this.FoodType;
@@ -219,6 +223,7 @@
 
             techGroup.Value = TechGroup.Survival;
             techCategory.DefaultValue = TechCategory.CookedFood;
+            foodModel = (EmProperty<FoodModel>) Properties[FoodModelKey];
         }
 
         internal override EmProperty Copy()
