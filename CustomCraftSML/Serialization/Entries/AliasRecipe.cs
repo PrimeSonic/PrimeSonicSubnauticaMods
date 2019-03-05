@@ -104,12 +104,16 @@
 
         protected bool ItemIDisUnique()
         {
-            if (GetTechType(this.ItemID) != TechType.None)
+            // Alias Recipes must request their techtype be added during the validation step
+            TechType techtype = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
+
+            if (techtype == TechType.None)
             {
                 QuickLogger.Warning($"{ItemIdKey} '{this.ItemID}' for entry {this.Key} from {this.Origin} is specifies an {ItemIdKey} that is already in use. Entry will be discarded.");
                 return false;
             }
 
+            this.TechType = techtype;
             return true;
         }
 
@@ -134,9 +138,6 @@
         {
             try
             {
-                // Alias Recipes must request their techtype be added
-                this.TechType = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
-
                 //  See if there is an asset in the asset folder that has the same name
                 HandleCustomSprite();
 
