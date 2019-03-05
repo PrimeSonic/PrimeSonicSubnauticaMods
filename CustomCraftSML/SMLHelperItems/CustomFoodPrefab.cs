@@ -20,8 +20,7 @@ namespace CustomCraft2SML.SMLHelperItems
 
         public override GameObject GetGameObject()
         {
-            TechType _type = FoodEntry.FoodPrefab;
-            GameObject prefab = CraftData.GetPrefabForTechType(_type != null & _type != TechType.None & CustomFood.IsMappedFoodType(_type) ? _type : TechType.NutrientBlock);
+            GameObject prefab = CraftData.GetPrefabForTechType(FoodEntry.FoodPrefab);
             GameObject obj = UnityEngine.Object.Instantiate(prefab);
 
             Eatable eatable = obj.GetComponent<Eatable>();

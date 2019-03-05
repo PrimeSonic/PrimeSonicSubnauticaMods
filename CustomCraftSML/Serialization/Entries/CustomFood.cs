@@ -1,4 +1,6 @@
-﻿namespace CustomCraft2SML.Serialization.Entries
+﻿using CustomCraft2SML.Serialization.Lists;
+
+namespace CustomCraft2SML.Serialization.Entries
 {
     using Common;
     using Common.EasyMarkup;
@@ -59,6 +61,21 @@
 
     internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
     {
+        internal static new readonly string[] TutorialText = new[]
+        {
+            $"{CustomFoodList.ListKey}: A powerful tool to satisfy the insatiable.",
+            "    Custom foods allow you to create custom eatables, for example Hamburgers or Sodas",
+            $"    {CustomFoodList.ListKey} have all the same properties of {AliasRecipeList.ListKey}, but when creating your own items, you will want to include these new properties:",
+            $"        {FoodKey}: Defines how much food the user will gain on consumption.",
+            $"        {WaterKey}: Defines how much water the user will gain on consumption.",
+            $"        {DecayRateKey}: Defines the speed at which food will decompose. If set to 1 it will decompose as fast as any cooked fish, if set to 2 it will decay twice as fast, and if set to 0 it will not decay.",
+            "            Without this property, the food will not decay.",
+            $"        {OverfillKey}: Defines if the eaten item can exceed the normal food-limit.",
+            "            If not defined it defaults to true.",
+            $"        {FoodModelKey}: Sets the model the food should use in the fabricator and upon being dropped. This needs to be an already existing food or drink.",
+            "            Leaving out this property results in an automatic definition using the food and water values.",
+        };
+
         // We may need this later.
         internal static bool IsMappedFoodType(TechType techType)
         {
@@ -186,7 +203,14 @@
                     }
                 }
 
-                return (TechType)this.FoodType;
+                if (IsMappedFoodType((TechType) this.FoodType))
+                {
+                    return (TechType)this.FoodType;
+                }
+                else
+                {
+                    return TechType.NutrientBlock;
+                }
             }
         }
 

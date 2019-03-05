@@ -170,6 +170,10 @@
             tutorialLines.Add(HorizontalLine);
             tutorialLines.AddRange(CustomCraftingTab.TutorialText);
             tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.AddRange(CustomFood.TutorialText);
+            tutorialLines.Add(Environment.NewLine);
         }
 
         private static void AddNonCraftingEntries(List<string> tutorialLines)
@@ -225,6 +229,13 @@
         {
             tutorialLines.Add(HorizontalLine);
             tutorialLines.Add("--- Change Log ---");
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("Version 1.8 adds the long awaited custom foods");
+            tutorialLines.Add("You can now create foods with custom food and water values and change the speed of decomposition for your foods.");
+            tutorialLines.Add("Additionally you can change the model your item has to already existing foods, for example a Cooked Peeper, otherwise it will auto-select using the food and water values.");
+            tutorialLines.Add("CustomFoods are available in the CustomFabricators too.");
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
