@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using CustomCraft2SML.Serialization.Components;
+    using CustomCraft2SML.Serialization.Entries;
 
     public interface ICustomFood : ITechTyped
     {
@@ -20,6 +21,7 @@
         TechCategory PdaCategory { get; }
 
         //FOOD SPECIFIC VALUES
+        FoodModel FoodType { get; }
 
         short FoodValue { get; }
         short WaterValue { get; }

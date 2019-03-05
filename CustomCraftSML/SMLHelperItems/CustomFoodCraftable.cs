@@ -14,29 +14,23 @@
         public override string[] StepsToFabricatorTab => Path.Steps;
         public override TechGroup GroupForPDA { get; } = TechGroup.Survival;
         public override TechCategory CategoryForPDA => FoodEntry.PdaCategory;
-
-        public override TechType RequiredForUnlock => FoodEntry.UnlockedBy_;
-
+        public override TechType RequiredForUnlock => FoodEntry.UnlockedByItem;
         public override string AssetsFolder => FileLocations.AssetsFolder;
+        public override string IconFileName => FoodEntry.IconName;
 
-        // TODO Unlocks will need to be handled
-
-        public readonly TechType FoodItemOriginal;
         public readonly CustomFood FoodEntry;
         public readonly CraftingPath Path;
 
-        public CustomFoodCraftable(CustomFood customFood, CraftingPath path, TechType baseItem)
-            : base(customFood.ItemID, /*$"{customFood.ItemID}Prefab"*/customFood.DisplayName, customFood.Tooltip)
+        public CustomFoodCraftable(CustomFood customFood, CraftingPath path)
+            : base(customFood.ItemID, $"{customFood.ItemID}Prefab", customFood.Tooltip)
         {
             FoodEntry = customFood;
             Path = path;
-            FoodItemOriginal = baseItem;
-
         }
 
         public override GameObject GetGameObject()
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(FoodItemOriginal);
+            GameObject prefab = CraftData.GetPrefabForTechType(FoodEntry.FoodPrefab);
             GameObject obj = UnityEngine.Object.Instantiate(prefab);
 
             Eatable eatable = obj.GetComponent<Eatable>();
@@ -49,8 +43,6 @@
             eatable.decomposes = FoodEntry.Decomposes;
             eatable.kDecayRate = FoodEntry.DecayRate * StandardDecayRate;
             eatable.allowOverfill = FoodEntry.Overfill;
-
-            // ADD MORE OPTIONS!
 
             return obj;
         }

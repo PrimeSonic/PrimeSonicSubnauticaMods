@@ -94,10 +94,10 @@
 
         public override bool PassesPreValidation()
         {
-            // Alias Recipes must request their techtype be added
-            this.TechType = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
-
-            return InnerItemsAreValid() && FunctionalItemIsValid();
+            return (GetTechType(this.ItemID) == TechType.None) & // Confirm that no other item is currently using this ID.
+                   // TODO = Log when the above check fails
+                InnerItemsAreValid() & 
+                FunctionalItemIsValid();
         }
 
         protected virtual bool FunctionalItemIsValid()
@@ -121,6 +121,9 @@
         {
             try
             {
+                // Alias Recipes must request their techtype be added
+                this.TechType = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
+
                 //  See if there is an asset in the asset folder that has the same name
                 HandleCustomSprite();
 

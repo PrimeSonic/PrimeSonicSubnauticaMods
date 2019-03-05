@@ -117,10 +117,11 @@
 
         internal string HandOverText => $"Use {this.DisplayName}";
 
-        public EmPropertyCollectionList<CfCustomCraftingTab> CustomCraftingTabs { get; private set; }
-        public EmPropertyCollectionList<CfMovedRecipe> MovedRecipes { get; private set; }
-        public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; private set; }
-        public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; private set; }
+        // Set in constructor
+        public EmPropertyCollectionList<CfCustomCraftingTab> CustomCraftingTabs { get; }
+        public EmPropertyCollectionList<CfMovedRecipe> MovedRecipes { get; }
+        public EmPropertyCollectionList<CfAddedRecipe> AddedRecipes { get; }
+        public EmPropertyCollectionList<CfAliasRecipe> AliasRecipes { get; }
         public EmPropertyCollectionList<CfCustomFood> CustomFoods { get; }
 
         private IDictionary<string, CfCustomCraftingTab> UniqueCustomTabs { get; } = new Dictionary<string, CfCustomCraftingTab>();
