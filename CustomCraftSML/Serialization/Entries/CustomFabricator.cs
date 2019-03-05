@@ -1,4 +1,7 @@
-﻿namespace CustomCraft2SML.Serialization.Entries
+﻿using System.IO;
+using SMLHelper.V2.Utility;
+
+namespace CustomCraft2SML.Serialization.Entries
 {
     using System;
     using System.Collections.Generic;
@@ -10,6 +13,7 @@
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using IOPath = System.IO.Path;
 
     public enum ModelTypes
     {
@@ -116,6 +120,21 @@
         internal CustomFabricatorBuildable BuildableFabricator { get; set; }
 
         internal string HandOverText => $"Use {this.DisplayName}";
+
+        public string ItemImage
+        {
+            get
+            {
+                string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
+
+                if (File.Exists(imagePath))
+                {
+                    return $"{this.ItemID}.png";
+                }
+
+                return $"{Model}.png";
+            }
+        }
 
         // Set in constructor
         public EmPropertyCollectionList<CfCustomCraftingTab> CustomCraftingTabs { get; }
@@ -321,5 +340,7 @@
         }
 
         internal override EmProperty Copy() => new CustomFabricator(this.Key, this.CopyDefinitions);
+
+        
     }
 }
