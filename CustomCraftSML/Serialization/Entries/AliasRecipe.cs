@@ -138,9 +138,6 @@
         {
             try
             {
-                // Alias Recipes must request their techtype be added
-                this.TechType = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
-
                 //  See if there is an asset in the asset folder that has the same name
                 HandleCustomSprite();
 
