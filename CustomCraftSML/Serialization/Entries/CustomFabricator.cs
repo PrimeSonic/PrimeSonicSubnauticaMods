@@ -142,7 +142,7 @@
 
         public override bool PassesPreValidation()
         {
-            return InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues() & ValidateInternalEntries();
+            return ItemIDisUnique() & InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues() & ValidateInternalEntries();
         }
 
         private bool ValidFabricatorValues()
