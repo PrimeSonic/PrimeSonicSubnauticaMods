@@ -1,7 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -10,6 +8,8 @@
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using System;
+    using System.Collections.Generic;
 
     internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     {
@@ -146,25 +146,24 @@
             }
         }
 
-        internal override EmProperty Copy() => new ModifiedRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new ModifiedRecipe(this.Key, this.CopyDefinitions);
+        }
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & InnerItemsAreValid();
+        public override bool PassesPreValidation()
+        {
+            return base.PassesPreValidation() & InnerItemsAreValid();
+        }
 
         protected bool InnerItemsAreValid()
         {
             // Sanity check of the blueprints ingredients and linked items to be sure that it only contains known items
             // Modded items are okay, but they must be for mods the player already has installed
-            bool internalItemsPassCheck = true;
-
-            internalItemsPassCheck &= ValidateIngredients();
-
-            internalItemsPassCheck &= ValidateLinkedItems();
-
-            internalItemsPassCheck &= ValidateUnlocks();
-
-            internalItemsPassCheck &= ValidateUnlockedBy();
-
-            return internalItemsPassCheck;
+            return ValidateIngredients() &
+                   ValidateLinkedItems() &
+                   ValidateUnlocks() &
+                   ValidateUnlockedBy();
         }
 
         protected bool ValidateUnlockedBy()
@@ -177,7 +176,7 @@
 
                 if (unlockByItemID == TechType.None)
                 {
-                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlockedBy} '{unlockedBy}'. Entry will be discarded.");
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {this.UnlockedBy} '{unlockedBy}'. Entry will be discarded.");
                     unlockedByValid = false;
                     continue;
                 }
@@ -274,7 +273,7 @@
                 QuickLogger.Error($"Error while trying to access new SMLHelper method for {this.Key} entry '{this.ItemID}' from {this.Origin}.{Environment.NewLine}" +
                                   $"    Please update your copy of Modding Helper (SMLHelper).{Environment.NewLine}", mme);
                 return false;
-            }            
+            }
 
             if (original == null)
             {

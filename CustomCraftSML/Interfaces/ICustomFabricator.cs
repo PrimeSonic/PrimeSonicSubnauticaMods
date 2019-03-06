@@ -2,6 +2,7 @@
 {
     using Common.EasyMarkup;
     using CustomCraft2SML.Serialization.Entries;
+    using UnityEngine;
 
     public interface ICustomFabricator<Tab, Moved, Added, Alias, Food> : IAliasRecipe
         where Tab : EmPropertyCollection, ICraftingTab, new()
@@ -11,7 +12,7 @@
         where Food : EmPropertyCollection, ICustomFood, new()
     {
         ModelTypes Model { get; }
-        int HueOffset { get; } // For future use
+        Color ColorRGB { get; }
         bool AllowedInBase { get; }
         bool AllowedInCyclops { get; }
 

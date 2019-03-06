@@ -1,30 +1,21 @@
 ﻿namespace CustomCraft2SML.Fabricators
 {
-    using System;
-    using System.Reflection;
     using Common;
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Crafting;
+    using System;
+    using System.Reflection;
     using UnityEngine;
 
-    internal class CustomFabricatorBuildable : Buildable
+    internal class CustomFabricatorBuildable : ModPrefab
     {
         protected readonly CustomFabricator FabricatorDetails;
 
         public CustomFabricatorBuildable(CustomFabricator customFabricator)
-            : base(customFabricator.ItemID, customFabricator.DisplayName, customFabricator.Tooltip)
+            : base(customFabricator.ItemID, $"{customFabricator.ItemID}PreFan", customFabricator.TechType)
         {
             FabricatorDetails = customFabricator;
-            OnStartedPatching += FabricatorDetails.StartCustomCraftingTree;
-            OnFinishedPatching += FabricatorDetails.FinishCustomCraftingTree;
         }
-
-        public override TechGroup GroupForPDA => FabricatorDetails.PdaGroup;
-        public override TechCategory CategoryForPDA => FabricatorDetails.PdaCategory;
-        public override string AssetsFolder { get; } = FileLocations.RootModName + "/Assets";
-        public override string IconFileName => FabricatorDetails.ItemImage;
-        public override string HandOverText => FabricatorDetails.HandOverText;
 
         public override GameObject GetGameObject()
         {
@@ -47,8 +38,8 @@
 
                     // Add prefab ID because CyclopsFabricator normaly doesn't have one
                     PrefabIdentifier prefabId = prefab.AddComponent<PrefabIdentifier>();
-                    prefabId.ClassId = this.FabricatorDetails.ItemID;
-                    prefabId.name = FriendlyName;
+                    prefabId.ClassId = FabricatorDetails.ItemID;
+                    prefabId.name = FabricatorDetails.DisplayName;
 
                     // Add tech tag because CyclopsFabricator normaly doesn't have one
                     TechTag techTag = prefab.AddComponent<TechTag>();
@@ -73,7 +64,7 @@
             }
 
             crafter.craftTree = FabricatorDetails.TreeTypeID;
-            crafter.handOverText = FabricatorDetails.HandOverText;
+            //crafter.handOverText = FabricatorDetails.HandOverText;
 
             if (constructible is null)
                 constructible = prefab.GetComponent<Constructable>();
@@ -87,17 +78,17 @@
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
             constructible.rotationEnabled = false;
-            constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time
+            constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time            
 
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
             skyApplier.renderers = prefab.GetComponentsInChildren<Renderer>();
             skyApplier.anchorSky = Skies.Auto;
 
-            // TODO
-            // Set the custom texture
-            //Texture2D customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorT.png");
-            //SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
-            //skinnedMeshRenderer.material.mainTexture = customTexture;
+            if (FabricatorDetails.HasColorValue)
+            {
+                SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();             
+                skinnedMeshRenderer.material.color = FabricatorDetails.ColorRGB; // Tint option available
+            }
 
             // Associate power relay
             var powerRelay = new PowerRelay();
@@ -110,7 +101,5 @@
 
             return prefab;
         }
-
-        protected override TechData GetBlueprintRecipe() => FabricatorDetails.CreateRecipeTechData();
     }
 }

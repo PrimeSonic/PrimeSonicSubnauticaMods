@@ -1,18 +1,19 @@
-﻿using System.IO;
-using SMLHelper.V2.Utility;
-
-namespace CustomCraft2SML.Serialization.Entries
+﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Fabricators;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
+    using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using UnityEngine;
     using IOPath = System.IO.Path;
 
     public enum ModelTypes
@@ -25,7 +26,7 @@ namespace CustomCraft2SML.Serialization.Entries
     internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe, CfCustomFood>, IFabricatorEntries
     {
         protected const string ModelKey = "Model";
-        protected const string HueOffsetKey = "Color";
+        protected const string ColorRGBKey = "ColorRGB";
         protected const string AllowedInBaseKey = "AllowedInBase";
         protected const string AllowedInCyclopsKey = "AllowedInCyclops";
         protected const string CfCustomCraftingTabListKey = CustomCraftingTabList.ListKey;
@@ -48,7 +49,7 @@ namespace CustomCraft2SML.Serialization.Entries
             $"    Everything to be added to the custom fabricator's crafting tree must be specified as a list inside the custom fabricator entry.",
             $"    Every entry will still need to specify a full path that includes the new fabricator as the starting point for the path.",
             $"    The lists you can add are as follows.",
-            $"        {CfCustomCraftingTabListKey}: List of crafting tabs to be added to the custom fabricator.",            
+            $"        {CfCustomCraftingTabListKey}: List of crafting tabs to be added to the custom fabricator.",
             $"        {CfAddedRecipeListKey}: List of added recipes for the custom fabricator.",
             $"        {CfAliasRecipeListKey}: List of alias recipes for the custom fabricator.",
             $"        {CfMovedRecipeListKey}: List of moved recipes for the custom fabricator.",
@@ -56,15 +57,14 @@ namespace CustomCraft2SML.Serialization.Entries
         };
 
         protected readonly EmProperty<ModelTypes> model;
-        protected readonly EmProperty<int> hueOffset;
-
+        protected readonly EmColorRGB colorRGB;
         protected readonly EmYesNo allowedInBase;
         protected readonly EmYesNo allowedInCyclops;
 
         protected static List<EmProperty> CustomFabricatorProperties => new List<EmProperty>(AliasRecipeProperties)
         {
             new EmProperty<ModelTypes>(ModelKey, ModelTypes.Fabricator),
-            new EmProperty<int>(HueOffsetKey, 0) { Optional = true },
+            new EmColorRGB(ColorRGBKey) { Optional = true },
             new EmYesNo(AllowedInBaseKey, true) { Optional = true },
             new EmYesNo(AllowedInCyclopsKey, true) { Optional = true },
             new EmPropertyCollectionList<CfCustomCraftingTab>(CfCustomCraftingTabListKey) { Optional = true },
@@ -81,7 +81,7 @@ namespace CustomCraft2SML.Serialization.Entries
         protected CustomFabricator(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             model = (EmProperty<ModelTypes>)Properties[ModelKey];
-            hueOffset = (EmProperty<int>)Properties[HueOffsetKey];
+            colorRGB = (EmColorRGB)Properties[ColorRGBKey];
             allowedInBase = (EmYesNo)Properties[AllowedInBaseKey];
             allowedInCyclops = (EmYesNo)Properties[AllowedInCyclopsKey];
             this.CustomCraftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
@@ -90,7 +90,7 @@ namespace CustomCraft2SML.Serialization.Entries
             this.AliasRecipes = (EmPropertyCollectionList<CfAliasRecipe>)Properties[CfAliasRecipeListKey];
             this.CustomFoods = (EmPropertyCollectionList<CfCustomFood>)Properties[CfCustomFoodListKey];
 
-            (Properties[PathKey] as EmProperty<string>).Optional = true;
+            path.Optional = true;
         }
 
         public ModelTypes Model
@@ -99,11 +99,9 @@ namespace CustomCraft2SML.Serialization.Entries
             set => model.Value = value;
         }
 
-        public int HueOffset
-        {
-            get => hueOffset.Value;
-            set => hueOffset.Value = value;
-        }
+        public Color ColorRGB => colorRGB.GetColor();
+
+        internal bool HasColorValue => colorRGB.HasValidColor;
 
         public bool AllowedInBase
         {
@@ -115,25 +113,6 @@ namespace CustomCraft2SML.Serialization.Entries
         {
             get => allowedInCyclops.Value;
             set => allowedInCyclops.Value = value;
-        }
-
-        internal CustomFabricatorBuildable BuildableFabricator { get; set; }
-
-        internal string HandOverText => $"Use {this.DisplayName}";
-
-        public string ItemImage
-        {
-            get
-            {
-                string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
-
-                if (File.Exists(imagePath))
-                {
-                    return $"{this.ItemID}.png";
-                }
-
-                return $"{Model}.png";
-            }
         }
 
         // Set in constructor
@@ -161,7 +140,10 @@ namespace CustomCraft2SML.Serialization.Entries
         public ICollection<string> AliasRecipesIDs => this.UniqueAliasRecipes.Keys;
         public ICollection<string> CustomFoodIDs => this.UniqueCustomFoods.Keys;
 
-        public override bool PassesPreValidation() => InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues() & ValidateInternalEntries();
+        public override bool PassesPreValidation()
+        {
+            return InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues() & ValidateInternalEntries();
+        }
 
         private bool ValidFabricatorValues()
         {
@@ -170,7 +152,6 @@ namespace CustomCraft2SML.Serialization.Entries
                 case ModelTypes.Fabricator:
                 case ModelTypes.Workbench:
                 case ModelTypes.MoonPool:
-                    this.BuildableFabricator = new CustomFabricatorBuildable(this);
                     break;
                 default:
                     QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}|{ModelTypes.MoonPool}");
@@ -188,7 +169,7 @@ namespace CustomCraft2SML.Serialization.Entries
 
         private bool ValidateInternalEntries()
         {
-            ValidateUniqueEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);            
+            ValidateUniqueEntries(this.CustomCraftingTabs, this.UniqueCustomTabs);
             ValidateUniqueEntries(this.AddedRecipes, this.UniqueAddedRecipes);
             ValidateUniqueEntries(this.AliasRecipes, this.UniqueAliasRecipes);
             ValidateUniqueEntries(this.MovedRecipes, this.UniqueMovedRecipes);
@@ -209,27 +190,6 @@ namespace CustomCraft2SML.Serialization.Entries
             return true;
         }
 
-        public override bool SendToSMLHelper()
-        {
-            if (this.BuildableFabricator != null)
-            {
-                try
-                {
-                    this.BuildableFabricator.Patch();
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    QuickLogger.Error($"Exception thrown while handling {this.Key} entry '{this.ItemID}' from {this.Origin}", ex);
-                    return false;
-                }
-
-            }
-
-            return false;
-        }
-
         internal void StartCustomCraftingTree()
         {
             this.RootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(this.ItemID, out CraftTree.Type craftType);
@@ -238,7 +198,7 @@ namespace CustomCraft2SML.Serialization.Entries
 
         internal void FinishCustomCraftingTree()
         {
-            SendToSMLHelper(this.UniqueCustomTabs);            
+            SendToSMLHelper(this.UniqueCustomTabs);
             SendToSMLHelper(this.UniqueAddedRecipes);
             SendToSMLHelper(this.UniqueAliasRecipes);
             SendToSMLHelper(this.UniqueMovedRecipes);
@@ -258,7 +218,7 @@ namespace CustomCraft2SML.Serialization.Entries
                 }
                 else
                 {
-                    
+
                     ModCraftTreeTab otherTab = this.RootNode.GetTabNode(entry.CraftingNodePath.Steps);
                     otherTab.AddCraftingNode(entry.TechType);
                 }
@@ -309,6 +269,54 @@ namespace CustomCraft2SML.Serialization.Entries
                 QuickLogger.Info($"{successCount} of {uniqueEntries.Count} {typeof(CustomCraftEntry).Name} entries were patched");
         }
 
+        protected override void HandleCustomPrefab()
+        {
+            if (this.TechType == TechType.None)
+                throw new InvalidOperationException("TechTypeHandler.AddTechType must be called before PrefabHandler.RegisterPrefab.");
+
+            StartCustomCraftingTree();
+
+            PrefabHandler.RegisterPrefab(new CustomFabricatorBuildable(this));
+
+            FinishCustomCraftingTree();
+        }
+
+        protected override void HandleCustomSprite()
+        {
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
+
+            if (File.Exists(imagePath))
+            {
+                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
+                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                SpriteHandler.RegisterSprite(this.TechType, sprite);
+                return;
+            }
+            else
+            {
+                QuickLogger.Debug($"Default sprite for {this.Key} '{this.ItemID}' from {this.Origin}");
+                switch (this.Model)
+                {
+                    case ModelTypes.Fabricator:
+                        SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.Fabricator));
+                        break;
+                    case ModelTypes.Workbench:
+                        SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.Workbench));
+                        break;
+                    case ModelTypes.MoonPool:
+                        imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
+                        Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                        SpriteHandler.RegisterSprite(this.TechType, sprite);
+                        break;
+                }
+            }
+        }
+
+        protected override void HandleCraftTreeAddition()
+        {
+            return; // Buildables aren't part of a crafting tree
+        }
+
         public void DuplicateCustomTabDiscovered(string id)
         {
             QuickLogger.Warning($"Duplicate entry for {CustomCraftingTabList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
@@ -339,8 +347,9 @@ namespace CustomCraft2SML.Serialization.Entries
             this.UniqueCustomFoods.Remove(id);
         }
 
-        internal override EmProperty Copy() => new CustomFabricator(this.Key, this.CopyDefinitions);
-
-        
+        internal override EmProperty Copy()
+        {
+            return new CustomFabricator(this.Key, this.CopyDefinitions);
+        }
     }
 }

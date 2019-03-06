@@ -1,9 +1,8 @@
-﻿using CustomCraft2SML.Serialization.Lists;
-
-namespace CustomCraft2SML.Serialization.Entries
+﻿namespace CustomCraft2SML.Serialization.Entries
 {
     using Common;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Serialization.Lists;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.SMLHelperItems;
@@ -283,20 +282,26 @@ namespace CustomCraft2SML.Serialization.Entries
 
             if (File.Exists(imagePath))
             {
-                QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
+                QuickLogger.Debug($"Custom sprite found in Assets folder for the custom sprite of {this.Key} '{this.ItemID}' from {this.Origin}");
                 SpriteHandler.RegisterSprite(this.TechType, ImageUtils.LoadSpriteFromFile(imagePath));
                 return;
             }
 
             if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
             {
-                QuickLogger.Debug($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
+                QuickLogger.Debug($"{SpriteItemIdKey} '{this.SpriteItemID}' used for the custom sprite of {this.Key} '{this.ItemID}' from {this.Origin}");
                 SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(this.SpriteItemID));
                 return;
             }
 
-            // TODO - Handle more custom icons
+            if (this.FoodType != FoodModel.None)
+            {
+                QuickLogger.Debug($"{FoodModelKey} '{this.FoodType}' used for the custom sprite of {this.Key} '{this.ItemID}' from {this.Origin}");
+                SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get((TechType)this.FoodType));
+                return;
+            }
 
+            // TODO - Handle more custom icons
             if (this.FoodValue >= this.WaterValue)
             {
                 SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.NutrientBlock));
