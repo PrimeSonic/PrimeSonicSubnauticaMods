@@ -21,19 +21,24 @@
 
         public bool Optional { get; set; } = false;
 
+        public abstract bool HasValue { get; }
+
         public string Key { get; protected set; }
 
         internal string SerializedValue;
 
         public override string ToString()
         {
-            if (string.IsNullOrEmpty(SerializedValue) && Optional)
+            if (string.IsNullOrEmpty(SerializedValue) && this.Optional)
                 return string.Empty;
 
             return $"{this.Key}{SpChar_KeyDelimiter}{EscapeSpecialCharacters(SerializedValue)}{SpChar_ValueDelimiter}";
         }
 
-        public static bool CheckKey(string rawValue, out string foundKey, string keyToValidate) => CheckKey(rawValue, out foundKey) && foundKey == keyToValidate;
+        public static bool CheckKey(string rawValue, out string foundKey, string keyToValidate)
+        {
+            return CheckKey(rawValue, out foundKey) && foundKey == keyToValidate;
+        }
 
         public static bool CheckKey(string rawValue, out string foundKey)
         {
@@ -77,8 +82,10 @@
             return key;
         }
 
-        protected virtual string ExtractValue(StringBuffer fullString) =>
-            ReadUntilDelimiter(fullString, SpChar_ValueDelimiter).ToString();
+        protected virtual string ExtractValue(StringBuffer fullString)
+        {
+            return ReadUntilDelimiter(fullString, SpChar_ValueDelimiter).ToString();
+        }
 
         internal abstract EmProperty Copy();
 
@@ -220,7 +227,9 @@
         }
 
         internal static string ReadUntilDelimiter(StringBuffer fullString, char delimeter)
-            => ReadUntilDelimiter(fullString, new HashSet<char> { delimeter });
+        {
+            return ReadUntilDelimiter(fullString, new HashSet<char> { delimeter });
+        }
 
         internal static string ReadUntilDelimiter(StringBuffer fullString, ICollection<char> delimeters)
         {
@@ -293,9 +302,15 @@
             return escaped.ToString();
         }
 
-        public override bool Equals(object obj) => base.Equals(obj);
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
 
-        public override int GetHashCode() => base.GetHashCode();
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
         public static bool operator ==(EmProperty a, EmProperty b)
         {

@@ -101,7 +101,7 @@
 
         public Color ColorRGB => colorRGB.GetColor();
 
-        internal bool HasColorValue => colorRGB.HasValidColor;
+        internal bool HasColorValue => colorRGB.HasValue;
 
         public bool AllowedInBase
         {

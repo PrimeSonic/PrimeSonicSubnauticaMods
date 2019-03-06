@@ -109,7 +109,7 @@
 
             if (techtype == TechType.None)
             {
-                QuickLogger.Warning($"{ItemIdKey} '{this.ItemID}' for entry {this.Key} from {this.Origin} is specifies an {ItemIdKey} that is already in use. Entry will be discarded.");
+                QuickLogger.Warning($"Unable to create new TechType with {ItemIdKey} value '{this.ItemID}' for entry {this.Key} from {this.Origin} is specifies an {ItemIdKey}. Entry will be discarded.");
                 return false;
             }
 

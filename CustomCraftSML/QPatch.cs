@@ -1,16 +1,15 @@
-﻿using System.Linq;
-using System.Reflection;
-
-namespace CustomCraft2SML
+﻿namespace CustomCraft2SML
 {
+    using Common;
+    using CustomCraft2SML.Serialization;
     using System;
     using System.IO;
-    using System.Text.RegularExpressions;
-    using Common;
+    using System.Linq;
+    using System.Reflection;
 
     public static class QPatch
-    {        
-        private static readonly Regex LogLevel = new Regex("\"DebugLogsEnabled\"[ \f\n\r\t\v]*:[ \f\n\r\t\v]*(false|true),", RegexOptions.IgnoreCase); // Oldschool whitespace checks for .NET 3.5
+    {
+        private static readonly CustomCraft2Config Config = new CustomCraft2Config();
 
         public static void Patch()
         {
@@ -23,7 +22,7 @@ namespace CustomCraft2SML
                 RestoreAssets();
 
                 HelpFilesWriter.HandleHelpFiles();
-                
+
                 WorkingFileParser.HandleWorkingFiles();
 
                 QuickLogger.Info("Finished patching.");
@@ -36,17 +35,19 @@ namespace CustomCraft2SML
 
         internal static void CheckLogLevel()
         {
-            string jsonText = File.ReadAllText(FileLocations.ModJson);
-
-            Match match = LogLevel.Match(jsonText);
-
-            if (match.Success && match.Groups.Count > 1)
+            if (!File.Exists(FileLocations.ConfigFile))
             {
-                Group capturedValue = match.Groups[1];
+                File.WriteAllText(FileLocations.ConfigFile, Config.PrettyPrint());
+                QuickLogger.DebugLogsEnabled = false;
+                QuickLogger.Info("CustomCraft2Config file was not found. Default file written.");
+            }
+            else
+            {
+                string configText = File.ReadAllText(FileLocations.ConfigFile);
 
-                if (bool.TryParse(capturedValue.Value, out bool result))
+                if (Config.FromString(configText))
                 {
-                    QuickLogger.DebugLogsEnabled = result;                    
+                    QuickLogger.DebugLogsEnabled = Config.EnabledDebugLogs;
                 }
             }
 
@@ -60,10 +61,10 @@ namespace CustomCraft2SML
         {
             string prefix = "CustomCraft2SML.SpriteAssets.";
 
-            Assembly ass = Assembly.GetExecutingAssembly();
-            var resources = ass.GetManifestResourceNames().Where(name => name.StartsWith(prefix));
+            var ass = Assembly.GetExecutingAssembly();
+            System.Collections.Generic.IEnumerable<string> resources = ass.GetManifestResourceNames().Where(name => name.StartsWith(prefix));
 
-            foreach (var resource in resources)
+            foreach (string resource in resources)
             {
                 string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);
                 //Console.WriteLine(file);
@@ -71,8 +72,8 @@ namespace CustomCraft2SML
                 if (!File.Exists(outFile))
                 {
                     Stream s = ass.GetManifestResourceStream(resource);
-                    BinaryReader r = new BinaryReader(s);
-                    File.WriteAllBytes(outFile,r.ReadBytes((int)s.Length));
+                    var r = new BinaryReader(s);
+                    File.WriteAllBytes(outFile, r.ReadBytes((int)s.Length));
                 }
             }
         }

@@ -77,6 +77,7 @@
   <ItemGroup>
     <Compile Include="Interfaces\ICustomFood.cs" />
     <Compile Include="Serialization\Components\EmColor.cs" />
+    <Compile Include="Serialization\CustomCraft2Config.cs" />
     <Compile Include="Serialization\Entries\CfCustomFood.cs" />
     <Compile Include="Serialization\Entries\CustomFood.cs" />
     <Compile Include="Serialization\Lists\CustomFoodList.cs" />
@@ -188,9 +189,9 @@
     <Content Include="SampleFiles\MovedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="SpriteAssets\Fabricator.png" />
-    <EmbeddedResource Include="SpriteAssets\MoonPool.png" />
-    <EmbeddedResource Include="SpriteAssets\Workbench.png" />
+    <EmbeddedResource Include="SpriteAssets\MoonPool.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />

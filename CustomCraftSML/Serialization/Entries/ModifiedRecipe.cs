@@ -55,11 +55,7 @@
 
                 return null;
             }
-            set
-            {
-                if (amountCrafted.HasValue = value.HasValue)
-                    amountCrafted.Value = value.Value;
-            }
+            set => amountCrafted.Value = value.Value;
         }
 
         protected bool DefaultForceUnlock = false;

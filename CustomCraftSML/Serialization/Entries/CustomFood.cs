@@ -2,9 +2,9 @@
 {
     using Common;
     using Common.EasyMarkup;
-    using CustomCraft2SML.Serialization.Lists;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
+    using CustomCraft2SML.Serialization.Lists;
     using CustomCraft2SML.SMLHelperItems;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
@@ -202,7 +202,7 @@
                     }
                 }
 
-                if (IsMappedFoodType((TechType) this.FoodType))
+                if (IsMappedFoodType((TechType)this.FoodType))
                 {
                     return (TechType)this.FoodType;
                 }
@@ -213,19 +213,16 @@
             }
         }
 
-        internal string IconName
+        internal string DefaultIconFileName
         {
             get
             {
-                string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
-
-                if (File.Exists(imagePath))
-                    return imagePath;
+                int index = (this.ItemID.GetHashCode() % 8) + 1;
 
                 if (this.FoodValue >= this.WaterValue)
-                    return "cake.png";
+                    return $"cake{index}.png";
                 else
-                    return "juice.png";
+                    return $"juice{index}.png";
             }
         }
 
@@ -246,7 +243,7 @@
 
             techGroup.Value = TechGroup.Survival;
             techCategory.DefaultValue = TechCategory.CookedFood;
-            foodModel = (EmProperty<FoodModel>) Properties[FoodModelKey];
+            foodModel = (EmProperty<FoodModel>)Properties[FoodModelKey];
         }
 
         internal override EmProperty Copy()
@@ -267,9 +264,15 @@
                 return false;
             }
 
-            if (this.WaterValue < MinValue || this.WaterValue > MaxValue)
+            if (this.WaterValue < MinValue || this.FoodValue > MaxValue)
             {
                 QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {WaterKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
+                return false;
+            }
+
+            if (this.WaterValue == 0 & this.FoodValue == 0)
+            {
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' must have at least one non-zero value for either {FoodKey} or {WaterKey}. Entry will be discarded.");
                 return false;
             }
 
@@ -301,19 +304,22 @@
                 return;
             }
 
-            // TODO - Handle more custom icons
-            if (this.FoodValue >= this.WaterValue)
+            // More defaulting behavior
+            imagePath = IOPath.Combine(FileLocations.AssetsFolder, this.DefaultIconFileName);
+
+            if (File.Exists(imagePath))
             {
-                SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.NutrientBlock));
-                return;
-            }
-            else
-            {
-                SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.FilteredWater));
+                QuickLogger.Debug($"Default sprite used for {this.Key} '{this.ItemID}' from {this.Origin}");
+                SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get((TechType)this.FoodType));
                 return;
             }
 
-            //QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
+            QuickLogger.Warning($"Missing all custom sprites for  {this.Key} '{this.ItemID}' from {this.Origin}. Using last fallback.");
+            TechType fallbackIcon = this.FoodValue >= this.WaterValue
+                ? TechType.NutrientBlock
+                : TechType.FilteredWater;
+
+            SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(fallbackIcon));
         }
 
         protected override void HandleCustomPrefab()

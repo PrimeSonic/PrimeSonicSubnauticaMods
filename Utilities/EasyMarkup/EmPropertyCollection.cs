@@ -1,8 +1,8 @@
 ﻿namespace Common.EasyMarkup
 {
+    using Common;
     using System;
     using System.Collections.Generic;
-    using Common;
 
     public abstract class EmPropertyCollection : EmProperty
     {
@@ -32,12 +32,29 @@
         public override string ToString()
         {
             string val = $"{this.Key}{SpChar_KeyDelimiter}{SpChar_BeginComplexValue}";
-            foreach (string key in Properties.Keys)
+            foreach (EmProperty property in Properties.Values)
             {
-                val += $"{Properties[key]}";
+                if (!property.HasValue && property.Optional)
+                    continue;
+
+                val += $"{property}";
             }
 
             return val + $"{SpChar_FinishComplexValue}{SpChar_ValueDelimiter}";
+        }
+
+        public override bool HasValue
+        {
+            get
+            {
+                foreach (EmProperty property in Properties.Values)
+                {
+                    if (property.HasValue)
+                        return true;
+                }
+
+                return false;
+            }
         }
 
         protected override string ExtractValue(StringBuffer fullString)

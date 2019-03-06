@@ -8,7 +8,7 @@
     {
         public const string MainKey = "ColorRGB";
 
-        public EmColorRGB() : this(MainKey, new float[3] { 0, 0, 0 })
+        public EmColorRGB() : this(MainKey, new float[0])
         {
         }
 
@@ -22,7 +22,7 @@
 
         internal Color GetColor()
         {
-            if (this.HasValidColor)
+            if (this.HasValue)
             {
                 return new Color(this.Values[0], this.Values[1], this.Values[2]);
             }
@@ -30,7 +30,15 @@
             return Color.black; // Fallback
         }
 
-        internal bool HasValidColor => this.HasValue && this.Values.Count == 3;
+        public override bool HasValue => this.Values.Count == 3;
+
+        public override string ToString()
+        {
+            if (this.Values.Count != 3)
+                return string.Empty;
+
+            return base.ToString();
+        }
 
         internal override EmProperty Copy()
         {
