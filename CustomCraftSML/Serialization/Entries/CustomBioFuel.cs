@@ -1,19 +1,21 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Components;
     using SMLHelper.V2.Handlers;
+    using System;
+    using System.Collections.Generic;
 
     internal class CustomBioFuel : EmTechTyped, ICustomBioFuel, ICustomCraft
     {
         private const string EnergyKey = "Energy";
 
-        internal static readonly string[] TutorialText = new[]
+        public string[] TutorialText => CustomBioFuelTutorial;
+
+        internal static readonly string[] CustomBioFuelTutorial = new[]
         {
             "CustomBioFuel: Customize the energy values of items in the BioReactor. ",
            $"    {EnergyKey}: Set this to the amount of energy the item provides via the BioReactor",
@@ -46,7 +48,10 @@
             set => emEnergy.Value = value;
         }
 
-        internal override EmProperty Copy() => new CustomBioFuel(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CustomBioFuel(this.Key, this.CopyDefinitions);
+        }
 
         public bool SendToSMLHelper()
         {

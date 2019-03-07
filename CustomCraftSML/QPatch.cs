@@ -9,15 +9,13 @@
 
     public static class QPatch
     {
-        private static readonly CustomCraft2Config Config = new CustomCraft2Config();
-
         public static void Patch()
         {
             QuickLogger.Info($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
 
             try
             {
-                CheckLogLevel();
+                CustomCraft2Config.CheckLogLevel();
 
                 RestoreAssets();
 
@@ -33,44 +31,21 @@
             }
         }
 
-        internal static void CheckLogLevel()
-        {
-            if (!File.Exists(FileLocations.ConfigFile))
-            {
-                File.WriteAllText(FileLocations.ConfigFile, Config.PrettyPrint());
-                QuickLogger.DebugLogsEnabled = false;
-                QuickLogger.Info("CustomCraft2Config file was not found. Default file written.");
-            }
-            else
-            {
-                string configText = File.ReadAllText(FileLocations.ConfigFile);
-
-                if (Config.FromString(configText))
-                {
-                    QuickLogger.DebugLogsEnabled = Config.EnabledDebugLogs;
-                }
-            }
-
-            if (QuickLogger.DebugLogsEnabled)
-                QuickLogger.Debug("Debug logging is enable");
-            else
-                QuickLogger.Info("To enable Debug logging, change the \"DebugLogsEnabled\" attribute in the mod.json file to true");
-        }
-
         internal static void RestoreAssets()
         {
-            string prefix = "CustomCraft2SML.SpriteAssets.";
+            string prefix = "CustomCraft2SML.Assets.";
 
             var ass = Assembly.GetExecutingAssembly();
             System.Collections.Generic.IEnumerable<string> resources = ass.GetManifestResourceNames().Where(name => name.StartsWith(prefix));
 
             foreach (string resource in resources)
             {
-                string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);
-                //Console.WriteLine(file);
-                string outFile = System.IO.Path.Combine(FileLocations.AssetsFolder, file);
+                string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);                
+                string outFile = Path.Combine(FileLocations.AssetsFolder, file);
                 if (!File.Exists(outFile))
                 {
+                    QuickLogger.Debug($"Restoring asset: {file}");
+
                     Stream s = ass.GetManifestResourceStream(resource);
                     var r = new BinaryReader(s);
                     File.WriteAllBytes(outFile, r.ReadBytes((int)s.Length));

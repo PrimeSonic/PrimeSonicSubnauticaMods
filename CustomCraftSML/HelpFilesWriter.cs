@@ -1,13 +1,14 @@
 ﻿namespace CustomCraft2SML
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using Common;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
 
     internal static partial class HelpFilesWriter
     {
@@ -86,7 +87,7 @@
 
             if (File.Exists(FileLocations.OriginalsFolder + fileName))
                 return;
-            
+
             File.WriteAllText(FileLocations.OriginalsFolder + fileName, PathHelper.GeneratePathString());
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
@@ -131,11 +132,7 @@
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            AddNonCraftingEntries(tutorialLines);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            AddCraftingEntries(tutorialLines);
+            AddWorkingFileTypes(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
@@ -145,54 +142,18 @@
             return tutorialLines.ToArray();
         }
 
-        private static void AddCraftingEntries(List<string> tutorialLines)
+        private static void AddWorkingFileTypes(List<string> tutorialLines)
         {
             tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add("--- Crafting Entries ---");
+            tutorialLines.Add("--- Working File Types ---");
             tutorialLines.Add(Environment.NewLine);
 
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(ModifiedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(AddedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(AliasRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(MovedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomCraftingTab.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomFood.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-        }
-
-        private static void AddNonCraftingEntries(List<string> tutorialLines)
-        {
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add("--- Non-Crafting Entries ---");
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomSize.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomBioFuel.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomFragmentCount.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
+            foreach (IParsingPackage package in WorkingFileParser.OrderedPackages)
+            {
+                tutorialLines.Add(HorizontalLine);
+                tutorialLines.AddRange(package.TutorialText);
+                tutorialLines.Add(Environment.NewLine);
+            }
         }
 
         private static void AddGettingStarted(List<string> tutorialLines)
@@ -243,7 +204,7 @@
             tutorialLines.Add("You can now make your own Custom Fabricators and set up your own crafting tree in them from scratch.");
             tutorialLines.Add("MovedRecipes can now copy an existing crafting node into another fabricator, even a custom one, without removing the original.");
             tutorialLines.Add("Everything that derives from ModifiedRecipes (which includes AddedRecipes, AliasRecipes, and now CustomFabricators) now has the 'UnlockedBy' property.");
-            tutorialLines.Add("UnlockedBy lets you specify a list of TechTypes that will be updated to unlock your main item whenever you discover any of those.");            
+            tutorialLines.Add("UnlockedBy lets you specify a list of TechTypes that will be updated to unlock your main item whenever you discover any of those.");
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
@@ -293,7 +254,5 @@
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
-
-
     }
 }

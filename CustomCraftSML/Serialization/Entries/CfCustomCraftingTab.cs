@@ -1,12 +1,12 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.PublicAPI;
     using SMLHelper.V2.Crafting;
+    using System;
+    using System.Collections.Generic;
 
     internal class CfCustomCraftingTab : CustomCraftingTab, ICustomFabricatorEntry
     {
@@ -63,6 +63,9 @@
             }
         }
 
-        internal override EmProperty Copy() => new CfCustomCraftingTab(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CfCustomCraftingTab(this.Key, this.CopyDefinitions);
+        }
     }
 }

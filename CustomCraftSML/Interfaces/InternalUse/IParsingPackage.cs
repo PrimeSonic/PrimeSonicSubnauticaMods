@@ -9,5 +9,6 @@
         void SendToSMLHelper();
         string ListKey { get; }
         string TypeName { get; }
+        string[] TutorialText { get; }
     }
 }

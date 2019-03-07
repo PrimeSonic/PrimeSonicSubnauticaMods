@@ -26,7 +26,7 @@
     internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe, CfCustomFood>, IFabricatorEntries
     {
         protected const string ModelKey = "Model";
-        protected const string ColorRGBKey = "ColorRGB";
+        protected const string ColorTintKey = "ColorTint";
         protected const string AllowedInBaseKey = "AllowedInBase";
         protected const string AllowedInCyclopsKey = "AllowedInCyclops";
         protected const string CfCustomCraftingTabListKey = CustomCraftingTabList.ListKey;
@@ -35,13 +35,19 @@
         protected const string CfMovedRecipeListKey = MovedRecipeList.ListKey;
         protected const string CfCustomFoodListKey = CustomFoodList.ListKey;
 
-        internal static new readonly string[] TutorialText = new[]
+        public override string[] TutorialText => CustomFabricatorTutorial;
+
+        internal static readonly string[] CustomFabricatorTutorial = new[]
         {
             $"{CustomFabricatorList.ListKey}: Create your own fabricator with your own completely custom crafting tree!",
             $"    Custom fabricators have all the same properties as {AliasRecipeList.ListKey} with the following additions.",
             $"    {ModelKey}: Choose from one of three visual styles for your fabricator.",
             $"        Valid options are: {ModelTypes.Fabricator}|{ModelTypes.MoonPool}|{ModelTypes.Workbench}",
             $"        This property is optional. Defaults to {ModelTypes.Fabricator}.",
+            $"    {ColorTintKey}: This optional property lets you apply a color tint over your fabricator.",
+            $"        This value is a list of floating point numbers.",
+            $"        Use three numbers to set the value as RGB. Example: 1.0, 0.64, 0.0 makes an orange color.",
+            $"        Use four numbers to set the value as RGBA (RGB with Alpha).",
             $"    {AllowedInBaseKey}: Determines if your fabricator can or can't be built inside a stationary base. ",
             $"        This property is optional. Defaults to YES.",
             $"    {AllowedInCyclopsKey}: Determines if your fabricator can or can't be built inside a Cyclops. ",
@@ -57,14 +63,14 @@
         };
 
         protected readonly EmProperty<ModelTypes> model;
-        protected readonly EmColorRGB colorRGB;
+        protected readonly EmColorRGB colortint;
         protected readonly EmYesNo allowedInBase;
         protected readonly EmYesNo allowedInCyclops;
 
         protected static List<EmProperty> CustomFabricatorProperties => new List<EmProperty>(AliasRecipeProperties)
         {
             new EmProperty<ModelTypes>(ModelKey, ModelTypes.Fabricator),
-            new EmColorRGB(ColorRGBKey) { Optional = true },
+            new EmColorRGB(ColorTintKey) { Optional = true },
             new EmYesNo(AllowedInBaseKey, true) { Optional = true },
             new EmYesNo(AllowedInCyclopsKey, true) { Optional = true },
             new EmPropertyCollectionList<CfCustomCraftingTab>(CfCustomCraftingTabListKey) { Optional = true },
@@ -81,7 +87,7 @@
         protected CustomFabricator(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             model = (EmProperty<ModelTypes>)Properties[ModelKey];
-            colorRGB = (EmColorRGB)Properties[ColorRGBKey];
+            colortint = (EmColorRGB)Properties[ColorTintKey];
             allowedInBase = (EmYesNo)Properties[AllowedInBaseKey];
             allowedInCyclops = (EmYesNo)Properties[AllowedInCyclopsKey];
             this.CustomCraftingTabs = (EmPropertyCollectionList<CfCustomCraftingTab>)Properties[CfCustomCraftingTabListKey];
@@ -99,9 +105,9 @@
             set => model.Value = value;
         }
 
-        public Color ColorRGB => colorRGB.GetColor();
+        public Color ColorTint => colortint.GetColor();
 
-        internal bool HasColorValue => colorRGB.HasValue;
+        internal bool HasColorValue => colortint.HasValue;
 
         public bool AllowedInBase
         {
@@ -283,33 +289,36 @@
 
         protected override void HandleCustomSprite()
         {
-            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
+            Atlas.Sprite sprite;
 
+            string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
             if (File.Exists(imagePath))
             {
                 QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
-                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-                SpriteHandler.RegisterSprite(this.TechType, sprite);
-                return;
+                sprite = ImageUtils.LoadSpriteFromFile(imagePath);
             }
             else
             {
-                QuickLogger.Debug($"Default sprite for {this.Key} '{this.ItemID}' from {this.Origin}");
+                QuickLogger.Debug($"Default sprite for {this.Key} '{this.ItemID}' from {this.Origin}");                
                 switch (this.Model)
-                {
+                {                    
                     case ModelTypes.Fabricator:
-                        SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.Fabricator));
+                        sprite = SpriteManager.Get(TechType.Fabricator);
                         break;
                     case ModelTypes.Workbench:
-                        SpriteHandler.RegisterSprite(this.TechType, SpriteManager.Get(TechType.Workbench));
+                        sprite = SpriteManager.Get(TechType.Workbench);
                         break;
                     case ModelTypes.MoonPool:
                         imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
-                        Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
-                        SpriteHandler.RegisterSprite(this.TechType, sprite);
+                        sprite = ImageUtils.LoadSpriteFromFile(imagePath);                        
                         break;
-                }
+                    default:
+                        throw new InvalidOperationException("Invalid ModelType encountered in HandleCustomSprite");
+                }                
+
             }
+
+            SpriteHandler.RegisterSprite(this.TechType, sprite);
         }
 
         protected override void HandleCraftTreeAddition()

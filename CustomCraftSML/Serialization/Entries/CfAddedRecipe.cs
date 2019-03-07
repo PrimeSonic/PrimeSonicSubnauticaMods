@@ -1,9 +1,9 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.PublicAPI;
+    using System.Collections.Generic;
 
     internal class CfAddedRecipe : AddedRecipe, ICustomFabricatorEntry
     {
@@ -23,8 +23,14 @@
 
         public CraftingPath CraftingNodePath => new CraftingPath(this.Path);
 
-        protected override void HandleCraftTreeAddition() => this.ParentFabricator.HandleCraftTreeAddition(this);
+        protected override void HandleCraftTreeAddition()
+        {
+            this.ParentFabricator.HandleCraftTreeAddition(this);
+        }
 
-        internal override EmProperty Copy() => new CfAddedRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CfAddedRecipe(this.Key, this.CopyDefinitions);
+        }
     }
 }

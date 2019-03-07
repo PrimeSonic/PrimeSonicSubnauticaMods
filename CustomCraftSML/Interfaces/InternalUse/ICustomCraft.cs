@@ -9,5 +9,6 @@
         bool SendToSMLHelper();
 
         OriginFile Origin { get; set; }
+        string[] TutorialText { get; }
     }
 }

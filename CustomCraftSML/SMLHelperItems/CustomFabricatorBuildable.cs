@@ -87,7 +87,7 @@
             if (FabricatorDetails.HasColorValue)
             {
                 SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();             
-                skinnedMeshRenderer.material.color = FabricatorDetails.ColorRGB; // Tint option available
+                skinnedMeshRenderer.material.color = FabricatorDetails.ColorTint; // Tint option available
             }
 
             // Associate power relay

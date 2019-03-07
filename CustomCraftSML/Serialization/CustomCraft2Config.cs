@@ -1,10 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
+    using Common;
     using Common.EasyMarkup;
     using System.Collections.Generic;
+    using System.IO;
 
     internal class CustomCraft2Config : EmPropertyCollection
     {
+        private static readonly CustomCraft2Config Config = new CustomCraft2Config();
+
         internal const string CC2Key = "CustomCraft2Configs";
         internal const string FileName = "CustomCraft2Config.txt";
         private const string DebugLogsKey = "DebugLogsEnabled";
@@ -31,6 +35,30 @@
         internal override EmProperty Copy()
         {
             return new CustomCraft2Config(this.Key, this.CopyDefinitions);
+        }
+
+        internal static void CheckLogLevel()
+        {
+            if (!File.Exists(FileLocations.ConfigFile))
+            {
+                File.WriteAllText(FileLocations.ConfigFile, Config.PrettyPrint());
+                QuickLogger.DebugLogsEnabled = false;
+                QuickLogger.Info("CustomCraft2Config file was not found. Default file written.");
+            }
+            else
+            {
+                string configText = File.ReadAllText(FileLocations.ConfigFile);
+
+                if (Config.FromString(configText))
+                {
+                    QuickLogger.DebugLogsEnabled = Config.EnabledDebugLogs;
+                }
+            }
+
+            if (QuickLogger.DebugLogsEnabled)
+                QuickLogger.Debug("Debug logging is enable");
+            else
+                QuickLogger.Info("To enable Debug logging, change the \"DebugLogsEnabled\" attribute in the mod.json file to true");
         }
     }
 }

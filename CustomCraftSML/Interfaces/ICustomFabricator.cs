@@ -12,7 +12,7 @@
         where Food : EmPropertyCollection, ICustomFood, new()
     {
         ModelTypes Model { get; }
-        Color ColorRGB { get; }
+        Color ColorTint { get; }
         bool AllowedInBase { get; }
         bool AllowedInCyclops { get; }
 

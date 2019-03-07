@@ -20,7 +20,9 @@
 
         public new const string TypeName = "AliasRecipe";
 
-        internal static new readonly string[] TutorialText = new[]
+        public override string[] TutorialText => AliasRecipeTutorial;
+
+        internal static readonly string[] AliasRecipeTutorial = new[]
         {
            $"{AliasRecipeList.ListKey}: A powerful tool with multiple applications.",
             "    Alias recipes allow you to create multiple ways to craft the same item, bypassing one of the limitations of Subnautica's crafting system.",

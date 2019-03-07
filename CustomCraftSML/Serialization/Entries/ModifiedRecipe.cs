@@ -13,7 +13,9 @@
 
     internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     {
-        internal static readonly string[] TutorialText = new[]
+        public virtual string[] TutorialText => ModifiedRecipeTutorial;
+
+        internal static readonly string[] ModifiedRecipeTutorial = new[]
         {
            $"{ModifiedRecipeList.ListKey}: Modify an existing crafting recipe. ",
            $"    {IngredientsKey}: Completely replace a recipe's required ingredients.",

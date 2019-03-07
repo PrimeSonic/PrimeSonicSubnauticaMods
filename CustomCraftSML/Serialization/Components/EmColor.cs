@@ -24,13 +24,35 @@
         {
             if (this.HasValue)
             {
-                return new Color(this.Values[0], this.Values[1], this.Values[2]);
+                if (this.Values.Count == 3)
+                    return new Color(this.Values[0], this.Values[1], this.Values[2]);
+                else // 4
+                    return new Color(this.Values[0], this.Values[1], this.Values[2], this.Values[3]);
             }
 
-            return Color.black; // Fallback
+            return new Color(0, 0, 0, 0); // Fallback. Should be invisible.
         }
 
-        public override bool HasValue => this.Values.Count == 3;
+        public override bool HasValue
+        {
+            get
+            {
+                if (this.Values.Count == 3 || this.Values.Count == 4)
+                {
+                    foreach (float value in this.Values)
+                    {
+                        if (value < 0f || value > 1f)
+                            return false;
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
 
         public override string ToString()
         {

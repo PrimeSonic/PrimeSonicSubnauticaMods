@@ -1,6 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -9,6 +8,7 @@
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
+    using System.Collections.Generic;
 
     internal class MovedRecipe : EmTechTyped, IMovedRecipe, ICustomCraft
     {
@@ -19,10 +19,12 @@
 
         public const string TypeName = "MovedRecipe";
 
-        internal static readonly string[] TutorialText = new[]
+        public string[] TutorialText => MovedRecipeTutorial;
+
+        internal static readonly string[] MovedRecipeTutorial = new[]
         {
            $"{MovedRecipeList.ListKey}: Further customize the crafting tree to your liking.",
-           $"    All moved recipes work with existing crafting nodes. So all moved recipe entries should be for items that can already be crafted.",           
+           $"    All moved recipes work with existing crafting nodes. So all moved recipe entries should be for items that can already be crafted.",
            $"    {OldPathKey}: If you want to move a craft node from its original location, this must be set.",
            $"    {OldPathKey}: If you want to move a craft node from its original location, this must be set.",
            $"        This node is optional if {CopyKey} is set to 'YES'.",
@@ -96,9 +98,15 @@
 
         public string ID => this.ItemID;
 
-        internal override EmProperty Copy() => new MovedRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new MovedRecipe(this.Key, this.CopyDefinitions);
+        }
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & IsValidState();
+        public override bool PassesPreValidation()
+        {
+            return base.PassesPreValidation() & IsValidState();
+        }
 
         private bool IsValidState()
         {
