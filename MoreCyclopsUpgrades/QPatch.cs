@@ -77,9 +77,9 @@
         private static void PatchBioEnergy(EmModPatchConfig modConfig)
         {
             if (modConfig.EnableBioEnergy)
-                QuickLogger.Info("Patching Cyclops BioReactor");
+                QuickLogger.Info("Patching Cyclops Bioreactor");
             else
-                QuickLogger.Info("Cyclops BioReactor disabled by config settings");
+                QuickLogger.Info("Cyclops Bioreactor disabled by config settings");
 
             var cyBioEnergy = new CyBioReactor();
 

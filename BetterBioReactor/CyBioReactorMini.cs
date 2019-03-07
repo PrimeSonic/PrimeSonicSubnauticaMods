@@ -1,9 +1,9 @@
 ﻿namespace BetterBioReactor
 {
-    using System.Collections.Generic;
     using BetterBioReactor.SaveData;
     using Common;
     using ProtoBuf;
+    using System.Collections.Generic;
     using UnityEngine;
 
     // The immediate access to the internals of the BaseBioReactor (without the use of Reflection) was made possible thanks to the AssemblyPublicizer
@@ -32,9 +32,11 @@
         private float numberOfContainerSlots = 12;
         private CyBioReactorSaveData SaveData;
         private readonly List<BioEnergy> MaterialsProcessing = new List<BioEnergy>();
-        private readonly List<BioEnergy> FullyConsumed = new List<BioEnergy>();        
+        private readonly List<BioEnergy> FullyConsumed = new List<BioEnergy>();
 
         public int MaxPower = -1;
+        public string MaxPowerText => $"{MaxPower}{(this.BioReactor.producingPower ? "+" : "")}";
+        public int CurrentPower => Mathf.RoundToInt(this.BioReactor._powerSource.GetPower());
 
         public BaseBioReactor BioReactor { get; private set; }
 
@@ -68,11 +70,9 @@
         internal void OnHover()
         {
             HandReticle main = HandReticle.main;
-            int currentPower = Mathf.RoundToInt(this.BioReactor._powerSource.GetPower());
-            string maxPowerText = $"{MaxPower}{(this.BioReactor.producingPower ? "+" : "")}";
 
             // All this is getting updated in Unity 2018
-            main.SetInteractText(Language.main.GetFormat("UseBaseBioReactor", currentPower, maxPowerText), "Tooltip_UseBaseBioReactor", false, true, true);
+            main.SetInteractText(Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText), "Tooltip_UseBaseBioReactor", false, true, true);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -177,13 +177,22 @@
 
         internal void UpdateDisplayText()
         {
-            if (!pdaIsOpen)
-                return;
-
             if (textDelay-- > 0)
                 return; // Slow down the text update
 
             textDelay = TextDelayTicks;
+
+            if (MaterialsProcessing.Count > 0 || this.CurrentPower > 0)
+            {
+                string maxPowerText = this.MaxPowerText;
+                string currentPowerString = this.CurrentPower.ToString().PadLeft(maxPowerText.Length, ' ');
+
+                BaseBioReactorGeometry baseBioReactorGeometry = this.BioReactor.GetModel();
+                baseBioReactorGeometry.text.text = $"<color=#00ff00>{Language.main.Get("BaseBioReactorActive")}\n{currentPowerString}/{maxPowerText}</color>";
+            }
+
+            if (!pdaIsOpen)
+                return;
 
             foreach (BioEnergy material in MaterialsProcessing)
                 material.UpdateInventoryText();
@@ -206,7 +215,7 @@
         }
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
-        {            
+        {
             QuickLogger.Debug("Looking for save data for object tree");
 
             this.BioReactor.container.Clear();
@@ -215,7 +224,7 @@
             {
                 isLoadingSaveData = true;
                 QuickLogger.Debug("Save data found");
-            }            
+            }
         }
 
         private void RestoreItemsFromSaveData()
