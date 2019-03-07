@@ -56,8 +56,9 @@
         private static void GenerateOriginalBioFuels()
         {
             const string fileName = "BioReactor_Values.txt";
+            const string Path = FileLocations.OriginalsFolder + fileName;
 
-            if (File.Exists(FileLocations.OriginalsFolder + fileName))
+            if (File.Exists(Path))
                 return;
 
             Dictionary<TechType, float> allBioFuels = ValidBioFuels.charge;
@@ -76,7 +77,7 @@
 
             printyPrints.Add(bioFuelList.PrettyPrint());
 
-            File.WriteAllLines(FileLocations.OriginalsFolder + fileName, printyPrints.ToArray());
+            File.WriteAllLines(Path, printyPrints.ToArray());
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -84,11 +85,34 @@
         private static void GenerateOriginalCraftingPaths()
         {
             const string fileName = "CraftingPaths.txt";
+            const string Path = FileLocations.OriginalsFolder + fileName;
 
-            if (File.Exists(FileLocations.OriginalsFolder + fileName))
+            if (File.Exists(Path))
                 return;
 
-            File.WriteAllText(FileLocations.OriginalsFolder + fileName, PathHelper.GeneratePathString());
+            File.WriteAllText(Path, PathHelper.GeneratePathString());
+
+            QuickLogger.Debug($"{fileName} file not found. File generated.");
+        }
+
+        private static void GenerateValidFoodModels()
+        {
+            const string fileName = "FoodModels.txt";
+            const string Path = FileLocations.OriginalsFolder + fileName;
+
+            if (File.Exists(Path))
+                return;
+
+            var models = (FoodModel[])Enum.GetValues(typeof(FoodModel));
+
+            var strings = new string[models.Length];
+
+            for (int i = 0; i < models.Length; i++)
+            {
+                strings[i] = models[i].ToString();
+            }
+
+            File.WriteAllLines(Path, strings);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -132,11 +156,11 @@
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            AddWorkingFileTypes(tutorialLines);
+            AddChangeLog(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            AddChangeLog(tutorialLines);
+            AddWorkingFileTypes(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             return tutorialLines.ToArray();
@@ -195,7 +219,7 @@
             tutorialLines.Add(HorizontalLine);
             tutorialLines.Add("Version 1.8 adds the long awaited custom foods");
             tutorialLines.Add("You can now create foods with custom food and water values and change the speed of decomposition for your foods.");
-            tutorialLines.Add("Additionally you can change the model your item has to already existing foods, for example a Cooked Peeper, otherwise it will auto-select using the food and water values.");
+            tutorialLines.Add("Additionally you can change the model your item uses to already existing foods, for example a Cooked Peeper, otherwise it will auto-select using the food and water values.");
             tutorialLines.Add("CustomFoods are available in the CustomFabricators too.");
             tutorialLines.Add(Environment.NewLine);
 

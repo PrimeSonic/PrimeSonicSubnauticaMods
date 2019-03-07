@@ -9,6 +9,5 @@
   "Game": "Subnautica",
   "Dependencies": [ "SMLHelper" ],
   "Priority": "Last",
-  "LoadAfter": [ "DecorationsMod", "MidGameBatteries",  "UpgradedVehicles", "MoreCyclopsUpgrades", "MoreSeamothUpgrades", "ScannerModule", "RepairModule", "LaserCannon" ],
-  "DebugLogsEnabled": false,
+  "LoadAfter": [ "DecorationsMod", "MidGameBatteries",  "UpgradedVehicles", "MoreCyclopsUpgrades", "MoreSeamothUpgrades", "ScannerModule", "RepairModule", "LaserCannon" ]
 }

@@ -13,66 +13,29 @@
     using System.IO;
     using IOPath = System.IO.Path;
 
-    public enum FoodModel
-    {
-        None = TechType.None,
-        BigFilteredWater = TechType.BigFilteredWater,
-        DisinfectedWater = TechType.DisinfectedWater,
-        FilteredWater = TechType.FilteredWater,
-        StillsuitWater = TechType.StillsuitWater,
-        BulboTreePiece = TechType.BulboTreePiece,
-        PurpleVegetable = TechType.PurpleVegetable,
-        CreepvinePiece = TechType.CreepvinePiece,
-        JellyPlant = TechType.JellyPlant,
-        KooshChunk = TechType.KooshChunk,
-        HangingFruit = TechType.HangingFruit,
-        Melon = TechType.Melon,
-        NutrientBlock = TechType.NutrientBlock,
-        CookedPeeper = TechType.CookedPeeper,
-        CookedHoleFish = TechType.CookedHoleFish,
-        CookedGarryFish = TechType.CookedGarryFish,
-        CookedReginald = TechType.CookedReginald,
-        CookedBladderfish = TechType.CookedBladderfish,
-        CookedHoverfish = TechType.CookedHoverfish,
-        CookedSpadefish = TechType.CookedSpadefish,
-        CookedBoomerang = TechType.CookedBoomerang,
-        CookedEyeye = TechType.CookedEyeye,
-        CookedOculus = TechType.CookedOculus,
-        CookedHoopfish = TechType.CookedHoopfish,
-        CookedSpinefish = TechType.CookedSpinefish,
-        CookedLavaEyeye = TechType.CookedLavaEyeye,
-        CookedLavaBoomerang = TechType.CookedLavaBoomerang,
-        CuredPeeper = TechType.CuredPeeper,
-        CuredHoleFish = TechType.CuredHoleFish,
-        CuredGarryFish = TechType.CuredGarryFish,
-        CuredReginald = TechType.CuredReginald,
-        CuredBladderfish = TechType.CuredBladderfish,
-        CuredHoverfish = TechType.CuredHoverfish,
-        CuredSpadefish = TechType.CuredSpadefish,
-        CuredBoomerang = TechType.CuredBoomerang,
-        CuredEyeye = TechType.CuredEyeye,
-        CuredOculus = TechType.CuredOculus,
-        CuredHoopfish = TechType.CuredHoopfish,
-        CuredSpinefish = TechType.CuredSpinefish,
-        CuredLavaEyeye = TechType.CuredLavaEyeye,
-        CuredLavaBoomerang = TechType.CuredLavaBoomerang,
-    }
-
     internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
     {
-        internal static new readonly string[] TutorialText = new[]
+        public override string[] TutorialText => CustomFoodTutorialText;
+
+        internal static readonly string[] CustomFoodTutorialText = new[]
         {
             $"{CustomFoodList.ListKey}: A powerful tool to satisfy the insatiable.",
-            "    Custom foods allow you to create custom eatables, for example Hamburgers or Sodas",
+            "    Custom foods allow you to create custom eatables, for example Hamburgers or Sodas.",
             $"    {CustomFoodList.ListKey} have all the same properties of {AliasRecipeList.ListKey}, but when creating your own items, you will want to include these new properties:",
             $"        {FoodKey}: Defines how much food the user will gain on consumption.",
+            $"            Must be between {MinValue} and {MaxValue}.",
             $"        {WaterKey}: Defines how much water the user will gain on consumption.",
-            $"        {DecayRateKey}: Defines the speed at which food will decompose. If set to 1 it will decompose as fast as any cooked fish, if set to 2 it will decay twice as fast, and if set to 0 it will not decay.",
-            "            Without this property, the food will not decay.",
+            $"            Must be between {MinValue} and {MaxValue}.",
+            $"        {DecayRateKey}: An optional property that defines the speed at which food will decompose.",
+            "            If set to 1 it will decompose as fast as any cooked fish." +
+            "            If set to 2 it will decay twice as fast.",
+            "            If set to 0.5 it will decay half as fast.",
+            "            And if set to 0 it will not decay.",
+            "            Without this property, the food item will not decay.",
             $"        {OverfillKey}: Defines if the eaten item can exceed the normal food-limit.",
-            "            If not defined it defaults to true.",
+            "            Defaults to YES when not present.",
             $"        {FoodModelKey}: Sets the model the food should use in the fabricator and upon being dropped. This needs to be an already existing food or drink.",
-            "            Leaving out this property results in an automatic definition using the food and water values.",
+            "            Leaving out this property results in an automatic definition based on the food and water values.",
         };
 
         // We may need this later.
