@@ -348,6 +348,15 @@
                 KnownTechHandler.SetAnalysisTechEntry(this.TechType, this.UnlockingItems);
             }
 
+            if (this.UnlockedByItems.Count > 0)
+            {
+                TechType[] thisTechType = new[] { this.TechType };
+                foreach (TechType unlockedByItem in this.UnlockedByItems)
+                {
+                    KnownTechHandler.SetAnalysisTechEntry(unlockedByItem, thisTechType);
+                }
+            }
+
             return true;
         }
     }
