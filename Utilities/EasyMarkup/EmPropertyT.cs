@@ -1,14 +1,15 @@
 ﻿namespace Common.EasyMarkup
 {
+    using Common;
     using System;
     using System.Globalization;
-    using Common;
 
     public class EmProperty<T> : EmProperty, IValueConfirmation where T : IConvertible
-    {        
+    {
+        private bool hasValue = false;
         public string InLineComment { get; set; } = null;
 
-        public bool HasValue { get; set; } = false;
+        public override bool HasValue => hasValue;
 
         public T DefaultValue { get; set; } = default;
 
@@ -22,7 +23,8 @@
             set
             {
                 ObjValue = value;
-                this.HasValue = true;
+                hasValue = value != null;
+
                 SerializedValue = ObjValue?.ToString(CultureInfo.InvariantCulture);
             }
         }
@@ -50,7 +52,7 @@
 
             this.Value = ConvertFromSerial(serialValue);
 
-            this.HasValue = true;
+            hasValue = true;
 
             return serialValue;
         }
@@ -65,7 +67,7 @@
             }
             catch
             {
-                this.HasValue = false;
+                hasValue = false;
                 return this.DefaultValue;
             }
         }

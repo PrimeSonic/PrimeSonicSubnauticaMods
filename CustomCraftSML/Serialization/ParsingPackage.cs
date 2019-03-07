@@ -1,9 +1,9 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
+    using System.Collections.Generic;
 
     internal class ParsingPackage<CustomCraftEntry, EmCollectionListT> : IParsingPackage
             where CustomCraftEntry : EmPropertyCollection, ICustomCraft, new()
@@ -15,6 +15,7 @@
         internal IDictionary<string, CustomCraftEntry> UniqueEntries { get; } = new Dictionary<string, CustomCraftEntry>();
 
         public string TypeName { get; } = typeof(CustomCraftEntry).Name;
+        public string[] TutorialText { get; } = (new CustomCraftEntry()).TutorialText;
 
         public ParsingPackage(string listKey)
         {

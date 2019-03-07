@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
@@ -12,27 +13,29 @@
 
     internal static class WorkingFileParser
     {
-        internal static readonly ParsingPackage<CustomCraftingTab, CustomCraftingTabList> CustomTabs = new ParsingPackage<CustomCraftingTab, CustomCraftingTabList>(CustomCraftingTabList.ListKey);
-        internal static readonly ParsingPackage<MovedRecipe, MovedRecipeList> MovedRecipes = new ParsingPackage<MovedRecipe, MovedRecipeList>(MovedRecipeList.ListKey);
-        internal static readonly ParsingPackage<AddedRecipe, AddedRecipeList> AddedRecipes = new ParsingPackage<AddedRecipe, AddedRecipeList>(AddedRecipeList.ListKey);
-        internal static readonly ParsingPackage<AliasRecipe, AliasRecipeList> AliasRecipes = new ParsingPackage<AliasRecipe, AliasRecipeList>(AliasRecipeList.ListKey);
-        internal static readonly ParsingPackage<CustomFabricator, CustomFabricatorList> CustomFabricatorParser = new ParsingPackage<CustomFabricator, CustomFabricatorList>(CustomFabricatorList.ListKey);
-        internal static readonly ParsingPackage<ModifiedRecipe, ModifiedRecipeList> ModifiedRecipeParser = new ParsingPackage<ModifiedRecipe, ModifiedRecipeList>(ModifiedRecipeList.ListKey);
-        internal static readonly ParsingPackage<CustomSize, CustomSizeList> CustomSizeParser = new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey);
-        internal static readonly ParsingPackage<CustomBioFuel, CustomBioFuelList> CustomBioFuelParser = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
-        internal static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCountParser = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
+        private static readonly ParsingPackage<CustomCraftingTab, CustomCraftingTabList> CustomTabs = new ParsingPackage<CustomCraftingTab, CustomCraftingTabList>(CustomCraftingTabList.ListKey);
+        private static readonly ParsingPackage<MovedRecipe, MovedRecipeList> MovedRecipes = new ParsingPackage<MovedRecipe, MovedRecipeList>(MovedRecipeList.ListKey);
+        private static readonly ParsingPackage<AddedRecipe, AddedRecipeList> AddedRecipes = new ParsingPackage<AddedRecipe, AddedRecipeList>(AddedRecipeList.ListKey);
+        private static readonly ParsingPackage<AliasRecipe, AliasRecipeList> AliasRecipes = new ParsingPackage<AliasRecipe, AliasRecipeList>(AliasRecipeList.ListKey);
+        private static readonly ParsingPackage<CustomFabricator, CustomFabricatorList> CustomFabricatorParser = new ParsingPackage<CustomFabricator, CustomFabricatorList>(CustomFabricatorList.ListKey);
+        private static readonly ParsingPackage<ModifiedRecipe, ModifiedRecipeList> ModifiedRecipeParser = new ParsingPackage<ModifiedRecipe, ModifiedRecipeList>(ModifiedRecipeList.ListKey);
+        private static readonly ParsingPackage<CustomSize, CustomSizeList> CustomSizeParser = new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey);
+        private static readonly ParsingPackage<CustomBioFuel, CustomBioFuelList> CustomBioFuelParser = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
+        private static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCountParser = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
+        private static readonly ParsingPackage<CustomFood, CustomFoodList> CustomFoods = new ParsingPackage<CustomFood, CustomFoodList>(CustomFoodList.ListKey);
 
-        private static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
+        internal static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
         {
             CustomFabricatorParser,
             CustomTabs,            
             AddedRecipes,
             AliasRecipes,
             ModifiedRecipeParser,
+            CustomFoods,
             MovedRecipes,
+            CustomFragCountParser,
             CustomSizeParser,
             CustomBioFuelParser,
-            CustomFragCountParser
         };
 
         private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(9);
@@ -44,6 +47,9 @@
 
             if (!Directory.Exists(FileLocations.AssetsFolder))
                 Directory.CreateDirectory(FileLocations.AssetsFolder);
+
+            if (!Directory.Exists(FileLocations.WorkingFolder))
+                Directory.CreateDirectory(FileLocations.WorkingFolder);
 
             string[] workingFiles = Directory.GetFiles(FileLocations.WorkingFolder);
 
@@ -71,7 +77,7 @@
         {
             string fileName = Path.GetFileName(workingFilePath);
 
-            string serializedData = File.ReadAllText(workingFilePath);
+            string serializedData = File.ReadAllText(workingFilePath, Encoding.UTF8);
 
             if (string.IsNullOrEmpty(serializedData))
             {
@@ -122,6 +128,7 @@
             var allMoves = new HashSet<string>(MovedRecipes.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
             var allAdded = new HashSet<string>(AddedRecipes.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
             var allAlias = new HashSet<string>(AliasRecipes.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
+            var allFoods = new HashSet<string>(CustomFoods.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
 
             foreach (IFabricatorEntries entries in CustomFabricatorParser.UniqueEntries.Values)
             {                
@@ -129,6 +136,7 @@
                 ValidateSets(allMoves, entries.MovedRecipeIDs, entries.DuplicateMovedRecipeDiscovered);
                 ValidateSets(allAdded, entries.AddedRecipeIDs, entries.DuplicateAddedRecipeDiscovered);
                 ValidateSets(allAlias, entries.AliasRecipesIDs, entries.DuplicateAliasRecipesDiscovered);                                
+                ValidateSets(allFoods, entries.CustomFoodIDs, entries.DuplicateCustomFoodsDiscovered);                                
             }
         }
 

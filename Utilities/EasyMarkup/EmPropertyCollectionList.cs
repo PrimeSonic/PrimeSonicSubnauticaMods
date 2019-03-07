@@ -8,7 +8,7 @@
     public class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation 
         where ListedType : EmPropertyCollection, new()
     {
-        public bool HasValue => Count > 0;
+        public override bool HasValue => Count > 0;
 
         public Type ItemType => typeof(ListedType);
 
@@ -45,9 +45,12 @@
             {
                 val += SpChar_BeginComplexValue;
 
-                foreach (string key in collection.Keys)
+                foreach (EmProperty property in collection.Values)
                 {
-                    val += $"{collection[key]}";
+                    if (!property.HasValue && property.Optional)
+                        continue;
+
+                    val += $"{property}";
                 }
 
                 val += $"{SpChar_FinishComplexValue}{SpChar_ListItemSplitter}";

@@ -1,7 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -9,14 +7,18 @@
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
+    using System;
+    using System.Collections.Generic;
 
     internal class CustomFragmentCount : EmTechTyped, ICustomFragmentCount, ICustomCraft
     {
         private const string FragmentsToScanKey = "FragmentsToScan";
         private const string TypeName = "CustomFragments";
 
-        internal static readonly string[] TutorialText = new[]
-{
+        public string[] TutorialText => CustomFragmentCountTutorial;
+
+        internal static readonly string[] CustomFragmentCountTutorial = new[]
+        {
             $"{CustomFragmentCountList.ListKey}: Change how many fragments must be scanned to unlock recipes/blueprints",
             $"    In addition to the usual {ItemIdKey}, you only need one more property for this one:",
             $"        {FragmentsToScanKey}: Simply set this to the total number of fragments that must be scanned to unlock the item in question.",
@@ -54,7 +56,10 @@
             set => emFragmentCount.Value = value;
         }
 
-        internal override EmProperty Copy() => new CustomFragmentCount(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CustomFragmentCount(this.Key, this.CopyDefinitions);
+        }
 
         public bool SendToSMLHelper()
         {

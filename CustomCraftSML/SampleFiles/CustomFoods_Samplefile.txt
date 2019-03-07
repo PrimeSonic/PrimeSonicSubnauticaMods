@@ -1,0 +1,26 @@
+CustomFoods:
+(
+    ItemID: Peeperburger;
+    DecayRateMod: 0.5; 
+    DisplayName: "Peeperburger";
+    Tooltip: "PeeperBurger.  Made from peepers and other items from in the world to look like human food ";
+    AmountCrafted: 1;
+    Ingredients: 
+    (
+        ItemID: Peeper;
+        Required: 2;
+    ),
+    (
+        ItemID: CoralChunk;
+        Required: 2;
+    ),
+    (
+        ItemID: CreepvinePiece;
+        Required: 1;
+    );
+    Path: Fabricator/CustomFood3/Food;
+    FoodValue:20;
+    WaterValue:11;
+    ForceUnlockAtStart: YES;
+),
+

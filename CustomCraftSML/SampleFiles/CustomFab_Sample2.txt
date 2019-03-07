@@ -1,0 +1,48 @@
+CustomFabricators:
+(
+    ItemID:CF3mod;
+    Ingredients:
+        (ItemID:Titanium;Required:2;),
+        (ItemID:ComputerChip;Required:1;),
+        (ItemID:Peeper;Required:1;),
+        (ItemID:Lead;Required:1;);
+    ForceUnlockAtStart:yes;
+    UnlockedBy:Workbench,BaseUpgradeConsole,Cyclops;
+    PdaGroup:InteriorModules;
+    PdaCategory:InteriorModule;
+    DisplayName:" Flint Lockwood Diatonic Super Mutating Dynamic Food Replicator or FLDSMDFR";
+    Tooltip:"takes water and turns it to fooood.";
+    Model:MoonPool;
+    ColorRGB: 1.0, 0.64, 0.0 ;
+    AllowedInBase:YES;
+    AllowedInCyclops:YES;
+    CustomCraftingTabs:
+       (TabID:Foods;DisplayName:"Food Fabricator";SpriteItemID:Peeper;ParentTabPath:CF3mod;);
+   CustomFoods:
+    (
+    ItemID: Peeperburger;
+    DisplayName: "Peeperburger";
+    Tooltip: "PeeperBurger.  Made from peepers and other items from in the world to look like human food ";
+    AmountCrafted: 1;
+    Ingredients: 
+    (
+        ItemID: Peeper;
+        Required: 2;
+    ),
+    (
+        ItemID: CoralChunk;
+        Required: 2;
+    ),
+    (
+        ItemID: CreepvinePiece;
+        Required: 1;
+    );
+    Path: CF3mod/Foods;
+    FoodValue:20;
+    WaterValue:11;
+    DecayRateMod:1;
+    ForceUnlockAtStart: YES;
+    );
+);
+
+

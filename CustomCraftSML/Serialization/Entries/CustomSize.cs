@@ -1,7 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -9,10 +7,14 @@
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
+    using System;
+    using System.Collections.Generic;
 
     internal class CustomSize : EmTechTyped, ICustomSize, ICustomCraft
     {
-        internal static readonly string[] TutorialText = new[]
+        public string[] TutorialText => CustomSizeTutorial;
+
+        internal static readonly string[] CustomSizeTutorial = new[]
         {
            $"{CustomSizeList.ListKey}: Customize the space occupied by an inventory item.",
            $"    Width: Must be a value between {Min} and {Max}",
@@ -72,9 +74,15 @@
             emHeight = (EmProperty<short>)Properties[HeightKey];
         }
 
-        internal override EmProperty Copy() => new CustomSize(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CustomSize(this.Key, this.CopyDefinitions);
+        }
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & ValidateSizes();
+        public override bool PassesPreValidation()
+        {
+            return base.PassesPreValidation() & ValidateSizes();
+        }
 
         private bool ValidateSizes()
         {

@@ -1,7 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -10,6 +8,8 @@
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using System;
+    using System.Collections.Generic;
 
     internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
@@ -19,7 +19,9 @@
 
         public const string TypeName = "AddedRecipe";
 
-        internal static new readonly string[] TutorialText = new[]
+        public override string[] TutorialText => AddedRecipeTutorial;
+
+        internal static readonly string[] AddedRecipeTutorial = new[]
         {
            $"{AddedRecipeList.ListKey}: Adding your own recipes into any of the existing fabricators.",
            $"    {AddedRecipeList.ListKey} have all the same properties as {ModifiedRecipeList.ListKey}, with the following additions:",
@@ -29,7 +31,7 @@
            $"    {PdaGroupKey}: Sets the main group for blueprint shown in the PDA.",
            $"        This is optional. If {PdaGroupKey} is set, {PdaCategoryKey} must also be set.",
            $"    {PdaCategoryKey}: Sets the category under the group for blueprint shown in the PDA.",
-           $"        This is optional. If {PdaCategoryKey} is set, {PdaGroupKey} must also be set.",           
+           $"        This is optional. If {PdaCategoryKey} is set, {PdaGroupKey} must also be set.",
         };
 
         protected readonly EmProperty<string> path;
@@ -77,7 +79,10 @@
             DefaultForceUnlock = true;
         }
 
-        internal override EmProperty Copy() => new AddedRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new AddedRecipe(this.Key, this.CopyDefinitions);
+        }
 
         public override bool SendToSMLHelper()
         {

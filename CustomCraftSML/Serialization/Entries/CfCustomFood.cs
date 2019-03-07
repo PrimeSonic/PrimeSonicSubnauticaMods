@@ -5,13 +5,13 @@
     using CustomCraft2SML.PublicAPI;
     using System.Collections.Generic;
 
-    internal class CfAddedRecipe : AddedRecipe, ICustomFabricatorEntry
+    internal class CfCustomFood : CustomFood, ICustomFabricatorEntry
     {
-        public CfAddedRecipe() : this(TypeName, AddedRecipeProperties)
+        public CfCustomFood() : this(TypeName, CustomFoodProperties)
         {
         }
 
-        protected CfAddedRecipe(string key, ICollection<EmProperty> definitions) : base(key, definitions)
+        protected CfCustomFood(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
         }
 
@@ -30,7 +30,8 @@
 
         internal override EmProperty Copy()
         {
-            return new CfAddedRecipe(this.Key, this.CopyDefinitions);
+            return new CfCustomFood(this.Key, this.CopyDefinitions);
         }
     }
 }
+

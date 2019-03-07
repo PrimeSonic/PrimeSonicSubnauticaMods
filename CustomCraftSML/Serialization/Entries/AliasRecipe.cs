@@ -1,14 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using IOPath = System.IO.Path;
 
     internal class AliasRecipe : AddedRecipe, IAliasRecipe
@@ -20,7 +20,9 @@
 
         public new const string TypeName = "AliasRecipe";
 
-        internal static new readonly string[] TutorialText = new[]
+        public override string[] TutorialText => AliasRecipeTutorial;
+
+        internal static readonly string[] AliasRecipeTutorial = new[]
         {
            $"{AliasRecipeList.ListKey}: A powerful tool with multiple applications.",
             "    Alias recipes allow you to create multiple ways to craft the same item, bypassing one of the limitations of Subnautica's crafting system.",
@@ -73,7 +75,7 @@
             new EmProperty<string>(DisplayNameKey),
             new EmProperty<string>(ToolTipKey),
             new EmProperty<string>(FunctionalIdKey) { Optional = true },
-            new EmProperty<TechType>(SpriteItemIdKey) { Optional = true }
+            new EmProperty<TechType>(SpriteItemIdKey, TechType.None) { Optional = true }
         };
 
         public AliasRecipe() : this(TypeName, AliasRecipeProperties)
@@ -90,14 +92,31 @@
             amountCrafted.DefaultValue = 0;
         }
 
-        internal override EmProperty Copy() => new AliasRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new AliasRecipe(this.Key, this.CopyDefinitions);
+        }
 
         public override bool PassesPreValidation()
         {
-            // Alias Recipes must request their techtype be added
-            this.TechType = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
+            return ItemIDisUnique() & // Confirm that no other item is currently using this ID.                                 
+                InnerItemsAreValid() &
+                FunctionalItemIsValid();
+        }
 
-            return InnerItemsAreValid() && FunctionalItemIsValid();
+        protected bool ItemIDisUnique()
+        {
+            // Alias Recipes must request their techtype be added during the validation step
+            TechType techtype = TechTypeHandler.AddTechType(this.ItemID, this.DisplayName, this.Tooltip, this.ForceUnlockAtStart);
+
+            if (techtype == TechType.None)
+            {
+                QuickLogger.Warning($"Unable to create new TechType with {ItemIdKey} value '{this.ItemID}' for entry {this.Key} from {this.Origin} is specifies an {ItemIdKey}. Entry will be discarded.");
+                return false;
+            }
+
+            this.TechType = techtype;
+            return true;
         }
 
         protected virtual bool FunctionalItemIsValid()
@@ -106,9 +125,9 @@
                 return true; // No value provided. This is fine.
 
             // The functional item for cloning must be valid.
-            FunctionalCloneID = GetTechType(this.FunctionalID);
+            this.FunctionalCloneID = GetTechType(this.FunctionalID);
 
-            if (FunctionalCloneID == TechType.None)
+            if (this.FunctionalCloneID == TechType.None)
             {
                 QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an unknown {FunctionalIdKey} value '{this.FunctionalID}'. Entry will be discarded.");
                 return false;
@@ -131,7 +150,7 @@
 
                 HandleUnlocks();
 
-                HandleFunctionalClone();
+                HandleCustomPrefab();
 
                 return true;
             }
@@ -142,7 +161,7 @@
             }
         }
 
-        protected void HandleCustomSprite()
+        protected virtual void HandleCustomSprite()
         {
             string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
 
@@ -173,11 +192,11 @@
             QuickLogger.Warning($"No sprite loaded for {this.Key} '{this.ItemID}' from {this.Origin}");
         }
 
-        protected void HandleFunctionalClone()
+        protected virtual void HandleCustomPrefab()
         {
-            if (FunctionalCloneID != TechType.None)
+            if (this.FunctionalCloneID != TechType.None)
             {
-                var clone = new FunctionalClone(this, FunctionalCloneID);
+                var clone = new FunctionalClone(this, this.FunctionalCloneID);
                 PrefabHandler.RegisterPrefab(clone);
                 QuickLogger.Debug($"Custom item '{this.ItemID}' will be a functional clone of '{this.FunctionalID}' - Entry from {this.Origin}");
             }

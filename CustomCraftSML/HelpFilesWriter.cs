@@ -1,13 +1,14 @@
 ﻿namespace CustomCraft2SML
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using Common;
     using Common.EasyMarkup;
+    using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
 
     internal static partial class HelpFilesWriter
     {
@@ -55,8 +56,9 @@
         private static void GenerateOriginalBioFuels()
         {
             const string fileName = "BioReactor_Values.txt";
+            const string Path = FileLocations.OriginalsFolder + fileName;
 
-            if (File.Exists(FileLocations.OriginalsFolder + fileName))
+            if (File.Exists(Path))
                 return;
 
             Dictionary<TechType, float> allBioFuels = ValidBioFuels.charge;
@@ -75,7 +77,7 @@
 
             printyPrints.Add(bioFuelList.PrettyPrint());
 
-            File.WriteAllLines(FileLocations.OriginalsFolder + fileName, printyPrints.ToArray());
+            File.WriteAllLines(Path, printyPrints.ToArray());
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -83,11 +85,34 @@
         private static void GenerateOriginalCraftingPaths()
         {
             const string fileName = "CraftingPaths.txt";
+            const string Path = FileLocations.OriginalsFolder + fileName;
 
-            if (File.Exists(FileLocations.OriginalsFolder + fileName))
+            if (File.Exists(Path))
                 return;
-            
-            File.WriteAllText(FileLocations.OriginalsFolder + fileName, PathHelper.GeneratePathString());
+
+            File.WriteAllText(Path, PathHelper.GeneratePathString());
+
+            QuickLogger.Debug($"{fileName} file not found. File generated.");
+        }
+
+        private static void GenerateValidFoodModels()
+        {
+            const string fileName = "FoodModels.txt";
+            const string Path = FileLocations.OriginalsFolder + fileName;
+
+            if (File.Exists(Path))
+                return;
+
+            var models = (FoodModel[])Enum.GetValues(typeof(FoodModel));
+
+            var strings = new string[models.Length];
+
+            for (int i = 0; i < models.Length; i++)
+            {
+                strings[i] = models[i].ToString();
+            }
+
+            File.WriteAllLines(Path, strings);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -131,64 +156,28 @@
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            AddNonCraftingEntries(tutorialLines);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            AddCraftingEntries(tutorialLines);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
             AddChangeLog(tutorialLines);
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            AddWorkingFileTypes(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             return tutorialLines.ToArray();
         }
 
-        private static void AddCraftingEntries(List<string> tutorialLines)
+        private static void AddWorkingFileTypes(List<string> tutorialLines)
         {
             tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add("--- Crafting Entries ---");
+            tutorialLines.Add("--- Working File Types ---");
             tutorialLines.Add(Environment.NewLine);
 
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(ModifiedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(AddedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(AliasRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(MovedRecipe.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomCraftingTab.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-        }
-
-        private static void AddNonCraftingEntries(List<string> tutorialLines)
-        {
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.Add("--- Non-Crafting Entries ---");
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomSize.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomBioFuel.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
-
-            tutorialLines.Add(HorizontalLine);
-            tutorialLines.AddRange(CustomFragmentCount.TutorialText);
-            tutorialLines.Add(Environment.NewLine);
+            foreach (IParsingPackage package in WorkingFileParser.OrderedPackages)
+            {
+                tutorialLines.Add(HorizontalLine);
+                tutorialLines.AddRange(package.TutorialText);
+                tutorialLines.Add(Environment.NewLine);
+            }
         }
 
         private static void AddGettingStarted(List<string> tutorialLines)
@@ -228,11 +217,18 @@
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add("Version 1.8 adds the long awaited custom foods");
+            tutorialLines.Add("You can now create foods with custom food and water values and change the speed of decomposition for your foods.");
+            tutorialLines.Add("Additionally you can change the model your item uses to already existing foods, for example a Cooked Peeper, otherwise it will auto-select using the food and water values.");
+            tutorialLines.Add("CustomFoods are available in the CustomFabricators too.");
+            tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
             tutorialLines.Add("Version 1.7 adds some very big additions to really help make your crafting.");
             tutorialLines.Add("You can now make your own Custom Fabricators and set up your own crafting tree in them from scratch.");
             tutorialLines.Add("MovedRecipes can now copy an existing crafting node into another fabricator, even a custom one, without removing the original.");
             tutorialLines.Add("Everything that derives from ModifiedRecipes (which includes AddedRecipes, AliasRecipes, and now CustomFabricators) now has the 'UnlockedBy' property.");
-            tutorialLines.Add("UnlockedBy lets you specify a list of TechTypes that will be updated to unlock your main item whenever you discover any of those.");            
+            tutorialLines.Add("UnlockedBy lets you specify a list of TechTypes that will be updated to unlock your main item whenever you discover any of those.");
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
@@ -282,7 +278,5 @@
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
-
-
     }
 }

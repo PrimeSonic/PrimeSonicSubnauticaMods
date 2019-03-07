@@ -9,7 +9,7 @@
     {
         private static HashSet<char> ListDelimeters { get; } = new HashSet<char> { SpChar_ListItemSplitter, SpChar_ValueDelimiter };
 
-        public bool HasValue => this.Values.Count > 0;
+        public override bool HasValue => this.Values.Count > 0;
 
         public T this[int index] => this.Values[index];
 

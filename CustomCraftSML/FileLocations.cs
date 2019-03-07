@@ -1,4 +1,6 @@
-﻿namespace CustomCraft2SML
+﻿using CustomCraft2SML.Serialization;
+
+namespace CustomCraft2SML
 {
     internal static class FileLocations
     {
@@ -11,5 +13,6 @@
         internal const string WorkingFolder = FolderRoot + "WorkingFiles/";
         internal const string AssetsFolder = FolderRoot + "Assets/";
         internal const string ModJson = FolderRoot + "mod.json";
+        internal const string ConfigFile = FolderRoot + CustomCraft2Config.FileName;
     }
 }

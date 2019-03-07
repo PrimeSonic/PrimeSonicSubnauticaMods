@@ -1,8 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -10,11 +7,16 @@
     using CustomCraft2SML.PublicAPI;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using IOPath = System.IO.Path;
 
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCraft
     {
-        internal static readonly string[] TutorialText = new[]
+        public string[] TutorialText => CustomCraftingTabTutorial;
+
+        internal static readonly string[] CustomCraftingTabTutorial = new[]
         {
             "CustomCraftingTab: Add your own custom tabs into the fabricator crafting trees. ",
             "    An absolute must for organizing large numbers of crafts.",
@@ -36,7 +38,7 @@
         protected const string DisplayNameKey = "DisplayName";
         protected const string SpriteItemIdKey = "SpriteItemID";
         protected const string ParentTabPathKey = "ParentTabPath";
-        
+
         protected readonly EmProperty<string> emTabID;
         protected readonly EmProperty<string> emDisplayName;
         protected readonly EmProperty<TechType> emSpriteID;
@@ -136,9 +138,15 @@
 
         public string FullPath => $"{this.ParentTabPath}{"/"}{this.TabID}";
 
-        internal override EmProperty Copy() => new CustomCraftingTab(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CustomCraftingTab(this.Key, this.CopyDefinitions);
+        }
 
-        public bool PassesPreValidation() => craftingPath != null & ValidFabricator();
+        public bool PassesPreValidation()
+        {
+            return craftingPath != null & ValidFabricator();
+        }
 
         protected virtual bool ValidFabricator()
         {

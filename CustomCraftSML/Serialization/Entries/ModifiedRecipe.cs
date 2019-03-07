@@ -1,7 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using System;
-    using System.Collections.Generic;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -10,10 +8,14 @@
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using System;
+    using System.Collections.Generic;
 
     internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     {
-        internal static readonly string[] TutorialText = new[]
+        public virtual string[] TutorialText => ModifiedRecipeTutorial;
+
+        internal static readonly string[] ModifiedRecipeTutorial = new[]
         {
            $"{ModifiedRecipeList.ListKey}: Modify an existing crafting recipe. ",
            $"    {IngredientsKey}: Completely replace a recipe's required ingredients.",
@@ -55,11 +57,7 @@
 
                 return null;
             }
-            set
-            {
-                if (amountCrafted.HasValue = value.HasValue)
-                    amountCrafted.Value = value.Value;
-            }
+            set => amountCrafted.Value = value.Value;
         }
 
         protected bool DefaultForceUnlock = false;
@@ -146,28 +144,27 @@
             }
         }
 
-        internal override EmProperty Copy() => new ModifiedRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new ModifiedRecipe(this.Key, this.CopyDefinitions);
+        }
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() & InnerItemsAreValid();
+        public override bool PassesPreValidation()
+        {
+            return base.PassesPreValidation() & InnerItemsAreValid();
+        }
 
         protected bool InnerItemsAreValid()
         {
             // Sanity check of the blueprints ingredients and linked items to be sure that it only contains known items
             // Modded items are okay, but they must be for mods the player already has installed
-            bool internalItemsPassCheck = true;
-
-            internalItemsPassCheck &= ValidateIngredients();
-
-            internalItemsPassCheck &= ValidateLinkedItems();
-
-            internalItemsPassCheck &= ValidateUnlocks();
-
-            internalItemsPassCheck &= ValidateUnlockedBy();
-
-            return internalItemsPassCheck;
+            return ValidateIngredients() &
+                   ValidateLinkedItems() &
+                   ValidateUnlocks() &
+                   ValidateUnlockedBy();
         }
 
-        private bool ValidateUnlockedBy()
+        protected bool ValidateUnlockedBy()
         {
             bool unlockedByValid = true;
 
@@ -177,7 +174,7 @@
 
                 if (unlockByItemID == TechType.None)
                 {
-                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {UnlockedBy} '{unlockedBy}'. Entry will be discarded.");
+                    QuickLogger.Warning($"{this.Key} entry with ID of '{this.ItemID}' contained an unknown {this.UnlockedBy} '{unlockedBy}'. Entry will be discarded.");
                     unlockedByValid = false;
                     continue;
                 }
@@ -188,7 +185,7 @@
             return unlockedByValid;
         }
 
-        private bool ValidateUnlocks()
+        protected bool ValidateUnlocks()
         {
             bool unlocksValid = true;
 
@@ -209,7 +206,7 @@
             return unlocksValid;
         }
 
-        private bool ValidateLinkedItems()
+        protected bool ValidateLinkedItems()
         {
             bool linkedItemsValid = true;
 
@@ -230,7 +227,7 @@
             return linkedItemsValid;
         }
 
-        private bool ValidateIngredients()
+        protected bool ValidateIngredients()
         {
             bool ingredientsValid = true;
 
@@ -274,7 +271,7 @@
                 QuickLogger.Error($"Error while trying to access new SMLHelper method for {this.Key} entry '{this.ItemID}' from {this.Origin}.{Environment.NewLine}" +
                                   $"    Please update your copy of Modding Helper (SMLHelper).{Environment.NewLine}", mme);
                 return false;
-            }            
+            }
 
             if (original == null)
             {
@@ -349,6 +346,15 @@
             if (this.UnlockingItems.Count > 0)
             {
                 KnownTechHandler.SetAnalysisTechEntry(this.TechType, this.UnlockingItems);
+            }
+
+            if (this.UnlockedByItems.Count > 0)
+            {
+                TechType[] thisTechType = new[] { this.TechType };
+                foreach (TechType unlockedByItem in this.UnlockedByItems)
+                {
+                    KnownTechHandler.SetAnalysisTechEntry(unlockedByItem, thisTechType);
+                }
             }
 
             return true;

@@ -1,24 +1,26 @@
 ﻿namespace CustomCraft2SML
 {
+    using Common;
+    using CustomCraft2SML.Serialization;
     using System;
     using System.IO;
-    using System.Text.RegularExpressions;
-    using Common;
+    using System.Linq;
+    using System.Reflection;
 
     public static class QPatch
-    {        
-        private static readonly Regex LogLevel = new Regex("\"DebugLogsEnabled\"[ \f\n\r\t\v]*:[ \f\n\r\t\v]*(false|true),"); // Oldschool whitespace checks for .NET 3.5
-
+    {
         public static void Patch()
         {
             QuickLogger.Info($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
 
             try
             {
-                CheckLogLevel();
+                CustomCraft2Config.CheckLogLevel();
+
+                RestoreAssets();
 
                 HelpFilesWriter.HandleHelpFiles();
-                
+
                 WorkingFileParser.HandleWorkingFiles();
 
                 QuickLogger.Info("Finished patching.");
@@ -29,26 +31,26 @@
             }
         }
 
-        internal static void CheckLogLevel()
+        internal static void RestoreAssets()
         {
-            string jsonText = File.ReadAllText(FileLocations.ModJson);
+            string prefix = "CustomCraft2SML.Assets.";
 
-            Match match = LogLevel.Match(jsonText);
+            var ass = Assembly.GetExecutingAssembly();
+            System.Collections.Generic.IEnumerable<string> resources = ass.GetManifestResourceNames().Where(name => name.StartsWith(prefix));
 
-            if (match.Success && match.Groups.Count > 1)
+            foreach (string resource in resources)
             {
-                Group capturedValue = match.Groups[1];
-
-                if (bool.TryParse(capturedValue.Value, out bool result))
+                string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);                
+                string outFile = Path.Combine(FileLocations.AssetsFolder, file);
+                if (!File.Exists(outFile))
                 {
-                    QuickLogger.DebugLogsEnabled = result;                    
+                    QuickLogger.Debug($"Restoring asset: {file}");
+
+                    Stream s = ass.GetManifestResourceStream(resource);
+                    var r = new BinaryReader(s);
+                    File.WriteAllBytes(outFile, r.ReadBytes((int)s.Length));
                 }
             }
-
-            if (QuickLogger.DebugLogsEnabled)
-                QuickLogger.Debug("Debug logging is enable");
-            else
-                QuickLogger.Info("To enable Debug logging, change the \"DebugLogsEnabled\" attribute in the mod.json file to true");
         }
     }
 }

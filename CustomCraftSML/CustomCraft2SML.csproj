@@ -39,27 +39,50 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony-1.2.0.1">
+      <HintPath>..\Dependencies\0Harmony-1.2.0.1.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Assembly-CSharp-firstpass_publicized">
+      <HintPath>..\Dependencies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp_publicized">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+      <HintPath>..\Dependencies\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+    <Reference Include="SMLHelper">
+      <HintPath>..\Dependencies\SMLHelper.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
+    <Reference Include="System">
+      <HintPath>..\Dependencies\System.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>..\Dependencies\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>..\Dependencies\System.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>..\Dependencies\System.Drawing.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\Dependencies\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\ICustomFood.cs" />
+    <Compile Include="Serialization\Components\EmColor.cs" />
+    <Compile Include="Serialization\CustomCraft2Config.cs" />
+    <Compile Include="Serialization\Entries\CfCustomFood.cs" />
+    <Compile Include="Serialization\Entries\CustomFood.cs" />
+    <Compile Include="FoodModel.cs" />
+    <Compile Include="Serialization\Lists\CustomFoodList.cs" />
     <Compile Include="SMLHelperItems\CustomFabricatorBuildable.cs" />
     <Compile Include="FileLocations.cs" />
+    <Compile Include="SMLHelperItems\CustomFoodPrefab.cs" />
     <Compile Include="SMLHelperItems\FunctionalClone.cs" />
     <Compile Include="Interfaces\InternalUse\IFabricatorEntries.cs" />
     <Compile Include="Interfaces\IAliasRecipe.cs" />
@@ -118,15 +141,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SampleFiles\AddedRecipes_Samples.txt">
+    <Content Include="SampleFiles\AddedRecipes_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SampleFiles\CustomSizes_Samples.txt">
+    </Content>
+    <Content Include="SampleFiles\CustomSizes_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SampleFiles\ModifiedRecipes_Samples.txt">
+    </Content>
+    <Content Include="SampleFiles\ModifiedRecipes_Samples.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="SampleFiles\AddedRecipes_Samples2.txt">
@@ -142,6 +165,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\CustomFabricator_Sample.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomFab_Sample2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\CustomFoods_Samplefile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\CustomFragments_Samples2.txt">
@@ -165,6 +194,7 @@
     <Content Include="SampleFiles\MovedRecipes_Samples2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Assets\MoonPool.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
