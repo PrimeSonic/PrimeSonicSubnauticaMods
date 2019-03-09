@@ -1,8 +1,6 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Caching;
     using Common;
-    using Modules;
     using MoreCyclopsUpgrades.SaveData;
     using UnityEngine;
 
@@ -10,14 +8,14 @@
     {
         public CyclopsManager Manager { get; private set; }
 
-        public uGUI_Icon PowerIconLeftThermal { get; private set; }
-        public uGUI_Icon PowerIconCenter { get; private set; }
-        public uGUI_Icon PowerIconRightSolar { get; private set; }
-        private bool chargingIconsSet = false;
+        internal readonly uGUI_Icon[] RowOfOdd = new uGUI_Icon[3];
+        internal readonly uGUI_Icon[] RowOfEven = new uGUI_Icon[2];
 
         public SubRoot Cyclops => this.Manager.Cyclops;
         public UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
         public PowerManager PowerManager => this.Manager.PowerManager;
+
+        private bool powerIconsInitialized = false;
 
         internal bool Initialize(CyclopsManager manager)
         {
@@ -42,7 +40,7 @@
                 return;
             }
 
-            if (!chargingIconsSet)
+            if (!powerIconsInitialized)
             {
                 AddHelmHUDicons(cyclopsHelmHUD);
             }
@@ -74,27 +72,8 @@
                     cyclopsHelmHUD.lastPowerPctUsedForString = powerPercentage;
                 }
 
-                if (this.PowerManager.chargingFromNuclear)
-                {
-                    this.PowerIconLeftThermal.enabled = false;
-                    this.PowerIconRightSolar.enabled = false;
-
-                    this.PowerIconCenter.sprite = SpriteManager.Get(CyclopsModule.NuclearChargerID);
-                    this.PowerIconCenter.enabled = true;
-                }
-                else
-                {
-                    this.PowerIconLeftThermal.enabled = this.PowerManager.chargingFromThermal;
-                    this.PowerIconRightSolar.enabled = this.PowerManager.chargingFromSolar;
-
-                    this.PowerIconCenter.sprite = SpriteManager.Get(TechType.BaseBioReactor);
-                    this.PowerIconCenter.enabled = this.PowerManager.chargingFromBio;
-                }
-
                 int currentDepth = (int)cyclopsHelmHUD.crushDamage.GetDepth();
                 int currentMaxDepth = (int)cyclopsHelmHUD.crushDamage.crushDepth;
-
-                Color color = currentDepth >= currentMaxDepth ? Color.red : Color.white;
 
                 if (cyclopsHelmHUD.lastDepthUsedForString != currentDepth || cyclopsHelmHUD.lastCrushDepthUsedForString != currentMaxDepth)
                 {
@@ -103,13 +82,18 @@
                     cyclopsHelmHUD.depthText.text = string.Format("{0}m / {1}m", currentDepth, currentMaxDepth);
                 }
 
-                cyclopsHelmHUD.depthText.color = color;
+                cyclopsHelmHUD.depthText.color = currentDepth >= currentMaxDepth ? Color.red : Color.white;
                 cyclopsHelmHUD.engineOffText.gameObject.SetActive(!cyclopsHelmHUD.motorMode.engineOn);
                 cyclopsHelmHUD.fireWarningSprite.gameObject.SetActive(cyclopsHelmHUD.fireWarning);
                 cyclopsHelmHUD.creatureAttackSprite.gameObject.SetActive(cyclopsHelmHUD.creatureAttackWarning);
                 cyclopsHelmHUD.hullDamageWarning = (cyclopsHelmHUD.subLiveMixin.GetHealthFraction() < 0.8f);
             }
 
+            UpdateWarnings(cyclopsHelmHUD);
+        }
+
+        private static void UpdateWarnings(CyclopsHelmHUDManager cyclopsHelmHUD)
+        {
             if (Player.main.currentSub == cyclopsHelmHUD.subRoot && !cyclopsHelmHUD.subRoot.subDestroyed)
             {
                 if (cyclopsHelmHUD.fireWarning && cyclopsHelmHUD.creatureAttackWarning)
@@ -138,6 +122,7 @@
                 cyclopsHelmHUD.warningAlpha = Mathf.PingPong(Time.time * 5f, 1f);
                 cyclopsHelmHUD.fireWarningSprite.color = new Color(1f, 1f, 1f, cyclopsHelmHUD.warningAlpha);
                 cyclopsHelmHUD.creatureAttackSprite.color = new Color(1f, 1f, 1f, cyclopsHelmHUD.warningAlpha);
+
                 if (cyclopsHelmHUD.hudActive)
                 {
                     cyclopsHelmHUD.canvasGroup.alpha = Mathf.Lerp(cyclopsHelmHUD.canvasGroup.alpha, 1f, Time.deltaTime * 3f);
@@ -153,6 +138,7 @@
             {
                 cyclopsHelmHUD.subRoot.subWarning = false;
             }
+
             if (cyclopsHelmHUD.oldWarningState != cyclopsHelmHUD.subRoot.subWarning)
             {
                 cyclopsHelmHUD.subRoot.BroadcastMessage("NewAlarmState", null, SendMessageOptions.DontRequireReceiver);
@@ -185,39 +171,72 @@
             hudManager.energyCur.text = IntStringCache.GetStringForInt(TotalPowerUnits);
 
             NuclearModuleConfig.SetCyclopsMaxPower(this.Cyclops.powerRelay.GetMaxPower());
+
+            UpdatePowerIcons(this.PowerManager.PowerIcons);
         }
 
         private void AddHelmHUDicons(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
             Canvas canvas = cyclopsHelmHUD.powerText.gameObject.GetComponentInParent<Canvas>();
 
-            const float unit = 100;
-            const float scale = 1.75f;
-            const float zoffset = 0.05f;
-            const float yoffset = -250;
+            /* --- 3-1-2 --- */
+            /* ---- 1-2 ---- */
 
-            var leftGo = new GameObject("LeftIcon", typeof(RectTransform));
-            leftGo.transform.SetParent(canvas.transform, false);
-            leftGo.transform.localPosition = new Vector3(unit, yoffset, zoffset);
-            leftGo.transform.localScale = new Vector3(scale, scale, scale);
-            this.PowerIconLeftThermal = leftGo.AddComponent<uGUI_Icon>();
-            this.PowerIconLeftThermal.sprite = SpriteManager.Get(TechType.CyclopsThermalReactorModule);
+            // Because the nuclear module only ever kicks in if there are no renewable sources of power
+            // We can guarantee that we only ever need at most, 3 icons on diplay.
+            const float unit = 120;
+            RowOfOdd[0] = CreatePowerIcon(canvas, 0);
+            RowOfOdd[1] = CreatePowerIcon(canvas, unit);
+            RowOfOdd[2] = CreatePowerIcon(canvas, -unit);
 
-            var centerGo = new GameObject("CenterIcon", typeof(RectTransform));
-            centerGo.transform.SetParent(canvas.transform, false);
-            centerGo.transform.localPosition = new Vector3(0, yoffset, zoffset);
-            centerGo.transform.localScale = new Vector3(scale, scale, scale);
-            this.PowerIconCenter = centerGo.AddComponent<uGUI_Icon>();
+            RowOfEven[0] = CreatePowerIcon(canvas, -unit / 2);
+            RowOfEven[1] = CreatePowerIcon(canvas, unit / 2);
 
-            var rightGo = new GameObject("RightIcon", typeof(RectTransform));
-            rightGo.transform.SetParent(canvas.transform, false);
-            rightGo.transform.localPosition = new Vector3(-unit, yoffset, zoffset);
-            rightGo.transform.localScale = new Vector3(scale, scale, scale);
-            this.PowerIconRightSolar = rightGo.AddComponent<uGUI_Icon>();
-            this.PowerIconRightSolar.sprite = SpriteManager.Get(CyclopsModule.SolarChargerID);
+            powerIconsInitialized = true;
 
-            chargingIconsSet = true;
             QuickLogger.Debug("Linked PowerManager to HelmHUD");
+        }
+
+        private uGUI_Icon CreatePowerIcon(Canvas canvas, float xoffset)
+        {
+            const float zoffset = 0.05f;
+            const float yoffset = -230;
+            const float scale = 1.80f;
+
+            var iconGo = new GameObject("IconGo", typeof(RectTransform));
+            iconGo.transform.SetParent(canvas.transform, false);
+            iconGo.transform.localPosition = new Vector3(xoffset, yoffset, zoffset);
+            iconGo.transform.localScale = new Vector3(scale, scale, scale);
+            return iconGo.AddComponent<uGUI_Icon>();
+        }
+
+        private void UpdatePowerIcons(PowerIconState powerIcons)
+        {
+            if (!powerIconsInitialized)
+                return;
+
+            RowOfOdd[0].enabled = false;
+            RowOfOdd[1].enabled = false;
+            RowOfOdd[2].enabled = false;
+
+            RowOfEven[0].enabled = false;
+            RowOfEven[1].enabled = false;
+
+            uGUI_Icon[] row = powerIcons.EvenCount ? RowOfEven : RowOfOdd;
+            int index = 0;
+
+            foreach (TechType item in powerIcons.ActiveIcons)
+            {
+                if (index == row.Length)
+                {
+                    QuickLogger.Debug("Got an unexpected number of icons", true);
+                    return;
+                }
+
+                uGUI_Icon uiIcon = row[index++];
+                uiIcon.sprite = SpriteManager.Get(item);
+                uiIcon.enabled = true;                
+            }
         }
     }
 }

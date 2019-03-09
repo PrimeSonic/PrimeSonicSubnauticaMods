@@ -1,7 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
     using Harmony;
-    using Caching;
+    using Managers;
 
     [HarmonyPatch(typeof(CyclopsHelmHUDManager))]
     [HarmonyPatch("Update")]

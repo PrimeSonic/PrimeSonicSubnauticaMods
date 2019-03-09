@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
-    using Caching;
+    using Managers;
     using Harmony;
 
     [HarmonyPatch(typeof(CyclopsUpgradeConsoleHUDManager))]

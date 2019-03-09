@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Caching
+﻿namespace MoreCyclopsUpgrades.Managers
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.Monobehaviors;

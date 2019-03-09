@@ -2,8 +2,8 @@
 {
     using System.Collections.Generic;
     using Harmony;
-    using MoreCyclopsUpgrades.Caching;
-    using MoreCyclopsUpgrades.Monobehaviors;
+    using Managers;
+    using Monobehaviors;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
     [HarmonyPatch("OnOpenPDA")]

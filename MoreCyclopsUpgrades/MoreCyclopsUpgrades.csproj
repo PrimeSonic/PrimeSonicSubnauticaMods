@@ -64,10 +64,11 @@
   <ItemGroup>
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
-    <Compile Include="Caching\CyclopsManager.cs" />
+    <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="Caching\NuclearModuleDetails.cs" />
     <Compile Include="Caching\OtherMods.cs" />
-    <Compile Include="CyclopsHUDManager.cs" />
+    <Compile Include="Managers\CyclopsHUDManager.cs" />
+    <Compile Include="Managers\PowerIconState.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Monobehaviors\BioEnergy.cs" />
     <Compile Include="Monobehaviors\CyBioReactorMono.cs" />
@@ -79,9 +80,9 @@
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
-    <Compile Include="PowerManager.cs" />
+    <Compile Include="Managers\PowerManager.cs" />
     <Compile Include="Patchers\uGUI_Patches.cs" />
-    <Compile Include="UpgradeManager.cs" />
+    <Compile Include="Managers\UpgradeManager.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
