@@ -1,12 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
+    using System;
+    using System.Reflection;
     using Common;
     using Modules;
     using ProtoBuf;
     using SaveData;
-    using SMLHelper.V2.Utility;
-    using System;
-    using System.Reflection;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -185,6 +184,9 @@
 
         internal void CyclopsUpgradeChange()
         {
+            if (this.ParentCyclops is null)
+                return;
+
             this.ParentCyclops.subModulesDirty = true;
         }
 
@@ -284,8 +286,7 @@
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
-            bool hasSaveData = SaveData.Load();
-            if (hasSaveData)
+            if (SaveData.Load())
             {
                 // Because the items here aren't being serialized with everything else normally,
                 // I've used custom save data to handle whatever gets left in these slots.

@@ -1,11 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades
 {
+    using System.Collections.Generic;
     using Caching;
     using Common;
     using Modules;
     using MoreCyclopsUpgrades.Monobehaviors;
     using SaveData;
-    using System.Collections.Generic;
     using UnityEngine;
 
     internal class PowerManager
@@ -233,114 +233,12 @@
             }
         }
 
-        /// <summary>
-        /// Updates the Cyclops helm HUD  using data from all equipment modules across all upgrade consoles.
-        /// </summary>
-        /// <param name="cyclopsHelmHUD">The instance.</param>
-        /// <param name="lastReservePower">The last reserve power.</param>
-        internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD)
-        {
-            if (this.UpgradeManager == null)
-            {
-                ErrorMessage.AddMessage("UpdateHelmHUD: UpgradeManager is null");
-                return;
-            }
-
-            bool isCyclopsAlive = cyclopsHelmHUD.subLiveMixin.IsAlive();
-            if (isCyclopsAlive)
-            {
-                // Update Health
-                float healthFraction = cyclopsHelmHUD.subLiveMixin.GetHealthFraction();
-                cyclopsHelmHUD.hpBar.fillAmount = Mathf.Lerp(cyclopsHelmHUD.hpBar.fillAmount, healthFraction, Time.deltaTime * 2f);
-
-                // Update Noise
-                float noisePercent = cyclopsHelmHUD.noiseManager.GetNoisePercent();
-                cyclopsHelmHUD.noiseBar.fillAmount = Mathf.Lerp(cyclopsHelmHUD.noiseBar.fillAmount, noisePercent, Time.deltaTime);
-
-                // Update Power (this one is different)
-                int currentReservePower = GetTotalReservePower();
-                cyclopsHelmHUD.powerText.color = currentReservePower > 0f ? Color.cyan : Color.white;                
-
-                float availablePower = currentReservePower + this.Cyclops.powerRelay.GetPower();
-                float availablePowerRatio = availablePower / this.Cyclops.powerRelay.GetMaxPower();
-
-                // Min'd with 999 since this textbox can only display 4 characeters
-                int powerPercentage = Mathf.Min(999, Mathf.CeilToInt(availablePowerRatio * 100f));
-
-                if (cyclopsHelmHUD.lastPowerPctUsedForString != powerPercentage)
-                {
-                    cyclopsHelmHUD.powerText.text = $"{powerPercentage}%";
-                    cyclopsHelmHUD.lastPowerPctUsedForString = powerPercentage;
-                }
-
-                int currentDepth = (int)cyclopsHelmHUD.crushDamage.GetDepth();
-                int currentMaxDepth = (int)cyclopsHelmHUD.crushDamage.crushDepth;
-
-                Color color = currentDepth >= currentMaxDepth ? Color.red : Color.white;
-
-                if (cyclopsHelmHUD.lastDepthUsedForString != currentDepth || cyclopsHelmHUD.lastCrushDepthUsedForString != currentMaxDepth)
-                {
-                    cyclopsHelmHUD.lastDepthUsedForString = currentDepth;
-                    cyclopsHelmHUD.lastCrushDepthUsedForString = currentMaxDepth;
-                    cyclopsHelmHUD.depthText.text = string.Format("{0}m / {1}m", currentDepth, currentMaxDepth);
-                }
-                cyclopsHelmHUD.depthText.color = color;
-                cyclopsHelmHUD.engineOffText.gameObject.SetActive(!cyclopsHelmHUD.motorMode.engineOn);
-                cyclopsHelmHUD.fireWarningSprite.gameObject.SetActive(cyclopsHelmHUD.fireWarning);
-                cyclopsHelmHUD.creatureAttackSprite.gameObject.SetActive(cyclopsHelmHUD.creatureAttackWarning);
-                cyclopsHelmHUD.hullDamageWarning = (cyclopsHelmHUD.subLiveMixin.GetHealthFraction() < 0.8f);
-            }
-
-            if (Player.main.currentSub == cyclopsHelmHUD.subRoot && !cyclopsHelmHUD.subRoot.subDestroyed)
-            {
-                if (cyclopsHelmHUD.fireWarning && cyclopsHelmHUD.creatureAttackWarning)
-                {
-                    cyclopsHelmHUD.subRoot.voiceNotificationManager.PlayVoiceNotification(cyclopsHelmHUD.subRoot.creatureAttackNotification, true, false);
-                }
-                else if (cyclopsHelmHUD.creatureAttackWarning)
-                {
-                    cyclopsHelmHUD.subRoot.voiceNotificationManager.PlayVoiceNotification(cyclopsHelmHUD.subRoot.creatureAttackNotification, cyclopsHelmHUD.subRoot, false);
-                }
-                else if (cyclopsHelmHUD.fireWarning)
-                {
-                    cyclopsHelmHUD.subRoot.voiceNotificationManager.PlayVoiceNotification(cyclopsHelmHUD.subRoot.fireNotification, true, false);
-                }
-                else if (cyclopsHelmHUD.noiseManager.GetNoisePercent() > 0.9f && !(cyclopsHelmHUD as MonoBehaviour).IsInvoking("PlayCavitationWarningAfterSeconds"))
-                {
-                    (cyclopsHelmHUD as MonoBehaviour).Invoke("PlayCavitationWarningAfterSeconds", 2f);
-                }
-                else if (cyclopsHelmHUD.hullDamageWarning)
-                {
-                    cyclopsHelmHUD.subRoot.voiceNotificationManager.PlayVoiceNotification(cyclopsHelmHUD.subRoot.hullDamageNotification, true, false);
-                }
-
-                cyclopsHelmHUD.subRoot.subWarning = cyclopsHelmHUD.fireWarning || cyclopsHelmHUD.creatureAttackWarning;
-
-                cyclopsHelmHUD.warningAlpha = Mathf.PingPong(Time.time * 5f, 1f);
-                cyclopsHelmHUD.fireWarningSprite.color = new Color(1f, 1f, 1f, cyclopsHelmHUD.warningAlpha);
-                cyclopsHelmHUD.creatureAttackSprite.color = new Color(1f, 1f, 1f, cyclopsHelmHUD.warningAlpha);
-                if (cyclopsHelmHUD.hudActive)
-                {
-                    cyclopsHelmHUD.canvasGroup.alpha = Mathf.Lerp(cyclopsHelmHUD.canvasGroup.alpha, 1f, Time.deltaTime * 3f);
-                    cyclopsHelmHUD.canvasGroup.interactable = true;
-                }
-                else
-                {
-                    cyclopsHelmHUD.canvasGroup.alpha = Mathf.Lerp(cyclopsHelmHUD.canvasGroup.alpha, 0f, Time.deltaTime * 3f);
-                    cyclopsHelmHUD.canvasGroup.interactable = false;
-                }
-            }
-            else
-            {
-                cyclopsHelmHUD.subRoot.subWarning = false;
-            }
-            if (cyclopsHelmHUD.oldWarningState != cyclopsHelmHUD.subRoot.subWarning)
-            {
-                cyclopsHelmHUD.subRoot.BroadcastMessage("NewAlarmState", null, SendMessageOptions.DontRequireReceiver);
-            }
-
-            cyclopsHelmHUD.oldWarningState = cyclopsHelmHUD.subRoot.subWarning;
-        }
+        internal bool chargingFromSolar = false;
+        internal bool chargingFromSolarBattery = false;
+        internal bool chargingFromThermal = false;
+        internal bool chargingFromThermalBattery = false;
+        internal bool chargingFromBio = false;
+        internal bool chargingFromNuclear = false;
 
         /// <summary>
         /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
@@ -366,47 +264,89 @@
             if (this.UpgradeManager.HasSolarModules) // Handle solar power
             {
                 float availableSolarEnergy = GetSolarChargeAmount();
+                chargingFromSolar = availableSolarEnergy > 0f;
 
-                if (this.UpgradeManager.SolarModuleCount > 0 && availableSolarEnergy > 0f)
+                if (this.UpgradeManager.SolarModuleCount > 0 && chargingFromSolar)
                 {
                     surplusPower += ChargeFromStandardModule(this.UpgradeManager.SolarModuleCount * availableSolarEnergy, ref powerDeficit);
                     renewablePowerAvailable = true;
                 }
 
-                foreach (Battery battery in this.UpgradeManager.SolarMk2Batteries)
+                if (this.UpgradeManager.SolarMk2Batteries.Count > 0)
                 {
-                    surplusPower += ChargeFromModuleMk2(battery, availableSolarEnergy, BatteryDrainRate, ref powerDeficit);
-                    renewablePowerAvailable |= battery.charge > 0f;
+                    bool usingSolarBatteryPower = false;
+                    foreach (Battery battery in this.UpgradeManager.SolarMk2Batteries)
+                    {
+                        surplusPower += ChargeFromModuleMk2(battery, availableSolarEnergy, BatteryDrainRate, ref powerDeficit);
+                        bool batteryHasCharge = battery.charge > 0f;
+                        renewablePowerAvailable |= batteryHasCharge;
 
-                    if (battery.charge < battery.capacity)
-                        lastBatteryToCharge = battery;
+                        if (battery.charge < battery.capacity)
+                            lastBatteryToCharge = battery;
+
+                        usingSolarBatteryPower |= !chargingFromSolar && batteryHasCharge;
+                    }
+                    chargingFromSolarBattery = usingSolarBatteryPower;
                 }
+            }
+            else
+            {
+                chargingFromSolar = false;
+                chargingFromSolarBattery = false;
             }
 
             if (this.UpgradeManager.HasThermalModules) // Handle thermal power
             {
                 float availableThermalEnergy = GetThermalChargeAmount();
+                chargingFromThermal = availableThermalEnergy > 0f;
 
-                if (this.UpgradeManager.ThermalModuleCount > 0 && availableThermalEnergy > 0f)
+                if (this.UpgradeManager.ThermalModuleCount > 0 && chargingFromThermal)
                 {
                     surplusPower += ChargeFromStandardModule(this.UpgradeManager.ThermalModuleCount * availableThermalEnergy, ref powerDeficit);
                     renewablePowerAvailable = true;
                 }
 
-                foreach (Battery battery in this.UpgradeManager.ThermalMk2Batteries)
+                if (this.UpgradeManager.ThermalMk2Batteries.Count > 0)
                 {
-                    surplusPower += ChargeFromModuleMk2(battery, availableThermalEnergy, BatteryDrainRate, ref powerDeficit);
-                    renewablePowerAvailable |= battery.charge > 0f;
+                    bool usingThermalBatteryPower = false;
+                    foreach (Battery battery in this.UpgradeManager.ThermalMk2Batteries)
+                    {
+                        surplusPower += ChargeFromModuleMk2(battery, availableThermalEnergy, BatteryDrainRate, ref powerDeficit);
+                        bool batteryHasCharge = battery.charge > 0f;
+                        renewablePowerAvailable |= batteryHasCharge;
 
-                    if (battery.charge < battery.capacity)
-                        lastBatteryToCharge = battery;
+                        if (battery.charge < battery.capacity)
+                            lastBatteryToCharge = battery;
+
+                        usingThermalBatteryPower |= !chargingFromThermal && batteryHasCharge;
+                    }
+                    chargingFromThermalBattery = usingThermalBatteryPower;
                 }
             }
-
-            foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
+            else
             {
-                if (reactor.HasPower)
+                chargingFromThermal = false;
+                chargingFromThermalBattery = false;
+            }
+
+            if (this.CyBioReactors.Count > 0)
+            {
+                bool hasBioPower = false;
+                foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
+                {
+                    if (!reactor.HasPower)
+                        continue;
+
                     ChargeCyclopsFromBattery(reactor.Battery, BatteryDrainRate, ref powerDeficit);
+                    renewablePowerAvailable = true;
+                    hasBioPower = true;
+                }
+
+                chargingFromBio = hasBioPower;
+            }
+            else
+            {
+                chargingFromBio = false;
             }
 
             bool cyclopsDoneCharging = powerDeficit <= 0.001f;
@@ -420,10 +360,15 @@
                 foreach (NuclearModuleDetails module in this.UpgradeManager.NuclearModules)
                 {
                     ChargeCyclopsFromBattery(module.NuclearBattery, NuclearDrainRate, ref powerDeficit);
+                    chargingFromNuclear = true;
 
                     if (module.NuclearBattery.charge <= 0f)
                         DepleteNuclearBattery(module.ParentEquipment, module.SlotName, module.NuclearBattery);
                 }
+            }
+            else
+            {
+                chargingFromNuclear = false;
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
@@ -435,36 +380,10 @@
         }
 
         /// <summary>
-        /// Updates the console HUD using data from all equipment modules across all upgrade consoles.
-        /// </summary>
-        /// <param name="hudManager">The console HUD manager.</param>
-        internal void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager hudManager)
-        {
-            int currentReservePower = GetTotalReservePower();
-
-            float currentBatteryPower = this.Cyclops.powerRelay.GetPower();
-
-            if (currentReservePower > 0)
-            {
-                hudManager.energyCur.color = Color.cyan; // Distinct color for when reserve power is available
-            }
-            else
-            {
-                hudManager.energyCur.color = Color.white; // Normal color
-            }
-
-            int TotalPowerUnits = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
-
-            hudManager.energyCur.text = IntStringCache.GetStringForInt(TotalPowerUnits);
-
-            NuclearModuleConfig.SetCyclopsMaxPower(this.Cyclops.powerRelay.GetMaxPower());
-        }
-
-        /// <summary>
         /// Gets the total available reserve power across all equipment upgrade modules.
         /// </summary>
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
-        private int GetTotalReservePower()
+        internal int GetTotalReservePower()
         {
             float availableReservePower = 0f;
 

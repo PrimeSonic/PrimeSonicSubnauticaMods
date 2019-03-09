@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.SaveData
 {
     using System.Collections.Generic;
-    using System.Reflection;
     using Harmony;
     using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Monobehaviors;
@@ -10,10 +9,6 @@
     [HarmonyPatch("OnOpenPDA")]
     public class UGUI_InventoryTab_OnOpenPDA_Patcher
     {
-        private static readonly FieldInfo containerInfo = typeof(uGUI_ItemsContainer).GetField("container", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo labelInfo = typeof(ItemsContainer).GetField("_label", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly FieldInfo itemsInfo = typeof(uGUI_ItemsContainer).GetField("items", BindingFlags.Instance | BindingFlags.NonPublic);
-
         [HarmonyPostfix]
         public static void Postfix(uGUI_InventoryTab __instance)
         {
@@ -29,28 +24,28 @@
             if (__instance.storage is null)
                 return; // Safety check
 
-            object containerObj = containerInfo.GetValue(__instance.storage);
+            ItemsContainer containerObj = __instance.storage.container;
 
-            if (containerObj is null || !(containerObj is ItemsContainer container))
+            if (containerObj is null)
                 return; // If this isn't a non-null ItemsContainer, then it's not what we want.
 
-            string label = (string)labelInfo.GetValue(container);
+            string label = containerObj._label;
 
             if (label != CyBioReactorMono.StorageLabel)
                 return; // Not a Cyclops Bioreactor storage
 
-            List<CyBioReactorMono> reactors = CyclopsManager.GetBioReactors(container, Player.main.currentSub);
+            List<CyBioReactorMono> reactors = CyclopsManager.GetBioReactors(Player.main.currentSub);
 
             if (reactors is null || reactors.Count == 0)
                 return; // Cyclops has no bioreactors
 
             // Look for the reactor that matches the container we just opened.
-            CyBioReactorMono reactor = reactors.Find(r => r.Container == container);
+            CyBioReactorMono reactor = reactors.Find(r => r.Container == containerObj);
 
             if (reactor is null)
                 return; // Didn't find the reactor we were looking for. Could it be on another cyclops?
 
-            var lookup = (Dictionary<InventoryItem, uGUI_ItemIcon>)itemsInfo.GetValue(__instance.storage);
+            Dictionary<InventoryItem, uGUI_ItemIcon> lookup = __instance.storage.items;
             reactor.ConnectToInventory(lookup); // Found!
         }
     }

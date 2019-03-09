@@ -33,18 +33,14 @@
             }
         }
 
-        private readonly IList<Battery> SolarBatteries = new List<Battery>();
-        private readonly IList<Battery> ThermalBatteries = new List<Battery>();
-        private readonly IList<NuclearModuleDetails> NuclearReactorModules = new List<NuclearModuleDetails>();
-
         private List<CyUpgradeConsoleMono> TempCache = new List<CyUpgradeConsoleMono>();
 
         internal float BonusCrushDepth { get; private set; } = 0f;
 
         internal bool HasChargingModules { get; private set; } = false;
-        internal bool HasSolarModules => this.SolarModuleCount > 0 || SolarBatteries.Count > 0;
-        internal bool HasThermalModules => this.ThermalModuleCount > 0 || ThermalBatteries.Count > 0;
-        internal bool HasNuclearModules => NuclearReactorModules.Count > 0;
+        internal bool HasSolarModules => this.SolarModuleCount > 0 || SolarMk2Batteries.Count > 0;
+        internal bool HasThermalModules => this.ThermalModuleCount > 0 || ThermalMk2Batteries.Count > 0;
+        internal bool HasNuclearModules => NuclearModules.Count > 0;
 
         internal int PowerIndex { get; private set; } = 0;
 
@@ -53,9 +49,9 @@
         internal int SolarModuleCount { get; private set; } = 0;
         internal int ThermalModuleCount { get; private set; } = 0;
 
-        internal IEnumerable<Battery> SolarMk2Batteries => SolarBatteries;
-        internal IEnumerable<Battery> ThermalMk2Batteries => ThermalBatteries;
-        internal IEnumerable<NuclearModuleDetails> NuclearModules => NuclearReactorModules;
+        internal IList<Battery> SolarMk2Batteries { get; } = new List<Battery>();
+        internal IList<Battery> ThermalMk2Batteries { get; } = new List<Battery>();
+        internal IList<NuclearModuleDetails> NuclearModules { get; } = new List<NuclearModuleDetails>();
 
         internal IEnumerable<Battery> ReserveBatteries
         {
@@ -200,9 +196,9 @@
             this.SolarModuleCount = 0;
             this.ThermalModuleCount = 0;
 
-            SolarBatteries.Clear();
-            ThermalBatteries.Clear();
-            NuclearReactorModules.Clear();
+            SolarMk2Batteries.Clear();
+            ThermalMk2Batteries.Clear();
+            NuclearModules.Clear();
 
             this.HasChargingModules = false;
         }
@@ -213,9 +209,9 @@
         private void AddPowerMk3Module() => this.PowerIndex = Math.Max(this.PowerIndex, 3);
         private void AddSolarModule() => ++this.SolarModuleCount;
         private void AddThermalModule() => ++this.ThermalModuleCount;
-        private void AddSolarMk2Module(Equipment modules, string slot) => SolarBatteries.Add(GetBatteryInSlot(modules, slot));
-        private void AddThermalMk2Module(Equipment modules, string slot) => ThermalBatteries.Add(GetBatteryInSlot(modules, slot));
-        private void AddNuclearModule(Equipment modules, string slot) => NuclearReactorModules.Add(new NuclearModuleDetails(modules, slot, GetBatteryInSlot(modules, slot)));
+        private void AddSolarMk2Module(Equipment modules, string slot) => SolarMk2Batteries.Add(GetBatteryInSlot(modules, slot));
+        private void AddThermalMk2Module(Equipment modules, string slot) => ThermalMk2Batteries.Add(GetBatteryInSlot(modules, slot));
+        private void AddNuclearModule(Equipment modules, string slot) => NuclearModules.Add(new NuclearModuleDetails(modules, slot, GetBatteryInSlot(modules, slot)));
         private void AddDepthModule(TechType depthModule) => this.BonusCrushDepth = Mathf.Max(this.BonusCrushDepth, ExtraCrushDepths[depthModule]);
 
         private void EnableFireSuppressionSystem() => this.HolographicHUD.fireSuppressionSystem.SetActive(true);

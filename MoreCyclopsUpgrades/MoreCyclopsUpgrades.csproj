@@ -67,6 +67,7 @@
     <Compile Include="Caching\CyclopsManager.cs" />
     <Compile Include="Caching\NuclearModuleDetails.cs" />
     <Compile Include="Caching\OtherMods.cs" />
+    <Compile Include="CyclopsHUDManager.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Monobehaviors\BioEnergy.cs" />
     <Compile Include="Monobehaviors\CyBioReactorMono.cs" />
