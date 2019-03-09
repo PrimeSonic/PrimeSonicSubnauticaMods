@@ -69,6 +69,7 @@
     <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
     <Compile Include="Managers\PowerIconState.cs" />
+    <Compile Include="Modules\Enhancement\BioReactorBooster.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Monobehaviors\BioEnergy.cs" />
     <Compile Include="Monobehaviors\CyBioReactorMono.cs" />

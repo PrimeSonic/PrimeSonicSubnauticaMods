@@ -19,7 +19,7 @@
             get
             {
                 if (nuclear) yield return CyclopsModule.NuclearChargerID;
-                if (bio) yield return TechType.BaseBioReactor; // placeholder
+                if (bio) yield return CyclopsModule.BioReactorBoosterID;
 
                 if (solar) yield return CyclopsModule.SolarChargerID;
                 if (solarBattery) yield return CyclopsModule.SolarChargerMk2ID;

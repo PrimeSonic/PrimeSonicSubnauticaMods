@@ -8,8 +8,11 @@
     {
         public CyclopsManager Manager { get; private set; }
 
-        internal readonly uGUI_Icon[] RowOfOdd = new uGUI_Icon[3];
-        internal readonly uGUI_Icon[] RowOfEven = new uGUI_Icon[2];
+        internal readonly uGUI_Icon[] HelmPowerIconsRowOfOdd = new uGUI_Icon[3];
+        internal readonly uGUI_Icon[] HelmPowerIconsRowOfEven = new uGUI_Icon[2];
+
+        internal readonly uGUI_Icon[] HealthBarPowerIconsRowOfOdd = new uGUI_Icon[3];
+        internal readonly uGUI_Icon[] HealthBarPowerIconsRowOfEven = new uGUI_Icon[2];
 
         public SubRoot Cyclops => this.Manager.Cyclops;
         public UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
@@ -42,7 +45,7 @@
 
             if (!powerIconsInitialized)
             {
-                AddHelmHUDicons(cyclopsHelmHUD);
+                AddPowerIcons(cyclopsHelmHUD);
             }
 
             bool isCyclopsAlive = cyclopsHelmHUD.subLiveMixin.IsAlive();
@@ -175,7 +178,7 @@
             UpdatePowerIcons(this.PowerManager.PowerIcons);
         }
 
-        private void AddHelmHUDicons(CyclopsHelmHUDManager cyclopsHelmHUD)
+        private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
             Canvas canvas = cyclopsHelmHUD.powerText.gameObject.GetComponentInParent<Canvas>();
 
@@ -184,25 +187,36 @@
 
             // Because the nuclear module only ever kicks in if there are no renewable sources of power
             // We can guarantee that we only ever need at most, 3 icons on diplay.
-            const float unit = 120;
-            RowOfOdd[0] = CreatePowerIcon(canvas, 0);
-            RowOfOdd[1] = CreatePowerIcon(canvas, unit);
-            RowOfOdd[2] = CreatePowerIcon(canvas, -unit);
+            const float helmspacing = 120;
 
-            RowOfEven[0] = CreatePowerIcon(canvas, -unit / 2);
-            RowOfEven[1] = CreatePowerIcon(canvas, unit / 2);
+            const float helmzoffset = 0.05f;
+            const float helmyoffset = -230;
+            const float helmscale = 1.80f;
+            HelmPowerIconsRowOfOdd[0] = CreatePowerIndicatorIcon(canvas, 0, helmyoffset, helmzoffset, helmscale);
+            HelmPowerIconsRowOfOdd[1] = CreatePowerIndicatorIcon(canvas, helmspacing, helmyoffset, helmzoffset, helmscale);
+            HelmPowerIconsRowOfOdd[2] = CreatePowerIndicatorIcon(canvas, -helmspacing, helmyoffset, helmzoffset, helmscale);
+            HelmPowerIconsRowOfEven[0] = CreatePowerIndicatorIcon(canvas, -helmspacing / 2, helmyoffset, helmzoffset, helmscale);
+            HelmPowerIconsRowOfEven[1] = CreatePowerIndicatorIcon(canvas, helmspacing / 2, helmyoffset, helmzoffset, helmscale);
+
+            Canvas canvas2 = this.UpgradeManager.HolographicHUD.healthBar.canvas;
+            const float healthbarspacing = 90;
+            const float healthbarzoffset = 0.05f;
+            const float healthbaryoffset = -50;
+            const float healthbarscale = 0.90f;
+
+            HealthBarPowerIconsRowOfOdd[0] = CreatePowerIndicatorIcon(canvas2, 0, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfOdd[1] = CreatePowerIndicatorIcon(canvas2, healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfOdd[2] = CreatePowerIndicatorIcon(canvas2, -healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfEven[0] = CreatePowerIndicatorIcon(canvas2, -healthbarspacing / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfEven[1] = CreatePowerIndicatorIcon(canvas2, healthbarspacing / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
 
             powerIconsInitialized = true;
 
-            QuickLogger.Debug("Linked PowerManager to HelmHUD");
+            QuickLogger.Debug("Linked CyclopsHUDManager to HelmHUD");
         }
 
-        private uGUI_Icon CreatePowerIcon(Canvas canvas, float xoffset)
+        private static uGUI_Icon CreatePowerIndicatorIcon(Canvas canvas, float xoffset, float yoffset, float zoffset, float scale)
         {
-            const float zoffset = 0.05f;
-            const float yoffset = -230;
-            const float scale = 1.80f;
-
             var iconGo = new GameObject("IconGo", typeof(RectTransform));
             iconGo.transform.SetParent(canvas.transform, false);
             iconGo.transform.localPosition = new Vector3(xoffset, yoffset, zoffset);
@@ -215,27 +229,34 @@
             if (!powerIconsInitialized)
                 return;
 
-            RowOfOdd[0].enabled = false;
-            RowOfOdd[1].enabled = false;
-            RowOfOdd[2].enabled = false;
+            HelmPowerIconsRowOfOdd[0].enabled = false;
+            HelmPowerIconsRowOfOdd[1].enabled = false;
+            HelmPowerIconsRowOfOdd[2].enabled = false;
+            HelmPowerIconsRowOfEven[0].enabled = false;
+            HelmPowerIconsRowOfEven[1].enabled = false;
 
-            RowOfEven[0].enabled = false;
-            RowOfEven[1].enabled = false;
+            HealthBarPowerIconsRowOfOdd[0].enabled = false;
+            HealthBarPowerIconsRowOfOdd[1].enabled = false;
+            HealthBarPowerIconsRowOfOdd[2].enabled = false;
+            HealthBarPowerIconsRowOfEven[0].enabled = false;
+            HealthBarPowerIconsRowOfEven[1].enabled = false;
 
-            uGUI_Icon[] row = powerIcons.EvenCount ? RowOfEven : RowOfOdd;
+            uGUI_Icon[] helmRow = powerIcons.EvenCount ? HelmPowerIconsRowOfEven : HelmPowerIconsRowOfOdd;
+            uGUI_Icon[] healthBarRow = powerIcons.EvenCount ? HealthBarPowerIconsRowOfEven : HealthBarPowerIconsRowOfOdd;
             int index = 0;
 
             foreach (TechType item in powerIcons.ActiveIcons)
             {
-                if (index == row.Length)
+                if (index == helmRow.Length)
                 {
                     QuickLogger.Debug("Got an unexpected number of icons", true);
                     return;
                 }
 
-                uGUI_Icon uiIcon = row[index++];
-                uiIcon.sprite = SpriteManager.Get(item);
-                uiIcon.enabled = true;                
+                uGUI_Icon helmIcon = helmRow[index];
+                uGUI_Icon hpIcon = healthBarRow[index++];
+                hpIcon.sprite = helmIcon.sprite = SpriteManager.Get(item);
+                hpIcon.enabled = helmIcon.enabled = true;
             }
         }
     }

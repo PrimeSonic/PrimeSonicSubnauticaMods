@@ -13,20 +13,24 @@
         private const string KeyName = "CBR";
         private const string ReactorBatterChargeKey = "BRP";
         private const string MaterialsKey = "MAT";
+        private const string BoostCountKey = "BC";
         private readonly string ID;
 
         private readonly EmProperty<float> _batteryCharge;
+        private readonly EmProperty<int> _boosterCount;
         private EmPropertyCollectionList<EmModuleSaveData> _materials;
 
         private static ICollection<EmProperty> GetDefinitions => new List<EmProperty>()
         {
             new EmProperty<float>(ReactorBatterChargeKey, 0),
+            new EmProperty<int>(BoostCountKey, 0),
             new EmPropertyCollectionList<EmModuleSaveData>(MaterialsKey)
         };
 
         public CyBioReactorSaveData(ICollection<EmProperty> definitions) : base("CyBioReactor", definitions)
         {
             _batteryCharge = (EmProperty<float>)Properties[ReactorBatterChargeKey];
+            _boosterCount = (EmProperty<int>)Properties[BoostCountKey];
             _materials = (EmPropertyCollectionList<EmModuleSaveData>)Properties[MaterialsKey];
         }
 
@@ -72,13 +76,28 @@
             set => _batteryCharge.Value = Mathf.Min(value, CyBioReactorMono.MaxPower);
         }
 
+        public int BoosterCount
+        {
+            get => _boosterCount.HasValue ? _boosterCount.Value : 0;
+            set => _boosterCount.Value = Mathf.Max(value, 0);
+        }
+
         private string SaveDirectory => Path.Combine(SaveUtils.GetCurrentSaveDataDir(), "CyBioReactor");
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
-        public void Save() => this.Save(this.SaveDirectory, this.SaveFile);
+        public void Save()
+        {
+            this.Save(this.SaveDirectory, this.SaveFile);
+        }
 
-        public bool Load() => this.Load(this.SaveDirectory, this.SaveFile);
+        public bool Load()
+        {
+            return this.Load(this.SaveDirectory, this.SaveFile);
+        }
 
-        internal override EmProperty Copy() => new CyBioReactorSaveData(this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CyBioReactorSaveData(this.CopyDefinitions);
+        }
     }
 }

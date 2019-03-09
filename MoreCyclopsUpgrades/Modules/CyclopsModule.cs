@@ -21,15 +21,17 @@
 
         internal static bool ModulesEnabled { get; private set; } = true;
 
-        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        // Default value that shouldn't get hit. Only here for error testing.
+        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld; 
+        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld;
+        public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld;
+        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.UnusedOld;
+        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.UnusedOld;
+        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.UnusedOld;
+        public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld;
+        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld;
+        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.UnusedOld;
+        public static TechType BioReactorBoosterID { get; protected set; } = TechType.UnusedOld;
 
         public readonly string NameID;
         public readonly string FriendlyName;
@@ -97,6 +99,14 @@
 
         protected abstract void SetStaticTechTypeID(TechType techTypeID);
 
+        public override GameObject GetGameObject()
+        {
+            GameObject prefab = CraftData.GetPrefabForTechType(PreFabTemplate);
+            var obj = GameObject.Instantiate(prefab);
+
+            return obj;
+        }
+
         protected abstract TechData GetRecipe();
 
         internal static void PatchAllModules(bool modulesEnabled)
@@ -111,6 +121,7 @@
             ModulesToPatch.Add(new CyclopsSpeedBooster(OtherMods.VehicleUpgradesInCyclops));
             ModulesToPatch.Add(new NuclearCharger());
             ModulesToPatch.Add(new DepletedNuclearModule());
+            ModulesToPatch.Add(new BioReactorBooster(OtherMods.VehicleUpgradesInCyclops));
 
             foreach (CyclopsModule module in ModulesToPatch)
             {

@@ -1,8 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Modules.PowerUpgrade
 {
-    using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using UnityEngine;
 
     internal class PowerUpgradeMk3 : CyclopsModule
     {
@@ -16,28 +14,23 @@
         {
         }
 
-        public override GameObject GetGameObject()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-            var obj = GameObject.Instantiate(prefab);
-
-            return obj;
-        }
-
         protected override TechData GetRecipe()
         {
             return new TechData()
             {
                 craftAmount = 1,
-                Ingredients = new List<Ingredient>(new Ingredient[3]
-                             {
-                                 new Ingredient(PowerUpgradeMk2ID, 1),
-                                 new Ingredient(TechType.Kyanite, 1), // More uses for Kyanite!
-                                 new Ingredient(TechType.Diamond, 1),
-                             })
+                Ingredients =
+                {
+                    new Ingredient(PowerUpgradeMk2ID, 1),
+                    new Ingredient(TechType.Kyanite, 1), // More uses for Kyanite!
+                    new Ingredient(TechType.Diamond, 1),
+                }
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID) => PowerUpgradeMk3ID = techTypeID;
+        protected override void SetStaticTechTypeID(TechType techTypeID)
+        {
+            PowerUpgradeMk3ID = techTypeID;
+        }
     }
 }

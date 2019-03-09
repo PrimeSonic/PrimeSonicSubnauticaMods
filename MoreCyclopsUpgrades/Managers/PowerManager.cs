@@ -20,6 +20,7 @@
 
         private const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
+        private const float MinimalPowerValue = 0.001f;
 
         private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
         {
@@ -63,6 +64,7 @@
         private List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
 
         internal bool HasBioReactors => this.CyBioReactors.Count > 0;
+        internal PowerIconState PowerIcons { get; } = new PowerIconState();
 
         public CyclopsManager Manager { get; private set; }
 
@@ -145,6 +147,11 @@
             {
                 this.CyBioReactors.Clear();
                 this.CyBioReactors.AddRange(TempCache);
+            }
+
+            foreach (CyBioReactorMono reactor in this.CyBioReactors)
+            {
+                reactor.UpdateBoosterCount(this.UpgradeManager.BioBoosterCount);
             }
         }
 
@@ -231,8 +238,6 @@
                 }
             }
         }
-
-        internal PowerIconState PowerIcons { get; } = new PowerIconState();
 
         /// <summary>
         /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
@@ -343,8 +348,7 @@
                 this.PowerIcons.Bio = false;
             }
 
-            bool cyclopsDoneCharging = powerDeficit <= 0.001f;
-
+            bool cyclopsDoneCharging = powerDeficit <= MinimalPowerValue;
             this.PowerIcons.Nuclear = !renewablePowerAvailable && this.UpgradeManager.HasNuclearModules;
 
             if (this.UpgradeManager.HasNuclearModules && // Nuclear power is available
@@ -355,7 +359,7 @@
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
                 foreach (NuclearModuleDetails module in this.UpgradeManager.NuclearModules)
                 {
-                    ChargeCyclopsFromBattery(module.NuclearBattery, NuclearDrainRate, ref powerDeficit);                    
+                    ChargeCyclopsFromBattery(module.NuclearBattery, NuclearDrainRate, ref powerDeficit);
 
                     if (module.NuclearBattery.charge <= 0f)
                         DepleteNuclearBattery(module.ParentEquipment, module.SlotName, module.NuclearBattery);

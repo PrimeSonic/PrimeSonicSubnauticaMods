@@ -23,13 +23,6 @@
             InstanceID = cyclops.GetInstanceID();
         }
 
-        public void Syncronize(CyclopsUpgradeConsoleHUDManager hudManager)
-        {
-            this.UpgradeManager.SyncUpgradeConsoles();
-            this.PowerManager.SyncBioReactors();
-            this.HUDManager.UpdateConsoleHUD(hudManager);
-        }
-
         // List was chosen because of the very small number of entries it will mamaged.
         private static List<CyclopsManager> Managers = new List<CyclopsManager>();
 
@@ -56,11 +49,6 @@
         public static CyclopsHUDManager GeHUDManager(SubRoot cyclops)
         {
             return GetManager(cyclops.GetInstanceID(), cyclops)?.HUDManager;
-        }
-
-        public static void SyncronizeAll(CyclopsUpgradeConsoleHUDManager hudManager)
-        {
-            GetManager(hudManager.subRoot.GetInstanceID(), hudManager.subRoot)?.Syncronize(hudManager);
         }
 
         private static CyclopsManager GetManager(int id, SubRoot cyclops)

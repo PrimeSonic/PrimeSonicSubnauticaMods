@@ -49,6 +49,8 @@
         internal int SolarModuleCount { get; private set; } = 0;
         internal int ThermalModuleCount { get; private set; } = 0;
 
+        internal int BioBoosterCount { get; private set; } = 0;
+
         internal IList<Battery> SolarMk2Batteries { get; } = new List<Battery>();
         internal IList<Battery> ThermalMk2Batteries { get; } = new List<Battery>();
         internal IList<NuclearModuleDetails> NuclearModules { get; } = new List<NuclearModuleDetails>();
@@ -88,7 +90,7 @@
 
         private List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
         private CyclopsHolographicHUD holographicHUD = null;
-        private CyclopsHolographicHUD HolographicHUD => holographicHUD ?? (holographicHUD = this.Cyclops.GetComponentInChildren<CyclopsHolographicHUD>());
+        internal CyclopsHolographicHUD HolographicHUD => holographicHUD ?? (holographicHUD = this.Cyclops.GetComponentInChildren<CyclopsHolographicHUD>());
 
         private readonly Dictionary<TechType, Action> SimpleUpgradeActions = new Dictionary<TechType, Action>(12);
         private readonly Dictionary<TechType, Action<Equipment, string>> SlotBoundUpgradeActions = new Dictionary<TechType, Action<Equipment, string>>(12);
@@ -113,6 +115,7 @@
             SimpleUpgradeActions.Add(CyclopsModule.SpeedBoosterModuleID, AddSpeedModule);
             SimpleUpgradeActions.Add(CyclopsModule.PowerUpgradeMk2ID, AddPowerMk2Module);
             SimpleUpgradeActions.Add(CyclopsModule.PowerUpgradeMk3ID, AddPowerMk3Module);
+            SimpleUpgradeActions.Add(CyclopsModule.BioReactorBoosterID, AddBioBooster);
 
             SlotBoundUpgradeActions.Add(CyclopsModule.SolarChargerMk2ID, AddSolarMk2Module);
             SlotBoundUpgradeActions.Add(CyclopsModule.ThermalChargerMk2ID, AddThermalMk2Module);
@@ -195,6 +198,7 @@
 
             this.SolarModuleCount = 0;
             this.ThermalModuleCount = 0;
+            this.BioBoosterCount = 0;
 
             this.SolarMk2Batteries.Clear();
             this.ThermalMk2Batteries.Clear();
@@ -231,6 +235,11 @@
         private void AddThermalModule()
         {
             ++this.ThermalModuleCount;
+        }
+
+        private void AddBioBooster()
+        {
+            ++this.BioBoosterCount;
         }
 
         private void AddSolarMk2Module(Equipment modules, string slot)

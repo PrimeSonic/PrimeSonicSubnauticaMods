@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.Modules.Recharging.Thermal
 {
-    using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
     using UnityEngine;
 
@@ -25,24 +24,26 @@
             return new TechData()
             {
                 craftAmount = 1,
-                Ingredients = new List<Ingredient>(new Ingredient[6]
-                             {
-                                 new Ingredient(TechType.CyclopsThermalReactorModule, 1),
-                                 new Ingredient(TechType.Battery, 2),
-                                 new Ingredient(TechType.Sulphur, 1),
-                                 new Ingredient(TechType.Kyanite, 1),
-                                 new Ingredient(TechType.WiringKit, 1),
-                                 new Ingredient(TechType.CopperWire, 1),
-                             })
+                Ingredients =
+                {
+                    new Ingredient(TechType.CyclopsThermalReactorModule, 1),
+                    new Ingredient(TechType.Battery, 2),
+                    new Ingredient(TechType.Sulphur, 1),
+                    new Ingredient(TechType.Kyanite, 1),
+                    new Ingredient(TechType.WiringKit, 1),
+                    new Ingredient(TechType.CopperWire, 1),
+                }
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID) => ThermalChargerMk2ID = techTypeID;
+        protected override void SetStaticTechTypeID(TechType techTypeID)
+        {
+            ThermalChargerMk2ID = techTypeID;
+        }
 
         public override GameObject GetGameObject()
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-            var obj = GameObject.Instantiate(prefab);
+            GameObject obj = base.GetGameObject();
 
             Battery pCell = obj.AddComponent<Battery>();
             pCell.name = "ThermalBackupBattery";

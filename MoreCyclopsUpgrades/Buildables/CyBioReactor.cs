@@ -1,10 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.Buildables
 {
-    using System.Reflection;
     using MoreCyclopsUpgrades.Monobehaviors;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using UnityEngine;
 
     internal class CyBioReactor : Buildable
@@ -53,6 +53,11 @@
             constructible.rotationEnabled = true;
             constructible.techType = this.TechType;
             constructible.model = model;
+
+            // Set the custom texture
+            Texture2D customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/CyBioReactorT.png");
+            SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
+            skinnedMeshRenderer.material.mainTexture = customTexture;
 
             CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>(); // The component that makes the magic happen
             Battery battery = prefab.AddComponent<Battery>();

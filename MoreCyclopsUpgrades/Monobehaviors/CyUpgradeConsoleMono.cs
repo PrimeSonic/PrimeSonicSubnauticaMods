@@ -40,6 +40,22 @@
             }
         }
 
+        private void Start()
+        {
+            SubRoot cyclops = GetComponentInParent<SubRoot>();
+
+            if (cyclops is null)
+            {
+                QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Destroying duplicate.");
+                Destroy(this);
+            }
+            else
+            {
+                QuickLogger.Debug("CyUpgradeConsoleMono: Parent cyclops found!");
+                ConnectToCyclops(cyclops);
+            }
+        }
+
         private void InitializeModules()
         {
             if (ModulesRoot == null)
