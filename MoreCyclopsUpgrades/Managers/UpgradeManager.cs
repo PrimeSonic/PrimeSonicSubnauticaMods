@@ -138,39 +138,13 @@
 
                 if (auxConsole.ParentCyclops == null)
                 {
+                    QuickLogger.Debug("CyUpgradeConsoleMono synced externally");
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
                     auxConsole.ConnectToCyclops(this.Cyclops);
                 }
             }
 
             return true;
-        }
-
-        internal void SyncUpgradeConsoles()
-        {
-            TempCache.Clear();
-
-            CyUpgradeConsoleMono[] auxUpgradeConsoles = this.Cyclops.GetAllComponentsInChildren<CyUpgradeConsoleMono>();
-
-            foreach (CyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
-            {
-                if (TempCache.Contains(auxConsole))
-                    continue; // This is a workaround because of the object references being returned twice in this array.
-
-                TempCache.Add(auxConsole);
-
-                if (auxConsole.ParentCyclops == null)
-                {
-                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    auxConsole.ConnectToCyclops(this.Cyclops);
-                }
-            }
-
-            if (TempCache.Count != this.AuxUpgradeConsoles.Count)
-            {
-                this.AuxUpgradeConsoles.Clear();
-                this.AuxUpgradeConsoles.AddRange(TempCache);
-            }
         }
 
         private void ClearAllUpgrades()

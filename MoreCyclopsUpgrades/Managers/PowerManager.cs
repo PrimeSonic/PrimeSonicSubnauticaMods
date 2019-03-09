@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Caching;
+    using Common;
     using Modules;
     using MoreCyclopsUpgrades.Monobehaviors;
     using SaveData;
@@ -117,41 +118,10 @@
 
                 if (cyBioReactor.ParentCyclops == null)
                 {
+                    QuickLogger.Debug("CyBioReactorMono synced externally");
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
                     cyBioReactor.ConnectToCyclops(this.Cyclops);
                 }
-            }
-        }
-
-        internal void SyncBioReactors()
-        {
-            TempCache.Clear();
-
-            CyBioReactorMono[] cyBioReactors = this.Cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
-
-            foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
-            {
-                if (TempCache.Contains(cyBioReactor))
-                    continue; // This is a workaround because of the object references being returned twice in this array.
-
-                TempCache.Add(cyBioReactor);
-
-                if (cyBioReactor.ParentCyclops == null)
-                {
-                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    cyBioReactor.ConnectToCyclops(this.Cyclops);
-                }
-            }
-
-            if (TempCache.Count != this.CyBioReactors.Count)
-            {
-                this.CyBioReactors.Clear();
-                this.CyBioReactors.AddRange(TempCache);
-            }
-
-            foreach (CyBioReactorMono reactor in this.CyBioReactors)
-            {
-                reactor.UpdateBoosterCount(this.UpgradeManager.BioBoosterCount);
             }
         }
 
@@ -263,7 +233,7 @@
             if (this.UpgradeManager.HasSolarModules) // Handle solar power
             {
                 float availableSolarEnergy = GetSolarChargeAmount();
-                this.PowerIcons.Solar = availableSolarEnergy > 0f;
+                this.PowerIcons.Solar = availableSolarEnergy > MinimalPowerValue;
 
                 if (this.UpgradeManager.SolarModuleCount > 0 && this.PowerIcons.Solar)
                 {
@@ -297,7 +267,7 @@
             if (this.UpgradeManager.HasThermalModules) // Handle thermal power
             {
                 float availableThermalEnergy = GetThermalChargeAmount();
-                this.PowerIcons.Thermal = availableThermalEnergy > 0f;
+                this.PowerIcons.Thermal = availableThermalEnergy > MinimalPowerValue;
 
                 if (this.UpgradeManager.ThermalModuleCount > 0 && this.PowerIcons.Thermal)
                 {
@@ -371,6 +341,8 @@
             {
                 // Recycle surplus power back into the batteries that need it
                 lastBatteryToCharge.charge = Mathf.Min(lastBatteryToCharge.capacity, lastBatteryToCharge.charge + surplusPower);
+                this.PowerIcons.SolarBattery = false;
+                this.PowerIcons.ThermalBattery = false;
             }
         }
 
@@ -427,7 +399,7 @@
         /// </returns>
         private float ChargeFromModuleMk2(Battery batteryInSlot, float chargeAmount, float batteryDrainRate, ref float powerDeficit)
         {
-            if (Mathf.Approximately(chargeAmount, 0f))
+            if (Mathf.Approximately(powerDeficit, 0f))
             {
                 ChargeCyclopsFromBattery(batteryInSlot, batteryDrainRate, ref powerDeficit);
                 return 0f;

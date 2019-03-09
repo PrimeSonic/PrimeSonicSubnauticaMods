@@ -434,6 +434,7 @@
 
             this.ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
+            
         }
 
         public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
