@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Monobehaviors
+﻿namespace MoreCyclopsUpgrades.Caching
 {
     using UnityEngine;
     using UnityEngine.UI;
@@ -25,7 +25,7 @@
         {
             Pickupable = pickupable;
             RemainingEnergy = energy;
-            MaxEnergy = CyBioReactorMono.GetChargeValue(pickupable.GetTechType());
+            MaxEnergy = BaseBioReactor.charge[pickupable.GetTechType()];
         }
 
         public void UpdateInventoryText()

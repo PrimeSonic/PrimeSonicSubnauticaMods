@@ -1,10 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.Modules.Recharging.Nuclear
 {
-    using System.Collections.Generic;
     using Buildables;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
-    using UnityEngine;
 
     internal class DepletedNuclearModule : CyclopsModule
     {
@@ -20,14 +18,6 @@
                   TechType.DepletedReactorRod)
         {
 
-        }
-
-        public override GameObject GetGameObject()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.DepletedReactorRod);
-            var gameObject = GameObject.Instantiate(prefab);
-
-            return gameObject;
         }
 
         protected override void Patch()
@@ -61,19 +51,22 @@
             return new TechData()
             {
                 craftAmount = 0,
-                Ingredients = new List<Ingredient>()
-                    {
-                        new Ingredient(this.TechType, 1),
-                        new Ingredient(TechType.ReactorRod, 1)
-                    },
-                LinkedItems = new List<TechType>()
-                    {
-                        NuclearChargerID,
-                        TechType.DepletedReactorRod
-                    }
+                Ingredients =
+                {
+                    new Ingredient(this.TechType, 1),
+                    new Ingredient(TechType.ReactorRod, 1)
+                },
+                LinkedItems =
+                {
+                    NuclearChargerID,
+                    TechType.DepletedReactorRod
+                }
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID) => DepletedNuclearModuleID = techTypeID;
+        protected override void SetStaticTechTypeID(TechType techTypeID)
+        {
+            DepletedNuclearModuleID = techTypeID;
+        }
     }
 }

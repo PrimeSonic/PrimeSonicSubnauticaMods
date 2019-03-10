@@ -1,8 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Modules.PowerUpgrade
 {
-    using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
-    using UnityEngine;
 
     internal class PowerUpgradeMk2 : CyclopsModule
     {
@@ -17,28 +15,23 @@
 
         }
 
-        public override GameObject GetGameObject()
-        {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsThermalReactorModule);
-            var obj = GameObject.Instantiate(prefab);
-
-            return obj;
-        }
-
         protected override TechData GetRecipe()
         {
             return new TechData()
             {
                 craftAmount = 1,
-                Ingredients = new List<Ingredient>(new Ingredient[3]
-                             {
-                                 new Ingredient(TechType.PowerUpgradeModule, 1),
-                                 new Ingredient(TechType.Aerogel, 1),
-                                 new Ingredient(TechType.Sulphur, 2) // Did you make it to the Lost River yet?
-                             })
+                Ingredients =
+                {
+                    new Ingredient(TechType.PowerUpgradeModule, 1),
+                    new Ingredient(TechType.Aerogel, 1),
+                    new Ingredient(TechType.Sulphur, 2) // Did you make it to the Lost River yet?
+                }
             };
         }
 
-        protected override void SetStaticTechTypeID(TechType techTypeID) => PowerUpgradeMk2ID = techTypeID;
+        protected override void SetStaticTechTypeID(TechType techTypeID)
+        {
+            PowerUpgradeMk2ID = techTypeID;
+        }
     }
 }

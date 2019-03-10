@@ -15,21 +15,23 @@
 
     internal abstract class CyclopsModule : ModPrefab
     {
-        private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>(8);
+        private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>();
 
         private static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
 
         internal static bool ModulesEnabled { get; private set; } = true;
 
-        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
-        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.UnusedOld; // Default value that shouldn't get hit
+        // Default value that shouldn't get hit. Only here for error testing.
+        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld;
+        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld;
+        public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld;
+        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.UnusedOld;
+        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.UnusedOld;
+        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.UnusedOld;
+        public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld;
+        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld;
+        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.UnusedOld;
+        public static TechType BioReactorBoosterID { get; protected set; } = TechType.UnusedOld;
 
         public readonly string NameID;
         public readonly string FriendlyName;
@@ -87,7 +89,10 @@
             CraftDataHandler.SetTechData(this.TechType, GetRecipe());
 
             if (AddToCraftTree)
+            {
+                QuickLogger.Debug($"Setting crafting node for {this.ClassID}");
                 CraftTreeHandler.AddCraftingNode(Fabricator, this.TechType, FabricatorTabs);
+            }
 
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
             CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
@@ -96,6 +101,14 @@
         }
 
         protected abstract void SetStaticTechTypeID(TechType techTypeID);
+
+        public override GameObject GetGameObject()
+        {
+            GameObject prefab = CraftData.GetPrefabForTechType(PreFabTemplate);
+            var obj = GameObject.Instantiate(prefab);
+
+            return obj;
+        }
 
         protected abstract TechData GetRecipe();
 
@@ -109,6 +122,7 @@
             ModulesToPatch.Add(new PowerUpgradeMk2());
             ModulesToPatch.Add(new PowerUpgradeMk3());
             ModulesToPatch.Add(new CyclopsSpeedBooster(OtherMods.VehicleUpgradesInCyclops));
+            ModulesToPatch.Add(new BioReactorBooster(OtherMods.VehicleUpgradesInCyclops));
             ModulesToPatch.Add(new NuclearCharger());
             ModulesToPatch.Add(new DepletedNuclearModule());
 

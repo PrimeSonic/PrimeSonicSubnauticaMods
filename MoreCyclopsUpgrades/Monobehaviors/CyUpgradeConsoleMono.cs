@@ -1,12 +1,12 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
-    using Common;
-    using Modules;
-    using ProtoBuf;
-    using SaveData;
-    using SMLHelper.V2.Utility;
     using System;
     using System.Reflection;
+    using Common;
+    using Modules;
+    using MoreCyclopsUpgrades.Managers;
+    using ProtoBuf;
+    using SaveData;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -15,6 +15,8 @@
     {
         // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
+
+        internal CyclopsManager Manager { get; private set; }
 
         public Equipment Modules { get; private set; }
 
@@ -38,6 +40,22 @@
             if (this.Modules == null)
             {
                 InitializeModules();
+            }
+        }
+
+        private void Start()
+        {
+            SubRoot cyclops = GetComponentInParent<SubRoot>();
+
+            if (cyclops is null)
+            {
+                QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Attempting external syncronize.");
+                CyclopsManager.SyncUpgradeConsoles();
+            }
+            else
+            {
+                QuickLogger.Debug("CyUpgradeConsoleMono: Parent cyclops found!");
+                ConnectToCyclops(cyclops);
             }
         }
 
@@ -180,11 +198,21 @@
         {
             this.ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
+            this.Manager = CyclopsManager.GetAllManagers(parentCyclops);
+
+            if (!this.Manager.UpgradeManager.AuxUpgradeConsoles.Contains(this))
+            {
+                this.Manager.UpgradeManager.AuxUpgradeConsoles.Add(this);
+            }
+
             QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
         }
 
         internal void CyclopsUpgradeChange()
         {
+            if (this.ParentCyclops is null)
+                return;
+
             this.ParentCyclops.subModulesDirty = true;
         }
 
@@ -284,8 +312,7 @@
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
-            bool hasSaveData = SaveData.Load();
-            if (hasSaveData)
+            if (SaveData.Load())
             {
                 // Because the items here aren't being serialized with everything else normally,
                 // I've used custom save data to handle whatever gets left in these slots.
