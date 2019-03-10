@@ -7,19 +7,17 @@
     [HarmonyPatch("RefreshScreen")]
     internal class CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher
     {
-        [HarmonyPrefix]
-        public static bool Prefix(ref CyclopsUpgradeConsoleHUDManager __instance)
+        [HarmonyPostfix]
+        public static void Postfix(ref CyclopsUpgradeConsoleHUDManager __instance)
         {
             CyclopsHUDManager hudMgr = CyclopsManager.GeHUDManager(__instance.subRoot);
 
             if (hudMgr == null)
             {
-                return true;
+                return;
             }
 
             hudMgr.UpdateConsoleHUD(__instance);
-
-            return false;
         }
     }
 }
