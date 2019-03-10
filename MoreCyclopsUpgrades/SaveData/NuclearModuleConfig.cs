@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Text;
+    using MoreCyclopsUpgrades.Managers;
     using SMLHelper.V2.Options;
     using UnityEngine;
 
@@ -20,7 +21,7 @@
 
         private static float CyclopsMaxPower = 1;
 
-        internal static float MinimumEnergyDeficit => EmConfig.ConserveNuclearModulePower ? RequiredEnergyDeficit : 0f;
+        internal static float MinimumEnergyDeficit => EmConfig.ConserveNuclearModulePower ? RequiredEnergyDeficit : PowerManager.MinimalPowerValue;
 
         internal static EmNuclearConfig EmConfig = new EmNuclearConfig(MinPercent, MaxPercent, DefaultPercent);
 

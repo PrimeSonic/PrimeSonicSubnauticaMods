@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
-    using System;
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.Caching;
@@ -12,7 +11,7 @@
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ISubRootConnection
     {
-        private const float baselineChargeRate = 0.83f;
+        private const float baselineChargeRate = 0.80f;
         public const int MaxBoosters = 3;
 
         internal int StorageWidth { get; private set; } = 2;
@@ -29,10 +28,6 @@
 
         private const int TextDelayTicks = 60;
 
-        [ProtoMember(3)]
-        [NonSerialized]
-        public float _constructed = 1f;
-
         [AssertNotNull]
         public ChildObjectIdentifier storageRoot;
 
@@ -47,6 +42,7 @@
         public ItemsContainer Container { get; private set; }
         public Battery Battery { get; internal set; }
         public string PrefabID { get; private set; }
+        public bool IsContructed => (this.Buildable != null) && this.Buildable.constructed;
 
         private int lastKnownBioBooster = 0;
 
@@ -55,8 +51,8 @@
         // Careful, this map only exists while the PDA screen is open
         public Dictionary<InventoryItem, uGUI_ItemIcon> InventoryMapping { get; private set; }
 
-        public bool ProducingPower => _constructed >= 1f && this.MaterialsProcessing.Count > 0;
-        public bool HasPower => _constructed >= 1f && this.Battery.charge > 0f;
+        public bool ProducingPower => this.IsContructed && this.MaterialsProcessing.Count > 0;
+        public bool HasPower => this.IsContructed && this.Battery.charge > 0f;
 
         #region Initialization
 
@@ -322,26 +318,6 @@
                 material.UpdateInventoryText();
         }
 
-        public float Constructed
-        {
-            get => _constructed;
-            set
-            {
-                value = Mathf.Clamp01(value);
-                if (_constructed != value)
-                {
-                    _constructed = value;
-                    if (_constructed < 1f)
-                    {
-                        if (_constructed <= 0f)
-                        {
-                            Destroy(this.gameObject);
-                        }
-                    }
-                }
-            }
-        }
-
         #region Save data handling
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
@@ -440,15 +416,15 @@
             }
         }
 
-        public void UpdateBoosterCount(int boosterCount)
+        public bool UpdateBoosterCount(int boosterCount)
         {
             if (boosterCount > MaxBoosters)
             {
-                return;
+                return false;
             }
 
             if (lastKnownBioBooster == boosterCount)
-                return;
+                return false;
 
             int nextWidth;
             int nextHeight;
@@ -487,10 +463,10 @@
                 {
                     BioEnergy material = this.MaterialsProcessing.GetCandidateForRemoval();
 
-                    if (material is null)                    
+                    if (material is null)
                         break;
 
-                    QuickLogger.Debug($"Removing material of size {material.Size}", true);                    
+                    QuickLogger.Debug($"Removing material of size {material.Size}", true);
                     this.MaterialsProcessing.Remove(material, this.Container);
                 }
             }
@@ -502,6 +478,8 @@
             ChargePerSecondPerItem = baselineChargeRate / this.TotalContainerSpaces * 2;
 
             lastKnownBioBooster = boosterCount;
+
+            return true;
         }
     }
 }

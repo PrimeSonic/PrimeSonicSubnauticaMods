@@ -226,7 +226,7 @@
 
         private void AddBioBooster()
         {
-            ++this.BioBoosterCount;            
+            ++this.BioBoosterCount;
         }
 
         private void UpdateBioReactors()
@@ -238,12 +238,13 @@
             }
 
             CyBioReactorMono lastRef = null;
+            bool changedHappened = false;
             foreach (CyBioReactorMono reactor in this.Manager.BioReactors)
             {
-                (lastRef = reactor).UpdateBoosterCount(this.BioBoosterCount);
+                changedHappened |= (lastRef = reactor).UpdateBoosterCount(this.BioBoosterCount);
             }
 
-            if (this.BioBoosterCount == CyBioReactorMono.MaxBoosters)
+            if (changedHappened && this.BioBoosterCount == CyBioReactorMono.MaxBoosters)
             {
                 ErrorMessage.AddMessage("Maximum boost to bioreactors achieved");
             }

@@ -72,9 +72,9 @@
                 Ingredients =
                 {
                     new Ingredient(TechType.Titanium, 1),
+                    new Ingredient(TechType.Glass, 1),
                     new Ingredient(TechType.WiringKit, 1),
                     new Ingredient(TechType.Lubricant, 1),
-                    new Ingredient(TechType.PowerCell, 1),
                 }
             };
         }

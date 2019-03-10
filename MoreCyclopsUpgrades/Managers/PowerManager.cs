@@ -21,7 +21,7 @@
 
         private const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
-        private const float MinimalPowerValue = 0.001f;
+        public const float MinimalPowerValue = 0.001f;
 
         private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
         {
@@ -240,7 +240,6 @@
 
             float surplusPower = 0f;
             Battery lastBatteryToCharge = null;
-
             bool renewablePowerAvailable = false;
 
             if (this.UpgradeManager.HasSolarModules) // Handle solar power
@@ -250,8 +249,7 @@
 
                 if (this.UpgradeManager.SolarModuleCount > 0 && this.PowerIcons.Solar)
                 {
-                    surplusPower += ChargeFromStandardModule(this.UpgradeManager.SolarModuleCount * availableSolarEnergy, ref powerDeficit);
-                    renewablePowerAvailable = true;
+                    surplusPower += ChargeFromStandardModule(this.UpgradeManager.SolarModuleCount * availableSolarEnergy, ref powerDeficit);                    
                 }
 
                 if (this.UpgradeManager.SolarMk2Batteries.Count > 0)
@@ -259,17 +257,27 @@
                     bool usingSolarBatteryPower = false;
                     foreach (Battery battery in this.UpgradeManager.SolarMk2Batteries)
                     {
-                        surplusPower += ChargeFromModuleMk2(battery, availableSolarEnergy, BatteryDrainRate, ref powerDeficit);
-                        bool batteryHasCharge = battery.charge > 0f;
-                        renewablePowerAvailable |= batteryHasCharge;
+                        if (this.PowerIcons.Solar)
+                        {
+                            surplusPower += ChargeCyclopsAndBattery(battery, ref availableSolarEnergy, ref powerDeficit);
+                        }
+                        else
+                        {
+                            ChargeCyclopsFromBattery(battery, BatteryDrainRate, ref powerDeficit);
 
-                        if (battery.charge < battery.capacity)
-                            lastBatteryToCharge = battery;
+                            bool batteryHasCharge = battery.charge > MinimalPowerValue;
 
-                        usingSolarBatteryPower |= !this.PowerIcons.Solar && batteryHasCharge;
+                            if (battery.charge < battery.capacity)
+                                lastBatteryToCharge = battery;
+
+                            usingSolarBatteryPower |= !this.PowerIcons.Thermal && batteryHasCharge;
+                        }
                     }
+
                     this.PowerIcons.SolarBattery = usingSolarBatteryPower;
                 }
+
+                renewablePowerAvailable |= this.PowerIcons.Solar || this.PowerIcons.SolarBattery;
             }
             else
             {
@@ -285,7 +293,6 @@
                 if (this.UpgradeManager.ThermalModuleCount > 0 && this.PowerIcons.Thermal)
                 {
                     surplusPower += ChargeFromStandardModule(this.UpgradeManager.ThermalModuleCount * availableThermalEnergy, ref powerDeficit);
-                    renewablePowerAvailable = true;
                 }
 
                 if (this.UpgradeManager.ThermalMk2Batteries.Count > 0)
@@ -293,17 +300,27 @@
                     bool usingThermalBatteryPower = false;
                     foreach (Battery battery in this.UpgradeManager.ThermalMk2Batteries)
                     {
-                        surplusPower += ChargeFromModuleMk2(battery, availableThermalEnergy, BatteryDrainRate, ref powerDeficit);
-                        bool batteryHasCharge = battery.charge > 0f;
-                        renewablePowerAvailable |= batteryHasCharge;
+                        if (this.PowerIcons.Thermal)
+                        {
+                            surplusPower += ChargeCyclopsAndBattery(battery, ref availableThermalEnergy, ref powerDeficit);
+                        }
+                        else
+                        {
+                            ChargeCyclopsFromBattery(battery, BatteryDrainRate, ref powerDeficit);
 
-                        if (battery.charge < battery.capacity)
-                            lastBatteryToCharge = battery;
+                            bool batteryHasCharge = battery.charge > 0f;
 
-                        usingThermalBatteryPower |= !this.PowerIcons.Thermal && batteryHasCharge;
+                            if (battery.charge < battery.capacity)
+                                lastBatteryToCharge = battery;
+
+                            usingThermalBatteryPower |= !this.PowerIcons.Thermal && batteryHasCharge;
+                        }
                     }
+
                     this.PowerIcons.ThermalBattery = usingThermalBatteryPower;
                 }
+
+                renewablePowerAvailable |= this.PowerIcons.Thermal || this.PowerIcons.ThermalBattery;
             }
             else
             {
@@ -319,24 +336,32 @@
                     if (!reactor.HasPower)
                         continue;
 
-                    ChargeCyclopsFromBattery(reactor.Battery, BatteryDrainRate, ref powerDeficit);
-                    renewablePowerAvailable = true;
+                    ChargeCyclopsFromBattery(reactor.Battery, BatteryDrainRate, ref powerDeficit);                    
                     hasBioPower = true;
                 }
 
                 this.PowerIcons.Bio = hasBioPower;
+                renewablePowerAvailable |= hasBioPower;
             }
             else
             {
                 this.PowerIcons.Bio = false;
             }
 
-            bool cyclopsDoneCharging = powerDeficit <= MinimalPowerValue;
-            this.PowerIcons.Nuclear = !renewablePowerAvailable && this.UpgradeManager.HasNuclearModules;
+            bool cyclopsDoneCharging = powerDeficit <= MinimalPowerValue;            
+            bool hasSurplusPower = surplusPower > MinimalPowerValue;
+            bool activelyCharging = !this.PowerIcons.Solar && !this.PowerIcons.Thermal;
 
-            if (this.UpgradeManager.HasNuclearModules && // Nuclear power is available
-                !cyclopsDoneCharging && // Halt charging if Cyclops is on full charge
-                !renewablePowerAvailable && // Only if there's no renewable power available
+            this.PowerIcons.SolarBattery &= activelyCharging;
+            this.PowerIcons.ThermalBattery &= activelyCharging;
+
+            this.PowerIcons.Nuclear =
+                this.UpgradeManager.HasNuclearModules &&
+                !renewablePowerAvailable && // Only if there's no renewable power available        
+                !hasSurplusPower; 
+
+            if (this.PowerIcons.Nuclear && // Nuclear power enabled
+                !cyclopsDoneCharging && // Halt charging if Cyclops is on full charge                
                 powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit) // User config for threshold to start charging                
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
@@ -350,12 +375,10 @@
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
-            if (cyclopsDoneCharging && surplusPower > 0f && lastBatteryToCharge != null)
+            if (cyclopsDoneCharging && hasSurplusPower && lastBatteryToCharge != null)
             {
                 // Recycle surplus power back into the batteries that need it
-                lastBatteryToCharge.charge = Mathf.Min(lastBatteryToCharge.capacity, lastBatteryToCharge.charge + surplusPower);
-                this.PowerIcons.SolarBattery = false;
-                this.PowerIcons.ThermalBattery = false;
+                lastBatteryToCharge.charge = Mathf.Min(lastBatteryToCharge.capacity, lastBatteryToCharge.charge + surplusPower);                
             }
         }
 
@@ -397,30 +420,6 @@
             powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
 
             return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
-        }
-
-        /// <summary>
-        /// Charges the Cyclops using a Mk2 charging module.
-        /// </summary>
-        /// <param name="batteryInSlot">The battery of the Mk2 charging module.</param>
-        /// <param name="chargeAmount">The charge amount.</param>
-        /// <param name="drainingRate">The battery power draining rate.</param>
-        /// <param name="powerDeficit">The power deficit.</param>
-        /// <returns>
-        /// The amount of surplus power this cycle.
-        /// This value can be <c>0f</c> if all charge was consumed or if the Mk2 module is running on reserver battery power.
-        /// </returns>
-        private float ChargeFromModuleMk2(Battery batteryInSlot, float chargeAmount, float batteryDrainRate, ref float powerDeficit)
-        {
-            if (Mathf.Approximately(powerDeficit, 0f))
-            {
-                ChargeCyclopsFromBattery(batteryInSlot, batteryDrainRate, ref powerDeficit);
-                return 0f;
-            }
-            else
-            {
-                return ChargeCyclopsAndBattery(batteryInSlot, ref chargeAmount, ref powerDeficit);
-            }
         }
 
         /// <summary>

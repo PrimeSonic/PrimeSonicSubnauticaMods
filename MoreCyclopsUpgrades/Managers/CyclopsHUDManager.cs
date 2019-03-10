@@ -187,11 +187,11 @@
 
             // Because the nuclear module only ever kicks in if there are no renewable sources of power
             // We can guarantee that we only ever need at most, 3 icons on diplay.
-            const float helmspacing = 120;
 
+            const float helmspacing = 135;
             const float helmzoffset = 0.05f;
-            const float helmyoffset = -230;
-            const float helmscale = 1.80f;
+            const float helmyoffset = -225;
+            const float helmscale = 1.40f;
             HelmPowerIconsRowOfOdd[0] = CreatePowerIndicatorIcon(canvas, 0, helmyoffset, helmzoffset, helmscale);
             HelmPowerIconsRowOfOdd[1] = CreatePowerIndicatorIcon(canvas, helmspacing, helmyoffset, helmzoffset, helmscale);
             HelmPowerIconsRowOfOdd[2] = CreatePowerIndicatorIcon(canvas, -helmspacing, helmyoffset, helmzoffset, helmscale);
@@ -199,16 +199,17 @@
             HelmPowerIconsRowOfEven[1] = CreatePowerIndicatorIcon(canvas, helmspacing / 2, helmyoffset, helmzoffset, helmscale);
 
             Canvas canvas2 = this.UpgradeManager.HolographicHUD.healthBar.canvas;
-            const float healthbarspacing = 90;
+            const float healthbarxoffset = 100;
+            const float healthbarspacing = 70;
             const float healthbarzoffset = 0.05f;
-            const float healthbaryoffset = -250;
+            const float healthbaryoffset = -300;
             const float healthbarscale = 0.70f;
 
-            HealthBarPowerIconsRowOfOdd[0] = CreatePowerIndicatorIcon(canvas2, 0, healthbaryoffset, healthbarzoffset, healthbarscale);
-            HealthBarPowerIconsRowOfOdd[1] = CreatePowerIndicatorIcon(canvas2, healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);
-            HealthBarPowerIconsRowOfOdd[2] = CreatePowerIndicatorIcon(canvas2, -healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);
-            HealthBarPowerIconsRowOfEven[0] = CreatePowerIndicatorIcon(canvas2, -healthbarspacing / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
-            HealthBarPowerIconsRowOfEven[1] = CreatePowerIndicatorIcon(canvas2, healthbarspacing / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfOdd[0] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfOdd[1] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfOdd[2] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + -healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfEven[0] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + -healthbarspacing / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+            HealthBarPowerIconsRowOfEven[1] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + healthbarspacing / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
 
             powerIconsInitialized = true;
 
