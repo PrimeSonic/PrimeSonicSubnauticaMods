@@ -60,7 +60,7 @@
             skinnedMeshRenderer.material.mainTexture = customTexture;
 
             CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>(); // The component that makes the magic happen
-            Battery battery = prefab.AddComponent<Battery>();
+            bioReactorComponent.Battery = prefab.AddComponent<Battery>();
 
             return prefab;
         }

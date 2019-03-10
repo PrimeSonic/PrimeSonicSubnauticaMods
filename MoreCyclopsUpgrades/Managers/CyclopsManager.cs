@@ -67,19 +67,33 @@
             var powerMgr = new PowerManager();
             var hudManager = new CyclopsHUDManager();
 
-            var mgr = new CyclopsManager(cyclops);
-
-            if (powerMgr.Initialize(mgr) && upgradeMgr.Initialize(mgr) && hudManager.Initialize(mgr))
+            var mgr = new CyclopsManager(cyclops)
             {
-                mgr.UpgradeManager = upgradeMgr;
-                mgr.PowerManager = powerMgr;
-                mgr.HUDManager = hudManager;
+                UpgradeManager = upgradeMgr,
+                PowerManager = powerMgr,
+                HUDManager = hudManager
+            };
+
+            if (upgradeMgr.Initialize(mgr) && powerMgr.Initialize(mgr) && hudManager.Initialize(mgr))
+            {                
                 Managers.Add(mgr);
 
                 return mgr;
             }
 
             return null;
+        }
+
+        public static void SyncBioReactors()
+        {
+            foreach (CyclopsManager mgr in Managers)
+                mgr.PowerManager.SyncBioReactors();
+        }
+
+        public static void SyncUpgradeConsoles()
+        {
+            foreach (CyclopsManager mgr in Managers)
+                mgr.UpgradeManager.SyncUpgradeConsoles();
         }
     }
 }

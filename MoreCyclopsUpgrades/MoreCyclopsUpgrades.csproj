@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
+    <Compile Include="Caching\BioEnergyCollection.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="Caching\NuclearModuleDetails.cs" />
     <Compile Include="Caching\OtherMods.cs" />
@@ -71,7 +72,7 @@
     <Compile Include="Managers\PowerIconState.cs" />
     <Compile Include="Modules\Enhancement\BioReactorBooster.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
-    <Compile Include="Monobehaviors\BioEnergy.cs" />
+    <Compile Include="Caching\BioEnergy.cs" />
     <Compile Include="Monobehaviors\CyBioReactorMono.cs" />
     <Compile Include="Monobehaviors\ISubRootConnection.cs" />
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />

@@ -201,8 +201,8 @@
             Canvas canvas2 = this.UpgradeManager.HolographicHUD.healthBar.canvas;
             const float healthbarspacing = 90;
             const float healthbarzoffset = 0.05f;
-            const float healthbaryoffset = -50;
-            const float healthbarscale = 0.90f;
+            const float healthbaryoffset = -250;
+            const float healthbarscale = 0.70f;
 
             HealthBarPowerIconsRowOfOdd[0] = CreatePowerIndicatorIcon(canvas2, 0, healthbaryoffset, healthbarzoffset, healthbarscale);
             HealthBarPowerIconsRowOfOdd[1] = CreatePowerIndicatorIcon(canvas2, healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);

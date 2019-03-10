@@ -4,6 +4,7 @@
     using System.Reflection;
     using Common;
     using Modules;
+    using MoreCyclopsUpgrades.Managers;
     using ProtoBuf;
     using SaveData;
     using UnityEngine;
@@ -14,6 +15,8 @@
     {
         // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
+
+        internal CyclopsManager Manager { get; private set; }
 
         public Equipment Modules { get; private set; }
 
@@ -46,8 +49,8 @@
 
             if (cyclops is null)
             {
-                QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Destroying duplicate.");
-                Destroy(this);
+                QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Attempting external syncronize.");
+                CyclopsManager.SyncUpgradeConsoles();
             }
             else
             {
@@ -195,6 +198,13 @@
         {
             this.ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
+            this.Manager = CyclopsManager.GetAllManagers(parentCyclops);
+
+            if (!this.Manager.UpgradeManager.AuxUpgradeConsoles.Contains(this))
+            {
+                this.Manager.UpgradeManager.AuxUpgradeConsoles.Add(this);
+            }
+
             QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
         }
 

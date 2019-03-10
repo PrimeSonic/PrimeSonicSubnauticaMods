@@ -15,14 +15,14 @@
 
     internal abstract class CyclopsModule : ModPrefab
     {
-        private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>(8);
+        private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>();
 
         private static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
 
         internal static bool ModulesEnabled { get; private set; } = true;
 
         // Default value that shouldn't get hit. Only here for error testing.
-        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld; 
+        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld;
         public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld;
         public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld;
         public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.UnusedOld;
@@ -89,7 +89,10 @@
             CraftDataHandler.SetTechData(this.TechType, GetRecipe());
 
             if (AddToCraftTree)
+            {
+                QuickLogger.Debug($"Setting crafting node for {this.ClassID}");
                 CraftTreeHandler.AddCraftingNode(Fabricator, this.TechType, FabricatorTabs);
+            }
 
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
             CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
@@ -119,9 +122,9 @@
             ModulesToPatch.Add(new PowerUpgradeMk2());
             ModulesToPatch.Add(new PowerUpgradeMk3());
             ModulesToPatch.Add(new CyclopsSpeedBooster(OtherMods.VehicleUpgradesInCyclops));
+            ModulesToPatch.Add(new BioReactorBooster(OtherMods.VehicleUpgradesInCyclops));
             ModulesToPatch.Add(new NuclearCharger());
             ModulesToPatch.Add(new DepletedNuclearModule());
-            ModulesToPatch.Add(new BioReactorBooster(OtherMods.VehicleUpgradesInCyclops));
 
             foreach (CyclopsModule module in ModulesToPatch)
             {

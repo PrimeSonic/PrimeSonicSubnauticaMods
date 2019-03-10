@@ -4,6 +4,7 @@
     using System.IO;
     using Common;
     using Common.EasyMarkup;
+    using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Monobehaviors;
     using SMLHelper.V2.Utility;
     using UnityEngine;
@@ -72,8 +73,8 @@
 
         public float ReactorBatterCharge
         {
-            get => _batteryCharge.HasValue ? Mathf.Min(_batteryCharge.Value, CyBioReactorMono.MaxPower) : 0;
-            set => _batteryCharge.Value = Mathf.Min(value, CyBioReactorMono.MaxPower);
+            get => _batteryCharge.HasValue ? Mathf.Min(_batteryCharge.Value, CyBioReactorMono.MaxPowerBaseline) : 0;
+            set => _batteryCharge.Value = Mathf.Min(value, CyBioReactorMono.MaxPowerBaseline);
         }
 
         public int BoosterCount

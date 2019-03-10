@@ -33,7 +33,7 @@
             }
         }
 
-        private List<CyUpgradeConsoleMono> TempCache = new List<CyUpgradeConsoleMono>();
+        private readonly List<CyUpgradeConsoleMono> TempCache = new List<CyUpgradeConsoleMono>();
 
         internal float BonusCrushDepth { get; private set; } = 0f;
 
@@ -88,7 +88,7 @@
 
         public SubRoot Cyclops => this.Manager.Cyclops;
 
-        private List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
+        internal List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
         private CyclopsHolographicHUD holographicHUD = null;
         internal CyclopsHolographicHUD HolographicHUD => holographicHUD ?? (holographicHUD = this.Cyclops.GetComponentInChildren<CyclopsHolographicHUD>());
 
@@ -127,14 +127,23 @@
             ChargingModules.Add(CyclopsModule.ThermalChargerMk2ID);
             ChargingModules.Add(CyclopsModule.NuclearChargerID);
 
-            CyUpgradeConsoleMono[] auxUpgradeConsoles = manager.Cyclops.GetAllComponentsInChildren<CyUpgradeConsoleMono>();
+            SyncUpgradeConsoles();
+
+            return true;
+        }
+
+        internal void SyncUpgradeConsoles()
+        {
+            TempCache.Clear();
+
+            CyUpgradeConsoleMono[] auxUpgradeConsoles = this.Cyclops.GetAllComponentsInChildren<CyUpgradeConsoleMono>();
 
             foreach (CyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
             {
-                if (this.AuxUpgradeConsoles.Contains(auxConsole))
+                if (TempCache.Contains(auxConsole))
                     continue; // This is a workaround because of the object references being returned twice in this array.
 
-                this.AuxUpgradeConsoles.Add(auxConsole);
+                TempCache.Add(auxConsole);
 
                 if (auxConsole.ParentCyclops == null)
                 {
@@ -144,7 +153,11 @@
                 }
             }
 
-            return true;
+            if (TempCache.Count != this.AuxUpgradeConsoles.Count)
+            {
+                this.AuxUpgradeConsoles.Clear();
+                this.AuxUpgradeConsoles.AddRange(TempCache);
+            }
         }
 
         private void ClearAllUpgrades()
@@ -213,7 +226,27 @@
 
         private void AddBioBooster()
         {
-            ++this.BioBoosterCount;
+            ++this.BioBoosterCount;            
+        }
+
+        private void UpdateBioReactors()
+        {
+            if (this.BioBoosterCount > CyBioReactorMono.MaxBoosters)
+            {
+                ErrorMessage.AddMessage("Cannot exceed maximum boost to bioreactors");
+                return;
+            }
+
+            CyBioReactorMono lastRef = null;
+            foreach (CyBioReactorMono reactor in this.Manager.BioReactors)
+            {
+                (lastRef = reactor).UpdateBoosterCount(this.BioBoosterCount);
+            }
+
+            if (this.BioBoosterCount == CyBioReactorMono.MaxBoosters)
+            {
+                ErrorMessage.AddMessage("Maximum boost to bioreactors achieved");
+            }
         }
 
         private void AddSolarMk2Module(Equipment modules, string slot)
@@ -311,6 +344,7 @@
             {
                 this.Cyclops.slotModSFX?.Play();
                 this.Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
+                UpdateBioReactors();
             }
         }
 

@@ -17,21 +17,21 @@
                 UpgradeModuleTabs[0].CraftNodes.Add(cyclopsSpeedModuleID);
             }
 
+            if (TechTypeHandler.TryGetModdedTechType("BioReactorBooster", out TechType bioReactorBooster))
+            {
+                UpgradeModuleTabs[0].CraftNodes.Add(bioReactorBooster);
+            }
+
             if (TechTypeHandler.TryGetModdedTechType("SpeedModule", out TechType speedModuleID))
             {
                 UpgradeModuleTabs[1].CraftNodes.Add(speedModuleID);
-            }
-
-            if (TechTypeHandler.TryGetModdedTechType("VehiclePowerCore", out TechType powerCoreID))
-            {
-                UpgradeModuleTabs[1].CraftNodes.Add(powerCoreID);
             }
         }
 
         internal static List<ModulesTab> UpgradeModuleTabs = new List<ModulesTab>(5)
         {
             new ModulesTab("CyclopsModules", "Cyclops Modules", "Workbench_CyclopsMenu",
-                new List<TechType>(8+1)
+                new List<TechType>(8+3)
                 {
                     TechType.CyclopsHullModule1,
                     TechType.PowerUpgradeModule,

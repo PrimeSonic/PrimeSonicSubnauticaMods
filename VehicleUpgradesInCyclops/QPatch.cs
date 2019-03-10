@@ -1,6 +1,6 @@
 ﻿namespace VehicleUpgradesInCyclops
 {
-    using System;
+    using Common;
     using SMLHelper.V2.Handlers;
 
     // QMods by qwiso https://github.com/Qwiso/QModManager
@@ -10,6 +10,8 @@
         // But since some people still want it, it's kept up and maintained.
         public static void Patch()
         {
+            QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
+
             // Remove all original Cyclops fabricator nodes
             foreach (string origNodeID in NodeCollections.OriginalCyclopsModuleCraftingNodes)
                 CraftTreeHandler.RemoveNode(CraftTree.Type.CyclopsFabricator, origNodeID);
@@ -27,7 +29,7 @@
                     CraftTreeHandler.AddCraftingNode(CraftTree.Type.CyclopsFabricator, craftTypeID, tab.TabID);
             }
 
-            Console.WriteLine("[VehicleUpgradesInCyclops] Patching complete.");
+            QuickLogger.Info("Patching complete");
         }
     }
 }

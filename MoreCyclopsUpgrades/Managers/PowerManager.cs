@@ -100,21 +100,23 @@
             this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
             this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
 
-            FirstConnectBioReactors(manager);
+            SyncBioReactors();
 
             return true;
         }
 
-        private void FirstConnectBioReactors(CyclopsManager manager)
+        internal void SyncBioReactors()
         {
-            CyBioReactorMono[] cyBioReactors = manager.Cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
+            TempCache.Clear();
+
+            CyBioReactorMono[] cyBioReactors = this.Cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
 
             foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
             {
-                if (this.CyBioReactors.Contains(cyBioReactor))
+                if (TempCache.Contains(cyBioReactor))
                     continue; // This is a workaround because of the object references being returned twice in this array.
 
-                this.CyBioReactors.Add(cyBioReactor);
+                TempCache.Add(cyBioReactor);
 
                 if (cyBioReactor.ParentCyclops == null)
                 {
@@ -122,6 +124,17 @@
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
                     cyBioReactor.ConnectToCyclops(this.Cyclops);
                 }
+            }
+
+            if (TempCache.Count != this.CyBioReactors.Count)
+            {
+                this.CyBioReactors.Clear();
+                this.CyBioReactors.AddRange(TempCache);
+            }
+
+            foreach (CyBioReactorMono reactor in this.CyBioReactors)
+            {
+                reactor.UpdateBoosterCount(this.UpgradeManager.BioBoosterCount);
             }
         }
 

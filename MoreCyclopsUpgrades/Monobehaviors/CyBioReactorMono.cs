@@ -2,8 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Reflection;
     using Common;
+    using MoreCyclopsUpgrades.Caching;
+    using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.SaveData;
     using ProtoBuf;
     using UnityEngine;
@@ -11,14 +12,19 @@
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ISubRootConnection
     {
+        private const float baselineChargeRate = 0.83f;
+        public const int MaxBoosters = 3;
+
         internal int StorageWidth { get; private set; } = 2;
         internal int StorageHeight { get; private set; } = 2;
         internal int TotalContainerSpaces => this.StorageHeight * this.StorageWidth;
+
         // Because now each item produces charge in parallel, the charge rate will be variable.
         // At half-full, we get close to original charging rates.
         // When at full capacity, charging rates will nearly double.
-        internal float ChargePerSecondPerItem => 0.83f / this.TotalContainerSpaces * 2;
-        internal const float MaxPower = 200;
+        internal float ChargePerSecondPerItem = baselineChargeRate;
+
+        internal const float MaxPowerBaseline = 200;
         internal const string StorageLabel = "Cyclops Bioreactor Materials";
 
         private const int TextDelayTicks = 60;
@@ -36,42 +42,18 @@
         private CyBioReactorSaveData SaveData;
 
         public SubRoot ParentCyclops { get; private set; }
+        internal CyclopsManager Manager { get; private set; }
         public Constructable Buildable { get; private set; }
         public ItemsContainer Container { get; private set; }
-        public Battery Battery { get; private set; }
+        public Battery Battery { get; internal set; }
         public string PrefabID { get; private set; }
 
         private int lastKnownBioBooster = 0;
 
-        internal List<BioEnergy> MaterialsProcessing { get; } = new List<BioEnergy>();
-        private List<BioEnergy> FullyConsumed { get; } = new List<BioEnergy>();
-        private int spacesOccupied = 0;
+        private BioEnergyCollection MaterialsProcessing { get; } = new BioEnergyCollection();
 
         // Careful, this map only exists while the PDA screen is open
         public Dictionary<InventoryItem, uGUI_ItemIcon> InventoryMapping { get; private set; }
-
-        #region BioFuel Lookup
-
-        private static Dictionary<TechType, float> _bioReactorCharges;
-        internal static readonly FieldInfo BioEnergyLookupInfo = typeof(BaseBioReactor).GetField("charge", BindingFlags.Static | BindingFlags.NonPublic);
-        internal static Dictionary<TechType, float> BioReactorCharges
-        {
-            get
-            {
-                if (_bioReactorCharges is null)
-                {
-                    _bioReactorCharges = (Dictionary<TechType, float>)BioEnergyLookupInfo.GetValue(null);
-                }
-
-                return _bioReactorCharges;
-            }
-        }
-        public static float GetChargeValue(TechType techType)
-        {
-            return BioReactorCharges.GetOrDefault(techType, -1f);
-        }
-
-        #endregion
 
         public bool ProducingPower => _constructed >= 1f && this.MaterialsProcessing.Count > 0;
         public bool HasPower => _constructed >= 1f && this.Battery.charge > 0f;
@@ -80,12 +62,14 @@
 
         private void Start()
         {
+            ChargePerSecondPerItem = baselineChargeRate / this.TotalContainerSpaces * 2;
+
             SubRoot cyclops = GetComponentInParent<SubRoot>();
 
             if (cyclops is null)
             {
-                QuickLogger.Debug("CyBioReactorMono: Could not find Cyclops during Start. Destroying duplicate.");
-                Destroy(this);
+                QuickLogger.Debug("CyBioReactorMono: Could not find Cyclops during Start. Attempting external syncronize.");
+                CyclopsManager.SyncBioReactors();
             }
             else
             {
@@ -144,7 +128,7 @@
                     QuickLogger.Debug("Battery was found", true);
                 }
 
-                this.Battery._capacity = MaxPower;
+                this.Battery._capacity = MaxPowerBaseline;
                 this.Battery._charge = 0; // Starts empty
             }
         }
@@ -177,7 +161,7 @@
 
                 if (powerDeficit > 0.001f)
                 {
-                    float chargeOverTime = this.ChargePerSecondPerItem * DayNightCycle.main.deltaTime;
+                    float chargeOverTime = ChargePerSecondPerItem * DayNightCycle.main.deltaTime;
 
                     float powerProduced = ProducePower(Mathf.Min(powerDeficit, chargeOverTime));
 
@@ -197,7 +181,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText($"Use Cyclops Bioreactor {Mathf.FloorToInt(this.Battery.charge)}/{MaxPower}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
+            main.SetInteractText($"Use Cyclops Bioreactor {Mathf.FloorToInt(this.Battery.charge)}/{this.Battery.capacity}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -233,7 +217,7 @@
                 return;
             }
 
-            if (BioReactorCharges.TryGetValue(item.item.GetTechType(), out float bioEnergyValue) && bioEnergyValue > 0f)
+            if (BaseBioReactor.charge.TryGetValue(item.item.GetTechType(), out float bioEnergyValue) && bioEnergyValue > 0f)
             {
                 var bioenergy = new BioEnergy(item.item, bioEnergyValue, bioEnergyValue)
                 {
@@ -241,7 +225,6 @@
                 };
 
                 this.MaterialsProcessing.Add(bioenergy);
-                spacesOccupied += bioenergy.Size;
             }
             else
             {
@@ -256,7 +239,7 @@
 
             if (this.InventoryMapping.TryGetValue(item, out uGUI_ItemIcon icon))
             {
-                BioEnergy bioEnergy = this.MaterialsProcessing.Find(m => m.Pickupable == item.item);
+                BioEnergy bioEnergy = this.MaterialsProcessing.Find(item.item);
 
                 if (bioEnergy is null)
                 {
@@ -283,7 +266,7 @@
             {
                 TechType techType = pickupable.GetTechType();
 
-                if (BioReactorCharges.ContainsKey(techType))
+                if (BaseBioReactor.charge.ContainsKey(techType))
                 {
                     canAdd = true;
                 }
@@ -319,22 +302,11 @@
                     powerProduced += availablePowerPerItem;
 
                     if (material.FullyConsumed)
-                        this.FullyConsumed.Add(material);
+                        this.MaterialsProcessing.StageForRemoval(material);
                 }
             }
 
-            if (this.FullyConsumed.Count > 0)
-            {
-                foreach (BioEnergy material in this.FullyConsumed)
-                {
-                    this.MaterialsProcessing.Remove(material);
-                    this.Container.RemoveItem(material.Pickupable, true);
-                    spacesOccupied -= material.Size;
-                    Destroy(material.Pickupable.gameObject);
-                }
-
-                this.FullyConsumed.Clear();
-            }
+            this.MaterialsProcessing.ClearAllStagedForRemoval(this.Container);
 
             return powerProduced;
         }
@@ -415,8 +387,8 @@
                 foreach (BioEnergy material in materials)
                 {
                     InventoryItem inventoryItem = this.Container.AddItem(material.Pickupable);
-                    this.MaterialsProcessing.Add(material);
                     material.Size = inventoryItem.width * inventoryItem.height;
+                    this.MaterialsProcessing.Add(material);
                 }
             }
 
@@ -430,11 +402,16 @@
             if (this.ParentCyclops != null)
                 return;
 
-            QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
-
             this.ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            
+            this.Manager = CyclopsManager.GetAllManagers(parentCyclops);
+
+            if (!this.Manager.PowerManager.CyBioReactors.Contains(this))
+            {
+                this.Manager.PowerManager.CyBioReactors.Add(this);
+            }
+
+            QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 
         public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
@@ -451,7 +428,7 @@
                 InventoryItem item = pair.Key;
                 uGUI_ItemIcon icon = pair.Value;
 
-                BioEnergy bioEnergy = this.MaterialsProcessing.Find(m => m.Pickupable == item.item);
+                BioEnergy bioEnergy = this.MaterialsProcessing.Find(item.item);
 
                 if (bioEnergy is null)
                 {
@@ -465,53 +442,64 @@
 
         public void UpdateBoosterCount(int boosterCount)
         {
+            if (boosterCount > MaxBoosters)
+            {
+                return;
+            }
+
             if (lastKnownBioBooster == boosterCount)
                 return;
 
-            this.Battery._capacity = MaxPower + 50 * boosterCount;
-
-            if (lastKnownBioBooster > boosterCount)
+            int nextWidth;
+            int nextHeight;
+            float nextCapacity;
+            switch (boosterCount)
             {
-                int testWidth = this.StorageWidth;
-                int testHeight = this.StorageHeight;
-                while (--boosterCount > 0)
-                {
-                    if (boosterCount % 2 != 0)
-                        testHeight++;
-                    else
-                        testWidth++;
-                }
-
-                this.Container.Resize(this.StorageWidth = testWidth, this.StorageHeight = testHeight);
+                default:
+                    nextWidth = 2;
+                    nextHeight = 2;
+                    nextCapacity = MaxPowerBaseline;
+                    break;
+                case 1:
+                    nextWidth = 3;
+                    nextHeight = 2;
+                    nextCapacity = MaxPowerBaseline + 50;
+                    break;
+                case 2:
+                    nextWidth = 3;
+                    nextHeight = 3;
+                    nextCapacity = MaxPowerBaseline + 100;
+                    break;
+                case 3: // MaxBoosters
+                    nextWidth = 3;
+                    nextHeight = 3;
+                    nextCapacity = MaxPowerBaseline + 200;
+                    break;
             }
-            else
+
+            this.Battery._capacity = nextCapacity;
+            this.Battery._charge = Mathf.Min(this.Battery.charge, this.Battery.capacity);
+
+            if (lastKnownBioBooster > boosterCount) // Getting smaller
             {
-                int testWidth = this.StorageWidth;
-                int testHeight = this.StorageHeight;
-                while (--boosterCount > 0)
+                int nextAvailableSpace = nextWidth * nextHeight;
+                while (this.MaterialsProcessing.SpacesOccupied > nextAvailableSpace)
                 {
-                    if (boosterCount % 2 != 0)
-                        testHeight--;
-                    else
-                        testWidth--;
+                    BioEnergy material = this.MaterialsProcessing.GetCandidateForRemoval();
+
+                    if (material is null)                    
+                        break;
+
+                    QuickLogger.Debug($"Removing material of size {material.Size}", true);                    
+                    this.MaterialsProcessing.Remove(material, this.Container);
                 }
-
-                int nextAvailableSpace = testWidth = testHeight;
-                while (spacesOccupied > nextAvailableSpace)
-                {
-                    BioEnergy material = this.MaterialsProcessing[0];
-
-                    if (material is null)
-                        continue;
-
-                    this.MaterialsProcessing.Remove(material);
-                    this.Container.RemoveItem(material.Pickupable, true);
-                    spacesOccupied -= material.Size;
-                    Destroy(material.Pickupable.gameObject);
-                }
-
-                this.Container.Resize(this.StorageWidth = testWidth, this.StorageHeight = testHeight);
             }
+
+            this.Container.Resize(this.StorageWidth = nextWidth, this.StorageHeight = nextHeight);
+            this.Container.Sort();
+            this.Container.unsorted = false;
+
+            ChargePerSecondPerItem = baselineChargeRate / this.TotalContainerSpaces * 2;
 
             lastKnownBioBooster = boosterCount;
         }
