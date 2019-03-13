@@ -64,7 +64,7 @@
             }
 
             crafter.craftTree = FabricatorDetails.TreeTypeID;
-            //crafter.handOverText = FabricatorDetails.HandOverText;
+            crafter.handOverText = $"Use {FabricatorDetails.DisplayName}";
 
             if (constructible is null)
                 constructible = prefab.GetComponent<Constructable>();
