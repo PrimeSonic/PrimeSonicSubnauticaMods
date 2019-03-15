@@ -12,13 +12,12 @@
         public int Count => collection.Count;
         public int SpacesOccupied { get; private set; } = 0;
 
-        public bool IsReadOnly { get; }
+        public bool IsReadOnly => false;
 
         public BioEnergy Find(Pickupable pickupable)
         {
             return collection.Find(material => material.Pickupable == pickupable);
         }
-
 
         public BioEnergy GetCandidateForRemoval()
         {
@@ -52,6 +51,14 @@
 
         public void Add(BioEnergy material)
         {
+            collection.Add(material);
+            this.SpacesOccupied += material.Size;
+        }
+
+        public void Add(BioEnergy material, ItemsContainer container)
+        {
+            InventoryItem inventoryItem = container.AddItem(material.Pickupable);
+            material.Size = inventoryItem.width * inventoryItem.height;
             collection.Add(material);
             this.SpacesOccupied += material.Size;
         }

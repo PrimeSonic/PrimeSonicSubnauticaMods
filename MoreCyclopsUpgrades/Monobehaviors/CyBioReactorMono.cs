@@ -9,7 +9,7 @@
     using UnityEngine;
 
     [ProtoContract]
-    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ISubRootConnection
+    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
         private const float baselineChargeRate = 0.80f;
         public const int MaxBoosters = 3;
@@ -52,7 +52,7 @@
         public Dictionary<InventoryItem, uGUI_ItemIcon> InventoryMapping { get; private set; }
 
         public bool ProducingPower => this.IsContructed && this.MaterialsProcessing.Count > 0;
-        public bool HasPower => this.IsContructed && this.Battery.charge > 0f;
+        public bool HasPower => this.IsContructed && this.Battery._charge > 0f;
 
         #region Initialization
 
@@ -153,7 +153,7 @@
         {
             if (this.ProducingPower)
             {
-                float powerDeficit = this.Battery.capacity - this.Battery.charge;
+                float powerDeficit = this.Battery._capacity - this.Battery._charge;
 
                 if (powerDeficit > 0.001f)
                 {
@@ -161,7 +161,7 @@
 
                     float powerProduced = ProducePower(Mathf.Min(powerDeficit, chargeOverTime));
 
-                    this.Battery.charge += powerProduced;
+                    this.Battery._charge += powerProduced;
                 }
             }
 
@@ -177,7 +177,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText($"Use Cyclops Bioreactor {Mathf.FloorToInt(this.Battery.charge)}/{this.Battery.capacity}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
+            main.SetInteractText($"Use Cyclops Bioreactor {Mathf.FloorToInt(this.Battery._charge)}/{this.Battery._capacity}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -322,7 +322,7 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            SaveData.ReactorBatterCharge = this.Battery.charge;
+            SaveData.ReactorBatterCharge = this.Battery._charge;
             SaveData.SaveMaterialsProcessing(this.MaterialsProcessing);
             SaveData.BoosterCount = lastKnownBioBooster;
 
@@ -353,18 +353,19 @@
 
             if (hasSaveData)
             {
-                this.Container.Clear();
+                this.Container.Clear(false);
 
                 UpdateBoosterCount(SaveData.BoosterCount);
-                this.Battery.charge = SaveData.ReactorBatterCharge;
 
-                List<BioEnergy> materials = SaveData.GetMaterialsInProcessing();
+                this.Battery._charge = SaveData.ReactorBatterCharge;
 
-                foreach (BioEnergy material in materials)
+                List<BioEnergy> savedMaterials = SaveData.GetMaterialsInProcessing();
+                QuickLogger.Debug($"Found {savedMaterials.Count} materials in save data");
+
+                foreach (BioEnergy material in savedMaterials)
                 {
-                    InventoryItem inventoryItem = this.Container.AddItem(material.Pickupable);
-                    material.Size = inventoryItem.width * inventoryItem.height;
-                    this.MaterialsProcessing.Add(material);
+                    QuickLogger.Debug($"Adding {material.Pickupable.GetTechName()} to container from save data");
+                    this.MaterialsProcessing.Add(material, this.Container);
                 }
             }
 
@@ -373,20 +374,21 @@
 
         #endregion 
 
-        public void ConnectToCyclops(SubRoot parentCyclops)
+        public void ConnectToCyclops(SubRoot parentCyclops, CyclopsManager manager = null)
         {
             if (this.ParentCyclops != null)
                 return;
 
             this.ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            this.Manager = CyclopsManager.GetAllManagers(parentCyclops);
+            this.Manager = manager ?? CyclopsManager.GetAllManagers(parentCyclops);
 
             if (!this.Manager.PowerManager.CyBioReactors.Contains(this))
             {
                 this.Manager.PowerManager.CyBioReactors.Add(this);
             }
 
+            UpdateBoosterCount(this.Manager.UpgradeManager.BioBoosterCount);
             QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 
@@ -419,9 +421,7 @@
         public bool UpdateBoosterCount(int boosterCount)
         {
             if (boosterCount > MaxBoosters)
-            {
                 return false;
-            }
 
             if (lastKnownBioBooster == boosterCount)
                 return false;
@@ -454,26 +454,29 @@
             }
 
             this.Battery._capacity = nextCapacity;
-            this.Battery._charge = Mathf.Min(this.Battery.charge, this.Battery.capacity);
 
-            if (lastKnownBioBooster > boosterCount) // Getting smaller
+            if (!isLoadingSaveData)
             {
-                int nextAvailableSpace = nextWidth * nextHeight;
-                while (this.MaterialsProcessing.SpacesOccupied > nextAvailableSpace)
+                this.Battery._charge = Mathf.Min(this.Battery._charge, this.Battery._capacity);
+
+                if (lastKnownBioBooster > boosterCount) // Getting smaller
                 {
-                    BioEnergy material = this.MaterialsProcessing.GetCandidateForRemoval();
+                    int nextAvailableSpace = nextWidth * nextHeight;
+                    while (this.MaterialsProcessing.SpacesOccupied > nextAvailableSpace)
+                    {
+                        BioEnergy material = this.MaterialsProcessing.GetCandidateForRemoval();
 
-                    if (material is null)
-                        break;
+                        if (material is null)
+                            break;
 
-                    QuickLogger.Debug($"Removing material of size {material.Size}", true);
-                    this.MaterialsProcessing.Remove(material, this.Container);
+                        QuickLogger.Debug($"Removing material of size {material.Size}", true);
+                        this.MaterialsProcessing.Remove(material, this.Container);
+                    }
                 }
             }
 
             this.Container.Resize(this.StorageWidth = nextWidth, this.StorageHeight = nextHeight);
             this.Container.Sort();
-            this.Container.unsorted = false;
 
             ChargePerSecondPerItem = baselineChargeRate / this.TotalContainerSpaces * 2;
 

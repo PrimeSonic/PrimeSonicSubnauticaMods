@@ -2,11 +2,11 @@
   "Id": "MoreCyclopsUpgrades",
   "DisplayName": "MoreCyclopsUpgrades",
   "Author": "PrimeSonic",
-  "Version": "2.3.0",
+  "Version": "2.3.1",
   "Enable": true,
   "Game": "Subnautica",
   "AssemblyName": "MoreCyclopsUpgrades.dll",
-  "Dependencies": [ "SMLHelper" ],  
+  "Dependencies": [ "SMLHelper" ],
   "AssemblyName": "MoreCyclopsUpgrades.dll",
   "EntryMethod": "MoreCyclopsUpgrades.QPatch.Patch",
 }

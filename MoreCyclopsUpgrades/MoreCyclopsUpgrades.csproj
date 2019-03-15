@@ -74,7 +74,6 @@
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Caching\BioEnergy.cs" />
     <Compile Include="Monobehaviors\CyBioReactorMono.cs" />
-    <Compile Include="Monobehaviors\ISubRootConnection.cs" />
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />

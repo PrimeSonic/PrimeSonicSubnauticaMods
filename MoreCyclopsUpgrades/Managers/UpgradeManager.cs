@@ -149,7 +149,7 @@
                 {
                     QuickLogger.Debug("CyUpgradeConsoleMono synced externally");
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    auxConsole.ConnectToCyclops(this.Cyclops);
+                    auxConsole.ConnectToCyclops(this.Cyclops, this.Manager);
                 }
             }
 
@@ -158,6 +158,8 @@
                 this.AuxUpgradeConsoles.Clear();
                 this.AuxUpgradeConsoles.AddRange(TempCache);
             }
+
+            HandleUpgrades();
         }
 
         private void ClearAllUpgrades()

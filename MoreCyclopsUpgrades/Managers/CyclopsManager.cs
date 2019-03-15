@@ -13,7 +13,7 @@
 
         public List<CyBioReactorMono> BioReactors => this.PowerManager.CyBioReactors;
 
-        public SubRoot Cyclops { get; private set; }
+        public SubRoot Cyclops { get; }
 
         public readonly int InstanceID;
 
@@ -84,16 +84,16 @@
             return null;
         }
 
-        public static void SyncBioReactors()
-        {
-            foreach (CyclopsManager mgr in Managers)
-                mgr.PowerManager.SyncBioReactors();
-        }
-
         public static void SyncUpgradeConsoles()
         {
             foreach (CyclopsManager mgr in Managers)
                 mgr.UpgradeManager.SyncUpgradeConsoles();
+        }
+
+        public static void SyncBioReactors()
+        {
+            foreach (CyclopsManager mgr in Managers)
+                mgr.PowerManager.SyncBioReactors();
         }
     }
 }

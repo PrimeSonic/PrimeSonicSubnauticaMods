@@ -11,7 +11,7 @@
     using UnityEngine.UI;
 
     [ProtoContract]
-    public class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ISubRootConnection
+    public class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
         // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
@@ -194,11 +194,11 @@
             Buildable.deconstructionAllowed = allEmpty;
         }
 
-        public void ConnectToCyclops(SubRoot parentCyclops)
+        internal void ConnectToCyclops(SubRoot parentCyclops, CyclopsManager manager = null)
         {
             this.ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            this.Manager = CyclopsManager.GetAllManagers(parentCyclops);
+            this.Manager = manager ?? CyclopsManager.GetAllManagers(parentCyclops);
 
             if (!this.Manager.UpgradeManager.AuxUpgradeConsoles.Contains(this))
             {

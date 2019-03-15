@@ -122,7 +122,7 @@
                 {
                     QuickLogger.Debug("CyBioReactorMono synced externally");
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    cyBioReactor.ConnectToCyclops(this.Cyclops);
+                    cyBioReactor.ConnectToCyclops(this.Cyclops, this.Manager);
                 }
             }
 
@@ -130,11 +130,6 @@
             {
                 this.CyBioReactors.Clear();
                 this.CyBioReactors.AddRange(TempCache);
-            }
-
-            foreach (CyBioReactorMono reactor in this.CyBioReactors)
-            {
-                reactor.UpdateBoosterCount(this.UpgradeManager.BioBoosterCount);
             }
         }
 
