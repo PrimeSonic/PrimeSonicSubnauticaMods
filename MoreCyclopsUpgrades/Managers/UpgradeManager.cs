@@ -127,6 +127,8 @@
             ChargingModules.Add(CyclopsModule.ThermalChargerMk2ID);
             ChargingModules.Add(CyclopsModule.NuclearChargerID);
 
+            holographicHUD = this.Cyclops.GetComponent<CyclopsHolographicHUD>();
+
             SyncUpgradeConsoles();
 
             return true;
@@ -165,7 +167,10 @@
         private void ClearAllUpgrades()
         {
             if (this.Cyclops == null)
-                QuickLogger.Error("ClearAllUpgrades: Cyclops ref is null", true);
+            {
+                ErrorMessage.AddError("ClearAllUpgrades: Cyclops ref is null - Upgrade handling cancled");
+                return;
+            }
 
             // Turn off all toggleable upgrades first
             this.Cyclops.shieldUpgrade = false;
@@ -174,11 +179,12 @@
             this.Cyclops.decoyTubeSizeIncreaseUpgrade = false;
             this.Cyclops.thermalReactorUpgrade = false;
 
-            if (this.HolographicHUD == null)
-                QuickLogger.Error("ClearAllUpgrades: HolographicHUD ref is null", true);
-
-            // The fire suppression system is toggleable but isn't a field on the SubRoot class
-            this.HolographicHUD.fireSuppressionSystem.SetActive(false);
+            if (this.HolographicHUD != null)
+            {
+                //ErrorMessage.AddError("ClearAllUpgrades: HolographicHUD ref is null");
+                // The fire suppression system is toggleable but isn't a field on the SubRoot class
+                this.HolographicHUD.fireSuppressionSystem.SetActive(false);
+            }
 
             this.BonusCrushDepth = 0f;
 
@@ -274,7 +280,10 @@
 
         private void EnableFireSuppressionSystem()
         {
-            this.HolographicHUD.fireSuppressionSystem.SetActive(true);
+            if (this.HolographicHUD != null)
+            {
+                this.HolographicHUD.fireSuppressionSystem.SetActive(true);
+            }
         }
 
         private void EnableExtraDecoySlots()
