@@ -1,27 +1,18 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using System;
-    using System.Collections.Generic;
     using Caching;
     using Common;
     using Modules;
     using Monobehaviors;
+    using System;
+    using System.Collections.Generic;
     using UnityEngine;
 
-    internal class UpgradeManager
+    public class UpgradeManager
     {
-        // This is a straight copy of the values in the original
-        private static readonly Dictionary<TechType, float> ExtraCrushDepths = new Dictionary<TechType, float>
-        {
-            { TechType.HullReinforcementModule, 800f },
-            { TechType.HullReinforcementModule2, 1600f },
-            { TechType.HullReinforcementModule3, 2800f },
-            { TechType.CyclopsHullModule1, 400f },
-            { TechType.CyclopsHullModule2, 800f },
-            { TechType.CyclopsHullModule3, 1200f }
-        };
+        public static Dictionary<TechType, float> CyclopsCrushDepths => SubRoot.hullReinforcement;
 
-        private struct UpgradeSlot
+        private class UpgradeSlot
         {
             internal Equipment Modules;
             internal string Slot;
@@ -44,12 +35,10 @@
 
         internal int PowerIndex { get; private set; } = 0;
 
-        internal int SpeedBoosters { get; private set; } = 0;
-
-        internal int SolarModuleCount { get; private set; } = 0;
-        internal int ThermalModuleCount { get; private set; } = 0;
-
-        internal int BioBoosterCount { get; private set; } = 0;
+        internal int SpeedBoosters => KnownsUpgradeModules[CyclopsModule.SpeedBoosterModuleID].Count;
+        internal int SolarModuleCount => KnownsUpgradeModules[CyclopsModule.SolarChargerID].Count;
+        internal int ThermalModuleCount => KnownsUpgradeModules[TechType.CyclopsThermalReactorModule].Count;
+        internal int BioBoosterCount => KnownsUpgradeModules[CyclopsModule.BioReactorBoosterID].Count;
 
         internal IList<Battery> SolarMk2Batteries { get; } = new List<Battery>();
         internal IList<Battery> ThermalMk2Batteries { get; } = new List<Battery>();
@@ -84,17 +73,15 @@
             }
         }
 
-        public CyclopsManager Manager { get; private set; }
+        internal CyclopsManager Manager { get; private set; }
 
-        public SubRoot Cyclops => this.Manager.Cyclops;
+        internal SubRoot Cyclops => this.Manager.Cyclops;
 
         internal List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
         private CyclopsHolographicHUD holographicHUD = null;
         internal CyclopsHolographicHUD HolographicHUD => holographicHUD ?? (holographicHUD = this.Cyclops.GetComponentInChildren<CyclopsHolographicHUD>());
 
-        private readonly Dictionary<TechType, Action> SimpleUpgradeActions = new Dictionary<TechType, Action>(12);
-        private readonly Dictionary<TechType, Action<Equipment, string>> SlotBoundUpgradeActions = new Dictionary<TechType, Action<Equipment, string>>(12);
-        private readonly HashSet<TechType> ChargingModules = new HashSet<TechType>();
+        private readonly Dictionary<TechType, CyclopsUpgrade> KnownsUpgradeModules = new Dictionary<TechType, CyclopsUpgrade>();
 
         internal bool Initialize(CyclopsManager manager)
         {
@@ -103,35 +90,142 @@
 
             this.Manager = manager;
 
-            SimpleUpgradeActions.Add(TechType.CyclopsShieldModule, EnabledShield);
-            SimpleUpgradeActions.Add(TechType.CyclopsSonarModule, EnableSonar);
-            SimpleUpgradeActions.Add(TechType.CyclopsSeamothRepairModule, EnableRepairDock);
-            SimpleUpgradeActions.Add(TechType.CyclopsDecoyModule, EnableExtraDecoySlots);
-            SimpleUpgradeActions.Add(TechType.CyclopsFireSuppressionModule, EnableFireSuppressionSystem);
-            SimpleUpgradeActions.Add(TechType.CyclopsThermalReactorModule, AddThermalModule);
-            SimpleUpgradeActions.Add(TechType.PowerUpgradeModule, AddPowerMk1Module);
-
-            SimpleUpgradeActions.Add(CyclopsModule.SolarChargerID, AddSolarModule);
-            SimpleUpgradeActions.Add(CyclopsModule.SpeedBoosterModuleID, AddSpeedModule);
-            SimpleUpgradeActions.Add(CyclopsModule.PowerUpgradeMk2ID, AddPowerMk2Module);
-            SimpleUpgradeActions.Add(CyclopsModule.PowerUpgradeMk3ID, AddPowerMk3Module);
-            SimpleUpgradeActions.Add(CyclopsModule.BioReactorBoosterID, AddBioBooster);
-
-            SlotBoundUpgradeActions.Add(CyclopsModule.SolarChargerMk2ID, AddSolarMk2Module);
-            SlotBoundUpgradeActions.Add(CyclopsModule.ThermalChargerMk2ID, AddThermalMk2Module);
-            SlotBoundUpgradeActions.Add(CyclopsModule.NuclearChargerID, AddNuclearModule);
-
-            ChargingModules.Add(CyclopsModule.SolarChargerID);
-            ChargingModules.Add(CyclopsModule.SolarChargerMk2ID);
-            ChargingModules.Add(TechType.CyclopsThermalReactorModule);
-            ChargingModules.Add(CyclopsModule.ThermalChargerMk2ID);
-            ChargingModules.Add(CyclopsModule.NuclearChargerID);
+            RegisterUpgrades();
 
             holographicHUD = this.Cyclops.GetComponent<CyclopsHolographicHUD>();
 
             SyncUpgradeConsoles();
 
             return true;
+        }
+
+        public void RegisterKnownUpgrade(CyclopsUpgrade upgrade)
+        {
+            KnownsUpgradeModules.Add(upgrade.techType, upgrade);
+        }
+
+        private void RegisterUpgrades()
+        {
+            RegisterKnownUpgrade(new CyclopsUpgrade(TechType.CyclopsShieldModule)
+            {
+                OnClearUpgradesCyclops = (SubRoot cyclops) => { cyclops.shieldUpgrade = false; },
+                OnUpgradeCountedByCyclops = (SubRoot cyclops) => { cyclops.shieldUpgrade = true; },
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(TechType.CyclopsSonarModule)
+            {
+                OnClearUpgradesCyclops = (SubRoot cyclops) => { cyclops.sonarUpgrade = false; },
+                OnUpgradeCountedByCyclops = (SubRoot cyclops) => { cyclops.sonarUpgrade = true; },
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(TechType.CyclopsSeamothRepairModule)
+            {
+                OnClearUpgradesCyclops = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = false; },
+                OnUpgradeCountedByCyclops = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = true; },
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(TechType.CyclopsDecoyModule)
+            {
+                OnClearUpgradesCyclops = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
+                OnUpgradeCountedByCyclops = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(TechType.CyclopsFireSuppressionModule)
+            {
+                OnClearUpgrades = () =>
+                {
+                    if (this.HolographicHUD != null)
+                        this.HolographicHUD.fireSuppressionSystem.SetActive(false);
+                },
+                OnUpgradeCounted = () =>
+                {
+                    if (this.HolographicHUD != null)
+                        this.HolographicHUD.fireSuppressionSystem.SetActive(true);
+                },
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(TechType.PowerUpgradeModule)
+            {
+                OnClearUpgrades = () =>
+                {
+                    this.PowerIndex = 0;
+                },
+                OnUpgradeCounted = () =>
+                {
+                    this.PowerIndex = Math.Max(this.PowerIndex, 1);
+                },
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(CyclopsModule.PowerUpgradeMk2ID)
+            {
+                //OnClearUpgrades = () =>
+                //{
+                //    this.PowerIndex = 0; // Redundant with PowerUpgradeModule
+                //},
+                OnUpgradeCounted = () =>
+                {
+                    this.PowerIndex = Math.Max(this.PowerIndex, 2);
+                },
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(CyclopsModule.PowerUpgradeMk3ID)
+            {
+                //OnClearUpgrades = () =>
+                //{
+                //    this.PowerIndex = 0; // Redundant with PowerUpgradeModule
+                //},
+                OnUpgradeCounted = () =>
+                {
+                    this.PowerIndex = Math.Max(this.PowerIndex, 3);
+                },
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(TechType.CyclopsThermalReactorModule)
+            {
+                IsPowerProducer = true
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(CyclopsModule.SolarChargerID)
+            {
+                IsPowerProducer = true
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(CyclopsModule.SpeedBoosterModuleID));
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(CyclopsModule.BioReactorBoosterID)
+            {
+                OnFinishedUpgrades = UpdateBioReactors
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(CyclopsModule.SolarChargerMk2ID)
+            {
+                IsPowerProducer = true,
+                OnClearUpgrades = () => { this.SolarMk2Batteries.Clear(); },
+                OnUpgradeCountedBySlot = (Equipment modules, string slot) =>
+                {
+                    this.SolarMk2Batteries.Add(GetBatteryInSlot(modules, slot));
+                }
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(CyclopsModule.ThermalChargerMk2ID)
+            {
+                IsPowerProducer = true,
+                OnClearUpgrades = () => { this.ThermalMk2Batteries.Clear(); },
+                OnUpgradeCountedBySlot = (Equipment modules, string slot) =>
+                {
+                    this.ThermalMk2Batteries.Add(GetBatteryInSlot(modules, slot));
+                }
+            });
+
+            RegisterKnownUpgrade(new CyclopsUpgrade(CyclopsModule.NuclearChargerID)
+            {
+                IsPowerProducer = true,
+                OnClearUpgrades = () => { this.NuclearModules.Clear(); },
+                OnUpgradeCountedBySlot = (Equipment modules, string slot) =>
+                {
+                    this.NuclearModules.Add(new NuclearModuleDetails(modules, slot, GetBatteryInSlot(modules, slot)));
+                }
+            });
         }
 
         internal void SyncUpgradeConsoles()
@@ -172,69 +266,13 @@
                 return;
             }
 
-            // Turn off all toggleable upgrades first
-            this.Cyclops.shieldUpgrade = false;
-            this.Cyclops.sonarUpgrade = false;
-            this.Cyclops.vehicleRepairUpgrade = false;
-            this.Cyclops.decoyTubeSizeIncreaseUpgrade = false;
-            this.Cyclops.thermalReactorUpgrade = false;
+            SubRoot cyclops = this.Cyclops;
 
-            if (this.HolographicHUD != null)
-            {
-                //ErrorMessage.AddError("ClearAllUpgrades: HolographicHUD ref is null");
-                // The fire suppression system is toggleable but isn't a field on the SubRoot class
-                this.HolographicHUD.fireSuppressionSystem.SetActive(false);
-            }
+            foreach (CyclopsUpgrade upgradeType in KnownsUpgradeModules.Values)
+                upgradeType.UpgradesCleared(cyclops);
 
             this.BonusCrushDepth = 0f;
-
-            this.PowerIndex = 0;
-            this.SpeedBoosters = 0;
-
-            this.SolarModuleCount = 0;
-            this.ThermalModuleCount = 0;
-            this.BioBoosterCount = 0;
-
-            this.SolarMk2Batteries.Clear();
-            this.ThermalMk2Batteries.Clear();
-            this.NuclearModules.Clear();
-
             this.HasChargingModules = false;
-        }
-
-        private void AddSpeedModule()
-        {
-            ++this.SpeedBoosters;
-        }
-
-        private void AddPowerMk1Module()
-        {
-            this.PowerIndex = Math.Max(this.PowerIndex, 1);
-        }
-
-        private void AddPowerMk2Module()
-        {
-            this.PowerIndex = Math.Max(this.PowerIndex, 2);
-        }
-
-        private void AddPowerMk3Module()
-        {
-            this.PowerIndex = Math.Max(this.PowerIndex, 3);
-        }
-
-        private void AddSolarModule()
-        {
-            ++this.SolarModuleCount;
-        }
-
-        private void AddThermalModule()
-        {
-            ++this.ThermalModuleCount;
-        }
-
-        private void AddBioBooster()
-        {
-            ++this.BioBoosterCount;
         }
 
         private void UpdateBioReactors()
@@ -258,58 +296,16 @@
             }
         }
 
-        private void AddSolarMk2Module(Equipment modules, string slot)
+        private void UpdateDepth(float bonusDepth)
         {
-            this.SolarMk2Batteries.Add(GetBatteryInSlot(modules, slot));
-        }
-
-        private void AddThermalMk2Module(Equipment modules, string slot)
-        {
-            this.ThermalMk2Batteries.Add(GetBatteryInSlot(modules, slot));
-        }
-
-        private void AddNuclearModule(Equipment modules, string slot)
-        {
-            this.NuclearModules.Add(new NuclearModuleDetails(modules, slot, GetBatteryInSlot(modules, slot)));
-        }
-
-        private void AddDepthModule(TechType depthModule)
-        {
-            this.BonusCrushDepth = Mathf.Max(this.BonusCrushDepth, ExtraCrushDepths[depthModule]);
-        }
-
-        private void EnableFireSuppressionSystem()
-        {
-            if (this.HolographicHUD != null)
-            {
-                this.HolographicHUD.fireSuppressionSystem.SetActive(true);
-            }
-        }
-
-        private void EnableExtraDecoySlots()
-        {
-            this.Cyclops.decoyTubeSizeIncreaseUpgrade = true;
-        }
-
-        private void EnableRepairDock()
-        {
-            this.Cyclops.vehicleRepairUpgrade = true;
-        }
-
-        private void EnableSonar()
-        {
-            this.Cyclops.sonarUpgrade = true;
-        }
-
-        private void EnabledShield()
-        {
-            this.Cyclops.shieldUpgrade = true;
+            this.BonusCrushDepth = Mathf.Max(this.BonusCrushDepth, bonusDepth);
         }
 
         internal void HandleUpgrades()
         {
             // Turn off all upgrades and clear all values
             ClearAllUpgrades();
+            SubRoot cyclops = this.Cyclops;
 
             var foundUpgrades = new List<TechType>();
 
@@ -325,30 +321,17 @@
 
                 foundUpgrades.Add(techTypeInSlot);
 
-                this.HasChargingModules |= ChargingModules.Contains(techTypeInSlot);
-
-                if (SimpleUpgradeActions.TryGetValue(techTypeInSlot, out Action simpleUpgrade))
+                if (CyclopsCrushDepths.TryGetValue(techTypeInSlot, out float bonusDepth))
                 {
-                    simpleUpgrade.Invoke();
+                    UpdateDepth(bonusDepth);
                     continue;
                 }
-
-                switch (techTypeInSlot)
+                else if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out CyclopsUpgrade upgrade))
                 {
-                    case TechType.HullReinforcementModule:
-                    case TechType.HullReinforcementModule2:
-                    case TechType.HullReinforcementModule3:
-                    case TechType.CyclopsHullModule1:
-                    case TechType.CyclopsHullModule2:
-                    case TechType.CyclopsHullModule3:
-                        AddDepthModule(techTypeInSlot);
-                        continue;
-                }
+                    upgrade.UpgradeCounted(cyclops, modules, slot);
 
-                if (SlotBoundUpgradeActions.TryGetValue(techTypeInSlot, out Action<Equipment, string> batteryUpgrade))
-                {
-                    batteryUpgrade.Invoke(modules, slot);
-                    continue;
+                    if (upgrade.IsPowerProducer)
+                        this.HasChargingModules = true;
                 }
             }
 
@@ -356,7 +339,9 @@
             {
                 this.Cyclops.slotModSFX?.Play();
                 this.Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
-                UpdateBioReactors();
+
+                foreach (CyclopsUpgrade upgradeType in KnownsUpgradeModules.Values)
+                    upgradeType.UpgradesFinished(cyclops);
             }
         }
 
@@ -366,7 +351,7 @@
         /// <param name="modules">The equipment modules.</param>
         /// <param name="slotName">The slot name.</param>
         /// <returns>The <see cref="Battery"/> component from the upgrade module.</returns>
-        private static Battery GetBatteryInSlot(Equipment modules, string slotName)
+        internal static Battery GetBatteryInSlot(Equipment modules, string slotName)
         {
             // Get the battery component
             return modules.GetItemInSlot(slotName).item.GetComponent<Battery>();
