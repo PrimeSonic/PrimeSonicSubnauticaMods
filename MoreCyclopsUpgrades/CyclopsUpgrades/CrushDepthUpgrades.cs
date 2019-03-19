@@ -1,5 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
+    using System.Collections.Generic;
+
     internal class CrushDepthUpgrades : TieredCyclopsUpgradeCollection<float>
     {
         public CrushDepthUpgrades() : base(0f)
@@ -13,13 +15,14 @@
 
                 float orignialCrushDepth = crushDmg.crushDepth;
 
-                crushDmg.SetExtraCrushDepth(this.BestValue);
+                crushDmg.SetExtraCrushDepth(this.HighestValue);
 
                 if (orignialCrushDepth != crushDmg.crushDepth)
                     ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", crushDmg.crushDepth));
             };
 
-            CreateTiers(SubRoot.hullReinforcement);
+            foreach (KeyValuePair<TechType, float> upgrade in SubRoot.hullReinforcement)
+                CreateTier(upgrade.Key, upgrade.Value);
         }
     }
 }

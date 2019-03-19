@@ -3,59 +3,90 @@
     using System;
     using System.Collections.Generic;
 
-    public class TieredCyclopsUpgradeCollection<T> where T : IComparable<T>
+    /// <summary>
+    /// Represents the complete tier of <see cref="TieredCyclopsUpgrade{T}"/> instances.
+    /// The events for this collection will be invoked only as few times as needed.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <seealso cref="CyclopsUpgrade" />
+    public class TieredCyclopsUpgradeCollection<T> : CyclopsUpgrade where T : IComparable<T>
     {
-        public ICollection<TieredCyclopsUpgrade<T>> Collection { get; } = new List<TieredCyclopsUpgrade<T>>();
+        /// <summary>
+        /// Gets the collection.
+        /// </summary>
+        /// <value>
+        /// The collection.
+        /// </value>
+        private readonly ICollection<TieredCyclopsUpgrade<T>> collection = new List<TieredCyclopsUpgrade<T>>();
 
-        public T BestValue { get; set; }
+        /// <summary>
+        /// Gets the highest value.
+        /// </summary>
+        /// <value>
+        /// The highest value.
+        /// </value>
+        public T HighestValue { get; private set; }
         public readonly T DefaultValue;
         private bool finished = true;
 
-        public TieredCyclopsUpgradeCollection(T defaultValue)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TieredCyclopsUpgradeCollection{T}"/> class with the default tier value.
+        /// </summary>
+        /// <param name="defaultValue">The default value to use when upgrades are cleared.</param>
+        public TieredCyclopsUpgradeCollection(T defaultValue) : base(TechType.None)
         {
             DefaultValue = defaultValue;
         }
 
-        public UpgradeEvent OnFinishedUpgrades;
-        public UpgradeEvent OnClearUpgrades;
-
-        public void CreateTier(TechType techType, T tieredValue)
+        /// <summary>
+        /// Adds a new <see cref="TieredCyclopsUpgrade{T}" /> to the collection, with all default events created.
+        /// </summary>
+        /// <param name="techType">The TechType of the upgrade module.</param>
+        /// <param name="tieredValue">The tiered value this upgrade module represents.</param>
+        /// <returns>THe newly created <see cref="TieredCyclopsUpgrade{T}"/> instance.</returns>
+        public TieredCyclopsUpgrade<T> CreateTier(TechType techType, T tieredValue)
         {
             var tieredUpgrade = new TieredCyclopsUpgrade<T>(techType, tieredValue, this);
-            this.Collection.Add(tieredUpgrade);
+            collection.Add(tieredUpgrade);
+
+            return tieredUpgrade;
         }
 
-        internal void CreateTiers(IDictionary<TechType, T> collection)
-        {
-            foreach (KeyValuePair<TechType, T> upgrade in collection)            
-                CreateTier(upgrade.Key, upgrade.Value);
-        }
-
-        internal void UpgradesCleared(SubRoot cyclops)
+        internal override void UpgradesCleared(SubRoot cyclops)
         {
             if (!finished)
                 return;
 
             finished = false;
-            this.BestValue = DefaultValue;
+            this.HighestValue = DefaultValue;
             OnClearUpgrades?.Invoke(cyclops);
         }
 
-        internal void TierCounted(TieredCyclopsUpgrade<T> counted)
+        internal void TierCounted(T countedValue)
         {
-            int comparison = counted.TieredValue.CompareTo(this.BestValue);
+            int comparison = countedValue.CompareTo(this.HighestValue);
 
             if (comparison > 0)
-                this.BestValue = counted.TieredValue;
+                this.HighestValue = countedValue;
         }
 
-        internal void UpgradesFinished(SubRoot cyclops)
+        internal override void UpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
+        {
+        }
+
+        internal override void UpgradesFinished(SubRoot cyclops)
         {
             if (finished)
                 return;
 
             OnFinishedUpgrades?.Invoke(cyclops);
             finished = true;
+        }
+
+        internal override void RegisterSelf(IDictionary<TechType, CyclopsUpgrade> dictionary)
+        {
+            foreach (TieredCyclopsUpgrade<T> upgrade in collection)
+                upgrade.RegisterSelf(dictionary);
         }
     }
 }

@@ -4,8 +4,6 @@
     using Caching;
     using Common;
     using Enhancement;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
-    using MoreCyclopsUpgrades.Managers;
     using PowerUpgrade;
     using Recharging.Nuclear;
     using Recharging.Solar;

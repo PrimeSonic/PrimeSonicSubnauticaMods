@@ -148,7 +148,7 @@
         /// </summary>
         internal void UpdatePowerSpeedRating()
         {
-            int powerIndex = this.EngineEfficientyUpgrades.BestValue;
+            int powerIndex = this.EngineEfficientyUpgrades.HighestValue;
             int speedBoosters = this.SpeedBoosters.Count;
 
             if (this.LastKnownPowerIndex != powerIndex)
