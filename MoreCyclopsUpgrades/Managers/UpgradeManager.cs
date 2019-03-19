@@ -16,8 +16,6 @@
             UpgradesToRegister.Add(upgrade);
         }
 
-        public static Dictionary<TechType, float> CyclopsCrushDepths => SubRoot.hullReinforcement;
-
         private class UpgradeSlot
         {
             internal Equipment Modules;
@@ -70,7 +68,7 @@
             return true;
         }
 
-        public T RegisterKnownUpgrade<T>(T upgrade) where T : CyclopsUpgrade
+        internal T RegisterKnownUpgrade<T>(T upgrade) where T : CyclopsUpgrade
         {
             KnownsUpgradeModules.Add(upgrade.techType, upgrade);
             return upgrade;

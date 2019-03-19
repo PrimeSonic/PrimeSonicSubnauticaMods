@@ -7,7 +7,7 @@
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    public class CyUpgradeConsole : Buildable
+    internal class CyUpgradeConsole : Buildable
     {
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;

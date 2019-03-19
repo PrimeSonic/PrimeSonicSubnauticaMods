@@ -6,7 +6,7 @@
     using Common.EasyMarkup;
     using SMLHelper.V2.Utility;
 
-    public class AuxUpgradeConsoleSaveData : EmPropertyCollection
+    internal class AuxUpgradeConsoleSaveData : EmPropertyCollection
     {
         private readonly string ID;
 

@@ -11,7 +11,7 @@
     using UnityEngine.UI;
 
     [ProtoContract]
-    public class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
+    internal class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
         // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
