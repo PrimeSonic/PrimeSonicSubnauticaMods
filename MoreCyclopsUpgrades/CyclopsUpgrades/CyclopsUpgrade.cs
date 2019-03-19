@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
-    using MoreCyclopsUpgrades.Modules;
     using System;
     using System.Collections.Generic;
 
@@ -18,6 +17,7 @@
         public readonly TechType techType;
 
         private int count = 0;
+        private bool maxedOut = false;
 
         internal bool IsPowerProducer = false;
 
@@ -73,6 +73,12 @@
         public UpgradeEvent OnFinishedUpgrades;
 
         /// <summary>
+        /// This event is invoked after all upgrade modules have been found and counted,
+        /// but only if this is the first time that the <see cref="MaxCount"/> of upgrades has been achived.
+        /// </summary>
+        public Action OnFirstTimeMaxCountReached;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CyclopsUpgrade"/> class.
         /// </summary>
         /// <param name="techType">The TechType of the upgrade module.</param>
@@ -90,7 +96,6 @@
         internal virtual void UpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
         {
             count++;
-
             OnUpgradeCounted?.Invoke(cyclops, modules, slot);
         }
 
@@ -100,17 +105,20 @@
                 return;
 
             if (count > this.MaxCount)
-            {
-                ErrorMessage.AddMessage($"Cannot exceed more than {this.MaxCount} {CyclopsModule.CyclopsModulesByTechType[techType].NameID}");
                 return;
-            }
 
             OnFinishedUpgrades?.Invoke(cyclops);
 
-            if (count == this.MaxCount)
+            if (!maxedOut) // If we haven't maxed out before, check this block
             {
-                ErrorMessage.AddMessage($"Maximum number of {CyclopsModule.CyclopsModulesByTechType[techType].NameID} reached");
-                return;
+                maxedOut = count == this.MaxCount; // Are we maxed out now?
+
+                if (maxedOut) // If we are, invoke the event
+                    OnFirstTimeMaxCountReached?.Invoke();
+            }
+            else // If we are in this block, that means we maxed out in a previous cycle
+            {
+                maxedOut = count == this.MaxCount; // Evaluate this again in case an upgrade was removed
             }
         }
 

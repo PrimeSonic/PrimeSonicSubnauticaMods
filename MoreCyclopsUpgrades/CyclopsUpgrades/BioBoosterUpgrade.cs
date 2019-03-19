@@ -13,20 +13,17 @@
 
             OnFinishedUpgrades = (SubRoot cyclops) =>
             {
-                CyBioReactorMono lastRef = null;
-                bool changedHappened = false;
-
                 List<CyBioReactorMono> bioreactors = CyclopsManager.GetBioReactors(cyclops);
 
                 foreach (CyBioReactorMono reactor in bioreactors)
                 {
-                    changedHappened |= (lastRef = reactor).UpdateBoosterCount(this.Count);
+                    reactor.UpdateBoosterCount(this.Count);
                 }
+            };
 
-                if (changedHappened && this.Count == CyBioReactorMono.MaxBoosters)
-                {
-                    ErrorMessage.AddMessage("Maximum boost to bioreactors achieved");
-                }
+            OnFirstTimeMaxCountReached = () =>
+            {
+                ErrorMessage.AddMessage("Maximum boost to bioreactors achieved");
             };
         }
     }

@@ -80,9 +80,6 @@
         {
             PowerManager powerManager = this.Manager.PowerManager;
 
-            var crushDepthUpgrades = new CrushDepthUpgrades();
-            crushDepthUpgrades.RegisterSelf(KnownsUpgradeModules);
-
             var efficiencyUpgrades = new TieredCyclopsUpgradeCollection<int>(0);
             efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
             efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
@@ -93,56 +90,10 @@
 
             var speed = new CyclopsUpgrade(CyclopsModule.SpeedBoosterModuleID)
             {
-                MaxCount = 6
+                MaxCount = 6,
             };
             speed.RegisterSelf(KnownsUpgradeModules);
             powerManager.SpeedBoosters = speed;
-
-            var shield = new CyclopsUpgrade(TechType.CyclopsShieldModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.shieldUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
-            };
-            shield.RegisterSelf(KnownsUpgradeModules);
-
-            var sonar = new CyclopsUpgrade(TechType.CyclopsSonarModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.sonarUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
-            };
-            sonar.RegisterSelf(KnownsUpgradeModules);
-
-            var repair = new CyclopsUpgrade(TechType.CyclopsSeamothRepairModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
-            };
-            repair.RegisterSelf(KnownsUpgradeModules);
-
-            var decoy = new CyclopsUpgrade(TechType.CyclopsDecoyModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
-            };
-            decoy.RegisterSelf(KnownsUpgradeModules);
-
-            var fire = new CyclopsUpgrade(TechType.CyclopsFireSuppressionModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) =>
-                {
-                    CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                    if (fss != null)
-                        fss.fireSuppressionSystem.SetActive(false);
-                },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
-                {
-                    CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                    if (fss != null)
-                        fss.fireSuppressionSystem.SetActive(true);
-                },
-            };
-            fire.RegisterSelf(KnownsUpgradeModules);
-
 
             var solarMk1 = new ChargingCyclopsUpgrade(CyclopsModule.SolarChargerID);
             solarMk1.RegisterSelf(KnownsUpgradeModules);
@@ -173,6 +124,7 @@
                     ErrorMessage.AddMessage("Nuclear Reactor Module depleted");
                 }
             };
+
             nuclear.RegisterSelf(KnownsUpgradeModules);
             powerManager.NuclearCharger = nuclear;
 
