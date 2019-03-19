@@ -74,6 +74,7 @@
                 HUDManager = hudManager
             };
 
+            // Managers must be initialized in this order
             if (upgradeMgr.Initialize(mgr) && powerMgr.Initialize(mgr) && hudManager.Initialize(mgr))
             {                
                 Managers.Add(mgr);

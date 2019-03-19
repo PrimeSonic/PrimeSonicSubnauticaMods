@@ -198,7 +198,7 @@
             HelmPowerIconsRowOfEven[0] = CreatePowerIndicatorIcon(canvas, -helmspacing / 2, helmyoffset, helmzoffset, helmscale);
             HelmPowerIconsRowOfEven[1] = CreatePowerIndicatorIcon(canvas, helmspacing / 2, helmyoffset, helmzoffset, helmscale);
 
-            Canvas canvas2 = this.UpgradeManager.HolographicHUD.healthBar.canvas;
+            Canvas canvas2 = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>().healthBar.canvas;
             const float healthbarxoffset = 100;
             const float healthbarspacing = 70;
             const float healthbarzoffset = 0.05f;

@@ -289,7 +289,7 @@
                     }
                     else
                     {
-                        savedModule.RemainingCharge = battery.charge;
+                        savedModule.RemainingCharge = battery._charge;
                     }
                 }
 

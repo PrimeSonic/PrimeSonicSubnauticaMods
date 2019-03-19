@@ -1,8 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Caching;
     using Common;
-    using Modules;
+    using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Monobehaviors;
     using SaveData;
     using System.Collections.Generic;
@@ -66,6 +65,15 @@
 
         internal bool HasBioReactors => this.CyBioReactors.Count > 0;
         internal PowerIconState PowerIcons { get; } = new PowerIconState();
+
+        internal CyclopsUpgrade SpeedBoosters { get; set; }
+        internal ChargingCyclopsUpgrade SolarCharger { get; set; }
+        internal ChargingCyclopsUpgrade ThermalCharger { get; set; }
+        internal BatteryCyclopsUpgrade SolarChargerMk2 { get; set; }
+        internal BatteryCyclopsUpgrade ThermalChargerMk2 { get; set; }
+        internal BatteryCyclopsUpgrade NuclearCharger { get; set; }
+        internal TieredCyclopsUpgradeCollection<int> EngineEfficientyUpgrades { get; set; }
+        internal BioBoosterUpgrade BioBoosters { get; set; }
 
         public CyclopsManager Manager { get; private set; }
 
@@ -140,8 +148,8 @@
         /// </summary>
         internal void UpdatePowerSpeedRating()
         {
-            int powerIndex = this.UpgradeManager.EngineEfficientyUpgrades.BestValue;
-            int speedBoosters = this.UpgradeManager.SpeedBoosters;
+            int powerIndex = this.EngineEfficientyUpgrades.BestValue;
+            int speedBoosters = this.SpeedBoosters.Count;
 
             if (this.LastKnownPowerIndex != powerIndex)
             {
@@ -237,26 +245,26 @@
             Battery lastBatteryToCharge = null;
             bool renewablePowerAvailable = false;
 
-            if (this.UpgradeManager.HasSolarModules) // Handle solar power
+            if (this.SolarCharger.HasUpgrade || this.SolarChargerMk2.HasUpgrade) // Handle solar power
             {
                 float availableSolarEnergy = GetSolarChargeAmount();
                 this.PowerIcons.Solar = availableSolarEnergy > MinimalPowerValue;
 
-                surplusPower += this.UpgradeManager.SolarCharger.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
+                surplusPower += this.SolarCharger.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
 
-                if (this.UpgradeManager.SolarChargerMk2.Count > 0)
+                if (this.SolarChargerMk2.HasUpgrade)
                 {
                     bool usingSolarBatteryPower = false;
 
                     if (this.PowerIcons.Solar)
                     {
-                        surplusPower += this.UpgradeManager.SolarChargerMk2.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
+                        surplusPower += this.SolarChargerMk2.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
                     }
                     else
                     {
-                        this.UpgradeManager.SolarChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
+                        this.SolarChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
 
-                        usingSolarBatteryPower |= !this.PowerIcons.Thermal && this.UpgradeManager.SolarChargerMk2.BatteryHasCharge;
+                        usingSolarBatteryPower |= !this.PowerIcons.Thermal && this.SolarChargerMk2.BatteryHasCharge;
                     }
 
                     this.PowerIcons.SolarBattery = usingSolarBatteryPower;
@@ -270,26 +278,26 @@
                 this.PowerIcons.SolarBattery = false;
             }
 
-            if (this.UpgradeManager.HasThermalModules) // Handle thermal power
+            if (this.ThermalCharger.HasUpgrade || this.ThermalChargerMk2.HasUpgrade) // Handle thermal power
             {
                 float availableThermalEnergy = GetThermalChargeAmount();
                 this.PowerIcons.Thermal = availableThermalEnergy > MinimalPowerValue;
 
-                surplusPower += this.UpgradeManager.ThermalCharger.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
+                surplusPower += this.ThermalCharger.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
 
-                if (this.UpgradeManager.ThermalChargerMk2.Count > 0)
+                if (this.ThermalChargerMk2.HasUpgrade)
                 {
                     bool usingThermalBatteryPower = false;
 
                     if (this.PowerIcons.Thermal)
                     {
-                        surplusPower += this.UpgradeManager.ThermalChargerMk2.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
+                        surplusPower += this.ThermalChargerMk2.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
                     }
                     else
                     {
-                        this.UpgradeManager.ThermalChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
+                        this.ThermalChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
 
-                        usingThermalBatteryPower |= !this.PowerIcons.Thermal && this.UpgradeManager.ThermalChargerMk2.BatteryHasCharge;
+                        usingThermalBatteryPower |= !this.PowerIcons.Thermal && this.ThermalChargerMk2.BatteryHasCharge;
                     }
 
                     this.PowerIcons.ThermalBattery = usingThermalBatteryPower;
@@ -309,7 +317,7 @@
                 foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
                 {
                     hasBioPower |= reactor.HasPower;
-                    reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);                    
+                    reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);
                 }
 
                 this.PowerIcons.Bio = hasBioPower;
@@ -328,7 +336,7 @@
             this.PowerIcons.ThermalBattery &= activelyCharging;
 
             this.PowerIcons.Nuclear =
-                this.UpgradeManager.HasNuclearModules &&
+                this.NuclearCharger.HasUpgrade &&
                 !renewablePowerAvailable && // Only if there's no renewable power available        
                 !hasSurplusPower;
 
@@ -337,15 +345,15 @@
                 powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit) // User config for threshold to start charging                
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
-                this.UpgradeManager.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);
+                this.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
             if (cyclopsDoneCharging && hasSurplusPower && lastBatteryToCharge != null)
             {
                 // Recycle surplus power back into the batteries that need it
-                this.UpgradeManager.SolarChargerMk2.RechargeBatteries(ref surplusPower);
-                this.UpgradeManager.ThermalChargerMk2.RechargeBatteries(ref surplusPower);
+                this.SolarChargerMk2.RechargeBatteries(ref surplusPower);
+                this.ThermalChargerMk2.RechargeBatteries(ref surplusPower);
             }
         }
 
@@ -357,11 +365,17 @@
         {
             float availableReservePower = 0f;
 
-            foreach (Battery battery in this.UpgradeManager.ReserveBatteries())
-                availableReservePower += battery.charge;
+            foreach (BatteryDetails details in this.SolarChargerMk2.Batteries)
+                availableReservePower += details.BatteryRef._charge;
+
+            foreach (BatteryDetails details in this.ThermalChargerMk2.Batteries)
+                availableReservePower += details.BatteryRef._charge;
+
+            foreach (BatteryDetails details in this.NuclearCharger.Batteries)
+                availableReservePower += details.BatteryRef._charge;
 
             foreach (CyBioReactorMono reactor in this.CyBioReactors)
-                availableReservePower += reactor.Battery.charge;
+                availableReservePower += reactor.Battery._charge;
 
             return Mathf.FloorToInt(availableReservePower);
         }

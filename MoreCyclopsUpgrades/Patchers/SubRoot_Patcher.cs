@@ -79,27 +79,6 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            UpgradeManager upgradeMgr = CyclopsManager.GetUpgradeManager(__instance);
-
-            if (upgradeMgr == null)
-            {
-                return true;
-            }
-
-            CrushDamage crushDmg = __instance.gameObject.GetComponent<CrushDamage>();
-
-            if (crushDmg == null)
-            {
-                return true;
-            }
-
-            float orignialCrushDepth = crushDmg.crushDepth;
-
-            crushDmg.SetExtraCrushDepth(upgradeMgr.CrushDepthUpgrades.BestValue);
-
-            if (orignialCrushDepth != crushDmg.crushDepth)
-                ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", crushDmg.crushDepth));
-
             return false; // Completely override the method and do not continue with original execution
             // The original method execution sucked anyways :P
         }

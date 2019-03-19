@@ -3,28 +3,42 @@
     using System;
     using System.Collections.Generic;
 
-    internal class TieredCyclopsUpgradeCollection<T> where T : IComparable<T>
+    public class TieredCyclopsUpgradeCollection<T> where T : IComparable<T>
     {
-        internal ICollection<TieredCyclopsUpgrade<T>> Collection { get; } = new List<TieredCyclopsUpgrade<T>>();
+        public ICollection<TieredCyclopsUpgrade<T>> Collection { get; } = new List<TieredCyclopsUpgrade<T>>();
 
-        internal T BestValue { get; set; }
-        internal readonly T DefaultValue;
+        public T BestValue { get; set; }
+        public readonly T DefaultValue;
+        private bool finished = true;
 
         public TieredCyclopsUpgradeCollection(T defaultValue)
         {
             DefaultValue = defaultValue;
         }
 
-        internal TieredCyclopsUpgrade<T> Create(TechType techType, T tieredValue)
+        public UpgradeEvent OnFinishedUpgrades;
+        public UpgradeEvent OnClearUpgrades;
+
+        public void CreateTier(TechType techType, T tieredValue)
         {
             var tieredUpgrade = new TieredCyclopsUpgrade<T>(techType, tieredValue, this);
             this.Collection.Add(tieredUpgrade);
-            return tieredUpgrade;
         }
 
-        internal void ResetValue()
+        internal void CreateTiers(IDictionary<TechType, T> collection)
         {
+            foreach (KeyValuePair<TechType, T> upgrade in collection)            
+                CreateTier(upgrade.Key, upgrade.Value);
+        }
+
+        internal void UpgradesCleared(SubRoot cyclops)
+        {
+            if (!finished)
+                return;
+
+            finished = false;
             this.BestValue = DefaultValue;
+            OnClearUpgrades?.Invoke(cyclops);
         }
 
         internal void TierCounted(TieredCyclopsUpgrade<T> counted)
@@ -33,6 +47,15 @@
 
             if (comparison > 0)
                 this.BestValue = counted.TieredValue;
+        }
+
+        internal void UpgradesFinished(SubRoot cyclops)
+        {
+            if (finished)
+                return;
+
+            OnFinishedUpgrades?.Invoke(cyclops);
+            finished = true;
         }
     }
 }

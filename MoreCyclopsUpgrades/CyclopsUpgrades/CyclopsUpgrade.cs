@@ -1,6 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
+    using MoreCyclopsUpgrades.Modules;
     using System;
+
+    public delegate void UpgradeEvent(SubRoot cyclops);
+    public delegate void UpgradeEventSlotBound(SubRoot cyclops, Equipment modules, string slot);
 
     public class CyclopsUpgrade
     {
@@ -16,8 +20,7 @@
 
         public bool MaxLimitReached => count == this.MaxCount;
 
-        public delegate void UpgradeEvent(SubRoot cyclops);
-        public delegate void UpgradeEventSlotBound(SubRoot cyclops, Equipment modules, string slot);
+        public bool HasUpgrade => this.Count > 0;
 
         public UpgradeEvent OnClearUpgrades;
         public UpgradeEventSlotBound OnUpgradeCounted;
@@ -37,12 +40,25 @@
         internal void UpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
         {
             count++;
+
             OnUpgradeCounted?.Invoke(cyclops, modules, slot);
         }
 
-        internal void UpgradesFinished(SubRoot cyclops)
+        internal virtual void UpgradesFinished(SubRoot cyclops)
         {
+            if (count > this.MaxCount)
+            {
+                ErrorMessage.AddMessage($"Cannot exceed more than {this.MaxCount} {CyclopsModule.CyclopsModulesByTechType[techType].NameID}");
+                return;
+            }
+
             OnFinishedUpgrades?.Invoke(cyclops);
+
+            if (count == this.MaxCount)
+            {
+                ErrorMessage.AddMessage($"Maximum number of {CyclopsModule.CyclopsModulesByTechType[techType].NameID} reached");
+                return;
+            }
         }
     }
 }

@@ -4,6 +4,8 @@
     using Caching;
     using Common;
     using Enhancement;
+    using MoreCyclopsUpgrades.CyclopsUpgrades;
+    using MoreCyclopsUpgrades.Managers;
     using PowerUpgrade;
     using Recharging.Nuclear;
     using Recharging.Solar;
@@ -17,7 +19,7 @@
     {
         private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>();
 
-        private static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
+        internal static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
 
         internal static bool ModulesEnabled { get; private set; } = true;
 
@@ -170,6 +172,11 @@
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
+        }
+
+        private void RegisterUpgrades()
+        {
+            
         }
     }
 }

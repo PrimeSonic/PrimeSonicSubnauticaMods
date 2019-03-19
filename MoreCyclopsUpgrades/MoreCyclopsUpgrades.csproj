@@ -67,6 +67,8 @@
     <Compile Include="Caching\BioEnergyCollection.cs" />
     <Compile Include="CyclopsUpgrades\BatteryCyclopsUpgrade.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
+    <Compile Include="CyclopsUpgrades\BioBoosterUpgrade.cs" />
+    <Compile Include="CyclopsUpgrades\CrushDepthUpgrades.cs" />
     <Compile Include="CyclopsUpgrades\DepthCyclopsUpgrade.cs" />
     <Compile Include="CyclopsUpgrades\TieredCyclopsUpgrade.cs" />
     <Compile Include="CyclopsUpgrades\TieredCyclopsUpgradeCollection.cs" />

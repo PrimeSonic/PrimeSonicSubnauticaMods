@@ -416,7 +416,7 @@
                 this.Manager.PowerManager.CyBioReactors.Add(this);
             }
 
-            UpdateBoosterCount(this.Manager.UpgradeManager.BioBoosterCount);
+            UpdateBoosterCount(this.Manager.PowerManager.BioBoosters.Count);
             QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 
