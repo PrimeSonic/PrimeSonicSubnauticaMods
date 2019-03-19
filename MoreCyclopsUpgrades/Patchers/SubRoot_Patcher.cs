@@ -95,7 +95,7 @@
 
             float orignialCrushDepth = crushDmg.crushDepth;
 
-            crushDmg.SetExtraCrushDepth(upgradeMgr.BonusCrushDepth);
+            crushDmg.SetExtraCrushDepth(upgradeMgr.CrushDepthUpgrades.BestValue);
 
             if (orignialCrushDepth != crushDmg.crushDepth)
                 ErrorMessage.AddMessage(Language.main.GetFormat("CrushDepthNow", crushDmg.crushDepth));

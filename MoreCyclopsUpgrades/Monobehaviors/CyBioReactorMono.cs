@@ -1,16 +1,18 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
-    using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.SaveData;
     using ProtoBuf;
+    using System.Collections.Generic;
     using UnityEngine;
 
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
+        public const float MinimalPowerValue = 0.001f;
+
         private const float baselineChargeRate = 0.80f;
         public const int MaxBoosters = 3;
 
@@ -305,6 +307,32 @@
             this.MaterialsProcessing.ClearAllStagedForRemoval(this.Container);
 
             return powerProduced;
+        }
+
+        public void ChargeCyclops(float drainingRate, ref float powerDeficit)
+        {
+            if (powerDeficit < MinimalPowerValue) // No power deficit left to charge
+                return; // Exit
+
+            if (!this.HasPower)
+                return;
+
+            // Mathf.Min is to prevent accidentally taking too much power from the battery
+            float chargeAmt = Mathf.Min(powerDeficit, drainingRate);
+
+            if (this.Battery._charge > chargeAmt)
+            {
+                this.Battery._charge -= chargeAmt;
+            }
+            else // Battery about to be fully drained
+            {
+                chargeAmt = this.Battery._charge; // Take what's left
+                this.Battery._charge = 0f; // Set battery to empty
+            }
+
+            powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
+
+            this.ParentCyclops.powerRelay.AddEnergy(chargeAmt, out float amtStored);
         }
 
         private void UpdateDisplayText()

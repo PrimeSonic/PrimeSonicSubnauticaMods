@@ -1,11 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using System.Collections.Generic;
     using Caching;
     using Common;
     using Modules;
     using MoreCyclopsUpgrades.Monobehaviors;
     using SaveData;
+    using System.Collections.Generic;
     using UnityEngine;
 
     internal class PowerManager
@@ -140,7 +140,7 @@
         /// </summary>
         internal void UpdatePowerSpeedRating()
         {
-            int powerIndex = this.UpgradeManager.PowerIndex;
+            int powerIndex = this.UpgradeManager.EngineEfficientyUpgrades.BestValue;
             int speedBoosters = this.UpgradeManager.SpeedBoosters;
 
             if (this.LastKnownPowerIndex != powerIndex)
@@ -242,31 +242,21 @@
                 float availableSolarEnergy = GetSolarChargeAmount();
                 this.PowerIcons.Solar = availableSolarEnergy > MinimalPowerValue;
 
-                if (this.UpgradeManager.SolarModuleCount > 0 && this.PowerIcons.Solar)
-                {
-                    surplusPower += ChargeFromStandardModule(this.UpgradeManager.SolarModuleCount * availableSolarEnergy, ref powerDeficit);                    
-                }
+                surplusPower += this.UpgradeManager.SolarCharger.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
 
-                if (this.UpgradeManager.SolarMk2Batteries.Count > 0)
+                if (this.UpgradeManager.SolarChargerMk2.Count > 0)
                 {
                     bool usingSolarBatteryPower = false;
-                    foreach (Battery battery in this.UpgradeManager.SolarMk2Batteries)
+
+                    if (this.PowerIcons.Solar)
                     {
-                        if (this.PowerIcons.Solar)
-                        {
-                            surplusPower += ChargeCyclopsAndBattery(battery, ref availableSolarEnergy, ref powerDeficit);
-                        }
-                        else
-                        {
-                            ChargeCyclopsFromBattery(battery, BatteryDrainRate, ref powerDeficit);
+                        surplusPower += this.UpgradeManager.SolarChargerMk2.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
+                    }
+                    else
+                    {
+                        this.UpgradeManager.SolarChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
 
-                            bool batteryHasCharge = battery.charge > MinimalPowerValue;
-
-                            if (battery.charge < battery.capacity)
-                                lastBatteryToCharge = battery;
-
-                            usingSolarBatteryPower |= !this.PowerIcons.Thermal && batteryHasCharge;
-                        }
+                        usingSolarBatteryPower |= !this.PowerIcons.Thermal && this.UpgradeManager.SolarChargerMk2.BatteryHasCharge;
                     }
 
                     this.PowerIcons.SolarBattery = usingSolarBatteryPower;
@@ -285,31 +275,21 @@
                 float availableThermalEnergy = GetThermalChargeAmount();
                 this.PowerIcons.Thermal = availableThermalEnergy > MinimalPowerValue;
 
-                if (this.UpgradeManager.ThermalModuleCount > 0 && this.PowerIcons.Thermal)
-                {
-                    surplusPower += ChargeFromStandardModule(this.UpgradeManager.ThermalModuleCount * availableThermalEnergy, ref powerDeficit);
-                }
+                surplusPower += this.UpgradeManager.ThermalCharger.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
 
-                if (this.UpgradeManager.ThermalMk2Batteries.Count > 0)
+                if (this.UpgradeManager.ThermalChargerMk2.Count > 0)
                 {
                     bool usingThermalBatteryPower = false;
-                    foreach (Battery battery in this.UpgradeManager.ThermalMk2Batteries)
+
+                    if (this.PowerIcons.Thermal)
                     {
-                        if (this.PowerIcons.Thermal)
-                        {
-                            surplusPower += ChargeCyclopsAndBattery(battery, ref availableThermalEnergy, ref powerDeficit);
-                        }
-                        else
-                        {
-                            ChargeCyclopsFromBattery(battery, BatteryDrainRate, ref powerDeficit);
+                        surplusPower += this.UpgradeManager.ThermalChargerMk2.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
+                    }
+                    else
+                    {
+                        this.UpgradeManager.ThermalChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
 
-                            bool batteryHasCharge = battery.charge > 0f;
-
-                            if (battery.charge < battery.capacity)
-                                lastBatteryToCharge = battery;
-
-                            usingThermalBatteryPower |= !this.PowerIcons.Thermal && batteryHasCharge;
-                        }
+                        usingThermalBatteryPower |= !this.PowerIcons.Thermal && this.UpgradeManager.ThermalChargerMk2.BatteryHasCharge;
                     }
 
                     this.PowerIcons.ThermalBattery = usingThermalBatteryPower;
@@ -328,11 +308,8 @@
                 bool hasBioPower = false;
                 foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
                 {
-                    if (!reactor.HasPower)
-                        continue;
-
-                    ChargeCyclopsFromBattery(reactor.Battery, BatteryDrainRate, ref powerDeficit);                    
-                    hasBioPower = true;
+                    hasBioPower |= reactor.HasPower;
+                    reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);                    
                 }
 
                 this.PowerIcons.Bio = hasBioPower;
@@ -343,7 +320,7 @@
                 this.PowerIcons.Bio = false;
             }
 
-            bool cyclopsDoneCharging = powerDeficit <= MinimalPowerValue;            
+            bool cyclopsDoneCharging = powerDeficit <= MinimalPowerValue;
             bool hasSurplusPower = surplusPower > MinimalPowerValue;
             bool activelyCharging = !this.PowerIcons.Solar && !this.PowerIcons.Thermal;
 
@@ -353,27 +330,22 @@
             this.PowerIcons.Nuclear =
                 this.UpgradeManager.HasNuclearModules &&
                 !renewablePowerAvailable && // Only if there's no renewable power available        
-                !hasSurplusPower; 
+                !hasSurplusPower;
 
             if (this.PowerIcons.Nuclear && // Nuclear power enabled
                 !cyclopsDoneCharging && // Halt charging if Cyclops is on full charge                
                 powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit) // User config for threshold to start charging                
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
-                foreach (NuclearModuleDetails module in this.UpgradeManager.NuclearModules)
-                {
-                    ChargeCyclopsFromBattery(module.NuclearBattery, NuclearDrainRate, ref powerDeficit);
-
-                    if (module.NuclearBattery.charge <= 0f)
-                        DepleteNuclearBattery(module.ParentEquipment, module.SlotName, module.NuclearBattery);
-                }
+                this.UpgradeManager.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
             if (cyclopsDoneCharging && hasSurplusPower && lastBatteryToCharge != null)
             {
                 // Recycle surplus power back into the batteries that need it
-                lastBatteryToCharge.charge = Mathf.Min(lastBatteryToCharge.capacity, lastBatteryToCharge.charge + surplusPower);                
+                this.UpgradeManager.SolarChargerMk2.RechargeBatteries(ref surplusPower);
+                this.UpgradeManager.ThermalChargerMk2.RechargeBatteries(ref surplusPower);
             }
         }
 
@@ -385,106 +357,13 @@
         {
             float availableReservePower = 0f;
 
-            foreach (Battery battery in this.UpgradeManager.ReserveBatteries)
+            foreach (Battery battery in this.UpgradeManager.ReserveBatteries())
                 availableReservePower += battery.charge;
 
             foreach (CyBioReactorMono reactor in this.CyBioReactors)
                 availableReservePower += reactor.Battery.charge;
 
             return Mathf.FloorToInt(availableReservePower);
-        }
-
-        /// <summary>
-        /// Charges the Cyclops using a standard charging module.
-        /// </summary>
-        /// <param name="chargeAmount">The charge amount.</param>
-        /// <param name="powerDeficit">The power deficit.</param>
-        /// <returns>
-        /// The amount of surplus power this cycle.
-        /// This value can be <c>0f</c> if all charge was consumed.
-        /// </returns>
-        private float ChargeFromStandardModule(float chargeAmount, ref float powerDeficit)
-        {
-            if (Mathf.Approximately(powerDeficit, 0f))
-                return chargeAmount; // Surplus power
-
-            if (Mathf.Approximately(chargeAmount, 0f))
-                return 0f;
-
-            this.Cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
-            powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
-
-            return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
-        }
-
-        /// <summary>
-        /// Charges the cyclops from the reserve battery of a non-standard charging module.
-        /// </summary>
-        /// <param name="battery">The battery of the non-standard charging module.</param>
-        /// <param name="drainingRate">The battery power draining rate.</param>
-        /// <param name="powerDeficit">The power deficit.</param>
-        private void ChargeCyclopsFromBattery(Battery battery, float drainingRate, ref float powerDeficit)
-        {
-            if (Mathf.Approximately(powerDeficit, 0f)) // No power deficit left to charge
-                return; // Exit
-
-            if (Mathf.Approximately(battery.charge, 0f)) // The battery has no charge left
-                return; // Skip this battery
-
-            // Mathf.Min is to prevent accidentally taking too much power from the battery
-            float chargeAmt = Mathf.Min(powerDeficit, drainingRate);
-
-            if (battery.charge > chargeAmt)
-            {
-                battery.charge -= chargeAmt;
-            }
-            else // Battery about to be fully drained
-            {
-                chargeAmt = battery.charge; // Take what's left
-                battery.charge = 0f; // Set battery to empty
-            }
-
-            powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
-
-            this.Cyclops.powerRelay.AddEnergy(chargeAmt, out float amtStored);
-        }
-
-        /// <summary>
-        /// Charges the cyclops and specified battery.
-        /// This happens if a Mk2 charging module with a reserve battery is currently producing power.
-        /// </summary>
-        /// <param name="battery">The battery from the module currently producing power.</param>
-        /// <param name="chargeAmount">The charge amount.</param>
-        /// <param name="powerDeficit">The power deficit.</param>
-        /// <returns>
-        /// The amount of surplus power this cycle.
-        /// This value can be <c>0f</c> if all charge was consumed.
-        /// </returns>
-        private float ChargeCyclopsAndBattery(Battery battery, ref float chargeAmount, ref float powerDeficit)
-        {
-            chargeAmount *= Mk2ChargeRateModifier;
-
-            this.Cyclops.powerRelay.AddEnergy(chargeAmount, out float amtStored);
-            powerDeficit = Mathf.Max(0f, powerDeficit - chargeAmount);
-
-            battery.charge = Mathf.Min(battery.capacity, battery.charge + chargeAmount);
-
-            return Mathf.Max(0f, chargeAmount - powerDeficit); // Surplus power
-        }
-
-        /// <summary>
-        /// Replaces a nuclear battery modules with Depleted Reactor Rods when they fully drained.
-        /// </summary>
-        /// <param name="modules">The equipment modules.</param>
-        /// <param name="slotName">Th slot name.</param>
-        /// <param name="nuclearBattery">The nuclear battery that just ran out.</param>
-        private void DepleteNuclearBattery(Equipment modules, string slotName, Battery nuclearBattery)
-        {
-            // Drained nuclear batteries are handled just like how the Nuclear Reactor handles depleated reactor rods
-            InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
-            Object.Destroy(inventoryItem.item.gameObject);
-            modules.AddItem(slotName, CyclopsModule.SpawnCyclopsModule(CyclopsModule.DepletedNuclearModuleID), true);
-            ErrorMessage.AddMessage("Nuclear Reactor Module depleted");
         }
 
         /// <summary>
