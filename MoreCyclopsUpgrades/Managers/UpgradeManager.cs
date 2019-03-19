@@ -4,7 +4,6 @@
     using Modules;
     using Monobehaviors;
     using MoreCyclopsUpgrades.CyclopsUpgrades;
-    using System;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -80,15 +79,24 @@
         private void RegisterUpgrades()
         {
             PowerManager powerManager = this.Manager.PowerManager;
+
             var crushDepthUpgrades = new CrushDepthUpgrades();
             crushDepthUpgrades.RegisterSelf(KnownsUpgradeModules);
 
-            powerManager.EngineEfficientyUpgrades = new TieredCyclopsUpgradeCollection<int>(0);
-            powerManager.EngineEfficientyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
-            powerManager.EngineEfficientyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
-            powerManager.EngineEfficientyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
+            var efficiencyUpgrades = new TieredCyclopsUpgradeCollection<int>(0);
+            efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
+            efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
+            efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
+            efficiencyUpgrades.RegisterSelf(KnownsUpgradeModules);
 
-            powerManager.EngineEfficientyUpgrades.RegisterSelf(KnownsUpgradeModules);
+            powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
+
+            var speed = new CyclopsUpgrade(CyclopsModule.SpeedBoosterModuleID)
+            {
+                MaxCount = 6
+            };
+            speed.RegisterSelf(KnownsUpgradeModules);
+            powerManager.SpeedBoosters = speed;
 
             var shield = new CyclopsUpgrade(TechType.CyclopsShieldModule)
             {
@@ -135,19 +143,24 @@
             };
             fire.RegisterSelf(KnownsUpgradeModules);
 
-            powerManager.SolarCharger = new ChargingCyclopsUpgrade(CyclopsModule.SolarChargerID);
-            powerManager.SolarCharger.RegisterSelf(KnownsUpgradeModules);
 
-            powerManager.SolarChargerMk2 = new BatteryCyclopsUpgrade(CyclopsModule.SolarChargerMk2ID, true);
-            powerManager.SolarChargerMk2.RegisterSelf(KnownsUpgradeModules);
+            var solarMk1 = new ChargingCyclopsUpgrade(CyclopsModule.SolarChargerID);
+            solarMk1.RegisterSelf(KnownsUpgradeModules);
+            powerManager.SolarCharger = solarMk1;
 
-            powerManager.ThermalCharger = new ChargingCyclopsUpgrade(TechType.CyclopsThermalReactorModule);
-            powerManager.ThermalCharger.RegisterSelf(KnownsUpgradeModules);
+            var solarMk2 = new BatteryCyclopsUpgrade(CyclopsModule.SolarChargerMk2ID, true);
+            solarMk2.RegisterSelf(KnownsUpgradeModules);
+            powerManager.SolarChargerMk2 = solarMk2;
 
-            powerManager.ThermalChargerMk2 = new BatteryCyclopsUpgrade(CyclopsModule.ThermalChargerMk2ID, true);
-            powerManager.ThermalChargerMk2.RegisterSelf(KnownsUpgradeModules);
+            var thermalMk1 = new ChargingCyclopsUpgrade(TechType.CyclopsThermalReactorModule);
+            thermalMk1.RegisterSelf(KnownsUpgradeModules);
+            powerManager.ThermalCharger = thermalMk1;
 
-            powerManager.NuclearCharger = new BatteryCyclopsUpgrade(CyclopsModule.NuclearChargerID, false)
+            var thermalMk2 = new BatteryCyclopsUpgrade(CyclopsModule.ThermalChargerMk2ID, true);
+            thermalMk2.RegisterSelf(KnownsUpgradeModules);
+            powerManager.ThermalChargerMk2 = thermalMk2;
+
+            var nuclear = new BatteryCyclopsUpgrade(CyclopsModule.NuclearChargerID, false)
             {
                 OnBatteryDrained = (BatteryDetails details) =>
                 {
@@ -160,16 +173,12 @@
                     ErrorMessage.AddMessage("Nuclear Reactor Module depleted");
                 }
             };
-            powerManager.NuclearCharger.RegisterSelf(KnownsUpgradeModules);
+            nuclear.RegisterSelf(KnownsUpgradeModules);
+            powerManager.NuclearCharger = nuclear;
 
-            var speed = new CyclopsUpgrade(CyclopsModule.SpeedBoosterModuleID)
-            {
-                MaxCount = 6
-            };
-            speed.RegisterSelf(KnownsUpgradeModules);
-
-            powerManager.BioBoosters = new BioBoosterUpgrade();
-            powerManager.BioBoosters.RegisterSelf(KnownsUpgradeModules);
+            var bioBoost = new BioBoosterUpgrade();
+            bioBoost.RegisterSelf(KnownsUpgradeModules);
+            powerManager.BioBoosters = bioBoost;
 
             // Register upgrades from other mods
             foreach (CyclopsUpgrade externalUpgrade in UpgradesToRegister)
@@ -209,27 +218,19 @@
             HandleUpgrades();
         }
 
-        private void ClearAllUpgrades()
+        internal void HandleUpgrades()
         {
+            // Turn off all upgrades and clear all values
             if (this.Cyclops == null)
             {
                 ErrorMessage.AddError("ClearAllUpgrades: Cyclops ref is null - Upgrade handling cancled");
                 return;
             }
 
-            SubRoot cyclops = this.Cyclops;
-
             foreach (CyclopsUpgrade upgradeType in KnownsUpgradeModules.Values)
-                upgradeType.UpgradesCleared(cyclops);
+                upgradeType.UpgradesCleared(this.Cyclops);
 
             this.HasChargingModules = false;
-        }
-
-        internal void HandleUpgrades()
-        {
-            // Turn off all upgrades and clear all values
-            ClearAllUpgrades();
-            SubRoot cyclops = this.Cyclops;
 
             var foundUpgrades = new List<TechType>();
 
@@ -247,7 +248,7 @@
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out CyclopsUpgrade upgrade))
                 {
-                    upgrade.UpgradeCounted(cyclops, modules, slot);
+                    upgrade.UpgradeCounted(this.Cyclops, modules, slot);
 
                     if (upgrade.IsPowerProducer)
                         this.HasChargingModules = true;
@@ -260,7 +261,7 @@
                 this.Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
 
                 foreach (CyclopsUpgrade upgradeType in KnownsUpgradeModules.Values)
-                    upgradeType.UpgradesFinished(cyclops);
+                    upgradeType.UpgradesFinished(this.Cyclops);
             }
         }
     }
