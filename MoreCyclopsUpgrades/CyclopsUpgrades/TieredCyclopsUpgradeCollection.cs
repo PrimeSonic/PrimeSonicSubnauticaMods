@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
+    using Common;
     using System;
     using System.Collections.Generic;
 

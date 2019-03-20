@@ -249,19 +249,18 @@
             uGUI_Icon icon = iconGo.AddComponent<uGUI_Icon>();
 
             var arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
-
             var textGO = new GameObject("TextGo");
 
-            textGO.transform.parent = icon.transform;
+            textGO.transform.SetParent(iconGo.transform, false);
             textGO.AddComponent<Text>();
 
             Text text = textGO.GetComponent<Text>();
             text.font = arial;
             text.material = arial.material;
-            text.text = string.Empty;
-            text.fontSize = 18;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = Color.yellow;
+            text.text = "??";
+            text.fontSize = 23;
+            text.alignment = TextAnchor.LowerCenter;
+            text.color = Color.white;
 
             Outline outline = textGO.AddComponent<Outline>();
             outline.effectColor = Color.black;
@@ -304,8 +303,10 @@
 
                 Indicator helmIcon = helmRow[index];
                 Indicator hpIcon = healthBarRow[index++];
+
                 hpIcon.Icon.sprite = helmIcon.Icon.sprite = SpriteManager.Get(icon.TechType);
                 hpIcon.Enabled = helmIcon.Enabled = true;
+                hpIcon.Text.text = helmIcon.Text.text = $"{Mathf.FloorToInt(icon.Value)}{icon.Format}";
             }
         }
     }

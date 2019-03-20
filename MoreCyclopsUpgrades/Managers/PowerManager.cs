@@ -250,6 +250,7 @@
                 float solarStatus = GetSolarStatus();
                 float availableSolarEnergy = SolarChargingFactor * solarStatus;
                 this.PowerIcons.SolarStatus = solarStatus;
+                this.PowerIcons.Solar = availableSolarEnergy > MinimalPowerValue;
 
                 surplusPower += this.SolarCharger.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
 
@@ -280,6 +281,7 @@
                 float thermalStatus = GetThermalStatus();
                 float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * this.Cyclops.thermalReactorCharge.Evaluate(thermalStatus);
                 this.PowerIcons.ThermalStatus = thermalStatus;
+                this.PowerIcons.Thermal = availableThermalEnergy > MinimalPowerValue;
 
                 surplusPower += this.ThermalCharger.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
 

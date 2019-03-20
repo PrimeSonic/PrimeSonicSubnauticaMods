@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
+    using Common;
     using System;
     using System.Collections.Generic;
 
@@ -124,6 +125,7 @@
 
         internal virtual void RegisterSelf(IDictionary<TechType, CyclopsUpgrade> dictionary)
         {
+            QuickLogger.Debug($"techType upgrades registered");
             dictionary.Add(techType, this);
         }
 

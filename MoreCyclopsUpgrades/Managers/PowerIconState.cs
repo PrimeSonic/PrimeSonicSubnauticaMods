@@ -9,22 +9,23 @@
         {
             public TechType TechType;
             public float Value;
+            public char Format;
 
-            public PowerIcon(TechType upgrade) : this()
+            public PowerIcon(TechType techType, char format) : this()
             {
-                TechType = upgrade;
+                TechType = techType;
+                Format = format;
             }
         }
 
         internal bool EvenCount { get; private set; } = true;
 
-        private PowerIcon nuclearIcon = new PowerIcon(CyclopsModule.NuclearChargerID);
-        private PowerIcon bioIcon = new PowerIcon(CyclopsModule.BioReactorBoosterID);
-        private PowerIcon solarIcon = new PowerIcon(CyclopsModule.SolarChargerID);
-        private PowerIcon solar2Icon = new PowerIcon(CyclopsModule.SolarChargerMk2ID);
-        private PowerIcon thermalIcon = new PowerIcon(TechType.CyclopsThermalReactorModule);
-        private PowerIcon thermal2Icon = new PowerIcon(CyclopsModule.ThermalChargerMk2ID);
-
+        private PowerIcon nuclearIcon = new PowerIcon(CyclopsModule.NuclearChargerID, 'B');
+        private PowerIcon bioIcon = new PowerIcon(CyclopsModule.BioReactorBoosterID, 'B');
+        private PowerIcon solarIcon = new PowerIcon(CyclopsModule.SolarChargerID, 'S');
+        private PowerIcon solar2Icon = new PowerIcon(CyclopsModule.SolarChargerMk2ID, 'B');
+        private PowerIcon thermalIcon = new PowerIcon(TechType.CyclopsThermalReactorModule, 'C');
+        private PowerIcon thermal2Icon = new PowerIcon(CyclopsModule.ThermalChargerMk2ID, 'B');
 
         private bool solar = false;
         private bool solarBattery = false;
