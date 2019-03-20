@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Represents a specialized type of upgrade module that is intended to be non-stacking, where only the best version applies.
@@ -28,17 +27,17 @@
             TieredValue = tieredValue;
             ParentCollection = parentCollection;
 
-            OnClearUpgrades = (SubRoot cyclops) =>
+            OnClearUpgrades += (SubRoot cyclops) =>
             {
                 ParentCollection.UpgradesCleared(cyclops);
             };
 
-            OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
+            OnUpgradeCounted += (SubRoot cyclops, Equipment modules, string slot) =>
             {
                 ParentCollection.TierCounted(TieredValue);
             };
 
-            OnFinishedUpgrades = (SubRoot cyclops) =>
+            OnFinishedUpgrades += (SubRoot cyclops) =>
             {
                 ParentCollection.UpgradesFinished(cyclops);
             };

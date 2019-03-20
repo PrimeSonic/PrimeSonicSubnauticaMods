@@ -11,7 +11,7 @@
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
 
-            OnFinishedUpgrades = (SubRoot cyclops) =>
+            OnFinishedUpgrades += (SubRoot cyclops) =>
             {
                 List<CyBioReactorMono> bioreactors = CyclopsManager.GetBioReactors(cyclops);
 
@@ -21,7 +21,7 @@
                 }
             };
 
-            OnFirstTimeMaxCountReached = () =>
+            OnFirstTimeMaxCountReached += () =>
             {
                 ErrorMessage.AddMessage("Maximum boost to bioreactors achieved");
             };

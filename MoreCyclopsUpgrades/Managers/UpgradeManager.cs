@@ -99,7 +99,7 @@
             solarMk1.RegisterSelf(KnownsUpgradeModules);
             powerManager.SolarCharger = solarMk1;
 
-            var solarMk2 = new BatteryCyclopsUpgrade(CyclopsModule.SolarChargerMk2ID, true);
+            var solarMk2 = new BatteryCyclopsUpgrade(CyclopsModule.SolarChargerMk2ID, canRecharge: true);
             solarMk2.RegisterSelf(KnownsUpgradeModules);
             powerManager.SolarChargerMk2 = solarMk2;
 
@@ -107,24 +107,11 @@
             thermalMk1.RegisterSelf(KnownsUpgradeModules);
             powerManager.ThermalCharger = thermalMk1;
 
-            var thermalMk2 = new BatteryCyclopsUpgrade(CyclopsModule.ThermalChargerMk2ID, true);
+            var thermalMk2 = new BatteryCyclopsUpgrade(CyclopsModule.ThermalChargerMk2ID, canRecharge: true);
             thermalMk2.RegisterSelf(KnownsUpgradeModules);
             powerManager.ThermalChargerMk2 = thermalMk2;
 
-            var nuclear = new BatteryCyclopsUpgrade(CyclopsModule.NuclearChargerID, false)
-            {
-                OnBatteryDrained = (BatteryDetails details) =>
-                {
-                    Equipment modules = details.ParentEquipment;
-                    string slotName = details.SlotName;
-                    // Drained nuclear batteries are handled just like how the Nuclear Reactor handles depleated reactor rods
-                    InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
-                    GameObject.Destroy(inventoryItem.item.gameObject);
-                    modules.AddItem(slotName, CyclopsModule.SpawnCyclopsModule(CyclopsModule.DepletedNuclearModuleID), true);
-                    ErrorMessage.AddMessage("Nuclear Reactor Module depleted");
-                }
-            };
-
+            var nuclear = new NuclearChargingModule();
             nuclear.RegisterSelf(KnownsUpgradeModules);
             powerManager.NuclearCharger = nuclear;
 

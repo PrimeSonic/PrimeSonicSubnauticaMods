@@ -70,6 +70,7 @@
     <Compile Include="CyclopsUpgrades\BioBoosterUpgrade.cs" />
     <Compile Include="CyclopsUpgrades\CrushDepthUpgrades.cs" />
     <Compile Include="CyclopsUpgrades\DepthCyclopsUpgrade.cs" />
+    <Compile Include="CyclopsUpgrades\NuclearChargingModule.cs" />
     <Compile Include="CyclopsUpgrades\TieredCyclopsUpgrade.cs" />
     <Compile Include="CyclopsUpgrades\TieredCyclopsUpgradeCollection.cs" />
     <Compile Include="Managers\ChargingCyclopsUpgrade.cs" />

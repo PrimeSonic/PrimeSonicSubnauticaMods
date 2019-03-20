@@ -6,7 +6,7 @@
     {
         public CrushDepthUpgrades() : base(0f)
         {
-            OnFinishedUpgrades = (SubRoot cyclops) =>
+            OnFinishedUpgrades += (SubRoot cyclops) =>
             {
                 CrushDamage crushDmg = cyclops.gameObject.GetComponent<CrushDamage>();
 
