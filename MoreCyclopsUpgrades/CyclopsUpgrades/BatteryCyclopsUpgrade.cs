@@ -17,7 +17,7 @@
         public float TotalBatteryCharge { get; protected set; } = 0f;
         public float TotalBatteryCapacity { get; protected set; } = 0f;
 
-        internal bool BatteryHasCharge => this.TotalBatteryCharge > MinimalPowerValue;
+        internal bool BatteryHasCharge => this.Count > 0 && this.TotalBatteryCharge > MinimalPowerValue;
 
         public BatteryCyclopsUpgrade(TechType techType, bool canRecharge) : base(techType)
         {

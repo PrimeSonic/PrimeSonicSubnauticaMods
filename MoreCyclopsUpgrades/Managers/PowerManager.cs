@@ -247,29 +247,26 @@
 
             if (this.SolarCharger.HasUpgrade || this.SolarChargerMk2.HasUpgrade) // Handle solar power
             {
-                float availableSolarEnergy = GetSolarChargeAmount();
-                this.PowerIcons.Solar = availableSolarEnergy > MinimalPowerValue;
+                float solarStatus = GetSolarStatus();
+                float availableSolarEnergy = SolarChargingFactor * solarStatus;
+                this.PowerIcons.SolarStatus = solarStatus;
 
                 surplusPower += this.SolarCharger.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
 
-                if (this.SolarChargerMk2.HasUpgrade)
+                bool usingSolarBatteryPower = false;
+
+                if (this.PowerIcons.Solar)
                 {
-                    bool usingSolarBatteryPower = false;
-
-                    if (this.PowerIcons.Solar)
-                    {
-                        surplusPower += this.SolarChargerMk2.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
-                    }
-                    else
-                    {
-                        this.SolarChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
-
-                        usingSolarBatteryPower |= !this.PowerIcons.Thermal && this.SolarChargerMk2.BatteryHasCharge;
-                    }
-
-                    this.PowerIcons.SolarBattery = usingSolarBatteryPower;
+                    surplusPower += this.SolarChargerMk2.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
+                }
+                else
+                {
+                    this.SolarChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
+                    usingSolarBatteryPower |= !this.PowerIcons.Thermal && this.SolarChargerMk2.BatteryHasCharge;
                 }
 
+                this.PowerIcons.SolarBattery = usingSolarBatteryPower;
+                this.PowerIcons.SolarBatteryCharge = this.SolarChargerMk2.TotalBatteryCharge;
                 renewablePowerAvailable |= this.PowerIcons.Solar || this.PowerIcons.SolarBattery;
             }
             else
@@ -280,29 +277,26 @@
 
             if (this.ThermalCharger.HasUpgrade || this.ThermalChargerMk2.HasUpgrade) // Handle thermal power
             {
-                float availableThermalEnergy = GetThermalChargeAmount();
-                this.PowerIcons.Thermal = availableThermalEnergy > MinimalPowerValue;
+                float thermalStatus = GetThermalStatus();
+                float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * this.Cyclops.thermalReactorCharge.Evaluate(thermalStatus);
+                this.PowerIcons.ThermalStatus = thermalStatus;
 
                 surplusPower += this.ThermalCharger.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
 
-                if (this.ThermalChargerMk2.HasUpgrade)
+                bool usingThermalBatteryPower = false;
+
+                if (this.PowerIcons.Thermal)
                 {
-                    bool usingThermalBatteryPower = false;
-
-                    if (this.PowerIcons.Thermal)
-                    {
-                        surplusPower += this.ThermalChargerMk2.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
-                    }
-                    else
-                    {
-                        this.ThermalChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
-
-                        usingThermalBatteryPower |= !this.PowerIcons.Thermal && this.ThermalChargerMk2.BatteryHasCharge;
-                    }
-
-                    this.PowerIcons.ThermalBattery = usingThermalBatteryPower;
+                    surplusPower += this.ThermalChargerMk2.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
+                }
+                else
+                {
+                    this.ThermalChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
+                    usingThermalBatteryPower |= !this.PowerIcons.Thermal && this.ThermalChargerMk2.BatteryHasCharge;
                 }
 
+                this.PowerIcons.ThermalBattery = usingThermalBatteryPower;
+                this.PowerIcons.ThermalBatteryCharge = this.ThermalChargerMk2.TotalBatteryCharge;
                 renewablePowerAvailable |= this.PowerIcons.Thermal || this.PowerIcons.ThermalBattery;
             }
             else
@@ -314,14 +308,17 @@
             if (this.CyBioReactors.Count > 0)
             {
                 bool hasBioPower = false;
+                float totalBioCharge = 0f;
                 foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
                 {
                     hasBioPower |= reactor.HasPower;
                     reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);
+                    totalBioCharge += reactor.Battery._charge;
                 }
 
                 this.PowerIcons.Bio = hasBioPower;
                 renewablePowerAvailable |= hasBioPower;
+                this.PowerIcons.BioCharge = totalBioCharge;
             }
             else
             {
@@ -346,6 +343,7 @@
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
                 this.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);
+                this.PowerIcons.NuclearCharge = this.NuclearCharger.TotalBatteryCharge;
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
@@ -399,6 +397,15 @@
                    Mathf.Clamp01((MaxSolarDepth + this.Cyclops.transform.position.y) / MaxSolarDepth); // Distance to surfuce
         }
 
+        private float GetSolarStatus()
+        {
+            if (DayNightCycle.main == null)
+                return 0f; // Safety check
+
+            return DayNightCycle.main.GetLocalLightScalar() *
+                   Mathf.Clamp01((MaxSolarDepth + this.Cyclops.transform.position.y) / MaxSolarDepth);
+        }
+
         /// <summary>
         ///  Gets the amount of available energy provided by the current ambient heat.
         /// </summary>
@@ -413,6 +420,14 @@
             return ThermalChargingFactor *
                    Time.deltaTime *
                    this.Cyclops.thermalReactorCharge.Evaluate(WaterTemperatureSimulation.main.GetTemperature(this.Cyclops.transform.position)); // Temperature
+        }
+
+        private float GetThermalStatus()
+        {
+            if (WaterTemperatureSimulation.main == null)
+                return 0f; // Safety check
+
+            return WaterTemperatureSimulation.main.GetTemperature(this.Cyclops.transform.position);
         }
     }
 }
