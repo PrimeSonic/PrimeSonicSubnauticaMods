@@ -122,8 +122,7 @@
             // Register upgrades from other mods
             foreach (CyclopsUpgrade externalUpgrade in UpgradesToRegister)
             {
-                if (externalUpgrade.techType != TechType.None)
-                    externalUpgrade.RegisterSelf(KnownsUpgradeModules);
+                externalUpgrade.RegisterSelf(KnownsUpgradeModules);
             }
         }
 

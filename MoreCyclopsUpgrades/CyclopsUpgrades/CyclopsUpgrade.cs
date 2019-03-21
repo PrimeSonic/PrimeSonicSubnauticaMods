@@ -90,8 +90,8 @@
 
         internal virtual void UpgradesCleared(SubRoot cyclops)
         {
-            OnClearUpgrades?.Invoke(cyclops);
             count = 0;
+            OnClearUpgrades?.Invoke(cyclops);
         }
 
         internal virtual void UpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
@@ -125,7 +125,7 @@
 
         internal virtual void RegisterSelf(IDictionary<TechType, CyclopsUpgrade> dictionary)
         {
-            QuickLogger.Debug($"techType upgrades registered");
+            QuickLogger.Debug($"{techType} upgrade registered");
             dictionary.Add(techType, this);
         }
 

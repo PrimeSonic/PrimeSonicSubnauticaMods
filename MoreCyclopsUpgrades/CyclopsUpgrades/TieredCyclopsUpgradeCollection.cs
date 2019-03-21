@@ -28,7 +28,8 @@
         /// </value>
         public T HighestValue { get; private set; }
         public readonly T DefaultValue;
-        private bool finished = true;
+        private bool cleared = false;
+        private bool finished = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TieredCyclopsUpgradeCollection{T}"/> class with the default tier value.
@@ -55,12 +56,15 @@
 
         internal override void UpgradesCleared(SubRoot cyclops)
         {
-            if (!finished)
+            if (cleared)
                 return;
 
+            cleared = true;
             finished = false;
+
             this.HighestValue = DefaultValue;
-            OnClearUpgrades?.Invoke(cyclops);
+
+            base.UpgradesCleared(cyclops);
         }
 
         internal void TierCounted(T countedValue)
@@ -82,6 +86,7 @@
 
             OnFinishedUpgrades?.Invoke(cyclops);
             finished = true;
+            cleared = false;
         }
 
         internal override void RegisterSelf(IDictionary<TechType, CyclopsUpgrade> dictionary)
