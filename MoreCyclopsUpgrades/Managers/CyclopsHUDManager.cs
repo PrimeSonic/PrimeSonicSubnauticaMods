@@ -258,7 +258,7 @@
             text.font = arial;
             text.material = arial.material;
             text.text = "??";
-            text.fontSize = 23;
+            text.fontSize = 22;
             text.alignment = TextAnchor.LowerCenter;
             text.color = Color.white;
 
@@ -306,7 +306,7 @@
 
                 hpIcon.Icon.sprite = helmIcon.Icon.sprite = SpriteManager.Get(icon.TechType);
                 hpIcon.Enabled = helmIcon.Enabled = true;
-                hpIcon.Text.text = helmIcon.Text.text = $"{Mathf.FloorToInt(icon.Value)}{icon.Format}";
+                hpIcon.Text.text = helmIcon.Text.text = $"{Mathf.FloorToInt(icon.Value)} {icon.Format}";
             }
         }
     }

@@ -60,56 +60,86 @@
 
             this.Manager = manager;
 
-            RegisterUpgrades();
+            SetupPowerManagerUpgrades();
+
+            RegisterUpgradeHandlers();
 
             SyncUpgradeConsoles();
 
             return true;
         }
 
-        private void RegisterUpgrades()
+        private void SetupPowerManagerUpgrades()
         {
             PowerManager powerManager = this.Manager.PowerManager;
 
-            var efficiencyUpgrades = new TieredUpgradeHandlerCollection<int>(0);
-            efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
-            efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
-            efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
-            efficiencyUpgrades.RegisterSelf(KnownsUpgradeModules);
-
-            powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
-
-            var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
+            ExternalUpgradeHandlerCreator += () =>
             {
-                MaxCount = 6,
+                var efficiencyUpgrades = new TieredUpgradeHandlerCollection<int>(0);
+                efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
+                efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
+                efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
+
+                powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
+                return efficiencyUpgrades;
             };
-            speed.RegisterSelf(KnownsUpgradeModules);
-            powerManager.SpeedBoosters = speed;
 
-            var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID);
-            solarMk1.RegisterSelf(KnownsUpgradeModules);
-            powerManager.SolarCharger = solarMk1;
+            ExternalUpgradeHandlerCreator += () =>
+            {
+                var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
+                {
+                    MaxCount = 6,
+                };
+                powerManager.SpeedBoosters = speed;
+                return speed;
+            };
 
-            var solarMk2 = new BatteryCyclopsUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true);
-            solarMk2.RegisterSelf(KnownsUpgradeModules);
-            powerManager.SolarChargerMk2 = solarMk2;
+            ExternalUpgradeHandlerCreator += () =>
+            {
+                var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID);
+                powerManager.SolarCharger = solarMk1;
+                return solarMk1;
+            };
 
-            var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule);
-            thermalMk1.RegisterSelf(KnownsUpgradeModules);
-            powerManager.ThermalCharger = thermalMk1;
+            ExternalUpgradeHandlerCreator += () =>
+            {
+                var solarMk2 = new BatteryCyclopsUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true);
+                powerManager.SolarChargerMk2 = solarMk2;
+                return solarMk2;
+            };
 
-            var thermalMk2 = new BatteryCyclopsUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true);
-            thermalMk2.RegisterSelf(KnownsUpgradeModules);
-            powerManager.ThermalChargerMk2 = thermalMk2;
+            ExternalUpgradeHandlerCreator += () =>
+            {
+                var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule);
+                powerManager.ThermalCharger = thermalMk1;
+                return thermalMk1;
+            };
 
-            var nuclear = new NuclearUpgradeHandler();
-            nuclear.RegisterSelf(KnownsUpgradeModules);
-            powerManager.NuclearCharger = nuclear;
+            ExternalUpgradeHandlerCreator += () =>
+            {
+                var thermalMk2 = new BatteryCyclopsUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true);
+                powerManager.ThermalChargerMk2 = thermalMk2;
+                return thermalMk2;
+            };
 
-            var bioBoost = new BioBoosterUpgradeHandler();
-            bioBoost.RegisterSelf(KnownsUpgradeModules);
-            powerManager.BioBoosters = bioBoost;
+            ExternalUpgradeHandlerCreator += () =>
+            {
+                var nuclear = new NuclearUpgradeHandler();
+                powerManager.NuclearCharger = nuclear;
+                return nuclear;
+            };
 
+            ExternalUpgradeHandlerCreator += () =>
+            {
+                var bioBoost = new BioBoosterUpgradeHandler();
+                powerManager.BioBoosters = bioBoost;
+                return bioBoost;
+            };
+        }
+
+
+        private void RegisterUpgradeHandlers()
+        {
             // Register upgrades from other mods
             foreach (Delegate externalMethod in ExternalUpgradeHandlerCreator.GetInvocationList())
             {
