@@ -1,8 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System;
-    using System.IO;
-    using System.Reflection;
     using Buildables;
     using Caching;
     using Common;
@@ -11,6 +8,9 @@
     using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Managers;
     using SaveData;
+    using System;
+    using System.IO;
+    using System.Reflection;
 
     public class QPatch
     {
@@ -21,7 +21,7 @@
 #endif
 
 #if DEBUG
-                QuickLogger.DebugLogsEnabled = true;
+            QuickLogger.DebugLogsEnabled = true;
 #endif
 
             try
@@ -87,52 +87,67 @@
 
             var cyBioEnergy = new CyBioReactor();
 
-            cyBioEnergy.Patch(modConfig.EnableBioEnergy);                
+            cyBioEnergy.Patch(modConfig.EnableBioEnergy);
         }
 
         private static void RegisterExternalUpgrades()
         {
-            UpgradeManager.PreRegisterCyclopsUpgrade(new CrushDepthUpgrades());
+            UpgradeManager.ExternalUpgradeHandlerCreator += () => { return new CrushDepthUpgradesHandler(); };
 
-            UpgradeManager.PreRegisterCyclopsUpgrade(new CyclopsUpgrade(TechType.CyclopsShieldModule)
+            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
             {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.shieldUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
-            });
-
-            UpgradeManager.PreRegisterCyclopsUpgrade(new CyclopsUpgrade(TechType.CyclopsSonarModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.sonarUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
-            });
-
-            UpgradeManager.PreRegisterCyclopsUpgrade(new CyclopsUpgrade(TechType.CyclopsSeamothRepairModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
-            });
-
-            UpgradeManager.PreRegisterCyclopsUpgrade(new CyclopsUpgrade(TechType.CyclopsDecoyModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
-            });
-
-            UpgradeManager.PreRegisterCyclopsUpgrade(new CyclopsUpgrade(TechType.CyclopsFireSuppressionModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) =>
+                return new UpgradeHandler(TechType.CyclopsShieldModule)
                 {
-                    CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                    if (fss != null)
-                        fss.fireSuppressionSystem.SetActive(false);
-                },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
+                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.shieldUpgrade = false; },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
+                };
+            };
+
+            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            {
+                return new UpgradeHandler(TechType.CyclopsSonarModule)
                 {
-                    CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                    if (fss != null)
-                        fss.fireSuppressionSystem.SetActive(true);
-                },
-            });
+                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.sonarUpgrade = false; },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
+                };
+            };
+
+            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            {
+                return new UpgradeHandler(TechType.CyclopsSeamothRepairModule)
+                {
+                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = false; },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
+                };
+            };
+
+            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            {
+                return new UpgradeHandler(TechType.CyclopsDecoyModule)
+                {
+                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
+                };
+            };
+
+            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            {
+                return new UpgradeHandler(TechType.CyclopsFireSuppressionModule)
+                {
+                    OnClearUpgrades = (SubRoot cyclops) =>
+                    {
+                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
+                        if (fss != null)
+                            fss.fireSuppressionSystem.SetActive(false);
+                    },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
+                    {
+                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
+                        if (fss != null)
+                            fss.fireSuppressionSystem.SetActive(true);
+                    },
+                };
+            };
         }
     }
 }

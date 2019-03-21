@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    internal class BatteryCyclopsUpgrade : ChargingCyclopsUpgrade
+    internal class BatteryCyclopsUpgradeHandler : ChargingUpgradeHandler
     {
         public delegate void BatteryDrainedEvent(BatteryDetails details);
         public BatteryDrainedEvent OnBatteryDrained;
@@ -19,7 +19,7 @@
 
         internal bool BatteryHasCharge => this.Count > 0 && this.TotalBatteryCharge > MinimalPowerValue;
 
-        public BatteryCyclopsUpgrade(TechType techType, bool canRecharge) : base(techType)
+        public BatteryCyclopsUpgradeHandler(TechType techType, bool canRecharge) : base(techType)
         {
             BatteryRecharges = canRecharge;
             OnClearUpgrades += (SubRoot cyclops) =>

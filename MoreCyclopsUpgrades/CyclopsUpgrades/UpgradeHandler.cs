@@ -4,13 +4,14 @@
     using System;
     using System.Collections.Generic;
 
+    public delegate UpgradeHandler UpgradeHandlerCreateEvent();
     public delegate void UpgradeEvent(SubRoot cyclops);
     public delegate void UpgradeEventSlotBound(SubRoot cyclops, Equipment modules, string slot);
 
     /// <summary>
     /// Represents all the behaviors for a cyclops upgrade module at the time of the module being installed and counted.
     /// </summary>
-    public class CyclopsUpgrade
+    public class UpgradeHandler
     {
         /// <summary>
         /// The TechType that identifies this type of upgrade module.
@@ -29,7 +30,11 @@
         /// <value>
         /// The total number of upgrade modules of this <see cref="techType"/> found.
         /// </value>
-        public int Count => Math.Min(this.MaxCount, count);
+        public int Count
+        {
+            get => Math.Min(this.MaxCount, count);
+            internal set => count = value;
+        }
 
         /// <summary>
         /// Gets or sets the maximum number of copies of the upgrade module allowed.
@@ -80,10 +85,10 @@
         public Action OnFirstTimeMaxCountReached;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CyclopsUpgrade"/> class.
+        /// Initializes a new instance of the <see cref="UpgradeHandler"/> class.
         /// </summary>
         /// <param name="techType">The TechType of the upgrade module.</param>
-        public CyclopsUpgrade(TechType techType)
+        public UpgradeHandler(TechType techType)
         {
             this.techType = techType;
         }
@@ -123,7 +128,7 @@
             }
         }
 
-        internal virtual void RegisterSelf(IDictionary<TechType, CyclopsUpgrade> dictionary)
+        internal virtual void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)
         {
             QuickLogger.Debug($"{techType} upgrade registered");
             dictionary.Add(techType, this);

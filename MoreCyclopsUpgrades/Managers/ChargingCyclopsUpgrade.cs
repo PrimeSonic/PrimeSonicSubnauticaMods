@@ -2,11 +2,11 @@
 {
     using UnityEngine;
 
-    internal class ChargingCyclopsUpgrade : CyclopsUpgrade
+    internal class ChargingUpgradeHandler : UpgradeHandler
     {
         public const float MinimalPowerValue = 0.001f;
 
-        public ChargingCyclopsUpgrade(TechType techType) : base(techType)
+        public ChargingUpgradeHandler(TechType techType) : base(techType)
         {
             IsPowerProducer = true;
         }

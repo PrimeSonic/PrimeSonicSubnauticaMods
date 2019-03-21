@@ -65,20 +65,19 @@
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\BioEnergyCollection.cs" />
-    <Compile Include="CyclopsUpgrades\BatteryCyclopsUpgrade.cs" />
+    <Compile Include="CyclopsUpgrades\BatteryCyclopsUpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
-    <Compile Include="CyclopsUpgrades\BioBoosterUpgrade.cs" />
-    <Compile Include="CyclopsUpgrades\CrushDepthUpgrades.cs" />
-    <Compile Include="CyclopsUpgrades\DepthCyclopsUpgrade.cs" />
-    <Compile Include="CyclopsUpgrades\NuclearChargingModule.cs" />
-    <Compile Include="CyclopsUpgrades\TieredCyclopsUpgrade.cs" />
-    <Compile Include="CyclopsUpgrades\TieredCyclopsUpgradeCollection.cs" />
+    <Compile Include="CyclopsUpgrades\BioBoosterUpgradeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\CrushDepthUpgradesHandler.cs" />
+    <Compile Include="CyclopsUpgrades\NuclearUpgradeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\TieredUpgradeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\TieredUpgradeHandlerCollection.cs" />
+    <Compile Include="CyclopsUpgrades\UpgradeHandler.cs" />
     <Compile Include="Managers\ChargingCyclopsUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
     <Compile Include="Managers\PowerIconState.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsUpgrade.cs" />
     <Compile Include="Modules\Enhancement\BioReactorBooster.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Caching\BioEnergy.cs" />
@@ -101,7 +100,6 @@
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
-    <Compile Include="SlotHelper.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />
     <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
@@ -109,6 +107,7 @@
     <Compile Include="Patchers\CyclopsHelmHUDManager_Update_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
+    <Compile Include="SlotHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AuxCyUpgradeConsole.png">

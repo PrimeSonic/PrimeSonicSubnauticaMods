@@ -66,14 +66,14 @@
         internal bool HasBioReactors => this.CyBioReactors.Count > 0;
         internal PowerIconState PowerIcons { get; } = new PowerIconState();
 
-        internal CyclopsUpgrade SpeedBoosters { get; set; }
-        internal ChargingCyclopsUpgrade SolarCharger { get; set; }
-        internal ChargingCyclopsUpgrade ThermalCharger { get; set; }
-        internal BatteryCyclopsUpgrade SolarChargerMk2 { get; set; }
-        internal BatteryCyclopsUpgrade ThermalChargerMk2 { get; set; }
-        internal BatteryCyclopsUpgrade NuclearCharger { get; set; }
-        internal TieredCyclopsUpgradeCollection<int> EngineEfficientyUpgrades { get; set; }
-        internal BioBoosterUpgrade BioBoosters { get; set; }
+        internal UpgradeHandler SpeedBoosters { get; set; }
+        internal ChargingUpgradeHandler SolarCharger { get; set; }
+        internal ChargingUpgradeHandler ThermalCharger { get; set; }
+        internal BatteryCyclopsUpgradeHandler SolarChargerMk2 { get; set; }
+        internal BatteryCyclopsUpgradeHandler ThermalChargerMk2 { get; set; }
+        internal BatteryCyclopsUpgradeHandler NuclearCharger { get; set; }
+        internal TieredUpgradeHandlerCollection<int> EngineEfficientyUpgrades { get; set; }
+        internal BioBoosterUpgradeHandler BioBoosters { get; set; }
 
         public CyclopsManager Manager { get; private set; }
 

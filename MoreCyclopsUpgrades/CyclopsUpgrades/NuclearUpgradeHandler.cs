@@ -3,9 +3,9 @@
     using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
-    internal class NuclearChargingModule : BatteryCyclopsUpgrade
+    internal class NuclearUpgradeHandler : BatteryCyclopsUpgradeHandler
     {
-        public NuclearChargingModule() : base(CyclopsModule.NuclearChargerID, canRecharge: false)
+        public NuclearUpgradeHandler() : base(CyclopsModule.NuclearChargerID, canRecharge: false)
         {
             OnBatteryDrained += (BatteryDetails details) =>
             {

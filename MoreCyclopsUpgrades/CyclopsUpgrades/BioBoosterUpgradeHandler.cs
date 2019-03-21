@@ -5,9 +5,9 @@
     using MoreCyclopsUpgrades.Monobehaviors;
     using System.Collections.Generic;
 
-    internal class BioBoosterUpgrade : CyclopsUpgrade
+    internal class BioBoosterUpgradeHandler : UpgradeHandler
     {
-        public BioBoosterUpgrade() : base(CyclopsModule.BioReactorBoosterID)
+        public BioBoosterUpgradeHandler() : base(CyclopsModule.BioReactorBoosterID)
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
 

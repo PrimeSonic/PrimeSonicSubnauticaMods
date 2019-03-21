@@ -4,6 +4,7 @@
     using Modules;
     using Monobehaviors;
     using MoreCyclopsUpgrades.CyclopsUpgrades;
+    using System;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -12,17 +13,7 @@
     /// </summary>
     public class UpgradeManager
     {
-        private static readonly List<CyclopsUpgrade> UpgradesToRegister = new List<CyclopsUpgrade>();
-
-        /// <summary>
-        /// Pre-Registered a new cyclops upgrade.
-        /// </summary>
-        /// <typeparam name="T">The <see cref="CyclopsUpgrade"/> type.</typeparam>
-        /// <param name="upgrade">The cyclops upgrade instance.</param>
-        public static void PreRegisterCyclopsUpgrade<T>(T upgrade) where T : CyclopsUpgrade
-        {
-            UpgradesToRegister.Add(upgrade);
-        }
+        public static UpgradeHandlerCreateEvent ExternalUpgradeHandlerCreator;
 
         private class UpgradeSlot
         {
@@ -60,7 +51,7 @@
 
         internal List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
 
-        private readonly Dictionary<TechType, CyclopsUpgrade> KnownsUpgradeModules = new Dictionary<TechType, CyclopsUpgrade>();
+        private readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
 
         internal bool Initialize(CyclopsManager manager)
         {
@@ -80,7 +71,7 @@
         {
             PowerManager powerManager = this.Manager.PowerManager;
 
-            var efficiencyUpgrades = new TieredCyclopsUpgradeCollection<int>(0);
+            var efficiencyUpgrades = new TieredUpgradeHandlerCollection<int>(0);
             efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
             efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
             efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
@@ -88,41 +79,45 @@
 
             powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
 
-            var speed = new CyclopsUpgrade(CyclopsModule.SpeedBoosterModuleID)
+            var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
             {
                 MaxCount = 6,
             };
             speed.RegisterSelf(KnownsUpgradeModules);
             powerManager.SpeedBoosters = speed;
 
-            var solarMk1 = new ChargingCyclopsUpgrade(CyclopsModule.SolarChargerID);
+            var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID);
             solarMk1.RegisterSelf(KnownsUpgradeModules);
             powerManager.SolarCharger = solarMk1;
 
-            var solarMk2 = new BatteryCyclopsUpgrade(CyclopsModule.SolarChargerMk2ID, canRecharge: true);
+            var solarMk2 = new BatteryCyclopsUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true);
             solarMk2.RegisterSelf(KnownsUpgradeModules);
             powerManager.SolarChargerMk2 = solarMk2;
 
-            var thermalMk1 = new ChargingCyclopsUpgrade(TechType.CyclopsThermalReactorModule);
+            var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule);
             thermalMk1.RegisterSelf(KnownsUpgradeModules);
             powerManager.ThermalCharger = thermalMk1;
 
-            var thermalMk2 = new BatteryCyclopsUpgrade(CyclopsModule.ThermalChargerMk2ID, canRecharge: true);
+            var thermalMk2 = new BatteryCyclopsUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true);
             thermalMk2.RegisterSelf(KnownsUpgradeModules);
             powerManager.ThermalChargerMk2 = thermalMk2;
 
-            var nuclear = new NuclearChargingModule();
+            var nuclear = new NuclearUpgradeHandler();
             nuclear.RegisterSelf(KnownsUpgradeModules);
             powerManager.NuclearCharger = nuclear;
 
-            var bioBoost = new BioBoosterUpgrade();
+            var bioBoost = new BioBoosterUpgradeHandler();
             bioBoost.RegisterSelf(KnownsUpgradeModules);
             powerManager.BioBoosters = bioBoost;
 
             // Register upgrades from other mods
-            foreach (CyclopsUpgrade externalUpgrade in UpgradesToRegister)
+            foreach (Delegate externalMethod in ExternalUpgradeHandlerCreator.GetInvocationList())
             {
-                externalUpgrade.RegisterSelf(KnownsUpgradeModules);
+                if (externalMethod is UpgradeHandlerCreateEvent upgradeHandlerCreator)
+                {
+                    UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
+                    upgrade.RegisterSelf(KnownsUpgradeModules);
+                }
             }
         }
 
@@ -165,7 +160,7 @@
                 return;
             }
 
-            foreach (CyclopsUpgrade upgradeType in KnownsUpgradeModules.Values)
+            foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
                 upgradeType.UpgradesCleared(this.Cyclops);
 
             this.HasChargingModules = false;
@@ -184,7 +179,7 @@
 
                 foundUpgrades.Add(techTypeInSlot);
 
-                if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out CyclopsUpgrade upgrade))
+                if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler upgrade))
                 {
                     upgrade.UpgradeCounted(this.Cyclops, modules, slot);
 
@@ -198,7 +193,7 @@
                 this.Cyclops.slotModSFX?.Play();
                 this.Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
 
-                foreach (CyclopsUpgrade upgradeType in KnownsUpgradeModules.Values)
+                foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
                     upgradeType.UpgradesFinished(this.Cyclops);
             }
         }
