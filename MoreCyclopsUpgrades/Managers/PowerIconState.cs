@@ -7,11 +7,12 @@
     {
         internal struct PowerIcon
         {
-            public TechType TechType;
+            public readonly TechType TechType;
             public float Value;
-            public char Format;
+            public float MaxValue;
+            public readonly NumberFormat Format;
 
-            public PowerIcon(TechType techType, char format) : this()
+            public PowerIcon(TechType techType, NumberFormat format) : this()
             {
                 TechType = techType;
                 Format = format;
@@ -20,12 +21,12 @@
 
         internal bool EvenCount { get; private set; } = true;
 
-        private PowerIcon nuclearIcon = new PowerIcon(CyclopsModule.NuclearChargerID, 'B');
-        private PowerIcon bioIcon = new PowerIcon(CyclopsModule.BioReactorBoosterID, 'B');
-        private PowerIcon solarIcon = new PowerIcon(CyclopsModule.SolarChargerID, 'S');
-        private PowerIcon solar2Icon = new PowerIcon(CyclopsModule.SolarChargerMk2ID, 'B');
-        private PowerIcon thermalIcon = new PowerIcon(TechType.CyclopsThermalReactorModule, 'C');
-        private PowerIcon thermal2Icon = new PowerIcon(CyclopsModule.ThermalChargerMk2ID, 'B');
+        private PowerIcon nuclearIcon = new PowerIcon(CyclopsModule.NuclearChargerID, NumberFormat.EnergyAmount) { MaxValue = 6000f };
+        private PowerIcon bioIcon = new PowerIcon(CyclopsModule.BioReactorBoosterID, NumberFormat.EnergyAmount) { MaxValue = 200f };
+        private PowerIcon solarIcon = new PowerIcon(CyclopsModule.SolarChargerID, NumberFormat.Sun) { MaxValue = 90f };
+        private PowerIcon solar2Icon = new PowerIcon(CyclopsModule.SolarChargerMk2ID, NumberFormat.EnergyAmount) { MaxValue = 100f };
+        private PowerIcon thermalIcon = new PowerIcon(TechType.CyclopsThermalReactorModule, NumberFormat.Temperature) { MaxValue = 90f };
+        private PowerIcon thermal2Icon = new PowerIcon(CyclopsModule.ThermalChargerMk2ID, NumberFormat.EnergyAmount) { MaxValue = 100f };
 
         private bool solar = false;
         private bool solarBattery = false;
@@ -83,6 +84,12 @@
             set => solar2Icon.Value = value;
         }
 
+        internal float SolarBatteryCapacity
+        {
+            get => solar2Icon.MaxValue;
+            set => solar2Icon.MaxValue = value;
+        }
+
         internal float ThermalStatus
         {
             get => thermalIcon.Value;
@@ -107,6 +114,12 @@
             set => thermal2Icon.Value = value;
         }
 
+        internal float ThermalBatteryCapacity
+        {
+            get => thermal2Icon.MaxValue;
+            set => thermal2Icon.MaxValue = value;
+        }
+
         internal bool Bio
         {
             get => bio;
@@ -119,6 +132,12 @@
             set => bioIcon.Value = value;
         }
 
+        internal float BioCapacity
+        {
+            get => bioIcon.MaxValue;
+            set => bioIcon.MaxValue = value;
+        }
+
         internal bool Nuclear
         {
             get => nuclear;
@@ -129,6 +148,12 @@
         {
             get => nuclearIcon.Value;
             set => nuclearIcon.Value = value;
+        }
+
+        internal float NuclearCapacity
+        {
+            get => nuclearIcon.MaxValue;
+            set => nuclearIcon.MaxValue = value;
         }
 
         private bool UpdateIconCount(bool newValue, bool originalValue)

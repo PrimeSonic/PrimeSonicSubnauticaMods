@@ -92,45 +92,45 @@
 
         private static void RegisterExternalUpgrades()
         {
-            UpgradeManager.ExternalUpgradeHandlerCreator += () => { return new CrushDepthUpgradesHandler(); };
+            UpgradeManager.RegisterReusableHandlerCreator(() => { return new CrushDepthUpgradesHandler(); });
 
-            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
             {
                 return new UpgradeHandler(TechType.CyclopsShieldModule)
                 {
                     OnClearUpgrades = (SubRoot cyclops) => { cyclops.shieldUpgrade = false; },
                     OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
                 };
-            };
+            });
 
-            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
             {
                 return new UpgradeHandler(TechType.CyclopsSonarModule)
                 {
                     OnClearUpgrades = (SubRoot cyclops) => { cyclops.sonarUpgrade = false; },
                     OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
                 };
-            };
+            });
 
-            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
             {
                 return new UpgradeHandler(TechType.CyclopsSeamothRepairModule)
                 {
                     OnClearUpgrades = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = false; },
                     OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
                 };
-            };
+            });
 
-            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
             {
                 return new UpgradeHandler(TechType.CyclopsDecoyModule)
                 {
                     OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
                     OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
                 };
-            };
+            });
 
-            UpgradeManager.ExternalUpgradeHandlerCreator += () =>
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
             {
                 return new UpgradeHandler(TechType.CyclopsFireSuppressionModule)
                 {
@@ -147,7 +147,7 @@
                             fss.fireSuppressionSystem.SetActive(true);
                     },
                 };
-            };
+            });
         }
     }
 }

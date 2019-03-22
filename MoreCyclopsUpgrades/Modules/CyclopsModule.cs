@@ -171,10 +171,5 @@
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
         }
-
-        private void RegisterUpgrades()
-        {
-            
-        }
     }
 }

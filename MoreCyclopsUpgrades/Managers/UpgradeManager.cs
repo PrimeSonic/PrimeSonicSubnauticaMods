@@ -13,7 +13,32 @@
     /// </summary>
     public class UpgradeManager
     {
-        public static UpgradeHandlerCreateEvent ExternalUpgradeHandlerCreator;
+        private static readonly ICollection<HandlerCreator> ReusableUpgradeHandlers = new List<HandlerCreator>();
+        private static readonly ICollection<HandlerCreator> OneTimeUseUpgradeHandlers = new List<HandlerCreator>();
+
+        /// <summary>
+        /// <para>This event happens whenever a new UpgradeManager is initialized, before <see cref="HandlerCreator"/>s are registered.</para>
+        /// <para>Use this if you need a way to know when you should call <see cref="RegisterOneTimeUseHandlerCreator"/> for <see cref="HandlerCreator"/>s that cannot be created from a static context.</para>
+        /// </summary>
+        public static Action UpgradeManagerInitializing;
+
+        /// <summary>
+        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
+        /// </summary>
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
+        public static void RegisterOneTimeUseHandlerCreator(HandlerCreator createEvent)
+        {
+            OneTimeUseUpgradeHandlers.Add(createEvent);
+        }
+
+        /// <summary>
+        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand that can be reused for each new Cyclops.
+        /// </summary>
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
+        public static void RegisterReusableHandlerCreator(HandlerCreator createEvent)
+        {
+            ReusableUpgradeHandlers.Add(createEvent);
+        }
 
         private class UpgradeSlot
         {
@@ -62,6 +87,8 @@
 
             SetupPowerManagerUpgrades();
 
+            UpgradeManagerInitializing?.Invoke();
+
             RegisterUpgradeHandlers();
 
             SyncUpgradeConsoles();
@@ -73,18 +100,18 @@
         {
             PowerManager powerManager = this.Manager.PowerManager;
 
-            ExternalUpgradeHandlerCreator += () =>
+            RegisterOneTimeUseHandlerCreator(() =>
             {
-                var efficiencyUpgrades = new TieredUpgradeHandlerCollection<int>(0);
+                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0);
                 efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
                 efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
                 efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
 
                 powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
                 return efficiencyUpgrades;
-            };
+            });
 
-            ExternalUpgradeHandlerCreator += () =>
+            RegisterOneTimeUseHandlerCreator(() =>
             {
                 var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
                 {
@@ -92,63 +119,70 @@
                 };
                 powerManager.SpeedBoosters = speed;
                 return speed;
-            };
+            });
 
-            ExternalUpgradeHandlerCreator += () =>
+            RegisterOneTimeUseHandlerCreator(() =>
             {
                 var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID);
                 powerManager.SolarCharger = solarMk1;
                 return solarMk1;
-            };
+            });
 
-            ExternalUpgradeHandlerCreator += () =>
+            RegisterOneTimeUseHandlerCreator(() =>
             {
-                var solarMk2 = new BatteryCyclopsUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true);
+                var solarMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true);
                 powerManager.SolarChargerMk2 = solarMk2;
                 return solarMk2;
-            };
+            });
 
-            ExternalUpgradeHandlerCreator += () =>
+            RegisterOneTimeUseHandlerCreator(() =>
             {
                 var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule);
                 powerManager.ThermalCharger = thermalMk1;
                 return thermalMk1;
-            };
+            });
 
-            ExternalUpgradeHandlerCreator += () =>
+            RegisterOneTimeUseHandlerCreator(() =>
             {
-                var thermalMk2 = new BatteryCyclopsUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true);
+                var thermalMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true);
                 powerManager.ThermalChargerMk2 = thermalMk2;
                 return thermalMk2;
-            };
+            });
 
-            ExternalUpgradeHandlerCreator += () =>
+            RegisterOneTimeUseHandlerCreator(() =>
             {
                 var nuclear = new NuclearUpgradeHandler();
                 powerManager.NuclearCharger = nuclear;
                 return nuclear;
-            };
+            });
 
-            ExternalUpgradeHandlerCreator += () =>
+            RegisterOneTimeUseHandlerCreator(() =>
             {
                 var bioBoost = new BioBoosterUpgradeHandler();
                 powerManager.BioBoosters = bioBoost;
                 return bioBoost;
-            };
+            });
         }
-
 
         private void RegisterUpgradeHandlers()
         {
             // Register upgrades from other mods
-            foreach (Delegate externalMethod in ExternalUpgradeHandlerCreator.GetInvocationList())
+            foreach (Delegate externalMethod in ReusableUpgradeHandlers)
             {
-                if (externalMethod is UpgradeHandlerCreateEvent upgradeHandlerCreator)
+                if (externalMethod is HandlerCreator upgradeHandlerCreator)
                 {
                     UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
                     upgrade.RegisterSelf(KnownsUpgradeModules);
                 }
             }
+
+            foreach (HandlerCreator upgradeHandlerCreator in OneTimeUseUpgradeHandlers)
+            {
+                UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
+                upgrade.RegisterSelf(KnownsUpgradeModules);
+            }
+
+            OneTimeUseUpgradeHandlers.Clear();
         }
 
         internal void SyncUpgradeConsoles()

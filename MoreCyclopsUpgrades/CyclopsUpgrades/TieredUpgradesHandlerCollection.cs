@@ -10,7 +10,7 @@
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <seealso cref="UpgradeHandler" />
-    public class TieredUpgradeHandlerCollection<T> : UpgradeHandler where T : IComparable<T>
+    public class TieredUpgradesHandlerCollection<T> : UpgradeHandler where T : IComparable<T>
     {
         /// <summary>
         /// Gets the collection.
@@ -32,10 +32,10 @@
         private bool finished = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TieredUpgradeHandlerCollection{T}"/> class with the default tier value.
+        /// Initializes a new instance of the <see cref="TieredUpgradesHandlerCollection{T}"/> class with the default tier value.
         /// </summary>
         /// <param name="defaultValue">The default value to use when upgrades are cleared.</param>
-        public TieredUpgradeHandlerCollection(T defaultValue) : base(TechType.None)
+        public TieredUpgradesHandlerCollection(T defaultValue) : base(TechType.None)
         {
             DefaultValue = defaultValue;
         }

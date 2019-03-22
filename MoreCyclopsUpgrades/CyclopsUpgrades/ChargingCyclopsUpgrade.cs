@@ -1,11 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
+    using Managers;
     using UnityEngine;
 
     internal class ChargingUpgradeHandler : UpgradeHandler
     {
-        public const float MinimalPowerValue = 0.001f;
-
         public ChargingUpgradeHandler(TechType techType) : base(techType)
         {
             IsPowerProducer = true;
@@ -16,10 +15,10 @@
             if (this.Count == 0)
                 return 0f;
 
-            if (powerDeficit < MinimalPowerValue)
+            if (powerDeficit < PowerManager.MinimalPowerValue)
                 return availablePower; // Surplus power
 
-            if (availablePower < MinimalPowerValue)
+            if (availablePower < PowerManager.MinimalPowerValue)
                 return 0f;
 
             availablePower *= this.Count;

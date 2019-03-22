@@ -1,14 +1,13 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
+    using Managers;
     using System.Collections.Generic;
     using UnityEngine;
 
-    internal class BatteryCyclopsUpgradeHandler : ChargingUpgradeHandler
+    internal class BatteryUpgradeHandler : ChargingUpgradeHandler
     {
         public delegate void BatteryDrainedEvent(BatteryDetails details);
         public BatteryDrainedEvent OnBatteryDrained;
-
-        internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
         internal IList<BatteryDetails> Batteries { get; } = new List<BatteryDetails>();
 
@@ -17,9 +16,9 @@
         public float TotalBatteryCharge { get; protected set; } = 0f;
         public float TotalBatteryCapacity { get; protected set; } = 0f;
 
-        internal bool BatteryHasCharge => this.Count > 0 && this.TotalBatteryCharge > MinimalPowerValue;
+        internal bool BatteryHasCharge => this.Count > 0 && this.TotalBatteryCharge > PowerManager.MinimalPowerValue;
 
-        public BatteryCyclopsUpgradeHandler(TechType techType, bool canRecharge) : base(techType)
+        public BatteryUpgradeHandler(TechType techType, bool canRecharge) : base(techType)
         {
             BatteryRecharges = canRecharge;
             OnClearUpgrades += (SubRoot cyclops) =>
@@ -33,6 +32,7 @@
             {
                 var details = new BatteryDetails(modules, slot, modules.GetItemInSlot(slot).item.GetComponent<Battery>());
                 this.Batteries.Add(details);
+                this.TotalBatteryCharge += details.BatteryRef._charge;
                 this.TotalBatteryCapacity += details.BatteryRef._capacity;
             };
         }
@@ -42,9 +42,9 @@
             if (this.Count == 0)
                 return 0f;
 
-            availablePower *= Mk2ChargeRateModifier;
+            availablePower *= PowerManager.Mk2ChargeRateModifier;
 
-            this.TotalBatteryCharge = 0f;
+            float totalCharge = 0f;
             foreach (BatteryDetails details in this.Batteries)
             {
                 cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
@@ -53,23 +53,24 @@
                 Battery battery = details.BatteryRef;
 
                 battery._charge = Mathf.Min(battery._capacity, battery._charge + availablePower);
-                this.TotalBatteryCharge += battery._charge;
+                totalCharge += battery._charge;
             }
 
+            this.TotalBatteryCharge = totalCharge;
             return Mathf.Max(0f, availablePower - powerDeficit); // Surplus power
         }
 
         public void ChargeCyclops(SubRoot cyclops, float drainingRate, ref float powerDeficit)
         {
-            if (powerDeficit < MinimalPowerValue) // No power deficit left to charge
+            if (powerDeficit < PowerManager.MinimalPowerValue) // No power deficit left to charge
                 return; // Exit
 
-            this.TotalBatteryCharge = 0f;
+            float totalCharge = 0f;
             foreach (BatteryDetails details in this.Batteries)
             {
                 Battery battery = details.BatteryRef;
 
-                if (battery._charge < MinimalPowerValue) // The battery has no charge left
+                if (battery._charge < PowerManager.MinimalPowerValue) // The battery has no charge left
                     continue; // Skip this battery
 
                 // Mathf.Min is to prevent accidentally taking too much power from the battery
@@ -87,11 +88,12 @@
                     OnBatteryDrained?.Invoke(details);
                 }
 
-                this.TotalBatteryCharge += battery._charge;
+                totalCharge += battery._charge;
                 powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
 
                 cyclops.powerRelay.AddEnergy(chargeAmt, out float amtStored);
             }
+            this.TotalBatteryCharge = totalCharge;
         }
 
         public void RechargeBatteries(ref float surplusPower)
@@ -108,7 +110,7 @@
                 if (batteryCharged)
                     continue;
 
-                if (surplusPower < MinimalPowerValue)
+                if (surplusPower < PowerManager.MinimalPowerValue)
                     continue;
 
                 if (details.IsFull)

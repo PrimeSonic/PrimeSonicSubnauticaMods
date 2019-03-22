@@ -4,8 +4,8 @@
 
     /// <summary>
     /// Represents a specialized type of upgrade module that is intended to be non-stacking, where only the best version applies.
-    /// This is always created through <see cref="TieredUpgradeHandlerCollection.CreateTier(TechType, T)"/> or 
-    /// <see cref="TieredUpgradeHandlerCollection.CreateTiers(IDictionary{TechType, T})"/>
+    /// This is always created through <see cref="TieredUpgradesHandlerCollection.CreateTier(TechType, T)"/> or 
+    /// <see cref="TieredUpgradesHandlerCollection.CreateTiers(IDictionary{TechType, T})"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <seealso cref="UpgradeHandler" />
@@ -20,12 +20,13 @@
         /// <summary>
         /// The parent collection. Create this first.
         /// </summary>
-        public readonly TieredUpgradeHandlerCollection<T> ParentCollection;
+        public readonly TieredUpgradesHandlerCollection<T> ParentCollection;
 
-        internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredUpgradeHandlerCollection<T> parentCollection) : base(techType)
+        internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredUpgradesHandlerCollection<T> parentCollection) : base(techType)
         {
             TieredValue = tieredValue;
             ParentCollection = parentCollection;
+            CheckCountOnFinished = false;
         }
 
         internal override void UpgradesCleared(SubRoot cyclops)

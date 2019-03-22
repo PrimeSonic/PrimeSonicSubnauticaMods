@@ -3,7 +3,7 @@
     using Common;
     using System.Collections.Generic;
 
-    internal class CrushDepthUpgradesHandler : TieredUpgradeHandlerCollection<float>
+    internal class CrushDepthUpgradesHandler : TieredUpgradesHandlerCollection<float>
     {
         private const float NoBonusCrushDepth = 0f;
 

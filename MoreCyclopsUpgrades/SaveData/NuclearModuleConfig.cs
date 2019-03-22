@@ -1,10 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.SaveData
 {
+    using MoreCyclopsUpgrades.Managers;
+    using SMLHelper.V2.Options;
     using System;
     using System.IO;
     using System.Text;
-    using MoreCyclopsUpgrades.Managers;
-    using SMLHelper.V2.Options;
     using UnityEngine;
 
     internal class NuclearModuleConfig : ModOptions
@@ -48,7 +48,10 @@
             UpdateRequiredDeficit();
         }
 
-        private static void UpdateRequiredDeficit() => RequiredEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * EmConfig.RequiredEnergyPercentage / 100f);
+        private static void UpdateRequiredDeficit()
+        {
+            RequiredEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * EmConfig.RequiredEnergyPercentage / 100f);
+        }
 
         public NuclearModuleConfig() : base("Cyclops Nuclear Module Options")
         {

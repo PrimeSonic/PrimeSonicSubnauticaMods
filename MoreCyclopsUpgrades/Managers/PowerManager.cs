@@ -9,12 +9,12 @@
 
     internal class PowerManager
     {
-        private const float MaxSolarDepth = 200f;
-        private const float SolarChargingFactor = 0.03f;
-        private const float ThermalChargingFactor = 1.5f;
-        private const float BatteryDrainRate = 0.01f;
-        private const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
-        private const float NuclearDrainRate = 0.15f;
+        internal const float MaxSolarDepth = 200f;
+        internal const float SolarChargingFactor = 0.03f;
+        internal const float ThermalChargingFactor = 1.5f;
+        internal const float BatteryDrainRate = 0.01f;
+        internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
+        internal const float NuclearDrainRate = 0.15f;
 
         private const float EnginePowerPenalty = 0.75f;
 
@@ -69,10 +69,10 @@
         internal UpgradeHandler SpeedBoosters { get; set; }
         internal ChargingUpgradeHandler SolarCharger { get; set; }
         internal ChargingUpgradeHandler ThermalCharger { get; set; }
-        internal BatteryCyclopsUpgradeHandler SolarChargerMk2 { get; set; }
-        internal BatteryCyclopsUpgradeHandler ThermalChargerMk2 { get; set; }
-        internal BatteryCyclopsUpgradeHandler NuclearCharger { get; set; }
-        internal TieredUpgradeHandlerCollection<int> EngineEfficientyUpgrades { get; set; }
+        internal BatteryUpgradeHandler SolarChargerMk2 { get; set; }
+        internal BatteryUpgradeHandler ThermalChargerMk2 { get; set; }
+        internal BatteryUpgradeHandler NuclearCharger { get; set; }
+        internal TieredUpgradesHandlerCollection<int> EngineEfficientyUpgrades { get; set; }
         internal BioBoosterUpgradeHandler BioBoosters { get; set; }
 
         public CyclopsManager Manager { get; private set; }
@@ -242,7 +242,6 @@
             float powerDeficit = this.Cyclops.powerRelay.GetMaxPower() - this.Cyclops.powerRelay.GetPower();
 
             float surplusPower = 0f;
-            Battery lastBatteryToCharge = null;
             bool renewablePowerAvailable = false;
 
             if (this.SolarCharger.HasUpgrade || this.SolarChargerMk2.HasUpgrade) // Handle solar power
@@ -268,6 +267,7 @@
 
                 this.PowerIcons.SolarBattery = usingSolarBatteryPower;
                 this.PowerIcons.SolarBatteryCharge = this.SolarChargerMk2.TotalBatteryCharge;
+                this.PowerIcons.SolarBatteryCapacity = this.SolarChargerMk2.TotalBatteryCapacity;
                 renewablePowerAvailable |= this.PowerIcons.Solar || this.PowerIcons.SolarBattery;
             }
             else
@@ -299,6 +299,7 @@
 
                 this.PowerIcons.ThermalBattery = usingThermalBatteryPower;
                 this.PowerIcons.ThermalBatteryCharge = this.ThermalChargerMk2.TotalBatteryCharge;
+                this.PowerIcons.ThermalBatteryCapacity = this.ThermalChargerMk2.TotalBatteryCapacity;
                 renewablePowerAvailable |= this.PowerIcons.Thermal || this.PowerIcons.ThermalBattery;
             }
             else
@@ -311,16 +312,19 @@
             {
                 bool hasBioPower = false;
                 float totalBioCharge = 0f;
+                float bioCapacity = 0f;
                 foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
                 {
                     hasBioPower |= reactor.HasPower;
                     reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);
                     totalBioCharge += reactor.Battery._charge;
+                    bioCapacity = reactor.Battery._capacity;
                 }
 
                 this.PowerIcons.Bio = hasBioPower;
                 renewablePowerAvailable |= hasBioPower;
                 this.PowerIcons.BioCharge = totalBioCharge;
+                this.PowerIcons.BioCapacity = bioCapacity * this.CyBioReactors.Count;
             }
             else
             {
@@ -339,21 +343,32 @@
                 !renewablePowerAvailable && // Only if there's no renewable power available        
                 !hasSurplusPower;
 
+            this.PowerIcons.NuclearCharge = this.NuclearCharger.TotalBatteryCharge;
+            this.PowerIcons.NuclearCapacity = this.NuclearCharger.TotalBatteryCapacity;
+
             if (this.PowerIcons.Nuclear && // Nuclear power enabled
                 !cyclopsDoneCharging && // Halt charging if Cyclops is on full charge                
                 powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit) // User config for threshold to start charging                
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
-                this.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);
-                this.PowerIcons.NuclearCharge = this.NuclearCharger.TotalBatteryCharge;
+                this.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);                
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
-            if (cyclopsDoneCharging && hasSurplusPower && lastBatteryToCharge != null)
+            if (cyclopsDoneCharging && hasSurplusPower)
             {
                 // Recycle surplus power back into the batteries that need it
-                this.SolarChargerMk2.RechargeBatteries(ref surplusPower);
-                this.ThermalChargerMk2.RechargeBatteries(ref surplusPower);
+
+                if (surplusPower % 2 != 0) // Let this be pseudo-random so we aren't always charging the same battery first each time
+                {
+                    this.SolarChargerMk2.RechargeBatteries(ref surplusPower);
+                    this.ThermalChargerMk2.RechargeBatteries(ref surplusPower);
+                }
+                else
+                {
+                    this.ThermalChargerMk2.RechargeBatteries(ref surplusPower);
+                    this.SolarChargerMk2.RechargeBatteries(ref surplusPower);
+                }
             }
         }
 
@@ -364,15 +379,9 @@
         internal int GetTotalReservePower()
         {
             float availableReservePower = 0f;
-
-            foreach (BatteryDetails details in this.SolarChargerMk2.Batteries)
-                availableReservePower += details.BatteryRef._charge;
-
-            foreach (BatteryDetails details in this.ThermalChargerMk2.Batteries)
-                availableReservePower += details.BatteryRef._charge;
-
-            foreach (BatteryDetails details in this.NuclearCharger.Batteries)
-                availableReservePower += details.BatteryRef._charge;
+            availableReservePower += this.SolarChargerMk2.TotalBatteryCharge;
+            availableReservePower += this.ThermalChargerMk2.TotalBatteryCharge;
+            availableReservePower += this.NuclearCharger.TotalBatteryCharge;
 
             foreach (CyBioReactorMono reactor in this.CyBioReactors)
                 availableReservePower += reactor.Battery._charge;

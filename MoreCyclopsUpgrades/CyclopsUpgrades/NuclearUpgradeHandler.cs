@@ -3,7 +3,7 @@
     using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
-    internal class NuclearUpgradeHandler : BatteryCyclopsUpgradeHandler
+    internal class NuclearUpgradeHandler : BatteryUpgradeHandler
     {
         public NuclearUpgradeHandler() : base(CyclopsModule.NuclearChargerID, canRecharge: false)
         {

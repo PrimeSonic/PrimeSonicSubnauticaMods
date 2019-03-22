@@ -4,7 +4,7 @@
     using System;
     using System.Collections.Generic;
 
-    public delegate UpgradeHandler UpgradeHandlerCreateEvent();
+    public delegate UpgradeHandler HandlerCreator();
     public delegate void UpgradeEvent(SubRoot cyclops);
     public delegate void UpgradeEventSlotBound(SubRoot cyclops, Equipment modules, string slot);
 
@@ -22,6 +22,20 @@
         private bool maxedOut = false;
 
         internal bool IsPowerProducer = false;
+
+        /// <summary>
+        /// Set this to <c>false</c> to ignore the value of <see cref="Count"/> when determining if <see cref="OnFinishedUpgrades"/> and <see cref="OnFirstTimeMaxCountReached"/>
+        /// should be executed when all upgrades have been counted.
+        /// </summary>
+        protected bool CheckCountOnFinished = true;
+
+        /// <summary>
+        /// Gets or sets the name of this upgrade handler used in logs.
+        /// </summary>
+        /// <value>
+        /// The name for this instance used for logging.
+        /// </value>
+        public string LoggingName { get; set; } = null;
 
         /// <summary>
         /// Gets the number of copies of this upgrade module type currently installed in the cyclops.
@@ -107,33 +121,37 @@
 
         internal virtual void UpgradesFinished(SubRoot cyclops)
         {
-            if (count == 0)
-                return;
+            if (CheckCountOnFinished)
+            {
+                if (count == 0)
+                    return;
 
-            if (count > this.MaxCount)
-                return;
+                if (count > this.MaxCount)
+                    return;
+            }
 
             OnFinishedUpgrades?.Invoke(cyclops);
 
-            if (!maxedOut) // If we haven't maxed out before, check this block
+            if (CheckCountOnFinished)
             {
-                maxedOut = count == this.MaxCount; // Are we maxed out now?
+                if (!maxedOut) // If we haven't maxed out before, check this block
+                {
+                    maxedOut = count == this.MaxCount; // Are we maxed out now?
 
-                if (maxedOut) // If we are, invoke the event
-                    OnFirstTimeMaxCountReached?.Invoke();
-            }
-            else // If we are in this block, that means we maxed out in a previous cycle
-            {
-                maxedOut = count == this.MaxCount; // Evaluate this again in case an upgrade was removed
+                    if (maxedOut) // If we are, invoke the event
+                        OnFirstTimeMaxCountReached?.Invoke();
+                }
+                else // If we are in this block, that means we maxed out in a previous cycle
+                {
+                    maxedOut = count == this.MaxCount; // Evaluate this again in case an upgrade was removed
+                }
             }
         }
 
         internal virtual void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)
         {
-            QuickLogger.Debug($"{techType} upgrade registered");
+            QuickLogger.Info($"{this.LoggingName ?? techType.AsString()} upgrade registered");
             dictionary.Add(techType, this);
         }
-
-
     }
 }
