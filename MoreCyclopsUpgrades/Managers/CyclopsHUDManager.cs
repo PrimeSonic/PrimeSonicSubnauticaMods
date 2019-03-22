@@ -246,14 +246,14 @@
 
         private static string HandleLargeNumbers(float possiblyLargeValue)
         {
-            if (possiblyLargeValue > 9999999)
+            if (possiblyLargeValue > 999999)
             {
-                return $"{possiblyLargeValue / 10000000:F1}M";
+                return $"{possiblyLargeValue / 1000000:F2}M";
             }
 
-            if (possiblyLargeValue > 9999)
+            if (possiblyLargeValue > 999)
             {
-                return $"{possiblyLargeValue / 10000:F1}K";
+                return $"{possiblyLargeValue / 1000:F2}K";
             }
 
             return $"{Mathf.CeilToInt(possiblyLargeValue)}";
