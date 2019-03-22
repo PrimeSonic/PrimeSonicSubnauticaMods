@@ -8,9 +8,9 @@
     internal enum NumberFormat : byte
     {
         Temperature = (byte)'T',
-        EnergyAmount = (byte)'A',
+        Amount = (byte)'A',
         Sun = (byte)'S',
-        EnergyPercent = (byte)'P',
+        Percent = (byte)'P',
     }
 
     internal class CyclopsHUDManager
@@ -104,11 +104,11 @@
             int normalMaxPower = Mathf.CeilToInt(this.Cyclops.powerRelay.GetMaxPower());
 
             hudManager.energyCur.color = currentReservePower > 0 ? Color.cyan : Color.white;
-            hudManager.energyCur.text = FormatNumber(TotalPowerUnits, NumberFormat.EnergyAmount);
+            hudManager.energyCur.text = FormatNumber(TotalPowerUnits, NumberFormat.Amount);
 
             if (hudManager.lastMaxSubPowerDisplayed != normalMaxPower)
             {
-                hudManager.energyMax.text = "/" + FormatNumber(normalMaxPower, NumberFormat.EnergyAmount);
+                hudManager.energyMax.text = "/" + FormatNumber(normalMaxPower, NumberFormat.Amount);
                 hudManager.lastMaxSubPowerDisplayed = normalMaxPower;
             }
 
@@ -223,7 +223,7 @@
                 hpIcon.Icon.sprite = helmIcon.Icon.sprite = SpriteManager.Get(icon.TechType);
                 hpIcon.Enabled = helmIcon.Enabled = true;
                 hpIcon.Text.text = helmIcon.Text.text = FormatNumber(icon.Value, icon.Format);
-                hpIcon.Text.color = helmIcon.Text.color = GetNumberColor(icon.Value, icon.MaxValue, icon.Format);
+                hpIcon.Text.color = helmIcon.Text.color = GetNumberColor(icon.Value, icon.MaxValue, icon.MinValue);
             }
         }
 
@@ -235,9 +235,9 @@
                     return $"{Mathf.CeilToInt(value)}°C";
                 case NumberFormat.Sun:
                     return $"{Mathf.CeilToInt(value)}°Θ";
-                case NumberFormat.EnergyAmount:
+                case NumberFormat.Amount:
                     return $"{HandleLargeNumbers(value)}";
-                case NumberFormat.EnergyPercent:
+                case NumberFormat.Percent:
                     return $"{Mathf.CeilToInt(value)}%";
                 default:
                     return Mathf.FloorToInt(value).ToString();
@@ -246,43 +246,34 @@
 
         private static string HandleLargeNumbers(float possiblyLargeValue)
         {
-            if (possiblyLargeValue > 999999)
+            if (possiblyLargeValue > 9999999)
             {
-                return $"{possiblyLargeValue / 1000000:F1}M";
+                return $"{possiblyLargeValue / 10000000:F1}M";
             }
 
-            if (possiblyLargeValue > 999)
+            if (possiblyLargeValue > 9999)
             {
-                return $"{possiblyLargeValue / 1000:F1}K";
+                return $"{possiblyLargeValue / 10000:F1}K";
             }
 
             return $"{Mathf.CeilToInt(possiblyLargeValue)}";
         }
 
-        private static Color GetNumberColor(float value, float max, NumberFormat format)
+        private static Color GetNumberColor(float value, float max, float min)
         {
+            if (value >= max)
+                return Color.white;
+
+            if (value <= min)
+                return Color.red;
+
             const float greenHue = 120f / 360f;
-            float percentOfMax = value / max;
+            float percentOfMax = (value - min) / (max - min);
 
             const float saturation = 1f;
-            const float lightness = 0.80f;
+            const float lightness = 0.75f;
 
-            switch (format)
-            {
-                case NumberFormat.Temperature:
-                case NumberFormat.Sun:
-                    if (value > 85f)
-                        return Color.white;
-                    
-                    return Color.HSVToRGB(percentOfMax * greenHue, saturation, lightness);
-
-                case NumberFormat.EnergyAmount:
-                case NumberFormat.EnergyPercent:
-                    return Color.HSVToRGB(percentOfMax * greenHue, saturation, lightness);
-
-                default:
-                    return Color.white;
-            }
+            return Color.HSVToRGB(percentOfMax * greenHue, saturation, lightness);
         }
     }
 }

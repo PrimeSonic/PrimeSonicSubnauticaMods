@@ -10,9 +10,17 @@
             public readonly TechType TechType;
             public float Value;
             public float MaxValue;
+            public readonly float MinValue;
             public readonly NumberFormat Format;
 
-            public PowerIcon(TechType techType, NumberFormat format) : this()
+            public PowerIcon(TechType techType, float minValue, NumberFormat format) : this()
+            {
+                TechType = techType;
+                Format = format;
+                MinValue = minValue;
+            }
+
+            public PowerIcon(TechType techType, NumberFormat format) : this(techType, 0f, format)
             {
                 TechType = techType;
                 Format = format;
@@ -21,12 +29,12 @@
 
         internal bool EvenCount { get; private set; } = true;
 
-        private PowerIcon nuclearIcon = new PowerIcon(CyclopsModule.NuclearChargerID, NumberFormat.EnergyAmount) { MaxValue = 6000f };
-        private PowerIcon bioIcon = new PowerIcon(CyclopsModule.BioReactorBoosterID, NumberFormat.EnergyAmount) { MaxValue = 200f };
+        private PowerIcon nuclearIcon = new PowerIcon(CyclopsModule.NuclearChargerID, NumberFormat.Amount) { MaxValue = 6000f };
+        private PowerIcon bioIcon = new PowerIcon(CyclopsModule.BioReactorBoosterID, NumberFormat.Amount) { MaxValue = 200f };
         private PowerIcon solarIcon = new PowerIcon(CyclopsModule.SolarChargerID, NumberFormat.Sun) { MaxValue = 90f };
-        private PowerIcon solar2Icon = new PowerIcon(CyclopsModule.SolarChargerMk2ID, NumberFormat.EnergyAmount) { MaxValue = 100f };
-        private PowerIcon thermalIcon = new PowerIcon(TechType.CyclopsThermalReactorModule, NumberFormat.Temperature) { MaxValue = 90f };
-        private PowerIcon thermal2Icon = new PowerIcon(CyclopsModule.ThermalChargerMk2ID, NumberFormat.EnergyAmount) { MaxValue = 100f };
+        private PowerIcon solar2Icon = new PowerIcon(CyclopsModule.SolarChargerMk2ID, NumberFormat.Amount) { MaxValue = 100f };
+        private PowerIcon thermalIcon = new PowerIcon(TechType.CyclopsThermalReactorModule, 25f, NumberFormat.Temperature) { MaxValue = 100f };
+        private PowerIcon thermal2Icon = new PowerIcon(CyclopsModule.ThermalChargerMk2ID, NumberFormat.Amount) { MaxValue = 100f };
 
         private bool solar = false;
         private bool solarBattery = false;
