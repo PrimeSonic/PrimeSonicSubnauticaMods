@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
-    using MoreCyclopsUpgrades.Modules;
+    using Modules;
+    using Modules.Recharging.Nuclear;
     using UnityEngine;
 
     internal class NuclearUpgradeHandler : BatteryUpgradeHandler
@@ -17,7 +18,7 @@
                 InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
                 GameObject.Destroy(inventoryItem.item.gameObject);
                 modules.AddItem(slotName, CyclopsModule.SpawnCyclopsModule(CyclopsModule.DepletedNuclearModuleID), true);
-                ErrorMessage.AddMessage("Nuclear Reactor Module depleted");
+                ErrorMessage.AddMessage(DepletedNuclearModule.DepletedEvent);
             };
         }
     }

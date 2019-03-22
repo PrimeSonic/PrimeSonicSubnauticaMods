@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
     using Common;
+    using MoreCyclopsUpgrades.Buildables;
     using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.SaveData;
@@ -26,7 +27,6 @@
         internal float ChargePerSecondPerItem = baselineChargeRate;
 
         internal const float MaxPowerBaseline = 200;
-        internal const string StorageLabel = "Cyclops Bioreactor Materials";
 
         private const int TextDelayTicks = 60;
 
@@ -91,7 +91,7 @@
         {
             if (this.Container is null)
             {
-                this.Container = new ItemsContainer(this.StorageWidth, this.StorageHeight, storageRoot.transform, StorageLabel, null);
+                this.Container = new ItemsContainer(this.StorageWidth, this.StorageHeight, storageRoot.transform, CyBioReactor.StorageLabel, null);
 
                 this.Container.isAllowedToAdd += IsAllowedToAdd;
                 this.Container.isAllowedToRemove += IsAllowedToRemove;
@@ -179,7 +179,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText($"Use Cyclops Bioreactor {Mathf.FloorToInt(this.Battery._charge)}/{this.Battery._capacity}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
+            main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(this.Battery._charge), this.Battery._capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 

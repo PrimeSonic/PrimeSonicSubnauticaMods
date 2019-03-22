@@ -13,13 +13,16 @@
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
         public override string AssetsFolder { get; } = "MoreCyclopsUpgrades/Assets";
         public override TechType RequiredForUnlock { get; } = TechType.CyclopsHullModule1;
-        public override string HandOverText { get; } = "Use Auxiliary Cyclop Upgrade Console";
+
+        private const string OnHoverKey = "CyUpgradeOnHover";
+        public static string OnHoverText => Language.main.Get(OnHoverKey);
 
         public CyUpgradeConsole() 
             : base(classId: "AuxCyUpgradeConsole", 
                    friendlyName: "Auxiliary Upgrade Console", 
                    description: "A secondary upgrade console to connect a greater number of upgrades to your Cyclops.")
         {
+            OnFinishedPatching += SetLanguageLines;
         }
 
         public void Patch(bool auxConsolesEnabled)
@@ -91,6 +94,11 @@
             constructible.model = consoleModel;
 
             return prefab;
+        }
+
+        private void SetLanguageLines()
+        {
+            LanguageHandler.SetLanguageLine(OnHoverKey, "Use Auxiliary Cyclop Upgrade Console");
         }
     }
 }

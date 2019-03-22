@@ -8,6 +8,9 @@
     {
         internal const string DepletedNameID = "DepletedCyclopsNuclearModule";
 
+        private const string DepletedEventKey = "CyNukeDepleted";
+        public static string DepletedEvent => Language.main.Get(DepletedEventKey);
+
         internal NuclearFabricator NukFabricator { get; } = new NuclearFabricator();
 
         internal DepletedNuclearModule()
@@ -16,8 +19,7 @@
                   "Bring to a specialized fabricator for safe extraction of the depleted reactor rod inside.",
                   CyclopsModule.NuclearChargerID,
                   TechType.DepletedReactorRod)
-        {
-
+        {            
         }
 
         protected override void Patch()
@@ -41,6 +43,8 @@
                 PrefabHandler.RegisterPrefab(this);
 
                 SetStaticTechTypeID(this.TechType);
+
+                LanguageHandler.SetLanguageLine(DepletedEventKey, "Nuclear Reactor Module depleted");
             }
 
             this.NukFabricator.Patch(CyclopsModule.ModulesEnabled);

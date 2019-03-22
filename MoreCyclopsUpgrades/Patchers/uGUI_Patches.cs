@@ -4,6 +4,7 @@
     using Harmony;
     using Managers;
     using Monobehaviors;
+    using Buildables;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
     [HarmonyPatch("OnOpenPDA")]
@@ -31,7 +32,7 @@
 
             string label = containerObj._label;
 
-            if (label != CyBioReactorMono.StorageLabel)
+            if (label != CyBioReactor.StorageLabel)
                 return; // Not a Cyclops Bioreactor storage
 
             List<CyBioReactorMono> reactors = CyclopsManager.GetBioReactors(Player.main.currentSub);

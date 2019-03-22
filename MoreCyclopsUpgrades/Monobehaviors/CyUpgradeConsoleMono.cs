@@ -4,7 +4,8 @@
     using System.Reflection;
     using Common;
     using Modules;
-    using MoreCyclopsUpgrades.Managers;
+    using Buildables;
+    using Managers;
     using ProtoBuf;
     using SaveData;
     using UnityEngine;
@@ -153,7 +154,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText("Use Auxiliary Cyclop Upgrade Console");
+            main.SetInteractText(CyUpgradeConsole.OnHoverText);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
 #if DEBUG
             PositionStuff(Module4.GetComponent<Canvas>().gameObject);

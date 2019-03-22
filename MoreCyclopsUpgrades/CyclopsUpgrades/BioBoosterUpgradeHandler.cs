@@ -2,6 +2,7 @@
 {
     using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.Modules;
+    using MoreCyclopsUpgrades.Modules.Enhancement;
     using MoreCyclopsUpgrades.Monobehaviors;
     using System.Collections.Generic;
 
@@ -23,7 +24,7 @@
 
             OnFirstTimeMaxCountReached += () =>
             {
-                ErrorMessage.AddMessage("Maximum boost to bioreactors achieved");
+                ErrorMessage.AddMessage(BioReactorBooster.MaxBoostAchived);
             };
         }
     }

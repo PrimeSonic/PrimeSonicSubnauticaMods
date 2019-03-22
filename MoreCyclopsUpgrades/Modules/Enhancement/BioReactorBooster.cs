@@ -1,9 +1,13 @@
 ﻿namespace MoreCyclopsUpgrades.Modules.Enhancement
 {
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
 
     internal class BioReactorBooster : CyclopsModule
     {
+        private const string MaxBoostKey = "CyBioBoostMaxed";
+        public static string MaxBoostAchived => Language.main.Get(MaxBoostKey);
+
         internal BioReactorBooster(bool fabModPresent) : this(fabModPresent ? null : new[] { "CyclopsMenu" })
         {
         }
@@ -15,7 +19,7 @@
                    CraftTree.Type.CyclopsFabricator,
                    tabs,
                    TechType.BaseBioReactor)
-        {
+        {   
         }
 
         protected override TechData GetRecipe()
@@ -38,6 +42,12 @@
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
             BioReactorBoosterID = techTypeID;
+        }
+
+        protected override void Patch()
+        {
+            base.Patch();
+            LanguageHandler.SetLanguageLine("MaxBoostKey", "Maximum boost to cyclops bioreactors achieved");
         }
     }
 }
