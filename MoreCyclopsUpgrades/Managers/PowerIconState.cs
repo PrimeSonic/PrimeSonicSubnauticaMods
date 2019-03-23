@@ -67,6 +67,15 @@
             }
         }
 
+        internal void DisableAll()
+        {
+            solar = false;
+            solarBattery = false;
+            thermal = false;
+            thermalBattery = false;
+            bio = false;
+            nuclear = false;
+        }
 
         internal float SolarStatus
         {

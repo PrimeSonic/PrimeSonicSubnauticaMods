@@ -3,7 +3,8 @@
     using Common;
     using Modules;
     using Monobehaviors;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
+    using CyclopsUpgrades;
+    using Modules.Enhancement;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
@@ -125,7 +126,11 @@
                 var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
                 {
                     MaxCount = 6,
-                    LoggingName = "SpeedBooster"
+                    LoggingName = "SpeedBooster",
+                    OnFirstTimeMaxCountReached = () =>
+                    {
+                        ErrorMessage.AddMessage(CyclopsSpeedBooster.MaxRatingAchived);
+                    }
                 };
                 powerManager.SpeedBoosters = speed;
                 return speed;
@@ -254,6 +259,8 @@
                 ErrorMessage.AddError("ClearAllUpgrades: Cyclops ref is null - Upgrade handling cancled");
                 return;
             }
+
+            this.Manager.PowerManager.PowerIcons.DisableAll();
 
             foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
                 upgradeType.UpgradesCleared(this.Cyclops);

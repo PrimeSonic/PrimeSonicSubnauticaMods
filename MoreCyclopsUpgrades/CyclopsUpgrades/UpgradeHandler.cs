@@ -24,13 +24,7 @@
 
         internal bool IsPowerProducer = false;
 
-        /// <summary>
-        /// Gets or sets the name of this upgrade handler used in logs.
-        /// </summary>
-        /// <value>
-        /// The name for this instance used for logging.
-        /// </value>
-        public string LoggingName { get; set; } = null;
+        internal string LoggingName { get; set; } = null;
 
         /// <summary>
         /// Gets the number of copies of this upgrade module type currently installed in the cyclops.

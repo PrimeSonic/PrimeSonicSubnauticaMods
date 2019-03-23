@@ -261,7 +261,7 @@
 
         private static Color GetNumberColor(float value, float max, float min)
         {
-            if (value >= max)
+            if (value > max)
                 return Color.white;
 
             if (value <= min)
@@ -271,7 +271,7 @@
             float percentOfMax = (value - min) / (max - min);
 
             const float saturation = 1f;
-            const float lightness = 0.75f;
+            const float lightness = 0.8f;
 
             return Color.HSVToRGB(percentOfMax * greenHue, saturation, lightness);
         }

@@ -24,7 +24,7 @@
             InstanceID = cyclops.GetInstanceID();
         }
 
-        // List was chosen because of the very small number of entries it will mamaged.
+        // List was chosen because of the very small number of entries it will have.
         private static List<CyclopsManager> Managers = new List<CyclopsManager>();
 
         public static CyclopsManager GetAllManagers(SubRoot cyclops)

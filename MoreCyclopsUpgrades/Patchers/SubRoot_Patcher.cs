@@ -79,8 +79,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            return false; // Completely override the method and do not continue with original execution
-            // The original method execution sucked anyways :P
+            return false; // Now handled by UpgradeManager HandleUpgrades
         }
     }
 

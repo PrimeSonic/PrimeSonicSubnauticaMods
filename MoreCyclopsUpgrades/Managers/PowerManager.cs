@@ -1,8 +1,9 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using Common;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
-    using MoreCyclopsUpgrades.Monobehaviors;
+    using CyclopsUpgrades;
+    using Modules.Enhancement;
+    using Monobehaviors;
     using SaveData;
     using System.Collections.Generic;
     using UnityEngine;
@@ -16,7 +17,7 @@
         internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
         internal const float NuclearDrainRate = 0.15f;
 
-        private const float EnginePowerPenalty = 0.75f;
+        private const float EnginePowerPenalty = 0.7f;
 
         private const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
@@ -24,20 +25,20 @@
 
         private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.30f, 0.15f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
-            // Max +75%
+            0.25f, 0.15f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
+            // Max +70%
         };
 
         private static readonly float[] StandardSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.45f, 0.35f, 0.25f, 0.20f, 0.15f, 0.10f // Diminishing returns on speed modules
-            // Max +150%
+            0.40f, 0.30f, 0.20f, 0.15f, 0.10f, 0.05f // Diminishing returns on speed modules
+            // Max +120%
         };
 
         private static readonly float[] FlankSpeedBonuses = new float[MaxSpeedBoosters]
         {
-            0.50f, 0.20f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
-            // Max +100%
+            0.45f, 0.20f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
+            // Max +95%
         };
 
         private static readonly float[] EnginePowerRatings = new float[PowerIndexCount]
@@ -186,10 +187,7 @@
             }
 
             if (speedBoosters > MaxSpeedBoosters)
-            {
-                ErrorMessage.AddMessage($"Speed rating already at maximum. You have {speedBoosters - MaxSpeedBoosters} too many.");
                 return; // Exit here
-            }
 
             if (this.LastKnownSpeedBoosters != speedBoosters)
             {
@@ -216,12 +214,7 @@
                 CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
                 this.SubControl.BaseForwardAccel = this.MotorMode.motorModeSpeeds[(int)currentMode];
 
-                ErrorMessage.AddMessage($"Speed rating is now at +{this.LastKnownSpeedBoosters} : {StandardMultiplier * 100:00}%");
-
-                if (this.LastKnownSpeedBoosters == MaxSpeedBoosters)
-                {
-                    ErrorMessage.AddMessage($"Maximum speed rating reached");
-                }
+                ErrorMessage.AddMessage(CyclopsSpeedBooster.SpeedRatingText(this.LastKnownSpeedBoosters, Mathf.RoundToInt(StandardMultiplier * 100)));
             }
         }
 
@@ -244,7 +237,8 @@
             float surplusPower = 0f;
             bool renewablePowerAvailable = false;
 
-            if (this.SolarCharger.HasUpgrade || this.SolarChargerMk2.HasUpgrade) // Handle solar power
+            // Handle solar power
+            if (this.SolarCharger.HasUpgrade || this.SolarChargerMk2.HasUpgrade)
             {
                 float solarStatus = GetSolarStatus();
                 float availableSolarEnergy = SolarChargingFactor * solarStatus;
@@ -276,7 +270,8 @@
                 this.PowerIcons.SolarBattery = false;
             }
 
-            if (this.ThermalCharger.HasUpgrade || this.ThermalChargerMk2.HasUpgrade) // Handle thermal power
+            // Handle thermal power
+            if (this.ThermalCharger.HasUpgrade || this.ThermalChargerMk2.HasUpgrade)
             {
                 float thermalStatus = GetThermalStatus();
                 float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * this.Cyclops.thermalReactorCharge.Evaluate(thermalStatus);
@@ -308,12 +303,14 @@
                 this.PowerIcons.ThermalBattery = false;
             }
 
+            // Handle bio power
             if (this.CyBioReactors.Count > 0)
             {
                 bool hasBioPower = false;
                 float totalBioCharge = 0f;
                 float bioCapacity = 0f;
-                foreach (CyBioReactorMono reactor in this.CyBioReactors) // Handle bio power
+
+                foreach (CyBioReactorMono reactor in this.CyBioReactors)
                 {
                     hasBioPower |= reactor.HasPower;
                     reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);
@@ -338,6 +335,7 @@
             this.PowerIcons.SolarBattery &= activelyCharging;
             this.PowerIcons.ThermalBattery &= activelyCharging;
 
+
             this.PowerIcons.Nuclear =
                 this.NuclearCharger.HasUpgrade &&
                 !renewablePowerAvailable && // Only if there's no renewable power available        
@@ -351,7 +349,7 @@
                 powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit) // User config for threshold to start charging                
             {
                 // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
-                this.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);                
+                this.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);
             }
 
             // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
