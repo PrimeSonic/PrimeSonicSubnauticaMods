@@ -1,13 +1,13 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
-    using System;
-    using System.Reflection;
-    using Common;
-    using Modules;
     using Buildables;
+    using Common;
     using Managers;
+    using Modules;
     using ProtoBuf;
     using SaveData;
+    using System;
+    using System.Reflection;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -62,6 +62,7 @@
 
         private void InitializeModules()
         {
+            QuickLogger.Debug("Initializing Equipment");
             if (ModulesRoot == null)
             {
                 var equipmentRoot = new GameObject("EquipmentRoot");
@@ -156,9 +157,6 @@
             HandReticle main = HandReticle.main;
             main.SetInteractText(CyUpgradeConsole.OnHoverText);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
-#if DEBUG
-            PositionStuff(Module4.GetComponent<Canvas>().gameObject);
-#endif
         }
 
         public void OnHandClick(GUIHand guiHand)
@@ -201,11 +199,15 @@
             this.transform.SetParent(parentCyclops.transform);
             this.Manager = manager ?? CyclopsManager.GetAllManagers(parentCyclops);
 
-            if (!this.Manager.UpgradeManager.AuxUpgradeConsoles.Contains(this))
+            UpgradeManager upgradeManager = this.Manager.UpgradeManager;
+
+            if (!upgradeManager.AuxUpgradeConsoles.Contains(this))
             {
-                this.Manager.UpgradeManager.AuxUpgradeConsoles.Add(this);
+                upgradeManager.AuxUpgradeConsoles.Add(this);
             }
 
+            Equipment console = this.Modules;
+            upgradeManager.AttachEquipmentEvents(ref console);
             QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
         }
 

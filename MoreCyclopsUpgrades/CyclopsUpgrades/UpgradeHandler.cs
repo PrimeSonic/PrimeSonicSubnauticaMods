@@ -7,6 +7,7 @@
     public delegate UpgradeHandler HandlerCreator();
     public delegate void UpgradeEvent(SubRoot cyclops);
     public delegate void UpgradeEventSlotBound(SubRoot cyclops, Equipment modules, string slot);
+    public delegate bool UpgradeAllowedEvent(SubRoot cyclops, Pickupable item, bool verbose);
 
     /// <summary>
     /// Represents all the behaviors for a cyclops upgrade module at the time of the module being installed and counted.
@@ -22,12 +23,6 @@
         private bool maxedOut = false;
 
         internal bool IsPowerProducer = false;
-
-        /// <summary>
-        /// Set this to <c>false</c> to ignore the value of <see cref="Count"/> when determining if <see cref="OnFinishedUpgrades"/> and <see cref="OnFirstTimeMaxCountReached"/>
-        /// should be executed when all upgrades have been counted.
-        /// </summary>
-        protected bool CheckCountOnFinished = true;
 
         /// <summary>
         /// Gets or sets the name of this upgrade handler used in logs.
@@ -99,12 +94,23 @@
         public Action OnFirstTimeMaxCountReached;
 
         /// <summary>
+        /// This event is invoked when the player is attempting to add an upgrade of this type to an upgrade console.
+        /// </summary>
+        public UpgradeAllowedEvent IsAllowedToAdd;
+
+        /// <summary>
+        /// This event is invoked when the player is attempting to remove an upgrade of this type to an upgrade console.
+        /// </summary>
+        public UpgradeAllowedEvent IsAllowedToRemove;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="UpgradeHandler"/> class.
         /// </summary>
         /// <param name="techType">The TechType of the upgrade module.</param>
         public UpgradeHandler(TechType techType)
         {
             this.techType = techType;
+            this.LoggingName = techType.AsString();
         }
 
         internal virtual void UpgradesCleared(SubRoot cyclops)
@@ -121,30 +127,21 @@
 
         internal virtual void UpgradesFinished(SubRoot cyclops)
         {
-            if (CheckCountOnFinished)
-            {
-                if (count == 0)
-                    return;
-
-                if (count > this.MaxCount)
-                    return;
-            }
+            if (count > this.MaxCount)
+                return;
 
             OnFinishedUpgrades?.Invoke(cyclops);
 
-            if (CheckCountOnFinished)
+            if (!maxedOut) // If we haven't maxed out before, check this block
             {
-                if (!maxedOut) // If we haven't maxed out before, check this block
-                {
-                    maxedOut = count == this.MaxCount; // Are we maxed out now?
+                maxedOut = count == this.MaxCount; // Are we maxed out now?
 
-                    if (maxedOut) // If we are, invoke the event
-                        OnFirstTimeMaxCountReached?.Invoke();
-                }
-                else // If we are in this block, that means we maxed out in a previous cycle
-                {
-                    maxedOut = count == this.MaxCount; // Evaluate this again in case an upgrade was removed
-                }
+                if (maxedOut) // If we are, invoke the event
+                    OnFirstTimeMaxCountReached?.Invoke();
+            }
+            else // If we are in this block, that means we maxed out in a previous cycle
+            {
+                maxedOut = count == this.MaxCount; // Evaluate this again in case an upgrade was removed
             }
         }
 
@@ -152,6 +149,26 @@
         {
             QuickLogger.Info($"{this.LoggingName ?? techType.AsString()} upgrade registered");
             dictionary.Add(techType, this);
+        }
+
+        internal virtual bool CanUpgradeBeAdded(SubRoot cyclops, Pickupable item, bool verbose)
+        {
+            if (IsAllowedToAdd != null)
+            {
+                return IsAllowedToAdd.Invoke(cyclops, item, verbose);
+            }
+
+            return count < this.MaxCount;
+        }
+
+        internal virtual bool CanUpgradeBeRemoved(SubRoot cyclops, Pickupable item, bool verbose)
+        {
+            if (IsAllowedToRemove != null)
+            {
+                return IsAllowedToRemove.Invoke(cyclops, item, verbose);
+            }
+
+            return true;
         }
     }
 }

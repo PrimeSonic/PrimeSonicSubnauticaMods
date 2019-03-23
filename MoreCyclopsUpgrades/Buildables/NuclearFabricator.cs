@@ -1,8 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Buildables
 {
     using System.Collections.Generic;
-    using System.Reflection;
-    using Common;
     using Modules;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;

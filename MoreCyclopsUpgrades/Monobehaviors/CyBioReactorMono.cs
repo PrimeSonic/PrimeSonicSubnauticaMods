@@ -28,12 +28,12 @@
 
         internal const float MaxPowerBaseline = 200;
 
-        private const int TextDelayTicks = 60;
+        private const float TextDelayInterval = 2f;
 
         [AssertNotNull]
         public ChildObjectIdentifier storageRoot;
 
-        private int textDelay = TextDelayTicks;
+        private float textDelay = TextDelayInterval;
         private bool pdaIsOpen = false;
         private bool isLoadingSaveData = false;
         private CyBioReactorSaveData SaveData;
@@ -259,23 +259,18 @@
             if (isLoadingSaveData)
                 return true;
 
-            bool canAdd = false;
             if (pickupable != null)
             {
                 TechType techType = pickupable.GetTechType();
 
                 if (BaseBioReactor.charge.ContainsKey(techType))
-                {
-                    canAdd = true;
-                }
+                    return true;
             }
 
-            if (!canAdd && verbose)
-            {
+            if (verbose)
                 ErrorMessage.AddMessage(Language.main.Get("BaseBioReactorCantAddItem"));
-            }
 
-            return canAdd;
+            return false;
         }
 
         private bool IsAllowedToRemove(Pickupable pickupable, bool verbose)
@@ -337,10 +332,10 @@
 
         private void UpdateDisplayText()
         {
-            if (textDelay-- > 0)
+            if (Time.time < textDelay)
                 return; // Slow down the text update
 
-            textDelay = TextDelayTicks;
+            textDelay = Time.time + TextDelayInterval;
 
             foreach (BioEnergy material in this.MaterialsProcessing)
                 material.UpdateInventoryText();
@@ -446,6 +441,13 @@
             }
         }
 
+        public bool HasRoomToShrink()
+        {
+            var nextStats = ReactorStats.GetStatsForBoosterCount(lastKnownBioBooster - 1);
+
+            return nextStats.TotalSpaces >= this.MaterialsProcessing.SpacesOccupied;
+        }
+
         public bool UpdateBoosterCount(int boosterCount)
         {
             if (boosterCount > MaxBoosters)
@@ -454,34 +456,9 @@
             if (lastKnownBioBooster == boosterCount)
                 return false;
 
-            int nextWidth;
-            int nextHeight;
-            float nextCapacity;
-            switch (boosterCount)
-            {
-                default:
-                    nextWidth = 2;
-                    nextHeight = 2;
-                    nextCapacity = MaxPowerBaseline;
-                    break;
-                case 1:
-                    nextWidth = 3;
-                    nextHeight = 2;
-                    nextCapacity = MaxPowerBaseline + 50;
-                    break;
-                case 2:
-                    nextWidth = 3;
-                    nextHeight = 3;
-                    nextCapacity = MaxPowerBaseline + 100;
-                    break;
-                case 3: // MaxBoosters
-                    nextWidth = 3;
-                    nextHeight = 3;
-                    nextCapacity = MaxPowerBaseline + 200;
-                    break;
-            }
+            var nextStats = ReactorStats.GetStatsForBoosterCount(boosterCount);
 
-            this.Battery._capacity = nextCapacity;
+            this.Battery._capacity = nextStats.Capacity;
 
             if (!isLoadingSaveData)
             {
@@ -489,12 +466,12 @@
 
                 if (lastKnownBioBooster > boosterCount) // Getting smaller
                 {
-                    int nextAvailableSpace = nextWidth * nextHeight;
+                    int nextAvailableSpace = nextStats.TotalSpaces;
                     while (this.MaterialsProcessing.SpacesOccupied > nextAvailableSpace)
                     {
                         BioEnergy material = this.MaterialsProcessing.GetCandidateForRemoval();
 
-                        if (material is null)
+                        if (material == null)
                             break;
 
                         QuickLogger.Debug($"Removing material of size {material.Size}", true);
@@ -503,7 +480,7 @@
                 }
             }
 
-            this.Container.Resize(this.StorageWidth = nextWidth, this.StorageHeight = nextHeight);
+            this.Container.Resize(this.StorageWidth = nextStats.Width, this.StorageHeight = nextStats.Height);
             this.Container.Sort();
 
             ChargePerSecondPerItem = baselineChargeRate / this.TotalContainerSpaces * 2;
@@ -511,6 +488,37 @@
             lastKnownBioBooster = boosterCount;
 
             return true;
+        }
+
+        private class ReactorStats
+        {
+            internal readonly int Width;
+            internal readonly int Height;
+            internal readonly float Capacity;
+
+            internal int TotalSpaces => Width * Height;
+
+            private ReactorStats(int width, int height, float capacity)
+            {
+                Width = width;
+                Height = height;
+                Capacity = capacity;
+            }
+
+            internal static ReactorStats GetStatsForBoosterCount(int boosterCount)
+            {
+                switch (boosterCount)
+                {
+                    default:
+                        return new ReactorStats(2, 2, MaxPowerBaseline);
+                    case 1:
+                        return new ReactorStats(3, 2, MaxPowerBaseline + 50f);
+                    case 2:
+                        return new ReactorStats(3, 3, MaxPowerBaseline + 100f);
+                    case 3: // MaxBoosters
+                        return new ReactorStats(3, 3, MaxPowerBaseline + 200f);
+                }
+            }
         }
     }
 }

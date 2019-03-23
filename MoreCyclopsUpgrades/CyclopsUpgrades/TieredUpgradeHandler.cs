@@ -26,7 +26,6 @@
         {
             TieredValue = tieredValue;
             ParentCollection = parentCollection;
-            CheckCountOnFinished = false;
         }
 
         internal override void UpgradesCleared(SubRoot cyclops)
@@ -41,7 +40,6 @@
 
         internal override void UpgradesFinished(SubRoot cyclops)
         {
-            // Always report, even if count is 0
             ParentCollection.UpgradesFinished(cyclops);
         }
     }

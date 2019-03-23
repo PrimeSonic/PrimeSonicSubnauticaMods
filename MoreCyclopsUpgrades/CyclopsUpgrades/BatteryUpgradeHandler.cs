@@ -12,7 +12,7 @@
         internal IList<BatteryDetails> Batteries { get; } = new List<BatteryDetails>();
 
         internal readonly bool BatteryRecharges;
-
+        private float tempTotalCharge;
         public float TotalBatteryCharge { get; protected set; } = 0f;
         public float TotalBatteryCapacity { get; protected set; } = 0f;
 
@@ -44,7 +44,7 @@
 
             availablePower *= PowerManager.Mk2ChargeRateModifier;
 
-            float totalCharge = 0f;
+            tempTotalCharge = 0f;
             foreach (BatteryDetails details in this.Batteries)
             {
                 cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
@@ -53,10 +53,10 @@
                 Battery battery = details.BatteryRef;
 
                 battery._charge = Mathf.Min(battery._capacity, battery._charge + availablePower);
-                totalCharge += battery._charge;
+                tempTotalCharge += battery._charge;
             }
 
-            this.TotalBatteryCharge = totalCharge;
+            this.TotalBatteryCharge = tempTotalCharge;
             return Mathf.Max(0f, availablePower - powerDeficit); // Surplus power
         }
 
@@ -65,7 +65,7 @@
             if (powerDeficit < PowerManager.MinimalPowerValue) // No power deficit left to charge
                 return; // Exit
 
-            float totalCharge = 0f;
+            tempTotalCharge = 0f;
             foreach (BatteryDetails details in this.Batteries)
             {
                 Battery battery = details.BatteryRef;
@@ -88,12 +88,12 @@
                     OnBatteryDrained?.Invoke(details);
                 }
 
-                totalCharge += battery._charge;
+                tempTotalCharge += battery._charge;
                 powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
 
                 cyclops.powerRelay.AddEnergy(chargeAmt, out float amtStored);
             }
-            this.TotalBatteryCharge = totalCharge;
+            this.TotalBatteryCharge = tempTotalCharge;
         }
 
         public void RechargeBatteries(ref float surplusPower)
@@ -101,11 +101,11 @@
             if (!BatteryRecharges)
                 return;
 
-            this.TotalBatteryCharge = 0f;
+            tempTotalCharge = 0f;
             bool batteryCharged = false;
             foreach (BatteryDetails details in this.Batteries)
             {
-                this.TotalBatteryCharge += details.BatteryRef._charge;
+                tempTotalCharge += details.BatteryRef._charge;
 
                 if (batteryCharged)
                     continue;
@@ -121,6 +121,8 @@
                 surplusPower -= (batteryToCharge._capacity - batteryToCharge._charge);
                 batteryCharged = true;
             }
+
+            this.TotalBatteryCharge = tempTotalCharge;
         }
     }
 }

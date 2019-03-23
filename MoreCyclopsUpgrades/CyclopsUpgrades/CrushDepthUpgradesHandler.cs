@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
-    using Common;
     using System.Collections.Generic;
 
     internal class CrushDepthUpgradesHandler : TieredUpgradesHandlerCollection<float>
@@ -9,6 +8,8 @@
 
         public CrushDepthUpgradesHandler() : base(NoBonusCrushDepth)
         {
+            this.LoggingName = "Depth Upgrades Collection";
+
             OnFinishedUpgrades += (SubRoot cyclops) =>
             {
                 CrushDamage crushDmg = cyclops.gameObject.GetComponent<CrushDamage>();
@@ -17,7 +18,10 @@
             };
 
             foreach (KeyValuePair<TechType, float> upgrade in SubRoot.hullReinforcement)
-                CreateTier(upgrade.Key, upgrade.Value);
+            {
+                TieredUpgradeHandler<float> tier = CreateTier(upgrade.Key, upgrade.Value);
+                tier.LoggingName = $"Depth Upgrade {tier.TieredValue}";
+            }
         }
     }
 }

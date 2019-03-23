@@ -8,6 +8,8 @@
     {
         public NuclearUpgradeHandler() : base(CyclopsModule.NuclearChargerID, canRecharge: false)
         {
+            this.LoggingName = "NuclearCharger";
+
             OnBatteryDrained += (BatteryDetails details) =>
             {
                 this.TotalBatteryCapacity -= details.BatteryRef._capacity;

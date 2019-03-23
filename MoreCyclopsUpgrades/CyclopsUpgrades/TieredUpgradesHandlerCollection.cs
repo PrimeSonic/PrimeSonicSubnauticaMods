@@ -21,13 +21,18 @@
         private readonly ICollection<TieredUpgradeHandler<T>> collection = new List<TieredUpgradeHandler<T>>();
 
         /// <summary>
-        /// Gets the highest value.
+        /// Gets the highest value reported among the <see cref="TieredUpgradeHandler{T}" /> of this collection.
         /// </summary>
         /// <value>
         /// The highest value.
         /// </value>
         public T HighestValue { get; private set; }
+
+        /// <summary>
+        /// The default value to reset to during the <see cref="OnClearUpgrades"/> event.
+        /// </summary>
         public readonly T DefaultValue;
+
         private bool cleared = false;
         private bool finished = false;
 

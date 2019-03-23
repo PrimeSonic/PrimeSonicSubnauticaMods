@@ -91,6 +91,9 @@
 
             RegisterUpgradeHandlers();
 
+            Equipment cyclopsConsole = this.Cyclops.upgradeConsole.modules;
+            AttachEquipmentEvents(ref cyclopsConsole);
+
             SyncUpgradeConsoles();
 
             return true;
@@ -102,10 +105,16 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
-                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0);
-                efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
-                efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
-                efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
+                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0)
+                {
+                    LoggingName = "Engine Upgrades Collection"
+                };
+                TieredUpgradeHandler<int> engine1 = efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
+                engine1.LoggingName = "Engine Upgrade Mk1";
+                TieredUpgradeHandler<int> engine2 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
+                engine2.LoggingName = "Engine Upgrade Mk2";
+                TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
+                engine3.LoggingName = "Engine Upgrade Mk3";
 
                 powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
                 return efficiencyUpgrades;
@@ -116,6 +125,7 @@
                 var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
                 {
                     MaxCount = 6,
+                    LoggingName = "SpeedBooster"
                 };
                 powerManager.SpeedBoosters = speed;
                 return speed;
@@ -123,28 +133,40 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
-                var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID);
+                var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID)
+                {
+                    LoggingName = "SolarCharger"
+                };
                 powerManager.SolarCharger = solarMk1;
                 return solarMk1;
             });
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
-                var solarMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true);
+                var solarMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true)
+                {
+                    LoggingName = "SolarChargerMk2"
+                };
                 powerManager.SolarChargerMk2 = solarMk2;
                 return solarMk2;
             });
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
-                var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule);
+                var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule)
+                {
+                    LoggingName = "ThermalCharger"
+                };
                 powerManager.ThermalCharger = thermalMk1;
                 return thermalMk1;
             });
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
-                var thermalMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true);
+                var thermalMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true)
+                {
+                    LoggingName = "ThermalChargerMk2"
+                };
                 powerManager.ThermalChargerMk2 = thermalMk2;
                 return thermalMk2;
             });
@@ -215,6 +237,15 @@
             HandleUpgrades();
         }
 
+        internal void AttachEquipmentEvents(ref Equipment upgradeConsoleEquipment)
+        {
+            if (upgradeConsoleEquipment == null)
+                return;
+
+            upgradeConsoleEquipment.isAllowedToAdd += IsAllowedToAdd;
+            upgradeConsoleEquipment.isAllowedToRemove += IsAllowedToRemove;
+        }
+
         internal void HandleUpgrades()
         {
             // Turn off all upgrades and clear all values
@@ -243,11 +274,11 @@
 
                 foundUpgrades.Add(techTypeInSlot);
 
-                if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler upgrade))
+                if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
-                    upgrade.UpgradeCounted(this.Cyclops, modules, slot);
+                    handler.UpgradeCounted(this.Cyclops, modules, slot);
 
-                    if (upgrade.IsPowerProducer)
+                    if (handler.IsPowerProducer)
                         this.HasChargingModules = true;
                 }
             }
@@ -260,6 +291,26 @@
                 foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
                     upgradeType.UpgradesFinished(this.Cyclops);
             }
+        }
+
+        private bool IsAllowedToAdd(Pickupable pickupable, bool verbose)
+        {
+            if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
+            {
+                return handler.CanUpgradeBeAdded(this.Cyclops, pickupable, verbose);
+            }
+
+            return true;
+        }
+
+        private bool IsAllowedToRemove(Pickupable pickupable, bool verbose)
+        {
+            if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
+            {
+                return handler.CanUpgradeBeRemoved(this.Cyclops, pickupable, verbose);
+            }
+
+            return true;
         }
     }
 }
