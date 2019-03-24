@@ -75,6 +75,7 @@
             thermalBattery = false;
             bio = false;
             nuclear = false;
+            this.EvenCount = true;
         }
 
         internal float SolarStatus

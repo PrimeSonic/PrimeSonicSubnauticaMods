@@ -118,12 +118,12 @@
 
                 if (this.Battery is null)
                 {
-                    QuickLogger.Debug("Battery was still null", true);
+                    QuickLogger.Debug("Initialized Battery component", true);
                     this.Battery = new Battery(); // Failsafe
                 }
                 else
                 {
-                    QuickLogger.Debug("Battery was found", true);
+                    QuickLogger.Debug("Battery component ready", true);
                 }
 
                 this.Battery._capacity = MaxPowerBaseline;

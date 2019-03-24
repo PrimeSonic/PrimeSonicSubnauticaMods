@@ -140,7 +140,8 @@
             {
                 var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID)
                 {
-                    LoggingName = "SolarCharger"
+                    LoggingName = "SolarCharger",
+                    MaxCount = 12
                 };
                 powerManager.SolarCharger = solarMk1;
                 return solarMk1;
@@ -150,7 +151,8 @@
             {
                 var solarMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true)
                 {
-                    LoggingName = "SolarChargerMk2"
+                    LoggingName = "SolarChargerMk2",
+                    MaxCount = 12
                 };
                 powerManager.SolarChargerMk2 = solarMk2;
                 return solarMk2;
@@ -160,7 +162,8 @@
             {
                 var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule)
                 {
-                    LoggingName = "ThermalCharger"
+                    LoggingName = "ThermalCharger",
+                    MaxCount = 12
                 };
                 powerManager.ThermalCharger = thermalMk1;
                 return thermalMk1;
@@ -170,7 +173,8 @@
             {
                 var thermalMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true)
                 {
-                    LoggingName = "ThermalChargerMk2"
+                    LoggingName = "ThermalChargerMk2",
+                    MaxCount = 12
                 };
                 powerManager.ThermalChargerMk2 = thermalMk2;
                 return thermalMk2;
