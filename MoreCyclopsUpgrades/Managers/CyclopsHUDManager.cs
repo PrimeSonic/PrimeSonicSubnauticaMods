@@ -100,19 +100,20 @@
 
             int currentReservePower = this.PowerManager.GetTotalReservePower();
             float currentBatteryPower = this.Cyclops.powerRelay.GetPower();
-            int TotalPowerUnits = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
-            int normalMaxPower = Mathf.CeilToInt(this.Cyclops.powerRelay.GetMaxPower());
+            float TotalPowerUnits = currentBatteryPower + currentReservePower;
+            float normalMaxPower = this.Cyclops.powerRelay.GetMaxPower();
+            int normalMaxPowerInt = Mathf.CeilToInt(normalMaxPower);
 
             hudManager.energyCur.color = currentReservePower > 0 ? Color.cyan : Color.white;
             hudManager.energyCur.text = FormatNumber(TotalPowerUnits, NumberFormat.Amount);
 
-            if (hudManager.lastMaxSubPowerDisplayed != normalMaxPower)
+            if (hudManager.lastMaxSubPowerDisplayed != normalMaxPowerInt)
             {
                 hudManager.energyMax.text = "/" + FormatNumber(normalMaxPower, NumberFormat.Amount);
-                hudManager.lastMaxSubPowerDisplayed = normalMaxPower;
+                hudManager.lastMaxSubPowerDisplayed = normalMaxPowerInt;
             }
 
-            NuclearModuleConfig.SetCyclopsMaxPower(this.Cyclops.powerRelay.GetMaxPower());
+            NuclearModuleConfig.SetCyclopsMaxPower(normalMaxPower);
 
             UpdatePowerIcons(this.PowerManager.PowerIcons);
         }
@@ -248,12 +249,12 @@
         {
             if (possiblyLargeValue > 999999)
             {
-                return $"{possiblyLargeValue / 1000000:F2}M";
+                return $"{possiblyLargeValue / 1000000:F1}M";
             }
 
             if (possiblyLargeValue > 999)
             {
-                return $"{possiblyLargeValue / 1000:F2}K";
+                return $"{possiblyLargeValue / 1000:F1}K";
             }
 
             return $"{Mathf.CeilToInt(possiblyLargeValue)}";

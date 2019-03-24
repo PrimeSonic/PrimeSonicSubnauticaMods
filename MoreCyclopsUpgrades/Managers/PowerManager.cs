@@ -242,7 +242,7 @@
             {
                 float solarStatus = GetSolarStatus();
                 float availableSolarEnergy = SolarChargingFactor * solarStatus;
-                this.PowerIcons.SolarStatus = solarStatus;
+                this.PowerIcons.SolarStatus = solarStatus * 100;
                 this.PowerIcons.Solar = availableSolarEnergy > MinimalPowerValue;
 
                 surplusPower += this.SolarCharger.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
@@ -306,22 +306,26 @@
             // Handle bio power
             if (this.CyBioReactors.Count > 0)
             {
-                bool hasBioPower = false;
                 float totalBioCharge = 0f;
                 float bioCapacity = 0f;
 
+                int countWithPower = 0;
                 foreach (CyBioReactorMono reactor in this.CyBioReactors)
                 {
-                    hasBioPower |= reactor.HasPower;
+                    if (!reactor.HasPower)
+                        continue;
+
+                    countWithPower++;
                     reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);
                     totalBioCharge += reactor.Battery._charge;
                     bioCapacity = reactor.Battery._capacity;
                 }
 
+                bool hasBioPower = countWithPower > 0;
                 this.PowerIcons.Bio = hasBioPower;
                 renewablePowerAvailable |= hasBioPower;
                 this.PowerIcons.BioCharge = totalBioCharge;
-                this.PowerIcons.BioCapacity = bioCapacity * this.CyBioReactors.Count;
+                this.PowerIcons.BioCapacity = bioCapacity * countWithPower;
             }
             else
             {

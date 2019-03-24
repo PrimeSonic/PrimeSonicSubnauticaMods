@@ -44,7 +44,7 @@
         public ItemsContainer Container { get; private set; }
         public Battery Battery { get; internal set; }
         public string PrefabID { get; private set; }
-        public bool IsContructed => (this.Buildable != null) && this.Buildable.constructed;
+        public bool IsContructed => (this.Buildable != null) && this.Buildable.constructed;        
 
         private int lastKnownBioBooster = 0;
 
