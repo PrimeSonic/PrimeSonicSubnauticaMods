@@ -123,11 +123,7 @@
 
             UpgradeManager.RegisterReusableHandlerCreator(() =>
             {
-                return new UpgradeHandler(TechType.CyclopsDecoyModule)
-                {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
-                };
+                return NewMethod();
             });
 
             UpgradeManager.RegisterReusableHandlerCreator(() =>
@@ -148,6 +144,15 @@
                     },
                 };
             });
+        }
+
+        private static UpgradeHandler NewMethod()
+        {
+            return new UpgradeHandler(TechType.CyclopsDecoyModule)
+            {
+                OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
+                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
+            };
         }
     }
 }

@@ -235,7 +235,7 @@
                 case NumberFormat.Temperature:
                     return $"{Mathf.CeilToInt(value)}°C";
                 case NumberFormat.Sun:
-                    return $"{Mathf.CeilToInt(value)}°Θ";
+                    return $"{Mathf.CeilToInt(value)}%Θ";
                 case NumberFormat.Amount:
                     return $"{HandleLargeNumbers(value)}";
                 case NumberFormat.Percent:
