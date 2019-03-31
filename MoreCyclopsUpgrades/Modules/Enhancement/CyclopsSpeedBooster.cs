@@ -1,9 +1,19 @@
 ﻿namespace MoreCyclopsUpgrades.Modules.Enhancement
 {
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
 
     internal class CyclopsSpeedBooster : CyclopsModule
     {
+        private const string MaxRatingKey = "CySpeedMaxed";
+        public static string MaxRatingAchived => Language.main.Get(MaxRatingKey);
+
+        private const string SpeedRatingKey = "CySpeedMaxed";
+        public static string SpeedRatingText(int boosterCount, int multiplier)
+        {
+            return Language.main.GetFormat(SpeedRatingKey, boosterCount, multiplier);
+        }
+
         internal CyclopsSpeedBooster(bool fabModPresent) : this(fabModPresent ? null : new[] { "CyclopsMenu" })
         {
         }
@@ -35,6 +45,13 @@
         protected override void SetStaticTechTypeID(TechType techTypeID)
         {
             SpeedBoosterModuleID = techTypeID;
+        }
+
+        protected override void Patch()
+        {
+            base.Patch();
+            LanguageHandler.SetLanguageLine(MaxRatingKey, "Maximum speed rating reached");
+            LanguageHandler.SetLanguageLine(SpeedRatingKey, "Speed rating is now at +{0} : {1}.");
         }
     }
 }

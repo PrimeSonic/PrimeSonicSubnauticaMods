@@ -1,14 +1,16 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System;
-    using System.IO;
-    using System.Reflection;
     using Buildables;
     using Caching;
     using Common;
     using Harmony;
     using Modules;
+    using MoreCyclopsUpgrades.CyclopsUpgrades;
+    using MoreCyclopsUpgrades.Managers;
     using SaveData;
+    using System;
+    using System.IO;
+    using System.Reflection;
 
     public class QPatch
     {
@@ -19,7 +21,7 @@
 #endif
 
 #if DEBUG
-                QuickLogger.DebugLogsEnabled = true;
+            QuickLogger.DebugLogsEnabled = true;
 #endif
 
             try
@@ -39,6 +41,8 @@
                 PatchAuxUpgradeConsole(modConfig);
 
                 PatchBioEnergy(modConfig);
+
+                RegisterExternalUpgrades();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -83,7 +87,72 @@
 
             var cyBioEnergy = new CyBioReactor();
 
-            cyBioEnergy.Patch(modConfig.EnableBioEnergy);                
+            cyBioEnergy.Patch(modConfig.EnableBioEnergy);
+        }
+
+        private static void RegisterExternalUpgrades()
+        {
+            UpgradeManager.RegisterReusableHandlerCreator(() => { return new CrushDepthUpgradesHandler(); });
+
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            {
+                return new UpgradeHandler(TechType.CyclopsShieldModule)
+                {
+                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.shieldUpgrade = false; },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
+                };
+            });
+
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            {
+                return new UpgradeHandler(TechType.CyclopsSonarModule)
+                {
+                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.sonarUpgrade = false; },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
+                };
+            });
+
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            {
+                return new UpgradeHandler(TechType.CyclopsSeamothRepairModule)
+                {
+                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = false; },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
+                };
+            });
+
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            {
+                return NewMethod();
+            });
+
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            {
+                return new UpgradeHandler(TechType.CyclopsFireSuppressionModule)
+                {
+                    OnClearUpgrades = (SubRoot cyclops) =>
+                    {
+                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
+                        if (fss != null)
+                            fss.fireSuppressionSystem.SetActive(false);
+                    },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
+                    {
+                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
+                        if (fss != null)
+                            fss.fireSuppressionSystem.SetActive(true);
+                    },
+                };
+            });
+        }
+
+        private static UpgradeHandler NewMethod()
+        {
+            return new UpgradeHandler(TechType.CyclopsDecoyModule)
+            {
+                OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
+                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
+            };
         }
     }
 }

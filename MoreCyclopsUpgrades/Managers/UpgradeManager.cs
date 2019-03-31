@@ -1,27 +1,47 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using System;
-    using System.Collections.Generic;
-    using Caching;
     using Common;
     using Modules;
     using Monobehaviors;
+    using CyclopsUpgrades;
+    using Modules.Enhancement;
+    using System;
+    using System.Collections.Generic;
     using UnityEngine;
 
-    internal class UpgradeManager
+    /// <summary>
+    /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
+    /// </summary>
+    public class UpgradeManager
     {
-        // This is a straight copy of the values in the original
-        private static readonly Dictionary<TechType, float> ExtraCrushDepths = new Dictionary<TechType, float>
-        {
-            { TechType.HullReinforcementModule, 800f },
-            { TechType.HullReinforcementModule2, 1600f },
-            { TechType.HullReinforcementModule3, 2800f },
-            { TechType.CyclopsHullModule1, 400f },
-            { TechType.CyclopsHullModule2, 800f },
-            { TechType.CyclopsHullModule3, 1200f }
-        };
+        private static readonly ICollection<HandlerCreator> ReusableUpgradeHandlers = new List<HandlerCreator>();
+        private static readonly ICollection<HandlerCreator> OneTimeUseUpgradeHandlers = new List<HandlerCreator>();
 
-        private struct UpgradeSlot
+        /// <summary>
+        /// <para>This event happens whenever a new UpgradeManager is initialized, before <see cref="HandlerCreator"/>s are registered.</para>
+        /// <para>Use this if you need a way to know when you should call <see cref="RegisterOneTimeUseHandlerCreator"/> for <see cref="HandlerCreator"/>s that cannot be created from a static context.</para>
+        /// </summary>
+        public static Action UpgradeManagerInitializing;
+
+        /// <summary>
+        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
+        /// </summary>
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
+        public static void RegisterOneTimeUseHandlerCreator(HandlerCreator createEvent)
+        {
+            OneTimeUseUpgradeHandlers.Add(createEvent);
+        }
+
+        /// <summary>
+        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand that can be reused for each new Cyclops.
+        /// </summary>
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
+        public static void RegisterReusableHandlerCreator(HandlerCreator createEvent)
+        {
+            ReusableUpgradeHandlers.Add(createEvent);
+        }
+
+        private class UpgradeSlot
         {
             internal Equipment Modules;
             internal string Slot;
@@ -35,40 +55,7 @@
 
         private readonly List<CyUpgradeConsoleMono> TempCache = new List<CyUpgradeConsoleMono>();
 
-        internal float BonusCrushDepth { get; private set; } = 0f;
-
         internal bool HasChargingModules { get; private set; } = false;
-        internal bool HasSolarModules => this.SolarModuleCount > 0 || this.SolarMk2Batteries.Count > 0;
-        internal bool HasThermalModules => this.ThermalModuleCount > 0 || this.ThermalMk2Batteries.Count > 0;
-        internal bool HasNuclearModules => this.NuclearModules.Count > 0;
-
-        internal int PowerIndex { get; private set; } = 0;
-
-        internal int SpeedBoosters { get; private set; } = 0;
-
-        internal int SolarModuleCount { get; private set; } = 0;
-        internal int ThermalModuleCount { get; private set; } = 0;
-
-        internal int BioBoosterCount { get; private set; } = 0;
-
-        internal IList<Battery> SolarMk2Batteries { get; } = new List<Battery>();
-        internal IList<Battery> ThermalMk2Batteries { get; } = new List<Battery>();
-        internal IList<NuclearModuleDetails> NuclearModules { get; } = new List<NuclearModuleDetails>();
-
-        internal IEnumerable<Battery> ReserveBatteries
-        {
-            get
-            {
-                foreach (Battery battery in this.SolarMk2Batteries)
-                    yield return battery;
-
-                foreach (Battery battery in this.ThermalMk2Batteries)
-                    yield return battery;
-
-                foreach (NuclearModuleDetails module in this.NuclearModules)
-                    yield return module.NuclearBattery;
-            }
-        }
 
         private IEnumerable<UpgradeSlot> UpgradeSlots
         {
@@ -84,17 +71,13 @@
             }
         }
 
-        public CyclopsManager Manager { get; private set; }
+        internal CyclopsManager Manager { get; private set; }
 
-        public SubRoot Cyclops => this.Manager.Cyclops;
+        internal SubRoot Cyclops => this.Manager.Cyclops;
 
         internal List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
-        private CyclopsHolographicHUD holographicHUD = null;
-        internal CyclopsHolographicHUD HolographicHUD => holographicHUD ?? (holographicHUD = this.Cyclops.GetComponentInChildren<CyclopsHolographicHUD>());
 
-        private readonly Dictionary<TechType, Action> SimpleUpgradeActions = new Dictionary<TechType, Action>(12);
-        private readonly Dictionary<TechType, Action<Equipment, string>> SlotBoundUpgradeActions = new Dictionary<TechType, Action<Equipment, string>>(12);
-        private readonly HashSet<TechType> ChargingModules = new HashSet<TechType>();
+        private readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
 
         internal bool Initialize(CyclopsManager manager)
         {
@@ -103,35 +86,134 @@
 
             this.Manager = manager;
 
-            SimpleUpgradeActions.Add(TechType.CyclopsShieldModule, EnabledShield);
-            SimpleUpgradeActions.Add(TechType.CyclopsSonarModule, EnableSonar);
-            SimpleUpgradeActions.Add(TechType.CyclopsSeamothRepairModule, EnableRepairDock);
-            SimpleUpgradeActions.Add(TechType.CyclopsDecoyModule, EnableExtraDecoySlots);
-            SimpleUpgradeActions.Add(TechType.CyclopsFireSuppressionModule, EnableFireSuppressionSystem);
-            SimpleUpgradeActions.Add(TechType.CyclopsThermalReactorModule, AddThermalModule);
-            SimpleUpgradeActions.Add(TechType.PowerUpgradeModule, AddPowerMk1Module);
+            SetupPowerManagerUpgrades();
 
-            SimpleUpgradeActions.Add(CyclopsModule.SolarChargerID, AddSolarModule);
-            SimpleUpgradeActions.Add(CyclopsModule.SpeedBoosterModuleID, AddSpeedModule);
-            SimpleUpgradeActions.Add(CyclopsModule.PowerUpgradeMk2ID, AddPowerMk2Module);
-            SimpleUpgradeActions.Add(CyclopsModule.PowerUpgradeMk3ID, AddPowerMk3Module);
-            SimpleUpgradeActions.Add(CyclopsModule.BioReactorBoosterID, AddBioBooster);
+            UpgradeManagerInitializing?.Invoke();
 
-            SlotBoundUpgradeActions.Add(CyclopsModule.SolarChargerMk2ID, AddSolarMk2Module);
-            SlotBoundUpgradeActions.Add(CyclopsModule.ThermalChargerMk2ID, AddThermalMk2Module);
-            SlotBoundUpgradeActions.Add(CyclopsModule.NuclearChargerID, AddNuclearModule);
+            RegisterUpgradeHandlers();
 
-            ChargingModules.Add(CyclopsModule.SolarChargerID);
-            ChargingModules.Add(CyclopsModule.SolarChargerMk2ID);
-            ChargingModules.Add(TechType.CyclopsThermalReactorModule);
-            ChargingModules.Add(CyclopsModule.ThermalChargerMk2ID);
-            ChargingModules.Add(CyclopsModule.NuclearChargerID);
-
-            holographicHUD = this.Cyclops.GetComponent<CyclopsHolographicHUD>();
+            Equipment cyclopsConsole = this.Cyclops.upgradeConsole.modules;
+            AttachEquipmentEvents(ref cyclopsConsole);
 
             SyncUpgradeConsoles();
 
             return true;
+        }
+
+        private void SetupPowerManagerUpgrades()
+        {
+            PowerManager powerManager = this.Manager.PowerManager;
+
+            RegisterOneTimeUseHandlerCreator(() =>
+            {
+                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0)
+                {
+                    LoggingName = "Engine Upgrades Collection"
+                };
+                TieredUpgradeHandler<int> engine1 = efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
+                engine1.LoggingName = "Engine Upgrade Mk1";
+                TieredUpgradeHandler<int> engine2 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
+                engine2.LoggingName = "Engine Upgrade Mk2";
+                TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
+                engine3.LoggingName = "Engine Upgrade Mk3";
+
+                powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
+                return efficiencyUpgrades;
+            });
+
+            RegisterOneTimeUseHandlerCreator(() =>
+            {
+                var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
+                {
+                    MaxCount = 6,
+                    LoggingName = "SpeedBooster",
+                    OnFirstTimeMaxCountReached = () =>
+                    {
+                        ErrorMessage.AddMessage(CyclopsSpeedBooster.MaxRatingAchived);
+                    }
+                };
+                powerManager.SpeedBoosters = speed;
+                return speed;
+            });
+
+            RegisterOneTimeUseHandlerCreator(() =>
+            {
+                var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID)
+                {
+                    LoggingName = "SolarCharger",
+                    MaxCount = 12
+                };
+                powerManager.SolarCharger = solarMk1;
+                return solarMk1;
+            });
+
+            RegisterOneTimeUseHandlerCreator(() =>
+            {
+                var solarMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true)
+                {
+                    LoggingName = "SolarChargerMk2",
+                    MaxCount = 12
+                };
+                powerManager.SolarChargerMk2 = solarMk2;
+                return solarMk2;
+            });
+
+            RegisterOneTimeUseHandlerCreator(() =>
+            {
+                var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule)
+                {
+                    LoggingName = "ThermalCharger",
+                    MaxCount = 12
+                };
+                powerManager.ThermalCharger = thermalMk1;
+                return thermalMk1;
+            });
+
+            RegisterOneTimeUseHandlerCreator(() =>
+            {
+                var thermalMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true)
+                {
+                    LoggingName = "ThermalChargerMk2",
+                    MaxCount = 12
+                };
+                powerManager.ThermalChargerMk2 = thermalMk2;
+                return thermalMk2;
+            });
+
+            RegisterOneTimeUseHandlerCreator(() =>
+            {
+                var nuclear = new NuclearUpgradeHandler();
+                powerManager.NuclearCharger = nuclear;
+                return nuclear;
+            });
+
+            RegisterOneTimeUseHandlerCreator(() =>
+            {
+                var bioBoost = new BioBoosterUpgradeHandler();
+                powerManager.BioBoosters = bioBoost;
+                return bioBoost;
+            });
+        }
+
+        private void RegisterUpgradeHandlers()
+        {
+            // Register upgrades from other mods
+            foreach (Delegate externalMethod in ReusableUpgradeHandlers)
+            {
+                if (externalMethod is HandlerCreator upgradeHandlerCreator)
+                {
+                    UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
+                    upgrade.RegisterSelf(KnownsUpgradeModules);
+                }
+            }
+
+            foreach (HandlerCreator upgradeHandlerCreator in OneTimeUseUpgradeHandlers)
+            {
+                UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
+                upgrade.RegisterSelf(KnownsUpgradeModules);
+            }
+
+            OneTimeUseUpgradeHandlers.Clear();
         }
 
         internal void SyncUpgradeConsoles()
@@ -164,152 +246,30 @@
             HandleUpgrades();
         }
 
-        private void ClearAllUpgrades()
+        internal void AttachEquipmentEvents(ref Equipment upgradeConsoleEquipment)
         {
+            if (upgradeConsoleEquipment == null)
+                return;
+
+            upgradeConsoleEquipment.isAllowedToAdd += IsAllowedToAdd;
+            upgradeConsoleEquipment.isAllowedToRemove += IsAllowedToRemove;
+        }
+
+        internal void HandleUpgrades()
+        {
+            // Turn off all upgrades and clear all values
             if (this.Cyclops == null)
             {
                 ErrorMessage.AddError("ClearAllUpgrades: Cyclops ref is null - Upgrade handling cancled");
                 return;
             }
 
-            // Turn off all toggleable upgrades first
-            this.Cyclops.shieldUpgrade = false;
-            this.Cyclops.sonarUpgrade = false;
-            this.Cyclops.vehicleRepairUpgrade = false;
-            this.Cyclops.decoyTubeSizeIncreaseUpgrade = false;
-            this.Cyclops.thermalReactorUpgrade = false;
+            this.Manager.PowerManager.PowerIcons.DisableAll();
 
-            if (this.HolographicHUD != null)
-            {
-                //ErrorMessage.AddError("ClearAllUpgrades: HolographicHUD ref is null");
-                // The fire suppression system is toggleable but isn't a field on the SubRoot class
-                this.HolographicHUD.fireSuppressionSystem.SetActive(false);
-            }
-
-            this.BonusCrushDepth = 0f;
-
-            this.PowerIndex = 0;
-            this.SpeedBoosters = 0;
-
-            this.SolarModuleCount = 0;
-            this.ThermalModuleCount = 0;
-            this.BioBoosterCount = 0;
-
-            this.SolarMk2Batteries.Clear();
-            this.ThermalMk2Batteries.Clear();
-            this.NuclearModules.Clear();
+            foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
+                upgradeType.UpgradesCleared(this.Cyclops);
 
             this.HasChargingModules = false;
-        }
-
-        private void AddSpeedModule()
-        {
-            ++this.SpeedBoosters;
-        }
-
-        private void AddPowerMk1Module()
-        {
-            this.PowerIndex = Math.Max(this.PowerIndex, 1);
-        }
-
-        private void AddPowerMk2Module()
-        {
-            this.PowerIndex = Math.Max(this.PowerIndex, 2);
-        }
-
-        private void AddPowerMk3Module()
-        {
-            this.PowerIndex = Math.Max(this.PowerIndex, 3);
-        }
-
-        private void AddSolarModule()
-        {
-            ++this.SolarModuleCount;
-        }
-
-        private void AddThermalModule()
-        {
-            ++this.ThermalModuleCount;
-        }
-
-        private void AddBioBooster()
-        {
-            ++this.BioBoosterCount;
-        }
-
-        private void UpdateBioReactors()
-        {
-            if (this.BioBoosterCount > CyBioReactorMono.MaxBoosters)
-            {
-                ErrorMessage.AddMessage("Cannot exceed maximum boost to bioreactors");
-                return;
-            }
-
-            CyBioReactorMono lastRef = null;
-            bool changedHappened = false;
-            foreach (CyBioReactorMono reactor in this.Manager.BioReactors)
-            {
-                changedHappened |= (lastRef = reactor).UpdateBoosterCount(this.BioBoosterCount);
-            }
-
-            if (changedHappened && this.BioBoosterCount == CyBioReactorMono.MaxBoosters)
-            {
-                ErrorMessage.AddMessage("Maximum boost to bioreactors achieved");
-            }
-        }
-
-        private void AddSolarMk2Module(Equipment modules, string slot)
-        {
-            this.SolarMk2Batteries.Add(GetBatteryInSlot(modules, slot));
-        }
-
-        private void AddThermalMk2Module(Equipment modules, string slot)
-        {
-            this.ThermalMk2Batteries.Add(GetBatteryInSlot(modules, slot));
-        }
-
-        private void AddNuclearModule(Equipment modules, string slot)
-        {
-            this.NuclearModules.Add(new NuclearModuleDetails(modules, slot, GetBatteryInSlot(modules, slot)));
-        }
-
-        private void AddDepthModule(TechType depthModule)
-        {
-            this.BonusCrushDepth = Mathf.Max(this.BonusCrushDepth, ExtraCrushDepths[depthModule]);
-        }
-
-        private void EnableFireSuppressionSystem()
-        {
-            if (this.HolographicHUD != null)
-            {
-                this.HolographicHUD.fireSuppressionSystem.SetActive(true);
-            }
-        }
-
-        private void EnableExtraDecoySlots()
-        {
-            this.Cyclops.decoyTubeSizeIncreaseUpgrade = true;
-        }
-
-        private void EnableRepairDock()
-        {
-            this.Cyclops.vehicleRepairUpgrade = true;
-        }
-
-        private void EnableSonar()
-        {
-            this.Cyclops.sonarUpgrade = true;
-        }
-
-        private void EnabledShield()
-        {
-            this.Cyclops.shieldUpgrade = true;
-        }
-
-        internal void HandleUpgrades()
-        {
-            // Turn off all upgrades and clear all values
-            ClearAllUpgrades();
 
             var foundUpgrades = new List<TechType>();
 
@@ -325,30 +285,12 @@
 
                 foundUpgrades.Add(techTypeInSlot);
 
-                this.HasChargingModules |= ChargingModules.Contains(techTypeInSlot);
-
-                if (SimpleUpgradeActions.TryGetValue(techTypeInSlot, out Action simpleUpgrade))
+                if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
-                    simpleUpgrade.Invoke();
-                    continue;
-                }
+                    handler.UpgradeCounted(this.Cyclops, modules, slot);
 
-                switch (techTypeInSlot)
-                {
-                    case TechType.HullReinforcementModule:
-                    case TechType.HullReinforcementModule2:
-                    case TechType.HullReinforcementModule3:
-                    case TechType.CyclopsHullModule1:
-                    case TechType.CyclopsHullModule2:
-                    case TechType.CyclopsHullModule3:
-                        AddDepthModule(techTypeInSlot);
-                        continue;
-                }
-
-                if (SlotBoundUpgradeActions.TryGetValue(techTypeInSlot, out Action<Equipment, string> batteryUpgrade))
-                {
-                    batteryUpgrade.Invoke(modules, slot);
-                    continue;
+                    if (handler.IsPowerProducer)
+                        this.HasChargingModules = true;
                 }
             }
 
@@ -356,20 +298,30 @@
             {
                 this.Cyclops.slotModSFX?.Play();
                 this.Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
-                UpdateBioReactors();
+
+                foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
+                    upgradeType.UpgradesFinished(this.Cyclops);
             }
         }
 
-        /// <summary>
-        /// Gets the battery of the upgrade module in the specified slot.
-        /// </summary>
-        /// <param name="modules">The equipment modules.</param>
-        /// <param name="slotName">The slot name.</param>
-        /// <returns>The <see cref="Battery"/> component from the upgrade module.</returns>
-        private static Battery GetBatteryInSlot(Equipment modules, string slotName)
+        private bool IsAllowedToAdd(Pickupable pickupable, bool verbose)
         {
-            // Get the battery component
-            return modules.GetItemInSlot(slotName).item.GetComponent<Battery>();
+            if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
+            {
+                return handler.CanUpgradeBeAdded(this.Cyclops, pickupable, verbose);
+            }
+
+            return true;
+        }
+
+        private bool IsAllowedToRemove(Pickupable pickupable, bool verbose)
+        {
+            if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
+            {
+                return handler.CanUpgradeBeRemoved(this.Cyclops, pickupable, verbose);
+            }
+
+            return true;
         }
     }
 }

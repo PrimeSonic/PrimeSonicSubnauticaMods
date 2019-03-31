@@ -4,13 +4,14 @@
     using Harmony;
     using Managers;
     using Monobehaviors;
+    using Buildables;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
     [HarmonyPatch("OnOpenPDA")]
-    public class UGUI_InventoryTab_OnOpenPDA_Patcher
+    internal class UGUI_InventoryTab_OnOpenPDA_Patcher
     {
         [HarmonyPostfix]
-        public static void Postfix(uGUI_InventoryTab __instance)
+        internal static void Postfix(uGUI_InventoryTab __instance)
         {
             // This event happens whenever the player opens their PDA.
             // We will make a series of checks to see if what they have opened is the Cyclops Bioreactor item container.
@@ -31,7 +32,7 @@
 
             string label = containerObj._label;
 
-            if (label != CyBioReactorMono.StorageLabel)
+            if (label != CyBioReactor.StorageLabel)
                 return; // Not a Cyclops Bioreactor storage
 
             List<CyBioReactorMono> reactors = CyclopsManager.GetBioReactors(Player.main.currentSub);

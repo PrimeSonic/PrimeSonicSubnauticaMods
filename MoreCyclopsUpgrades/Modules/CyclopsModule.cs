@@ -17,7 +17,7 @@
     {
         private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>();
 
-        private static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
+        internal static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
 
         internal static bool ModulesEnabled { get; private set; } = true;
 

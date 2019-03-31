@@ -13,9 +13,19 @@
 
         public static TechType TechTypeID { get; private set; } = TechType.UnusedOld;
 
+        private const string OnHoverFormatKey = "CyBioOnHover";
+        public static string OnHoverFormatString(int charge, float capacity, string stillProducing)
+        {
+            return Language.main.GetFormat(OnHoverFormatKey, charge, capacity, stillProducing);
+        }
+
+        private const string StorageLabelKey = "CyBioReactorLabel";
+        public static string StorageLabel => Language.main.Get(StorageLabelKey);
+
         public CyBioReactor()
             : base(CyBioReactorID, "Cyclops Bioreactor", "Composts organic matter into electrical energy.")
         {
+            OnFinishedPatching += HandleLanguageLines;
         }
 
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
@@ -91,6 +101,12 @@
             }
 
             TechTypeID = this.TechType;
+        }
+
+        private void HandleLanguageLines()
+        {
+            LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
+            LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
         }
     }
 }

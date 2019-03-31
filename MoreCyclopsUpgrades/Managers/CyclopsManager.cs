@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using System.Collections.Generic;
+    using Common;
     using MoreCyclopsUpgrades.Monobehaviors;
 
     internal class CyclopsManager
@@ -23,7 +24,7 @@
             InstanceID = cyclops.GetInstanceID();
         }
 
-        // List was chosen because of the very small number of entries it will mamaged.
+        // List was chosen because of the very small number of entries it will have.
         private static List<CyclopsManager> Managers = new List<CyclopsManager>();
 
         public static CyclopsManager GetAllManagers(SubRoot cyclops)
@@ -74,14 +75,20 @@
                 HUDManager = hudManager
             };
 
-            if (upgradeMgr.Initialize(mgr) && powerMgr.Initialize(mgr) && hudManager.Initialize(mgr))
-            {                
-                Managers.Add(mgr);
+            
+            Managers.Add(mgr);
 
-                return mgr;
+            // Managers must be initialized in this order
+            if (!upgradeMgr.Initialize(mgr) || 
+                !powerMgr.Initialize(mgr) || 
+                !hudManager.Initialize(mgr))
+            {
+                QuickLogger.Error("Failed to initialized manager", true);
+                Managers.Remove(mgr);
+                return null;
             }
 
-            return null;
+            return mgr;            
         }
 
         public static void SyncUpgradeConsoles()

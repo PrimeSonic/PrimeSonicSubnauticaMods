@@ -1,8 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Buildables
 {
     using System.Collections.Generic;
-    using System.Reflection;
-    using Common;
     using Modules;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -17,7 +15,7 @@
         // This name will be used as both the new TechType of the buildable fabricator and the CraftTree Type for the custom crafting tree.
         public const string NameID = "NuclearFabricator";
         public const string FriendlyName = "Nuclear Fabricator";
-        public const string HandOverText = "UseNukFabricator";
+        private const string HandOverKey = "UseNukFabricator";
 
         internal NuclearFabricator() : base(NameID, $"{NameID}PreFab")
         {
@@ -59,7 +57,7 @@
             // Set the buildable prefab
             PrefabHandler.RegisterPrefab(this);
 
-            LanguageHandler.SetLanguageLine(HandOverText, "Use Nuclear Fabricator");
+            LanguageHandler.SetLanguageLine(HandOverKey, "Use Nuclear Fabricator");
 
             // Set the custom sprite for the Habitat Builder Tool menu
             SpriteHandler.RegisterSprite(this.TechType, @"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorI.png");
@@ -111,7 +109,7 @@
             // Associate custom craft tree to the fabricator
             GhostCrafter fabricator = prefab.GetComponent<Fabricator>();
             fabricator.craftTree = this.TreeTypeID;
-            fabricator.handOverText = HandOverText;
+            fabricator.handOverText = Language.main.Get(HandOverKey);
 
             // Modify existing constructable - This is just a modified Fabricator which already had a Constructible component.
             Constructable constructible = prefab.GetComponent<Constructable>();
@@ -143,5 +141,7 @@
 
             return prefab;
         }
+
+
     }
 }
