@@ -229,6 +229,9 @@
                 return;
             }
 
+            if (Time.timeScale == 0f) // Is the game paused?
+                return;
+
             if (!this.UpgradeManager.HasChargingModules && !this.HasBioReactors)
                 return; // No charging modules, early exit
 
