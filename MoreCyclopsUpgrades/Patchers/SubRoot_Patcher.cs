@@ -1,7 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
-    using Managers;
     using Harmony;
+    using Managers;
     using SMLHelper.V2.Utility;
 
     [HarmonyPatch(typeof(SubRoot))]
@@ -98,7 +98,7 @@
 
             reference = __instance.voiceNotificationManager;
             __instance.voiceNotificationManager = null;
-            
+
         }
 
         [HarmonyPostfix]

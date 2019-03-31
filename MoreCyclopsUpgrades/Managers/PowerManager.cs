@@ -240,6 +240,8 @@
             float surplusPower = 0f;
             bool renewablePowerAvailable = false;
 
+            this.Manager.HUDManager.UpdateTextVisibility();
+
             // Handle solar power
             if (this.SolarCharger.HasUpgrade || this.SolarChargerMk2.HasUpgrade)
             {

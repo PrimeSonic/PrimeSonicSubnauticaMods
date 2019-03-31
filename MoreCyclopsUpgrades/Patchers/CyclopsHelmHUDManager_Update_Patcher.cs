@@ -10,17 +10,10 @@
         [HarmonyPostfix]
         public static void Postfix(ref CyclopsHelmHUDManager __instance)
         {
-            if (!__instance.LOD.IsFull())
-            {
-                return; // Same early exit
-            }
-
-            CyclopsHUDManager hudMgr = CyclopsManager.GeHUDManager(__instance.subRoot);
+            CyclopsHUDManager hudMgr = CyclopsManager.GetHUDManager(__instance.subRoot);
 
             if (hudMgr == null)
-            {
                 return;
-            }
 
             hudMgr.UpdateHelmHUD(__instance);
         }

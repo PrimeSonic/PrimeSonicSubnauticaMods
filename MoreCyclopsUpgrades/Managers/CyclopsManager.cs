@@ -47,7 +47,7 @@
             return GetManager(cyclops.GetInstanceID(), cyclops)?.BioReactors;
         }
 
-        public static CyclopsHUDManager GeHUDManager(SubRoot cyclops)
+        public static CyclopsHUDManager GetHUDManager(SubRoot cyclops)
         {
             return GetManager(cyclops.GetInstanceID(), cyclops)?.HUDManager;
         }

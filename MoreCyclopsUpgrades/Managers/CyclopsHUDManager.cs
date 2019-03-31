@@ -51,12 +51,33 @@
 
         private bool powerIconsInitialized = false;
 
+        private CyclopsHolographicHUD holographicHUD;
+
+        private bool lastKnownTextVisibility = false;
+        private bool powerIconTextVisibility = false;
+
+        public void UpdateTextVisibility()
+        {
+            powerIconTextVisibility =
+                Player.main.currentSub == this.Cyclops &&
+                holographicHUD != null &&
+                Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
+
+            if (lastKnownTextVisibility != powerIconTextVisibility)
+            {
+                UpdatePowerIcons(this.PowerManager.PowerIcons);
+                lastKnownTextVisibility = powerIconTextVisibility;
+            }
+        }
+
         internal bool Initialize(CyclopsManager manager)
         {
             if (this.Manager != null)
                 return false; // Already initialized
 
             this.Manager = manager;
+
+            powerIconTextVisibility = Player.main.currentSub == this.Cyclops;
 
             return true;
         }
@@ -68,6 +89,11 @@
         /// <param name="lastReservePower">The last reserve power.</param>
         internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
+            if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != this.Manager.Cyclops)
+            {
+                return; // Same early exit
+            }
+
             if (this.UpgradeManager == null)
             {
                 ErrorMessage.AddMessage("UpdateHelmHUD: UpgradeManager is null");
@@ -90,6 +116,11 @@
         /// <param name="hudManager">The console HUD manager.</param>
         internal void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager hudManager)
         {
+            if (!this.Cyclops.LOD.IsFull() || Player.main.currentSub != this.Cyclops)
+            {
+                return; // Same early exit
+            }
+
             hudManager.healthCur.text = IntStringCache.GetStringForInt(Mathf.FloorToInt(hudManager.liveMixin.health));
             int maxHealth = Mathf.CeilToInt(hudManager.liveMixin.health);
             if (hudManager.lastHealthMaxDisplayed != maxHealth)
@@ -138,7 +169,9 @@
             HelmIndicatorsEven[0] = CreatePowerIndicatorIcon(canvas, -helmspacing / 2, helmyoffset, helmzoffset, helmscale);
             HelmIndicatorsEven[1] = CreatePowerIndicatorIcon(canvas, helmspacing / 2, helmyoffset, helmzoffset, helmscale);
 
-            Canvas canvas2 = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>().healthBar.canvas;
+            holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
+            Canvas canvas2 = holographicHUD.healthBar.canvas;
+
             const float healthbarxoffset = 100;
             const float healthbarspacing = 70;
             const float healthbarzoffset = 0.05f;
@@ -169,9 +202,8 @@
             var textGO = new GameObject("TextGo");
 
             textGO.transform.SetParent(iconGo.transform, false);
-            textGO.AddComponent<Text>();
 
-            Text text = textGO.GetComponent<Text>();
+            Text text = textGO.AddComponent<Text>();
             text.font = arial;
             text.material = arial.material;
             text.text = "??";
@@ -185,6 +217,7 @@
             RectTransform rectTransform = text.GetComponent<RectTransform>();
             rectTransform.localScale = Vector3.one;
             rectTransform.anchoredPosition3D = Vector3.zero;
+            rectTransform.anchoredPosition += new Vector2(0, -15f);
 
             return new Indicator(icon, text);
         }
@@ -223,13 +256,15 @@
 
                 hpIcon.Icon.sprite = helmIcon.Icon.sprite = SpriteManager.Get(icon.TechType);
                 hpIcon.Enabled = helmIcon.Enabled = true;
+
+                hpIcon.Text.enabled = powerIconTextVisibility;
                 hpIcon.Text.text = helmIcon.Text.text = FormatNumber(icon.Value, icon.Format);
                 hpIcon.Text.color = helmIcon.Text.color = GetNumberColor(icon.Value, icon.MaxValue, icon.MinValue);
             }
         }
 
         private static string FormatNumber(float value, NumberFormat format)
-        {            
+        {
             switch (format)
             {
                 case NumberFormat.Temperature:

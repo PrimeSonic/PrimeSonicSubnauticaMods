@@ -1,7 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
-    using Managers;
     using Harmony;
+    using Managers;
 
     [HarmonyPatch(typeof(CyclopsUpgradeConsoleHUDManager))]
     [HarmonyPatch("RefreshScreen")]
@@ -10,12 +10,10 @@
         [HarmonyPrefix]
         public static bool Prefix(ref CyclopsUpgradeConsoleHUDManager __instance)
         {
-            CyclopsHUDManager hudMgr = CyclopsManager.GeHUDManager(__instance.subRoot);
+            CyclopsHUDManager hudMgr = CyclopsManager.GetHUDManager(__instance.subRoot);
 
             if (hudMgr == null)
-            {
                 return true;
-            }
 
             hudMgr.UpdateConsoleHUD(__instance);
 
