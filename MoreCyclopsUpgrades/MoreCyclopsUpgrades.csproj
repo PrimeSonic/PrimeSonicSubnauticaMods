@@ -66,6 +66,8 @@
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\BioEnergyCollection.cs" />
+    <Compile Include="NumberFormat.cs" />
+    <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
     <Compile Include="CyclopsUpgrades\BatteryUpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\BioBoosterUpgradeHandler.cs" />

@@ -2,6 +2,7 @@
 {
     using MoreCyclopsUpgrades.Modules;
     using System.Collections.Generic;
+    using UnityEngine;
 
     internal class PowerIconState
     {
@@ -12,6 +13,8 @@
             public float MaxValue;
             public readonly float MinValue;
             public readonly NumberFormat Format;
+
+            public int IntValue => Mathf.CeilToInt(Value);
 
             public PowerIcon(TechType techType, float minValue, NumberFormat format) : this()
             {

@@ -1,17 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using Common;
+    using MoreCyclopsUpgrades.Caching;
     using SaveData;
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
-
-    internal enum NumberFormat : byte
-    {
-        Temperature = (byte)'T',
-        Amount = (byte)'A',
-        Sun = (byte)'S',
-        Percent = (byte)'P',
-    }
 
     internal class CyclopsHUDManager
     {
@@ -131,16 +125,16 @@
 
             int currentReservePower = this.PowerManager.GetTotalReservePower();
             float currentBatteryPower = this.Cyclops.powerRelay.GetPower();
-            float TotalPowerUnits = currentBatteryPower + currentReservePower;
+            int TotalPowerUnits = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
             float normalMaxPower = this.Cyclops.powerRelay.GetMaxPower();
             int normalMaxPowerInt = Mathf.CeilToInt(normalMaxPower);
 
             hudManager.energyCur.color = currentReservePower > 0 ? Color.cyan : Color.white;
-            hudManager.energyCur.text = FormatNumber(TotalPowerUnits, NumberFormat.Amount);
+            hudManager.energyCur.text = NumberFormatter.FormatNumber(TotalPowerUnits, NumberFormat.Amount);
 
             if (hudManager.lastMaxSubPowerDisplayed != normalMaxPowerInt)
             {
-                hudManager.energyMax.text = "/" + FormatNumber(normalMaxPower, NumberFormat.Amount);
+                hudManager.energyMax.text = "/" + NumberFormatter.FormatNumber(normalMaxPowerInt, NumberFormat.Amount);
                 hudManager.lastMaxSubPowerDisplayed = normalMaxPowerInt;
             }
 
@@ -258,58 +252,9 @@
                 hpIcon.Enabled = helmIcon.Enabled = true;
 
                 hpIcon.Text.enabled = powerIconTextVisibility;
-                hpIcon.Text.text = helmIcon.Text.text = FormatNumber(icon.Value, icon.Format);
-                hpIcon.Text.color = helmIcon.Text.color = GetNumberColor(icon.Value, icon.MaxValue, icon.MinValue);
+                hpIcon.Text.text = helmIcon.Text.text = NumberFormatter.FormatNumber(icon.IntValue, icon.Format);
+                hpIcon.Text.color = helmIcon.Text.color = NumberFormatter.GetNumberColor(icon.Value, icon.MaxValue, icon.MinValue);
             }
-        }
-
-        private static string FormatNumber(float value, NumberFormat format)
-        {
-            switch (format)
-            {
-                case NumberFormat.Temperature:
-                    return $"{Mathf.CeilToInt(value)}°C";
-                case NumberFormat.Sun:
-                    return $"{Mathf.CeilToInt(value)}%Θ";
-                case NumberFormat.Amount:
-                    return $"{HandleLargeNumbers(value)}";
-                case NumberFormat.Percent:
-                    return $"{Mathf.CeilToInt(value)}%";
-                default:
-                    return Mathf.FloorToInt(value).ToString();
-            }
-        }
-
-        private static string HandleLargeNumbers(float possiblyLargeValue)
-        {
-            if (possiblyLargeValue > 999999)
-            {
-                return $"{possiblyLargeValue / 1000000:F1}M";
-            }
-
-            if (possiblyLargeValue > 999)
-            {
-                return $"{possiblyLargeValue / 1000:F1}K";
-            }
-
-            return $"{Mathf.CeilToInt(possiblyLargeValue)}";
-        }
-
-        private static Color GetNumberColor(float value, float max, float min)
-        {
-            if (value > max)
-                return Color.white;
-
-            if (value <= min)
-                return Color.red;
-
-            const float greenHue = 120f / 360f;
-            float percentOfMax = (value - min) / (max - min);
-
-            const float saturation = 1f;
-            const float lightness = 0.8f;
-
-            return Color.HSVToRGB(percentOfMax * greenHue, saturation, lightness);
-        }
+        }        
     }
 }
