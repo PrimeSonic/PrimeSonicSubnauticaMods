@@ -380,7 +380,7 @@
 
                 UpdateBoosterCount(SaveData.BoosterCount);
 
-                this.Battery._charge = SaveData.ReactorBatterCharge;
+                this.Battery._charge = Mathf.Min(this.Battery._capacity, SaveData.ReactorBatterCharge);
 
                 List<BioEnergy> savedMaterials = SaveData.GetMaterialsInProcessing();
                 QuickLogger.Debug($"Found {savedMaterials.Count} materials in save data");
@@ -516,7 +516,7 @@
                     case 2:
                         return new ReactorStats(3, 3, MaxPowerBaseline + 100f);
                     case 3: // MaxBoosters
-                        return new ReactorStats(3, 3, MaxPowerBaseline + 200f);
+                        return new ReactorStats(4, 3, MaxPowerBaseline + 150f);
                 }
             }
         }
