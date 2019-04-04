@@ -1,50 +1,46 @@
 ﻿namespace MoreCyclopsUpgrades.SaveData
 {
+    using Common;
+    using Common.EasyMarkup;
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Reflection;
     using System.Text;
-    using Common;
-    using Common.EasyMarkup;
 
     internal class EmModPatchConfig : EmPropertyCollection
     {
-        internal bool ValidDataRead = true;
+        internal static readonly EmModPatchConfig Settings = new EmModPatchConfig();
+
+        private readonly string SaveFile = Path.Combine(Assembly.GetExecutingAssembly().Location, $"{ConfigKey}.txt");
+
+        private bool ValidDataRead = true;
 
         private const string ConfigKey = "MoreCyclopsUpgradesConfig";
-        private const string ConfigFile = "./QMods/MoreCyclopsUpgrades/" + ConfigKey + ".txt";
-
         private const string EmAuxEnabledKey = "EnableAuxiliaryUpgradeConsoles";
         private const string EmUpgradesEnabledKey = "EnableNewUpgradeModules";
         private const string EmBioEnergyEnabledKey = "EnableCyclopsBioReactor";
+        private const string EmPowerLevelKey = "CyclopsPowerLevel";
 
-        internal bool EnableAuxiliaryUpgradeConsoles
-        {
-            get => EmAuxEnabled.Value;
-            set => EmAuxEnabled.Value = value;
-        }
+        internal bool EnableAuxiliaryUpgradeConsoles => EmAuxEnabled.Value;
 
-        internal bool EnableNewUpgradeModules
-        {
-            get => EmUpgradesEnabled.Value;
-            set => EmUpgradesEnabled.Value = value;
-        }
+        internal bool EnableNewUpgradeModules => EmUpgradesEnabled.Value;
 
-        internal bool EnableBioEnergy
-        {
-            get => EmBioEnergyEnabled.Value;
-            set => EmBioEnergyEnabled.Value = value;
-        }
+        internal bool EnableBioReactors => EmBioEnergyEnabled.Value;
+
+        internal CyclopsPowerLevels PowerLevel => EmPowerLevel.Value;
 
         private readonly EmYesNo EmAuxEnabled;
         private readonly EmYesNo EmUpgradesEnabled;
         private readonly EmYesNo EmBioEnergyEnabled;
+        private readonly EmProperty<CyclopsPowerLevels> EmPowerLevel;
 
-        private static ICollection<EmProperty> definitions = new List<EmProperty>(2)
+        private static ICollection<EmProperty> definitions = new List<EmProperty>()
         {
             new EmYesNo(EmAuxEnabledKey, true),
             new EmYesNo(EmUpgradesEnabledKey, true),
             new EmYesNo(EmBioEnergyEnabledKey, true),
+            new EmProperty<CyclopsPowerLevels>(EmPowerLevelKey, CyclopsPowerLevels.Crabsnake),
         };
 
         public EmModPatchConfig() : base(ConfigKey, definitions)
@@ -52,20 +48,21 @@
             EmAuxEnabled = (EmYesNo)Properties[EmAuxEnabledKey];
             EmUpgradesEnabled = (EmYesNo)Properties[EmUpgradesEnabledKey];
             EmBioEnergyEnabled = (EmYesNo)Properties[EmBioEnergyEnabledKey];
+            EmPowerLevel = (EmProperty<CyclopsPowerLevels>)Properties[EmPowerLevelKey];
 
             OnValueExtractedEvent += Validate;
         }
 
-        internal void Initialize()
+        internal static void Initialize()
         {
             try
             {
-                LoadFromFile();
+                Settings.LoadFromFile();
             }
             catch (Exception ex)
             {
                 QuickLogger.Warning("Error loading {ConfigKey}: " + ex.ToString());
-                WriteConfigFile();
+                Settings.WriteConfigFile();
             }
         }
 
@@ -90,11 +87,14 @@
             }
         }
 
-        internal override EmProperty Copy() => new EmModPatchConfig();
+        internal override EmProperty Copy()
+        {
+            return new EmModPatchConfig();
+        }
 
         private void WriteConfigFile()
         {
-            File.WriteAllLines(ConfigFile, new[]
+            File.WriteAllLines(SaveFile, new[]
             {
                 "# ----------------------------------------------------------------------------- #",
                 "# Changes to this config file will only take effect next time you boot the game #",
@@ -131,14 +131,14 @@
 
         private void LoadFromFile()
         {
-            if (!File.Exists(ConfigFile))
+            if (!File.Exists(SaveFile))
             {
                 QuickLogger.Debug("Mod config file not found. Writing default file.");
                 WriteConfigFile();
                 return;
             }
 
-            string text = File.ReadAllText(ConfigFile, Encoding.UTF8);
+            string text = File.ReadAllText(SaveFile, Encoding.UTF8);
 
             bool readCorrectly = base.FromString(text);
 

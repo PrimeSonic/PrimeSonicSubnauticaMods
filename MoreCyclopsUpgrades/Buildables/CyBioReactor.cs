@@ -11,6 +11,13 @@
     {
         internal const string CyBioReactorID = "CyBioReactor";
 
+        private static readonly CyBioReactor main = new CyBioReactor();
+
+        public static void PatchCyBioReactor(bool enableBioreactor)
+        {
+            main.Patch(enableBioreactor);
+        }
+
         public static TechType TechTypeID { get; private set; } = TechType.UnusedOld;
 
         private const string OnHoverFormatKey = "CyBioOnHover";
@@ -89,7 +96,7 @@
             };
         }
 
-        public void Patch(bool fullPatch)
+        private void Patch(bool fullPatch)
         {
             if (fullPatch)
             {

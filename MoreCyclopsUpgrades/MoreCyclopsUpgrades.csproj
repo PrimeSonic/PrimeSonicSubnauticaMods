@@ -89,6 +89,7 @@
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\CyBioReactorSaveData.cs" />
+    <Compile Include="SaveData\CyclopsPowerLevels.cs" />
     <Compile Include="SaveData\EmModPatchConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
@@ -162,6 +163,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

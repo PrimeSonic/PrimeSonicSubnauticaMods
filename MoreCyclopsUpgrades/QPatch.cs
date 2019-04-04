@@ -33,14 +33,15 @@
                 if (OtherMods.VehicleUpgradesInCyclops)
                     QuickLogger.Debug("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");
 
-                var modConfig = new EmModPatchConfig();
-                modConfig.Initialize();
+                EmModPatchConfig.Initialize();
 
-                PatchUpgradeModules(modConfig);
+                // TODO - Configure cyclops power levels
 
-                PatchAuxUpgradeConsole(modConfig);
+                PatchUpgradeModules(EmModPatchConfig.Settings.EnableNewUpgradeModules);
 
-                PatchBioEnergy(modConfig);
+                PatchAuxUpgradeConsole(EmModPatchConfig.Settings.EnableAuxiliaryUpgradeConsoles);
+
+                PatchBioEnergy(EmModPatchConfig.Settings.EnableBioReactors);
 
                 RegisterExternalUpgrades();
 
@@ -56,38 +57,34 @@
             }
         }
 
-        private static void PatchUpgradeModules(EmModPatchConfig modConfig)
+        private static void PatchUpgradeModules(bool enableNewUpgradeModules)
         {
-            if (modConfig.EnableNewUpgradeModules)
+            if (enableNewUpgradeModules)
                 QuickLogger.Info("Patching new upgrade modules");
             else
                 QuickLogger.Info("New upgrade modules disabled by config settings");
 
-            CyclopsModule.PatchAllModules(modConfig.EnableNewUpgradeModules);
+            CyclopsModule.PatchAllModules(enableNewUpgradeModules);
         }
 
-        private static void PatchAuxUpgradeConsole(EmModPatchConfig modConfig)
+        private static void PatchAuxUpgradeConsole(bool enableAuxiliaryUpgradeConsoles)
         {
-            if (modConfig.EnableAuxiliaryUpgradeConsoles)
+            if (enableAuxiliaryUpgradeConsoles)
                 QuickLogger.Info("Patching Auxiliary Upgrade Console");
             else
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
-
-            var auxConsole = new CyUpgradeConsole();
-
-            auxConsole.Patch(modConfig.EnableAuxiliaryUpgradeConsoles);
+            
+            CyUpgradeConsole.PatchAuxUpgradeConsole(enableAuxiliaryUpgradeConsoles);
         }
 
-        private static void PatchBioEnergy(EmModPatchConfig modConfig)
+        private static void PatchBioEnergy(bool enableBioreactors)
         {
-            if (modConfig.EnableBioEnergy)
+            if (enableBioreactors)
                 QuickLogger.Info("Patching Cyclops Bioreactor");
             else
                 QuickLogger.Info("Cyclops Bioreactor disabled by config settings");
-
-            var cyBioEnergy = new CyBioReactor();
-
-            cyBioEnergy.Patch(modConfig.EnableBioEnergy);
+            
+            CyBioReactor.PatchCyBioReactor(enableBioreactors);
         }
 
         private static void RegisterExternalUpgrades()
@@ -123,7 +120,11 @@
 
             UpgradeManager.RegisterReusableHandlerCreator(() =>
             {
-                return NewMethod();
+                return new UpgradeHandler(TechType.CyclopsDecoyModule)
+                {
+                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
+                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
+                };
             });
 
             UpgradeManager.RegisterReusableHandlerCreator(() =>
@@ -144,15 +145,6 @@
                     },
                 };
             });
-        }
-
-        private static UpgradeHandler NewMethod()
-        {
-            return new UpgradeHandler(TechType.CyclopsDecoyModule)
-            {
-                OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
-            };
         }
     }
 }
