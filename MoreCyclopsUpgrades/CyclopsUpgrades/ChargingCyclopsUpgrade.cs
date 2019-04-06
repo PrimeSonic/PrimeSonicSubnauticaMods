@@ -5,9 +5,18 @@
 
     internal class ChargingUpgradeHandler : UpgradeHandler
     {
+        internal ChargingUpgradeHandler SiblingUpgrade = null;
+
         public ChargingUpgradeHandler(TechType techType) : base(techType)
         {
             IsPowerProducer = true;
+            IsAllowedToAdd += (SubRoot cyclops, Pickupable item, bool verbose) =>
+            {
+                if (SiblingUpgrade == null)
+                    return this.Count < this.MaxCount;
+
+                return (SiblingUpgrade.Count + this.Count) < this.MaxCount;
+            };
         }
 
         public virtual float ChargeCyclops(SubRoot cyclops, ref float availablePower, ref float powerDeficit)

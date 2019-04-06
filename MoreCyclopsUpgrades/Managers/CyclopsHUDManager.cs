@@ -71,6 +71,11 @@
 
             this.Manager = manager;
 
+            float maxHealth = MaxCyclopsHealth(EmModPatchConfig.Settings.PowerLevel);
+
+            this.Cyclops.live.data.maxHealth = maxHealth;
+            this.Cyclops.live.health = Mathf.Min(maxHealth, this.Cyclops.live.health);
+
             powerIconTextVisibility = Player.main.currentSub == this.Cyclops;
 
             return true;
@@ -256,5 +261,16 @@
                 hpIcon.Text.color = helmIcon.Text.color = NumberFormatter.GetNumberColor(icon.Value, icon.MaxValue, icon.MinValue);
             }
         }        
+
+        private static float MaxCyclopsHealth(CyclopsPowerLevels setting)
+        {
+            switch (setting)
+            {
+                case CyclopsPowerLevels.Leviathan: return 1800f;
+                case CyclopsPowerLevels.Crabsnake: return 1500f;
+                case CyclopsPowerLevels.Peeper: return 1200f;
+                default: return 1500f;
+            }
+        }
     }
 }

@@ -9,7 +9,6 @@
         public NuclearUpgradeHandler() : base(CyclopsModule.NuclearChargerID, canRecharge: false)
         {
             this.LoggingName = "NuclearCharger";
-            this.MaxCount = 6;
 
             OnBatteryDrained += (BatteryDetails details) =>
             {

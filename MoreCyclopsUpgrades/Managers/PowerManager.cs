@@ -19,7 +19,7 @@
 
         private const float EnginePowerPenalty = 0.7f;
 
-        private const int MaxSpeedBoosters = 6;
+        public const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
         public const float MinimalPowerValue = 0.001f;
 
@@ -80,6 +80,8 @@
 
         public SubRoot Cyclops => this.Manager.Cyclops;
 
+        public int MaxModules { get; internal set; } = MaxSpeedBoosters;
+
         private UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
 
         private CyclopsMotorMode motorMode;
@@ -88,11 +90,13 @@
         private SubControl subControl;
         private SubControl SubControl => subControl ?? (subControl = this.Cyclops.GetComponentInChildren<SubControl>());
 
-        private float LastKnownPowerRating { get; set; } = -1f;
-        private int LastKnownSpeedBoosters { get; set; } = -1;
-        private int LastKnownPowerIndex { get; set; } = -1;
+        private float lastKnownPowerRating = -1f;
+        private int lastKnownSpeedBoosters = -1;
+        private int lastKnownPowerIndex = -1;
+        private int speedBoosterSkip = 0;
 
         private float[] OriginalSpeeds { get; } = new float[3];
+        
 
         public bool Initialize(CyclopsManager manager)
         {
@@ -152,9 +156,9 @@
             int powerIndex = this.EngineEfficientyUpgrades.HighestValue;
             int speedBoosters = this.SpeedBoosters.Count;
 
-            if (this.LastKnownPowerIndex != powerIndex)
+            if (lastKnownPowerIndex != powerIndex)
             {
-                this.LastKnownPowerIndex = powerIndex;
+                lastKnownPowerIndex = powerIndex;
 
                 this.Cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
                 this.Cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
@@ -176,9 +180,9 @@
 
             float powerRating = cleanRating / 100f;
 
-            if (this.LastKnownPowerRating != powerRating)
+            if (lastKnownPowerRating != powerRating)
             {
-                this.LastKnownPowerRating = powerRating;
+                lastKnownPowerRating = powerRating;
 
                 this.Cyclops.currPowerRating = powerRating;
 
@@ -186,12 +190,12 @@
                 ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
             }
 
-            if (speedBoosters > MaxSpeedBoosters)
+            if (speedBoosters > this.MaxModules)
                 return; // Exit here
 
-            if (this.LastKnownSpeedBoosters != speedBoosters)
+            if (lastKnownSpeedBoosters != speedBoosters)
             {
-                this.LastKnownSpeedBoosters = speedBoosters;
+                lastKnownSpeedBoosters = speedBoosters;
 
                 float SlowMultiplier = 1f;
                 float StandardMultiplier = 1f;
@@ -214,7 +218,7 @@
                 CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
                 this.SubControl.BaseForwardAccel = this.MotorMode.motorModeSpeeds[(int)currentMode];
 
-                ErrorMessage.AddMessage(CyclopsSpeedBooster.SpeedRatingText(this.LastKnownSpeedBoosters, Mathf.RoundToInt(StandardMultiplier * 100)));
+                ErrorMessage.AddMessage(CyclopsSpeedBooster.SpeedRatingText(lastKnownSpeedBoosters, Mathf.RoundToInt(StandardMultiplier * 100)));
             }
         }
 
@@ -234,6 +238,14 @@
 
             if (!this.UpgradeManager.HasChargingModules && !this.HasBioReactors)
                 return; // No charging modules, early exit
+
+            if (speedBoosterSkip < lastKnownSpeedBoosters)
+            {
+                speedBoosterSkip++; // Slightly slows down recharging with more speed boosters
+                return;
+            }
+
+            speedBoosterSkip = 0;
 
             float powerDeficit = this.Cyclops.powerRelay.GetMaxPower() - this.Cyclops.powerRelay.GetPower();
 

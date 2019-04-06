@@ -8,6 +8,7 @@
     using System;
     using System.Collections.Generic;
     using UnityEngine;
+    using MoreCyclopsUpgrades.SaveData;
 
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
@@ -104,6 +105,9 @@
         {
             PowerManager powerManager = this.Manager.PowerManager;
 
+            int maxChargingModules = MaxChargingModules(EmModPatchConfig.Settings.PowerLevel);
+            powerManager.MaxModules = maxChargingModules;
+
             RegisterOneTimeUseHandlerCreator(() =>
             {
                 var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0)
@@ -125,7 +129,7 @@
             {
                 var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
                 {
-                    MaxCount = 6,
+                    MaxCount = maxChargingModules,
                     LoggingName = "SpeedBooster",
                     OnFirstTimeMaxCountReached = () =>
                     {
@@ -141,7 +145,7 @@
                 var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID)
                 {
                     LoggingName = "SolarCharger",
-                    MaxCount = 12
+                    MaxCount = maxChargingModules
                 };
                 powerManager.SolarCharger = solarMk1;
                 return solarMk1;
@@ -152,18 +156,21 @@
                 var solarMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true)
                 {
                     LoggingName = "SolarChargerMk2",
-                    MaxCount = 12
+                    MaxCount = maxChargingModules
                 };
                 powerManager.SolarChargerMk2 = solarMk2;
                 return solarMk2;
             });
+
+            powerManager.SolarCharger.SiblingUpgrade = powerManager.SolarChargerMk2;
+            powerManager.SolarChargerMk2.SiblingUpgrade = powerManager.SolarCharger;
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
                 var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule)
                 {
                     LoggingName = "ThermalCharger",
-                    MaxCount = 12
+                    MaxCount = maxChargingModules
                 };
                 powerManager.ThermalCharger = thermalMk1;
                 return thermalMk1;
@@ -174,15 +181,21 @@
                 var thermalMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true)
                 {
                     LoggingName = "ThermalChargerMk2",
-                    MaxCount = 12
+                    MaxCount = maxChargingModules
                 };
                 powerManager.ThermalChargerMk2 = thermalMk2;
                 return thermalMk2;
             });
 
+            powerManager.ThermalCharger.SiblingUpgrade = powerManager.ThermalChargerMk2;
+            powerManager.ThermalChargerMk2.SiblingUpgrade = powerManager.ThermalCharger;
+
             RegisterOneTimeUseHandlerCreator(() =>
             {
-                var nuclear = new NuclearUpgradeHandler();
+                var nuclear = new NuclearUpgradeHandler()
+                {
+                    MaxCount = maxChargingModules
+                };
                 powerManager.NuclearCharger = nuclear;
                 return nuclear;
             });
@@ -323,5 +336,16 @@
 
             return true;
         }
+
+        private static int MaxChargingModules(CyclopsPowerLevels setting)
+        {
+            switch (setting)
+            {
+                case CyclopsPowerLevels.Leviathan: return 6;
+                case CyclopsPowerLevels.Crabsnake: return 3;
+                case CyclopsPowerLevels.Peeper: return 1;
+                default: return 12;
+            }
+        }        
     }
 }
