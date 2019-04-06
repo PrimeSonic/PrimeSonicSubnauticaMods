@@ -26,6 +26,12 @@
             return Language.main.GetFormat(OnHoverFormatKey, charge, capacity, stillProducing);
         }
 
+        private const string OverLimitKey = "CyBioOverLimit";
+        public static string OverLimitString()
+        {
+            return Language.main.Get(OverLimitKey);
+        }
+
         private const string StorageLabelKey = "CyBioReactorLabel";
         public static string StorageLabel => Language.main.Get(StorageLabelKey);
 
@@ -114,6 +120,7 @@
         {
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
             LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
+            LanguageHandler.SetLanguageLine(OverLimitKey, "Deactivated. Too many active Bioreactors.");
         }
     }
 }

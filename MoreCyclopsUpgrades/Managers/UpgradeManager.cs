@@ -202,7 +202,7 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
-                var bioBoost = new BioBoosterUpgradeHandler();
+                var bioBoost = new BioBoosterUpgradeHandler(maxChargingModules);
                 powerManager.BioBoosters = bioBoost;
                 return bioBoost;
             });

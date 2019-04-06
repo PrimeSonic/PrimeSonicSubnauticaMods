@@ -96,7 +96,6 @@
         private int speedBoosterSkip = 0;
 
         private float[] OriginalSpeeds { get; } = new float[3];
-        
 
         public bool Initialize(CyclopsManager manager)
         {
@@ -332,10 +331,18 @@
                     if (!reactor.HasPower)
                         continue;
 
-                    countWithPower++;
-                    reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);
-                    totalBioCharge += reactor.Battery._charge;
-                    bioCapacity = reactor.Battery._capacity;
+                    if (countWithPower < this.BioBoosters.MaxBioreactorsAllowed)
+                    {
+                        countWithPower++;
+                        reactor.OverLimit = false;
+                        reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);
+                        totalBioCharge += reactor.Battery._charge;
+                        bioCapacity = reactor.Battery._capacity;
+                    }
+                    else
+                    {
+                        reactor.OverLimit = true;
+                    }
                 }
 
                 bool hasBioPower = countWithPower > 0;
