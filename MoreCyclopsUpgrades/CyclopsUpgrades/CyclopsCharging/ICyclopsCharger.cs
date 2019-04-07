@@ -4,16 +4,18 @@
     using UnityEngine;
 
     /// <summary>
-    /// Defines a method that creates a new <see cref="ICyclopsCharger"/> when needed by the <seealso cref="PowerManager"/>.
+    /// <para>Defines a method that creates a new <see cref="ICyclopsCharger"/> when needed by the <seealso cref="PowerManager"/>.</para>
+    /// <para>DO NOT recharge the Cyclops PowerRelay yourself from the instantiated <see cref="ICyclopsCharger"/>!!! The MoreCyclopsUpgrades PowerManager will handle that.</para>
     /// </summary>
     /// <param name="cyclops">The cyclops that the <see cref="ICyclopsCharger"/> is tasked with recharging.</param>
-    /// <returns></returns>
+    /// <returns>A new <see cref="ICyclopsCharger"/> ready to produce power for the Cyclops.</returns>
     public delegate ICyclopsCharger ChargerCreator(SubRoot cyclops);
 
     /// <summary>
     /// <para>Defines all the behaviors for a cyclops charger that handles a particular type of energy recharging.</para>
     /// <para>Recharging may be part of an update module or it might be a new buidable.</para>
     /// <para>Whatever the case, it is up to you to ensure you have all your references set and ready.</para>
+    /// <para>DO NOT recharge the Cyclops PowerRelay yourself from this class!!! The MoreCyclopsUpgrades PowerManager will handle that.</para>
     /// </summary>
     public interface ICyclopsCharger
     {
@@ -21,6 +23,7 @@
         /// <para>Produces power for the Cyclops during the RechargeCyclops update cycle.</para>
         /// <para>This method should return <c>0f</c> if there is no power avaiable from this charging handler.</para>
         /// <para>You may limit the amount of power produced to only what the cyclops needs, or you may return more.</para>
+        /// <para>DO NOT recharge the Cyclops PowerRelay yourself from this method!!! The MoreCyclopsUpgrades PowerManager will handle that.</para>
         /// </summary>
         /// <param name="requestedPower">The amount of power being requested by the cyclops; This is the current Power Deficit of the cyclops.</param>
         /// <returns>The amount of power produced by this cyclops charger.</returns>
