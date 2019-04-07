@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.Modules
 {
-    using System.Collections.Generic;
     using Caching;
     using Common;
     using Enhancement;
@@ -11,6 +10,7 @@
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using System.Collections.Generic;
     using UnityEngine;
 
     internal abstract class CyclopsModule : ModPrefab
@@ -20,6 +20,12 @@
         internal static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
 
         internal static bool ModulesEnabled { get; private set; } = true;
+
+        private const string MaxChargingReachedKey = "MaxChargeHit";
+        internal static string MaxChargingModuleReached()
+        {
+            return Language.main.Get(MaxChargingReachedKey);
+        }
 
         // Default value that shouldn't get hit. Only here for error testing.
         public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld;
@@ -132,6 +138,8 @@
                 module.Patch();
                 CyclopsModulesByTechType.Add(module.TechType, module);
             }
+
+            LanguageHandler.SetLanguageLine(MaxChargingReachedKey, "Max chargers reached for this type.");
         }
 
         public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
