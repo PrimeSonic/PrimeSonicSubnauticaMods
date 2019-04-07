@@ -22,8 +22,6 @@
         private int count = 0;
         private bool maxedOut = false;
 
-        internal bool IsPowerProducer = false;
-
         internal string LoggingName { get; set; } = null;
 
         /// <summary>

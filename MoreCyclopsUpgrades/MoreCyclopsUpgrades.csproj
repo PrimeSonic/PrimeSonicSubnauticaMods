@@ -66,6 +66,11 @@
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\BioEnergyCollection.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\BioChargeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\CyclopsCharger.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\NuclearChargeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\SolarChargeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
     <Compile Include="NumberFormat.cs" />
     <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
@@ -80,7 +85,6 @@
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
-    <Compile Include="Managers\PowerIconState.cs" />
     <Compile Include="Modules\Enhancement\BioReactorBooster.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Caching\BioEnergy.cs" />

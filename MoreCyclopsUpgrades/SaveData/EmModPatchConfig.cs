@@ -10,9 +10,11 @@
 
     internal class EmModPatchConfig : EmPropertyCollection
     {
-        internal static readonly EmModPatchConfig Settings = new EmModPatchConfig();
+        internal static EmModPatchConfig Settings;
 
-        private readonly string SaveFile = Path.Combine(Assembly.GetExecutingAssembly().Location, $"{ConfigKey}.txt");
+        private readonly string SaveFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{ConfigKey}.txt");
+
+        private readonly string versionLine = $"# VERSION {QuickLogger.GetAssemblyVersion()} #";
 
         private bool ValidDataRead = true;
 
@@ -57,6 +59,7 @@
         {
             try
             {
+                Settings = new EmModPatchConfig();
                 Settings.LoadFromFile();
             }
             catch (Exception ex)
@@ -94,12 +97,10 @@
 
         private void WriteConfigFile()
         {
+
             File.WriteAllLines(SaveFile, new[]
             {
-                "# ----------------------------------------------------------------------------- #",
-                "#                 This config file was built using EasyMarkup                   #",
-                "# ----------------------------------------------------------------------------- #",
-                "",
+                versionLine,
                 PrettyPrint(),
                 "",
                 "# Here's the full details on what these configurations do: #",
@@ -141,6 +142,13 @@
             }
 
             string text = File.ReadAllText(SaveFile, Encoding.UTF8);
+
+            if (!text.StartsWith(versionLine))
+            {
+                QuickLogger.Debug("Mod config file was out of date. Writing default file.");
+                WriteConfigFile();
+                return;
+            }
 
             bool readCorrectly = base.FromString(text);
 

@@ -4,8 +4,7 @@
 
     /// <summary>
     /// Represents a specialized type of upgrade module that is intended to be non-stacking, where only the best version applies.
-    /// This is always created through <see cref="TieredUpgradesHandlerCollection.CreateTier(TechType, T)"/> or 
-    /// <see cref="TieredUpgradesHandlerCollection.CreateTiers(IDictionary{TechType, T})"/>
+    /// This is always created through <see cref="TieredUpgradesHandlerCollection{T}.CreateTier(TechType, T)"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <seealso cref="UpgradeHandler" />

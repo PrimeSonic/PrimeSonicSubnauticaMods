@@ -12,8 +12,6 @@
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
-        public const float MinimalPowerValue = 0.001f;
-
         private const float baselineChargeRate = 0.80f;
         public const int MaxBoosters = 3;
 
@@ -317,16 +315,16 @@
             return powerProduced;
         }
 
-        public void ChargeCyclops(float drainingRate, ref float powerDeficit)
+        public float GetBatteryPower(float drainingRate, float requestedAmount)
         {
-            if (powerDeficit < MinimalPowerValue) // No power deficit left to charge
-                return; // Exit
+            if (requestedAmount < PowerManager.MinimalPowerValue) // No power deficit left to charge
+                return 0f; // Exit
 
             if (!this.HasPower)
-                return;
+                return 0f;
 
             // Mathf.Min is to prevent accidentally taking too much power from the battery
-            float chargeAmt = Mathf.Min(powerDeficit, drainingRate);
+            float chargeAmt = Mathf.Min(requestedAmount, drainingRate);
 
             if (Battery._charge > chargeAmt)
             {
@@ -338,9 +336,7 @@
                 Battery._charge = 0f; // Set battery to empty
             }
 
-            powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
-
-            ParentCyclops.powerRelay.AddEnergy(chargeAmt, out float amtStored);
+            return chargeAmt;
         }
 
         private void UpdateDisplayText()

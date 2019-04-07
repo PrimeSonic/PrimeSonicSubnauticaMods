@@ -12,8 +12,14 @@
     using System.IO;
     using System.Reflection;
 
+    /// <summary>
+    /// Entry point class for patching. For use by QModManager only.
+    /// </summary>
     public class QPatch
     {
+        /// <summary>
+        /// Main patching method. For use by QModManager only.
+        /// </summary>
         public static void Patch()
         {
 #if RELEASE
@@ -28,12 +34,14 @@
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
+                EmModPatchConfig.Initialize();
+
+                QuickLogger.Info($"Difficult set to {EmModPatchConfig.Settings.PowerLevel}");
+
                 OtherMods.VehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
 
                 if (OtherMods.VehicleUpgradesInCyclops)
-                    QuickLogger.Debug("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");
-
-                EmModPatchConfig.Initialize();
+                    QuickLogger.Debug("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");                
 
                 // TODO - Configure cyclops power levels
 
