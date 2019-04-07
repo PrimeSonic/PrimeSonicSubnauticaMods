@@ -65,7 +65,7 @@
 
             if (lastKnownTextVisibility != powerIconTextVisibility)
             {
-                UpdatePowerIcons(this.PowerManager.PowerChargers);
+                UpdatePowerIcons();
                 lastKnownTextVisibility = powerIconTextVisibility;
             }
         }
@@ -150,7 +150,7 @@
 
             NuclearModuleConfig.SetCyclopsMaxPower(normalMaxPower);
 
-            UpdatePowerIcons(this.PowerManager.PowerChargers);
+            UpdatePowerIcons();
         }
 
         private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD, int totalIcons)
@@ -246,10 +246,12 @@
             return new Indicator(icon, text);
         }
 
-        private void UpdatePowerIcons(IList<CyclopsCharger> cyclopsChargers)
+        private void UpdatePowerIcons()
         {
             if (!powerIconsInitialized)
                 return;
+
+            IList<ICyclopsCharger> cyclopsChargers = this.PowerManager.PowerChargers;
 
             foreach (Indicator indicator in HelmIndicatorsOdd)
                 indicator.Enabled = false;
@@ -267,7 +269,7 @@
             bool isEven = true;
             foreach (CyclopsCharger charger in cyclopsChargers)
             {
-                if (charger.IsShowingIndicator())
+                if (charger.HasPowerIndicatorInfo())
                     isEven = !isEven;
             }
 
@@ -277,7 +279,7 @@
 
             foreach (CyclopsCharger charger in cyclopsChargers)
             {
-                if (!charger.IsShowingIndicator())
+                if (!charger.HasPowerIndicatorInfo())
                     continue;
 
                 Indicator helmIcon = helmRow[index];

@@ -17,7 +17,6 @@
         public BioBoosterUpgradeHandler(int maxBioreactorsAllowed) : base(CyclopsModule.BioReactorBoosterID)
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
-            this.LoggingName = "BioBooster";
             MaxBioreactorsAllowed = maxBioreactorsAllowed;
 
             OnFinishedUpgrades += (SubRoot cyclops) =>

@@ -2,12 +2,7 @@
 {
     using UnityEngine;
 
-    public delegate CyclopsCharger ChargerCreator(SubRoot cyclops);
-
-    /// <summary>
-    /// Defines the bahavior of a class that the Cyclops uses to recharge itself.
-    /// </summary>
-    public abstract class CyclopsCharger
+    internal abstract class CyclopsCharger : ICyclopsCharger
     {
         public readonly SubRoot Cyclops;
 
@@ -18,7 +13,7 @@
 
         public abstract float ProducePower(float requestedPower);
 
-        public abstract bool IsShowingIndicator();
+        public abstract bool HasPowerIndicatorInfo();
 
         public abstract Atlas.Sprite GetIndicatorSprite();
 

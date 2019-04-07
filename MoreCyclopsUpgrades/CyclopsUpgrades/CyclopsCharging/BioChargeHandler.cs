@@ -14,7 +14,7 @@
 
         private List<CyBioReactorMono> BioReactors => powerManager.CyBioReactors;
 
-        private int countWithPower = 0;
+        private int reactorsWithPower = 0;
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
 
@@ -39,9 +39,9 @@
             return NumberFormatter.GetNumberColor(totalBioCharge, totalBioCapacity, 0f);
         }
 
-        public override bool IsShowingIndicator()
+        public override bool HasPowerIndicatorInfo()
         {
-            return countWithPower > 0;
+            return reactorsWithPower > 0;
         }
 
         public override float ProducePower(float requestedPower)
@@ -53,15 +53,15 @@
             float tempBioCapacity = 0f;
             float charge = 0f;
 
-            countWithPower = 0;
+            int poweredReactors = 0;            
             foreach (CyBioReactorMono reactor in this.BioReactors)
             {
                 if (!reactor.HasPower)
                     continue;
 
-                if (countWithPower < bioBoosters.MaxBioreactorsAllowed)
+                if (poweredReactors < bioBoosters.MaxBioreactorsAllowed)
                 {
-                    countWithPower++;
+                    poweredReactors++;
                     reactor.OverLimit = false;
 
                     charge += reactor.GetBatteryPower(PowerManager.BatteryDrainRate, requestedPower);
@@ -75,6 +75,7 @@
                 }
             }
 
+            reactorsWithPower = poweredReactors;
             totalBioCharge = tempBioCharge;
             totalBioCapacity = tempBioCapacity;
 

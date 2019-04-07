@@ -22,8 +22,6 @@
         private int count = 0;
         private bool maxedOut = false;
 
-        internal string LoggingName { get; set; } = null;
-
         /// <summary>
         /// Gets the number of copies of this upgrade module type currently installed in the cyclops.
         /// This value will not exceed <see cref="Count"/>.
@@ -102,7 +100,6 @@
         public UpgradeHandler(TechType techType)
         {
             this.techType = techType;
-            this.LoggingName = techType.AsString();
         }
 
         internal virtual void UpgradesCleared(SubRoot cyclops)
@@ -139,7 +136,6 @@
 
         internal virtual void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)
         {
-            QuickLogger.Info($"{this.LoggingName ?? techType.AsString()} upgrade registered");
             dictionary.Add(techType, this);
         }
 

@@ -74,13 +74,19 @@
             }
         }
 
-        public override bool IsShowingIndicator()
+        public override bool HasPowerIndicatorInfo()
         {
             return thermalState != ThermalState.None;
         }
 
         public override float ProducePower(float requestedPower)
         {
+            if (ThermalChargers.Count == 0 && ThermalChargerMk2.Count == 0)
+            {
+                thermalState = ThermalState.None;
+                return 0f;
+            }
+
             temperature = GetThermalStatus(base.Cyclops);
             float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * base.Cyclops.thermalReactorCharge.Evaluate(temperature);
 

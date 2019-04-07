@@ -114,16 +114,17 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
                 {
-                    var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0)
-                    {
-                        LoggingName = "Engine Upgrades Collection"
-                    };
+                    QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrades Collection");
+                    var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0);
+
+                    QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk1");
                     TieredUpgradeHandler<int> engine1 = efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
-                    engine1.LoggingName = "Engine Upgrade Mk1";
+
+                    QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk2");
                     TieredUpgradeHandler<int> engine2 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
-                    engine2.LoggingName = "Engine Upgrade Mk2";
-                    TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
-                    engine3.LoggingName = "Engine Upgrade Mk3";
+
+                    QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk3");
+                    TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);                    
 
                     powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
                     return efficiencyUpgrades;
@@ -131,10 +132,10 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
+                QuickLogger.Debug("UpgradeHandler Registered: SpeedBooster Upgrade");
                 var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
                 {
                     MaxCount = maxChargingModules,
-                    LoggingName = "SpeedBooster",
                     OnFirstTimeMaxCountReached = () =>
                     {
                         ErrorMessage.AddMessage(CyclopsSpeedBooster.MaxRatingAchived);
@@ -146,9 +147,9 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
+                QuickLogger.Debug("UpgradeHandler Registered: SolarCharger Upgrade");
                 var solarMk1 = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID)
                 {
-                    LoggingName = "SolarCharger",
                     MaxCount = maxChargingModules
                 };
                 powerManager.SolarCharger = solarMk1;
@@ -157,9 +158,9 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
+                QuickLogger.Debug("UpgradeHandler Registered: SolarChargerMk2 Upgrade");
                 var solarMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true)
                 {
-                    LoggingName = "SolarChargerMk2",
                     MaxCount = maxChargingModules
                 };
                 powerManager.SolarChargerMk2 = solarMk2;
@@ -171,9 +172,9 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
+                QuickLogger.Debug("UpgradeHandler Registered: ThermalCharger Upgrade");
                 var thermalMk1 = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule)
                 {
-                    LoggingName = "ThermalCharger",
                     MaxCount = maxChargingModules
                 };
                 powerManager.ThermalCharger = thermalMk1;
@@ -182,9 +183,9 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
+                QuickLogger.Debug("UpgradeHandler Registered: ThermalChargerMk2 Upgrade");
                 var thermalMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true)
                 {
-                    LoggingName = "ThermalChargerMk2",
                     MaxCount = maxChargingModules
                 };
                 powerManager.ThermalChargerMk2 = thermalMk2;
@@ -197,6 +198,7 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
+                QuickLogger.Debug("UpgradeHandler Registered: NuclearReactor Upgrade");
                 var nuclear = new NuclearUpgradeHandler()
                 {
                     MaxCount = maxChargingModules
@@ -207,11 +209,11 @@
 
             RegisterOneTimeUseHandlerCreator(() =>
             {
+                QuickLogger.Debug("UpgradeHandler Registered: BioBooster Upgrade");
                 var bioBoost = new BioBoosterUpgradeHandler(maxChargingModules);
                 powerManager.BioBoosters = bioBoost;
                 return bioBoost;
             });
-
         }
 
         private static void RegisterPowerChargers(PowerManager powerManager)
@@ -220,7 +222,7 @@
             {
                 PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
                 {
-                    QuickLogger.Debug("Solar charging ready");
+                    QuickLogger.Debug("CyclopsCharger Registered: Solar charging ready");
                     var solarChargeHandler = new SolarChargeHandler(powerManager.Cyclops, powerManager.SolarCharger, powerManager.SolarChargerMk2);
                     powerManager.SolarCharging = solarChargeHandler;
                     return solarChargeHandler;
@@ -228,7 +230,7 @@
 
                 PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
                 {
-                    QuickLogger.Debug("Thermal charging ready");
+                    QuickLogger.Debug("CyclopsCharger Registered: Thermal charging ready");
                     var thermalChargeHandler = new ThermalChargeHandler(powerManager.Cyclops, powerManager.ThermalCharger, powerManager.ThermalChargerMk2);
                     powerManager.ThermalCharging = thermalChargeHandler;
                     return thermalChargeHandler;
@@ -236,7 +238,7 @@
 
                 PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
                 {
-                    QuickLogger.Debug("Bio charging ready");
+                    QuickLogger.Debug("CyclopsCharger Registered: Bio charging ready");
                     var bioChargeHandler = new BioChargeHandler(powerManager.Cyclops, powerManager);
                     powerManager.BioCharging = bioChargeHandler;
                     return bioChargeHandler;
@@ -244,7 +246,7 @@
 
                 PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
                 {
-                    QuickLogger.Debug("Nuclear charging ready");
+                    QuickLogger.Debug("CyclopsCharger Registered: Nuclear charging ready");
                     var nuclearChargeHandler = new NuclearChargeHandler(powerManager.Cyclops, powerManager.NuclearCharger, powerManager.SolarCharging, powerManager.ThermalCharging, powerManager.BioCharging);
                     powerManager.NuclearCharging = nuclearChargeHandler;
                     return nuclearChargeHandler;

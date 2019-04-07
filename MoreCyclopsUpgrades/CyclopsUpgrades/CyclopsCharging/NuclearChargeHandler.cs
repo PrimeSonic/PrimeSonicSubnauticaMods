@@ -52,7 +52,7 @@
             return NumberFormatter.GetNumberColor(NuclearCharger.TotalBatteryCharge, NuclearCharger.TotalBatteryCapacity, 0f);
         }
 
-        public override bool IsShowingIndicator()
+        public override bool HasPowerIndicatorInfo()
         {
             return nuclearState == NuclearState.NuclearPowerEngaged;
         }
@@ -64,7 +64,7 @@
                 nuclearState = NuclearState.None;
                 return 0f;
             }
-            else if (solarCharger.IsShowingIndicator() || thermalCharger.IsShowingIndicator() || bioCharger.IsShowingIndicator())
+            else if (solarCharger.HasPowerIndicatorInfo() || thermalCharger.HasPowerIndicatorInfo() || bioCharger.HasPowerIndicatorInfo())
             {
                 nuclearState = NuclearState.RenewableEnergyAvailable;
                 return 0f;

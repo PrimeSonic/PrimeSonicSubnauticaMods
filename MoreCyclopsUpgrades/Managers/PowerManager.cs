@@ -14,7 +14,6 @@
     /// </summary>
     public class PowerManager
     {
-        private static readonly ICollection<ChargerCreator> ReusableCyclopsChargers = new List<ChargerCreator>();
         private static readonly ICollection<ChargerCreator> OneTimeUseCyclopsChargers = new List<ChargerCreator>();
 
         /// <summary>
@@ -30,15 +29,6 @@
         public static void RegisterOneTimeUseChargerCreator(ChargerCreator createEvent)
         {
             OneTimeUseCyclopsChargers.Add(createEvent);
-        }
-
-        /// <summary>
-        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="ChargerCreator"/> on demand that can be reused for each new Cyclops.
-        /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ChargerCreator"/>.</param>
-        public static void RegisterReusableChargerCreator(ChargerCreator createEvent)
-        {
-            ReusableCyclopsChargers.Add(createEvent);
         }
 
         internal const float BatteryDrainRate = 0.01f;
@@ -92,7 +82,7 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
-        internal readonly List<CyclopsCharger> PowerChargers = new List<CyclopsCharger>();
+        internal readonly List<ICyclopsCharger> PowerChargers = new List<ICyclopsCharger>();
 
         internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
         private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
@@ -126,7 +116,7 @@
         private float lastKnownPowerRating = -1f;
         private int lastKnownSpeedBoosters = -1;
         private int lastKnownPowerIndex = -1;
-        private int speedBoosterSkip = 0;
+        private int speedBoosterSkip = -1;
 
         internal PowerManager(SubRoot cyclops)
         {
@@ -157,9 +147,6 @@
         internal void InitializeChargingHandlers()
         {
             CyclopsChargersInitializing?.Invoke();
-
-            foreach (ChargerCreator method in ReusableCyclopsChargers)
-                PowerChargers.Add(method.Invoke(Cyclops));
 
             foreach (ChargerCreator method in OneTimeUseCyclopsChargers)
                 PowerChargers.Add(method.Invoke(Cyclops));
@@ -289,16 +276,13 @@
 
             speedBoosterSkip = 0;
 
-            SubRoot cyclops = Cyclops;
-
-            float powerDeficit = cyclops.powerRelay.GetMaxPower() - cyclops.powerRelay.GetPower();
+            float powerDeficit = Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower();
 
             Manager.HUDManager.UpdateTextVisibility();
 
             foreach (CyclopsCharger charger in PowerChargers)
             {
                 float power = charger.ProducePower(powerDeficit);
-
                 ChargeCyclops(power, ref powerDeficit);
             }
         }

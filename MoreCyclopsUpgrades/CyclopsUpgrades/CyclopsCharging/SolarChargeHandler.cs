@@ -71,13 +71,19 @@
             }
         }
 
-        public override bool IsShowingIndicator()
+        public override bool HasPowerIndicatorInfo()
         {
             return solarState != SolarState.None;
         }
 
         public override float ProducePower(float requestedPower)
         {
+            if (SolarChargers.Count == 0 && SolarChargerMk2.Count == 0)
+            {
+                solarState = SolarState.None;
+                return 0f;
+            }
+
             float solarStatus = GetSolarStatus(base.Cyclops);
             float availableSolarEnergy = SolarChargingFactor * solarStatus;
             solarPercentage = solarStatus * 100;
