@@ -67,7 +67,6 @@
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\BioEnergyCollection.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\BioChargeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\CyclopsCharger.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\ICyclopsCharger.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\NuclearChargeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\SolarChargeHandler.cs" />

@@ -22,7 +22,7 @@
         /// <summary>
         /// <para>Produces power for the Cyclops during the RechargeCyclops update cycle.</para>
         /// <para>This method should return <c>0f</c> if there is no power avaiable from this charging handler.</para>
-        /// <para>You may limit the amount of power produced to only what the cyclops needs, or you may return more.</para>
+        /// <para>You may limit the amount of power produced to only what the cyclops needs or you may return more.</para>
         /// <para>DO NOT recharge the Cyclops PowerRelay yourself from this method!!! The MoreCyclopsUpgrades PowerManager will handle that.</para>
         /// </summary>
         /// <param name="requestedPower">The amount of power being requested by the cyclops; This is the current Power Deficit of the cyclops.</param>

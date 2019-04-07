@@ -5,7 +5,7 @@
     using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
-    internal class ThermalChargeHandler : CyclopsCharger
+    internal class ThermalChargeHandler : ICyclopsCharger
     {
         private enum ThermalState
         {
@@ -20,6 +20,7 @@
 
         internal readonly ChargingUpgradeHandler ThermalChargers;
         internal readonly BatteryUpgradeHandler ThermalChargerMk2;
+        public readonly SubRoot Cyclops;
 
         private const float MaxTemperature = 100f;
         private const float MinUsableTemperature = 25f;
@@ -29,13 +30,14 @@
 
         public ThermalChargeHandler(SubRoot cyclops,
                                     ChargingUpgradeHandler thermalChargers,
-                                    BatteryUpgradeHandler thermalChargerMk2) : base(cyclops)
+                                    BatteryUpgradeHandler thermalChargerMk2)
         {
+            Cyclops = cyclops;
             ThermalChargers = thermalChargers;
             ThermalChargerMk2 = thermalChargerMk2;
         }
 
-        public override Atlas.Sprite GetIndicatorSprite()
+        public Atlas.Sprite GetIndicatorSprite()
         {
             switch (thermalState)
             {
@@ -48,7 +50,7 @@
             }
         }
 
-        public override string GetIndicatorText()
+        public string GetIndicatorText()
         {
             switch (thermalState)
             {
@@ -61,7 +63,7 @@
             }
         }
 
-        public override Color GetIndicatorTextColor()
+        public Color GetIndicatorTextColor()
         {
             switch (thermalState)
             {
@@ -74,12 +76,12 @@
             }
         }
 
-        public override bool HasPowerIndicatorInfo()
+        public bool HasPowerIndicatorInfo()
         {
             return thermalState != ThermalState.None;
         }
 
-        public override float ProducePower(float requestedPower)
+        public float ProducePower(float requestedPower)
         {
             if (ThermalChargers.Count == 0 && ThermalChargerMk2.Count == 0)
             {
@@ -87,8 +89,8 @@
                 return 0f;
             }
 
-            temperature = GetThermalStatus(base.Cyclops);
-            float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * base.Cyclops.thermalReactorCharge.Evaluate(temperature);
+            temperature = GetThermalStatus(Cyclops);
+            float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * Cyclops.thermalReactorCharge.Evaluate(temperature);
 
             if (availableThermalEnergy > PowerManager.MinimalPowerValue)
             {

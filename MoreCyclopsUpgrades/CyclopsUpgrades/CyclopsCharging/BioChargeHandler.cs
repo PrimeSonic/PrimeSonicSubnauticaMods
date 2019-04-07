@@ -7,7 +7,7 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    internal class BioChargeHandler : CyclopsCharger
+    internal class BioChargeHandler : ICyclopsCharger
     {
         private readonly PowerManager powerManager;
         private readonly BioBoosterUpgradeHandler bioBoosters;
@@ -18,33 +18,36 @@
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
 
-        public BioChargeHandler(SubRoot cyclops, PowerManager powerManagerReference) : base(cyclops)
+        public readonly SubRoot Cyclops;
+
+        public BioChargeHandler(SubRoot cyclops, PowerManager powerManagerReference)
         {
+            Cyclops = cyclops;
             powerManager = powerManagerReference;
             bioBoosters = powerManager.BioBoosters;
         }
 
-        public override Atlas.Sprite GetIndicatorSprite()
+        public Atlas.Sprite GetIndicatorSprite()
         {
             return SpriteManager.Get(CyclopsModule.BioReactorBoosterID);
         }
 
-        public override string GetIndicatorText()
+        public string GetIndicatorText()
         {
             return NumberFormatter.FormatNumber(Mathf.CeilToInt(totalBioCharge), NumberFormat.Amount);
         }
 
-        public override Color GetIndicatorTextColor()
+        public Color GetIndicatorTextColor()
         {
             return NumberFormatter.GetNumberColor(totalBioCharge, totalBioCapacity, 0f);
         }
 
-        public override bool HasPowerIndicatorInfo()
+        public bool HasPowerIndicatorInfo()
         {
             return reactorsWithPower > 0;
         }
 
-        public override float ProducePower(float requestedPower)
+        public float ProducePower(float requestedPower)
         {
             if (this.BioReactors.Count == 0)
                 return 0f;
@@ -53,7 +56,7 @@
             float tempBioCapacity = 0f;
             float charge = 0f;
 
-            int poweredReactors = 0;            
+            int poweredReactors = 0;
             foreach (CyBioReactorMono reactor in this.BioReactors)
             {
                 if (!reactor.HasPower)

@@ -17,7 +17,7 @@
         private static readonly ICollection<ChargerCreator> OneTimeUseCyclopsChargers = new List<ChargerCreator>();
 
         /// <summary>
-        /// <para>This event happens right before the PowerManager starts initializing a the registered <see cref="CyclopsCharger"/>s.</para>
+        /// <para>This event happens right before the PowerManager starts initializing a the registered <see cref="ICyclopsCharger"/>s.</para>
         /// <para>Use this if you need a way to know when you should call <see cref="RegisterOneTimeUseChargerCreator"/> for <see cref="ChargerCreator"/>s that cannot be created from a static context.</para>
         /// </summary>
         public static Action CyclopsChargersInitializing;
@@ -280,11 +280,11 @@
 
             Manager.HUDManager.UpdateTextVisibility();
 
-            foreach (CyclopsCharger charger in PowerChargers)
-            {
-                float power = charger.ProducePower(powerDeficit);
-                ChargeCyclops(power, ref powerDeficit);
-            }
+            float power = 0f;
+            foreach (ICyclopsCharger charger in PowerChargers)
+                power += charger.ProducePower(powerDeficit);
+
+            ChargeCyclops(power, ref powerDeficit);
         }
 
         /// <summary>

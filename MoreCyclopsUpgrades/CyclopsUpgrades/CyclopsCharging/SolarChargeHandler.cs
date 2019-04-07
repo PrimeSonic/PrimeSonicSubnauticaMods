@@ -5,7 +5,7 @@
     using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
-    internal class SolarChargeHandler : CyclopsCharger
+    internal class SolarChargeHandler : ICyclopsCharger
     {
         private enum SolarState
         {
@@ -21,18 +21,21 @@
         internal readonly ChargingUpgradeHandler SolarChargers;
         internal readonly BatteryUpgradeHandler SolarChargerMk2;
 
+        public readonly SubRoot Cyclops;
+
         private SolarState solarState = SolarState.None;
         private float solarPercentage = 0f;
 
         public SolarChargeHandler(SubRoot cyclops,
                                   ChargingUpgradeHandler solarChargers,
-                                  BatteryUpgradeHandler solarChargerMk2) : base(cyclops)
+                                  BatteryUpgradeHandler solarChargerMk2)
         {
+            Cyclops = cyclops;
             SolarChargers = solarChargers;
             SolarChargerMk2 = solarChargerMk2;
         }
 
-        public override Atlas.Sprite GetIndicatorSprite()
+        public Atlas.Sprite GetIndicatorSprite()
         {
             switch (solarState)
             {
@@ -45,7 +48,7 @@
             }
         }
 
-        public override string GetIndicatorText()
+        public string GetIndicatorText()
         {
             switch (solarState)
             {
@@ -58,7 +61,7 @@
             }
         }
 
-        public override Color GetIndicatorTextColor()
+        public Color GetIndicatorTextColor()
         {
             switch (solarState)
             {
@@ -71,12 +74,12 @@
             }
         }
 
-        public override bool HasPowerIndicatorInfo()
+        public bool HasPowerIndicatorInfo()
         {
             return solarState != SolarState.None;
         }
 
-        public override float ProducePower(float requestedPower)
+        public float ProducePower(float requestedPower)
         {
             if (SolarChargers.Count == 0 && SolarChargerMk2.Count == 0)
             {
@@ -84,7 +87,7 @@
                 return 0f;
             }
 
-            float solarStatus = GetSolarStatus(base.Cyclops);
+            float solarStatus = GetSolarStatus(Cyclops);
             float availableSolarEnergy = SolarChargingFactor * solarStatus;
             solarPercentage = solarStatus * 100;
 

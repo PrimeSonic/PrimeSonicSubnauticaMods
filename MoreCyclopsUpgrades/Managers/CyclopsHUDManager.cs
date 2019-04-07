@@ -267,7 +267,7 @@
 
 
             bool isEven = true;
-            foreach (CyclopsCharger charger in cyclopsChargers)
+            foreach (ICyclopsCharger charger in cyclopsChargers)
             {
                 if (charger.HasPowerIndicatorInfo())
                     isEven = !isEven;
@@ -277,7 +277,7 @@
             Indicator[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
             int index = 0;
 
-            foreach (CyclopsCharger charger in cyclopsChargers)
+            foreach (ICyclopsCharger charger in cyclopsChargers)
             {
                 if (!charger.HasPowerIndicatorInfo())
                     continue;
