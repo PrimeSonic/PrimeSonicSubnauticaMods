@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging
 {
-    using MoreCyclopsUpgrades.Managers;
+    using Managers;
     using UnityEngine;
 
     /// <summary>

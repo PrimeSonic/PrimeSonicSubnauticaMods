@@ -2,9 +2,9 @@
 {
     using Common;
     using CyclopsUpgrades;
+    using CyclopsUpgrades.CyclopsCharging;
     using Modules.Enhancement;
     using Monobehaviors;
-    using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
@@ -15,6 +15,7 @@
     public class PowerManager
     {
         private static readonly ICollection<ChargerCreator> OneTimeUseCyclopsChargers = new List<ChargerCreator>();
+        private static readonly ICollection<ChargerCreator> ReusableCyclopsChargers = new List<ChargerCreator>();
 
         /// <summary>
         /// <para>This event happens right before the PowerManager starts initializing a the registered <see cref="ICyclopsCharger"/>s.</para>
@@ -23,12 +24,21 @@
         public static Action CyclopsChargersInitializing;
 
         /// <summary>
-        /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
+        /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ChargerCreator"/>.</param>
         public static void RegisterOneTimeUseChargerCreator(ChargerCreator createEvent)
         {
             OneTimeUseCyclopsChargers.Add(createEvent);
+        }
+
+        /// <summary>
+        /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand that can is reused for each new Cyclops.
+        /// </summary>
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ICyclopsCharger"/>.</param>
+        public static void RegisterReusableChargerCreator(ChargerCreator createEvent)
+        {
+            ReusableCyclopsChargers.Add(createEvent);
         }
 
         internal const float BatteryDrainRate = 0.01f;
@@ -147,6 +157,9 @@
         internal void InitializeChargingHandlers()
         {
             CyclopsChargersInitializing?.Invoke();
+
+            foreach (ChargerCreator method in ReusableCyclopsChargers)
+                PowerChargers.Add(method.Invoke(Cyclops));
 
             foreach (ChargerCreator method in OneTimeUseCyclopsChargers)
                 PowerChargers.Add(method.Invoke(Cyclops));
@@ -280,11 +293,20 @@
 
             Manager.HUDManager.UpdateTextVisibility();
 
-            float power = 0f;
+            float availablePower = 0f;
             foreach (ICyclopsCharger charger in PowerChargers)
-                power += charger.ProducePower(powerDeficit);
+            {
+                availablePower += charger.ProducePower(powerDeficit);
 
-            ChargeCyclops(power, ref powerDeficit);
+                if (powerDeficit < MinimalPowerValue)
+                    return; // No need to charge
+
+                if (availablePower < MinimalPowerValue)
+                    return; // No power available
+
+                Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
+                powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
+            }            
         }
 
         /// <summary>
@@ -302,18 +324,6 @@
                 availableReservePower += reactor.Battery._charge;
 
             return Mathf.FloorToInt(availableReservePower);
-        }
-
-        private void ChargeCyclops(float availablePower, ref float powerDeficit)
-        {
-            if (powerDeficit < MinimalPowerValue)
-                return; // No need to charge
-
-            if (availablePower < MinimalPowerValue)
-                return; // No power available
-
-            Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
-            powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
         }
     }
 }
