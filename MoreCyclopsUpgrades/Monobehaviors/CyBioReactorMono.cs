@@ -415,12 +415,12 @@
             this.transform.SetParent(parentCyclops.transform);
             Manager = manager ?? CyclopsManager.GetAllManagers(parentCyclops);
 
-            if (!Manager.PowerManager.CyBioReactors.Contains(this))
+            if (!Manager.ChargeManager.CyBioReactors.Contains(this))
             {
-                Manager.PowerManager.CyBioReactors.Add(this);
+                Manager.ChargeManager.CyBioReactors.Add(this);
             }
 
-            UpdateBoosterCount(Manager.PowerManager.BioBoosters.Count);
+            UpdateBoosterCount(Manager.ChargeManager.BioBoosters.Count);
             QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 

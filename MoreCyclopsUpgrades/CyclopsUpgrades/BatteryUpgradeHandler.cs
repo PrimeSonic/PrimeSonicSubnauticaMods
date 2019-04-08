@@ -13,18 +13,18 @@
 
         internal readonly bool BatteryRecharges;
         private float tempTotalCharge;
-        public float TotalBatteryCharge { get; protected set; } = 0f;
-        public float TotalBatteryCapacity { get; protected set; } = 0f;
+        public float TotalBatteryCharge = 0f;
+        public float TotalBatteryCapacity = 0f;
 
-        internal bool BatteryHasCharge => this.Count > 0 && this.TotalBatteryCharge > PowerManager.MinimalPowerValue;
+        internal bool BatteryHasCharge => this.Count > 0 && TotalBatteryCharge > PowerManager.MinimalPowerValue;
 
         public BatteryUpgradeHandler(TechType techType, bool canRecharge) : base(techType)
         {
             BatteryRecharges = canRecharge;
             OnClearUpgrades += (SubRoot cyclops) =>
             {
-                this.TotalBatteryCharge = 0f;
-                this.TotalBatteryCapacity = 0f;
+                TotalBatteryCharge = 0f;
+                TotalBatteryCapacity = 0f;
                 this.Batteries.Clear();
             };
 
@@ -32,8 +32,8 @@
             {
                 var details = new BatteryDetails(modules, slot, modules.GetItemInSlot(slot).item.GetComponent<Battery>());
                 this.Batteries.Add(details);
-                this.TotalBatteryCharge += details.BatteryRef._charge;
-                this.TotalBatteryCapacity += details.BatteryRef._capacity;
+                TotalBatteryCharge += details.BatteryRef._charge;
+                TotalBatteryCapacity += details.BatteryRef._capacity;
             };
         }
 
@@ -74,7 +74,7 @@
 
                 totalDrainedAmt += amtToDrain;
             }
-            this.TotalBatteryCharge = tempTotalCharge;
+            TotalBatteryCharge = tempTotalCharge;
 
             return totalDrainedAmt;
         }
@@ -105,7 +105,7 @@
                 batteryCharged = true;
             }
 
-            this.TotalBatteryCharge = tempTotalCharge;
+            TotalBatteryCharge = tempTotalCharge;
         }
     }
 }

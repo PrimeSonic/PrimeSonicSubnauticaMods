@@ -1,42 +1,37 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging
 {
-    using MoreCyclopsUpgrades.Caching;
-    using MoreCyclopsUpgrades.Modules;
-    using MoreCyclopsUpgrades.SaveData;
+    using Caching;
+    using Managers;
+    using Modules;
+    using SaveData;
     using UnityEngine;
+
+    internal enum NuclearState
+    {
+        None,
+        RenewableEnergyAvailable,
+        ConservingNuclearEnergy,
+        NuclearPowerEngaged
+    }
 
     internal class NuclearChargeHandler : ICyclopsCharger
     {
-        private enum NuclearState
-        {
-            None,
-            RenewableEnergyAvailable,
-            ConservingNuclearEnergy,
-            NuclearPowerEngaged
-        }
-
         internal const float NuclearDrainRate = 0.15f;
 
-        private readonly SolarChargeHandler solarCharger;
-        private readonly ThermalChargeHandler thermalCharger;
-        private readonly BioChargeHandler bioCharger;
-        internal readonly BatteryUpgradeHandler NuclearCharger;
+        private readonly ChargeManager ChargeManager;
+        private SolarChargeHandler SolarCharger => ChargeManager.SolarCharging;
+        private ThermalChargeHandler ThermalCharger => ChargeManager.ThermalCharging;
+        private BioChargeHandler BioCharger => ChargeManager.BioCharging;
+        internal BatteryUpgradeHandler NuclearCharger => ChargeManager.NuclearCharger;
 
         public readonly SubRoot Cyclops;
 
-        private NuclearState nuclearState = NuclearState.None;
+        internal NuclearState NuclearState = NuclearState.None;
 
-        public NuclearChargeHandler(SubRoot cyclops,
-                                    BatteryUpgradeHandler nuclearCharger,
-                                    SolarChargeHandler solarChargHandler,
-                                    ThermalChargeHandler thermalChargHandler,
-                                    BioChargeHandler bioChargHandler)
+        public NuclearChargeHandler(ChargeManager chargeManager)
         {
-            Cyclops = cyclops;
-            NuclearCharger = nuclearCharger;
-            solarCharger = solarChargHandler;
-            thermalCharger = thermalChargHandler;
-            bioCharger = bioChargHandler;
+            ChargeManager = chargeManager;
+            Cyclops = chargeManager.Cyclops;
         }
 
         public Atlas.Sprite GetIndicatorSprite()
@@ -46,40 +41,40 @@
 
         public string GetIndicatorText()
         {
-            return NumberFormatter.FormatNumber(Mathf.CeilToInt(NuclearCharger.TotalBatteryCharge), NumberFormat.Amount);
+            return NumberFormatter.FormatNumber(Mathf.CeilToInt(this.NuclearCharger.TotalBatteryCharge), NumberFormat.Amount);
         }
 
         public Color GetIndicatorTextColor()
         {
-            return NumberFormatter.GetNumberColor(NuclearCharger.TotalBatteryCharge, NuclearCharger.TotalBatteryCapacity, 0f);
+            return NumberFormatter.GetNumberColor(this.NuclearCharger.TotalBatteryCharge, this.NuclearCharger.TotalBatteryCapacity, 0f);
         }
 
         public bool HasPowerIndicatorInfo()
         {
-            return nuclearState == NuclearState.NuclearPowerEngaged;
+            return NuclearState == NuclearState.NuclearPowerEngaged;
         }
 
         public float ProducePower(float requestedPower)
         {
-            if (NuclearCharger.Count == 0)
+            if (!this.NuclearCharger.BatteryHasCharge)
             {
-                nuclearState = NuclearState.None;
+                NuclearState = NuclearState.None;
                 return 0f;
             }
-            else if (solarCharger.HasPowerIndicatorInfo() || thermalCharger.HasPowerIndicatorInfo() || bioCharger.HasPowerIndicatorInfo())
+            else if (this.SolarCharger.SolarState != SolarState.None || this.ThermalCharger.ThermalState != ThermalState.None || this.BioCharger.ProducingPower)
             {
-                nuclearState = NuclearState.RenewableEnergyAvailable;
+                NuclearState = NuclearState.RenewableEnergyAvailable;
                 return 0f;
             }
             else if (requestedPower < NuclearModuleConfig.MinimumEnergyDeficit)
             {
-                nuclearState = NuclearState.ConservingNuclearEnergy;
+                NuclearState = NuclearState.ConservingNuclearEnergy;
                 return 0f;
             }
             else
             {
-                nuclearState = NuclearState.NuclearPowerEngaged;
-                return NuclearCharger.GetBatteryPower(NuclearDrainRate, requestedPower);
+                NuclearState = NuclearState.NuclearPowerEngaged;
+                return this.NuclearCharger.GetBatteryPower(NuclearDrainRate, requestedPower);
             }
         }
     }

@@ -5,39 +5,37 @@
     using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
+    internal enum SolarState
+    {
+        None,
+        SunAvailable,
+        BatteryAvailable
+    }
+
     internal class SolarChargeHandler : ICyclopsCharger
     {
-        private enum SolarState
-        {
-            None,
-            SunAvailable,
-            BatteryAvailable
-        }
-
         private const float MaxSolarDepth = 200f;
         private const float SolarChargingFactor = 0.03f;
         private const float MaxSolarPercentage = 90f;
 
-        internal readonly ChargingUpgradeHandler SolarChargers;
-        internal readonly BatteryUpgradeHandler SolarChargerMk2;
-
+        internal readonly ChargeManager ChargeManager;
+        internal ChargingUpgradeHandler SolarChargers => ChargeManager.SolarCharger;
+        internal BatteryUpgradeHandler SolarChargerMk2 => ChargeManager.SolarChargerMk2;
+        internal ThermalChargeHandler ThermalCharginer => ChargeManager.ThermalCharging;
         public readonly SubRoot Cyclops;
 
-        private SolarState solarState = SolarState.None;
+        internal SolarState SolarState = SolarState.None;
         private float solarPercentage = 0f;
 
-        public SolarChargeHandler(SubRoot cyclops,
-                                  ChargingUpgradeHandler solarChargers,
-                                  BatteryUpgradeHandler solarChargerMk2)
+        public SolarChargeHandler(ChargeManager chargeManager)
         {
-            Cyclops = cyclops;
-            SolarChargers = solarChargers;
-            SolarChargerMk2 = solarChargerMk2;
+            Cyclops = chargeManager.Cyclops;
+            ChargeManager = chargeManager;
         }
 
         public Atlas.Sprite GetIndicatorSprite()
         {
-            switch (solarState)
+            switch (SolarState)
             {
                 case SolarState.SunAvailable:
                     return SpriteManager.Get(CyclopsModule.SolarChargerID);
@@ -50,12 +48,12 @@
 
         public string GetIndicatorText()
         {
-            switch (solarState)
+            switch (SolarState)
             {
                 case SolarState.SunAvailable:
                     return NumberFormatter.FormatNumber(Mathf.CeilToInt(solarPercentage), NumberFormat.Sun);
                 case SolarState.BatteryAvailable:
-                    return NumberFormatter.FormatNumber(Mathf.CeilToInt(SolarChargerMk2.TotalBatteryCharge), NumberFormat.Amount);
+                    return NumberFormatter.FormatNumber(Mathf.CeilToInt(this.SolarChargerMk2.TotalBatteryCharge), NumberFormat.Amount);
                 default:
                     return string.Empty;
             }
@@ -63,12 +61,12 @@
 
         public Color GetIndicatorTextColor()
         {
-            switch (solarState)
+            switch (SolarState)
             {
                 case SolarState.SunAvailable:
                     return NumberFormatter.GetNumberColor(solarPercentage, MaxSolarPercentage, 0f);
                 case SolarState.BatteryAvailable:
-                    return NumberFormatter.GetNumberColor(SolarChargerMk2.TotalBatteryCharge, SolarChargerMk2.TotalBatteryCapacity, 0f);
+                    return NumberFormatter.GetNumberColor(this.SolarChargerMk2.TotalBatteryCharge, this.SolarChargerMk2.TotalBatteryCapacity, 0f);
                 default:
                     return Color.white;
             }
@@ -76,14 +74,14 @@
 
         public bool HasPowerIndicatorInfo()
         {
-            return solarState != SolarState.None;
+            return SolarState != SolarState.None;
         }
 
         public float ProducePower(float requestedPower)
         {
-            if (SolarChargers.Count == 0 && SolarChargerMk2.Count == 0)
+            if (this.SolarChargers.Count == 0 && this.SolarChargerMk2.Count == 0)
             {
-                solarState = SolarState.None;
+                SolarState = SolarState.None;
                 return 0f;
             }
 
@@ -93,22 +91,22 @@
 
             if (availableSolarEnergy > PowerManager.MinimalPowerValue)
             {
-                solarState = SolarState.SunAvailable;
-                float mk1Power = SolarChargers.Count * availableSolarEnergy;
-                float mk2Power = SolarChargerMk2.Count * availableSolarEnergy * PowerManager.Mk2ChargeRateModifier;
+                SolarState = SolarState.SunAvailable;
+                float mk1Power = this.SolarChargers.Count * availableSolarEnergy;
+                float mk2Power = this.SolarChargerMk2.Count * availableSolarEnergy * PowerManager.Mk2ChargeRateModifier;
 
-                SolarChargerMk2.RechargeBatteries(mk1Power + mk2Power);
+                this.SolarChargerMk2.RechargeBatteries(mk1Power + mk2Power);
 
                 return mk1Power + mk2Power;
             }
-            else if (SolarChargerMk2.BatteryHasCharge)
+            else if (this.ThermalCharginer.ThermalState != ThermalState.HeatAvailable && this.SolarChargerMk2.BatteryHasCharge)
             {
-                solarState = SolarState.BatteryAvailable;
-                return SolarChargerMk2.GetBatteryPower(PowerManager.BatteryDrainRate, requestedPower);
+                SolarState = SolarState.BatteryAvailable;
+                return this.SolarChargerMk2.GetBatteryPower(PowerManager.BatteryDrainRate, requestedPower);
             }
             else
             {
-                solarState = SolarState.None;
+                SolarState = SolarState.None;
                 return 0f;
             }
         }

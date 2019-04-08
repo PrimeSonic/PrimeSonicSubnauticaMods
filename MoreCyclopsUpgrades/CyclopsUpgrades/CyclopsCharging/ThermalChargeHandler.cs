@@ -5,41 +5,40 @@
     using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
+    internal enum ThermalState
+    {
+        None,
+        HeatAvailable,
+        BatteryAvailable
+    }
+
     internal class ThermalChargeHandler : ICyclopsCharger
     {
-        private enum ThermalState
-        {
-            None,
-            HeatAvailable,
-            BatteryAvailable
-        }
-
         internal const float ThermalChargingFactor = 1.5f;
         internal const float BatteryDrainRate = 0.01f;
         internal const float Mk2ChargeRateModifier = 1.15f;
 
-        internal readonly ChargingUpgradeHandler ThermalChargers;
-        internal readonly BatteryUpgradeHandler ThermalChargerMk2;
+        internal readonly ChargeManager ChargeManager;
+        internal ChargingUpgradeHandler ThermalChargers => ChargeManager.ThermalCharger;
+        internal BatteryUpgradeHandler ThermalChargerMk2 => ChargeManager.ThermalChargerMk2;
+        internal SolarChargeHandler SolarCharger => ChargeManager.SolarCharging;
         public readonly SubRoot Cyclops;
 
         private const float MaxTemperature = 100f;
         private const float MinUsableTemperature = 25f;
 
-        private ThermalState thermalState = ThermalState.None;
+        internal ThermalState ThermalState = ThermalState.None;
         private float temperature = 0f;
 
-        public ThermalChargeHandler(SubRoot cyclops,
-                                    ChargingUpgradeHandler thermalChargers,
-                                    BatteryUpgradeHandler thermalChargerMk2)
+        public ThermalChargeHandler(ChargeManager chargeManager)
         {
-            Cyclops = cyclops;
-            ThermalChargers = thermalChargers;
-            ThermalChargerMk2 = thermalChargerMk2;
+            ChargeManager = chargeManager;
+            Cyclops = chargeManager.Cyclops;
         }
 
         public Atlas.Sprite GetIndicatorSprite()
         {
-            switch (thermalState)
+            switch (ThermalState)
             {
                 case ThermalState.HeatAvailable:
                     return SpriteManager.Get(TechType.CyclopsThermalReactorModule);
@@ -52,12 +51,12 @@
 
         public string GetIndicatorText()
         {
-            switch (thermalState)
+            switch (ThermalState)
             {
                 case ThermalState.HeatAvailable:
                     return NumberFormatter.FormatNumber(Mathf.CeilToInt(temperature), NumberFormat.Temperature);
                 case ThermalState.BatteryAvailable:
-                    return NumberFormatter.FormatNumber(Mathf.CeilToInt(ThermalChargerMk2.TotalBatteryCharge), NumberFormat.Amount);
+                    return NumberFormatter.FormatNumber(Mathf.CeilToInt(this.ThermalChargerMk2.TotalBatteryCharge), NumberFormat.Amount);
                 default:
                     return string.Empty;
             }
@@ -65,12 +64,12 @@
 
         public Color GetIndicatorTextColor()
         {
-            switch (thermalState)
+            switch (ThermalState)
             {
                 case ThermalState.HeatAvailable:
                     return NumberFormatter.GetNumberColor(temperature, MaxTemperature, MinUsableTemperature);
                 case ThermalState.BatteryAvailable:
-                    return NumberFormatter.GetNumberColor(ThermalChargerMk2.TotalBatteryCharge, ThermalChargerMk2.TotalBatteryCapacity, 0f);
+                    return NumberFormatter.GetNumberColor(this.ThermalChargerMk2.TotalBatteryCharge, this.ThermalChargerMk2.TotalBatteryCapacity, 0f);
                 default:
                     return Color.white;
             }
@@ -78,14 +77,14 @@
 
         public bool HasPowerIndicatorInfo()
         {
-            return thermalState != ThermalState.None;
+            return ThermalState != ThermalState.None;
         }
 
         public float ProducePower(float requestedPower)
         {
-            if (ThermalChargers.Count == 0 && ThermalChargerMk2.Count == 0)
+            if (this.ThermalChargers.Count == 0 && this.ThermalChargerMk2.Count == 0)
             {
-                thermalState = ThermalState.None;
+                ThermalState = ThermalState.None;
                 return 0f;
             }
 
@@ -94,22 +93,22 @@
 
             if (availableThermalEnergy > PowerManager.MinimalPowerValue)
             {
-                thermalState = ThermalState.HeatAvailable;
-                float mk1Power = ThermalChargers.Count * availableThermalEnergy;
-                float mk2Power = ThermalChargerMk2.Count * availableThermalEnergy * PowerManager.Mk2ChargeRateModifier;
+                ThermalState = ThermalState.HeatAvailable;
+                float mk1Power = this.ThermalChargers.Count * availableThermalEnergy;
+                float mk2Power = this.ThermalChargerMk2.Count * availableThermalEnergy * PowerManager.Mk2ChargeRateModifier;
 
-                ThermalChargerMk2.RechargeBatteries(mk1Power + mk2Power);
+                this.ThermalChargerMk2.RechargeBatteries(mk1Power + mk2Power);
 
                 return mk1Power + mk2Power;
             }
-            else if (ThermalChargerMk2.BatteryHasCharge)
+            else if (this.SolarCharger.SolarState != SolarState.SunAvailable && this.ThermalChargerMk2.BatteryHasCharge)
             {
-                thermalState = ThermalState.BatteryAvailable;
-                return ThermalChargerMk2.GetBatteryPower(PowerManager.BatteryDrainRate, requestedPower);
+                ThermalState = ThermalState.BatteryAvailable;
+                return this.ThermalChargerMk2.GetBatteryPower(PowerManager.BatteryDrainRate, requestedPower);
             }
             else
             {
-                thermalState = ThermalState.None;
+                ThermalState = ThermalState.None;
                 return 0f;
             }
         }

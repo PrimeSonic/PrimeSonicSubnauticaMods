@@ -9,22 +9,22 @@
 
     internal class BioChargeHandler : ICyclopsCharger
     {
-        private readonly PowerManager powerManager;
-        private readonly BioBoosterUpgradeHandler bioBoosters;
+        private readonly ChargeManager ChargeManager;
+        private BioBoosterUpgradeHandler BioBoosters => ChargeManager.BioBoosters;
 
-        private List<CyBioReactorMono> BioReactors => powerManager.CyBioReactors;
+        private List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
 
-        private int reactorsWithPower = 0;
+        internal bool ProducingPower = false;
+
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
 
         public readonly SubRoot Cyclops;
 
-        public BioChargeHandler(SubRoot cyclops, PowerManager powerManagerReference)
+        public BioChargeHandler(ChargeManager chargeManager)
         {
-            Cyclops = cyclops;
-            powerManager = powerManagerReference;
-            bioBoosters = powerManager.BioBoosters;
+            ChargeManager = chargeManager;
+            Cyclops = chargeManager.Cyclops;
         }
 
         public Atlas.Sprite GetIndicatorSprite()
@@ -44,13 +44,16 @@
 
         public bool HasPowerIndicatorInfo()
         {
-            return reactorsWithPower > 0;
+            return ProducingPower;
         }
 
         public float ProducePower(float requestedPower)
         {
             if (this.BioReactors.Count == 0)
+            {
+                ProducingPower = false;
                 return 0f;
+            }
 
             float tempBioCharge = 0f;
             float tempBioCapacity = 0f;
@@ -62,7 +65,7 @@
                 if (!reactor.HasPower)
                     continue;
 
-                if (poweredReactors < bioBoosters.MaxBioreactorsAllowed)
+                if (poweredReactors < this.BioBoosters.MaxBioreactorsAllowed)
                 {
                     poweredReactors++;
                     reactor.OverLimit = false;
@@ -78,11 +81,15 @@
                 }
             }
 
-            reactorsWithPower = poweredReactors;
+            ProducingPower = poweredReactors > 0;
+
             totalBioCharge = tempBioCharge;
             totalBioCapacity = tempBioCapacity;
 
             return charge;
         }
+
     }
+
+
 }

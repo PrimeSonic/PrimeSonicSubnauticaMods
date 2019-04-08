@@ -43,6 +43,7 @@
         internal readonly SubRoot Cyclops;
         internal UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
         internal PowerManager PowerManager => this.Manager.PowerManager;
+        internal ChargeManager ChargeManager => this.Manager.ChargeManager;
 
         private bool powerIconsInitialized = false;
 
@@ -110,7 +111,7 @@
             }
 
             // Change the color of the Cyclops energy percentage on the HUD
-            int currentReservePower = this.PowerManager.GetTotalReservePower();
+            int currentReservePower = this.ChargeManager.GetTotalReservePower();
             cyclopsHelmHUD.powerText.color = currentReservePower > 0f ? Color.cyan : Color.white;
         }
 
@@ -133,7 +134,7 @@
                 hudManager.lastHealthMaxDisplayed = maxHealth;
             }
 
-            int currentReservePower = this.PowerManager.GetTotalReservePower();
+            int currentReservePower = this.ChargeManager.GetTotalReservePower();
             float currentBatteryPower = Cyclops.powerRelay.GetPower();
             int TotalPowerUnits = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
             float normalMaxPower = Cyclops.powerRelay.GetMaxPower();

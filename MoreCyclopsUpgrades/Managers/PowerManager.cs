@@ -1,10 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Common;
     using CyclopsUpgrades;
     using CyclopsUpgrades.CyclopsCharging;
     using Modules.Enhancement;
-    using Monobehaviors;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
@@ -94,25 +92,10 @@
 
         internal readonly List<ICyclopsCharger> PowerChargers = new List<ICyclopsCharger>();
 
-        internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
-        private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
-
         internal UpgradeHandler SpeedBoosters;
-        internal ChargingUpgradeHandler SolarCharger;
-        internal ChargingUpgradeHandler ThermalCharger;
-        internal BatteryUpgradeHandler SolarChargerMk2;
-        internal BatteryUpgradeHandler ThermalChargerMk2;
-        internal BatteryUpgradeHandler NuclearCharger;
         internal TieredUpgradesHandlerCollection<int> EngineEfficientyUpgrades;
-        internal BioBoosterUpgradeHandler BioBoosters;
-
-        internal SolarChargeHandler SolarCharging;
-        internal ThermalChargeHandler ThermalCharging;
-        internal BioChargeHandler BioCharging;
-        internal NuclearChargeHandler NuclearCharging;
 
         internal CyclopsManager Manager;
-
         internal readonly SubRoot Cyclops;
 
         internal int MaxModules = MaxSpeedBoosters;
@@ -149,7 +132,7 @@
             this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
             this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
 
-            SyncBioReactors();
+            manager.ChargeManager.SyncBioReactors();
 
             return true;
         }
@@ -165,36 +148,6 @@
                 PowerChargers.Add(method.Invoke(Cyclops));
 
             OneTimeUseCyclopsChargers.Clear();
-        }
-
-        internal void SyncBioReactors()
-        {
-            TempCache.Clear();
-
-            SubRoot cyclops = Cyclops;
-
-            CyBioReactorMono[] cyBioReactors = cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
-
-            foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
-            {
-                if (TempCache.Contains(cyBioReactor))
-                    continue; // This is a workaround because of the object references being returned twice in this array.
-
-                TempCache.Add(cyBioReactor);
-
-                if (cyBioReactor.ParentCyclops == null)
-                {
-                    QuickLogger.Debug("CyBioReactorMono synced externally");
-                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    cyBioReactor.ConnectToCyclops(cyclops, Manager);
-                }
-            }
-
-            if (TempCache.Count != CyBioReactors.Count)
-            {
-                CyBioReactors.Clear();
-                CyBioReactors.AddRange(TempCache);
-            }
         }
 
         /// <summary>
@@ -293,37 +246,23 @@
 
             Manager.HUDManager.UpdateTextVisibility();
 
-            float availablePower = 0f;
+            float power = 0f;
             foreach (ICyclopsCharger charger in PowerChargers)
-            {
-                availablePower += charger.ProducePower(powerDeficit);
+                power += charger.ProducePower(powerDeficit);
 
-                if (powerDeficit < MinimalPowerValue)
-                    return; // No need to charge
-
-                if (availablePower < MinimalPowerValue)
-                    return; // No power available
-
-                Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
-                powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
-            }            
+            ChargeCyclops(power, ref powerDeficit);
         }
 
-        /// <summary>
-        /// Gets the total available reserve power across all equipment upgrade modules.
-        /// </summary>
-        /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
-        internal int GetTotalReservePower()
+        private void ChargeCyclops(float availablePower, ref float powerDeficit)
         {
-            float availableReservePower = 0f;
-            availableReservePower += SolarChargerMk2.TotalBatteryCharge;
-            availableReservePower += ThermalChargerMk2.TotalBatteryCharge;
-            availableReservePower += NuclearCharger.TotalBatteryCharge;
+            if (powerDeficit < MinimalPowerValue)
+                return; // No need to charge
 
-            foreach (CyBioReactorMono reactor in CyBioReactors)
-                availableReservePower += reactor.Battery._charge;
+            if (availablePower < MinimalPowerValue)
+                return; // No power available
 
-            return Mathf.FloorToInt(availableReservePower);
+            Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
+            powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
         }
     }
 }
