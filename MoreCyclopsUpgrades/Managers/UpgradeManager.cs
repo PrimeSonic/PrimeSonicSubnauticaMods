@@ -91,14 +91,12 @@
             this.Manager = manager;
 
             UpgradeManagerInitializing?.Invoke();
-
-            int maxModules = MaxChargingModules(EmModPatchConfig.Settings.PowerLevel);
-
+            
             PowerManager powerManager = this.Manager.PowerManager;
-            powerManager.MaxModules = maxModules;
+            powerManager.MaxSpeedModules = EmModPatchConfig.Settings.MaxSpeedModules();
 
-            SetupPowerManagerUpgrades(powerManager, maxModules);
-            this.Manager.ChargeManager.SetupChargingUpgrades(powerManager.MaxModules);
+            SetupPowerManagerUpgrades(powerManager, EmModPatchConfig.Settings.MaxChargingModules());
+            this.Manager.ChargeManager.SetupChargingUpgrades(EmModPatchConfig.Settings.MaxChargingModules());
 
             RegisterUpgradeHandlers();
 
@@ -266,21 +264,6 @@
             }
 
             return true;
-        }
-
-        private static int MaxChargingModules(CyclopsPowerLevels setting)
-        {
-            switch (setting)
-            {
-                case CyclopsPowerLevels.Leviathan:
-                    return 6;
-                case CyclopsPowerLevels.Crabsnake:
-                    return 3;
-                case CyclopsPowerLevels.Peeper:
-                    return 1;
-                default:
-                    return 12;
-            }
         }
     }
 }

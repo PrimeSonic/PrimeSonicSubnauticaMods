@@ -3,6 +3,7 @@
     using CyclopsUpgrades;
     using CyclopsUpgrades.CyclopsCharging;
     using Modules.Enhancement;
+    using MoreCyclopsUpgrades.SaveData;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
@@ -98,7 +99,7 @@
         internal CyclopsManager Manager;
         internal readonly SubRoot Cyclops;
 
-        internal int MaxModules = MaxSpeedBoosters;
+        internal int MaxSpeedModules = MaxSpeedBoosters;
 
         private CyclopsMotorMode motorMode;
         private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = Cyclops.GetComponentInChildren<CyclopsMotorMode>());
@@ -109,7 +110,8 @@
         private float lastKnownPowerRating = -1f;
         private int lastKnownSpeedBoosters = -1;
         private int lastKnownPowerIndex = -1;
-        private int speedBoosterSkip = -1;
+        private int rechargeSkip = 10;
+        private readonly int extraSkips = EmModPatchConfig.Settings.RechargeSkipRate();
 
         internal PowerManager(SubRoot cyclops)
         {
@@ -194,7 +196,7 @@
                 ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
             }
 
-            if (speedBoosters > MaxModules)
+            if (speedBoosters > MaxSpeedModules)
                 return; // Exit here
 
             if (lastKnownSpeedBoosters != speedBoosters)
@@ -234,13 +236,13 @@
             if (Time.timeScale == 0f) // Is the game paused?
                 return;
 
-            if (speedBoosterSkip < lastKnownSpeedBoosters)
+            if (rechargeSkip < lastKnownSpeedBoosters + extraSkips)
             {
-                speedBoosterSkip++; // Slightly slows down recharging with more speed boosters
+                rechargeSkip++; // Slightly slows down recharging with more speed boosters and higher difficulty
                 return;
             }
 
-            speedBoosterSkip = 0;
+            rechargeSkip = 0;
 
             float powerDeficit = Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower();
 

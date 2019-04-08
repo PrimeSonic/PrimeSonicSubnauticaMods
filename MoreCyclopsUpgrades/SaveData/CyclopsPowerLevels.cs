@@ -3,7 +3,8 @@
     internal enum CyclopsPowerLevels
     {
         Leviathan,
-        Crabsnake,
+        Ampeel,
+        Crabsnake,        
         Peeper
     }
 }

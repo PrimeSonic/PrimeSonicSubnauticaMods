@@ -32,6 +32,57 @@
 
         internal CyclopsPowerLevels PowerLevel => EmPowerLevel.Value;
 
+        internal int MaxChargingModules()
+        {
+            switch (EmPowerLevel.Value)
+            {
+                case CyclopsPowerLevels.Leviathan:
+                    return 12;
+                case CyclopsPowerLevels.Ampeel:
+                    return 6;
+                case CyclopsPowerLevels.Crabsnake:
+                    return 3;
+                case CyclopsPowerLevels.Peeper:
+                    return 1;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
+            }
+        }
+
+        internal int MaxSpeedModules()
+        {
+            switch (EmPowerLevel.Value)
+            {
+                case CyclopsPowerLevels.Leviathan:
+                    return 6;
+                case CyclopsPowerLevels.Ampeel:
+                    return 4;
+                case CyclopsPowerLevels.Crabsnake:
+                    return 2;
+                case CyclopsPowerLevels.Peeper:
+                    return 1;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
+            }
+        }
+
+        internal int RechargeSkipRate()
+        {
+            switch (EmPowerLevel.Value)
+            {
+                case CyclopsPowerLevels.Leviathan:
+                    return 0;
+                case CyclopsPowerLevels.Ampeel:
+                    return 1;
+                case CyclopsPowerLevels.Crabsnake:
+                    return 2;
+                case CyclopsPowerLevels.Peeper:
+                    return 3;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
+            }
+        }
+
         private readonly EmYesNo EmAuxEnabled;
         private readonly EmYesNo EmUpgradesEnabled;
         private readonly EmYesNo EmBioEnergyEnabled;
@@ -42,7 +93,7 @@
             new EmYesNo(EmAuxEnabledKey, true),
             new EmYesNo(EmUpgradesEnabledKey, true),
             new EmYesNo(EmBioEnergyEnabledKey, true),
-            new EmProperty<CyclopsPowerLevels>(EmPowerLevelKey, CyclopsPowerLevels.Crabsnake),
+            new EmProperty<CyclopsPowerLevels>(EmPowerLevelKey, CyclopsPowerLevels.Ampeel),
         };
 
         public EmModPatchConfig() : base(ConfigKey, definitions)
@@ -124,9 +175,11 @@
                 "# 'Cyclops Power Level' #",
                 "# This setting lets you configure the overall balance of the entire mod. #",
                 "# If you find that the Cyclops is too easy to too hard to maintain, try changing this setting. #",
-               $"# {CyclopsPowerLevels.Leviathan} (Easy Mode) No restrictions. #",
-               $"# {CyclopsPowerLevels.Crabsnake} (Moderate Difficulty) Some restrictions to prevent the Cyclops from being too easy to keep. #",
-               $"# {CyclopsPowerLevels.Peeper} (Hard Mode) Aproaches vanilla levels of Cyclops restrictions. #",
+                "# Changing this will limit the number of charging modules that can be added to the Cyclops of any one type. #",
+               $"# {CyclopsPowerLevels.Leviathan} (Easy Mode) #",
+               $"# {CyclopsPowerLevels.Ampeel} (Modest Difficulty) #",
+               $"# {CyclopsPowerLevels.Crabsnake} (Moderate Difficulty) #",
+               $"# {CyclopsPowerLevels.Peeper} (Hard Mode) #",
                 "",
 
             }, Encoding.UTF8);
