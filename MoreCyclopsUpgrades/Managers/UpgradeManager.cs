@@ -93,10 +93,10 @@
             UpgradeManagerInitializing?.Invoke();
             
             PowerManager powerManager = this.Manager.PowerManager;
-            powerManager.MaxSpeedModules = EmModPatchConfig.Settings.MaxSpeedModules();
+            powerManager.MaxSpeedModules = ModConfig.Settings.MaxSpeedModules();
 
-            SetupPowerManagerUpgrades(powerManager, EmModPatchConfig.Settings.MaxChargingModules());
-            this.Manager.ChargeManager.SetupChargingUpgrades(EmModPatchConfig.Settings.MaxChargingModules());
+            SetupPowerManagerUpgrades(powerManager, ModConfig.Settings.MaxChargingModules());
+            this.Manager.ChargeManager.SetupChargingUpgrades(ModConfig.Settings.MaxChargingModules());
 
             RegisterUpgradeHandlers();
 

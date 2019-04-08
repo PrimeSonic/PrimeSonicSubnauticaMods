@@ -95,7 +95,7 @@
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\CyBioReactorSaveData.cs" />
     <Compile Include="SaveData\CyclopsPowerLevels.cs" />
-    <Compile Include="SaveData\EmModPatchConfig.cs" />
+    <Compile Include="SaveData\ModConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="Managers\PowerManager.cs" />

@@ -34,9 +34,9 @@
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-                EmModPatchConfig.Initialize();
+                ModConfig.Initialize();
 
-                QuickLogger.Info($"Difficult set to {EmModPatchConfig.Settings.PowerLevel}");
+                QuickLogger.Info($"Difficult set to {ModConfig.Settings.PowerLevel}");
 
                 OtherMods.VehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
 
@@ -45,11 +45,11 @@
 
                 // TODO - Configure cyclops power levels
 
-                PatchUpgradeModules(EmModPatchConfig.Settings.EnableNewUpgradeModules);
+                PatchUpgradeModules(ModConfig.Settings.EnableNewUpgradeModules);
 
-                PatchAuxUpgradeConsole(EmModPatchConfig.Settings.EnableAuxiliaryUpgradeConsoles);
+                PatchAuxUpgradeConsole(ModConfig.Settings.EnableAuxiliaryUpgradeConsoles);
 
-                PatchBioEnergy(EmModPatchConfig.Settings.EnableBioReactors);
+                PatchBioEnergy(ModConfig.Settings.EnableBioReactors);
 
                 RegisterExternalUpgrades();
 

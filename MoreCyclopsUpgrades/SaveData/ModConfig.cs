@@ -8,9 +8,9 @@
     using System.Reflection;
     using System.Text;
 
-    internal class EmModPatchConfig : EmPropertyCollection
+    internal class ModConfig : EmPropertyCollection
     {
-        internal static EmModPatchConfig Settings;
+        internal static ModConfig Settings;
 
         private readonly string SaveFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{ConfigKey}.txt");
 
@@ -96,7 +96,7 @@
             new EmProperty<CyclopsPowerLevels>(EmPowerLevelKey, CyclopsPowerLevels.Ampeel),
         };
 
-        public EmModPatchConfig() : base(ConfigKey, definitions)
+        public ModConfig() : base(ConfigKey, definitions)
         {
             EmAuxEnabled = (EmYesNo)Properties[EmAuxEnabledKey];
             EmUpgradesEnabled = (EmYesNo)Properties[EmUpgradesEnabledKey];
@@ -110,7 +110,7 @@
         {
             try
             {
-                Settings = new EmModPatchConfig();
+                Settings = new ModConfig();
                 Settings.LoadFromFile();
             }
             catch (Exception ex)
@@ -143,7 +143,7 @@
 
         internal override EmProperty Copy()
         {
-            return new EmModPatchConfig();
+            return new ModConfig();
         }
 
         private void WriteConfigFile()

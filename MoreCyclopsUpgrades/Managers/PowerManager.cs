@@ -111,7 +111,7 @@
         private int lastKnownSpeedBoosters = -1;
         private int lastKnownPowerIndex = -1;
         private int rechargeSkip = 10;
-        private readonly int extraSkips = EmModPatchConfig.Settings.RechargeSkipRate();
+        private readonly int extraSkips = ModConfig.Settings.RechargeSkipRate();
 
         internal PowerManager(SubRoot cyclops)
         {

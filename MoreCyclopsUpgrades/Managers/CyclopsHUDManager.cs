@@ -78,7 +78,7 @@
 
             this.Manager = manager;
 
-            float maxHealth = MaxCyclopsHealth(EmModPatchConfig.Settings.PowerLevel);
+            float maxHealth = MaxCyclopsHealth(ModConfig.Settings.PowerLevel);
 
             Cyclops.live.data.maxHealth = maxHealth;
             Cyclops.live.health = Mathf.Min(maxHealth, Cyclops.live.health);
