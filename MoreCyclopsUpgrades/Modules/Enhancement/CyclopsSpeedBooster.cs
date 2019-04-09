@@ -51,7 +51,7 @@
         {
             base.Patch();
             LanguageHandler.SetLanguageLine(MaxRatingKey, "Maximum speed rating reached");
-            LanguageHandler.SetLanguageLine(SpeedRatingKey, "Speed rating is now at +{0} : {1}.");
+            LanguageHandler.SetLanguageLine(SpeedRatingKey, "Speed rating is now at +{0} ({1}%).");
         }
     }
 }
