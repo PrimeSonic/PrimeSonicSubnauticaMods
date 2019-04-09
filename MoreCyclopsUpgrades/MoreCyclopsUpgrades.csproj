@@ -108,6 +108,7 @@
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
+    <Compile Include="SaveData\ModConfigOptions.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />

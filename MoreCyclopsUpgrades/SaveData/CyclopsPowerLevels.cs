@@ -2,9 +2,9 @@
 {    
     internal enum CyclopsPowerLevels
     {
-        Leviathan,
-        Ampeel,
-        Crabsnake,        
-        Peeper
+        Leviathan = 0,
+        Ampeel = 1,
+        Crabsnake = 2,        
+        Peeper = 3
     }
 }

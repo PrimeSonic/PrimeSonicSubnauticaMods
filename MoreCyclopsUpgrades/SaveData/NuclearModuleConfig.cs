@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.SaveData
 {
+    using Common;
     using MoreCyclopsUpgrades.Managers;
     using SMLHelper.V2.Options;
     using System;
@@ -33,7 +34,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Error loading {EmNuclearConfig.ConfigKey}: " + ex.ToString());
+                QuickLogger.Warning($"[MoreCyclopsUpgrades] Error loading {EmNuclearConfig.ConfigKey}: " + ex.ToString());
                 WriteConfigFile();
             }
         }
@@ -126,15 +127,15 @@
         {
             if (File.Exists(OldConfigFile))
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Found original nuclear module config file.");
+                QuickLogger.Debug($"Found original nuclear module config file.");
                 // Renamed the config file because we're going to add a new one
                 File.Move(OldConfigFile, ConfigFile);
-                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file renamed.");
+                QuickLogger.Debug($"Nuclear module config file renamed.");
             }
 
             if (!File.Exists(ConfigFile))
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file not found. Writing default file.");
+                QuickLogger.Debug($"Nuclear module config file not found. Writing default file.");
                 WriteConfigFile();
                 return;
             }
@@ -145,7 +146,7 @@
 
             if (!readCorrectly || !EmConfig.ValidDataRead)
             {
-                Console.WriteLine($"[MoreCyclopsUpgrades] Nuclear module config file contained errors. Writing default file.");
+                QuickLogger.Info($"Nuclear module config file contained errors. Writing default file.");
                 WriteConfigFile();
                 return;
             }

@@ -2,6 +2,7 @@
 {
     using Common;
     using Common.EasyMarkup;
+    using SMLHelper.V2.Handlers;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -10,6 +11,8 @@
 
     internal class ModConfig : EmPropertyCollection
     {
+        private static readonly ModConfigOptions Options = new ModConfigOptions();
+
         internal static ModConfig Settings;
 
         private readonly string SaveFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{ConfigKey}.txt");
@@ -30,7 +33,11 @@
 
         internal bool EnableBioReactors => EmBioEnergyEnabled.Value;
 
-        internal CyclopsPowerLevels PowerLevel => EmPowerLevel.Value;
+        internal CyclopsPowerLevels PowerLevel
+        {
+            get => EmPowerLevel.Value;
+            set => EmPowerLevel.Value = value;
+        }
 
         internal int MaxChargingModules()
         {
@@ -110,6 +117,7 @@
         {
             try
             {
+                OptionsPanelHandler.RegisterModOptions(Options);
                 Settings = new ModConfig();
                 Settings.LoadFromFile();
             }
