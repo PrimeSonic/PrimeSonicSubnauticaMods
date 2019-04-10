@@ -146,34 +146,18 @@
         {
             GameObject gameObject;
 
-            if (techTypeID < TechType.Databox) // This is a standard upgrade module
+            if (CyclopsModulesByTechType.ContainsKey(techTypeID))
             {
-                gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
-            }
-            else if (ModulesEnabled) // Safety check in case these are disabled in the config
-            {
-                if (!CyclopsModulesByTechType.ContainsKey(techTypeID))
-                    return null; // error condition
-
                 // Get the CyclopsModule child class instance associated to this TechType
                 CyclopsModule cyclopsModule = CyclopsModulesByTechType[techTypeID];
 
                 // Instantiate a new prefab of the appripriate template TechType
                 gameObject = cyclopsModule.GetGameObject();
-
-                // Set the TechType value on the TechTag
-                TechTag tag = gameObject.GetComponent<TechTag>();
-                if (tag != null)
-                    tag.type = techTypeID;
-                else // Add if needed since this is how these are identified throughout the mod
-                    gameObject.AddComponent<TechTag>().type = techTypeID;
-
-                // Set the ClassId
-                gameObject.GetComponent<PrefabIdentifier>().ClassId = cyclopsModule.NameID;
             }
             else
             {
-                return null; // error condition
+                // This is a standard upgrade module or an upgrade module from another mod
+                gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
             }
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);

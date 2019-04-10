@@ -1,8 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.SaveData
 {
     using SMLHelper.V2.Options;
-    using System;
-
 
     internal class ModConfigOptions : ModOptions
     {
