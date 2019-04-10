@@ -90,6 +90,40 @@
             }
         }
 
+        internal float MaxCyclopsHealth()
+        {
+            switch (EmPowerLevel.Value)
+            {
+                case CyclopsPowerLevels.Leviathan:
+                    return 1600f;
+                case CyclopsPowerLevels.Ampeel:
+                    return 1400f;
+                case CyclopsPowerLevels.Crabsnake:
+                    return 1200f;
+                case CyclopsPowerLevels.Peeper:
+                    return 1000f;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
+            }
+        }
+
+        internal float RechargePenalty()
+        {
+            switch (EmPowerLevel.Value)
+            {
+                case CyclopsPowerLevels.Leviathan:
+                    return 1.0f;
+                case CyclopsPowerLevels.Ampeel:
+                    return 0.98f;
+                case CyclopsPowerLevels.Crabsnake:
+                    return 0.96f;
+                case CyclopsPowerLevels.Peeper:
+                    return 0.94f;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
+            }
+        }
+
         private readonly EmYesNo EmAuxEnabled;
         private readonly EmYesNo EmUpgradesEnabled;
         private readonly EmYesNo EmBioEnergyEnabled;

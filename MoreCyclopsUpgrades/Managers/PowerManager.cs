@@ -112,6 +112,7 @@
         private int lastKnownPowerIndex = -1;
         private int rechargeSkip = 10;
         private readonly int extraSkips = ModConfig.Settings.RechargeSkipRate();
+        private readonly float rechargePenalty = ModConfig.Settings.RechargePenalty();
 
         internal PowerManager(SubRoot cyclops)
         {
@@ -262,6 +263,8 @@
 
             if (availablePower < MinimalPowerValue)
                 return; // No power available
+
+            availablePower *= rechargePenalty;
 
             Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);

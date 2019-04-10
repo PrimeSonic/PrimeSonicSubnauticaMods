@@ -184,14 +184,25 @@
 
             HandReticle main = HandReticle.main;
 
-            main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(Battery._charge), Battery._capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
+            if (OverLimit)
+            {
+                main.SetInteractText(CyBioReactor.OverLimitString());
+            }
+            else
+            {
+                main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(Battery._charge), Battery._capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
+            }
+
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
         public void OnHandClick(GUIHand guiHand)
         {
             if (OverLimit)
+            {
+                ErrorMessage.AddMessage(CyBioReactor.OverLimitString());
                 return;
+            }
 
             PDA pda = Player.main.GetPDA();
             Inventory.main.SetUsedStorage(Container);

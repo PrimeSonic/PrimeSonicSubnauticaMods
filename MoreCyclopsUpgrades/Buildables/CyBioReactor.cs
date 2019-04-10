@@ -120,7 +120,7 @@
         {
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
             LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
-            LanguageHandler.SetLanguageLine(OverLimitKey, "Deactivated. Too many active Bioreactors.");
+            LanguageHandler.SetLanguageLine(OverLimitKey, "Bioreactor Deactivated. Too many active Bioreactors.");
         }
     }
 }

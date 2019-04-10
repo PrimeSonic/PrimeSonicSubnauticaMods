@@ -78,7 +78,7 @@
 
             this.Manager = manager;
 
-            float maxHealth = MaxCyclopsHealth(ModConfig.Settings.PowerLevel);
+            float maxHealth = ModConfig.Settings.MaxCyclopsHealth();
 
             Cyclops.live.data.maxHealth = maxHealth;
             Cyclops.live.health = Mathf.Min(maxHealth, Cyclops.live.health);
@@ -293,21 +293,6 @@
                 hpIcon.Text.text = helmIcon.Text.text = charger.GetIndicatorText();
                 hpIcon.Text.color = helmIcon.Text.color = charger.GetIndicatorTextColor();
             }
-        }
-
-        private static float MaxCyclopsHealth(CyclopsPowerLevels setting)
-        {
-            switch (setting)
-            {
-                case CyclopsPowerLevels.Leviathan:
-                    return 1800f;
-                case CyclopsPowerLevels.Crabsnake:
-                    return 1500f;
-                case CyclopsPowerLevels.Peeper:
-                    return 1200f;
-                default:
-                    return 1500f;
-            }
-        }
+        }        
     }
 }
