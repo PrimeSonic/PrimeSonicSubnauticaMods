@@ -20,6 +20,10 @@
                 modules.AddItem(slotName, CyclopsModule.SpawnCyclopsModule(CyclopsModule.DepletedNuclearModuleID), true);
                 ErrorMessage.AddMessage(DepletedNuclearModule.DepletedEvent);
             };
+            OnFirstTimeMaxCountReached += () =>
+            {
+                ErrorMessage.AddMessage(CyclopsModule.MaxNuclearReached());
+            };
         }
     }
 }

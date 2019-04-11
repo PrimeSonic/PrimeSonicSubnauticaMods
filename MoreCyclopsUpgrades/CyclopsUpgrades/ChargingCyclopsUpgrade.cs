@@ -1,7 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
-    using Modules;
-
     internal class ChargingUpgradeHandler : UpgradeHandler
     {
         internal ChargingUpgradeHandler SiblingUpgrade = null;
@@ -14,11 +12,6 @@
                     return this.Count < this.MaxCount;
 
                 return (SiblingUpgrade.Count + this.Count) < this.MaxCount;
-            };
-
-            OnFirstTimeMaxCountReached = () =>
-            {
-                ErrorMessage.AddMessage(CyclopsModule.MaxChargingModuleReached());
             };
         }
     }

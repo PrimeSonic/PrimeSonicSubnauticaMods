@@ -100,6 +100,10 @@
                 {
                     MaxCount = maxChargingModules
                 };
+                SolarCharger.OnFirstTimeMaxCountReached += () =>
+                {
+                    ErrorMessage.AddMessage(CyclopsModule.MaxSolarReached());
+                };
                 return SolarCharger;
             });
 
@@ -110,6 +114,11 @@
                 {
                     MaxCount = maxChargingModules
                 };
+                SolarChargerMk2.OnFirstTimeMaxCountReached += () =>
+                {
+                    ErrorMessage.AddMessage(CyclopsModule.MaxSolarReached());
+                };
+
                 SolarCharger.SiblingUpgrade = SolarChargerMk2;
                 SolarChargerMk2.SiblingUpgrade = SolarCharger;
                 return SolarChargerMk2;
@@ -122,6 +131,10 @@
                 {
                     MaxCount = maxChargingModules
                 };
+                ThermalCharger.OnFirstTimeMaxCountReached += () =>
+                {
+                    ErrorMessage.AddMessage(CyclopsModule.MaxThermalReached());
+                };
                 return ThermalCharger;
             });
 
@@ -131,6 +144,10 @@
                 ThermalChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true)
                 {
                     MaxCount = maxChargingModules
+                };
+                ThermalChargerMk2.OnFirstTimeMaxCountReached += () =>
+                {
+                    ErrorMessage.AddMessage(CyclopsModule.MaxThermalReached());
                 };
                 ThermalCharger.SiblingUpgrade = ThermalChargerMk2;
                 ThermalChargerMk2.SiblingUpgrade = ThermalCharger;
@@ -150,7 +167,7 @@
             UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: BioBooster Upgrade");
-                BioBoosters = new BioBoosterUpgradeHandler();                
+                BioBoosters = new BioBoosterUpgradeHandler();
                 return BioBoosters;
             });
         }

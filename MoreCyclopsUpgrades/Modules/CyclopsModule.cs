@@ -21,10 +21,22 @@
 
         internal static bool ModulesEnabled { get; private set; } = true;
 
-        private const string MaxChargingReachedKey = "MaxChargeHit";
-        internal static string MaxChargingModuleReached()
+        private const string MaxSolarReachedKey = "MaxSolarMsg";
+        internal static string MaxSolarReached()
         {
-            return Language.main.Get(MaxChargingReachedKey);
+            return Language.main.Get(MaxSolarReachedKey);
+        }
+
+        private const string MaxThermalReachedKey = "MaxThermalMsg";
+        internal static string MaxThermalReached()
+        {
+            return Language.main.Get(MaxThermalReachedKey);
+        }
+
+        private const string MaxNuclearReachedKey = "MaxNuclearMsg";
+        internal static string MaxNuclearReached()
+        {
+            return Language.main.Get(MaxNuclearReachedKey);
         }
 
         // Default value that shouldn't get hit. Only here for error testing.
@@ -139,7 +151,9 @@
                 CyclopsModulesByTechType.Add(module.TechType, module);
             }
 
-            LanguageHandler.SetLanguageLine(MaxChargingReachedKey, "Max chargers reached for this type.");
+            LanguageHandler.SetLanguageLine(MaxSolarReachedKey, "Max number of solar chargers reached.");
+            LanguageHandler.SetLanguageLine(MaxThermalReachedKey, "Max number of thermal chargers reached.");
+            LanguageHandler.SetLanguageLine(MaxNuclearReachedKey, "Max number of nuclear chargers.");
         }
 
         public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
