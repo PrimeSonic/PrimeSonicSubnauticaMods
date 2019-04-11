@@ -158,21 +158,7 @@
 
         public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
         {
-            GameObject gameObject;
-
-            if (CyclopsModulesByTechType.ContainsKey(techTypeID))
-            {
-                // Get the CyclopsModule child class instance associated to this TechType
-                CyclopsModule cyclopsModule = CyclopsModulesByTechType[techTypeID];
-
-                // Instantiate a new prefab of the appripriate template TechType
-                gameObject = cyclopsModule.GetGameObject();
-            }
-            else
-            {
-                // This is a standard upgrade module or an upgrade module from another mod
-                gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
-            }
+            var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);

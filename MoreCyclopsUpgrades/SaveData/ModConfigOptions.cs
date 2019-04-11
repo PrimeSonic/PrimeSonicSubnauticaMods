@@ -6,7 +6,7 @@
     {
         private const string ChoiceID = "MCUMode";
 
-        public ModConfigOptions() : base("MoreCyclopsUpgrades Difficulty")
+        public ModConfigOptions() : base("MoreCyclopsUpgrades Difficulty (Requires restart!)")
         {
             base.ChoiceChanged += ModConfigOptions_ChoiceChanged;
         }
@@ -21,13 +21,13 @@
 
         public override void BuildModOptions()
         {
-            base.AddChoiceOption(ChoiceID, "Cyclops Power (Requires restart!)",
+            base.AddChoiceOption(ChoiceID, "Cyclops Power",
                                  new string[]
                                  {
-                                    $"{CyclopsPowerLevels.Leviathan} (Easy difficulty)",
-                                    $"{CyclopsPowerLevels.Ampeel} (Modest difficulty)",
-                                    $"{CyclopsPowerLevels.Crabsnake} (Moderate difficulty)",
-                                    $"{CyclopsPowerLevels.Peeper} (Hard difficulty)",
+                                    $"{CyclopsPowerLevels.Leviathan} (Easy)",
+                                    $"{CyclopsPowerLevels.Ampeel} (Modest)",
+                                    $"{CyclopsPowerLevels.Crabsnake} (Moderate)",
+                                    $"{CyclopsPowerLevels.Peeper} (Hard)",
                                  }, (int)ModConfig.Settings.PowerLevel);
         }
     }
