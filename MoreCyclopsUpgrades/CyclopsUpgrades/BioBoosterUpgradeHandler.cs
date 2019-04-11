@@ -12,12 +12,10 @@
     {
         private float errorDelay = 0f;
         private const float delayInterval = 10f;
-        internal readonly int MaxBioreactorsAllowed;
 
-        public BioBoosterUpgradeHandler(int maxBioreactorsAllowed) : base(CyclopsModule.BioReactorBoosterID)
+        public BioBoosterUpgradeHandler() : base(CyclopsModule.BioReactorBoosterID)
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
-            MaxBioreactorsAllowed = maxBioreactorsAllowed;
 
             OnFinishedUpgrades += (SubRoot cyclops) =>
             {

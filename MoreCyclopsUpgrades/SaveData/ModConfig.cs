@@ -73,6 +73,23 @@
             }
         }
 
+        internal int MaxBioReactors()
+        {
+            switch (EmPowerLevel.Value)
+            {
+                case CyclopsPowerLevels.Leviathan:
+                    return 6;
+                case CyclopsPowerLevels.Ampeel:
+                    return 4;
+                case CyclopsPowerLevels.Crabsnake:
+                    return 2;
+                case CyclopsPowerLevels.Peeper:
+                    return 1;
+                default:
+                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
+            }
+        }
+
         internal int RechargeSkipRate()
         {
             switch (EmPowerLevel.Value)
@@ -190,7 +207,6 @@
 
         private void WriteConfigFile()
         {
-
             File.WriteAllLines(SaveFile, new[]
             {
                 versionLine,
@@ -218,10 +234,10 @@
                 "#     This setting lets you configure the overall balance of the entire mod. #",
                 "#     If you find that the Cyclops is too easy to too hard to maintain, try changing this setting. #",
                 "#     Changing this will limit the number of charging modules that can be added to the Cyclops of any one type. #",
-               $"#      {CyclopsPowerLevels.Leviathan} (Easy)      Cyclops HP: 1600, Max Charging Modules: 12, Max Speed Modules: 6, Recharge Rate: Fastest #",
-               $"#      {CyclopsPowerLevels.Ampeel} (Modest)       Cyclops HP: 1400, Max Charging Modules:  6, Max Speed Modules: 4, Recharge Rate: Fast #",
-               $"#      {CyclopsPowerLevels.Crabsnake} (Moderate)  Cyclops HP: 1200, Max Charging Modules:  3, Max Speed Modules: 2, Recharge Rate: Slower #",
-               $"#      {CyclopsPowerLevels.Peeper} (Hard)         Cyclops HP: 1000, Max Charging Modules:  1, Max Speed Modules: 1, Recharge Rate: Slowest #",
+               $"#      {CyclopsPowerLevels.Leviathan} (Easy)      Cyclops HP: 1600, Max Charging Modules: 12, Max Speed Modules: 6, Max Cyclops BioReactors: 6, Recharge Rate: Fastest #",
+               $"#      {CyclopsPowerLevels.Ampeel} (Modest)       Cyclops HP: 1400, Max Charging Modules:  6, Max Speed Modules: 4, Max Cyclops BioReactors: 4, Recharge Rate: Fast #",
+               $"#      {CyclopsPowerLevels.Crabsnake} (Moderate)  Cyclops HP: 1200, Max Charging Modules:  3, Max Speed Modules: 2, Max Cyclops BioReactors: 2, Recharge Rate: Slower #",
+               $"#      {CyclopsPowerLevels.Peeper} (Hard)         Cyclops HP: 1000, Max Charging Modules:  1, Max Speed Modules: 1, Max Cyclops BioReactors: 1, Recharge Rate: Slowest #",
                 "",
             }, Encoding.UTF8);
         }

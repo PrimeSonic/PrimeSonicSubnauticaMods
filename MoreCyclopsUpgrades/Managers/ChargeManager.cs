@@ -150,7 +150,7 @@
             UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: BioBooster Upgrade");
-                BioBoosters = new BioBoosterUpgradeHandler(maxChargingModules);                
+                BioBoosters = new BioBoosterUpgradeHandler();                
                 return BioBoosters;
             });
         }

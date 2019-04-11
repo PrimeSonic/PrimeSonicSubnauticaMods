@@ -4,16 +4,20 @@
     using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.Modules;
     using MoreCyclopsUpgrades.Monobehaviors;
+    using MoreCyclopsUpgrades.SaveData;
     using System.Collections.Generic;
     using UnityEngine;
 
     internal class BioChargeHandler : ICyclopsCharger
     {
+        private const float BioReactorRateLimiter = 0.85f;
+
         private readonly ChargeManager ChargeManager;
         private BioBoosterUpgradeHandler BioBoosters => ChargeManager.BioBoosters;
 
         private List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
 
+        private readonly int MaxBioReactors = ModConfig.Settings.MaxBioReactors();
         internal bool ProducingPower = false;
 
         private float totalBioCharge = 0f;
@@ -65,12 +69,12 @@
                 if (!reactor.HasPower)
                     continue;
 
-                if (poweredReactors < this.BioBoosters.MaxBioreactorsAllowed)
+                if (poweredReactors < MaxBioReactors)
                 {
                     poweredReactors++;
                     reactor.OverLimit = false;
 
-                    charge += reactor.GetBatteryPower(PowerManager.BatteryDrainRate, requestedPower);
+                    charge += reactor.GetBatteryPower(PowerManager.BatteryDrainRate * BioReactorRateLimiter, requestedPower);
 
                     tempBioCharge += reactor.Battery._charge;
                     tempBioCapacity = reactor.Battery._capacity;
