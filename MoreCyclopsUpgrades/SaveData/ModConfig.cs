@@ -183,19 +183,25 @@
         {
             if (!EmAuxEnabled.HasValue)
             {
-                QuickLogger.Warning($"Config value for {ConfigKey}>{EmAuxEnabled.Key} was out of range. Replaced with default.");
+                QuickLogger.Warning($"Config value for {ConfigKey}>{EmAuxEnabled.Key} was out of range. Replaced config with default.");
                 ValidDataRead &= false;
             }
 
             if (!EmUpgradesEnabled.HasValue)
             {
-                QuickLogger.Warning($"Config value for {ConfigKey}>{EmUpgradesEnabled.Key} was out of range. Replaced with default.");
+                QuickLogger.Warning($"Config value for {ConfigKey}>{EmUpgradesEnabled.Key} was out of range. Replaced config with default.");
                 ValidDataRead &= false;
             }
 
             if (!EmBioEnergyEnabled.HasValue)
             {
-                QuickLogger.Warning($"Config value for {ConfigKey}>{EmBioEnergyEnabled.Key} was out of range. Replaced with default.");
+                QuickLogger.Warning($"Config value for {ConfigKey}>{EmBioEnergyEnabled.Key} was out of range. Replaced config with default.");
+                ValidDataRead &= false;
+            }
+
+            if (!EmPowerLevel.HasValue)
+            {
+                QuickLogger.Warning($"Config value for {ConfigKey}>{EmPowerLevel.Key} was out of range. Replaced config with default.");
                 ValidDataRead &= false;
             }
         }
