@@ -78,24 +78,6 @@
 
             this.Manager = manager;
 
-            QuickLogger.Debug("Overriding Cyclops HP values");
-
-            float maxHealth = ModConfig.Settings.MaxCyclopsHealth();
-
-            if (Cyclops.live.IsFullHealth())
-            {
-                Cyclops.live.data.maxHealth = maxHealth;
-                Cyclops.live.health = maxHealth;
-            }
-            else
-            {
-                float fraction = Cyclops.live.GetHealthFraction();
-                float currentHealth = fraction * maxHealth;
-
-                Cyclops.live.data.maxHealth = maxHealth;
-                Cyclops.live.health = currentHealth;
-            }
-
             powerIconTextVisibility = Player.main.currentSub == Cyclops;
 
             return true;
