@@ -1,26 +1,56 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Common;
     using CyclopsUpgrades;
+    using CyclopsUpgrades.CyclopsCharging;
     using Modules.Enhancement;
-    using Monobehaviors;
-    using SaveData;
+    using MoreCyclopsUpgrades.SaveData;
+    using System;
     using System.Collections.Generic;
     using UnityEngine;
 
-    internal class PowerManager
+    /// <summary>
+    /// Handles recharging the Cyclops and other power related tasks.
+    /// </summary>
+    public class PowerManager
     {
-        internal const float MaxSolarDepth = 200f;
-        internal const float SolarChargingFactor = 0.03f;
-        internal const float ThermalChargingFactor = 1.5f;
+        private static readonly ICollection<ChargerCreator> OneTimeUseCyclopsChargers = new List<ChargerCreator>();
+        private static readonly ICollection<ChargerCreator> ReusableCyclopsChargers = new List<ChargerCreator>();
+
+        /// <summary>
+        /// <para>This event happens right before the PowerManager starts initializing a the registered <see cref="ICyclopsCharger"/>s.</para>
+        /// <para>Use this if you need a way to know when you should call <see cref="RegisterOneTimeUseChargerCreator"/> for <see cref="ChargerCreator"/>s that cannot be created from a static context.</para>
+        /// </summary>
+        public static Action CyclopsChargersInitializing;
+
+        /// <summary>
+        /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
+        /// </summary>
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ChargerCreator"/>.</param>
+        public static void RegisterOneTimeUseChargerCreator(ChargerCreator createEvent)
+        {
+            OneTimeUseCyclopsChargers.Add(createEvent);
+        }
+
+        /// <summary>
+        /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand that can is reused for each new Cyclops.
+        /// </summary>
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ICyclopsCharger"/>.</param>
+        public static void RegisterReusableChargerCreator(ChargerCreator createEvent)
+        {
+            ReusableCyclopsChargers.Add(createEvent);
+        }
+
         internal const float BatteryDrainRate = 0.01f;
         internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
-        internal const float NuclearDrainRate = 0.15f;
 
         private const float EnginePowerPenalty = 0.7f;
 
-        private const int MaxSpeedBoosters = 6;
+        internal const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
+
+        /// <summary>
+        /// "Practically zero" for all intents and purposes. Any energy value lower than this should be considered zero.
+        /// </summary>
         public const float MinimalPowerValue = 0.001f;
 
         private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
@@ -61,85 +91,66 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
-        public List<CyBioReactorMono> CyBioReactors { get; } = new List<CyBioReactorMono>();
-        private List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
+        internal readonly List<ICyclopsCharger> PowerChargers = new List<ICyclopsCharger>();
 
-        internal bool HasBioReactors => this.CyBioReactors.Count > 0;
-        internal PowerIconState PowerIcons { get; } = new PowerIconState();
+        internal UpgradeHandler SpeedBoosters;
+        internal TieredUpgradesHandlerCollection<int> EngineEfficientyUpgrades;
 
-        internal UpgradeHandler SpeedBoosters { get; set; }
-        internal ChargingUpgradeHandler SolarCharger { get; set; }
-        internal ChargingUpgradeHandler ThermalCharger { get; set; }
-        internal BatteryUpgradeHandler SolarChargerMk2 { get; set; }
-        internal BatteryUpgradeHandler ThermalChargerMk2 { get; set; }
-        internal BatteryUpgradeHandler NuclearCharger { get; set; }
-        internal TieredUpgradesHandlerCollection<int> EngineEfficientyUpgrades { get; set; }
-        internal BioBoosterUpgradeHandler BioBoosters { get; set; }
+        internal CyclopsManager Manager;
+        internal readonly SubRoot Cyclops;
 
-        public CyclopsManager Manager { get; private set; }
-
-        public SubRoot Cyclops => this.Manager.Cyclops;
-
-        private UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
+        internal int MaxSpeedModules = MaxSpeedBoosters;
 
         private CyclopsMotorMode motorMode;
-        private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = this.Cyclops.GetComponentInChildren<CyclopsMotorMode>());
+        private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = Cyclops.GetComponentInChildren<CyclopsMotorMode>());
 
         private SubControl subControl;
-        private SubControl SubControl => subControl ?? (subControl = this.Cyclops.GetComponentInChildren<SubControl>());
+        private SubControl SubControl => subControl ?? (subControl = Cyclops.GetComponentInChildren<SubControl>());
 
-        private float LastKnownPowerRating { get; set; } = -1f;
-        private int LastKnownSpeedBoosters { get; set; } = -1;
-        private int LastKnownPowerIndex { get; set; } = -1;
+        private float lastKnownPowerRating = -1f;
+        private int lastKnownSpeedBoosters = -1;
+        private int lastKnownPowerIndex = -1;
+        private int rechargeSkip = 10;
+        private readonly int extraSkips = ModConfig.Settings.RechargeSkipRate();
+        private readonly float rechargePenalty = ModConfig.Settings.RechargePenalty();
+
+        internal PowerManager(SubRoot cyclops)
+        {
+            Cyclops = cyclops;
+        }
 
         private float[] OriginalSpeeds { get; } = new float[3];
 
-        public bool Initialize(CyclopsManager manager)
+        internal bool Initialize(CyclopsManager manager)
         {
-            if (this.Manager != null)
+            if (Manager != null)
                 return false; // Already initialized
 
-            this.Manager = manager;
+            Manager = manager;
 
-            if (this.MotorMode == null)
-                return false;
+            InitializeChargingHandlers();
 
             // Store the original values before we start to change them
             this.OriginalSpeeds[0] = this.MotorMode.motorModeSpeeds[0];
             this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
             this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
 
-            SyncBioReactors();
+            manager.ChargeManager.SyncBioReactors();
 
             return true;
         }
 
-        internal void SyncBioReactors()
+        internal void InitializeChargingHandlers()
         {
-            TempCache.Clear();
+            CyclopsChargersInitializing?.Invoke();
 
-            CyBioReactorMono[] cyBioReactors = this.Cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
+            foreach (ChargerCreator method in ReusableCyclopsChargers)
+                PowerChargers.Add(method.Invoke(Cyclops));
 
-            foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
-            {
-                if (TempCache.Contains(cyBioReactor))
-                    continue; // This is a workaround because of the object references being returned twice in this array.
+            foreach (ChargerCreator method in OneTimeUseCyclopsChargers)
+                PowerChargers.Add(method.Invoke(Cyclops));
 
-                TempCache.Add(cyBioReactor);
-
-                if (cyBioReactor.ParentCyclops == null)
-                {
-                    QuickLogger.Debug("CyBioReactorMono synced externally");
-                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    cyBioReactor.ConnectToCyclops(this.Cyclops, this.Manager);
-                }
-            }
-
-            if (TempCache.Count != this.CyBioReactors.Count)
-            {
-                this.CyBioReactors.Clear();
-                this.CyBioReactors.AddRange(TempCache);
-            }
+            OneTimeUseCyclopsChargers.Clear();
         }
 
         /// <summary>
@@ -149,16 +160,16 @@
         /// </summary>
         internal void UpdatePowerSpeedRating()
         {
-            int powerIndex = this.EngineEfficientyUpgrades.HighestValue;
-            int speedBoosters = this.SpeedBoosters.Count;
+            int powerIndex = EngineEfficientyUpgrades.HighestValue;
+            int speedBoosters = SpeedBoosters.Count;
 
-            if (this.LastKnownPowerIndex != powerIndex)
+            if (lastKnownPowerIndex != powerIndex)
             {
-                this.LastKnownPowerIndex = powerIndex;
+                lastKnownPowerIndex = powerIndex;
 
-                this.Cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
-                this.Cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
-                this.Cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
+                Cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+                Cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
+                Cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
             }
 
             // Speed modules can affect power rating too
@@ -176,22 +187,22 @@
 
             float powerRating = cleanRating / 100f;
 
-            if (this.LastKnownPowerRating != powerRating)
+            if (lastKnownPowerRating != powerRating)
             {
-                this.LastKnownPowerRating = powerRating;
+                lastKnownPowerRating = powerRating;
 
-                this.Cyclops.currPowerRating = powerRating;
+                Cyclops.currPowerRating = powerRating;
 
                 // Inform the new power rating just like the original method would.
                 ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
             }
 
-            if (speedBoosters > MaxSpeedBoosters)
+            if (speedBoosters > MaxSpeedModules)
                 return; // Exit here
 
-            if (this.LastKnownSpeedBoosters != speedBoosters)
+            if (lastKnownSpeedBoosters != speedBoosters)
             {
-                this.LastKnownSpeedBoosters = speedBoosters;
+                lastKnownSpeedBoosters = speedBoosters;
 
                 float SlowMultiplier = 1f;
                 float StandardMultiplier = 1f;
@@ -214,7 +225,7 @@
                 CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
                 this.SubControl.BaseForwardAccel = this.MotorMode.motorModeSpeeds[(int)currentMode];
 
-                ErrorMessage.AddMessage(CyclopsSpeedBooster.SpeedRatingText(this.LastKnownSpeedBoosters, Mathf.RoundToInt(StandardMultiplier * 100)));
+                ErrorMessage.AddMessage(CyclopsSpeedBooster.SpeedRatingText(lastKnownSpeedBoosters, Mathf.RoundToInt(StandardMultiplier * 100)));
             }
         }
 
@@ -223,229 +234,40 @@
         /// </summary>
         internal void RechargeCyclops()
         {
-            if (this.UpgradeManager == null)
-            {
-                ErrorMessage.AddMessage("RechargeCyclops: UpgradeManager is null");
-                return;
-            }
-
             if (Time.timeScale == 0f) // Is the game paused?
                 return;
 
-            if (!this.UpgradeManager.HasChargingModules && !this.HasBioReactors)
-                return; // No charging modules, early exit
-
-            float powerDeficit = this.Cyclops.powerRelay.GetMaxPower() - this.Cyclops.powerRelay.GetPower();
-
-            float surplusPower = 0f;
-            bool renewablePowerAvailable = false;
-
-            this.Manager.HUDManager.UpdateTextVisibility();
-
-            // Handle solar power
-            if (this.SolarCharger.HasUpgrade || this.SolarChargerMk2.HasUpgrade)
+            if (rechargeSkip < lastKnownSpeedBoosters + extraSkips)
             {
-                float solarStatus = GetSolarStatus();
-                float availableSolarEnergy = SolarChargingFactor * solarStatus;
-                this.PowerIcons.SolarStatus = solarStatus * 100;
-                this.PowerIcons.Solar = availableSolarEnergy > MinimalPowerValue;
-
-                surplusPower += this.SolarCharger.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
-
-                bool usingSolarBatteryPower = false;
-
-                if (this.PowerIcons.Solar)
-                {
-                    surplusPower += this.SolarChargerMk2.ChargeCyclops(this.Cyclops, ref availableSolarEnergy, ref powerDeficit);
-                }
-                else
-                {
-                    this.SolarChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
-                    usingSolarBatteryPower |= !this.PowerIcons.Thermal && this.SolarChargerMk2.BatteryHasCharge;
-                }
-
-                this.PowerIcons.SolarBattery = usingSolarBatteryPower;
-                this.PowerIcons.SolarBatteryCharge = this.SolarChargerMk2.TotalBatteryCharge;
-                this.PowerIcons.SolarBatteryCapacity = this.SolarChargerMk2.TotalBatteryCapacity;
-                renewablePowerAvailable |= this.PowerIcons.Solar || this.PowerIcons.SolarBattery;
-            }
-            else
-            {
-                this.PowerIcons.Solar = false;
-                this.PowerIcons.SolarBattery = false;
+                rechargeSkip++; // Slightly slows down recharging with more speed boosters and higher difficulty
+                return;
             }
 
-            // Handle thermal power
-            if (this.ThermalCharger.HasUpgrade || this.ThermalChargerMk2.HasUpgrade)
-            {
-                float thermalStatus = GetThermalStatus();
-                float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * this.Cyclops.thermalReactorCharge.Evaluate(thermalStatus);
-                this.PowerIcons.ThermalStatus = thermalStatus;
-                this.PowerIcons.Thermal = availableThermalEnergy > MinimalPowerValue;
+            rechargeSkip = 0;
 
-                surplusPower += this.ThermalCharger.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
+            float powerDeficit = Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower();
 
-                bool usingThermalBatteryPower = false;
+            Manager.HUDManager.UpdateTextVisibility();
 
-                if (this.PowerIcons.Thermal)
-                {
-                    surplusPower += this.ThermalChargerMk2.ChargeCyclops(this.Cyclops, ref availableThermalEnergy, ref powerDeficit);
-                }
-                else
-                {
-                    this.ThermalChargerMk2.ChargeCyclops(this.Cyclops, BatteryDrainRate, ref powerDeficit);
-                    usingThermalBatteryPower |= !this.PowerIcons.Thermal && this.ThermalChargerMk2.BatteryHasCharge;
-                }
+            float power = 0f;
+            foreach (ICyclopsCharger charger in PowerChargers)
+                power += charger.ProducePower(powerDeficit);
 
-                this.PowerIcons.ThermalBattery = usingThermalBatteryPower;
-                this.PowerIcons.ThermalBatteryCharge = this.ThermalChargerMk2.TotalBatteryCharge;
-                this.PowerIcons.ThermalBatteryCapacity = this.ThermalChargerMk2.TotalBatteryCapacity;
-                renewablePowerAvailable |= this.PowerIcons.Thermal || this.PowerIcons.ThermalBattery;
-            }
-            else
-            {
-                this.PowerIcons.Thermal = false;
-                this.PowerIcons.ThermalBattery = false;
-            }
-
-            // Handle bio power
-            if (this.CyBioReactors.Count > 0)
-            {
-                float totalBioCharge = 0f;
-                float bioCapacity = 0f;
-
-                int countWithPower = 0;
-                foreach (CyBioReactorMono reactor in this.CyBioReactors)
-                {
-                    if (!reactor.HasPower)
-                        continue;
-
-                    countWithPower++;
-                    reactor.ChargeCyclops(BatteryDrainRate, ref powerDeficit);
-                    totalBioCharge += reactor.Battery._charge;
-                    bioCapacity = reactor.Battery._capacity;
-                }
-
-                bool hasBioPower = countWithPower > 0;
-                this.PowerIcons.Bio = hasBioPower;
-                renewablePowerAvailable |= hasBioPower;
-                this.PowerIcons.BioCharge = totalBioCharge;
-                this.PowerIcons.BioCapacity = bioCapacity * countWithPower;
-            }
-            else
-            {
-                this.PowerIcons.Bio = false;
-            }
-
-            bool cyclopsDoneCharging = powerDeficit <= MinimalPowerValue;
-            bool hasSurplusPower = surplusPower > MinimalPowerValue;
-            bool activelyCharging = !this.PowerIcons.Solar && !this.PowerIcons.Thermal;
-
-            this.PowerIcons.SolarBattery &= activelyCharging;
-            this.PowerIcons.ThermalBattery &= activelyCharging;
-
-
-            this.PowerIcons.Nuclear =
-                this.NuclearCharger.HasUpgrade &&
-                !renewablePowerAvailable && // Only if there's no renewable power available        
-                !hasSurplusPower;
-
-            this.PowerIcons.NuclearCharge = this.NuclearCharger.TotalBatteryCharge;
-            this.PowerIcons.NuclearCapacity = this.NuclearCharger.TotalBatteryCapacity;
-
-            if (this.PowerIcons.Nuclear && // Nuclear power enabled
-                !cyclopsDoneCharging && // Halt charging if Cyclops is on full charge                
-                powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit) // User config for threshold to start charging                
-            {
-                // We'll only charge from the nuclear cells if we aren't getting power from the other modules.
-                this.NuclearCharger.ChargeCyclops(this.Cyclops, NuclearDrainRate, ref powerDeficit);
-            }
-
-            // If the Cyclops is at full energy and it's generating a surplus of power, it can recharge a reserve battery
-            if (cyclopsDoneCharging && hasSurplusPower)
-            {
-                // Recycle surplus power back into the batteries that need it
-
-                if (surplusPower % 2 != 0) // Let this be pseudo-random so we aren't always charging the same battery first each time
-                {
-                    this.SolarChargerMk2.RechargeBatteries(ref surplusPower);
-                    this.ThermalChargerMk2.RechargeBatteries(ref surplusPower);
-                }
-                else
-                {
-                    this.ThermalChargerMk2.RechargeBatteries(ref surplusPower);
-                    this.SolarChargerMk2.RechargeBatteries(ref surplusPower);
-                }
-            }
+            ChargeCyclops(power, ref powerDeficit);
         }
 
-        /// <summary>
-        /// Gets the total available reserve power across all equipment upgrade modules.
-        /// </summary>
-        /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
-        internal int GetTotalReservePower()
+        private void ChargeCyclops(float availablePower, ref float powerDeficit)
         {
-            float availableReservePower = 0f;
-            availableReservePower += this.SolarChargerMk2.TotalBatteryCharge;
-            availableReservePower += this.ThermalChargerMk2.TotalBatteryCharge;
-            availableReservePower += this.NuclearCharger.TotalBatteryCharge;
+            if (powerDeficit < MinimalPowerValue)
+                return; // No need to charge
 
-            foreach (CyBioReactorMono reactor in this.CyBioReactors)
-                availableReservePower += reactor.Battery._charge;
+            if (availablePower < MinimalPowerValue)
+                return; // No power available
 
-            return Mathf.FloorToInt(availableReservePower);
-        }
+            availablePower *= rechargePenalty;
 
-        /// <summary>
-        /// Gets the amount of available energy provided by the currently available sunlight.
-        /// </summary>
-        /// <returns>The currently available solar energy.</returns>
-        private float GetSolarChargeAmount()
-        {
-            // The code here mostly replicates what the UpdateSolarRecharge() method does from the SeaMoth class.
-            // Consessions were made for the differences between the Seamoth and Cyclops upgrade modules.
-
-            if (DayNightCycle.main == null)
-                return 0f; // Safety check
-
-            // This is 1-to-1 the same way the Seamoth calculates its solar charging rate.
-
-            return SolarChargingFactor *
-                   DayNightCycle.main.GetLocalLightScalar() *
-                   Mathf.Clamp01((MaxSolarDepth + this.Cyclops.transform.position.y) / MaxSolarDepth); // Distance to surfuce
-        }
-
-        private float GetSolarStatus()
-        {
-            if (DayNightCycle.main == null)
-                return 0f; // Safety check
-
-            return DayNightCycle.main.GetLocalLightScalar() *
-                   Mathf.Clamp01((MaxSolarDepth + this.Cyclops.transform.position.y) / MaxSolarDepth);
-        }
-
-        /// <summary>
-        ///  Gets the amount of available energy provided by the current ambient heat.
-        /// </summary>
-        /// <returns>The currently available thermal energy.</returns>
-        private float GetThermalChargeAmount()
-        {
-            // This code mostly replicates what the UpdateThermalReactorCharge() method does from the SubRoot class
-
-            if (WaterTemperatureSimulation.main == null)
-                return 0f; // Safety check
-
-            return ThermalChargingFactor *
-                   Time.deltaTime *
-                   this.Cyclops.thermalReactorCharge.Evaluate(WaterTemperatureSimulation.main.GetTemperature(this.Cyclops.transform.position)); // Temperature
-        }
-
-        private float GetThermalStatus()
-        {
-            if (WaterTemperatureSimulation.main == null)
-                return 0f; // Safety check
-
-            return WaterTemperatureSimulation.main.GetTemperature(this.Cyclops.transform.position);
+            Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
+            powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
         }
     }
 }

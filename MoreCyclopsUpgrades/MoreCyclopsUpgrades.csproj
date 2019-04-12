@@ -66,6 +66,14 @@
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\BioEnergyCollection.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\BioChargeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\ICyclopsCharger.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\NuclearChargeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\SolarChargeHandler.cs" />
+    <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
+    <Compile Include="Managers\ChargeManager.cs" />
+    <Compile Include="NumberFormat.cs" />
+    <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
     <Compile Include="CyclopsUpgrades\BatteryUpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\BioBoosterUpgradeHandler.cs" />
@@ -78,7 +86,6 @@
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
-    <Compile Include="Managers\PowerIconState.cs" />
     <Compile Include="Modules\Enhancement\BioReactorBooster.cs" />
     <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Caching\BioEnergy.cs" />
@@ -87,7 +94,8 @@
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\CyBioReactorSaveData.cs" />
-    <Compile Include="SaveData\EmModPatchConfig.cs" />
+    <Compile Include="SaveData\CyclopsPowerLevels.cs" />
+    <Compile Include="SaveData\ModConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="Managers\PowerManager.cs" />
@@ -100,6 +108,7 @@
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
     <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
+    <Compile Include="SaveData\ModConfigOptions.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />
@@ -160,6 +169,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

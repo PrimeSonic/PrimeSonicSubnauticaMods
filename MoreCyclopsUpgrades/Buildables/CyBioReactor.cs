@@ -11,12 +11,25 @@
     {
         internal const string CyBioReactorID = "CyBioReactor";
 
+        private static readonly CyBioReactor main = new CyBioReactor();
+
+        public static void PatchCyBioReactor(bool enableBioreactor)
+        {
+            main.Patch(enableBioreactor);
+        }
+
         public static TechType TechTypeID { get; private set; } = TechType.UnusedOld;
 
         private const string OnHoverFormatKey = "CyBioOnHover";
         public static string OnHoverFormatString(int charge, float capacity, string stillProducing)
         {
             return Language.main.GetFormat(OnHoverFormatKey, charge, capacity, stillProducing);
+        }
+
+        private const string OverLimitKey = "CyBioOverLimit";
+        public static string OverLimitString()
+        {
+            return Language.main.Get(OverLimitKey);
         }
 
         private const string StorageLabelKey = "CyBioReactorLabel";
@@ -89,7 +102,7 @@
             };
         }
 
-        public void Patch(bool fullPatch)
+        private void Patch(bool fullPatch)
         {
             if (fullPatch)
             {
@@ -107,6 +120,7 @@
         {
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
             LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
+            LanguageHandler.SetLanguageLine(OverLimitKey, "Bioreactor Deactivated. Too many active Bioreactors.");
         }
     }
 }

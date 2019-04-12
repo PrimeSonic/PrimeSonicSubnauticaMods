@@ -1,17 +1,12 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using Common;
+    using MoreCyclopsUpgrades.Caching;
+    using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
     using SaveData;
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
-
-    internal enum NumberFormat : byte
-    {
-        Temperature = (byte)'T',
-        Amount = (byte)'A',
-        Sun = (byte)'S',
-        Percent = (byte)'P',
-    }
 
     internal class CyclopsHUDManager
     {
@@ -20,7 +15,7 @@
             internal uGUI_Icon Icon;
             internal Text Text;
 
-            public Indicator(uGUI_Icon icon, Text text)
+            internal Indicator(uGUI_Icon icon, Text text)
             {
                 Icon = icon;
                 Text = text;
@@ -37,17 +32,18 @@
             }
         }
 
-        public CyclopsManager Manager { get; private set; }
+        internal CyclopsManager Manager { get; private set; }
 
-        private readonly Indicator[] HelmIndicatorsOdd = new Indicator[3];
-        private readonly Indicator[] HelmIndicatorsEven = new Indicator[2];
+        private Indicator[] HelmIndicatorsOdd;
+        private Indicator[] HelmIndicatorsEven;
 
-        private readonly Indicator[] HealthBarIndicatorsOdd = new Indicator[3];
-        private readonly Indicator[] HealthBarIndicatorsEven = new Indicator[2];
+        private Indicator[] HealthBarIndicatorsOdd;
+        private Indicator[] HealthBarIndicatorsEven;
 
-        public SubRoot Cyclops => this.Manager.Cyclops;
-        public UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
-        public PowerManager PowerManager => this.Manager.PowerManager;
+        internal readonly SubRoot Cyclops;
+        internal UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
+        internal PowerManager PowerManager => this.Manager.PowerManager;
+        internal ChargeManager ChargeManager => this.Manager.ChargeManager;
 
         private bool powerIconsInitialized = false;
 
@@ -56,16 +52,21 @@
         private bool lastKnownTextVisibility = false;
         private bool powerIconTextVisibility = false;
 
-        public void UpdateTextVisibility()
+        internal CyclopsHUDManager(SubRoot cyclops)
+        {
+            Cyclops = cyclops;
+        }
+
+        internal void UpdateTextVisibility()
         {
             powerIconTextVisibility =
-                Player.main.currentSub == this.Cyclops &&
+                Player.main.currentSub == Cyclops &&
                 holographicHUD != null &&
                 Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
 
             if (lastKnownTextVisibility != powerIconTextVisibility)
             {
-                UpdatePowerIcons(this.PowerManager.PowerIcons);
+                UpdatePowerIcons();
                 lastKnownTextVisibility = powerIconTextVisibility;
             }
         }
@@ -77,7 +78,25 @@
 
             this.Manager = manager;
 
-            powerIconTextVisibility = Player.main.currentSub == this.Cyclops;
+            QuickLogger.Debug("Overriding Cyclops HP values");
+
+            float maxHealth = ModConfig.Settings.MaxCyclopsHealth();
+
+            if (Cyclops.live.IsFullHealth())
+            {
+                Cyclops.live.data.maxHealth = maxHealth;
+                Cyclops.live.health = maxHealth;
+            }
+            else
+            {
+                float fraction = Cyclops.live.GetHealthFraction();
+                float currentHealth = fraction * maxHealth;
+
+                Cyclops.live.data.maxHealth = maxHealth;
+                Cyclops.live.health = currentHealth;
+            }
+
+            powerIconTextVisibility = Player.main.currentSub == Cyclops;
 
             return true;
         }
@@ -86,7 +105,6 @@
         /// Updates the Cyclops helm HUD  using data from all equipment modules across all upgrade consoles.
         /// </summary>
         /// <param name="cyclopsHelmHUD">The instance.</param>
-        /// <param name="lastReservePower">The last reserve power.</param>
         internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
             if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != this.Manager.Cyclops)
@@ -102,11 +120,11 @@
 
             if (!powerIconsInitialized)
             {
-                AddPowerIcons(cyclopsHelmHUD);
+                AddPowerIcons(cyclopsHelmHUD, this.Manager.PowerManager.PowerChargers.Count);
             }
 
             // Change the color of the Cyclops energy percentage on the HUD
-            int currentReservePower = this.PowerManager.GetTotalReservePower();
+            int currentReservePower = this.ChargeManager.GetTotalReservePower();
             cyclopsHelmHUD.powerText.color = currentReservePower > 0f ? Color.cyan : Color.white;
         }
 
@@ -116,7 +134,7 @@
         /// <param name="hudManager">The console HUD manager.</param>
         internal void UpdateConsoleHUD(CyclopsUpgradeConsoleHUDManager hudManager)
         {
-            if (!this.Cyclops.LOD.IsFull() || Player.main.currentSub != this.Cyclops)
+            if (!Cyclops.LOD.IsFull() || Player.main.currentSub != Cyclops)
             {
                 return; // Same early exit
             }
@@ -129,60 +147,80 @@
                 hudManager.lastHealthMaxDisplayed = maxHealth;
             }
 
-            int currentReservePower = this.PowerManager.GetTotalReservePower();
-            float currentBatteryPower = this.Cyclops.powerRelay.GetPower();
-            float TotalPowerUnits = currentBatteryPower + currentReservePower;
-            float normalMaxPower = this.Cyclops.powerRelay.GetMaxPower();
+            int currentReservePower = this.ChargeManager.GetTotalReservePower();
+            float currentBatteryPower = Cyclops.powerRelay.GetPower();
+            int TotalPowerUnits = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
+            float normalMaxPower = Cyclops.powerRelay.GetMaxPower();
             int normalMaxPowerInt = Mathf.CeilToInt(normalMaxPower);
 
             hudManager.energyCur.color = currentReservePower > 0 ? Color.cyan : Color.white;
-            hudManager.energyCur.text = FormatNumber(TotalPowerUnits, NumberFormat.Amount);
+            hudManager.energyCur.text = NumberFormatter.FormatNumber(TotalPowerUnits, NumberFormat.Amount);
 
             if (hudManager.lastMaxSubPowerDisplayed != normalMaxPowerInt)
             {
-                hudManager.energyMax.text = "/" + FormatNumber(normalMaxPower, NumberFormat.Amount);
+                hudManager.energyMax.text = "/" + NumberFormatter.FormatNumber(normalMaxPowerInt, NumberFormat.Amount);
                 hudManager.lastMaxSubPowerDisplayed = normalMaxPowerInt;
             }
 
             NuclearModuleConfig.SetCyclopsMaxPower(normalMaxPower);
 
-            UpdatePowerIcons(this.PowerManager.PowerIcons);
+            UpdatePowerIcons();
         }
 
-        private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD)
+        private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD, int totalIcons)
         {
             Canvas canvas = cyclopsHelmHUD.powerText.gameObject.GetComponentInParent<Canvas>();
-
-            /* --- 3-1-2 --- */
-            /* ---- 1-2 ---- */
-
-            // Because the nuclear module only ever kicks in if there are no renewable sources of power
-            // We can guarantee that we only ever need at most, 3 icons on diplay.
-
-            const float helmspacing = 135;
-            const float helmzoffset = 0.05f;
-            const float helmyoffset = -225;
-            const float helmscale = 1.40f;
-            HelmIndicatorsOdd[0] = CreatePowerIndicatorIcon(canvas, 0, helmyoffset, helmzoffset, helmscale);
-            HelmIndicatorsOdd[1] = CreatePowerIndicatorIcon(canvas, helmspacing, helmyoffset, helmzoffset, helmscale);
-            HelmIndicatorsOdd[2] = CreatePowerIndicatorIcon(canvas, -helmspacing, helmyoffset, helmzoffset, helmscale);
-            HelmIndicatorsEven[0] = CreatePowerIndicatorIcon(canvas, -helmspacing / 2, helmyoffset, helmzoffset, helmscale);
-            HelmIndicatorsEven[1] = CreatePowerIndicatorIcon(canvas, helmspacing / 2, helmyoffset, helmzoffset, helmscale);
 
             holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
             Canvas canvas2 = holographicHUD.healthBar.canvas;
 
+            /* --- 3-1-2 --- */
+            /* ---- 1-2 ---- */
+
+            if (totalIcons % 2 != 0)
+                totalIcons--;
+
+            HelmIndicatorsOdd = new Indicator[totalIcons + 1];
+            HelmIndicatorsEven = new Indicator[totalIcons];
+            HealthBarIndicatorsOdd = new Indicator[totalIcons + 1];
+            HealthBarIndicatorsEven = new Indicator[totalIcons];
+
+            const float helmspacing = 140;
+            const float helmzoffset = 0.05f;
+            const float helmyoffset = -225;
+            const float helmscale = 1.40f;
+
             const float healthbarxoffset = 100;
-            const float healthbarspacing = 70;
+            const float healthbarspacing = helmspacing / 2;
             const float healthbarzoffset = 0.05f;
             const float healthbaryoffset = -300;
             const float healthbarscale = 0.70f;
 
+            HelmIndicatorsOdd[0] = CreatePowerIndicatorIcon(canvas, 0, helmyoffset, helmzoffset, helmscale);
             HealthBarIndicatorsOdd[0] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
-            HealthBarIndicatorsOdd[1] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);
-            HealthBarIndicatorsOdd[2] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + -healthbarspacing, healthbaryoffset, healthbarzoffset, healthbarscale);
-            HealthBarIndicatorsEven[0] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + -healthbarspacing / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
-            HealthBarIndicatorsEven[1] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + healthbarspacing / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+
+            int index = 0;
+            float spacing = helmspacing;
+            float spacingSmall = healthbarspacing;
+            do
+            {
+                HelmIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(canvas, spacing, helmyoffset, helmzoffset, helmscale);
+                HelmIndicatorsOdd[index + 2] = CreatePowerIndicatorIcon(canvas, -spacing, helmyoffset, helmzoffset, helmscale);
+
+                HelmIndicatorsEven[index] = CreatePowerIndicatorIcon(canvas, -spacing / 2, helmyoffset, helmzoffset, helmscale);
+                HelmIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(canvas, spacing / 2, helmyoffset, helmzoffset, helmscale);
+
+                HealthBarIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + spacingSmall, healthbaryoffset, healthbarzoffset, healthbarscale);
+                HealthBarIndicatorsOdd[index + 2] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + -spacingSmall, healthbaryoffset, healthbarzoffset, healthbarscale);
+
+                HealthBarIndicatorsEven[index] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + -spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+                HealthBarIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+
+                spacing += helmspacing;
+                spacingSmall += healthbarspacing;
+
+                index += 2;
+            } while (totalIcons > index);
 
             powerIconsInitialized = true;
 
@@ -222,94 +260,52 @@
             return new Indicator(icon, text);
         }
 
-        private void UpdatePowerIcons(PowerIconState powerIcons)
+        private void UpdatePowerIcons()
         {
             if (!powerIconsInitialized)
                 return;
 
-            HelmIndicatorsOdd[0].Enabled = false;
-            HelmIndicatorsOdd[1].Enabled = false;
-            HelmIndicatorsOdd[2].Enabled = false;
-            HelmIndicatorsEven[0].Enabled = false;
-            HelmIndicatorsEven[1].Enabled = false;
+            IList<ICyclopsCharger> cyclopsChargers = this.PowerManager.PowerChargers;
 
-            HealthBarIndicatorsOdd[0].Enabled = false;
-            HealthBarIndicatorsOdd[1].Enabled = false;
-            HealthBarIndicatorsOdd[2].Enabled = false;
-            HealthBarIndicatorsEven[0].Enabled = false;
-            HealthBarIndicatorsEven[1].Enabled = false;
+            foreach (Indicator indicator in HelmIndicatorsOdd)
+                indicator.Enabled = false;
 
-            Indicator[] helmRow = powerIcons.EvenCount ? HelmIndicatorsEven : HelmIndicatorsOdd;
-            Indicator[] healthBarRow = powerIcons.EvenCount ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
+            foreach (Indicator indicator in HelmIndicatorsEven)
+                indicator.Enabled = false;
+
+            foreach (Indicator indicator in HealthBarIndicatorsOdd)
+                indicator.Enabled = false;
+
+            foreach (Indicator indicator in HealthBarIndicatorsEven)
+                indicator.Enabled = false;
+
+
+            bool isEven = true;
+            foreach (ICyclopsCharger charger in cyclopsChargers)
+            {
+                if (charger.HasPowerIndicatorInfo())
+                    isEven = !isEven;
+            }
+
+            Indicator[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
+            Indicator[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
             int index = 0;
 
-            foreach (PowerIconState.PowerIcon icon in powerIcons.ActiveIcons)
+            foreach (ICyclopsCharger charger in cyclopsChargers)
             {
-                if (index == helmRow.Length)
-                {
-                    QuickLogger.Debug("Got an unexpected number of icons", true);
-                    return;
-                }
+                if (!charger.HasPowerIndicatorInfo())
+                    continue;
 
                 Indicator helmIcon = helmRow[index];
                 Indicator hpIcon = healthBarRow[index++];
 
-                hpIcon.Icon.sprite = helmIcon.Icon.sprite = SpriteManager.Get(icon.TechType);
+                hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.GetIndicatorSprite();
                 hpIcon.Enabled = helmIcon.Enabled = true;
 
                 hpIcon.Text.enabled = powerIconTextVisibility;
-                hpIcon.Text.text = helmIcon.Text.text = FormatNumber(icon.Value, icon.Format);
-                hpIcon.Text.color = helmIcon.Text.color = GetNumberColor(icon.Value, icon.MaxValue, icon.MinValue);
+                hpIcon.Text.text = helmIcon.Text.text = charger.GetIndicatorText();
+                hpIcon.Text.color = helmIcon.Text.color = charger.GetIndicatorTextColor();
             }
-        }
-
-        private static string FormatNumber(float value, NumberFormat format)
-        {
-            switch (format)
-            {
-                case NumberFormat.Temperature:
-                    return $"{Mathf.CeilToInt(value)}°C";
-                case NumberFormat.Sun:
-                    return $"{Mathf.CeilToInt(value)}%Θ";
-                case NumberFormat.Amount:
-                    return $"{HandleLargeNumbers(value)}";
-                case NumberFormat.Percent:
-                    return $"{Mathf.CeilToInt(value)}%";
-                default:
-                    return Mathf.FloorToInt(value).ToString();
-            }
-        }
-
-        private static string HandleLargeNumbers(float possiblyLargeValue)
-        {
-            if (possiblyLargeValue > 999999)
-            {
-                return $"{possiblyLargeValue / 1000000:F1}M";
-            }
-
-            if (possiblyLargeValue > 999)
-            {
-                return $"{possiblyLargeValue / 1000:F1}K";
-            }
-
-            return $"{Mathf.CeilToInt(possiblyLargeValue)}";
-        }
-
-        private static Color GetNumberColor(float value, float max, float min)
-        {
-            if (value > max)
-                return Color.white;
-
-            if (value <= min)
-                return Color.red;
-
-            const float greenHue = 120f / 360f;
-            float percentOfMax = (value - min) / (max - min);
-
-            const float saturation = 1f;
-            const float lightness = 0.8f;
-
-            return Color.HSVToRGB(percentOfMax * greenHue, saturation, lightness);
-        }
+        }        
     }
 }

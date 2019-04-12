@@ -320,6 +320,7 @@
                 // Because the items here aren't being serialized with everything else normally,
                 // I've used custom save data to handle whatever gets left in these slots.
 
+                QuickLogger.Debug("Loading save data");
                 // The following is a recreation of the essential parts of the Equipment.ResponseEquipment method.
                 foreach (string slot in SlotHelper.SlotNames)
                 {
@@ -332,6 +333,7 @@
                         continue; // Nothing here
 
                     InventoryItem spanwedItem = CyclopsModule.SpawnCyclopsModule((TechType)savedModule.ItemID);
+                    QuickLogger.Debug($"Spawned in {savedModule.ItemID} from save data");
 
                     if (spanwedItem is null)
                         continue;

@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.Modules
 {
-    using System.Collections.Generic;
     using Caching;
     using Common;
     using Enhancement;
@@ -11,6 +10,7 @@
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using System.Collections.Generic;
     using UnityEngine;
 
     internal abstract class CyclopsModule : ModPrefab
@@ -20,6 +20,24 @@
         internal static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
 
         internal static bool ModulesEnabled { get; private set; } = true;
+
+        private const string MaxSolarReachedKey = "MaxSolarMsg";
+        internal static string MaxSolarReached()
+        {
+            return Language.main.Get(MaxSolarReachedKey);
+        }
+
+        private const string MaxThermalReachedKey = "MaxThermalMsg";
+        internal static string MaxThermalReached()
+        {
+            return Language.main.Get(MaxThermalReachedKey);
+        }
+
+        private const string MaxNuclearReachedKey = "MaxNuclearMsg";
+        internal static string MaxNuclearReached()
+        {
+            return Language.main.Get(MaxNuclearReachedKey);
+        }
 
         // Default value that shouldn't get hit. Only here for error testing.
         public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld;
@@ -132,41 +150,15 @@
                 module.Patch();
                 CyclopsModulesByTechType.Add(module.TechType, module);
             }
+
+            LanguageHandler.SetLanguageLine(MaxSolarReachedKey, "Max number of solar chargers reached.");
+            LanguageHandler.SetLanguageLine(MaxThermalReachedKey, "Max number of thermal chargers reached.");
+            LanguageHandler.SetLanguageLine(MaxNuclearReachedKey, "Max number of nuclear chargers.");
         }
 
         public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
         {
-            GameObject gameObject;
-
-            if (techTypeID < TechType.Databox) // This is a standard upgrade module
-            {
-                gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
-            }
-            else if (ModulesEnabled) // Safety check in case these are disabled in the config
-            {
-                if (!CyclopsModulesByTechType.ContainsKey(techTypeID))
-                    return null; // error condition
-
-                // Get the CyclopsModule child class instance associated to this TechType
-                CyclopsModule cyclopsModule = CyclopsModulesByTechType[techTypeID];
-
-                // Instantiate a new prefab of the appripriate template TechType
-                gameObject = cyclopsModule.GetGameObject();
-
-                // Set the TechType value on the TechTag
-                TechTag tag = gameObject.GetComponent<TechTag>();
-                if (tag != null)
-                    tag.type = techTypeID;
-                else // Add if needed since this is how these are identified throughout the mod
-                    gameObject.AddComponent<TechTag>().type = techTypeID;
-
-                // Set the ClassId
-                gameObject.GetComponent<PrefabIdentifier>().ClassId = cyclopsModule.NameID;
-            }
-            else
-            {
-                return null; // error condition
-            }
+            var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);

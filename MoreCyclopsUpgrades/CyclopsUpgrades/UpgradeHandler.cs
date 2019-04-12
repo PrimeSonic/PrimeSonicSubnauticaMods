@@ -1,12 +1,36 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
-    using Common;
+    using MoreCyclopsUpgrades.Managers;
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Defines a method that creates a new <see cref="UpgradeHandler"/> when needed by the <seealso cref="UpgradeManager"/>.
+    /// </summary>
+    /// <returns>A newly instantiated <see cref="UpgradeHandler"/> ready to handle upgrade events.</returns>
     public delegate UpgradeHandler HandlerCreator();
+
+    /// <summary>
+    /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="UpgradeHandler.OnClearUpgrades"/> and <see cref="UpgradeHandler.OnFinishedUpgrades"/>.
+    /// </summary>
+    /// <param name="cyclops">The cyclops where the event took place.</param>
     public delegate void UpgradeEvent(SubRoot cyclops);
+
+    /// <summary>
+    /// Defines a method to invoke that takes all the needed references to identify a single upgrade module instance. Used for <seealso cref="UpgradeHandler.OnUpgradeCounted"/>.
+    /// </summary>
+    /// <param name="cyclops">The cyclops where the event took place.</param>
+    /// <param name="modules">The equipment module where the event took place.</param>
+    /// <param name="slot">The equipment slot where the event took place.</param>
     public delegate void UpgradeEventSlotBound(SubRoot cyclops, Equipment modules, string slot);
+
+    /// <summary>
+    /// Defines a method to invoke that returns whether or not an item is allowed in or out. Used for <seealso cref="UpgradeHandler.IsAllowedToAdd"/> and <seealso cref="UpgradeHandler.IsAllowedToRemove"/>.
+    /// </summary>
+    /// <param name="cyclops">The cyclops where the event took place.</param>
+    /// <param name="item">The item being checked.</param>
+    /// <param name="verbose">if set to <c>true</c> verbose text display was requested; Otherwise <c>false</c>.</param>
+    /// <returns></returns>
     public delegate bool UpgradeAllowedEvent(SubRoot cyclops, Pickupable item, bool verbose);
 
     /// <summary>
@@ -21,10 +45,6 @@
 
         private int count = 0;
         private bool maxedOut = false;
-
-        internal bool IsPowerProducer = false;
-
-        internal string LoggingName { get; set; } = null;
 
         /// <summary>
         /// Gets the number of copies of this upgrade module type currently installed in the cyclops.
@@ -104,7 +124,6 @@
         public UpgradeHandler(TechType techType)
         {
             this.techType = techType;
-            this.LoggingName = techType.AsString();
         }
 
         internal virtual void UpgradesCleared(SubRoot cyclops)
@@ -141,7 +160,6 @@
 
         internal virtual void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)
         {
-            QuickLogger.Info($"{this.LoggingName ?? techType.AsString()} upgrade registered");
             dictionary.Add(techType, this);
         }
 

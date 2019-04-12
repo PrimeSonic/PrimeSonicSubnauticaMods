@@ -8,9 +8,6 @@
     {
         public NuclearUpgradeHandler() : base(CyclopsModule.NuclearChargerID, canRecharge: false)
         {
-            this.LoggingName = "NuclearCharger";
-            this.MaxCount = 6;
-
             OnBatteryDrained += (BatteryDetails details) =>
             {
                 this.TotalBatteryCapacity -= details.BatteryRef._capacity;
@@ -22,6 +19,10 @@
                 GameObject.Destroy(inventoryItem.item.gameObject);
                 modules.AddItem(slotName, CyclopsModule.SpawnCyclopsModule(CyclopsModule.DepletedNuclearModuleID), true);
                 ErrorMessage.AddMessage(DepletedNuclearModule.DepletedEvent);
+            };
+            OnFirstTimeMaxCountReached += () =>
+            {
+                ErrorMessage.AddMessage(CyclopsModule.MaxNuclearReached());
             };
         }
     }

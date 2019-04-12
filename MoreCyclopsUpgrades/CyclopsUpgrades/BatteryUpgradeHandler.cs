@@ -13,18 +13,18 @@
 
         internal readonly bool BatteryRecharges;
         private float tempTotalCharge;
-        public float TotalBatteryCharge { get; protected set; } = 0f;
-        public float TotalBatteryCapacity { get; protected set; } = 0f;
+        public float TotalBatteryCharge = 0f;
+        public float TotalBatteryCapacity = 0f;
 
-        internal bool BatteryHasCharge => this.Count > 0 && this.TotalBatteryCharge > PowerManager.MinimalPowerValue;
+        internal bool BatteryHasCharge => this.Count > 0 && TotalBatteryCharge > PowerManager.MinimalPowerValue;
 
         public BatteryUpgradeHandler(TechType techType, bool canRecharge) : base(techType)
         {
             BatteryRecharges = canRecharge;
             OnClearUpgrades += (SubRoot cyclops) =>
             {
-                this.TotalBatteryCharge = 0f;
-                this.TotalBatteryCapacity = 0f;
+                TotalBatteryCharge = 0f;
+                TotalBatteryCapacity = 0f;
                 this.Batteries.Clear();
             };
 
@@ -32,71 +32,54 @@
             {
                 var details = new BatteryDetails(modules, slot, modules.GetItemInSlot(slot).item.GetComponent<Battery>());
                 this.Batteries.Add(details);
-                this.TotalBatteryCharge += details.BatteryRef._charge;
-                this.TotalBatteryCapacity += details.BatteryRef._capacity;
+                TotalBatteryCharge += details.BatteryRef._charge;
+                TotalBatteryCapacity += details.BatteryRef._capacity;
             };
         }
 
-        public override float ChargeCyclops(SubRoot cyclops, ref float availablePower, ref float powerDeficit)
+        public float GetBatteryPower(float drainingRate, float requestedPower)
         {
-            if (this.Count == 0)
-                return 0f;
-
-            availablePower *= PowerManager.Mk2ChargeRateModifier;
+            if (requestedPower < PowerManager.MinimalPowerValue) // No power deficit left to charge
+                return 0f; // Exit
 
             tempTotalCharge = 0f;
+            float totalDrainedAmt = 0f;
             foreach (BatteryDetails details in this.Batteries)
             {
-                cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
-                powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
+                if (requestedPower <= 0f)
+                    continue; // No more power requested
 
-                Battery battery = details.BatteryRef;
-
-                battery._charge = Mathf.Min(battery._capacity, battery._charge + availablePower);
-                tempTotalCharge += battery._charge;
-            }
-
-            this.TotalBatteryCharge = tempTotalCharge;
-            return Mathf.Max(0f, availablePower - powerDeficit); // Surplus power
-        }
-
-        public void ChargeCyclops(SubRoot cyclops, float drainingRate, ref float powerDeficit)
-        {
-            if (powerDeficit < PowerManager.MinimalPowerValue) // No power deficit left to charge
-                return; // Exit
-
-            tempTotalCharge = 0f;
-            foreach (BatteryDetails details in this.Batteries)
-            {
                 Battery battery = details.BatteryRef;
 
                 if (battery._charge < PowerManager.MinimalPowerValue) // The battery has no charge left
                     continue; // Skip this battery
 
                 // Mathf.Min is to prevent accidentally taking too much power from the battery
-                float chargeAmt = Mathf.Min(powerDeficit, drainingRate);
+                float amtToDrain = Mathf.Min(requestedPower, drainingRate);
 
-                if (battery._charge > chargeAmt)
+                if (battery._charge > amtToDrain)
                 {
-                    battery._charge -= chargeAmt;
+                    battery._charge -= amtToDrain;
                 }
                 else // Battery about to be fully drained
                 {
-                    chargeAmt = battery._charge; // Take what's left
+                    amtToDrain = battery._charge; // Take what's left
                     battery._charge = 0f; // Set battery to empty
 
                     OnBatteryDrained?.Invoke(details);
                 }
 
                 tempTotalCharge += battery._charge;
-                powerDeficit -= chargeAmt; // This is to prevent draining more than needed if the power cells were topped up mid-loop
+                requestedPower -= amtToDrain; // This is to prevent draining more than needed if the power cells were topped up mid-loop
 
-                cyclops.powerRelay.AddEnergy(chargeAmt, out float amtStored);
+                totalDrainedAmt += amtToDrain;
             }
-            this.TotalBatteryCharge = tempTotalCharge;
+            TotalBatteryCharge = tempTotalCharge;
+
+            return totalDrainedAmt;
         }
 
-        public void RechargeBatteries(ref float surplusPower)
+        public void RechargeBatteries(float surplusPower)
         {
             if (!BatteryRecharges)
                 return;
@@ -122,7 +105,7 @@
                 batteryCharged = true;
             }
 
-            this.TotalBatteryCharge = tempTotalCharge;
+            TotalBatteryCharge = tempTotalCharge;
         }
     }
 }

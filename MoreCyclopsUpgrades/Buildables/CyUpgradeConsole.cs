@@ -9,6 +9,13 @@
 
     internal class CyUpgradeConsole : Buildable
     {
+        private static readonly CyUpgradeConsole main = new CyUpgradeConsole();
+
+        public static void PatchAuxUpgradeConsole(bool auxConsolesEnabled)
+        {
+            main.Patch(auxConsolesEnabled);
+        }
+
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
         public override string AssetsFolder { get; } = "MoreCyclopsUpgrades/Assets";
@@ -25,7 +32,7 @@
             OnFinishedPatching += SetLanguageLines;
         }
 
-        public void Patch(bool auxConsolesEnabled)
+        private void Patch(bool auxConsolesEnabled)
         {
             if (!auxConsolesEnabled) // Even if the options have this be disabled,
             {

@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Modules.Enhancement
 {
+    using MoreCyclopsUpgrades.SaveData;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
 
@@ -22,7 +23,7 @@
                    CraftTree.Type.CyclopsFabricator,
                    tabs,
                    TechType.BaseBioReactor)
-        {   
+        {
         }
 
         protected override TechData GetRecipe()
@@ -49,6 +50,12 @@
 
         protected override void Patch()
         {
+            if (!ModulesEnabled || !ModConfig.Settings.EnableBioReactors) // Even if the options have this be disabled,
+            {
+                this.TechType = TechTypeHandler.AddTechType(NameID, FriendlyName, Description, RequiredForUnlock == TechType.None);
+                return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
+            }
+
             base.Patch();
             LanguageHandler.SetLanguageLine(MaxBoostKey, "Maximum boost to cyclops bioreactors achieved");
             LanguageHandler.SetLanguageLine(CannotRemoveKey, "Cannot remove BioReactor Booster while bioreactor is too full");

@@ -29,7 +29,7 @@
         public T HighestValue { get; private set; }
 
         /// <summary>
-        /// The default value to reset to during the <see cref="OnClearUpgrades"/> event.
+        /// The default value to reset to during the <see cref="UpgradeHandler.OnClearUpgrades"/> event.
         /// </summary>
         public readonly T DefaultValue;
 

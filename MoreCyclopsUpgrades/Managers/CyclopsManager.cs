@@ -1,26 +1,29 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.Monobehaviors;
+    using System.Collections.Generic;
 
     internal class CyclopsManager
     {
-        public UpgradeManager UpgradeManager { get; private set; }
+        public readonly UpgradeManager UpgradeManager;
+        public readonly PowerManager PowerManager;
+        public readonly CyclopsHUDManager HUDManager;
+        public readonly ChargeManager ChargeManager;
 
-        public PowerManager PowerManager { get; private set; }
+        public List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
 
-        public CyclopsHUDManager HUDManager { get; private set; }
-
-        public List<CyBioReactorMono> BioReactors => this.PowerManager.CyBioReactors;
-
-        public SubRoot Cyclops { get; }
+        public readonly SubRoot Cyclops;
 
         public readonly int InstanceID;
 
-        private CyclopsManager(SubRoot cyclops)
+        public CyclopsManager(SubRoot cyclops, UpgradeManager upgradeManager, PowerManager powerManager, CyclopsHUDManager hUDManager, ChargeManager chargeManager)
         {
-            this.Cyclops = cyclops;
+            UpgradeManager = upgradeManager;
+            PowerManager = powerManager;
+            HUDManager = hUDManager;
+            ChargeManager = chargeManager;
+            Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
         }
 
@@ -64,23 +67,19 @@
 
         private static CyclopsManager CreateNewManagers(SubRoot cyclops)
         {
-            var upgradeMgr = new UpgradeManager();
-            var powerMgr = new PowerManager();
-            var hudManager = new CyclopsHUDManager();
+            var upgradeMgr = new UpgradeManager(cyclops);
+            var powerMgr = new PowerManager(cyclops);
+            var hudManager = new CyclopsHUDManager(cyclops);
+            var chargeMgr = new ChargeManager(cyclops);
 
-            var mgr = new CyclopsManager(cyclops)
-            {
-                UpgradeManager = upgradeMgr,
-                PowerManager = powerMgr,
-                HUDManager = hudManager
-            };
+            var mgr = new CyclopsManager(cyclops, upgradeMgr, powerMgr, hudManager, chargeMgr);
 
-            
             Managers.Add(mgr);
 
             // Managers must be initialized in this order
-            if (!upgradeMgr.Initialize(mgr) || 
-                !powerMgr.Initialize(mgr) || 
+            if (!upgradeMgr.Initialize(mgr) ||
+                !chargeMgr.Initialize(mgr) ||
+                !powerMgr.Initialize(mgr) ||
                 !hudManager.Initialize(mgr))
             {
                 QuickLogger.Error("Failed to initialized manager", true);
@@ -88,7 +87,7 @@
                 return null;
             }
 
-            return mgr;            
+            return mgr;
         }
 
         public static void SyncUpgradeConsoles()
@@ -100,7 +99,7 @@
         public static void SyncBioReactors()
         {
             foreach (CyclopsManager mgr in Managers)
-                mgr.PowerManager.SyncBioReactors();
+                mgr.ChargeManager.SyncBioReactors();
         }
     }
 }
