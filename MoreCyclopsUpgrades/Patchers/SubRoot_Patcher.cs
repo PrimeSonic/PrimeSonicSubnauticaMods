@@ -1,8 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
+    using Common;
     using Harmony;
     using Managers;
+    using MoreCyclopsUpgrades.SaveData;
     using SMLHelper.V2.Utility;
+    using UnityEngine;
 
     [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]

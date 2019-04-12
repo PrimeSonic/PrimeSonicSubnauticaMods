@@ -36,7 +36,11 @@
         internal CyclopsPowerLevels PowerLevel
         {
             get => EmPowerLevel.Value;
-            set => EmPowerLevel.Value = value;
+            set
+            {
+                EmPowerLevel.Value = value;
+                WriteConfigFile();
+            }
         }
 
         internal int MaxChargingModules()
