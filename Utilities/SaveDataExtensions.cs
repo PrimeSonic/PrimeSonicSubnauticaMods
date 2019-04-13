@@ -5,7 +5,7 @@
 
     internal static class SaveDataExtensions
     {
-        public static void Save<T>(this T data, string directory, string fileLocation) where T : EmPropertyCollection
+        public static void Save<T>(this T data, string directory, string fileLocation) where T : EmProperty
         {
             if (!Directory.Exists(directory))
             {
@@ -19,7 +19,7 @@
             });
         }
 
-        public static bool Load<T>(this T data, string directory, string fileLocation) where T : EmPropertyCollection
+        public static bool Load<T>(this T data, string directory, string fileLocation) where T : EmProperty
         {
             if (!File.Exists(fileLocation))
             {
