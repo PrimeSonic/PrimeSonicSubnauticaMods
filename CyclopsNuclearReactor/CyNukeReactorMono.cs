@@ -40,8 +40,13 @@
             new SlotData { techType = TechType.None, charge = -1f },
         };
 
+        internal bool OverLimit = false;
+
         internal float GetTotalAvailablePower()
         {
+            if (OverLimit)
+                return 0f;            
+
             float totalPower = 0;
             foreach (SlotData slotData in slots)
             {
@@ -59,8 +64,8 @@
         {
             foreach (SlotData slotData in slots)
             {
-                if (slotData.techType == TechType.None || slotData.techType == TechType.DepletedReactorRod)
-                    continue;
+                //if (slotData.techType == TechType.None || slotData.techType == TechType.DepletedReactorRod)
+                //    continue;
 
                 if (slotData.charge > PowerManager.MinimalPowerValue)
                     return true;
@@ -72,6 +77,9 @@
         public float ProducePower(ref float powerDeficit)
         {
             if (Mathf.Approximately(powerDeficit, 0f))
+                return 0f;
+
+            if (OverLimit)
                 return 0f;
 
             float totalPowerProduced = 0f;
@@ -159,6 +167,9 @@
             if (!_buildable.constructed)
                 return;
 
+            if (OverLimit)
+                return;
+
             Player main = Player.main;
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(_rodSlots, false);
@@ -171,8 +182,17 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText(CyNukReactorSMLHelper.OnHoverText()); // TODO - Provide some power info here
-            main.SetIcon(HandReticle.IconType.Hand, 1f);
+
+            if (OverLimit)
+            {
+                main.SetInteractText(CyNukReactorSMLHelper.OverLimit());
+            }
+            else
+            {
+                int currentPower = Mathf.FloorToInt(GetTotalAvailablePower());
+                main.SetInteractText(CyNukReactorSMLHelper.OnHoverText(currentPower));
+                main.SetIcon(HandReticle.IconType.Hand, 1f);
+            }            
         }
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
@@ -287,7 +307,7 @@
             _rodSlots = new Equipment(base.gameObject, _rodsRoot.transform);
             _rodSlots.SetLabel(CyNukReactorSMLHelper.EquipmentLabel());
             _rodSlots.isAllowedToAdd += (Pickupable pickupable, bool verbose) => { return pickupable.GetTechType() == TechType.ReactorRod; };
-            _rodSlots.isAllowedToRemove += (Pickupable pickupable, bool verbose) => { return pickupable.GetTechType() == TechType.DepletedReactorRod; };
+            _rodSlots.isAllowedToRemove += (Pickupable pickupable, bool verbose) => { return pickupable.GetTechType() == TechType.DepletedReactorRod; };            
 
             Type equipmentType = typeof(Equipment);
             EventInfo onEquipInfo = equipmentType.GetEvent("onEquip", BindingFlags.Public | BindingFlags.Instance);

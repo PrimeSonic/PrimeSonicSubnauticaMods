@@ -22,9 +22,15 @@
         }
 
         private const string OnHoverKey = "CyNukeOnHover";
-        public static string OnHoverText()
+        public static string OnHoverText(int currentPower)
         {
-            return Language.main.Get(OnHoverKey);
+            return Language.main.GetFormat(OnHoverKey, currentPower);
+        }
+
+        private const string OverLimitKey = "CyNukeOverLimit";
+        public static string OverLimit()
+        {
+            return Language.main.Get(OverLimitKey);
         }
 
         public static TechType TechTypeID { get; private set; }
@@ -110,7 +116,8 @@
             TechTypeID = this.TechType;
             LanguageHandler.SetLanguageLine(EquipmentLabelKey, "Cyclops Nuclear Reactor Rods");
             LanguageHandler.SetLanguageLine(DepletedMessageKey, "A nuclear reactor rod has depleted in the Cyclops");
-            LanguageHandler.SetLanguageLine(OnHoverKey, "Cyclops Nuclear Reactor");
+            LanguageHandler.SetLanguageLine(OnHoverKey, "Cyclops Nuclear Reactor\n{0} ");
+            LanguageHandler.SetLanguageLine(OverLimitKey, "Disabled! Too many active reactors");
         }
     }
 }

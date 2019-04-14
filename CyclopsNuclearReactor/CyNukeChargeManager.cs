@@ -32,6 +32,8 @@
 
         #endregion
 
+        public const int MaxReactors = 2; // TODO make configurable
+
         public readonly SubRoot Cyclops;
         public readonly int InstanceID;
 
@@ -89,9 +91,19 @@
 
             float powerDeficit = requestedPower;
             float producedPower = 0f;
-
+            int count = 0;
             foreach (CyNukeReactorMono reactor in CyNukeReactors)
-                producedPower += reactor.ProducePower(ref powerDeficit);
+            {
+                count++;
+                if (count > MaxReactors)
+                {
+                    reactor.OverLimit = true;
+                }
+                else
+                {
+                    producedPower += reactor.ProducePower(ref powerDeficit);
+                }
+            }
 
             return producedPower;
         }
@@ -122,8 +134,6 @@
 
             if (CyNukeReactors.Count == 1)
                 return NumberFormatter.FormatNumber(Mathf.CeilToInt(CyNukeReactors[0].GetTotalAvailablePower()));
-
-            // TODO Number of reactors per Cyclops should be limited
 
             string value = string.Empty;
             for (int i = 0; i < CyNukeReactors.Count; i++)
