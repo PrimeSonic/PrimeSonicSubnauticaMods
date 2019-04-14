@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -7,25 +8,41 @@
     {
         internal class SlotData
         {
-            internal TechType techType;
-            internal float charge;
-            internal Pickupable pickupable;
-            internal Text text;
+            internal TechType TechTypeID;
+            internal float Charge;
+            internal Pickupable Item;
+            internal Text InfoDisplay;
 
             public SlotData()
             {
-                techType = TechType.None;
-                charge = -1f;
-                pickupable = null;
-                text = null;
+                TechTypeID = TechType.None;
+                Charge = -1f;
+                Item = null;
+                InfoDisplay = null;
             }
 
             public SlotData(float charge, Pickupable pickupable)
             {
-                techType = pickupable.GetTechType();
-                this.charge = charge;
-                this.pickupable = pickupable;
-                text = null;
+                TechTypeID = pickupable.GetTechType();
+                Charge = charge;
+                Item = pickupable;
+                InfoDisplay = null;
+            }
+
+            public bool HasPower()
+            {
+                if (TechTypeID != TechType.ReactorRod)
+                    return false;
+
+                return Charge > PowerManager.MinimalPowerValue;
+            }
+
+            public void Clear()
+            {
+                TechTypeID = TechType.None;
+                Charge = -1f;
+                Item = null;
+                InfoDisplay = null;
             }
 
             public void AddDisplayText(uGUI_EquipmentSlot icon)
@@ -53,7 +70,7 @@
                 rectTransform.localScale = Vector3.one;
                 rectTransform.anchoredPosition3D = Vector3.zero;
 
-                this.text = text;
+                InfoDisplay = text;
             }
         }
     }

@@ -26,7 +26,7 @@
             this.Values.Clear();
         }
 
-        public IEnumerable<CyNukeRodSaveData> Rods
+        public IEnumerable<CyNukeRodSaveData> SlotData
         {
             get
             {

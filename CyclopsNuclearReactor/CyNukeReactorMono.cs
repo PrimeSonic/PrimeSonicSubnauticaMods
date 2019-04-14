@@ -53,10 +53,10 @@
             float totalPower = 0;
             foreach (SlotData slotData in slots)
             {
-                if (slotData.techType == TechType.None)
+                if (!slotData.HasPower())
                     continue;
 
-                totalPower += slotData.charge;
+                totalPower += slotData.Charge;
             }
 
             return totalPower;
@@ -64,9 +64,12 @@
 
         internal bool HasPower()
         {
+            if (!this.IsConstructed)
+                return false;
+
             foreach (SlotData slotData in slots)
             {
-                if (slotData.charge > PowerManager.MinimalPowerValue)
+                if (slotData.HasPower())
                     return true;
             }
 
@@ -87,18 +90,15 @@
             {
                 SlotData slotData = slots[slot];
 
-                if (slotData.techType != TechType.ReactorRod)
+                if (!slotData.HasPower())                
                     continue;
 
-                if (slotData.charge < PowerManager.MinimalPowerValue)
-                    continue;
+                float powerProduced = Mathf.Min(PowerMultiplier * DayNightCycle.main.deltaTime, slotData.Charge);
 
-                float powerProduced = Mathf.Min(PowerMultiplier * DayNightCycle.main.deltaTime, slotData.charge);
-
-                slotData.charge -= powerProduced;
+                slotData.Charge -= powerProduced;
                 totalPowerProduced += powerProduced;
 
-                if (Mathf.Approximately(slotData.charge, 0f))
+                if (Mathf.Approximately(slotData.Charge, 0f))
                 {
                     // Deplete reactor rod
                     string slotName = SlotNames[slot];
@@ -109,6 +109,8 @@
 
                     ErrorMessage.AddMessage(CyNukReactorSMLHelper.DepletedMessage());
                 }
+
+                slot++;
             }
 
             if (pdaIsOpen)
@@ -202,7 +204,7 @@
                 QuickLogger.Debug("Loading save data");
 
                 int slotIndex = 0;
-                foreach (CyNukeRodSaveData rodData in _saveData.Rods)
+                foreach (CyNukeRodSaveData rodData in _saveData.SlotData)
                 {
                     // These slots need to be added before we can add items to them
                     string slotName = SlotNames[slotIndex];
@@ -244,13 +246,13 @@
 
             foreach (SlotData slotData in slots)
             {
-                if (slotData.techType == TechType.None)
+                if (slotData.TechTypeID == TechType.None)
                 {
                     _saveData.AddEmptySlot();
                 }
                 else
                 {
-                    _saveData.AddRodData(slotData.techType, slotData.charge);
+                    _saveData.AddRodData(slotData.TechTypeID, slotData.Charge);
                 }
             }
 
@@ -306,7 +308,7 @@
             _slotMapping = null;
 
             foreach (SlotData data in slots)
-                data.text = null;
+                data.InfoDisplay = null;
 
             pdaIsOpen = false;
 
@@ -336,7 +338,7 @@
                 return;
             }
 
-            slots[slotIndex] = new SlotData();
+            slots[slotIndex].Clear();
         }
 
         private void OnEquipLate(string slot, InventoryItem item)
@@ -371,7 +373,10 @@
 
                 int slotIndex = FindSlotIndex(item);
 
-                slots[slotIndex].AddDisplayText(icon);
+                SlotData slotData = slots[slotIndex];
+
+                if (slotData.TechTypeID == TechType.ReactorRod)
+                    slotData.AddDisplayText(icon);
             }
         }
 
@@ -384,10 +389,10 @@
 
             foreach (SlotData item in slots)
             {
-                if (item.techType != TechType.ReactorRod || item.text == null)
+                if (item.TechTypeID != TechType.ReactorRod || item.InfoDisplay == null)
                     continue;
 
-                item.text.text = NumberFormatter.FormatNumber(Mathf.FloorToInt(item.charge));
+                item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.FloorToInt(item.Charge));
             }
         }
 
@@ -396,17 +401,18 @@
         private int FindSlotIndex(InventoryItem item)
         {
             int slotIndex = 0;
-            while (slotIndex < MaxSlots && slots[slotIndex].pickupable != item.item)
+            while (slotIndex < MaxSlots && slots[slotIndex].Item != item.item)
                 slotIndex++;
 
             return slotIndex;
         }
 
-        private static int FindSlotIndex(string slot)
+        private static int FindSlotIndex(string slotName)
         {
             int slotIndex = 0;
-            while (slotIndex < MaxSlots && slot != SlotNames[slotIndex])
+            while (slotIndex < MaxSlots && slotName != SlotNames[slotIndex])
                 slotIndex++;
+
             return slotIndex;
         }
 
