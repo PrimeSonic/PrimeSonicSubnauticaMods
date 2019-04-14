@@ -10,6 +10,12 @@
     [ProtoContract]
     internal class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
+        internal struct SlotData
+        {
+            internal TechType techType;
+            internal float charge;
+        }
+
         internal static readonly string[] SlotNames = { "CyNuk1", "CyNuk2", "CyNuk3", "CyNuk4" };
         internal const int MaxSlots = 4;
         internal const float InitialReactorRodCharge = 10000f; // Half of what the Base Nuclear Reactor provides
@@ -26,18 +32,24 @@
         [NonSerialized]
         private CyNukeReactorSaveData _saveData;
 
-        internal readonly TechType[] TechTypePerSlot = new TechType[MaxSlots] { TechType.None, TechType.None, TechType.None, TechType.None };
-        internal readonly float[] ChargePerSlot = new float[MaxSlots] { -1f, -1f, -1f, -1f };
+        internal readonly SlotData[] slots = new SlotData[MaxSlots]
+        {
+            new SlotData { techType = TechType.None, charge = -1f },
+            new SlotData { techType = TechType.None, charge = -1f },
+            new SlotData { techType = TechType.None, charge = -1f },
+            new SlotData { techType = TechType.None, charge = -1f },
+        };
 
         internal float GetTotalAvailablePower()
         {
             float totalPower = 0;
-            for (int slot = 0; slot < MaxSlots; slot++)
+            foreach (SlotData slotData in slots)
             {
-                if (TechTypePerSlot[slot] == TechType.None)
+
+                if (slotData.techType == TechType.None)
                     continue;
 
-                totalPower += ChargePerSlot[slot];
+                totalPower += slotData.charge;
             }
 
             return totalPower;
@@ -45,12 +57,12 @@
 
         internal bool HasPower()
         {
-            for (int slot = 0; slot < MaxSlots; slot++)
+            foreach (SlotData slotData in slots)
             {
-                if (TechTypePerSlot[slot] == TechType.None || TechTypePerSlot[slot] == TechType.DepletedReactorRod)
+                if (slotData.techType == TechType.None || slotData.techType == TechType.DepletedReactorRod)
                     continue;
 
-                if (ChargePerSlot[slot] > PowerManager.MinimalPowerValue)
+                if (slotData.charge > PowerManager.MinimalPowerValue)
                     return true;
             }
 
@@ -66,15 +78,17 @@
             int slot = 0;
             while (slot < MaxSlots && powerDeficit < PowerManager.MinimalPowerValue)
             {
-                if (TechTypePerSlot[slot] == TechType.None || TechTypePerSlot[slot] == TechType.DepletedReactorRod)
+                SlotData slotData = slots[slot];
+
+                if (slotData.techType == TechType.None || slotData.techType == TechType.DepletedReactorRod)
                     continue;
 
-                if (ChargePerSlot[slot] <= PowerManager.MinimalPowerValue)
+                if (slotData.charge < PowerManager.MinimalPowerValue)
                     continue;
 
-                float powerProduced = Mathf.Min(PowerMultiplier * DayNightCycle.main.deltaTime, ChargePerSlot[slot]);
+                float powerProduced = Mathf.Min(PowerMultiplier * DayNightCycle.main.deltaTime, slotData.charge);
 
-                ChargePerSlot[slot] -= powerProduced;
+                slotData.charge -= powerProduced;
                 totalPowerProduced += powerProduced;
             }
 
@@ -93,7 +107,7 @@
             if (_saveData == null)
             {
                 string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CyNukeReactorSaveData(id);
+                _saveData = new CyNukeReactorSaveData(id, MaxSlots);
             }
 
             if (_rodSlots == null)
@@ -196,15 +210,15 @@
         {
             _saveData.ClearOldData();
 
-            for (int i = 0; i < MaxSlots; i++)
+            foreach (SlotData slotData in slots)
             {
-                if (TechTypePerSlot[i] == TechType.None)
+                if (slotData.techType == TechType.None)
                 {
                     _saveData.AddEmptySlot();
                 }
                 else
                 {
-                    _saveData.AddRodData(TechTypePerSlot[i], ChargePerSlot[i]);
+                    _saveData.AddRodData(slotData.techType, slotData.charge);
                 }
             }
 
@@ -228,8 +242,8 @@
                 return;
             }
 
-            TechTypePerSlot[slotIndex] = item.item.GetTechType();
-            ChargePerSlot[slotIndex] = InitialReactorRodCharge;
+            slots[slotIndex].techType = item.item.GetTechType();
+            slots[slotIndex].charge = InitialReactorRodCharge;
         }
 
         private void OnUnequip(string slot, InventoryItem item)
@@ -244,8 +258,8 @@
                 return;
             }
 
-            TechTypePerSlot[slotIndex] = TechType.None;
-            ChargePerSlot[slotIndex] = -1f;
+            slots[slotIndex].techType = TechType.None;
+            slots[slotIndex].charge = -1f;
         }
 
         private void InitializeRodSlots()
