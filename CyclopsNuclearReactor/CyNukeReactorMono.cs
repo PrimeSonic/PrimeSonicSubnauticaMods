@@ -90,6 +90,18 @@
 
                 slotData.charge -= powerProduced;
                 totalPowerProduced += powerProduced;
+
+                if (Mathf.Approximately(slotData.charge, 0f))
+                {
+                    // Deplete reactor rod
+                    string slotName = SlotNames[slot];
+
+                    InventoryItem inventoryItem = _rodSlots.RemoveItem(slotName, true, false);
+                    GameObject.Destroy(inventoryItem.item.gameObject);
+                    _rodSlots.AddItem(slotName, SpawnItem(TechType.DepletedReactorRod), true);
+
+                    ErrorMessage.AddMessage(CyNukReactorSMLHelper.DepletedMessage());
+                }
             }
 
             return totalPowerProduced;
