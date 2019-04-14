@@ -30,6 +30,13 @@
             return mgr;
         }
 
+        internal static List<CyNukeReactorMono> GetReactors(SubRoot cyclops)
+        {
+            CyNukeChargeManager mgr = GetManager(cyclops);
+
+            return mgr.CyNukeReactors;
+        }
+
         #endregion
 
         public const int MaxReactors = 2; // TODO make configurable
@@ -94,6 +101,9 @@
             int count = 0;
             foreach (CyNukeReactorMono reactor in CyNukeReactors)
             {
+                if (!reactor.IsConstructed)
+                    continue;
+
                 count++;
                 if (count > MaxReactors)
                 {

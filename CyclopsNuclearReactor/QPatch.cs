@@ -1,8 +1,10 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Common;
+    using Harmony;
     using MoreCyclopsUpgrades.Managers;
     using System;
+    using System.Reflection;
 
     public static class QPatch
     {
@@ -24,10 +26,9 @@
                 {
                     return CyNukeChargeManager.GetManager(cyclops);
                 });
-
-                // There aren't any Harmony patches in this mod (yet).
-                //var harmony = HarmonyInstance.Create("com.cyclopsnuclearreactor.psmod");
-                //harmony.PatchAll(Assembly.GetExecutingAssembly());
+                
+                var harmony = HarmonyInstance.Create("com.cyclopsnuclearreactor.psmod");
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
                 QuickLogger.Info("Finished patching");
             }
             catch (Exception ex)

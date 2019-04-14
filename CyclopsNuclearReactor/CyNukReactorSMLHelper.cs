@@ -58,7 +58,6 @@
             GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
             GameObject consoleModel = consoleWide.FindChild("console");
 
-            // The LabTrashcan prefab was chosen because it is very similar in size, shape, and collision model to the upgrade console model
             var prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.LabTrashcan));
 
             prefab.FindChild("discovery_trashcan_01_d").SetActive(false); // Turn off this model
@@ -66,7 +65,7 @@
             GameObject.DestroyImmediate(prefab.GetComponent<StorageContainer>()); // Don't need this
 
             // Add the custom component
-
+            CyNukeReactorMono auxConsole = prefab.AddComponent<CyNukeReactorMono>();
 
             // This is to tie the model to the prefab
             consoleModel.transform.SetParent(prefab.transform);
