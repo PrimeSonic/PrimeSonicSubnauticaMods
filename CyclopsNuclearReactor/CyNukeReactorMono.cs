@@ -260,6 +260,8 @@
 
             _rodSlots = new Equipment(base.gameObject, _rodsRoot.transform);
             _rodSlots.SetLabel(CyNukReactorSMLHelper.EquipmentLabel());
+            _rodSlots.isAllowedToAdd += (Pickupable pickupable, bool verbose) => { return pickupable.GetTechType() == TechType.ReactorRod; };
+            _rodSlots.isAllowedToRemove += (Pickupable pickupable, bool verbose) => { return pickupable.GetTechType() == TechType.DepletedReactorRod; };
 
             Type equipmentType = typeof(Equipment);
             EventInfo onEquipInfo = equipmentType.GetEvent("onEquip", BindingFlags.Public | BindingFlags.Instance);
