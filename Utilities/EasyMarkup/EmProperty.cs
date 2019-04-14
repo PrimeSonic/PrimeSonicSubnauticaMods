@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
 
-    public abstract class EmProperty : IEquatable<EmProperty>
+    internal abstract class EmProperty : IEquatable<EmProperty>
     {
         internal const char SpChar_KeyDelimiter = ':';
         internal const char SpChar_ValueDelimiter = ';';

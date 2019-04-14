@@ -2,7 +2,7 @@
 {
     using CustomCraft2SML.Serialization.Entries;
 
-    public interface ICustomFood : IAliasRecipe
+    internal interface ICustomFood : IAliasRecipe
     {
         FoodModel FoodType { get; }
 

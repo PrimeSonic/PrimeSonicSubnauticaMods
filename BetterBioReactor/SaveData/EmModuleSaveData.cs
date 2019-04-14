@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
 
-    public class EmModuleSaveData : EmPropertyCollection
+    internal class EmModuleSaveData : EmPropertyCollection
     {
         private const string ItemIDKey = "ID";
         private const string RemainingChargeKey = "B";

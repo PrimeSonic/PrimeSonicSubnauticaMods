@@ -14,7 +14,7 @@
     /// <seealso cref="System.IEquatable{StringBuffer}" />
     /// <seealso cref="string" />
     /// <seealso cref="ICloneable" />
-    public class StringBuffer : Deque<char>,
+    internal class StringBuffer : Deque<char>,
         IComparable, IConvertible, IEquatable<StringBuffer>, IEquatable<string>, ICloneable
     {
         // Constructors

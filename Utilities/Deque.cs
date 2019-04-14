@@ -11,7 +11,7 @@
     /// <typeparam name="T">Specifies the type of elements in the deque.</typeparam>
     /// <remarks>https://en.wikipedia.org/wiki/Double-ended_queue</remarks>
     [Serializable]
-    public class Deque<T> : ICollection, IEnumerable<T> // Replace IEnumerable with IReadOnlyCollection on .NET 4.x
+    internal class Deque<T> : ICollection, IEnumerable<T> // Replace IEnumerable with IReadOnlyCollection on .NET 4.x
     {
         private const int MinimumGrow = 4;
         private const long GrowFactor = 200;

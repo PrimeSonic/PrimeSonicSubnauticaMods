@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using Common;
 
-    public class EmPropertyList<T> : EmProperty, IEnumerable<T> where T : IConvertible
+    internal class EmPropertyList<T> : EmProperty, IEnumerable<T> where T : IConvertible
     {
         private static HashSet<char> ListDelimeters { get; } = new HashSet<char> { SpChar_ListItemSplitter, SpChar_ValueDelimiter };
 

@@ -1,6 +1,6 @@
 ﻿namespace Common.EasyMarkup
 {
-    public class EmYesNo : EmProperty<bool>
+    internal class EmYesNo : EmProperty<bool>
     {
         public EmYesNo(string key, bool defaultValue = false) : base(key, defaultValue)
         {

@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class EmException : Exception
+    internal class EmException : Exception
     {
         internal StringBuffer CurrentBuffer { get; private set; } = null;
 

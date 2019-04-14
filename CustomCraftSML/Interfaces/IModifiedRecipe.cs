@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using CustomCraft2SML.Serialization.Components;
 
-    public interface IModifiedRecipe : ITechTyped
+    internal interface IModifiedRecipe : ITechTyped
     {
         short? AmountCrafted { get; }
         bool ForceUnlockAtStart { get; }
