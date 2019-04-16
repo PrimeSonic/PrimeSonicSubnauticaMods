@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-using UnityEngine;
-
-namespace CyclopsNuclearReactor.Helpers
+﻿namespace CyclopsNuclearReactor.Helpers
 {
+    using System;
+    using System.IO;
+    using UnityEngine;
+
     /// <summary>
     /// A  helper class that deals with the AssetBudle
     /// </summary>

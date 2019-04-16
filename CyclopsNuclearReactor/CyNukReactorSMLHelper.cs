@@ -1,11 +1,10 @@
-﻿using System;
-using CyclopsNuclearReactor.Helpers;
-
-namespace CyclopsNuclearReactor
+﻿namespace CyclopsNuclearReactor
 {
+    using CyclopsNuclearReactor.Helpers;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using System;
     using UnityEngine;
 
     internal class CyNukReactorSMLHelper : Buildable
@@ -63,7 +62,7 @@ namespace CyclopsNuclearReactor
         public override GameObject GetGameObject()
         {
             var prefab = GameObject.Instantiate(_cyNukReactorPrefab);
-            var consoleModel = prefab.FindChild("model");
+            GameObject consoleModel = prefab.FindChild("model");
 
             // Update sky applier
             SkyApplier skyApplier = prefab.AddComponent<SkyApplier>();
@@ -84,17 +83,17 @@ namespace CyclopsNuclearReactor
             constructible.rotationEnabled = true;
             constructible.techType = this.TechType;
             constructible.model = consoleModel;
-        
+
             //Add the prefabIdentifier
             prefab.AddComponent<PrefabIdentifier>().ClassId = this.ClassID;
 
             //Add the techType to this custom prefab
-            var techTag = prefab.AddComponent<TechTag>();
+            TechTag techTag = prefab.AddComponent<TechTag>();
             techTag.type = this.TechType;
 
             // Add the custom component
             CyNukeReactorMono auxConsole = prefab.AddComponent<CyNukeReactorMono>(); // Moved to the bottom to allow constructible to be added
-            
+
             return prefab;
         }
 
@@ -133,15 +132,16 @@ namespace CyclopsNuclearReactor
         {
             // == Get the prefab == //
 
-            var assetBundle = AssetHelper.Asset("CyclopsNuclearReactor", "CyNukReactorbundle");
+            AssetBundle assetBundle = AssetHelper.Asset("CyclopsNuclearReactor", "CyNukReactorbundle");
 
             //If the result is null return false.
-            if (assetBundle == null) return false;
+            if (assetBundle == null)
+                return false;
 
             _assetBundle = assetBundle;
 
             //We have found the asset bundle and now we are going to continue by looking for the model.
-            var cyNukReactorPrefab = assetBundle.LoadAsset<GameObject>("CyNukReactor");
+            GameObject cyNukReactorPrefab = assetBundle.LoadAsset<GameObject>("CyNukReactor");
 
             //If the prefab isn't null lets add the shader to the materials
             if (cyNukReactorPrefab != null)
@@ -177,8 +177,12 @@ namespace CyclopsNuclearReactor
             TechTypeID = this.TechType;
             LanguageHandler.SetLanguageLine(EquipmentLabelKey, "Cyclops Nuclear Reactor Rods");
             LanguageHandler.SetLanguageLine(DepletedMessageKey, "A nuclear reactor rod has depleted in the Cyclops");
-            LanguageHandler.SetLanguageLine(OnHoverKey, "Cyclops Nuclear Reactor\n{0} ");
+            LanguageHandler.SetLanguageLine(OnHoverKey, "Cyclops Nuclear Reactor\n {0} ");
             LanguageHandler.SetLanguageLine(OverLimitKey, "Disabled! Too many active reactors");
+
+            // Map new slots
+            foreach (string slot in CyNukeReactorMono.SlotNames)
+                Equipment.slotMapping.Add(slot, EquipmentType.NuclearReactor);
         }
     }
 }

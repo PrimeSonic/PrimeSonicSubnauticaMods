@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
-namespace CyclopsNuclearReactor.Helpers
+﻿namespace CyclopsNuclearReactor.Helpers
 {
+    using System.Collections.Generic;
+    using UnityEngine;
+
     /// <summary>
     /// A class the helps applies a shader to a material and adds settings to the material specified
     /// </summary>
@@ -16,8 +16,7 @@ namespace CyclopsNuclearReactor.Helpers
         /// <returns></returns>
         public static Texture2D FindTexture2D(string textureName, AssetBundle assetBundle)
         {
-            List<object> objects = new List<object>(assetBundle.LoadAllAssets(typeof(object)));
-
+            var objects = new List<object>(assetBundle.LoadAllAssets(typeof(object)));
 
             for (int i = 0; i < objects.Count; i++)
             {
@@ -41,8 +40,7 @@ namespace CyclopsNuclearReactor.Helpers
         /// <returns>Returns the <see cref="Material"/> of the specified type</returns>
         public static Material FindMaterial(string materialName, AssetBundle assetBundle)
         {
-            List<object> objects = new List<object>(assetBundle.LoadAllAssets(typeof(object)));
-
+            var objects = new List<object>(assetBundle.LoadAllAssets(typeof(object)));
 
             for (int i = 0; i < objects.Count; i++)
             {
@@ -70,10 +68,10 @@ namespace CyclopsNuclearReactor.Helpers
         {
             //Use this to do the Emission
             var shader = Shader.Find("MarmosetUBER");
-            var renderers = gameObject.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
             {
-                foreach (var material in renderer.materials)
+                foreach (Material material in renderer.materials)
                 {
                     if (material.name.StartsWith(materialName))
                     {
@@ -99,10 +97,10 @@ namespace CyclopsNuclearReactor.Helpers
         public static void ApplyNormalShader(string materialName, string textureName, GameObject gameObject, AssetBundle assetBundle)
         {
             var shader = Shader.Find("MarmosetUBER");
-            var renderers = gameObject.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
             {
-                foreach (var material in renderer.materials)
+                foreach (Material material in renderer.materials)
                 {
                     if (material.name.StartsWith(materialName))
                     {
@@ -127,10 +125,10 @@ namespace CyclopsNuclearReactor.Helpers
         public static void ApplyMetallicShader(string materialName, string textureName, GameObject gameObject, AssetBundle assetBundle, float glossiness)
         {
             var shader = Shader.Find("MarmosetUBER");
-            var renderers = gameObject.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
             {
-                foreach (var material in renderer.materials)
+                foreach (Material material in renderer.materials)
                 {
                     if (material.name.StartsWith(materialName))
                     {
@@ -158,10 +156,10 @@ namespace CyclopsNuclearReactor.Helpers
         public static void ApplySpecShader(string materialName, string textureName, GameObject gameObject, Color specColor, float specInt, float shininess, AssetBundle assetBundle)
         {
             var shader = Shader.Find("MarmosetUBER");
-            var renderers = gameObject.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
             {
-                foreach (var material in renderer.materials)
+                foreach (Material material in renderer.materials)
                 {
                     if (material.name.StartsWith(materialName))
                     {
@@ -187,10 +185,10 @@ namespace CyclopsNuclearReactor.Helpers
         public static void ApplyAlphaShader(string materialName, GameObject gameObject)
         {
             var shader = Shader.Find("MarmosetUBER");
-            var renderers = gameObject.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
             {
-                foreach (var material in renderer.materials)
+                foreach (Material material in renderer.materials)
                 {
                     if (material.name.StartsWith(materialName))
                     {
@@ -209,13 +207,13 @@ namespace CyclopsNuclearReactor.Helpers
         /// <param name="materialName">The name of the material to look for on the object.</param>
         /// <param name="gameObject">The game object to process.</param>
         /// <param name="glossiness">The amount of gloss for the metallic property.</param>
-        public static void ApplyGlassShaderTemplate(string materialName,  GameObject gameObject, float glossiness)
+        public static void ApplyGlassShaderTemplate(string materialName, GameObject gameObject, float glossiness)
         {
             var shader = Shader.Find("Standard");
-            var renderers = gameObject.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
             {
-                foreach (var material in renderer.materials)
+                foreach (Material material in renderer.materials)
                 {
                     if (material.name.StartsWith(materialName))
                     {
