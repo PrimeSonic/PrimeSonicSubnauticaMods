@@ -39,33 +39,35 @@
       <HintPath>..\Dependencies\0Harmony-1.2.0.1.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\Dependencies\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\Dependencies\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="MoreCyclopsUpgrades">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\MoreCyclopsUpgrades\MoreCyclopsUpgrades.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\MoreCyclopsUpgrades\MoreCyclopsUpgrades.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Epic Games\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\AssetHelper.cs" />
     <Compile Include="CyNukeChargeManager.cs" />
     <Compile Include="CyNukeReactorMono.cs" />
     <Compile Include="CyNukeReactorSaveData.cs" />
     <Compile Include="CyNukeRodSaveData.cs" />
     <Compile Include="CyNukReactorSMLHelper.cs" />
+    <Compile Include="Helpers\MaterialHelpers.cs" />
     <Compile Include="NumberFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
@@ -76,6 +78,11 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="ModFolder\cynukreactorbundle" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ModFolder\Assets\CyNukReactor.png" />
+    <Content Include="ModFolder\CyclopsNuclearReactor.dll" />
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -127,12 +127,12 @@
 
             if (_buildable == null)
             {
-                _buildable = GetComponentInChildren<Constructable>();
+                _buildable = GetComponentInParent<Constructable>();
             }
 
             if (_saveData == null)
             {
-                string id = GetComponentInParent<PrefabIdentifier>().Id;
+                string id = GetComponentInParent<PrefabIdentifier>().ClassId; // Changed this to classId because Id was returning null
                 _saveData = new CyNukeReactorSaveData(id, MaxSlots);
             }
 

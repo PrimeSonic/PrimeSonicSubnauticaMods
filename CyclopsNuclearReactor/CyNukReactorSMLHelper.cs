@@ -1,4 +1,7 @@
-﻿namespace CyclopsNuclearReactor
+﻿using System;
+using CyclopsNuclearReactor.Helpers;
+
+namespace CyclopsNuclearReactor
 {
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -8,6 +11,8 @@
     internal class CyNukReactorSMLHelper : Buildable
     {
         private static readonly CyNukReactorSMLHelper main = new CyNukReactorSMLHelper();
+        private static GameObject _cyNukReactorPrefab;
+        private AssetBundle _assetBundle;
 
         private const string EquipmentLabelKey = "CyNukeRodsLabel";
         public static string EquipmentLabel()
@@ -37,6 +42,12 @@
 
         public static void PatchSMLHelper()
         {
+
+            if (!main.GetPrefabs())
+            {
+                throw new NullReferenceException("CyNukReactor has failed to retrieve the prefab from the asset bundle");
+            }
+
             main.Patch();
         }
 
@@ -45,42 +56,22 @@
             OnFinishedPatching += AdditionalPatching;
         }
 
-        public override TechGroup GroupForPDA { get; } = TechGroup.Cyclops;
-        public override TechCategory CategoryForPDA { get; } = TechCategory.Cyclops;
-
-        // TODO This needs an icon sprite
+        public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
+        public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
         public override string AssetsFolder { get; } = "CyclopsNuclearReactor/Assets";
 
         public override GameObject GetGameObject()
         {
-            // TODO - Replace this with the actual model we need.
-            var consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide"));
-            GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
-            GameObject consoleModel = consoleWide.FindChild("console");
-
-            var prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.LabTrashcan));
-
-            prefab.FindChild("discovery_trashcan_01_d").SetActive(false); // Turn off this model
-            GameObject.DestroyImmediate(prefab.GetComponent<Trashcan>()); // Don't need this
-            GameObject.DestroyImmediate(prefab.GetComponent<StorageContainer>()); // Don't need this
-
-            // Add the custom component
-            CyNukeReactorMono auxConsole = prefab.AddComponent<CyNukeReactorMono>();
-
-            // This is to tie the model to the prefab
-            consoleModel.transform.SetParent(prefab.transform);
-            consoleWide.SetActive(false);
-            consolePrefab.SetActive(false);
-
-            // Rotate to the correct orientation
-            consoleModel.transform.rotation *= Quaternion.Euler(180f, 180f, 180f);
+            var prefab = GameObject.Instantiate(_cyNukReactorPrefab);
+            var consoleModel = prefab.FindChild("model");
 
             // Update sky applier
-            SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
+            SkyApplier skyApplier = prefab.AddComponent<SkyApplier>();
             skyApplier.renderers = consoleModel.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
 
-            Constructable constructible = prefab.GetComponent<Constructable>();
+            //Add the constructible component to the prefab
+            Constructable constructible = prefab.AddComponent<Constructable>();
 
             constructible.allowedInBase = false;
             constructible.allowedInSub = true; // Only allowed in Cyclops
@@ -93,8 +84,79 @@
             constructible.rotationEnabled = true;
             constructible.techType = this.TechType;
             constructible.model = consoleModel;
+        
+            //Add the prefabIdentifier
+            prefab.AddComponent<PrefabIdentifier>().ClassId = this.ClassID;
 
+            //Add the techType to this custom prefab
+            var techTag = prefab.AddComponent<TechTag>();
+            techTag.type = this.TechType;
+
+            // Add the custom component
+            CyNukeReactorMono auxConsole = prefab.AddComponent<CyNukeReactorMono>(); // Moved to the bottom to allow constructible to be added
+            
             return prefab;
+        }
+
+        /// <summary>
+        /// Applies the shader to the materials of the reactor
+        /// </summary>
+        /// <param name="prefab"></param>
+        private void ApplyShaders(GameObject prefab)
+        {
+            #region SystemLights_BaseColor
+            MaterialHelpers.ApplyEmissionShader("SystemLights_BaseColor", "SystemLights_OnMode_Emissive", prefab, _assetBundle, new Color(0.08235294f, 1f, 1f));
+            MaterialHelpers.ApplyNormalShader("SystemLights_BaseColor", "SystemLights_Norm", prefab, _assetBundle);
+            MaterialHelpers.ApplyAlphaShader("SystemLights_BaseColor", prefab);
+            #endregion
+
+            #region FCS_SUBMods_GlobalDecals
+            MaterialHelpers.ApplyAlphaShader("FCS_SUBMods_GlobalDecals", prefab);
+            #endregion
+
+            #region NuclearPowerStorage
+            MaterialHelpers.ApplyEmissionShader("NuclearPowerStorage", "NuclearPowerStorage_Emissive", prefab, _assetBundle, new Color(0.08235294f, 0.7686275f, 0.227451f));
+            MaterialHelpers.ApplyNormalShader("NuclearPowerStorage", "NuclearPowerStorage_Norm", prefab, _assetBundle);
+            #endregion
+
+            #region Glass
+            // MaterialHelpers.ApplyGlassShader("glass", prefab, 0.1f); //Temperately disabled until solution is found
+            #endregion
+        }
+
+
+        /// <summary>
+        /// Finds the prefab in the asset bundle
+        /// </summary>
+        /// <returns></returns>
+        public bool GetPrefabs()
+        {
+            // == Get the prefab == //
+
+            var assetBundle = AssetHelper.Asset("CyclopsNuclearReactor", "CyNukReactorbundle");
+
+            //If the result is null return false.
+            if (assetBundle == null) return false;
+
+            _assetBundle = assetBundle;
+
+            //We have found the asset bundle and now we are going to continue by looking for the model.
+            var cyNukReactorPrefab = assetBundle.LoadAsset<GameObject>("CyNukReactor");
+
+            //If the prefab isn't null lets add the shader to the materials
+            if (cyNukReactorPrefab != null)
+            {
+                _cyNukReactorPrefab = cyNukReactorPrefab;
+
+                //Lets apply the material shader
+                ApplyShaders(_cyNukReactorPrefab);
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
         protected override TechData GetBlueprintRecipe()

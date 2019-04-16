@@ -26,7 +26,7 @@
                 {
                     return CyNukeChargeManager.GetManager(cyclops);
                 });
-                
+
                 var harmony = HarmonyInstance.Create("com.cyclopsnuclearreactor.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
                 QuickLogger.Info("Finished patching");
