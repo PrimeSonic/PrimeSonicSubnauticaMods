@@ -1,7 +1,6 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Common;
-    using MoreCyclopsUpgrades.Managers;
     using ProtoBuf;
     using System;
     using System.Collections.Generic;
@@ -10,7 +9,6 @@
     [ProtoContract]
     internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
-        internal static readonly string[] SlotNames = { "CyNuk1", "CyNuk2", "CyNuk3", "CyNuk4" };
         internal const int MaxSlots = 4;
         internal const float InitialReactorRodCharge = 10000f; // Half of what the Base Nuclear Reactor provides
         internal const float PowerMultiplier = 4.1f; // Rounded down from what the Base Nuclear Reactor provides
@@ -21,25 +19,21 @@
         public SubRoot ParentCyclops;
         public CyNukeChargeManager Manager;
 
-        internal Equipment RodSlots;
+        internal ItemsContainer RodsContainer;
         private ChildObjectIdentifier _rodsRoot;
         private Constructable _buildable;
 
         private bool pdaIsOpen = false;
+        private bool isLoadingSaveData = false;
 
-        private Dictionary<InventoryItem, uGUI_EquipmentSlot> _slotMapping;
+
+        private Dictionary<InventoryItem, uGUI_ItemIcon> _slotMapping;
 
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         private CyNukeReactorSaveData _saveData;
 
-        internal readonly SlotData[] slots = new SlotData[MaxSlots]
-        {
-            new SlotData(),
-            new SlotData(),
-            new SlotData(),
-            new SlotData(),
-        };
+        internal readonly List<SlotData> reactorRodData = new List<SlotData>(4);
 
         internal bool IsConstructed => _buildable != null && _buildable.constructed;
 
@@ -51,7 +45,7 @@
                 return 0f;
 
             float totalPower = 0;
-            foreach (SlotData slotData in slots)
+            foreach (SlotData slotData in reactorRodData)
             {
                 if (!slotData.HasPower())
                     continue;
@@ -67,7 +61,7 @@
             if (!this.IsConstructed)
                 return false;
 
-            foreach (SlotData slotData in slots)
+            foreach (SlotData slotData in reactorRodData)
             {
                 if (slotData.HasPower())
                     return true;
@@ -85,12 +79,10 @@
                 return 0f;
 
             float totalPowerProduced = 0f;
-            int slot = 0;
-            while (slot < MaxSlots && powerDeficit < PowerManager.MinimalPowerValue)
-            {
-                SlotData slotData = slots[slot];
 
-                if (!slotData.HasPower())                
+            foreach (SlotData slotData in reactorRodData)
+            {
+                if (!slotData.HasPower())
                     continue;
 
                 float powerProduced = Mathf.Min(PowerMultiplier * DayNightCycle.main.deltaTime, slotData.Charge);
@@ -100,17 +92,12 @@
 
                 if (Mathf.Approximately(slotData.Charge, 0f))
                 {
-                    // Deplete reactor rod
-                    string slotName = SlotNames[slot];
-
-                    InventoryItem inventoryItem = RodSlots.RemoveItem(slotName, true, false);
-                    GameObject.Destroy(inventoryItem.item.gameObject);
-                    RodSlots.AddItem(slotName, SpawnItem(TechType.DepletedReactorRod), true);
+                    RodsContainer.RemoveItem(slotData.Item, true);
+                    GameObject.Destroy(slotData.Item.gameObject);
+                    RodsContainer.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
 
                     ErrorMessage.AddMessage(CyNukReactorSMLHelper.DepletedMessage());
                 }
-
-                slot++;
             }
 
             if (pdaIsOpen)
@@ -136,7 +123,7 @@
                 _saveData = new CyNukeReactorSaveData(id, MaxSlots);
             }
 
-            if (RodSlots == null)
+            if (RodsContainer == null)
             {
                 InitializeRodSlots();
             }
@@ -178,19 +165,23 @@
                 _rodsRoot = equipmentRoot.AddComponent<ChildObjectIdentifier>();
             }
 
-            RodSlots = new Equipment(base.gameObject, _rodsRoot.transform);
-            RodSlots.SetLabel(CyNukReactorSMLHelper.EquipmentLabel());
-            RodSlots.isAllowedToAdd += (Pickupable pickupable, bool verbose) => { return pickupable.GetTechType() == TechType.ReactorRod; };
-            RodSlots.isAllowedToRemove += (Pickupable pickupable, bool verbose) => { return pickupable.GetTechType() == TechType.DepletedReactorRod; };
-            RodSlots.onEquip += OnEquip;
-            RodSlots.onUnequip += OnUnequip;
+            RodsContainer = new ItemsContainer(2, 2, _rodsRoot.transform, CyNukReactorSMLHelper.StorageLabel(), null);
+            RodsContainer.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
 
-            UnlockDefaultRodSlots();
-        }
+            RodsContainer.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
+            {
+                TechType techType = pickupable.GetTechType();
 
-        private void UnlockDefaultRodSlots()
-        {
-            RodSlots.AddSlots(SlotNames);
+                return techType == TechType.ReactorRod || (isLoadingSaveData && techType == TechType.DepletedReactorRod);
+            };
+
+            RodsContainer.isAllowedToRemove += (Pickupable pickupable, bool verbose) =>
+            {
+                return pickupable.GetTechType() == TechType.DepletedReactorRod;
+            };
+
+            RodsContainer.onAddItem += OnAddItem;
+            RodsContainer.onRemoveItem += OnRemoveItem;
         }
 
         #endregion
@@ -201,15 +192,11 @@
         {
             if (_saveData.LoadData())
             {
+                isLoadingSaveData = true;
                 QuickLogger.Debug("Loading save data");
 
-                int slotIndex = 0;
                 foreach (CyNukeRodSaveData rodData in _saveData.SlotData)
                 {
-                    // These slots need to be added before we can add items to them
-                    string slotName = SlotNames[slotIndex];
-                    RodSlots.AddSlot(slotName);
-
                     TechType techTypeID = rodData.TechTypeID;
 
                     if (techTypeID != TechType.None)
@@ -218,33 +205,33 @@
 
                         if (spanwedItem != null)
                         {
-                            RodSlots.AddItem(slotName, spanwedItem, true);
-                            QuickLogger.Debug($"Spawned '{techTypeID.AsString()}' into slot '{slotName}' from save data");
+                            RodsContainer.AddItem(spanwedItem.item);
+                            reactorRodData.Add(new SlotData(rodData.RemainingCharge, spanwedItem.item));
                         }
                     }
-
-                    slotIndex++;
                 }
-            }
-            else
-            {
-                UnlockDefaultRodSlots();
+
+                isLoadingSaveData = false;
             }
         }
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
-            if (RodSlots == null)
+            isLoadingSaveData = true;
+
+            if (RodsContainer == null)
                 InitializeRodSlots();
 
-            RodSlots.Clear();
+            RodsContainer.Clear();
+
+            isLoadingSaveData = false;
         }
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
             _saveData.ClearOldData();
 
-            foreach (SlotData slotData in slots)
+            foreach (SlotData slotData in reactorRodData)
             {
                 if (slotData.TechTypeID == TechType.None)
                 {
@@ -278,7 +265,7 @@
 
             Player main = Player.main;
             PDA pda = main.GetPDA();
-            Inventory.main.SetUsedStorage(RodSlots, false);
+            Inventory.main.SetUsedStorage(RodsContainer, false);
             pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
 
             pdaIsOpen = true;
@@ -293,7 +280,7 @@
 
             if (OverLimit)
             {
-                main.SetInteractText(CyNukReactorSMLHelper.OverLimit());
+                main.SetInteractText(CyNukReactorSMLHelper.OverLimitMessage());
             }
             else
             {
@@ -307,76 +294,59 @@
         {
             _slotMapping = null;
 
-            foreach (SlotData data in slots)
+            foreach (SlotData data in reactorRodData)
                 data.InfoDisplay = null;
 
             pdaIsOpen = false;
 
-            RodSlots.onEquip -= OnEquipLate;
+            RodsContainer.onAddItem -= OnAddItemLate;
         }
 
-        private void OnEquip(string slot, InventoryItem item)
+        private void OnAddItem(InventoryItem item)
         {
-            int slotIndex = FindSlotIndex(slot);
-
-            if (slotIndex > MaxSlots)
-            {
-                QuickLogger.Error($"Attempting to equip item to unknown slot '{slot}'");
+            if (isLoadingSaveData)
                 return;
-            }
 
-            slots[slotIndex] = new SlotData(InitialReactorRodCharge, item.item);
+            reactorRodData.Add(new SlotData(InitialReactorRodCharge, item.item));
         }
 
-        private void OnUnequip(string slot, InventoryItem item)
+        private void OnRemoveItem(InventoryItem item)
         {
-            int slotIndex = FindSlotIndex(slot);
-
-            if (slotIndex > MaxSlots)
-            {
-                QuickLogger.Error($"Attempting to remove item to unknown slot '{slot}'");
-                return;
-            }
-
-            slots[slotIndex].Clear();
+            SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
+            reactorRodData.Remove(slotData);
         }
 
-        private void OnEquipLate(string slot, InventoryItem item)
+        private void OnAddItemLate(InventoryItem item)
         {
             if (_slotMapping == null)
                 return; // Safety check
 
-            if (_slotMapping.TryGetValue(item, out uGUI_EquipmentSlot icon))
+            if (_slotMapping.TryGetValue(item, out uGUI_ItemIcon icon))
             {
-                int slotIndex = FindSlotIndex(slot);
+                SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
 
-                if (slotIndex > MaxSlots)
-                {
-                    QuickLogger.Error($"Attempting to equip item to unknown slot '{slot}'");
-                    return;
-                }
-
-                slots[slotIndex].AddDisplayText(icon);
+                slotData.AddDisplayText(icon);
             }
         }
 
-        internal void ConnectToEquipment(Dictionary<InventoryItem, uGUI_EquipmentSlot> lookup)
+        internal void ConnectToContainer(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
         {
             _slotMapping = lookup;
 
-            RodSlots.onEquip += OnEquipLate;
+            RodsContainer.onAddItem += OnAddItemLate;
 
-            foreach (KeyValuePair<InventoryItem, uGUI_EquipmentSlot> pair in _slotMapping)
+            foreach (KeyValuePair<InventoryItem, uGUI_ItemIcon> pair in _slotMapping)
             {
                 InventoryItem item = pair.Key;
-                uGUI_EquipmentSlot icon = pair.Value;
+                uGUI_ItemIcon icon = pair.Value;
 
-                int slotIndex = FindSlotIndex(item);
+                SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
 
-                SlotData slotData = slots[slotIndex];
-
-                if (slotData.TechTypeID == TechType.ReactorRod)
+                if (slotData.HasPower())
+                {
                     slotData.AddDisplayText(icon);
+                    return;
+                }
             }
         }
 
@@ -387,7 +357,7 @@
 
             textDelay = Time.time + TextDelayInterval;
 
-            foreach (SlotData item in slots)
+            foreach (SlotData item in reactorRodData)
             {
                 if (item.TechTypeID != TechType.ReactorRod || item.InfoDisplay == null)
                     continue;
@@ -397,24 +367,6 @@
         }
 
         #endregion
-
-        private int FindSlotIndex(InventoryItem item)
-        {
-            int slotIndex = 0;
-            while (slotIndex < MaxSlots && slots[slotIndex].Item != item.item)
-                slotIndex++;
-
-            return slotIndex;
-        }
-
-        private static int FindSlotIndex(string slotName)
-        {
-            int slotIndex = 0;
-            while (slotIndex < MaxSlots && slotName != SlotNames[slotIndex])
-                slotIndex++;
-
-            return slotIndex;
-        }
 
         private static InventoryItem SpawnItem(TechType techTypeID)
         {

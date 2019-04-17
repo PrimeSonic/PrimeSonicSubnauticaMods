@@ -2,7 +2,6 @@
 {
     using Harmony;
     using System.Collections.Generic;
-    using System.Reflection;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
     [HarmonyPatch("OnOpenPDA")]
@@ -20,34 +19,34 @@
             if (!Player.main.IsInSub() || !Player.main.currentSub.isCyclops)
                 return; // If not in Cyclops then all is irrelevant
 
-            uGUI_Equipment equipmentUI = __instance.equipment;
+            uGUI_ItemsContainer storageUI = __instance.storage;
 
-            if (equipmentUI == null)
+            if (storageUI == null)
                 return; // Not an equipment container
 
-            var equipment = (Equipment)AccessTools.Field(typeof(uGUI_Equipment), "equipment").GetValue(equipmentUI);
+            var container = (ItemsContainer)AccessTools.Field(typeof(uGUI_ItemsContainer), "container").GetValue(storageUI);
 
-            if (equipment == null)
+            if (container == null)
                 return; // Safety check
 
-            string label = (equipment as IItemsContainer).label;
+            string label = (container as IItemsContainer).label;
 
-            if (label != CyNukReactorSMLHelper.EquipmentLabel())
+            if (label != CyNukReactorSMLHelper.StorageLabel())
                 return; // Not a CyNukReactor
 
             List<CyNukeReactorMono> reactors = CyNukeChargeManager.GetReactors(Player.main.currentSub);
 
             if (reactors == null || reactors.Count == 0)
-                return; // Cyclops has no bioreactors
+                return; // Cyclops has no reactors
 
             // Look for the reactor that matches the container we just opened.
-            CyNukeReactorMono reactor = reactors.Find(r => r.RodSlots == equipment);
+            CyNukeReactorMono reactor = reactors.Find(r => r.RodsContainer == container);
 
             if (reactor == null)
                 return; // Didn't find the reactor we were looking for. Could it be on another cyclops?
 
-            var lookup = (Dictionary<InventoryItem, uGUI_EquipmentSlot>)AccessTools.Field(typeof(uGUI_Equipment), "items").GetValue(equipmentUI);
-            reactor.ConnectToEquipment(lookup); // Found!
+            var lookup = (Dictionary<InventoryItem, uGUI_ItemIcon>)AccessTools.Field(typeof(uGUI_ItemsContainer), "items").GetValue(storageUI);
+            reactor.ConnectToContainer(lookup); // Found!
         }
     }
 }

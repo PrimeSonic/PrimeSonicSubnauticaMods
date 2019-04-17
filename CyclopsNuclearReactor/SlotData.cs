@@ -45,7 +45,7 @@
                 InfoDisplay = null;
             }
 
-            public void AddDisplayText(uGUI_EquipmentSlot icon)
+            public void AddDisplayText(uGUI_ItemIcon icon)
             {
                 // This code was made possible with the help of Waisie Milliams Hah
                 var arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");

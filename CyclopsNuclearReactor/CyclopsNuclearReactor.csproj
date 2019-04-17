@@ -78,11 +78,14 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ModFolder\cynukreactorbundle" />
+    <None Include="ModFolder\cynukreactorbundle">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ModFolder\Assets\CyNukReactor.png" />
-    <Content Include="ModFolder\CyclopsNuclearReactor.dll" />
+    <Content Include="ModFolder\Assets\CyNukReactor.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

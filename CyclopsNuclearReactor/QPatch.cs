@@ -24,6 +24,7 @@
                 // Register Charge Manager with MoreCyclopsUpgrades
                 PowerManager.RegisterReusableChargerCreator((SubRoot cyclops) =>
                 {
+                    QuickLogger.Debug("Registering CyclopsNuclearReactor");
                     return CyNukeChargeManager.GetManager(cyclops);
                 });
 

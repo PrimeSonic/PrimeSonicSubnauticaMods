@@ -13,10 +13,10 @@
         private static GameObject _cyNukReactorPrefab;
         private AssetBundle _assetBundle;
 
-        private const string EquipmentLabelKey = "CyNukeRodsLabel";
-        public static string EquipmentLabel()
+        private const string StorageLabelKey = "CyNukeRodsLabel";
+        public static string StorageLabel()
         {
-            return Language.main.Get(EquipmentLabelKey);
+            return Language.main.Get(StorageLabelKey);
         }
 
         private const string DepletedMessageKey = "CyNukeRodDepleted";
@@ -32,7 +32,7 @@
         }
 
         private const string OverLimitKey = "CyNukeOverLimit";
-        public static string OverLimit()
+        public static string OverLimitMessage()
         {
             return Language.main.Get(OverLimitKey);
         }
@@ -61,6 +61,17 @@
 
         public override GameObject GetGameObject()
         {
+            SubRoot cyclops = Player.main.currentSub;
+            if (cyclops != null)
+            {
+                var mgr = CyNukeChargeManager.GetManager(cyclops);
+                if (mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
+                {
+                    ErrorMessage.AddMessage(OverLimitMessage());
+                    return null;
+                }
+            }
+
             var prefab = GameObject.Instantiate(_cyNukReactorPrefab);
             GameObject consoleModel = prefab.FindChild("model");
 
@@ -175,14 +186,10 @@
         private void AdditionalPatching()
         {
             TechTypeID = this.TechType;
-            LanguageHandler.SetLanguageLine(EquipmentLabelKey, "Cyclops Nuclear Reactor Rods");
+            LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Nuclear Reactor Rods");
             LanguageHandler.SetLanguageLine(DepletedMessageKey, "A nuclear reactor rod has depleted in the Cyclops");
             LanguageHandler.SetLanguageLine(OnHoverKey, "Cyclops Nuclear Reactor\n {0} ");
-            LanguageHandler.SetLanguageLine(OverLimitKey, "Disabled! Too many active reactors");
-
-            // Map new slots
-            foreach (string slot in CyNukeReactorMono.SlotNames)
-                Equipment.slotMapping.Add(slot, EquipmentType.NuclearReactor);
+            LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active nuclear reactors");
         }
     }
 }
