@@ -25,16 +25,28 @@
             return Language.main.Get(DepletedMessageKey);
         }
 
-        private const string OnHoverKey = "CyNukeOnHover";
-        public static string OnHoverText(int currentPower)
+        private const string OnHoverPoweredKey = "CyNukeOnHover";
+        public static string OnHoverPoweredText(int currentPower)
         {
-            return Language.main.GetFormat(OnHoverKey, currentPower);
+            return Language.main.GetFormat(OnHoverPoweredKey, currentPower);
+        }
+
+        private const string OnHoverNoPowerKey = "CyNukeHoverUnpowered";
+        public static string OnHoverNoPowerText()
+        {
+            return Language.main.Get(OnHoverNoPowerKey);
         }
 
         private const string OverLimitKey = "CyNukeOverLimit";
         public static string OverLimitMessage()
         {
             return Language.main.Get(OverLimitKey);
+        }
+
+        private const string NoPowerKey = "CyNukeNoPower";
+        public static string NoPoweMessage()
+        {
+            return Language.main.Get(NoPowerKey);
         }
 
         public static TechType TechTypeID { get; private set; }
@@ -65,6 +77,8 @@
             if (cyclops != null)
             {
                 var mgr = CyNukeChargeManager.GetManager(cyclops);
+                mgr.SyncReactorsExternally();
+
                 if (mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitMessage());
@@ -188,8 +202,10 @@
             TechTypeID = this.TechType;
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Nuclear Reactor Rods");
             LanguageHandler.SetLanguageLine(DepletedMessageKey, "A nuclear reactor rod has depleted in the Cyclops");
-            LanguageHandler.SetLanguageLine(OnHoverKey, "Cyclops Nuclear Reactor\n {0} ");
+            LanguageHandler.SetLanguageLine(OnHoverPoweredKey, "Cyclops Nuclear Reactor\n {0} ");
+            LanguageHandler.SetLanguageLine(OnHoverNoPowerKey, "Cyclops Nuclear Reactor\nNo Power");
             LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active nuclear reactors");
+            LanguageHandler.SetLanguageLine(NoPowerKey, "No Power");
         }
     }
 }

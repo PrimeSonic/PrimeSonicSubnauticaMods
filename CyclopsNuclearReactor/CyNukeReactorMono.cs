@@ -13,7 +13,7 @@
         internal const float InitialReactorRodCharge = 10000f; // Half of what the Base Nuclear Reactor provides
         internal const float PowerMultiplier = 4.1f; // Rounded down from what the Base Nuclear Reactor provides
 
-        private const float TextDelayInterval = 2f;
+        private const float TextDelayInterval = 1.4f;
         private float textDelay = TextDelayInterval;
 
         public SubRoot ParentCyclops;
@@ -37,11 +37,17 @@
 
         internal bool IsConstructed => _buildable != null && _buildable.constructed;
 
-        internal bool OverLimit = false;
+        internal string PowerIndicatorString()
+        {
+            if (reactorRodData.Count == 0)
+                return CyNukReactorSMLHelper.NoPoweMessage();
+
+            return NumberFormatter.FormatNumber(Mathf.CeilToInt(GetTotalAvailablePower()));
+        }
 
         internal float GetTotalAvailablePower()
         {
-            if (OverLimit)
+            if (!this.IsConstructed || reactorRodData.Count == 0)
                 return 0f;
 
             float totalPower = 0;
@@ -75,7 +81,7 @@
             if (Mathf.Approximately(powerDeficit, 0f))
                 return 0f;
 
-            if (OverLimit)
+            if (reactorRodData.Count == 0)
                 return 0f;
 
             float totalPowerProduced = 0f;
@@ -89,6 +95,7 @@
 
                 slotData.Charge -= powerProduced;
                 totalPowerProduced += powerProduced;
+                powerDeficit -= powerProduced;
 
                 if (Mathf.Approximately(slotData.Charge, 0f))
                 {
@@ -125,7 +132,7 @@
 
             if (RodsContainer == null)
             {
-                InitializeRodSlots();
+                InitializeRodsContainer();
             }
         }
 
@@ -135,12 +142,12 @@
 
             if (cyclops is null)
             {
-                QuickLogger.Debug("CyNukeReactorMono: Could not find Cyclops during Start. Attempting external syncronize.");
+                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external syncronize.");
                 CyNukeChargeManager.SyncReactors();
             }
             else
             {
-                QuickLogger.Debug("CyNukeReactorMono: Parent cyclops found directly!");
+                QuickLogger.Debug("Parent cyclops found directly!");
                 ConnectToCyclops(cyclops);
             }
         }
@@ -152,17 +159,20 @@
 
             Manager = manager ?? CyNukeChargeManager.GetManager(cyclops);
 
+            if (!Manager.CyNukeReactors.Contains(this))
+                Manager.CyNukeReactors.Add(this);
+
             QuickLogger.Debug("Cyclops Nuclear Reactor has been connected", true);
         }
 
-        private void InitializeRodSlots()
+        private void InitializeRodsContainer()
         {
-            QuickLogger.Debug("Initializing Equipment");
+            QuickLogger.Debug("Initializing Storage");
             if (_rodsRoot == null)
             {
-                var equipmentRoot = new GameObject("EquipmentRoot");
-                equipmentRoot.transform.SetParent(this.transform, false);
-                _rodsRoot = equipmentRoot.AddComponent<ChildObjectIdentifier>();
+                var storageRoot = new GameObject("StorageRoot");
+                storageRoot.transform.SetParent(this.transform, false);
+                _rodsRoot = storageRoot.AddComponent<ChildObjectIdentifier>();
             }
 
             RodsContainer = new ItemsContainer(2, 2, _rodsRoot.transform, CyNukReactorSMLHelper.StorageLabel(), null);
@@ -220,7 +230,7 @@
             isLoadingSaveData = true;
 
             if (RodsContainer == null)
-                InitializeRodSlots();
+                InitializeRodsContainer();
 
             RodsContainer.Clear();
 
@@ -260,9 +270,6 @@
             if (!_buildable.constructed)
                 return;
 
-            if (OverLimit)
-                return;
-
             Player main = Player.main;
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(RodsContainer, false);
@@ -278,16 +285,13 @@
 
             HandReticle main = HandReticle.main;
 
-            if (OverLimit)
-            {
-                main.SetInteractText(CyNukReactorSMLHelper.OverLimitMessage());
-            }
-            else
-            {
-                int currentPower = Mathf.FloorToInt(GetTotalAvailablePower());
-                main.SetInteractText(CyNukReactorSMLHelper.OnHoverText(currentPower));
-                main.SetIcon(HandReticle.IconType.Hand, 1f);
-            }
+            int currentPower = Mathf.FloorToInt(GetTotalAvailablePower());
+            string text = currentPower > 0
+                ? CyNukReactorSMLHelper.OnHoverPoweredText(currentPower)
+                : CyNukReactorSMLHelper.OnHoverNoPowerText();
+
+            main.SetInteractText(text);
+            main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
         internal void CyOnPdaClose(PDA pda)
@@ -323,9 +327,7 @@
 
             if (_slotMapping.TryGetValue(item, out uGUI_ItemIcon icon))
             {
-                SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
-
-                slotData.AddDisplayText(icon);
+                AddDisplayText(item, icon);
             }
         }
 
@@ -335,19 +337,21 @@
 
             RodsContainer.onAddItem += OnAddItemLate;
 
-            foreach (KeyValuePair<InventoryItem, uGUI_ItemIcon> pair in _slotMapping)
+            foreach (KeyValuePair<InventoryItem, uGUI_ItemIcon> pair in lookup)
             {
                 InventoryItem item = pair.Key;
                 uGUI_ItemIcon icon = pair.Value;
 
-                SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
-
-                if (slotData.HasPower())
-                {
-                    slotData.AddDisplayText(icon);
-                    return;
-                }
+                AddDisplayText(item, icon);
             }
+        }
+
+        private void AddDisplayText(InventoryItem item, uGUI_ItemIcon icon)
+        {
+            SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
+
+            if (slotData != null && slotData.HasPower())
+                slotData.AddDisplayText(icon);
         }
 
         private void UpdateDisplayText()
@@ -359,7 +363,7 @@
 
             foreach (SlotData item in reactorRodData)
             {
-                if (item.TechTypeID != TechType.ReactorRod || item.InfoDisplay == null)
+                if (!item.HasPower() || item.InfoDisplay == null)
                     continue;
 
                 item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.FloorToInt(item.Charge));

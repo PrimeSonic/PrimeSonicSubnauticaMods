@@ -31,18 +31,8 @@
 
             public bool HasPower()
             {
-                if (TechTypeID != TechType.ReactorRod)
-                    return false;
-
-                return Charge > PowerManager.MinimalPowerValue;
-            }
-
-            public void Clear()
-            {
-                TechTypeID = TechType.None;
-                Charge = -1f;
-                Item = null;
-                InfoDisplay = null;
+                return TechTypeID == TechType.ReactorRod &&
+                       Charge > PowerManager.MinimalPowerValue;
             }
 
             public void AddDisplayText(uGUI_ItemIcon icon)
