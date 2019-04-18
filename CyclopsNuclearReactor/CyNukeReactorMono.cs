@@ -16,12 +16,11 @@
         private const float TextDelayInterval = 1.4f;
         private float textDelay = TextDelayInterval;
 
-        public SubRoot ParentCyclops;
-        public CyNukeChargeManager Manager;
-
-        internal ItemsContainer RodsContainer;
-        private ChildObjectIdentifier _rodsRoot;
-        private Constructable _buildable;
+        public SubRoot ParentCyclops = null;
+        public CyNukeChargeManager Manager = null;
+        internal ItemsContainer RodsContainer = null;
+        private ChildObjectIdentifier _rodsRoot = null;        
+        private Constructable _buildable = null;
 
         private bool pdaIsOpen = false;
         private bool isLoadingSaveData = false;
@@ -32,6 +31,20 @@
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         private CyNukeReactorSaveData _saveData;
+                
+        internal int ActiveRodCount
+        {
+            get
+            {
+                int count = 0;
+                foreach (SlotData slot in reactorRodData)
+                {
+                    if (slot.HasPower())
+                        count++;
+                }
+                return count;
+            }
+        }
 
         internal readonly List<SlotData> reactorRodData = new List<SlotData>(4);
 
@@ -143,7 +156,15 @@
 
         private void Start()
         {
-            if (ParentCyclops == null || Manager == null)
+            if (Manager != null)
+            {
+                ConnectToCyclops(Manager.Cyclops, Manager);
+            }
+            else if (ParentCyclops != null)
+            {
+                ConnectToCyclops(ParentCyclops);
+            }
+            else
             {
                 SubRoot cyclops = GetComponentInParent<SubRoot>();
 
@@ -166,18 +187,16 @@
             this.transform.SetParent(cyclops.transform);
 
             Manager = manager ?? CyNukeChargeManager.GetManager(cyclops);
-
-            if (!Manager.CyNukeReactors.Contains(this))
-                Manager.CyNukeReactors.Add(this);
+            Manager.AddReactor(this);
 
             QuickLogger.Debug("Cyclops Nuclear Reactor has been connected", true);
         }
 
         private void InitializeRodsContainer()
         {
-            QuickLogger.Debug("Initializing Storage");
             if (_rodsRoot == null)
             {
+                QuickLogger.Debug("Initializing StorageRoot");
                 var storageRoot = new GameObject("StorageRoot");
                 storageRoot.transform.SetParent(this.transform, false);
                 _rodsRoot = storageRoot.AddComponent<ChildObjectIdentifier>();
@@ -185,6 +204,7 @@
 
             if (RodsContainer == null)
             {
+                QuickLogger.Debug("Initializing RodsContainer");
                 RodsContainer = new ItemsContainer(2, 2, _rodsRoot.transform, CyNukReactorSMLHelper.StorageLabel(), null);
                 RodsContainer.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
 
@@ -247,7 +267,7 @@
                     }
                 }
 
-                QuickLogger.Debug($"Added {reactorRodData.Count} items from save data");
+                QuickLogger.Debug($"Added {this.ActiveRodCount} items from save data");
 
                 isLoadingSaveData = false;
             }

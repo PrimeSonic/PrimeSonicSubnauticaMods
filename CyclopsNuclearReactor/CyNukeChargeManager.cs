@@ -49,6 +49,14 @@
 
         public readonly List<CyNukeReactorMono> CyNukeReactors = new List<CyNukeReactorMono>();
 
+        public void AddReactor(CyNukeReactorMono reactor)
+        {
+            if (!CyNukeReactors.Contains(reactor))
+            {
+                CyNukeReactors.Add(reactor);
+            }
+        }
+
         public CyNukeChargeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;

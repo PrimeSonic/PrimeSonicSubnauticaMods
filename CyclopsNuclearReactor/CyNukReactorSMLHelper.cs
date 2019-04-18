@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using Common;
     using CyclopsNuclearReactor.Helpers;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -55,6 +56,7 @@
         {
             if (!main.GetPrefabs())
             {
+                QuickLogger.Error("CyNukReactor has failed to retrieve the prefab from the asset bundle");
                 throw new NullReferenceException("CyNukReactor has failed to retrieve the prefab from the asset bundle");
             }
 
