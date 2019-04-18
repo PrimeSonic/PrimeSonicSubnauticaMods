@@ -25,7 +25,7 @@
 
         private bool pdaIsOpen = false;
         private bool isLoadingSaveData = false;
-
+        private bool isDepletingRod = false;
 
         private Dictionary<InventoryItem, uGUI_ItemIcon> _slotMapping;
 
@@ -86,6 +86,7 @@
 
             float totalPowerProduced = 0f;
 
+            SlotData depletedRod = null;
             foreach (SlotData slotData in reactorRodData)
             {
                 if (!slotData.HasPower())
@@ -98,13 +99,20 @@
                 powerDeficit -= powerProduced;
 
                 if (Mathf.Approximately(slotData.Charge, 0f))
-                {
-                    RodsContainer.RemoveItem(slotData.Item, true);
-                    GameObject.Destroy(slotData.Item.gameObject);
-                    RodsContainer.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
+                    depletedRod = slotData;
+            }
 
-                    ErrorMessage.AddMessage(CyNukReactorSMLHelper.DepletedMessage());
-                }
+            if (depletedRod != null)
+            {
+                isDepletingRod = true;
+
+                RodsContainer.RemoveItem(depletedRod.Item, true);
+                GameObject.Destroy(depletedRod.Item.gameObject);
+                RodsContainer.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
+
+                ErrorMessage.AddMessage(CyNukReactorSMLHelper.DepletedMessage());
+
+                isDepletingRod = false;
             }
 
             if (pdaIsOpen)
@@ -126,29 +134,29 @@
 
             if (_saveData == null)
             {
-                string id = GetComponentInParent<PrefabIdentifier>().ClassId; // Changed this to classId because Id was returning null
+                string id = GetComponentInParent<PrefabIdentifier>().Id;
                 _saveData = new CyNukeReactorSaveData(id, MaxSlots);
             }
 
-            if (RodsContainer == null)
-            {
-                InitializeRodsContainer();
-            }
+            InitializeRodsContainer();
         }
 
         private void Start()
         {
-            SubRoot cyclops = GetComponentInParent<SubRoot>();
+            if (ParentCyclops == null || Manager == null)
+            {
+                SubRoot cyclops = GetComponentInParent<SubRoot>();
 
-            if (cyclops is null)
-            {
-                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external syncronize.");
-                CyNukeChargeManager.SyncReactors();
-            }
-            else
-            {
-                QuickLogger.Debug("Parent cyclops found directly!");
-                ConnectToCyclops(cyclops);
+                if (cyclops == null)
+                {
+                    QuickLogger.Debug("Could not find Cyclops during Start. Attempting external syncronize.");
+                    CyNukeChargeManager.SyncReactors();
+                }
+                else
+                {
+                    QuickLogger.Debug("Parent cyclops found directly!");
+                    ConnectToCyclops(cyclops);
+                }
             }
         }
 
@@ -175,35 +183,53 @@
                 _rodsRoot = storageRoot.AddComponent<ChildObjectIdentifier>();
             }
 
-            RodsContainer = new ItemsContainer(2, 2, _rodsRoot.transform, CyNukReactorSMLHelper.StorageLabel(), null);
-            RodsContainer.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
-
-            RodsContainer.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
+            if (RodsContainer == null)
             {
-                TechType techType = pickupable.GetTechType();
+                RodsContainer = new ItemsContainer(2, 2, _rodsRoot.transform, CyNukReactorSMLHelper.StorageLabel(), null);
+                RodsContainer.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
 
-                return techType == TechType.ReactorRod || (isLoadingSaveData && techType == TechType.DepletedReactorRod);
-            };
+                RodsContainer.isAllowedToAdd += IsAllowedToAdd;
+                RodsContainer.isAllowedToRemove += IsAllowedToRemove;
 
-            RodsContainer.isAllowedToRemove += (Pickupable pickupable, bool verbose) =>
-            {
-                return pickupable.GetTechType() == TechType.DepletedReactorRod;
-            };
+                RodsContainer.onAddItem += OnAddItem;
+                RodsContainer.onRemoveItem += OnRemoveItem;
+            }
+        }
 
-            RodsContainer.onAddItem += OnAddItem;
-            RodsContainer.onRemoveItem += OnRemoveItem;
+        private bool IsAllowedToAdd(Pickupable pickupable, bool verbose)
+        {
+            TechType techType = pickupable.GetTechType();
+            return techType == TechType.ReactorRod ||
+                   (DepletedRodsAllowed() && techType == TechType.DepletedReactorRod);
+        }
+
+        private bool DepletedRodsAllowed()
+        {
+            return isLoadingSaveData || isDepletingRod;
+        }
+
+        private bool IsAllowedToRemove(Pickupable pickupable, bool verbose)
+        {
+            TechType techType = pickupable.GetTechType();
+            return techType == TechType.DepletedReactorRod ||
+                  (isDepletingRod && techType == TechType.ReactorRod);
         }
 
         #endregion
 
         #region Save Data
 
-        public void OnProtoDeserialize(ProtobufSerializer serializer)
+        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
+            QuickLogger.Debug("Loading save data");
+
             if (_saveData.LoadData())
             {
                 isLoadingSaveData = true;
-                QuickLogger.Debug("Loading save data");
+                QuickLogger.Debug("Save data found");
+
+                RodsContainer.Clear(false);
+                reactorRodData.Clear();
 
                 foreach (CyNukeRodSaveData rodData in _saveData.SlotData)
                 {
@@ -215,22 +241,23 @@
 
                         if (spanwedItem != null)
                         {
-                            RodsContainer.AddItem(spanwedItem.item);
-                            reactorRodData.Add(new SlotData(rodData.RemainingCharge, spanwedItem.item));
+                            InventoryItem rod = RodsContainer.AddItem(spanwedItem.item);
+                            reactorRodData.Add(new SlotData(rodData.RemainingCharge, rod.item));
                         }
                     }
                 }
+
+                QuickLogger.Debug($"Added {reactorRodData.Count} items from save data");
 
                 isLoadingSaveData = false;
             }
         }
 
-        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
+        public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
             isLoadingSaveData = true;
 
-            if (RodsContainer == null)
-                InitializeRodsContainer();
+            InitializeRodsContainer();
 
             RodsContainer.Clear();
 
@@ -285,9 +312,9 @@
 
             HandReticle main = HandReticle.main;
 
-            int currentPower = Mathf.FloorToInt(GetTotalAvailablePower());
+            int currentPower = Mathf.CeilToInt(GetTotalAvailablePower());
             string text = currentPower > 0
-                ? CyNukReactorSMLHelper.OnHoverPoweredText(currentPower)
+                ? CyNukReactorSMLHelper.OnHoverPoweredText(currentPower, reactorRodData.Count, MaxSlots)
                 : CyNukReactorSMLHelper.OnHoverNoPowerText();
 
             main.SetInteractText(text);

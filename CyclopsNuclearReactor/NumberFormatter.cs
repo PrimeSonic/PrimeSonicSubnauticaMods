@@ -23,11 +23,6 @@
 
         private static string HandleLargeNumbers(int possiblyLargeValue)
         {
-            if (possiblyLargeValue > 9999999)
-            {
-                return $"{possiblyLargeValue / 1000000f:F1}M";
-            }
-
             if (possiblyLargeValue > 9999)
             {
                 return $"{possiblyLargeValue / 1000f:F1}K";

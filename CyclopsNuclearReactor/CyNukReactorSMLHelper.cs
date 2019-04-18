@@ -26,9 +26,9 @@
         }
 
         private const string OnHoverPoweredKey = "CyNukeOnHover";
-        public static string OnHoverPoweredText(int currentPower)
+        public static string OnHoverPoweredText(int currentPower, int rods, int maxRods)
         {
-            return Language.main.GetFormat(OnHoverPoweredKey, currentPower);
+            return Language.main.GetFormat<int, int, int>(OnHoverPoweredKey, currentPower, rods, maxRods);
         }
 
         private const string OnHoverNoPowerKey = "CyNukeHoverUnpowered";
@@ -53,7 +53,6 @@
 
         public static void PatchSMLHelper()
         {
-
             if (!main.GetPrefabs())
             {
                 throw new NullReferenceException("CyNukReactor has failed to retrieve the prefab from the asset bundle");
@@ -76,8 +75,7 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                var mgr = CyNukeChargeManager.GetManager(cyclops);
-                mgr.SyncReactorsExternally();
+                var mgr = CyNukeChargeManager.GetManager(cyclops);                
 
                 if (mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
                 {
@@ -106,15 +104,12 @@
             constructible.allowedOnConstructables = false;
             constructible.controlModelState = true;
             constructible.rotationEnabled = true;
-            constructible.techType = this.TechType;
+            constructible.techType = TechTypeID;
             constructible.model = consoleModel;
 
             //Add the prefabIdentifier
-            prefab.AddComponent<PrefabIdentifier>().ClassId = this.ClassID;
-
-            //Add the techType to this custom prefab
-            TechTag techTag = prefab.AddComponent<TechTag>();
-            techTag.type = this.TechType;
+            PrefabIdentifier prefabID = prefab.AddComponent<PrefabIdentifier>();
+            prefabID.ClassId = main.ClassID;
 
             // Add the custom component
             CyNukeReactorMono auxConsole = prefab.AddComponent<CyNukeReactorMono>(); // Moved to the bottom to allow constructible to be added
@@ -202,7 +197,7 @@
             TechTypeID = this.TechType;
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Nuclear Reactor Rods");
             LanguageHandler.SetLanguageLine(DepletedMessageKey, "A nuclear reactor rod has depleted in the Cyclops");
-            LanguageHandler.SetLanguageLine(OnHoverPoweredKey, "Cyclops Nuclear Reactor\n {0} ");
+            LanguageHandler.SetLanguageLine(OnHoverPoweredKey, "Cyclops Nuclear Reactor\n {0} ({1}/{2})");
             LanguageHandler.SetLanguageLine(OnHoverNoPowerKey, "Cyclops Nuclear Reactor\nNo Power");
             LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active nuclear reactors");
             LanguageHandler.SetLanguageLine(NoPowerKey, "No Power");

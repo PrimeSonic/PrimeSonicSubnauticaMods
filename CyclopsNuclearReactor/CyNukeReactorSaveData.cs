@@ -15,7 +15,7 @@
         private readonly string PreFabId;
         private readonly int MaxSlots;
 
-        public CyNukeReactorSaveData(string prefabID, int maxSlots) : base(prefabID)
+        public CyNukeReactorSaveData(string prefabID, int maxSlots) : base("CNR")
         {
             PreFabId = prefabID;
             MaxSlots = maxSlots;

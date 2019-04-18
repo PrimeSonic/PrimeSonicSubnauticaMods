@@ -27,6 +27,7 @@
         {
             var mgr = new CyNukeChargeManager(cyclops);
             Managers.Add(mgr);
+            mgr.SyncReactorsExternally();
             return mgr;
         }
 
