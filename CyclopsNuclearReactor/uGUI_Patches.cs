@@ -31,7 +31,7 @@
 
             string label = (container as IItemsContainer).label;
 
-            if (label != CyNukReactorSMLHelper.StorageLabel())
+            if (label != CyNukReactorBuildable.StorageLabel())
                 return; // Not a CyNukReactor
 
             List<CyNukeReactorMono> reactors = CyNukeChargeManager.GetReactors(Player.main.currentSub);

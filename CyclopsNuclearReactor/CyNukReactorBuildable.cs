@@ -8,9 +8,9 @@
     using System;
     using UnityEngine;
 
-    internal class CyNukReactorSMLHelper : Buildable
+    internal class CyNukReactorBuildable : Buildable
     {
-        private static readonly CyNukReactorSMLHelper main = new CyNukReactorSMLHelper();
+        private static readonly CyNukReactorBuildable main = new CyNukReactorBuildable();
         private static GameObject _cyNukReactorPrefab;
         private AssetBundle _assetBundle;
 
@@ -50,6 +50,18 @@
             return Language.main.Get(NoPowerKey);
         }
 
+        private const string CannotRemoveKey = "CyNukeNoDowngrade";
+        internal static string CannotRemoveMsg()
+        {
+            return Language.main.Get(CannotRemoveKey);
+        }
+
+        private const string UpgradedMsgKey = "CyNukeUpgradedKey";
+        public static string UpgradedMsg()
+        {
+            return Language.main.Get(UpgradedMsgKey);
+        }
+
         public static TechType TechTypeID { get; private set; }
 
         public static void PatchSMLHelper()
@@ -60,10 +72,10 @@
                 throw new NullReferenceException("CyNukReactor has failed to retrieve the prefab from the asset bundle");
             }
 
-            main.Patch();
+            main.Patch();            
         }
 
-        public CyNukReactorSMLHelper() : base("CyNukReactor", "Cyclops Nuclear Reactor", "A nuclear reactor re-designed to fit and function inside the Cyclops.")
+        public CyNukReactorBuildable() : base("CyNukReactor", "Cyclops Nuclear Reactor", "A nuclear reactor re-designed to fit and function inside the Cyclops.")
         {
             OnFinishedPatching += AdditionalPatching;
         }
@@ -71,13 +83,14 @@
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
         public override string AssetsFolder { get; } = "CyclopsNuclearReactor/Assets";
+        public override TechType RequiredForUnlock { get; } = TechType.BaseNuclearReactor;
 
         public override GameObject GetGameObject()
         {
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                var mgr = CyNukeChargeManager.GetManager(cyclops);                
+                var mgr = CyNukeChargeManager.GetManager(cyclops);
 
                 if (mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
                 {
@@ -189,7 +202,7 @@
                 {
                     new Ingredient(TechType.PlasteelIngot, 1),
                     new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.Lead, 2),
+                    new Ingredient(TechType.Lead, 3),
                 }
             };
         }
@@ -203,6 +216,8 @@
             LanguageHandler.SetLanguageLine(OnHoverNoPowerKey, "Cyclops Nuclear Reactor\nNo Power");
             LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active nuclear reactors");
             LanguageHandler.SetLanguageLine(NoPowerKey, "No Power");
+            LanguageHandler.SetLanguageLine(UpgradedMsgKey, "Nuclear reactors on the cyclops have been enhanced");
+            LanguageHandler.SetLanguageLine(CannotRemoveKey, "Too many active rods in nuclear reactor to remove enhancement");
         }
     }
 }

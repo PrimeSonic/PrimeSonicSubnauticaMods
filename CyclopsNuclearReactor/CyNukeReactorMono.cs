@@ -9,17 +9,26 @@
     [ProtoContract]
     internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
-        internal const int MaxSlots = 4;
         internal const float InitialReactorRodCharge = 10000f; // Half of what the Base Nuclear Reactor provides
         internal const float PowerMultiplier = 4.1f; // Rounded down from what the Base Nuclear Reactor provides
 
+        internal const int MaxUpgradeLevel = 2;
+        internal const int ContainerWidth = 2;
+        internal const int MinContainerHeight = 2;
+        internal const int MinSlots = ContainerWidth * MinContainerHeight;
+        internal const int HeightBonus = 4;
+
+        internal int ContainerHeight = 5;
+        internal int MaxSlots => ContainerWidth * ContainerHeight;
+
+        private int lastKnownUpgradeLevel = 0;
         private const float TextDelayInterval = 1.4f;
         private float textDelay = TextDelayInterval;
 
         public SubRoot ParentCyclops = null;
         public CyNukeChargeManager Manager = null;
         internal ItemsContainer RodsContainer = null;
-        private ChildObjectIdentifier _rodsRoot = null;        
+        private ChildObjectIdentifier _rodsRoot = null;
         private Constructable _buildable = null;
 
         private bool pdaIsOpen = false;
@@ -31,7 +40,9 @@
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         private CyNukeReactorSaveData _saveData;
-                
+
+        internal int TotalItemCount => reactorRodData.Count;
+
         internal int ActiveRodCount
         {
             get
@@ -53,7 +64,7 @@
         internal string PowerIndicatorString()
         {
             if (reactorRodData.Count == 0)
-                return CyNukReactorSMLHelper.NoPoweMessage();
+                return CyNukReactorBuildable.NoPoweMessage();
 
             return NumberFormatter.FormatNumber(Mathf.CeilToInt(GetTotalAvailablePower()));
         }
@@ -123,7 +134,7 @@
                 GameObject.Destroy(depletedRod.Item.gameObject);
                 RodsContainer.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
 
-                ErrorMessage.AddMessage(CyNukReactorSMLHelper.DepletedMessage());
+                ErrorMessage.AddMessage(CyNukReactorBuildable.DepletedMessage());
 
                 isDepletingRod = false;
             }
@@ -148,7 +159,7 @@
             if (_saveData == null)
             {
                 string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CyNukeReactorSaveData(id, MaxSlots);
+                _saveData = new CyNukeReactorSaveData(id, this.MaxSlots);
             }
 
             InitializeRodsContainer();
@@ -205,7 +216,7 @@
             if (RodsContainer == null)
             {
                 QuickLogger.Debug("Initializing RodsContainer");
-                RodsContainer = new ItemsContainer(2, 2, _rodsRoot.transform, CyNukReactorSMLHelper.StorageLabel(), null);
+                RodsContainer = new ItemsContainer(ContainerWidth, ContainerHeight, _rodsRoot.transform, CyNukReactorBuildable.StorageLabel(), null);
                 RodsContainer.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
 
                 RodsContainer.isAllowedToAdd += IsAllowedToAdd;
@@ -334,8 +345,8 @@
 
             int currentPower = Mathf.CeilToInt(GetTotalAvailablePower());
             string text = currentPower > 0
-                ? CyNukReactorSMLHelper.OnHoverPoweredText(currentPower, reactorRodData.Count, MaxSlots)
-                : CyNukReactorSMLHelper.OnHoverNoPowerText();
+                ? CyNukReactorBuildable.OnHoverPoweredText(currentPower, reactorRodData.Count, this.MaxSlots)
+                : CyNukReactorBuildable.OnHoverNoPowerText();
 
             main.SetInteractText(text);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
@@ -419,12 +430,44 @@
 
         #endregion
 
+        internal void UpdateUpgradeLevel(int upgradeLevel)
+        {
+            if (upgradeLevel < 0 || upgradeLevel > MaxUpgradeLevel)
+                return;
+
+            if (upgradeLevel == lastKnownUpgradeLevel)
+                return;
+
+            int nextHeight = MinContainerHeight + HeightBonus * upgradeLevel;
+
+            if (!isLoadingSaveData &&
+                lastKnownUpgradeLevel > upgradeLevel && // Getting smaller
+                reactorRodData.Count < nextHeight * ContainerWidth)
+            {
+                return; // Protect from accidents
+            }
+            else if (lastKnownUpgradeLevel < upgradeLevel) // Getting bigger
+            {
+                ErrorMessage.AddMessage(CyNukReactorBuildable.UpgradedMsg());
+            }
+
+            RodsContainer.Resize(ContainerWidth, ContainerHeight = nextHeight);
+            RodsContainer.Sort();
+
+            lastKnownUpgradeLevel = upgradeLevel;
+        }
+
         private static InventoryItem SpawnItem(TechType techTypeID)
         {
             var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
+        }
+
+        internal static int CalculateTotalSlots(int upgradeLevel)
+        {
+            return ContainerWidth * (MinContainerHeight + HeightBonus * upgradeLevel);
         }
     }
 }

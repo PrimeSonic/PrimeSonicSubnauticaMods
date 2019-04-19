@@ -16,26 +16,38 @@
             QuickLogger.DebugLogsEnabled = true;
             QuickLogger.Debug("Debug logs enabled");
 #endif
-
             try
             {
-                CyNukReactorSMLHelper.PatchSMLHelper();
+                CyNukReactorBuildable.PatchSMLHelper();
+                CyNukeEnhancerMk1.PatchSMLHelper();
+                CyNukeEnhancerMk2.PatchSMLHelper();
 
-                // Register Charge Manager with MoreCyclopsUpgrades
-                PowerManager.RegisterReusableChargerCreator((SubRoot cyclops) =>
-                {
-                    QuickLogger.Debug("Registering CyclopsNuclearReactor");
-                    return CyNukeChargeManager.GetManager(cyclops);
-                });
+                RegisterWithMoreCyclopsUpgrades();
 
                 var harmony = HarmonyInstance.Create("com.cyclopsnuclearreactor.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
+
                 QuickLogger.Info("Finished patching");
             }
             catch (Exception ex)
             {
                 QuickLogger.Error(ex);
             }
+        }
+
+        private static void RegisterWithMoreCyclopsUpgrades()
+        {
+            PowerManager.RegisterReusableChargerCreator((SubRoot cyclops) =>
+            {
+                QuickLogger.Debug("Registering CyclopsNuclearReactor ICyclopsCharger");
+                return CyNukeChargeManager.GetManager(cyclops);
+            });
+
+            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            {
+                QuickLogger.Debug("Registering CyNukeEnhancerHandler UpgradeHandler");
+                return new CyNukeEnhancerHandler();
+            });
         }
     }
 }

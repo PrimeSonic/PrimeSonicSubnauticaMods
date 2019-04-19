@@ -61,12 +61,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CyNukeEnhancerHandler.cs" />
+    <Compile Include="CyNukeEnhancerMk1.cs" />
+    <Compile Include="CyNukeEnhancerMk2.cs" />
     <Compile Include="Helpers\AssetHelper.cs" />
     <Compile Include="CyNukeChargeManager.cs" />
     <Compile Include="CyNukeReactorMono.cs" />
     <Compile Include="CyNukeReactorSaveData.cs" />
     <Compile Include="CyNukeRodSaveData.cs" />
-    <Compile Include="CyNukReactorSMLHelper.cs" />
+    <Compile Include="CyNukReactorBuildable.cs" />
     <Compile Include="Helpers\MaterialHelpers.cs" />
     <Compile Include="NumberFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

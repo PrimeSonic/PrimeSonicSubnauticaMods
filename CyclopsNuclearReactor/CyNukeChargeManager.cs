@@ -45,7 +45,7 @@
         public readonly SubRoot Cyclops;
         public readonly int InstanceID;
 
-        private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(CyNukReactorSMLHelper.TechTypeID);
+        private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(CyNukReactorBuildable.TechTypeID);
 
         public readonly List<CyNukeReactorMono> CyNukeReactors = new List<CyNukeReactorMono>();
 
