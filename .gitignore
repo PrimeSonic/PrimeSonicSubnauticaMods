@@ -8,3 +8,7 @@ packages
 /Dependencies/Assembly-CSharp_publicized.dll
 /Dependencies/SMLHelper.dll
 /Dependencies/SMLHelper.xml
+
+*.user
+
+CyclopsNuclearReactor/CyclopsNuclearReactor\.csproj

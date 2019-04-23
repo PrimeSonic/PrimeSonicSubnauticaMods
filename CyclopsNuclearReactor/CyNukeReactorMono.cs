@@ -1,4 +1,6 @@
-﻿namespace CyclopsNuclearReactor
+﻿using CyclopsNuclearReactor.Helpers;
+
+namespace CyclopsNuclearReactor
 {
     using Common;
     using ProtoBuf;
@@ -124,6 +126,8 @@
 
                 if (Mathf.Approximately(slotData.Charge, 0f))
                     depletedRod = slotData;
+
+                UpdateGraphicalRod(slotData);
             }
 
             if (depletedRod != null)
@@ -181,7 +185,7 @@
 
                 if (cyclops == null)
                 {
-                    QuickLogger.Debug("Could not find Cyclops during Start. Attempting external syncronize.");
+                    QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
                     CyNukeChargeManager.SyncReactors();
                 }
                 else
@@ -368,13 +372,13 @@
         {
             if (isLoadingSaveData)
                 return;
-
             reactorRodData.Add(new SlotData(InitialReactorRodCharge, item.item));
         }
 
         private void OnRemoveItem(InventoryItem item)
         {
             SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
+            CyNukeRodHelper.EmptyRod(gameObject, reactorRodData.FindIndex(a => a == slotData));
             reactorRodData.Remove(slotData);
         }
 
@@ -428,6 +432,38 @@
             }
         }
 
+        #endregion
+
+        #region Rod Updates
+        private void UpdateGraphicalRod(SlotData slotData)
+        {
+            var graphicalRod = CyNukeRodHelper.Find(gameObject, reactorRodData.FindIndex(a => a == slotData));
+
+            if (graphicalRod != null)
+            {
+                var uranium = graphicalRod.FindChild("PowerRod_Uranium")?.gameObject;
+
+                if (uranium != null)
+                {
+                    uranium.transform.localPosition = NewPostion(uranium, slotData);
+                }
+                else
+                {
+                    QuickLogger.Error($"PowerRod_Uranium not found in GameObject {graphicalRod.name}");
+                }
+            }
+            else
+            {
+                QuickLogger.Error($"GraphicalRod is null", true);
+            }
+        }
+
+        private Vector3 NewPostion(GameObject uranium, SlotData slotData)
+        {
+            if (uranium == null) return Vector3.zero;
+            var fuelPercentage = slotData.Charge / InitialReactorRodCharge;
+            return new Vector3(uranium.transform.localPosition.x, fuelPercentage, uranium.transform.localPosition.z);
+        }
         #endregion
 
         internal void UpdateUpgradeLevel(int upgradeLevel)
