@@ -62,6 +62,12 @@
             return Language.main.Get(UpgradedMsgKey);
         }
 
+        private const string InactiveRodKey = "CyNukeInactiveRod";
+        public static string InactiveRodMsg()
+        {
+            return Language.main.Get(InactiveRodKey);
+        }
+
         public static TechType TechTypeID { get; private set; }
 
         public static void PatchSMLHelper()
@@ -216,8 +222,9 @@
             LanguageHandler.SetLanguageLine(OnHoverNoPowerKey, "Cyclops Nuclear Reactor\nNo Power");
             LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active nuclear reactors");
             LanguageHandler.SetLanguageLine(NoPowerKey, "No Power");
-            LanguageHandler.SetLanguageLine(UpgradedMsgKey, "Nuclear reactors on the cyclops have been enhanced");
+            LanguageHandler.SetLanguageLine(UpgradedMsgKey, "Cyclops nuclear reactor has been enhanced");
             LanguageHandler.SetLanguageLine(CannotRemoveKey, "Too many active rods in nuclear reactor to remove enhancement");
+            LanguageHandler.SetLanguageLine(InactiveRodKey, "Inactive");
         }
     }
 }

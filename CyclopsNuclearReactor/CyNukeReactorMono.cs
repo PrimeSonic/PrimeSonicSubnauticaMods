@@ -13,13 +13,11 @@
         internal const float PowerMultiplier = 4.1f; // Rounded down from what the Base Nuclear Reactor provides
 
         internal const int MaxUpgradeLevel = 2;
+        internal const int ContainerHeight = 5;
         internal const int ContainerWidth = 2;
-        internal const int MinContainerHeight = 2;
-        internal const int MinSlots = ContainerWidth * MinContainerHeight;
-        internal const int HeightBonus = 4;
+        internal const int MaxSlots = ContainerHeight * ContainerWidth;
 
-        internal int ContainerHeight = 5;
-        internal int MaxSlots => ContainerWidth * ContainerHeight;
+        internal int MaxActiveSlots => 2 + lastKnownUpgradeLevel * 4;
 
         private int lastKnownUpgradeLevel = 0;
         private const float TextDelayInterval = 1.4f;
@@ -34,6 +32,7 @@
         private bool pdaIsOpen = false;
         private bool isLoadingSaveData = false;
         private bool isDepletingRod = false;
+        private int activeRods = 0;
 
         private Dictionary<InventoryItem, uGUI_ItemIcon> _slotMapping;
 
@@ -57,7 +56,7 @@
             }
         }
 
-        internal readonly List<SlotData> reactorRodData = new List<SlotData>(4);
+        internal readonly List<SlotData> reactorRodData = new List<SlotData>(MaxSlots);
 
         internal bool IsConstructed => _buildable != null && _buildable.constructed;
 
@@ -75,8 +74,10 @@
                 return 0f;
 
             float totalPower = 0;
-            foreach (SlotData slotData in reactorRodData)
+            for (int i = 0; i < this.MaxActiveSlots; i++)
             {
+                SlotData slotData = reactorRodData[i];
+
                 if (!slotData.HasPower())
                     continue;
 
@@ -91,8 +92,10 @@
             if (!this.IsConstructed)
                 return false;
 
-            foreach (SlotData slotData in reactorRodData)
+            for (int i = 0; i < this.MaxActiveSlots; i++)
             {
+                SlotData slotData = reactorRodData[i];
+
                 if (slotData.HasPower())
                     return true;
             }
@@ -111,8 +114,10 @@
             float totalPowerProduced = 0f;
 
             SlotData depletedRod = null;
-            foreach (SlotData slotData in reactorRodData)
+            for (int i = 0; i < this.MaxActiveSlots; i++)
             {
+                SlotData slotData = reactorRodData[i];
+
                 if (!slotData.HasPower())
                     continue;
 
@@ -133,6 +138,7 @@
                 RodsContainer.RemoveItem(depletedRod.Item, true);
                 GameObject.Destroy(depletedRod.Item.gameObject);
                 RodsContainer.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
+                activeRods--;
 
                 ErrorMessage.AddMessage(CyNukReactorBuildable.DepletedMessage());
 
@@ -159,7 +165,7 @@
             if (_saveData == null)
             {
                 string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CyNukeReactorSaveData(id, this.MaxSlots);
+                _saveData = new CyNukeReactorSaveData(id, MaxSlots);
             }
 
             InitializeRodsContainer();
@@ -344,8 +350,9 @@
             HandReticle main = HandReticle.main;
 
             int currentPower = Mathf.CeilToInt(GetTotalAvailablePower());
+
             string text = currentPower > 0
-                ? CyNukReactorBuildable.OnHoverPoweredText(currentPower, reactorRodData.Count, this.MaxSlots)
+                ? CyNukReactorBuildable.OnHoverPoweredText(currentPower, activeRods, this.MaxActiveSlots)
                 : CyNukReactorBuildable.OnHoverNoPowerText();
 
             main.SetInteractText(text);
@@ -366,6 +373,9 @@
 
         private void OnAddItem(InventoryItem item)
         {
+            if (item.item.GetTechType() == TechType.ReactorRod)
+                activeRods++;
+
             if (isLoadingSaveData)
                 return;
 
@@ -408,7 +418,7 @@
         {
             SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
 
-            if (slotData != null && slotData.HasPower())
+            if (slotData != null)
                 slotData.AddDisplayText(icon);
         }
 
@@ -419,12 +429,23 @@
 
             textDelay = Time.time + TextDelayInterval;
 
-            foreach (SlotData item in reactorRodData)
+            for (int i = 0; i < reactorRodData.Count; i++)
             {
-                if (!item.HasPower() || item.InfoDisplay == null)
+                SlotData item = reactorRodData[i];
+                if (item.InfoDisplay == null)
                     continue;
 
-                item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.FloorToInt(item.Charge));
+                if (item.HasPower())
+                {
+                    if (i < this.MaxActiveSlots)
+                        item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.FloorToInt(item.Charge));
+                    else
+                        item.InfoDisplay.text = CyNukReactorBuildable.InactiveRodMsg();
+                }
+                else
+                {
+                    item.InfoDisplay.text = CyNukReactorBuildable.NoPoweMessage();
+                }
             }
         }
 
@@ -438,23 +459,8 @@
             if (upgradeLevel == lastKnownUpgradeLevel)
                 return;
 
-            int nextHeight = MinContainerHeight + HeightBonus * upgradeLevel;
-
-            if (!isLoadingSaveData &&
-                lastKnownUpgradeLevel > upgradeLevel && // Getting smaller
-                reactorRodData.Count < nextHeight * ContainerWidth)
-            {
-                return; // Protect from accidents
-            }
-            else if (lastKnownUpgradeLevel < upgradeLevel) // Getting bigger
-            {
-                ErrorMessage.AddMessage(CyNukReactorBuildable.UpgradedMsg());
-            }
-
-            RodsContainer.Resize(ContainerWidth, ContainerHeight = nextHeight);
-            RodsContainer.Sort();
-
             lastKnownUpgradeLevel = upgradeLevel;
+            ErrorMessage.AddMessage(CyNukReactorBuildable.UpgradedMsg());
         }
 
         private static InventoryItem SpawnItem(TechType techTypeID)
@@ -463,11 +469,6 @@
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
-        }
-
-        internal static int CalculateTotalSlots(int upgradeLevel)
-        {
-            return ContainerWidth * (MinContainerHeight + HeightBonus * upgradeLevel);
         }
     }
 }
