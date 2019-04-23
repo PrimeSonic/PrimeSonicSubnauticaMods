@@ -463,6 +463,13 @@
             ErrorMessage.AddMessage(CyNukReactorBuildable.UpgradedMsg());
         }
 
+        private void OnDestroy()
+        {
+            Manager.CyNukeReactors.Remove(this);
+            ParentCyclops = null;
+            Manager = null;
+        }
+
         private static InventoryItem SpawnItem(TechType techTypeID)
         {
             var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
