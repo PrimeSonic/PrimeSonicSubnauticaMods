@@ -25,7 +25,8 @@
                 throw new ArgumentException($"{result} is empty");
             }
 
-            return AssetBundle.LoadFromFile(Path.Combine(Path.Combine(Environment.CurrentDirectory, "QMods"), Path.Combine(modName, modBundleName)));
+            return AssetBundle.LoadFromFile(Path.Combine(Path.Combine(Environment.CurrentDirectory, "QMods"), Path.Combine(modName, Path.Combine("Assets", modBundleName))));
         }
+
     }
 }

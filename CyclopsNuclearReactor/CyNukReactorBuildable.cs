@@ -78,7 +78,7 @@
                 throw new NullReferenceException("CyNukReactor has failed to retrieve the prefab from the asset bundle");
             }
 
-            main.Patch();            
+            main.Patch();
         }
 
         public CyNukReactorBuildable() : base("CyNukReactor", "Cyclops Nuclear Reactor", "A nuclear reactor re-designed to fit and function inside the Cyclops.")
@@ -163,7 +163,6 @@
             // MaterialHelpers.ApplyGlassShader("glass", prefab, 0.1f); //Temperately disabled until solution is found
             #endregion
         }
-
 
         /// <summary>
         /// Finds the prefab in the asset bundle

@@ -11,6 +11,7 @@
         internal Pickupable Item;
         internal Text InfoDisplay;
 
+
         public SlotData()
         {
             TechTypeID = TechType.None;
