@@ -2,6 +2,7 @@
 {
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using System.IO;
     using UnityEngine;
 
@@ -63,6 +64,8 @@
         private void AdditionalPatching()
         {
             TechTypeID = this.TechType;
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
+            CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
         }
     }
 }

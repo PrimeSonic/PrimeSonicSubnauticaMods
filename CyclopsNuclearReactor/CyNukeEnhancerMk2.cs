@@ -2,6 +2,7 @@
 {
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class CyNukeEnhancerMk2 : Craftable
@@ -50,6 +51,8 @@
         private void AdditionalPatching()
         {
             TechTypeID = this.TechType;
+            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
+            CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
         }
     }
 }

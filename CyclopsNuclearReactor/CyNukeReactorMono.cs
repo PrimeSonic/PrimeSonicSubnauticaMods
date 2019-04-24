@@ -33,7 +33,6 @@
         private bool pdaIsOpen = false;
         private bool isLoadingSaveData = false;
         private bool isDepletingRod = false;
-        private int activeRods = 0;
 
         private Dictionary<InventoryItem, uGUI_ItemIcon> _slotMapping;
 
@@ -53,7 +52,8 @@
                     if (slot.HasPower())
                         count++;
                 }
-                return count;
+
+                return Math.Min(count, this.MaxActiveSlots);
             }
         }
 
@@ -75,7 +75,8 @@
                 return 0f;
 
             float totalPower = 0;
-            for (int i = 0; i < this.MaxActiveSlots; i++)
+            int max = Math.Min(this.MaxActiveSlots, this.TotalItemCount);
+            for (int i = 0; i < max; i++)
             {
                 SlotData slotData = reactorRodData[i];
 
@@ -93,7 +94,8 @@
             if (!this.IsConstructed)
                 return false;
 
-            for (int i = 0; i < this.MaxActiveSlots; i++)
+            int max = Math.Min(this.MaxActiveSlots, this.TotalItemCount);
+            for (int i = 0; i < max; i++)
             {
                 SlotData slotData = reactorRodData[i];
 
@@ -115,7 +117,8 @@
             float totalPowerProduced = 0f;
 
             SlotData depletedRod = null;
-            for (int i = 0; i < this.MaxActiveSlots; i++)
+            int max = Math.Min(this.MaxActiveSlots, this.TotalItemCount);
+            for (int i = 0; i < max; i++)
             {
                 SlotData slotData = reactorRodData[i];
 
@@ -141,7 +144,6 @@
                 RodsContainer.RemoveItem(depletedRod.Item, true);
                 GameObject.Destroy(depletedRod.Item.gameObject);
                 RodsContainer.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
-                activeRods--;
 
                 ErrorMessage.AddMessage(CyNukReactorBuildable.DepletedMessage());
 
@@ -355,7 +357,7 @@
             int currentPower = Mathf.CeilToInt(GetTotalAvailablePower());
 
             string text = currentPower > 0
-                ? CyNukReactorBuildable.OnHoverPoweredText(currentPower, activeRods, this.MaxActiveSlots)
+                ? CyNukReactorBuildable.OnHoverPoweredText(currentPower, this.ActiveRodCount, this.MaxActiveSlots)
                 : CyNukReactorBuildable.OnHoverNoPowerText();
 
             main.SetInteractText(text);
@@ -376,9 +378,6 @@
 
         private void OnAddItem(InventoryItem item)
         {
-            if (item.item.GetTechType() == TechType.ReactorRod)
-                activeRods++;
-
             if (isLoadingSaveData)
                 return;
 
@@ -498,8 +497,10 @@
             if (upgradeLevel == lastKnownUpgradeLevel)
                 return;
 
+            if (upgradeLevel > 0)
+                ErrorMessage.AddMessage(CyNukReactorBuildable.UpgradedMsg());
+
             lastKnownUpgradeLevel = upgradeLevel;
-            ErrorMessage.AddMessage(CyNukReactorBuildable.UpgradedMsg());
         }
 
         private void OnDestroy()
