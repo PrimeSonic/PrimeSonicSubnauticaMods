@@ -70,6 +70,7 @@
     <Compile Include="CyNukeReactorSaveData.cs" />
     <Compile Include="CyNukeRodSaveData.cs" />
     <Compile Include="CyNukReactorBuildable.cs" />
+    <Compile Include="Helpers\CyNukeRodHelper.cs" />
     <Compile Include="Helpers\MaterialHelpers.cs" />
     <Compile Include="NumberFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -82,11 +83,17 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ModFolder\cynukreactorbundle">
+    <None Include="ModFolder\Assets\cynukreactorbundle">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ModFolder\Assets\CyNukeUpgrade1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ModFolder\Assets\CyNukeUpgrade2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ModFolder\Assets\CyNukReactor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

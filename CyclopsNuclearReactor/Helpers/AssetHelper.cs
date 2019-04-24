@@ -21,7 +21,7 @@
 
             if (modName.Equals(string.Empty) || modBundleName.Equals(string.Empty))
             {
-                var result = modName.Equals(string.Empty) ? nameof(modName) : nameof(modBundleName);
+                string result = modName.Equals(string.Empty) ? nameof(modName) : nameof(modBundleName);
                 throw new ArgumentException($"{result} is empty");
             }
 

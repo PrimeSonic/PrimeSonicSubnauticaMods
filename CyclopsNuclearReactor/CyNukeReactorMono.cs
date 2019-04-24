@@ -1,8 +1,7 @@
-﻿using CyclopsNuclearReactor.Helpers;
-
-namespace CyclopsNuclearReactor
+﻿namespace CyclopsNuclearReactor
 {
     using Common;
+    using CyclopsNuclearReactor.Helpers;
     using ProtoBuf;
     using System;
     using System.Collections.Generic;
@@ -382,13 +381,14 @@ namespace CyclopsNuclearReactor
 
             if (isLoadingSaveData)
                 return;
+
             reactorRodData.Add(new SlotData(InitialReactorRodCharge, item.item));
         }
 
         private void OnRemoveItem(InventoryItem item)
         {
             SlotData slotData = reactorRodData.Find(rod => rod.Item == item.item);
-            CyNukeRodHelper.EmptyRod(gameObject, reactorRodData.FindIndex(a => a == slotData));
+            CyNukeRodHelper.EmptyRod(this.gameObject, reactorRodData.FindIndex(a => a == slotData));
             reactorRodData.Remove(slotData);
         }
 
@@ -456,13 +456,14 @@ namespace CyclopsNuclearReactor
         #endregion
 
         #region Rod Updates
+
         private void UpdateGraphicalRod(SlotData slotData)
         {
-            var graphicalRod = CyNukeRodHelper.Find(gameObject, reactorRodData.FindIndex(a => a == slotData));
+            GameObject graphicalRod = CyNukeRodHelper.Find(this.gameObject, reactorRodData.FindIndex(a => a == slotData));
 
             if (graphicalRod != null)
             {
-                var uranium = graphicalRod.FindChild("PowerRod_Uranium")?.gameObject;
+                GameObject uranium = graphicalRod.FindChild("PowerRod_Uranium")?.gameObject;
 
                 if (uranium != null)
                 {
@@ -481,10 +482,12 @@ namespace CyclopsNuclearReactor
 
         private Vector3 NewPostion(GameObject uranium, SlotData slotData)
         {
-            if (uranium == null) return Vector3.zero;
-            var fuelPercentage = slotData.Charge / InitialReactorRodCharge;
+            if (uranium == null)
+                return Vector3.zero;
+            float fuelPercentage = slotData.Charge / InitialReactorRodCharge;
             return new Vector3(uranium.transform.localPosition.x, fuelPercentage, uranium.transform.localPosition.z);
         }
+
         #endregion
 
         internal void UpdateUpgradeLevel(int upgradeLevel)

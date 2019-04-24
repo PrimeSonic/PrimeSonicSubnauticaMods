@@ -1,8 +1,8 @@
-﻿using Common;
-using UnityEngine;
-
-namespace CyclopsNuclearReactor.Helpers
+﻿namespace CyclopsNuclearReactor.Helpers
 {
+    using Common;
+    using UnityEngine;
+
     public static class CyNukeRodHelper
     {
         public static GameObject Find(GameObject gameObject, int index)
@@ -13,10 +13,13 @@ namespace CyclopsNuclearReactor.Helpers
                 return null;
             }
 
-            var rod = gameObject.FindChild("model").FindChild("Rod_Slots").FindChild($"PowerRod_Item_{index}")
-                ?.gameObject;
+            GameObject rod = gameObject
+                                .FindChild("model")
+                                .FindChild("Rod_Slots")
+                                .FindChild($"PowerRod_Item_{index}")?.gameObject;
 
-            if (rod != null) return rod;
+            if (rod != null)
+                return rod;
 
             QuickLogger.Error($"Cannot find gameObject PowerRod_Item_{index}");
             return null;
@@ -24,7 +27,7 @@ namespace CyclopsNuclearReactor.Helpers
 
         public static void EmptyRod(GameObject gameObject, int index)
         {
-            var rod = Find(gameObject, index);
+            GameObject rod = Find(gameObject, index);
             rod.transform.localPosition = Vector3.zero;
         }
     }

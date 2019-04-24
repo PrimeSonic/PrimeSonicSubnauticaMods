@@ -6,9 +6,6 @@
 
     internal class CyNukeEnhancerHandler : TieredUpgradesHandlerCollection<int>
     {
-        private static readonly float errorDelay = 0f;
-        private const float delayInterval = 10f;
-
         private readonly TieredUpgradeHandler<int> tier1;
         private readonly TieredUpgradeHandler<int> tier2;
 
