@@ -56,6 +56,7 @@
                 {
                     new Ingredient(TechType.Magnetite, 1),
                     new Ingredient(TechType.CopperWire, 1),
+                    new Ingredient(TechType.Benzene, 1),
                     new Ingredient(TechType.Lead, 1),
                 }
             };

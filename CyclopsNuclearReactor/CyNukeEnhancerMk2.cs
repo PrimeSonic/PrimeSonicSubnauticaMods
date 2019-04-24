@@ -43,7 +43,8 @@
                 {
                     new Ingredient(CyNukeEnhancerMk1.TechTypeID, 1),
                     new Ingredient(TechType.WiringKit, 1),
-                    new Ingredient(TechType.Kyanite, 2),
+                    new Ingredient(TechType.Aerogel, 1),
+                    new Ingredient(TechType.Lead, 1),
                 }
             };
         }
