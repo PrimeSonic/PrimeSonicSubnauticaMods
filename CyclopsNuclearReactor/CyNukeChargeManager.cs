@@ -141,17 +141,43 @@
             if (CyNukeReactors.Count == 1)
                 return CyNukeReactors[0].PowerIndicatorString();
 
-            string value = string.Empty;
+            if (CyNukeReactors.Count == 2)
+                return $"{CyNukeReactors[0].PowerIndicatorString()}\n{CyNukeReactors[1].PowerIndicatorString()}";
 
+            string value = string.Empty;
             for (int i = 0; i < CyNukeReactors.Count; i++)
                 value += $"{CyNukeReactors[i].PowerIndicatorString()}\n";
 
             return value;
         }
 
+        private static readonly Color orange = new Color(1f, 0.5f, 0f);
+        private static readonly Color yelgren = new Color(0.5f, 1f, 0.25f);
+
         public Color GetIndicatorTextColor()
         {
-            return Color.white;
+            if (CyNukeReactors.Count == 0)
+                return Color.white;
+
+            int totalActiveRods = 0;
+            int maxRods = 0;
+
+            foreach (CyNukeReactorMono reactor in CyNukeReactors)
+            {
+                totalActiveRods += reactor.ActiveRodCount;
+                maxRods += reactor.MaxActiveSlots;
+            }
+
+            // All slots active
+            if (totalActiveRods == maxRods)
+                return Color.green;
+
+            // No slots active
+            if (totalActiveRods == 0)
+                return Color.white;
+
+            // Some slots depleted
+            return Color.yellow;
         }
 
         #endregion
