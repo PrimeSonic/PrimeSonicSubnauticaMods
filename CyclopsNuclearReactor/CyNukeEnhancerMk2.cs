@@ -39,6 +39,7 @@
         {
             return new TechData
             {
+                craftAmount = 1,
                 Ingredients =
                 {
                     new Ingredient(CyNukeEnhancerMk1.TechTypeID, 1),
@@ -53,7 +54,6 @@
         {
             TechTypeID = this.TechType;
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
-            CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
         }
     }
 }
