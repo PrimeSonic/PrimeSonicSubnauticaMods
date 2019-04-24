@@ -83,18 +83,16 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ModFolder\Assets\cynukreactorbundle">
+    <None Include="Assets\cynukreactorbundle">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ModFolder\Assets\CyNukeUpgrade1.png">
+    <Content Include="Assets\CyNukeUpgrade1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ModFolder\Assets\CyNukeUpgrade2.png">
+    <Content Include="Assets\CyNukeUpgrade2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ModFolder\Assets\CyNukReactor.png">
+    <Content Include="Assets\CyNukReactor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

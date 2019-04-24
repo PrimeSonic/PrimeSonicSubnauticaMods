@@ -151,9 +151,6 @@
             return value;
         }
 
-        private static readonly Color orange = new Color(1f, 0.5f, 0f);
-        private static readonly Color yelgren = new Color(0.5f, 1f, 0.25f);
-
         public Color GetIndicatorTextColor()
         {
             if (CyNukeReactors.Count == 0)
