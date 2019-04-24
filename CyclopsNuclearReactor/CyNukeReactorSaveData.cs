@@ -26,45 +26,14 @@
             this.Values.Clear();
         }
 
-        public IEnumerable<CyNukeRodSaveData> SlotData
+        public IEnumerable<CyNukeRodSaveData> SlotData => this.Values;
+
+        public void AddSlotData(IEnumerable<SlotData> slotDataCollection)
         {
-            get
+            foreach (SlotData slotData in slotDataCollection)
             {
-                if (this.Values.Count > MaxSlots)
-                {
-                    for (int i = 0; i < MaxSlots; i++)
-                        yield return this.Values[i];
-                }
-                else
-                {
-                    foreach (CyNukeRodSaveData data in this.Values)
-                        yield return data;
-                }
+                this.Values.Add(new CyNukeRodSaveData(slotData));
             }
-        }
-
-        public void AddRodData(TechType techType, float remainingCharge)
-        {
-            if (this.Values.Count == MaxSlots)
-                return;
-
-            this.Values.Add(new CyNukeRodSaveData
-            {
-                TechTypeID = techType,
-                RemainingCharge = remainingCharge
-            });
-        }
-
-        public void AddEmptySlot()
-        {
-            if (this.Values.Count == MaxSlots)
-                return;
-
-            this.Values.Add(new CyNukeRodSaveData
-            {
-                TechTypeID = TechType.None,
-                RemainingCharge = 0f
-            });
         }
 
         public void SaveData()

@@ -273,6 +273,7 @@
                 RodsContainer.Clear(false);
                 reactorRodData.Clear();
 
+                int nonEmptySlots = 0;
                 foreach (CyNukeRodSaveData rodData in _saveData.SlotData)
                 {
                     TechType techTypeID = rodData.TechTypeID;
@@ -284,14 +285,13 @@
                         if (spanwedItem != null)
                         {
                             InventoryItem rod = RodsContainer.AddItem(spanwedItem.item);
-                            SlotData slotData = new SlotData(rodData.RemainingCharge, rod.item);
-                            reactorRodData.Add(slotData);
-                            UpdateGraphicalRod(slotData);
+                            AddNewRod(rodData.RemainingCharge, rod.item);
+                            nonEmptySlots++;
                         }
                     }
                 }
 
-                QuickLogger.Debug($"Added {this.ActiveRodCount} items from save data");
+                QuickLogger.Debug($"Added {nonEmptySlots} items from save data");
 
                 isLoadingSaveData = false;
             }
@@ -311,19 +311,7 @@
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
             _saveData.ClearOldData();
-
-            foreach (SlotData slotData in reactorRodData)
-            {
-                if (slotData.TechTypeID == TechType.None)
-                {
-                    _saveData.AddEmptySlot();
-                }
-                else
-                {
-                    _saveData.AddRodData(slotData.TechTypeID, slotData.Charge);
-                }
-            }
-
+            _saveData.AddSlotData(reactorRodData);
             _saveData.SaveData();
         }
 
@@ -383,9 +371,7 @@
             if (isLoadingSaveData)
                 return;
 
-            SlotData slotData = new SlotData(InitialReactorRodCharge, item.item);
-            reactorRodData.Add(slotData);
-            UpdateGraphicalRod(slotData);
+            AddNewRod(InitialReactorRodCharge, item.item);
         }
 
         private void OnRemoveItem(InventoryItem item)
@@ -491,6 +477,13 @@
             return new Vector3(uranium.transform.localPosition.x, fuelPercentage, uranium.transform.localPosition.z);
         }
 
+        private void AddNewRod(float chargeLevel, Pickupable item)
+        {
+            var slotData = new SlotData(chargeLevel, item);
+            reactorRodData.Add(slotData);
+            UpdateGraphicalRod(slotData);
+        }
+
         #endregion
 
         internal void UpdateUpgradeLevel(int upgradeLevel)
@@ -509,7 +502,11 @@
 
         private void OnDestroy()
         {
-            Manager.CyNukeReactors.Remove(this);
+            if (Manager != null)
+                Manager.CyNukeReactors.Remove(this);
+            else
+                CyNukeChargeManager.RemoveReactor(this);
+
             ParentCyclops = null;
             Manager = null;
         }

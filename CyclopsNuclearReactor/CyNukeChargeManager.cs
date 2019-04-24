@@ -38,6 +38,14 @@
             return mgr.CyNukeReactors;
         }
 
+        internal static void RemoveReactor(CyNukeReactorMono reactor)
+        {
+            foreach (CyNukeChargeManager mgr in Managers)
+            {
+                mgr.CyNukeReactors.Remove(reactor);
+            }
+        }
+
         #endregion
 
         public const int MaxReactors = 2; // TODO make configurable

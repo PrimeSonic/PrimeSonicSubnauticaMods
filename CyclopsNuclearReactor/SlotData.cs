@@ -6,6 +6,8 @@
 
     internal class SlotData
     {
+        internal const float EmptySlotCharge = -1f;
+
         internal TechType TechTypeID;
         internal float Charge;
         internal Pickupable Item;
@@ -15,7 +17,7 @@
         public SlotData()
         {
             TechTypeID = TechType.None;
-            Charge = -1f;
+            Charge = EmptySlotCharge;
             Item = null;
             InfoDisplay = null;
         }

@@ -32,8 +32,8 @@
 
         private static ICollection<EmProperty> GetDefinitions => new List<EmProperty>()
         {
-            new EmProperty<int>(ItemIDKey, 0),
-            new EmProperty<float>(RemainingChargeKey, -1f)
+            new EmProperty<int>(ItemIDKey, (int)TechType.None),
+            new EmProperty<float>(RemainingChargeKey, SlotData.EmptySlotCharge)
         };
 
         public CyNukeRodSaveData(string keyName) : this(keyName, GetDefinitions)
@@ -42,6 +42,12 @@
 
         public CyNukeRodSaveData() : this(KeyName, GetDefinitions)
         {
+        }
+
+        public CyNukeRodSaveData(SlotData slotData) : this()
+        {
+            this.TechTypeID = slotData.TechTypeID;
+            this.RemainingCharge = slotData.Charge;
         }
 
         public CyNukeRodSaveData(string keyName, ICollection<EmProperty> definitions) : base(keyName, definitions)
