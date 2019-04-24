@@ -284,7 +284,9 @@
                         if (spanwedItem != null)
                         {
                             InventoryItem rod = RodsContainer.AddItem(spanwedItem.item);
-                            reactorRodData.Add(new SlotData(rodData.RemainingCharge, rod.item));
+                            SlotData slotData = new SlotData(rodData.RemainingCharge, rod.item);
+                            reactorRodData.Add(slotData);
+                            UpdateGraphicalRod(slotData);
                         }
                     }
                 }
@@ -381,7 +383,9 @@
             if (isLoadingSaveData)
                 return;
 
-            reactorRodData.Add(new SlotData(InitialReactorRodCharge, item.item));
+            SlotData slotData = new SlotData(InitialReactorRodCharge, item.item);
+            reactorRodData.Add(slotData);
+            UpdateGraphicalRod(slotData);
         }
 
         private void OnRemoveItem(InventoryItem item)
