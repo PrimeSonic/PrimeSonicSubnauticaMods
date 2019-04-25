@@ -27,9 +27,9 @@
         }
 
         private const string OnHoverPoweredKey = "CyNukeOnHover";
-        public static string OnHoverPoweredText(int currentPower, int rods, int maxRods)
+        public static string OnHoverPoweredText(string currentPower, int rods, int maxRods)
         {
-            return Language.main.GetFormat<int, int, int>(OnHoverPoweredKey, currentPower, rods, maxRods);
+            return Language.main.GetFormat<string, int, int>(OnHoverPoweredKey, currentPower, rods, maxRods);
         }
 
         private const string OnHoverNoPowerKey = "CyNukeHoverUnpowered";

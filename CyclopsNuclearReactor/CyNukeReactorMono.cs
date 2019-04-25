@@ -343,7 +343,7 @@
             int currentPower = Mathf.CeilToInt(GetTotalAvailablePower());
 
             string text = currentPower > 0
-                ? CyNukReactorBuildable.OnHoverPoweredText(currentPower, this.ActiveRodCount, this.MaxActiveSlots)
+                ? CyNukReactorBuildable.OnHoverPoweredText(NumberFormatter.FormatNumber(currentPower), this.ActiveRodCount, this.MaxActiveSlots)
                 : CyNukReactorBuildable.OnHoverNoPowerText();
 
             main.SetInteractText(text);
