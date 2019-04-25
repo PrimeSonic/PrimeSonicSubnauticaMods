@@ -213,9 +213,20 @@
                 return;
             }
 
+            // get the handler from this cyclops
+            UpgradeModuleEventHandler upgradeModuleEventHandler = Cyclops.gameObject.GetComponentInChildren<UpgradeModuleEventHandler>();
+            
+            if (upgradeModuleEventHandler == null)
+            {
+                QuickLogger.Error("UpgradeModuleEventHandler is null!");
+            }
+            
             foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
                 upgradeType.UpgradesCleared(Cyclops);
 
+            // triggering the remove event on this cyclops
+            upgradeModuleEventHandler.onUpgradeModuleRemove.Trigger(Cyclops);
+            
             var foundUpgrades = new List<TechType>();
 
             foreach (UpgradeSlot upgradeSlot in this.UpgradeSlots)
@@ -228,6 +239,9 @@
                 if (techTypeInSlot == TechType.None)
                     continue;
 
+                // triggering the add event on this cyclops
+                upgradeModuleEventHandler.onUpgradeModuleAdd.Trigger(new UpgradeInfo(Cyclops, techTypeInSlot));
+                
                 foundUpgrades.Add(techTypeInSlot);
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
