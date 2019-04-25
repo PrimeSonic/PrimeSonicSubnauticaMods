@@ -11,7 +11,7 @@
     internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
         internal const float InitialReactorRodCharge = 10000f; // Half of what the Base Nuclear Reactor provides
-        internal const float PowerMultiplier = 4.1f; // Rounded down from what the Base Nuclear Reactor provides
+        internal const float PowerMultiplier = 4.05f; // Rounded down and slightly reduced from what the Base Nuclear Reactor provides
 
         internal const int MaxUpgradeLevel = 2;
         internal const int ContainerHeight = 5;
@@ -241,13 +241,9 @@
         private bool IsAllowedToAdd(Pickupable pickupable, bool verbose)
         {
             TechType techType = pickupable.GetTechType();
-            return techType == TechType.ReactorRod ||
-                   (DepletedRodsAllowed() && techType == TechType.DepletedReactorRod);
-        }
-
-        private bool DepletedRodsAllowed()
-        {
-            return isLoadingSaveData || isDepletingRod;
+            return techType == TechType.ReactorRod || // Normal case
+                   ((isLoadingSaveData || isDepletingRod) && // When depleted rods are allowed
+                   techType == TechType.DepletedReactorRod);
         }
 
         private bool IsAllowedToRemove(Pickupable pickupable, bool verbose)
@@ -405,6 +401,8 @@
 
                 AddDisplayText(item, icon);
             }
+
+            UpdateDisplayText(true);
         }
 
         private void AddDisplayText(InventoryItem item, uGUI_ItemIcon icon)
@@ -415,29 +413,40 @@
                 slotData.AddDisplayText(icon);
         }
 
-        private void UpdateDisplayText()
+        private void UpdateDisplayText(bool force = false)
         {
-            if (Time.time < textDelay)
-                return; // Slow down the text update
+            if (!force)
+            {
+                if (Time.time < textDelay)
+                    return; // Slow down the text update
 
-            textDelay = Time.time + TextDelayInterval;
+                textDelay = Time.time + TextDelayInterval;
+            }
 
             for (int i = 0; i < reactorRodData.Count; i++)
             {
                 SlotData item = reactorRodData[i];
+
                 if (item.InfoDisplay == null)
                     continue;
 
                 if (item.HasPower())
                 {
                     if (i < this.MaxActiveSlots)
-                        item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.FloorToInt(item.Charge));
+                    {
+                        item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.CeilToInt(item.Charge));
+                        item.InfoDisplay.color = Color.white;
+                    }
                     else
+                    {
                         item.InfoDisplay.text = CyNukReactorBuildable.InactiveRodMsg();
+                        item.InfoDisplay.color = Color.yellow;
+                    }
                 }
                 else
                 {
                     item.InfoDisplay.text = CyNukReactorBuildable.NoPoweMessage();
+                    item.InfoDisplay.color = Color.red;
                 }
             }
         }

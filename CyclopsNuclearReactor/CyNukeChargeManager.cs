@@ -48,7 +48,7 @@
 
         #endregion
 
-        public const int MaxReactors = 2; // TODO make configurable
+        public const int MaxReactors = 2;
 
         public readonly SubRoot Cyclops;
         public readonly int InstanceID;

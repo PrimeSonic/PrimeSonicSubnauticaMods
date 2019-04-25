@@ -6,6 +6,8 @@
 
     internal class SlotData
     {
+        private static readonly Font arialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+
         internal const float EmptySlotCharge = -1f;
 
         internal TechType TechTypeID;
@@ -39,7 +41,6 @@
         public void AddDisplayText(uGUI_ItemIcon icon)
         {
             // This code was made possible with the help of Waisie Milliams Hah
-            var arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
             var textGO = new GameObject("EnergyLabel");
 
@@ -47,8 +48,8 @@
             textGO.AddComponent<Text>();
 
             Text text = textGO.GetComponent<Text>();
-            text.font = arial;
-            text.material = arial.material;
+            text.font = arialFont;
+            text.material = arialFont.material;
             text.text = string.Empty;
             text.fontSize = 16;
             text.alignment = TextAnchor.MiddleCenter;

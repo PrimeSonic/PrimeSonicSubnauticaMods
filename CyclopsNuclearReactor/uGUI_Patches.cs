@@ -1,12 +1,18 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Harmony;
+    using System;
     using System.Collections.Generic;
+    using System.Reflection;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
     [HarmonyPatch("OnOpenPDA")]
     internal class UGUI_InventoryTab_OnOpenPDA_Patcher
     {
+        private static readonly Type uGUIContainerType = typeof(uGUI_ItemsContainer);
+        private static readonly FieldInfo containerField = AccessTools.Field(uGUIContainerType, "container");
+        private static readonly FieldInfo itemsField = AccessTools.Field(uGUIContainerType, "items");
+
         [HarmonyPostfix]
         internal static void Postfix(uGUI_InventoryTab __instance)
         {
@@ -24,7 +30,7 @@
             if (storageUI == null)
                 return; // Not an equipment container
 
-            var container = (ItemsContainer)AccessTools.Field(typeof(uGUI_ItemsContainer), "container").GetValue(storageUI);
+            var container = (ItemsContainer)containerField.GetValue(storageUI);
 
             if (container == null)
                 return; // Safety check
@@ -45,7 +51,7 @@
             if (reactor == null)
                 return; // Didn't find the reactor we were looking for. Could it be on another cyclops?
 
-            var lookup = (Dictionary<InventoryItem, uGUI_ItemIcon>)AccessTools.Field(typeof(uGUI_ItemsContainer), "items").GetValue(storageUI);
+            var lookup = (Dictionary<InventoryItem, uGUI_ItemIcon>)itemsField.GetValue(storageUI);
             reactor.ConnectToContainer(lookup); // Found!
         }
     }
