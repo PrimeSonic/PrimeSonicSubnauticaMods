@@ -3,14 +3,17 @@
     using Harmony;
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("OnPlayerEntered")]
-    internal class SubRoot_OnPlayerEntered_BeQuiet
-    {        
+    [HarmonyPatch("Awake")]
+    internal class SubRoot_Awake
+    {
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
-            var mgr = CyNukeChargeManager.GetManager(__instance);
-            mgr.SyncReactorsExternally();
+            if (__instance.isCyclops)
+            {
+                var mgr = CyNukeChargeManager.GetManager(__instance);
+                mgr.SyncReactorsExternally();
+            }
         }
     }
 }

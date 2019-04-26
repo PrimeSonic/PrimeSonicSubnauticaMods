@@ -235,6 +235,29 @@
 
                 RodsContainer.onAddItem += OnAddItem;
                 RodsContainer.onRemoveItem += OnRemoveItem;
+
+                RodsContainer.onChangeItemPosition += RodsContainer_onChangeItemPosition;
+            }
+        }
+
+        private void RodsContainer_onChangeItemPosition(InventoryItem item)
+        {
+            RefreshAllRods();
+        }
+
+        private void RefreshAllRods()
+        {
+            for (int i = 0; i < MaxSlots; i++)
+            {
+                if (i <= reactorRodData.Count - 1)
+                {
+                    SlotData slotData = reactorRodData[i];
+                    UpdateGraphicalRod(slotData);
+                }
+                else
+                {
+                    CyNukeRodHelper.EmptyRod(this.gameObject,i);
+                }
             }
         }
 
@@ -367,7 +390,7 @@
             if (isLoadingSaveData)
                 return;
 
-            AddNewRod(InitialReactorRodCharge, item.item);
+            AddNewRod(item.item.GetTechType() == TechType.DepletedReactorRod ? 0 : InitialReactorRodCharge, item.item);
         }
 
         private void OnRemoveItem(InventoryItem item)
@@ -483,7 +506,10 @@
             if (uranium == null)
                 return Vector3.zero;
             float fuelPercentage = slotData.Charge / InitialReactorRodCharge;
-            return new Vector3(uranium.transform.localPosition.x, fuelPercentage, uranium.transform.localPosition.z);
+
+            Vector3 positon = new Vector3(uranium.transform.localPosition.x, fuelPercentage,
+                uranium.transform.localPosition.z);
+            return positon;
         }
 
         private void AddNewRod(float chargeLevel, Pickupable item)

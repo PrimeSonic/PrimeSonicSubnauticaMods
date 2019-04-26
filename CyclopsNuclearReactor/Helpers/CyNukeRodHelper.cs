@@ -27,8 +27,12 @@
 
         public static void EmptyRod(GameObject gameObject, int index)
         {
-            GameObject rod = Find(gameObject, index);
-            rod.transform.localPosition = Vector3.zero;
+            GameObject uranium = Find(gameObject, index).FindChild("PowerRod_Uranium")?.gameObject;
+
+            if (uranium != null)
+            {
+                uranium.transform.localPosition = new Vector3(uranium.transform.localPosition.x, 0, uranium.transform.localPosition.z);
+            }
         }
     }
 }
