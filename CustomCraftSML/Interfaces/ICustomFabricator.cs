@@ -4,7 +4,7 @@
     using CustomCraft2SML.Serialization.Entries;
     using UnityEngine;
 
-    public interface ICustomFabricator<Tab, Moved, Added, Alias, Food> : IAliasRecipe
+    internal interface ICustomFabricator<Tab, Moved, Added, Alias, Food> : IAliasRecipe
         where Tab : EmPropertyCollection, ICraftingTab, new()
         where Moved : EmPropertyCollection, IMovedRecipe, new()        
         where Added : EmPropertyCollection, IAddedRecipe, new()

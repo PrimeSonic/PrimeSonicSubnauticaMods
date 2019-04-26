@@ -4,7 +4,7 @@
     using System;
     using System.Collections.Generic;
 
-    public abstract class EmPropertyCollection : EmProperty
+    internal abstract class EmPropertyCollection : EmProperty
     {
         public EmProperty this[string key]
         {

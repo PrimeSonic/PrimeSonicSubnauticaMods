@@ -7,7 +7,7 @@
     using CustomCraft2SML.PublicAPI;
     using SMLHelper.V2.Handlers;
 
-    public abstract class EmTechTyped : EmPropertyCollection, ITechTyped
+    internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped
     {
         protected const string ItemIdKey = "ItemID";
 

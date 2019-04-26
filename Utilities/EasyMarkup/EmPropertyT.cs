@@ -4,7 +4,7 @@
     using System;
     using System.Globalization;
 
-    public class EmProperty<T> : EmProperty, IValueConfirmation where T : IConvertible
+    internal class EmProperty<T> : EmProperty, IValueConfirmation where T : IConvertible
     {
         private bool hasValue = false;
         public string InLineComment { get; set; } = null;

@@ -2,7 +2,7 @@
 {
     using System;
 
-    public static class EmUtils
+    internal static class EmUtils
     {
         public static bool Deserialize<T>(this T emProperty, string serializedData) where T : EmProperty
         {

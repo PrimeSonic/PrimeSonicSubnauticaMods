@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using Common;
 
-    public class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation 
+    internal class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation 
         where ListedType : EmPropertyCollection, new()
     {
         public override bool HasValue => Count > 0;

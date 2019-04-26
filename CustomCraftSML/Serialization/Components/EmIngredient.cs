@@ -5,7 +5,7 @@
     using Common.EasyMarkup;
     using SMLHelper.V2.Crafting;
 
-    public class EmIngredient : EmTechTyped
+    internal class EmIngredient : EmTechTyped
     {
         public const short Max = 25;
         public const short Min = 1;
