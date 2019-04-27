@@ -101,5 +101,11 @@
             foreach (CyclopsManager mgr in Managers)
                 mgr.ChargeManager.SyncBioReactors();
         }
+
+        internal static void RemoveReactor(CyBioReactorMono cyBioReactorMono)
+        {
+            foreach (CyclopsManager mgr in Managers)
+                mgr.BioReactors.Remove(cyBioReactorMono);
+        }
     }
 }

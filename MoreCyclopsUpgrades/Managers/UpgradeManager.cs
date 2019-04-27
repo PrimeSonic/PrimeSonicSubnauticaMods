@@ -91,7 +91,7 @@
             this.Manager = manager;
 
             UpgradeManagerInitializing?.Invoke();
-            
+
             PowerManager powerManager = this.Manager.PowerManager;
             powerManager.MaxSpeedModules = ModConfig.Settings.MaxSpeedModules();
 
@@ -144,7 +144,6 @@
                 powerManager.SpeedBoosters = speed;
                 return speed;
             });
-
         }
 
         private void RegisterUpgradeHandlers()
@@ -153,13 +152,17 @@
             foreach (HandlerCreator upgradeHandlerCreator in ReusableUpgradeHandlers)
             {
                 UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
-                upgrade.RegisterSelf(KnownsUpgradeModules);
+
+                if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
+                    upgrade.RegisterSelf(KnownsUpgradeModules);
             }
 
             foreach (HandlerCreator upgradeHandlerCreator in OneTimeUseUpgradeHandlers)
             {
                 UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
-                upgrade.RegisterSelf(KnownsUpgradeModules);
+
+                if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
+                    upgrade.RegisterSelf(KnownsUpgradeModules);
             }
 
             OneTimeUseUpgradeHandlers.Clear();

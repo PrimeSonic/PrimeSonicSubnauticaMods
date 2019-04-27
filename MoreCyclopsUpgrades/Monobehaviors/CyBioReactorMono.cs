@@ -55,8 +55,6 @@
         public bool ProducingPower => this.IsContructed && this.MaterialsProcessing.Count > 0;
         public bool HasPower => this.IsContructed && Battery._charge > 0f;
 
-        public bool OverLimit = false;
-
         #region Initialization
 
         private void Start()
@@ -154,9 +152,6 @@
 
         private void Update() // The all important Update method
         {
-            if (OverLimit)
-                return;
-
             if (this.ProducingPower)
             {
                 float powerDeficit = Battery._capacity - Battery._charge;
@@ -183,27 +178,12 @@
                 return;
 
             HandReticle main = HandReticle.main;
-
-            if (OverLimit)
-            {
-                main.SetInteractText(CyBioReactor.OverLimitString());
-            }
-            else
-            {
-                main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(Battery._charge), Battery._capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
-            }
-
+            main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(Battery._charge), Battery._capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
         public void OnHandClick(GUIHand guiHand)
         {
-            if (OverLimit)
-            {
-                ErrorMessage.AddMessage(CyBioReactor.OverLimitString());
-                return;
-            }
-
             PDA pda = Player.main.GetPDA();
             Inventory.main.SetUsedStorage(Container);
             pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
@@ -277,9 +257,6 @@
         {
             if (isLoadingSaveData)
                 return true;
-
-            if (OverLimit)
-                return false;
 
             if (pickupable != null)
             {
@@ -508,6 +485,17 @@
             lastKnownBioBooster = boosterCount;
 
             return true;
+        }
+
+        private void OnDestroy()
+        {
+            if (Manager != null)
+                Manager.BioReactors.Remove(this);
+            else
+                CyclopsManager.RemoveReactor(this);
+
+            ParentCyclops = null;
+            Manager = null;
         }
 
         private class ReactorStats

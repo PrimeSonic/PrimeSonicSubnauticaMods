@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Buildables
 {
+    using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.Monobehaviors;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -48,6 +49,18 @@
 
         public override GameObject GetGameObject()
         {
+            SubRoot cyclops = Player.main.currentSub;
+            if (cyclops != null)
+            {
+                var mgr = CyclopsManager.GetAllManagers(cyclops);
+
+                if (mgr.BioReactors.Count >= mgr.ChargeManager.MaxBioReactors)
+                {
+                    ErrorMessage.AddMessage(OverLimitString());
+                    return null;
+                }
+            }
+
             // Instantiate Fabricator object
             var prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.SpecimenAnalyzer));
             GameObject.DestroyImmediate(prefab.GetComponentInChildren<SpecimenAnalyzerBase>()); // Don't need this
@@ -120,7 +133,7 @@
         {
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
             LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
-            LanguageHandler.SetLanguageLine(OverLimitKey, "Bioreactor Deactivated. Too many active Bioreactors.");
+            LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");            
         }
     }
 }

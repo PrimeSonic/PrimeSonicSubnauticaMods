@@ -25,6 +25,8 @@
         internal BatteryUpgradeHandler NuclearCharger;
         internal BioBoosterUpgradeHandler BioBoosters;
 
+        internal int MaxBioReactors => BioCharging.MaxBioReactors;
+
         internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
         private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
 

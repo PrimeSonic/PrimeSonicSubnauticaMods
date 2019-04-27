@@ -1,11 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
-    using Common;
     using Harmony;
     using Managers;
-    using MoreCyclopsUpgrades.SaveData;
-    using SMLHelper.V2.Utility;
-    using UnityEngine;
 
     [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
@@ -56,7 +52,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            var cyclopsLife = (LiveMixin)__instance.GetInstanceField("live");
+            LiveMixin cyclopsLife = __instance.live;
 
             if (cyclopsLife == null || !cyclopsLife.IsAlive())
                 return true; // safety check
@@ -96,22 +92,25 @@
         [HarmonyPrefix]
         public static void Prefix(ref SubRoot __instance)
         {
-            if (firstEventDone || __instance.voiceNotificationManager is null)
+            if (firstEventDone)
+                return;
+
+            if (reference != null || __instance.voiceNotificationManager == null)
                 return;
 
             reference = __instance.voiceNotificationManager;
             __instance.voiceNotificationManager = null;
-
         }
 
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
-            if (!firstEventDone && __instance.voiceNotificationManager is null)
+            if (reference != null && __instance.voiceNotificationManager == null)
             {
                 __instance.voiceNotificationManager = reference;
-                firstEventDone = true;
             }
+
+            firstEventDone = true;
         }
     }
 }
