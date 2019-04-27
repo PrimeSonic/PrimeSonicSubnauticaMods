@@ -63,6 +63,9 @@
         }
 
         private const string InactiveRodKey = "CyNukeInactiveRod";
+
+        internal const string PowerIndicatorIconID = "CyNukReactorHUD";
+
         public static string InactiveRodMsg()
         {
             return Language.main.Get(InactiveRodKey);
@@ -224,6 +227,7 @@
             LanguageHandler.SetLanguageLine(UpgradedMsgKey, "Cyclops nuclear reactor has been enhanced");
             LanguageHandler.SetLanguageLine(CannotRemoveKey, "Too many active rods in nuclear reactor to remove enhancement");
             LanguageHandler.SetLanguageLine(InactiveRodKey, "Inactive");
+            SpriteHandler.RegisterSprite(SpriteManager.Group.Category, PowerIndicatorIconID, DirectoryHelper.GrabFromAssetsDirectory("CyclopsNuclearReactor", "CyNukReactorHUD.png"));
         }
     }
 }

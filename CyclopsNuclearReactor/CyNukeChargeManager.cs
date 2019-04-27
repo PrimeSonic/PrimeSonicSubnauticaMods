@@ -51,9 +51,10 @@
         public const int MaxReactors = 2;
 
         public readonly SubRoot Cyclops;
+
         public readonly int InstanceID;
 
-        private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(CyNukReactorBuildable.TechTypeID);
+        private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, CyNukReactorBuildable.PowerIndicatorIconID);
 
         public readonly List<CyNukeReactorMono> CyNukeReactors = new List<CyNukeReactorMono>();
 
