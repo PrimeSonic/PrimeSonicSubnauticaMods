@@ -53,6 +53,8 @@
         public readonly SubRoot Cyclops;
 
         public readonly int InstanceID;
+        internal CyNukeEnhancerHandler UpgradeHandler;
+        internal int UpgradeLevel => UpgradeHandler == null ? 0 : UpgradeHandler.HighestValue;
 
         private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, CyNukReactorBuildable.PowerIndicatorIconID);
 

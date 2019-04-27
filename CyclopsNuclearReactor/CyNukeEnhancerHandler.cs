@@ -6,18 +6,29 @@
 
     internal class CyNukeEnhancerHandler : TieredUpgradesHandlerCollection<int>
     {
+        private const int NoUpgradesValue = 0;
+        private const int Mk1UpgradeValue = 1;
+        private const int Mk2UpgradeValue = 2;
+
         private readonly TieredUpgradeHandler<int> tier1;
         private readonly TieredUpgradeHandler<int> tier2;
 
-        public CyNukeEnhancerHandler() : base(0)
+        public CyNukeEnhancerHandler() : base(NoUpgradesValue)
         {
             // CyNukeEnhancerMk1
-            tier1 = CreateTier(CyNukeEnhancerMk1.TechTypeID, 1);
+            tier1 = CreateTier(CyNukeEnhancerMk1.TechTypeID, Mk1UpgradeValue);
             tier1.MaxCount = 1;
 
             // CyNukeEnhancerMk2
-            tier2 = CreateTier(CyNukeEnhancerMk2.TechTypeID, 2);
+            tier2 = CreateTier(CyNukeEnhancerMk2.TechTypeID, Mk2UpgradeValue);
             tier2.MaxCount = 1;
+
+            OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
+            {
+                var mgr = CyNukeChargeManager.GetManager(cyclops);
+                mgr.UpgradeHandler = this; // Link this to the upgrade manager
+                OnUpgradeCounted = null; // This method only needs to be called once
+            };
 
             // Collection
             OnFinishedUpgrades += (SubRoot cyclops) =>

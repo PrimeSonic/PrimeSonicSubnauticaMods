@@ -212,6 +212,8 @@
             Manager = manager ?? CyNukeChargeManager.GetManager(cyclops);
             Manager.AddReactor(this);
 
+            UpdateUpgradeLevel(Manager.UpgradeLevel);
+
             QuickLogger.Debug("Cyclops Nuclear Reactor has been connected", true);
         }
 
