@@ -71,6 +71,7 @@
     <Compile Include="CyNukeRodSaveData.cs" />
     <Compile Include="CyNukReactorBuildable.cs" />
     <Compile Include="Helpers\CyNukeRodHelper.cs" />
+    <Compile Include="Helpers\DirectoryHelper.cs" />
     <Compile Include="Helpers\MaterialHelpers.cs" />
     <Compile Include="NumberFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

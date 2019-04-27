@@ -1,16 +1,17 @@
-﻿using System;
-using System.IO;
-
-namespace CyclopsNuclearReactor.Helpers
+﻿namespace CyclopsNuclearReactor.Helpers
 {
+    using System;
+    using System.IO;
+
     public static class DirectoryHelper
     {
         public static string GrabFromAssetsDirectory(string modName, string file)
         {
-            var path = Path.Combine(Path.Combine(Environment.CurrentDirectory, "QMods"),
+            string path = Path.Combine(Path.Combine(Environment.CurrentDirectory, "QMods"),
                 Path.Combine(modName, Path.Combine("Assets", file)));
 
-            if (!File.Exists(path)) throw new FileNotFoundException();
+            if (!File.Exists(path))
+                throw new FileNotFoundException();
 
             return path;
         }

@@ -54,7 +54,7 @@
 
         public readonly int InstanceID;
 
-        private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, "CyNukReactorHUD");
+        private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, CyNukReactorBuildable.PowerIndicatorIconID);
 
         public readonly List<CyNukeReactorMono> CyNukeReactors = new List<CyNukeReactorMono>();
 
