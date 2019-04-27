@@ -37,7 +37,7 @@
         private CyBioReactorSaveData SaveData;
 
         public SubRoot ParentCyclops;
-        internal CyclopsManager Manager;
+        internal ChargeManager Manager;
         public Constructable Buildable;
         public ItemsContainer Container;
         public Battery Battery;
@@ -394,21 +394,21 @@
 
         #endregion 
 
-        public void ConnectToCyclops(SubRoot parentCyclops, CyclopsManager manager = null)
+        public void ConnectToCyclops(SubRoot parentCyclops, ChargeManager manager = null)
         {
             if (ParentCyclops != null)
                 return;
 
             ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            Manager = manager ?? CyclopsManager.GetAllManagers(parentCyclops);
+            Manager = manager ?? CyclopsManager.GetChargeManager(parentCyclops);
 
-            if (!Manager.ChargeManager.CyBioReactors.Contains(this))
+            if (!Manager.CyBioReactors.Contains(this))
             {
-                Manager.ChargeManager.CyBioReactors.Add(this);
+                Manager.CyBioReactors.Add(this);
             }
 
-            UpdateBoosterCount(Manager.ChargeManager.BioBoosters.Count);
+            UpdateBoosterCount(Manager.BioBoosters.Count);
             QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 
@@ -490,7 +490,7 @@
         private void OnDestroy()
         {
             if (Manager != null)
-                Manager.BioReactors.Remove(this);
+                Manager.CyBioReactors.Remove(this);
             else
                 CyclopsManager.RemoveReactor(this);
 

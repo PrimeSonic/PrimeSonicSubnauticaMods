@@ -52,9 +52,9 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                var mgr = CyclopsManager.GetAllManagers(cyclops);
+                ChargeManager mgr = CyclopsManager.GetChargeManager(cyclops);
 
-                if (mgr.BioReactors.Count >= mgr.ChargeManager.MaxBioReactors)
+                if (mgr.CyBioReactors.Count >= mgr.MaxBioReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitString());
                     return null;
@@ -133,7 +133,7 @@
         {
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
             LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
-            LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");            
+            LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");
         }
     }
 }
