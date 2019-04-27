@@ -245,7 +245,11 @@
 
             rechargeSkip = 0;
 
-            float powerDeficit = Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower();
+            // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
+            // This is so that each charge can decide what to do individually rather than skip the entire charging cycle all together.
+            float powerDeficit = GameModeUtils.RequiresPower()
+                                 ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
+                                 : 0f;
 
             Manager.HUDManager.UpdateTextVisibility();
 
