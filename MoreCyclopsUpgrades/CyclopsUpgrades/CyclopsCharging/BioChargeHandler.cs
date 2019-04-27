@@ -10,14 +10,14 @@
 
     internal class BioChargeHandler : ICyclopsCharger
     {
-        private const float BioReactorRateLimiter = 0.85f;
+        private const float BioReactorRateLimiter = 0.90f;
 
         private readonly ChargeManager ChargeManager;
         private BioBoosterUpgradeHandler BioBoosters => ChargeManager.BioBoosters;
 
         private List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
 
-        private readonly int MaxBioReactors = ModConfig.Settings.MaxBioReactors();
+        internal readonly int MaxBioReactors = ModConfig.Settings.MaxBioReactors();
         internal bool ProducingPower = false;
 
         private float totalBioCharge = 0f;
@@ -72,16 +72,11 @@
                 if (poweredReactors < MaxBioReactors)
                 {
                     poweredReactors++;
-                    reactor.OverLimit = false;
 
                     charge += reactor.GetBatteryPower(PowerManager.BatteryDrainRate * BioReactorRateLimiter, requestedPower);
 
                     tempBioCharge += reactor.Battery._charge;
                     tempBioCapacity = reactor.Battery._capacity;
-                }
-                else
-                {
-                    reactor.OverLimit = true;
                 }
             }
 

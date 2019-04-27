@@ -12,6 +12,7 @@
         public readonly ChargeManager ChargeManager;
 
         public List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
+        public int TotalPowerChargers => PowerManager.PowerChargers.Count;
 
         public readonly SubRoot Cyclops;
 
@@ -43,6 +44,11 @@
         public static PowerManager GetPowerManager(SubRoot cyclops)
         {
             return GetManager(cyclops.GetInstanceID(), cyclops)?.PowerManager;
+        }
+
+        public static ChargeManager GetChargeManager(SubRoot cyclops)
+        {
+            return GetManager(cyclops.GetInstanceID(), cyclops)?.ChargeManager;
         }
 
         public static List<CyBioReactorMono> GetBioReactors(SubRoot cyclops)
@@ -100,6 +106,12 @@
         {
             foreach (CyclopsManager mgr in Managers)
                 mgr.ChargeManager.SyncBioReactors();
+        }
+
+        internal static void RemoveReactor(CyBioReactorMono cyBioReactorMono)
+        {
+            foreach (CyclopsManager mgr in Managers)
+                mgr.BioReactors.Remove(cyBioReactorMono);
         }
     }
 }

@@ -37,7 +37,7 @@
         private CyBioReactorSaveData SaveData;
 
         public SubRoot ParentCyclops;
-        internal CyclopsManager Manager;
+        internal ChargeManager Manager;
         public Constructable Buildable;
         public ItemsContainer Container;
         public Battery Battery;
@@ -54,8 +54,6 @@
 
         public bool ProducingPower => this.IsContructed && this.MaterialsProcessing.Count > 0;
         public bool HasPower => this.IsContructed && Battery._charge > 0f;
-
-        public bool OverLimit = false;
 
         #region Initialization
 
@@ -154,9 +152,6 @@
 
         private void Update() // The all important Update method
         {
-            if (OverLimit)
-                return;
-
             if (this.ProducingPower)
             {
                 float powerDeficit = Battery._capacity - Battery._charge;
@@ -183,27 +178,12 @@
                 return;
 
             HandReticle main = HandReticle.main;
-
-            if (OverLimit)
-            {
-                main.SetInteractText(CyBioReactor.OverLimitString());
-            }
-            else
-            {
-                main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(Battery._charge), Battery._capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
-            }
-
+            main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(Battery._charge), Battery._capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
         public void OnHandClick(GUIHand guiHand)
         {
-            if (OverLimit)
-            {
-                ErrorMessage.AddMessage(CyBioReactor.OverLimitString());
-                return;
-            }
-
             PDA pda = Player.main.GetPDA();
             Inventory.main.SetUsedStorage(Container);
             pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
@@ -277,9 +257,6 @@
         {
             if (isLoadingSaveData)
                 return true;
-
-            if (OverLimit)
-                return false;
 
             if (pickupable != null)
             {
@@ -417,21 +394,21 @@
 
         #endregion 
 
-        public void ConnectToCyclops(SubRoot parentCyclops, CyclopsManager manager = null)
+        public void ConnectToCyclops(SubRoot parentCyclops, ChargeManager manager = null)
         {
             if (ParentCyclops != null)
                 return;
 
             ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            Manager = manager ?? CyclopsManager.GetAllManagers(parentCyclops);
+            Manager = manager ?? CyclopsManager.GetChargeManager(parentCyclops);
 
-            if (!Manager.ChargeManager.CyBioReactors.Contains(this))
+            if (!Manager.CyBioReactors.Contains(this))
             {
-                Manager.ChargeManager.CyBioReactors.Add(this);
+                Manager.CyBioReactors.Add(this);
             }
 
-            UpdateBoosterCount(Manager.ChargeManager.BioBoosters.Count);
+            UpdateBoosterCount(Manager.BioBoosters.Count);
             QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 
@@ -508,6 +485,17 @@
             lastKnownBioBooster = boosterCount;
 
             return true;
+        }
+
+        private void OnDestroy()
+        {
+            if (Manager != null)
+                Manager.CyBioReactors.Remove(this);
+            else
+                CyclopsManager.RemoveReactor(this);
+
+            ParentCyclops = null;
+            Manager = null;
         }
 
         private class ReactorStats

@@ -1,8 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
+    using Common;
     using CyclopsUpgrades;
     using CyclopsUpgrades.CyclopsCharging;
     using Modules.Enhancement;
+    using MoreCyclopsUpgrades.Modules;
     using MoreCyclopsUpgrades.SaveData;
     using System;
     using System.Collections.Generic;
@@ -91,7 +93,7 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
-        internal readonly List<ICyclopsCharger> PowerChargers = new List<ICyclopsCharger>();
+        internal readonly ICollection<ICyclopsCharger> PowerChargers = new List<ICyclopsCharger>();
 
         internal UpgradeHandler SpeedBoosters;
         internal TieredUpgradesHandlerCollection<int> EngineEfficientyUpgrades;
@@ -99,7 +101,7 @@
         internal CyclopsManager Manager;
         internal readonly SubRoot Cyclops;
 
-        internal int MaxSpeedModules = MaxSpeedBoosters;
+        internal readonly int MaxSpeedModules = ModConfig.Settings.MaxSpeedModules();
 
         private CyclopsMotorMode motorMode;
         private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = Cyclops.GetComponentInChildren<CyclopsMotorMode>());
@@ -117,6 +119,7 @@
         internal PowerManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
+            UpgradeManager.UpgradeManagerInitializing += SetupPowerManagerUpgrades;
         }
 
         private float[] OriginalSpeeds { get; } = new float[3];
@@ -245,7 +248,11 @@
 
             rechargeSkip = 0;
 
-            float powerDeficit = Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower();
+            // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
+            // This is so that each charge can decide what to do individually rather than skip the entire charging cycle all together.
+            float powerDeficit = GameModeUtils.RequiresPower()
+                                 ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
+                                 : 0f;
 
             Manager.HUDManager.UpdateTextVisibility();
 
@@ -268,6 +275,46 @@
 
             Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
+        }
+
+        private void SetupPowerManagerUpgrades()
+        {
+            int maxModules = ModConfig.Settings.MaxChargingModules();
+
+            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrades Collection");
+                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0);
+
+                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk1");
+                TieredUpgradeHandler<int> engine1 = efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
+
+                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk2");
+                TieredUpgradeHandler<int> engine2 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
+
+                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk3");
+                TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
+
+                EngineEfficientyUpgrades = efficiencyUpgrades;
+                return efficiencyUpgrades;
+            });
+
+            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: SpeedBooster Upgrade");
+                var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
+                {
+                    MaxCount = maxModules,
+                    OnFirstTimeMaxCountReached = () =>
+                    {
+                        ErrorMessage.AddMessage(CyclopsSpeedBooster.MaxRatingAchived);
+                    }
+                };
+                SpeedBoosters = speed;
+                return speed;
+            });
+
+            UpgradeManager.UpgradeManagerInitializing -= SetupPowerManagerUpgrades;
         }
     }
 }

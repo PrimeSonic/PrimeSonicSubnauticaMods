@@ -90,17 +90,7 @@
 
             this.Manager = manager;
 
-            UpgradeManagerInitializing?.Invoke();
-            
-            PowerManager powerManager = this.Manager.PowerManager;
-            powerManager.MaxSpeedModules = ModConfig.Settings.MaxSpeedModules();
-
-            SetupPowerManagerUpgrades(powerManager, ModConfig.Settings.MaxChargingModules());
-            this.Manager.ChargeManager.SetupChargingUpgrades(ModConfig.Settings.MaxChargingModules());
-
             RegisterUpgradeHandlers();
-
-            this.Manager.ChargeManager.RegisterPowerChargers();
 
             Equipment cyclopsConsole = Cyclops.upgradeConsole.modules;
             AttachEquipmentEvents(ref cyclopsConsole);
@@ -110,56 +100,25 @@
             return true;
         }
 
-        private void SetupPowerManagerUpgrades(PowerManager powerManager, int maxModules)
-        {
-            RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrades Collection");
-                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0);
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk1");
-                TieredUpgradeHandler<int> engine1 = efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk2");
-                TieredUpgradeHandler<int> engine2 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk3");
-                TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
-
-                powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
-                return efficiencyUpgrades;
-            });
-
-            RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: SpeedBooster Upgrade");
-                var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
-                {
-                    MaxCount = maxModules,
-                    OnFirstTimeMaxCountReached = () =>
-                    {
-                        ErrorMessage.AddMessage(CyclopsSpeedBooster.MaxRatingAchived);
-                    }
-                };
-                powerManager.SpeedBoosters = speed;
-                return speed;
-            });
-
-        }
-
         private void RegisterUpgradeHandlers()
         {
+            UpgradeManagerInitializing?.Invoke();
+
             // Register upgrades from other mods
             foreach (HandlerCreator upgradeHandlerCreator in ReusableUpgradeHandlers)
             {
                 UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
-                upgrade.RegisterSelf(KnownsUpgradeModules);
+
+                if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
+                    upgrade.RegisterSelf(KnownsUpgradeModules);
             }
 
             foreach (HandlerCreator upgradeHandlerCreator in OneTimeUseUpgradeHandlers)
             {
                 UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
-                upgrade.RegisterSelf(KnownsUpgradeModules);
+
+                if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
+                    upgrade.RegisterSelf(KnownsUpgradeModules);
             }
 
             OneTimeUseUpgradeHandlers.Clear();

@@ -5,6 +5,7 @@
     using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
     using MoreCyclopsUpgrades.Modules;
     using MoreCyclopsUpgrades.Monobehaviors;
+    using MoreCyclopsUpgrades.SaveData;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -25,12 +26,16 @@
         internal BatteryUpgradeHandler NuclearCharger;
         internal BioBoosterUpgradeHandler BioBoosters;
 
+        internal int MaxBioReactors => BioCharging.MaxBioReactors;
+
         internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
         private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
 
         public ChargeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
+            UpgradeManager.UpgradeManagerInitializing += SetupChargingUpgrades;
+            PowerManager.CyclopsChargersInitializing += RegisterPowerChargers;
         }
 
         internal bool Initialize(CyclopsManager manager)
@@ -56,7 +61,7 @@
             return Mathf.FloorToInt(availableReservePower);
         }
 
-        internal void RegisterPowerChargers()
+        private void RegisterPowerChargers()
         {
             PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
             {
@@ -89,10 +94,14 @@
                 NuclearCharging = nuclearChargeHandler;
                 return nuclearChargeHandler;
             });
+
+            PowerManager.CyclopsChargersInitializing -= RegisterPowerChargers;
         }
 
-        internal void SetupChargingUpgrades(int maxChargingModules)
+        private void SetupChargingUpgrades()
         {
+            int maxChargingModules = ModConfig.Settings.MaxChargingModules();
+
             UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: SolarCharger Upgrade");
@@ -170,6 +179,8 @@
                 BioBoosters = new BioBoosterUpgradeHandler();
                 return BioBoosters;
             });
+
+            UpgradeManager.UpgradeManagerInitializing -= SetupChargingUpgrades;
         }
 
         internal void SyncBioReactors()
@@ -194,7 +205,7 @@
                 {
                     QuickLogger.Debug("CyBioReactorMono synced externally");
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    cyBioReactor.ConnectToCyclops(cyclops, Manager);
+                    cyBioReactor.ConnectToCyclops(cyclops, this);
                 }
             }
 

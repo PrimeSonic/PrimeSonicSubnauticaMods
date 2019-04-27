@@ -102,7 +102,7 @@
 
             if (!powerIconsInitialized)
             {
-                AddPowerIcons(cyclopsHelmHUD, this.Manager.PowerManager.PowerChargers.Count);
+                AddPowerIcons(cyclopsHelmHUD, this.Manager.TotalPowerChargers);
             }
 
             // Change the color of the Cyclops energy percentage on the HUD
@@ -247,7 +247,7 @@
             if (!powerIconsInitialized)
                 return;
 
-            IList<ICyclopsCharger> cyclopsChargers = this.PowerManager.PowerChargers;
+            ICollection<ICyclopsCharger> cyclopsChargers = this.PowerManager.PowerChargers;
 
             foreach (Indicator indicator in HelmIndicatorsOdd)
                 indicator.Enabled = false;
@@ -288,6 +288,6 @@
                 hpIcon.Text.text = helmIcon.Text.text = charger.GetIndicatorText();
                 hpIcon.Text.color = helmIcon.Text.color = charger.GetIndicatorTextColor();
             }
-        }        
+        }
     }
 }
