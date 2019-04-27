@@ -1,4 +1,7 @@
-﻿namespace CyclopsNuclearReactor
+﻿using System.IO;
+using uSky;
+
+namespace CyclopsNuclearReactor
 {
     using Common;
     using CyclopsNuclearReactor.Helpers;
@@ -224,6 +227,7 @@
             LanguageHandler.SetLanguageLine(UpgradedMsgKey, "Cyclops nuclear reactor has been enhanced");
             LanguageHandler.SetLanguageLine(CannotRemoveKey, "Too many active rods in nuclear reactor to remove enhancement");
             LanguageHandler.SetLanguageLine(InactiveRodKey, "Inactive");
+            SpriteHandler.RegisterSprite(SpriteManager.Group.Category, "CyNukReactorHUD", DirectoryHelper.GrabFromAssetsDirectory("CyclopsNuclearReactor", "CyNukReactorHUD.png"));
         }
     }
 }
