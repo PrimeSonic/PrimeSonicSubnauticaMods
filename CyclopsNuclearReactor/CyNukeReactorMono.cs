@@ -2,6 +2,7 @@
 {
     using Common;
     using CyclopsNuclearReactor.Helpers;
+    using MoreCyclopsUpgrades.Managers;
     using ProtoBuf;
     using System;
     using System.Collections.Generic;
@@ -108,7 +109,7 @@
 
         public float ProducePower(ref float powerDeficit)
         {
-            if (Mathf.Approximately(powerDeficit, 0f))
+            if (powerDeficit <= PowerManager.MinimalPowerValue)
                 return 0f;
 
             if (reactorRodData.Count == 0)
@@ -131,7 +132,7 @@
                 totalPowerProduced += powerProduced;
                 powerDeficit -= powerProduced;
 
-                if (Mathf.Approximately(slotData.Charge, 0f))
+                if (slotData.Charge <= PowerManager.MinimalPowerValue)
                     depletedRod = slotData;
 
                 UpdateGraphicalRod(slotData);

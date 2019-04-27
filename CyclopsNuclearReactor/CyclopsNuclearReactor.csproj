@@ -81,6 +81,9 @@
     <Compile Include="uGUI_Patches.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\CyNukReactorHUD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
