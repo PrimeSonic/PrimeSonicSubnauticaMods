@@ -29,6 +29,10 @@
         private BioChargeHandler BioCharger => ChargeManager.BioCharging;
         internal BatteryUpgradeHandler NuclearCharger => ChargeManager.NuclearCharger;
 
+        private bool HasRenewablePower => this.SolarCharger.SolarState != SolarState.None ||
+                                          this.ThermalCharger.ThermalState != ThermalState.None ||
+                                          this.BioCharger.ProducingPower;
+
         private readonly Atlas.Sprite sprite = SpriteManager.Get(CyclopsModule.NuclearChargerID);
 
         public readonly SubRoot Cyclops;
@@ -44,7 +48,7 @@
         }
 
         public Atlas.Sprite GetIndicatorSprite()
-        {           
+        {
             return sprite;
         }
 
@@ -71,16 +75,19 @@
             if (!this.NuclearCharger.BatteryHasCharge)
             {
                 NuclearState = NuclearState.None;
+                chargeRate = MinNuclearChargeRate;
                 return 0f;
             }
-            else if (this.SolarCharger.SolarState != SolarState.None || this.ThermalCharger.ThermalState != ThermalState.None || this.BioCharger.ProducingPower)
+            else if (this.HasRenewablePower)
             {
                 NuclearState = NuclearState.RenewableEnergyAvailable;
+                chargeRate = MinNuclearChargeRate;
                 return 0f;
             }
             else if (requestedPower < NuclearModuleConfig.MinimumEnergyDeficit)
             {
                 NuclearState = NuclearState.ConservingNuclearEnergy;
+                chargeRate = MinNuclearChargeRate;
                 return 0f;
             }
             else if (heat > MaxHeat)
