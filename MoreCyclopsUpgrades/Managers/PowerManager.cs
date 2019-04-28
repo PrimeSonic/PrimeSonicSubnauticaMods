@@ -8,6 +8,7 @@
     using MoreCyclopsUpgrades.SaveData;
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using UnityEngine;
 
     /// <summary>
@@ -30,6 +31,7 @@
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ChargerCreator"/>.</param>
         public static void RegisterOneTimeUseChargerCreator(ChargerCreator createEvent)
         {
+            QuickLogger.Info($"Received OneTimeUse ChargerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
             OneTimeUseCyclopsChargers.Add(createEvent);
         }
 
@@ -39,6 +41,7 @@
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ICyclopsCharger"/>.</param>
         public static void RegisterReusableChargerCreator(ChargerCreator createEvent)
         {
+            QuickLogger.Info($"Received Reusable ChargerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
             ReusableCyclopsChargers.Add(createEvent);
         }
 
@@ -93,7 +96,7 @@
             50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
         };
 
-        internal readonly ICollection<ICyclopsCharger> PowerChargers = new List<ICyclopsCharger>();
+        internal readonly ICollection<ICyclopsCharger> PowerChargers = new HashSet<ICyclopsCharger>();
 
         internal UpgradeHandler SpeedBoosters;
         internal TieredUpgradesHandlerCollection<int> EngineEfficientyUpgrades;
@@ -145,13 +148,29 @@
 
         internal void InitializeChargingHandlers()
         {
+            QuickLogger.Debug("PowerManager InitializeChargingHandlers");
             CyclopsChargersInitializing?.Invoke();
+            QuickLogger.Debug("External CyclopsChargersInitializing methods invoked");
 
             foreach (ChargerCreator method in ReusableCyclopsChargers)
-                PowerChargers.Add(method.Invoke(Cyclops));
+            {
+                ICyclopsCharger charger = method.Invoke(Cyclops);
+
+                if (!PowerChargers.Contains(charger))
+                    PowerChargers.Add(charger);
+                else
+                    QuickLogger.Warning($"Duplicate Reusable ICyclopsCharger '{charger.GetType()?.Name}' was blocked");
+            }
 
             foreach (ChargerCreator method in OneTimeUseCyclopsChargers)
-                PowerChargers.Add(method.Invoke(Cyclops));
+            {
+                ICyclopsCharger charger = method.Invoke(Cyclops);
+
+                if (!PowerChargers.Contains(charger))
+                    PowerChargers.Add(charger);
+                else
+                    QuickLogger.Warning($"Duplicate OneTimeUse ICyclopsCharger '{charger.GetType()?.Name}' was blocked");
+            }
 
             OneTimeUseCyclopsChargers.Clear();
         }

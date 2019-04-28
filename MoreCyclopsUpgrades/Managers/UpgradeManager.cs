@@ -8,6 +8,7 @@
     using SaveData;
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using UnityEngine;
 
     /// <summary>
@@ -30,6 +31,7 @@
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
         public static void RegisterOneTimeUseHandlerCreator(HandlerCreator createEvent)
         {
+            QuickLogger.Info($"Received OneTimeUse HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
             OneTimeUseUpgradeHandlers.Add(createEvent);
         }
 
@@ -39,6 +41,7 @@
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
         public static void RegisterReusableHandlerCreator(HandlerCreator createEvent)
         {
+            QuickLogger.Info($"Received Reusable HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
             ReusableUpgradeHandlers.Add(createEvent);
         }
 
@@ -102,7 +105,9 @@
 
         private void RegisterUpgradeHandlers()
         {
+            QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
             UpgradeManagerInitializing?.Invoke();
+            QuickLogger.Debug("External UpgradeManagerInitializing methods invoked");
 
             // Register upgrades from other mods
             foreach (HandlerCreator upgradeHandlerCreator in ReusableUpgradeHandlers)
@@ -111,6 +116,8 @@
 
                 if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
                     upgrade.RegisterSelf(KnownsUpgradeModules);
+                else
+                    QuickLogger.Warning($"Duplicate Reusable UpgradeHandler for '{upgrade.techType}' was blocked");
             }
 
             foreach (HandlerCreator upgradeHandlerCreator in OneTimeUseUpgradeHandlers)
@@ -119,6 +126,8 @@
 
                 if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
                     upgrade.RegisterSelf(KnownsUpgradeModules);
+                else
+                    QuickLogger.Warning($"Duplicate OneTimeUse UpgradeHandler for '{upgrade.techType}' was blocked");
             }
 
             OneTimeUseUpgradeHandlers.Clear();
