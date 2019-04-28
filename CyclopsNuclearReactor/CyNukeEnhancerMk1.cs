@@ -32,7 +32,7 @@
                     return new[] { "CyclopsMenu" };
                 }
 
-                return null;
+                return new string[0];
             }
         }
 

@@ -22,6 +22,7 @@
         public override TechCategory CategoryForPDA { get; } = TechCategory.CyclopsUpgrades;
         public override string AssetsFolder { get; } = "CyclopsNuclearReactor/Assets";
         public override TechType RequiredForUnlock { get; } = TechType.Workbench;
+        public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
 
         public static void PatchSMLHelper()
         {
