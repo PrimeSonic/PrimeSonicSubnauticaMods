@@ -4,7 +4,7 @@
 
     internal class SolarCharger : CyclopsModule
     {
-        internal SolarCharger(bool fabModPresent) : this(fabModPresent ? null : new[] { "CyclopsMenu" })
+        internal SolarCharger(bool fabModPresent) : this(fabModPresent ? new[] { "CyclopsModules" } : new string[0])
         {
         }
 
