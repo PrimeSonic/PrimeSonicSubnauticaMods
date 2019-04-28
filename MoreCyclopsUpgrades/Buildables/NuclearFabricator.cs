@@ -73,7 +73,6 @@
             ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(NameID, out craftType);
 
             rootNode.AddCraftingNode(CyclopsModule.NuclearChargerID);
-            rootNode.AddCraftingNode(CyclopsModule.RefillNuclearModuleID);
             rootNode.AddCraftingNode(TechType.ReactorRod);
             rootNode.AddModdedCraftingNode("RReactorRodDUMMY");
         }

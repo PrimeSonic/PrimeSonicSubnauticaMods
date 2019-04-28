@@ -48,7 +48,6 @@
         public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.UnusedOld;
         public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld;
         public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld;
-        public static TechType RefillNuclearModuleID { get; protected set; } = TechType.UnusedOld;
         public static TechType BioReactorBoosterID { get; protected set; } = TechType.UnusedOld;
 
         public readonly string NameID;
@@ -104,10 +103,9 @@
 
             SpriteHandler.RegisterSprite(this.TechType, $"./QMods/MoreCyclopsUpgrades/Assets/{NameID}.png");
 
-            CraftDataHandler.SetTechData(this.TechType, GetRecipe());
-
             if (AddToCraftTree)
             {
+                CraftDataHandler.SetTechData(this.TechType, GetRecipe());
                 QuickLogger.Debug($"Setting crafting node for {this.ClassID}");
                 CraftTreeHandler.AddCraftingNode(Fabricator, this.TechType, FabricatorTabs);
             }
