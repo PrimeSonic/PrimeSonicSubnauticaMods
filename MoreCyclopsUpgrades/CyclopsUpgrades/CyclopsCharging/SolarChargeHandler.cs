@@ -40,9 +40,9 @@
         {
             switch (SolarState)
             {
-                case SolarState.SunAvailable:                    
+                case SolarState.SunAvailable:
                     return solar1Sprite;
-                case SolarState.BatteryAvailable:                    
+                case SolarState.BatteryAvailable:
                     return solar2Sprite;
                 default:
                     return null;

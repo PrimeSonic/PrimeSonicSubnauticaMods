@@ -43,9 +43,9 @@
         {
             switch (ThermalState)
             {
-                case ThermalState.HeatAvailable:                    
+                case ThermalState.HeatAvailable:
                     return thermal1Sprite;
-                case ThermalState.BatteryAvailable:                    
+                case ThermalState.BatteryAvailable:
                     return thermal2Sprite;
                 default:
                     return null;

@@ -34,7 +34,7 @@
         }
 
         public Atlas.Sprite GetIndicatorSprite()
-        {            
+        {
             return sprite;
         }
 
