@@ -12,7 +12,6 @@
         internal IList<BatteryDetails> Batteries { get; } = new List<BatteryDetails>();
 
         internal readonly bool BatteryRecharges;
-        private float tempTotalCharge;
         public float TotalBatteryCharge = 0f;
         public float TotalBatteryCapacity = 0f;
 
@@ -41,8 +40,6 @@
         {
             if (requestedPower < PowerManager.MinimalPowerValue) // No power deficit left to charge
                 return 0f; // Exit
-
-            tempTotalCharge = 0f;
             float totalDrainedAmt = 0f;
             foreach (BatteryDetails details in this.Batteries)
             {
@@ -69,12 +66,11 @@
                     OnBatteryDrained?.Invoke(details);
                 }
 
-                tempTotalCharge += battery._charge;
+                TotalBatteryCharge -= amtToDrain;
                 requestedPower -= amtToDrain; // This is to prevent draining more than needed if the power cells were topped up mid-loop
 
                 totalDrainedAmt += amtToDrain;
             }
-            TotalBatteryCharge = tempTotalCharge;
 
             return totalDrainedAmt;
         }
@@ -84,12 +80,9 @@
             if (!BatteryRecharges)
                 return;
 
-            tempTotalCharge = 0f;
             bool batteryCharged = false;
             foreach (BatteryDetails details in this.Batteries)
             {
-                tempTotalCharge += details.BatteryRef._charge;
-
                 if (batteryCharged)
                     continue;
 
@@ -105,7 +98,7 @@
                 batteryCharged = true;
             }
 
-            TotalBatteryCharge = tempTotalCharge;
+            TotalBatteryCharge = Mathf.Min(TotalBatteryCharge + surplusPower, TotalBatteryCapacity);
         }
     }
 }

@@ -69,9 +69,9 @@
             Description = description;
             RequiredForUnlock = requiredAnalysisItem;
             Fabricator = fabricator;
-            FabricatorTabs = fabricatorTab;
+            FabricatorTabs = fabricatorTab ?? new string[0];
 
-            AddToCraftTree = FabricatorTabs != null;
+            AddToCraftTree = true;
             PreFabTemplate = preFabTemplate;
         }
 

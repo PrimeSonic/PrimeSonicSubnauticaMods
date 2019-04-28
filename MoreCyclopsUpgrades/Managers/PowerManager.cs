@@ -93,7 +93,7 @@
 
         private static readonly float[] ShieldPowerCosts = new float[PowerIndexCount]
         {
-            50f, 50f, 42f, 34f // Lower costs here don't show up until the Mk2
+            50f, 50f, 45f, 35f // Lower costs here don't show up until the Mk2
         };
 
         internal readonly ICollection<ICyclopsCharger> PowerChargers = new HashSet<ICyclopsCharger>();

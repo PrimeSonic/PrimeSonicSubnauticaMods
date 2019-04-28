@@ -18,10 +18,9 @@
     internal class NuclearChargeHandler : ICyclopsCharger
     {
         private const float MaxNuclearChargeRate = 0.16f;
-        private const float CooldownRate = MaxNuclearChargeRate / 2;
         private const float MinNuclearChargeRate = PowerManager.MinimalPowerValue * 2;
-        private const float ChargeMultiplier = 0.95f;
-        private const float MaxHeat = 500f;
+        private const float CooldownRate = MaxNuclearChargeRate * 6f;
+        private const float MaxHeat = 1200f;
 
         private readonly ChargeManager ChargeManager;
         private SolarChargeHandler SolarCharger => ChargeManager.SolarCharging;
@@ -71,37 +70,41 @@
 
         public float ProducePower(float requestedPower)
         {
-            // Cooldown
-            heat = Mathf.Max(0f, heat - CooldownRate);
+            if (NuclearState != NuclearState.NuclearPowerEngaged && heat > 0f)
+            {
+                chargeRate = MinNuclearChargeRate;
+                heat -= CooldownRate; // Cooldown
+            }
 
             if (!this.NuclearCharger.BatteryHasCharge)
             {
+                chargeRate = Mathf.Max(MinNuclearChargeRate, chargeRate - MinNuclearChargeRate);
                 NuclearState = NuclearState.None;
-                chargeRate = MinNuclearChargeRate;
                 return 0f;
             }
             else if (this.HasRenewablePower)
             {
+                chargeRate = Mathf.Max(MinNuclearChargeRate, chargeRate - MinNuclearChargeRate);
                 NuclearState = NuclearState.RenewableEnergyAvailable;
-                chargeRate = MinNuclearChargeRate;
                 return 0f;
             }
             else if (requestedPower < NuclearModuleConfig.MinimumEnergyDeficit)
             {
+                chargeRate = Mathf.Max(MinNuclearChargeRate, chargeRate - MinNuclearChargeRate);
                 NuclearState = NuclearState.ConservingNuclearEnergy;
-                chargeRate = MinNuclearChargeRate;
                 return 0f;
             }
-            else if (heat > MaxHeat)
+            else if (heat >= MaxHeat)
             {
+                chargeRate = Mathf.Max(MinNuclearChargeRate, chargeRate - MinNuclearChargeRate);
                 NuclearState = NuclearState.Overheated;
-                chargeRate = MinNuclearChargeRate;
                 return 0f;
             }
             else if (NuclearState == NuclearState.Overheated)
             {
                 if (heat <= 0) // Do not allow nuclear power to charge again until heat has returned to zero
                     NuclearState = NuclearState.None;
+
                 return 0f;
             }
             else
@@ -112,8 +115,8 @@
 
                 float generatedPower = this.NuclearCharger.GetBatteryPower(chargeRate, requestedPower);
 
-                heat += generatedPower * this.NuclearCharger.Count;
-                return ChargeMultiplier * generatedPower;
+                heat += generatedPower;
+                return generatedPower;
             }
         }
     }

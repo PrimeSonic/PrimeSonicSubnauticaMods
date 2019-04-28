@@ -14,7 +14,7 @@
         internal NuclearCharger()
             : base("CyclopsNuclearModule",
                   "Cyclops Nuclear Reactor Module",
-                  "Recharge your Cyclops using this portable nuclear reactor. Intelligently provides power only when you need it.",
+                  "Recharge your Cyclops using this portable nuclear reactor. Intelligently provides power only when you need it.\nWarning! Prolonged use will overheat the module, causing temporary shutdown.",
                   CraftTree.Type.Workbench, // TODO Custom fabricator for all that is Cyclops and nuclear
                   new[] { "CyclopsMenu" },
                   TechType.BaseNuclearReactor)

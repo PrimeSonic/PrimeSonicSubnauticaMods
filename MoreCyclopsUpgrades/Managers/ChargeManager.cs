@@ -169,7 +169,7 @@
                 QuickLogger.Debug("UpgradeHandler Registered: NuclearReactor Upgrade");
                 NuclearCharger = new NuclearUpgradeHandler()
                 {
-                    MaxCount = Math.Min(maxChargingModules, 6)
+                    MaxCount = Math.Min(maxChargingModules, 3) // No more than 3 no matter what the difficulty
                 };
                 return NuclearCharger;
             });
