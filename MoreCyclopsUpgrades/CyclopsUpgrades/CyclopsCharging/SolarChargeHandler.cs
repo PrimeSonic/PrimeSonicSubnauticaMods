@@ -24,6 +24,9 @@
         internal ThermalChargeHandler ThermalCharginer => ChargeManager.ThermalCharging;
         public readonly SubRoot Cyclops;
 
+        private readonly Atlas.Sprite solar1Sprite = SpriteManager.Get(CyclopsModule.SolarChargerID);
+        private readonly Atlas.Sprite solar2Sprite = SpriteManager.Get(CyclopsModule.SolarChargerMk2ID);
+
         internal SolarState SolarState = SolarState.None;
         private float solarPercentage = 0f;
 
@@ -37,10 +40,10 @@
         {
             switch (SolarState)
             {
-                case SolarState.SunAvailable:
-                    return SpriteManager.Get(CyclopsModule.SolarChargerID);
-                case SolarState.BatteryAvailable:
-                    return SpriteManager.Get(CyclopsModule.SolarChargerMk2ID);
+                case SolarState.SunAvailable:                    
+                    return solar1Sprite;
+                case SolarState.BatteryAvailable:                    
+                    return solar2Sprite;
                 default:
                     return null;
             }

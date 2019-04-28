@@ -10,7 +10,7 @@
         {
             OnBatteryDrained += (BatteryDetails details) =>
             {
-                this.TotalBatteryCapacity -= details.BatteryRef._capacity;
+                TotalBatteryCapacity -= details.BatteryRef._capacity;
 
                 Equipment modules = details.ParentEquipment;
                 string slotName = details.SlotName;
