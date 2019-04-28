@@ -6,6 +6,7 @@
     using MoreCyclopsUpgrades.Modules;
     using MoreCyclopsUpgrades.Monobehaviors;
     using MoreCyclopsUpgrades.SaveData;
+    using System;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -168,7 +169,7 @@
                 QuickLogger.Debug("UpgradeHandler Registered: NuclearReactor Upgrade");
                 NuclearCharger = new NuclearUpgradeHandler()
                 {
-                    MaxCount = maxChargingModules
+                    MaxCount = Math.Min(maxChargingModules, 3) // No more than 3 no matter what the difficulty
                 };
                 return NuclearCharger;
             });
