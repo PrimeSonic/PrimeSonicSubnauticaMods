@@ -2,10 +2,7 @@
 {
     using Common;
     using CyclopsUpgrades;
-    using Modules;
-    using Modules.Enhancement;
     using Monobehaviors;
-    using SaveData;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
@@ -175,17 +172,12 @@
         internal void HandleUpgrades()
         {
             // Turn off all upgrades and clear all values
-            if (Cyclops == null)
-            {
-                ErrorMessage.AddError("ClearAllUpgrades: Cyclops ref is null - Upgrade handling cancled");
-                return;
-            }
-
             foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
-                upgradeType.UpgradesCleared(Cyclops);
+                upgradeType.UpgradesCleared(Cyclops); // UpgradeHandler event
 
             var foundUpgrades = new List<TechType>();
 
+            // Go through all slots and check what upgrades are available
             foreach (UpgradeSlot upgradeSlot in this.UpgradeSlots)
             {
                 Equipment modules = upgradeSlot.Modules;
@@ -200,18 +192,20 @@
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
-                    handler.UpgradeCounted(Cyclops, modules, slot);
+                    handler.UpgradeCounted(Cyclops, modules, slot); // UpgradeHandler event
                 }
             }
 
+            // If any upgrades were found, play the sound to alert the player
             if (foundUpgrades.Count > 0)
             {
                 Cyclops.slotModSFX?.Play();
-                Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
 
                 foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
-                    upgradeType.UpgradesFinished(Cyclops);
+                    upgradeType.UpgradesFinished(Cyclops); // UpgradeHandler event
             }
+
+            Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
         }
 
         private bool IsAllowedToAdd(Pickupable pickupable, bool verbose)

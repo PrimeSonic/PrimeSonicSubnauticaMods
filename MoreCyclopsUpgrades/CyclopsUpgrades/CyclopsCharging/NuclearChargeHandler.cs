@@ -54,11 +54,13 @@
 
         public string GetIndicatorText()
         {
+            // Show remaining energy
             return NumberFormatter.FormatNumber(Mathf.CeilToInt(this.NuclearCharger.TotalBatteryCharge), NumberFormat.Amount);
         }
 
         public Color GetIndicatorTextColor()
         {
+            // Use color to inform heat levels
             return NumberFormatter.GetNumberColor(MaxHeat - heat, MaxHeat, 0f);
         }
 
@@ -94,6 +96,12 @@
             {
                 NuclearState = NuclearState.Overheated;
                 chargeRate = MinNuclearChargeRate;
+                return 0f;
+            }
+            else if (NuclearState == NuclearState.Overheated)
+            {
+                if (heat <= 0) // Do not allow nuclear power to charge again until heat has returned to zero
+                    NuclearState = NuclearState.None;
                 return 0f;
             }
             else
