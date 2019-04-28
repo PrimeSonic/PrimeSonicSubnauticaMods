@@ -54,7 +54,7 @@
         public string GetIndicatorText()
         {
             // Show remaining energy
-            return NumberFormatter.FormatNumber(Mathf.CeilToInt(this.NuclearCharger.TotalBatteryCharge), NumberFormat.Amount);
+            return NumberFormatter.FormatNumber(Mathf.RoundToInt(this.NuclearCharger.TotalBatteryCharge), NumberFormat.Amount);
         }
 
         public Color GetIndicatorTextColor()

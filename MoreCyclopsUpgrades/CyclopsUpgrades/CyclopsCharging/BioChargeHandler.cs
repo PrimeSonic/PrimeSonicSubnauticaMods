@@ -40,7 +40,7 @@
 
         public string GetIndicatorText()
         {
-            return NumberFormatter.FormatNumber(Mathf.CeilToInt(totalBioCharge), NumberFormat.Amount);
+            return NumberFormatter.FormatNumber(Mathf.RoundToInt(totalBioCharge), NumberFormat.Amount);
         }
 
         public Color GetIndicatorTextColor()
