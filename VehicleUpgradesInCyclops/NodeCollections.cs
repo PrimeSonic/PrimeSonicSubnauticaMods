@@ -1,33 +1,9 @@
 ﻿namespace VehicleUpgradesInCyclops
 {
     using System.Collections.Generic;
-    using SMLHelper.V2.Handlers;
 
     internal static class NodeCollections
     {
-        internal static void CheckForCrossModAdditions()
-        {
-            if (TechTypeHandler.TryGetModdedTechType("CyclopsSolarCharger", out TechType solarChargerID))
-            {
-                UpgradeModuleTabs[0].CraftNodes.Add(solarChargerID);
-            }
-
-            if (TechTypeHandler.TryGetModdedTechType("CyclopsSpeedModule", out TechType cyclopsSpeedModuleID))
-            {
-                UpgradeModuleTabs[0].CraftNodes.Add(cyclopsSpeedModuleID);
-            }
-
-            if (TechTypeHandler.TryGetModdedTechType("BioReactorBooster", out TechType bioReactorBooster))
-            {
-                UpgradeModuleTabs[0].CraftNodes.Add(bioReactorBooster);
-            }
-
-            if (TechTypeHandler.TryGetModdedTechType("SpeedModule", out TechType speedModuleID))
-            {
-                UpgradeModuleTabs[1].CraftNodes.Add(speedModuleID);
-            }
-        }
-
         internal static List<ModulesTab> UpgradeModuleTabs = new List<ModulesTab>(5)
         {
             new ModulesTab("CyclopsModules", "Cyclops Modules", "Workbench_CyclopsMenu",

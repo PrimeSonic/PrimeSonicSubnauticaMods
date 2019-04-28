@@ -29,10 +29,10 @@
             {
                 if (Directory.Exists(@"./QMods/VehicleUpgradesInCyclops"))
                 {
-                    return new[] { "CyclopsMenu" };
+                    return new[] { "CyclopsModules" };
                 }
 
-                return null;
+                return new string[0];
             }
         }
 

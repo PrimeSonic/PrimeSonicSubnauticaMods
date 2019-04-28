@@ -12,7 +12,7 @@
         private const string CannotRemoveKey = "CyBioCannotShrink";
         public static string CannotRemove => Language.main.Get(CannotRemoveKey);
 
-        internal BioReactorBooster(bool fabModPresent) : this(fabModPresent ? null : new[] { "CyclopsMenu" })
+        internal BioReactorBooster(bool fabModPresent) : this(fabModPresent ? new[] { "CyclopsModules" } : new string[0])
         {
         }
 
