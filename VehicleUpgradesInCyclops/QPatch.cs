@@ -15,10 +15,7 @@
             // Remove all original Cyclops fabricator nodes
             foreach (string origNodeID in NodeCollections.OriginalCyclopsModuleCraftingNodes)
                 CraftTreeHandler.RemoveNode(CraftTree.Type.CyclopsFabricator, origNodeID);
-
-            NodeCollections.CheckForCrossModAdditions();
-
-            // Includes a new Cyclops Upgrades Tab (This will keep things more organized and prevent the icons from being rendered off screen when there's too many)
+                        
             // Recreates all the tabs from the Vehicle Upgrade Console
 
             foreach (ModulesTab tab in NodeCollections.UpgradeModuleTabs)

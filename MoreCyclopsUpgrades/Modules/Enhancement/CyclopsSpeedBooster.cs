@@ -14,7 +14,7 @@
             return Language.main.GetFormat(SpeedRatingKey, boosterCount, multiplier);
         }
 
-        internal CyclopsSpeedBooster(bool fabModPresent) : this(fabModPresent ? null : new[] { "CyclopsMenu" })
+        internal CyclopsSpeedBooster(bool fabModPresent) : this(fabModPresent ? new[] { "CyclopsModules" } : new string[0])
         {
         }
 
