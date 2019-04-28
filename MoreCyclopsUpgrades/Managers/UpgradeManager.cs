@@ -2,12 +2,10 @@
 {
     using Common;
     using CyclopsUpgrades;
-    using Modules;
-    using Modules.Enhancement;
     using Monobehaviors;
-    using SaveData;
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using UnityEngine;
 
     /// <summary>
@@ -30,6 +28,7 @@
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
         public static void RegisterOneTimeUseHandlerCreator(HandlerCreator createEvent)
         {
+            QuickLogger.Info($"Received OneTimeUse HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
             OneTimeUseUpgradeHandlers.Add(createEvent);
         }
 
@@ -39,6 +38,7 @@
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
         public static void RegisterReusableHandlerCreator(HandlerCreator createEvent)
         {
+            QuickLogger.Info($"Received Reusable HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
             ReusableUpgradeHandlers.Add(createEvent);
         }
 
@@ -102,7 +102,9 @@
 
         private void RegisterUpgradeHandlers()
         {
+            QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
             UpgradeManagerInitializing?.Invoke();
+            QuickLogger.Debug("External UpgradeManagerInitializing methods invoked");
 
             // Register upgrades from other mods
             foreach (HandlerCreator upgradeHandlerCreator in ReusableUpgradeHandlers)
@@ -111,6 +113,8 @@
 
                 if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
                     upgrade.RegisterSelf(KnownsUpgradeModules);
+                else
+                    QuickLogger.Warning($"Duplicate Reusable UpgradeHandler for '{upgrade.techType}' was blocked");
             }
 
             foreach (HandlerCreator upgradeHandlerCreator in OneTimeUseUpgradeHandlers)
@@ -119,6 +123,8 @@
 
                 if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
                     upgrade.RegisterSelf(KnownsUpgradeModules);
+                else
+                    QuickLogger.Warning($"Duplicate OneTimeUse UpgradeHandler for '{upgrade.techType}' was blocked");
             }
 
             OneTimeUseUpgradeHandlers.Clear();
@@ -166,17 +172,12 @@
         internal void HandleUpgrades()
         {
             // Turn off all upgrades and clear all values
-            if (Cyclops == null)
-            {
-                ErrorMessage.AddError("ClearAllUpgrades: Cyclops ref is null - Upgrade handling cancled");
-                return;
-            }
-
             foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
-                upgradeType.UpgradesCleared(Cyclops);
+                upgradeType.UpgradesCleared(Cyclops); // UpgradeHandler event
 
             var foundUpgrades = new List<TechType>();
 
+            // Go through all slots and check what upgrades are available
             foreach (UpgradeSlot upgradeSlot in this.UpgradeSlots)
             {
                 Equipment modules = upgradeSlot.Modules;
@@ -191,18 +192,20 @@
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
-                    handler.UpgradeCounted(Cyclops, modules, slot);
+                    handler.UpgradeCounted(Cyclops, modules, slot); // UpgradeHandler event
                 }
             }
 
+            // If any upgrades were found, play the sound to alert the player
             if (foundUpgrades.Count > 0)
             {
                 Cyclops.slotModSFX?.Play();
-                Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
 
                 foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
-                    upgradeType.UpgradesFinished(Cyclops);
+                    upgradeType.UpgradesFinished(Cyclops); // UpgradeHandler event
             }
+
+            Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
         }
 
         private bool IsAllowedToAdd(Pickupable pickupable, bool verbose)

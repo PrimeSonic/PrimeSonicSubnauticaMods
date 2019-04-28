@@ -198,10 +198,10 @@
                 HealthBarIndicatorsEven[index] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + -spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
                 HealthBarIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
 
-                spacing += helmspacing;
-                spacingSmall += healthbarspacing;
-
                 index += 2;
+                spacing += helmspacing * index;
+                spacingSmall += healthbarspacing * index;
+
             } while (totalIcons > index);
 
             powerIconsInitialized = true;

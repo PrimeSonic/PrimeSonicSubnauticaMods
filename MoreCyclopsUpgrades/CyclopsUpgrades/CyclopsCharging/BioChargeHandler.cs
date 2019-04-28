@@ -23,6 +23,8 @@
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
 
+        private readonly Atlas.Sprite sprite = SpriteManager.Get(CyclopsModule.BioReactorBoosterID);
+
         public readonly SubRoot Cyclops;
 
         public BioChargeHandler(ChargeManager chargeManager)
@@ -32,13 +34,13 @@
         }
 
         public Atlas.Sprite GetIndicatorSprite()
-        {
-            return SpriteManager.Get(CyclopsModule.BioReactorBoosterID);
+        {            
+            return sprite;
         }
 
         public string GetIndicatorText()
         {
-            return NumberFormatter.FormatNumber(Mathf.CeilToInt(totalBioCharge), NumberFormat.Amount);
+            return NumberFormatter.FormatNumber(Mathf.RoundToInt(totalBioCharge), NumberFormat.Amount);
         }
 
         public Color GetIndicatorTextColor()

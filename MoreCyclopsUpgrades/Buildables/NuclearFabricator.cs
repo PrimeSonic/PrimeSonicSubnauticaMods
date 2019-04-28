@@ -72,10 +72,11 @@
         {
             ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(NameID, out craftType);
 
-            rootNode.AddCraftingNode(CyclopsModule.NuclearChargerID);
-            rootNode.AddCraftingNode(CyclopsModule.RefillNuclearModuleID);
             rootNode.AddCraftingNode(TechType.ReactorRod);
-            rootNode.AddModdedCraftingNode("RReactorRodDUMMY");
+            rootNode.AddCraftingNode(CyclopsModule.NuclearChargerID);            
+            rootNode.AddModdedCraftingNode("RReactorRodDUMMY"); // Refill nuclear reactor rod
+            rootNode.AddModdedCraftingNode("CyNukeUpgrade1"); // Cyclops Nuclear Reactor Enhancer Mk1
+            rootNode.AddModdedCraftingNode("CyNukeUpgrade2"); // Cyclops Nuclear Reactor Enhancer Mk2
         }
 
         public override GameObject GetGameObject()
