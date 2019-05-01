@@ -1,7 +1,7 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Common;
-    using CyclopsNuclearReactor.Helpers;
+    using Common.Helpers;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
