@@ -16,6 +16,8 @@
         private ChildObjectIdentifier _containerRoot = null;
         private Constructable _buildable = null;
 
+        private bool IsConstructed => _buildable != null && _buildable.constructed;
+
         public override void Awake()
         {
             base.Awake();
@@ -28,20 +30,6 @@
             InitializeContainer();
 
             RetrieveAnimator();
-
-        }
-
-        private void Start()
-        {
-            powerRelay = base.gameObject.GetComponentInParent<PowerRelay>();
-
-            if (powerRelay == null)
-            {
-                QuickLogger.Error("Did not find PowerRelay in parent. Find a solution!");
-            }
-
-            base.Invoke(nameof(TryStartingNextCube), DelayedStartTime);
-            base.InvokeRepeating(nameof(UpdateCubeGeneration), DelayedStartTime * 3f, RepeatingUpdateInterval);
         }
 
         private void OnDestroy()

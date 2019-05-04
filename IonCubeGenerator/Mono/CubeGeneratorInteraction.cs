@@ -1,6 +1,7 @@
 ﻿namespace IonCubeGenerator.Mono
 {
     using IonCubeGenerator.Buildable;
+    using UnityEngine;
 
     internal partial class CubeGeneratorMono : HandTarget, IHandTarget
     {
@@ -9,8 +10,7 @@
 
         public void OnHandClick(GUIHand hand)
         {
-
-            if (!_buildable.constructed)
+            if (!this.IsConstructed)
                 return;
 
             Player main = Player.main;
@@ -23,13 +23,29 @@
 
         public void OnHandHover(GUIHand hand)
         {
-            if (!_buildable.constructed)
+            if (!this.IsConstructed)
                 return;
 
+            string text;
+            if (_cubeContainer.count == MaxAvailableSpaces)
+            {
+                text = CubeGeneratorBuildable.OnHoverTextFull();
+            }
+            else if (GameModeUtils.RequiresPower() && this.AvailablePower < EnergyConsumptionPerSecond)
+            {
+                text = CubeGeneratorBuildable.OnHoverTextNoPower();
+            }
+            else if (isGenerating && timeToNextCube > 0f)
+            {
+                int percent = Mathf.RoundToInt(NextCubePercentage);
+                text = CubeGeneratorBuildable.OnHoverTextProgress(percent);
+            }
+            else
+            {
+                text = CubeGeneratorBuildable.BuildableName;
+            }
+
             HandReticle main = HandReticle.main;
-
-            string text = CubeGeneratorBuildable.OnHoverText();
-
             main.SetInteractText(text);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }

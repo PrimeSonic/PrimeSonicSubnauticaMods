@@ -29,12 +29,10 @@
         public override TechGroup GroupForPDA { get; } = TechGroup.BasePieces;
         public override TechCategory CategoryForPDA { get; } = TechCategory.BasePiece;
         public override string AssetsFolder { get; } = "IonCubeGenerator/Assets";
-        public override TechType RequiredForUnlock { get; } = TechType.PrecursorPrisonIonGenerator;
+        public override TechType RequiredForUnlock { get; } = TechType.PrecursorIonPowerCell;
 
         public override GameObject GetGameObject()
         {
-            // TODO - Check this out
-
             var prefab = GameObject.Instantiate(_ionCubeGenPrefab);
             GameObject consoleModel = prefab.FindChild("model");
 
@@ -74,13 +72,17 @@
             {
                 Ingredients =
                 {
-                    new Ingredient(TechType.PrecursorIonCrystal, 6),
-                    new Ingredient(TechType.AdvancedWiringKit, 2),
+                    new Ingredient(TechType.PrecursorIonCrystal, 4),
+                    new Ingredient(TechType.AdvancedWiringKit, 1),
+                    new Ingredient(TechType.Benzene, 2),
+
                     new Ingredient(TechType.PlasteelIngot, 2),
-                    new Ingredient(TechType.Kyanite, 3),
-                    new Ingredient(TechType.EnameledGlass, 3),
-                    new Ingredient(TechType.Nickel, 4),
-                    new Ingredient(TechType.Diamond, 4),
+                    new Ingredient(TechType.Lithium, 2),
+                    new Ingredient(TechType.Magnetite, 2),
+
+                    new Ingredient(TechType.PrecursorKey_Blue, 2),
+                    new Ingredient(TechType.PrecursorKey_Purple, 2),
+                    new Ingredient(TechType.PrecursorKey_Orange, 2),
                 }
             };
         }
