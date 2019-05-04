@@ -27,6 +27,8 @@
 
             InitializeContainer();
 
+            RetrieveAnimator();
+
         }
 
         private void Start()

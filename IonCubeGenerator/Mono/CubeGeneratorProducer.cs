@@ -14,6 +14,7 @@
         private float timeToNextCube = -1f;
         private PowerRelay powerRelay;
 
+
         private void Update()
         {
             // Monobehavior Update method
@@ -33,6 +34,11 @@
 
                 if (hasPowerToConsume)
                 {
+                    if (_AnimatorPausedState)
+                    {
+                        ResumeAnimation();
+                    }
+
                     if (requiresEnergy)
                     {
                         powerRelay.ConsumeEnergy(energyToConsume, out float amountConsumed);
@@ -53,6 +59,10 @@
                             TryStartingNextCube();
                     }
                 }
+                else
+                {
+                    PauseAnimation();
+                }
 
                 if (timeToNextCube == -1f)
                 {
@@ -65,10 +75,12 @@
 
             if (isGenerating && !wasPreviouslyGenerating)
             {
+                AnimationWorkingState();
                 PlaySounds();
             }
             else if (!isGenerating && wasPreviouslyGenerating)
             {
+                AnimationIdleState();
                 StopSounds();
             }
         }
@@ -77,6 +89,7 @@
         {
             if (!_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
             {
+                AnimationIdleState();
                 return false;
             }
             

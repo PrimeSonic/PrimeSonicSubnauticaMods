@@ -1,4 +1,7 @@
-﻿namespace IonCubeGenerator.Mono
+﻿using System.Collections;
+using UnityEngine;
+
+namespace IonCubeGenerator.Mono
 {
     using System;
     using System.Collections.Generic;
@@ -8,15 +11,17 @@
     internal partial class CubeGeneratorMono
     {
 
-
+        #region Private Methods
         private void PlaySounds()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void StopSounds()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
+        #endregion
+        
     }
 }

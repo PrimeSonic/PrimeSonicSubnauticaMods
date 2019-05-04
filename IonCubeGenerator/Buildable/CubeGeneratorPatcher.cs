@@ -14,7 +14,7 @@
         {
             if (!singleton.GetPrefabs())
             {
-                throw new FileNotFoundException("Failed to retrieve the CubeGenerator prefab from the asset bundle");
+                throw new FileNotFoundException("Failed to retrieve the IonCubeGenerator prefab from the asset bundle");
             }
 
             singleton.Patch();
@@ -35,7 +35,7 @@
         {
             // TODO - Check this out
 
-            var prefab = GameObject.Instantiate(_cubeGeneratorPrefab);
+            var prefab = GameObject.Instantiate(_ionCubeGenPrefab);
             GameObject consoleModel = prefab.FindChild("model");
 
             // Update sky applier

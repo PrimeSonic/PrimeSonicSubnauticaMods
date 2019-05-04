@@ -1,20 +1,15 @@
 ﻿namespace IonCubeGenerator.Mono
 {
-    using Common;
     using IonCubeGenerator.Buildable;
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using UnityEngine;
 
     internal partial class CubeGeneratorMono : HandTarget, IHandTarget
     {
         // TODO - Will we need this?
         private bool pdaIsOpen = false;
 
-
         public void OnHandClick(GUIHand hand)
         {
+
             if (!_buildable.constructed)
                 return;
 

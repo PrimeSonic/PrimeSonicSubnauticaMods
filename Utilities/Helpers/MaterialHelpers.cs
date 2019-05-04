@@ -64,7 +64,7 @@
         /// <param name="gameObject">The game object to process.</param>
         /// <param name="assetBundle">The assetBundle to search in.</param>
         /// <param name="emissionColor">The color to use on the emission material.</param>
-        public static void ApplyEmissionShader(string materialName, string textureName, GameObject gameObject, AssetBundle assetBundle, Color emissionColor)
+        public static void ApplyEmissionShader(string materialName, string textureName, GameObject gameObject, AssetBundle assetBundle, Color emissionColor, float emissionMuli = 1.0f)
         {
             //Use this to do the Emission
             var shader = Shader.Find("MarmosetUBER");
@@ -79,7 +79,7 @@
                         //material.EnableKeyword("_EMISSION");
                         material.EnableKeyword("MARMO_EMISSION");
 
-                        material.SetVector("_EmissionColor", emissionColor * 1.0f);
+                        material.SetVector("_EmissionColor", emissionColor * emissionMuli);
                         material.SetTexture("_Illum", FindTexture2D(textureName, assetBundle));
                         material.SetVector("_Illum_ST", new Vector4(1.0f, 1.0f, 0.0f, 0.0f));
                     }
