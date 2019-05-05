@@ -1,13 +1,9 @@
 ﻿namespace IonCubeGenerator.Mono
 {
     using IonCubeGenerator.Buildable;
-    using UnityEngine;
 
     internal partial class CubeGeneratorMono : HandTarget, IHandTarget
     {
-        // TODO - Will we need this?
-        private bool pdaIsOpen = false;
-
         public void OnHandClick(GUIHand hand)
         {
             if (!this.IsConstructed)
@@ -16,9 +12,7 @@
             Player main = Player.main;
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(_cubeContainer, false);
-            pda.Open(PDATab.Inventory, null, new PDA.OnClose(IonGenOnPdaClose), 4f);
-
-            pdaIsOpen = true;
+            pda.Open(PDATab.Inventory, null, null, 4f);
         }
 
         public void OnHandHover(GUIHand hand)
@@ -27,7 +21,7 @@
                 return;
 
             string text;
-            if (_cubeContainer.count == MaxAvailableSpaces)
+            if (CurrentCubeCount == MaxAvailableSpaces)
             {
                 text = CubeGeneratorBuildable.OnHoverTextFull();
             }
@@ -37,8 +31,7 @@
             }
             else if (isGenerating && timeToNextCube > 0f)
             {
-                int percent = Mathf.RoundToInt(NextCubePercentage);
-                text = CubeGeneratorBuildable.OnHoverTextProgress(percent);
+                text = CubeGeneratorBuildable.OnHoverTextProgress(this.NextCubePercentage);
             }
             else
             {
@@ -48,12 +41,6 @@
             HandReticle main = HandReticle.main;
             main.SetInteractText(text);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
-        }
-
-        internal void IonGenOnPdaClose(PDA pda)
-        {
-            // TODO - Will we need this?
-            pdaIsOpen = false;
         }
     }
 }

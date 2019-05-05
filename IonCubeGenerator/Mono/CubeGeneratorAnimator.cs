@@ -1,9 +1,9 @@
-﻿using Common;
-using System.Collections;
-using UnityEngine;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
+    using Common;
+    using System.Collections;
+    using UnityEngine;
+
     internal partial class CubeGeneratorMono
     {
         private bool _safeToAnimate;
@@ -12,7 +12,7 @@ namespace IonCubeGenerator.Mono
 
         private void RetrieveAnimator()
         {
-            var animator = transform.GetComponent<Animator>();
+            Animator animator = this.transform.GetComponent<Animator>();
 
             if (animator == null)
             {

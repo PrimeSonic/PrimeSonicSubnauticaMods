@@ -6,9 +6,14 @@
 
     public static class QPatch
     {
-
         public static void Patch()
         {
+
+#if DEBUG
+            QuickLogger.DebugLogsEnabled = true;
+            QuickLogger.Debug("Debug logs enabled");
+#endif
+
             try
             {
                 CubeGeneratorBuildable.PatchSMLHelper();

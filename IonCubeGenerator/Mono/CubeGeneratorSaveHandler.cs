@@ -1,26 +1,43 @@
 ﻿namespace IonCubeGenerator.Mono
 {
-    internal partial class CubeGeneratorMono : IProtoEventListener, IProtoTreeEventListener
+    using Common;
+
+    internal partial class CubeGeneratorMono : IProtoTreeEventListener
     {
-        public void OnProtoDeserialize(ProtobufSerializer serializer)
-        {
-            // TODO - Load custom save data
-        }
+        private bool _isLoadingSaveData = false;
+        private CubeGeneratorSaveData _saveData;
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
-            InitializeContainer();
-            // TODO - Load custom save data
-        }
+            _isLoadingSaveData = true;
 
-        public void OnProtoSerialize(ProtobufSerializer serializer)
-        {
-            // TODO - Create custom save data
+            InitializeContainer();
+
+            QuickLogger.Debug("Loading save data");
+
+            if (_saveData.LoadData())
+            {
+                QuickLogger.Debug("Save data found");
+
+                _cubeContainer.Clear(false);
+
+                timeToNextCube = _saveData.RemainingTimeToNextCube;
+
+                int numberOfCubes = _saveData.NumberOfCubes;
+
+                for (int i = 0; i < numberOfCubes; i++)
+                    SpawnCube();
+            }
+
+            _isLoadingSaveData = false;
         }
 
         public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
         {
-            // TODO - Create custom save data
+            QuickLogger.Debug("Saving state to file");
+            _saveData.NumberOfCubes = this.CurrentCubeCount;
+            _saveData.RemainingTimeToNextCube = isGenerating ? timeToNextCube : -1f;
+            _saveData.SaveData();
         }
     }
 }

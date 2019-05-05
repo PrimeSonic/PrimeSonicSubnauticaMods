@@ -60,6 +60,7 @@
     <Compile Include="Buildable\CubeGeneratorAuxPatcher.cs" />
     <Compile Include="Buildable\CubeGeneratorModelPrefab.cs" />
     <Compile Include="Buildable\CubeGeneratorPatcher.cs" />
+    <Compile Include="CubeGeneratorSaveData.cs" />
     <Compile Include="Mono\CubeGeneratorAnimator.cs" />
     <Compile Include="Mono\CubeGeneratorContainer.cs" />
     <Compile Include="Mono\CubeGeneratorInteraction.cs" />

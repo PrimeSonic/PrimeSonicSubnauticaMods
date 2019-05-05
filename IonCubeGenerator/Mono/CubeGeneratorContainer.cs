@@ -1,5 +1,6 @@
 ﻿namespace IonCubeGenerator.Mono
 {
+    using System;
     using Common;
     using IonCubeGenerator.Buildable;
     using UnityEngine;
@@ -17,6 +18,7 @@
         private Constructable _buildable = null;
 
         private bool IsConstructed => _buildable != null && _buildable.constructed;
+        private int CurrentCubeCount => _cubeContainer.count;
 
         public override void Awake()
         {
@@ -25,6 +27,12 @@
             if (_buildable == null)
             {
                 _buildable = GetComponentInParent<Constructable>();
+            }
+
+            if (_saveData == null)
+            {
+                string id = GetComponentInParent<PrefabIdentifier>().Id;
+                _saveData = new CubeGeneratorSaveData(id, MaxAvailableSpaces);
             }
 
             InitializeContainer();

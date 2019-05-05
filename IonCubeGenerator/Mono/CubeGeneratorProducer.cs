@@ -10,9 +10,9 @@
         private static readonly Vector2int CubeSize = CraftData.GetItemSize(TechType.PrecursorIonCrystal);
         private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
-        private const float EnergyConsumptionPerSecond = 1.35f;
-        private const float CubeCreationTime = 60f;
-        private const float CubeCreationCost = CubeCreationTime * EnergyConsumptionPerSecond;
+        private const float CubeCreationTime = 90f;
+        private const float CubeEnergyCost = 1200f;
+        private const float EnergyConsumptionPerSecond = CubeEnergyCost / CubeCreationTime;
 
         [ProtoMember(1)]
         [NonSerialized]
@@ -41,9 +41,9 @@
             }
         }
 
-        private float NextCubePercentage => timeToNextCube > 0f
-                                                ? (1f - timeToNextCube / CubeCreationCost) * 100f
-                                                : 0f; // default to zero when not generating
+        private int NextCubePercentage => timeToNextCube > 0f
+                                                ? Mathf.RoundToInt((1f - timeToNextCube / CubeEnergyCost) * 100)
+                                                : 0; // default to zero when not generating
 
         private bool coroutineStarted = false;
 
@@ -71,6 +71,9 @@
         private void UpdateCubeGeneration()
         {
             coroutineStarted = true;
+
+            if (_isLoadingSaveData)
+                return;
 
             bool isCurrentlyGenerating = false;
 
@@ -135,7 +138,7 @@
 
         private bool SpawnCube()
         {
-            if (!_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
+            if (CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
             {
                 AnimationIdleState();
                 return false;
@@ -155,9 +158,9 @@
             if (timeToNextCube > 0f)
                 return;
 
-            if (_cubeContainer.count < MaxAvailableSpaces)
+            if (CurrentCubeCount < MaxAvailableSpaces)
             {
-                timeToNextCube = CubeCreationCost;
+                timeToNextCube = CubeEnergyCost;
             }
         }
 
