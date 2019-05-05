@@ -138,7 +138,7 @@
 
         private bool SpawnCube()
         {
-            if (CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
+            if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
             {
                 AnimationIdleState();
                 return false;
@@ -158,7 +158,7 @@
             if (timeToNextCube > 0f)
                 return;
 
-            if (CurrentCubeCount < MaxAvailableSpaces)
+            if (this.CurrentCubeCount < MaxAvailableSpaces)
             {
                 timeToNextCube = CubeEnergyCost;
             }

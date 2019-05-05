@@ -1,6 +1,5 @@
 ﻿namespace IonCubeGenerator.Mono
 {
-    using System;
     using Common;
     using IonCubeGenerator.Buildable;
     using UnityEngine;
@@ -40,11 +39,6 @@
             RetrieveAnimator();
         }
 
-        private void OnDestroy()
-        {
-
-        }
-
         private void InitializeContainer()
         {
             if (_containerRoot == null)
@@ -78,7 +72,7 @@
         }
 
         private void OnRemoveItem(InventoryItem item)
-        {            
+        {
             TryStartingNextCube();
         }
     }
