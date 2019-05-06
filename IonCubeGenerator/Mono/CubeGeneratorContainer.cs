@@ -57,7 +57,8 @@
                 _cubeContainer.isAllowedToAdd += IsAllowedToAdd;
                 _cubeContainer.isAllowedToRemove += IsAllowedToRemove;
 
-                _cubeContainer.onRemoveItem += OnRemoveItem;
+                _cubeContainer.onAddItem += OnAddItemEvent;
+                _cubeContainer.onRemoveItem += OnRemoveItemEvent;
             }
         }
 
@@ -71,9 +72,15 @@
             return true;
         }
 
-        private void OnRemoveItem(InventoryItem item)
+        private void OnAddItemEvent(InventoryItem item)
+        {
+            _buildable.deconstructionAllowed = false;
+        }
+
+        private void OnRemoveItemEvent(InventoryItem item)
         {
             TryStartingNextCube();
+            _buildable.deconstructionAllowed = _cubeContainer.count == 0;
         }
     }
 }
