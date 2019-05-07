@@ -2,6 +2,7 @@
 {
     using Common;
     using Common.EasyMarkup;
+    using IonCubeGenerator.Mono;
     using SMLHelper.V2.Utility;
     using System;
     using System.Collections.Generic;
@@ -65,14 +66,30 @@
             return new CubeGeneratorSaveData(this.Key, this.CopyDefinitions);
         }
 
-        public void SaveData()
+        public void SaveData(CubeGeneratorMono cubeGenerator)
         {
+            this.NumberOfCubes = cubeGenerator.CurrentCubeCount;
+            this.RemainingTimeToNextCube = cubeGenerator.IsGenerating ? cubeGenerator.TimeToNextCube : -1f;
+            this.Mode = cubeGenerator.CurrentSpeedMode;
+
             this.Save(SaveDirectory, this.SaveFile);
         }
 
-        public bool LoadData()
+        public void LoadData(CubeGeneratorMono cubeGenerator)
         {
-            return this.Load(SaveDirectory, this.SaveFile);
+            if (this.Load(SaveDirectory, this.SaveFile))
+            {
+                cubeGenerator.ClearContainer();
+
+                cubeGenerator.TimeToNextCube = this.RemainingTimeToNextCube;
+
+                int numberOfCubes = this.NumberOfCubes;
+
+                for (int i = 0; i < numberOfCubes; i++)
+                    cubeGenerator.SpawnCube();
+
+                cubeGenerator.CurrentSpeedMode = this.Mode;
+            }
         }
     }
 }

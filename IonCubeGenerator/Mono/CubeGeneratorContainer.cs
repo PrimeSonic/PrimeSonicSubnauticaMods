@@ -15,7 +15,7 @@
         private Constructable _buildable = null;
 
         private bool IsConstructed => _buildable != null && _buildable.constructed;
-        private int CurrentCubeCount => _cubeContainer.count;
+        internal int CurrentCubeCount => _cubeContainer.count;
 
         public override void Awake()
         {
@@ -35,6 +35,13 @@
             InitializeContainer();
 
             RetrieveAnimator();
+        }
+
+        internal void ClearContainer()
+        {
+            InitializeContainer();
+
+            _cubeContainer.Clear(false);
         }
 
         private void InitializeContainer()

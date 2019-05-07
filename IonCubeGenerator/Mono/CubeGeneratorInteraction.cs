@@ -21,7 +21,7 @@
                 return;
 
             string text;
-            if (CurrentCubeCount == MaxAvailableSpaces)
+            if (this.CurrentCubeCount == MaxAvailableSpaces)
             {
                 text = CubeGeneratorBuildable.OnHoverTextFull();
             }
@@ -29,7 +29,7 @@
             {
                 text = CubeGeneratorBuildable.OnHoverTextNoPower();
             }
-            else if (isGenerating && timeToNextCube > 0f)
+            else if (this.IsGenerating && TimeToNextCube > 0f)
             {
                 text = CubeGeneratorBuildable.OnHoverTextProgress(this.NextCubePercentage);
             }

@@ -16,11 +16,11 @@
         private float CubeCreationTime = 0f;
         private float EnergyConsumptionPerSecond = 0f;
 
-        private bool isGenerating = false;
-        private float timeToNextCube = -1f;
+        internal bool IsGenerating { get; private set; } = false;
+        internal float TimeToNextCube = -1f;
         private SpeedModes currentMode = SpeedModes.High;
 
-        private SpeedModes CurrentSpeedMode
+        internal SpeedModes CurrentSpeedMode
         {
             get => currentMode;
             set
@@ -52,8 +52,8 @@
             }
         }
 
-        private int NextCubePercentage => timeToNextCube > 0f
-                                                ? Mathf.RoundToInt((1f - timeToNextCube / CubeEnergyCost) * 100)
+        private int NextCubePercentage => TimeToNextCube > 0f
+                                                ? Mathf.RoundToInt((1f - TimeToNextCube / CubeEnergyCost) * 100)
                                                 : 0; // default to zero when not generating
 
         private bool coroutineStarted = false;
@@ -90,7 +90,7 @@
 
             bool isCurrentlyGenerating = false;
 
-            if (this.IsConstructed && currentMode > SpeedModes.Off && timeToNextCube > 0f)
+            if (this.IsConstructed && currentMode > SpeedModes.Off && TimeToNextCube > 0f)
             {
                 float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
 
@@ -110,15 +110,15 @@
                         _connectedRelay.ConsumeEnergy(energyToConsume, out float amountConsumed);
                     }
 
-                    if (timeToNextCube > 0f)
+                    if (TimeToNextCube > 0f)
                     {
-                        timeToNextCube = Mathf.Max(0f, timeToNextCube - energyToConsume);
+                        TimeToNextCube = Mathf.Max(0f, TimeToNextCube - energyToConsume);
                         isCurrentlyGenerating = true;
                     }
 
-                    if (timeToNextCube == 0f)
+                    if (TimeToNextCube == 0f)
                     {
-                        timeToNextCube = -1f;
+                        TimeToNextCube = -1f;
                         bool successfullySpawnedCube = SpawnCube();
 
                         if (successfullySpawnedCube)
@@ -130,26 +130,26 @@
                     PauseAnimation();
                 }
 
-                if (timeToNextCube == -1f)
+                if (TimeToNextCube == -1f)
                 {
                     isCurrentlyGenerating = false;
                 }
             }
 
-            bool wasPreviouslyGenerating = isGenerating;
-            isGenerating = isCurrentlyGenerating;
+            bool wasPreviouslyGenerating = this.IsGenerating;
+            this.IsGenerating = isCurrentlyGenerating;
 
-            if (isGenerating && !wasPreviouslyGenerating)
+            if (this.IsGenerating && !wasPreviouslyGenerating)
             {
                 AnimationWorkingState();
             }
-            else if (!isGenerating && wasPreviouslyGenerating)
+            else if (!this.IsGenerating && wasPreviouslyGenerating)
             {
                 AnimationIdleState();
             }
         }
 
-        private bool SpawnCube()
+        internal bool SpawnCube()
         {
             if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
             {
@@ -168,12 +168,12 @@
 
         private void TryStartingNextCube()
         {
-            if (timeToNextCube > 0f)
+            if (TimeToNextCube > 0f || CurrentSpeedMode == SpeedModes.Off)
                 return;
 
             if (this.CurrentCubeCount < MaxAvailableSpaces)
             {
-                timeToNextCube = CubeEnergyCost;
+                TimeToNextCube = CubeEnergyCost;
             }
         }
 
