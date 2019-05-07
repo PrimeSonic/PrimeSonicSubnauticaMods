@@ -1,8 +1,6 @@
 ﻿namespace IonCubeGenerator.Mono
 {
     using Common;
-    using ProtoBuf;
-    using System;
     using UnityEngine;
 
     internal partial class CubeGeneratorMono
@@ -10,17 +8,30 @@
         private static readonly Vector2int CubeSize = CraftData.GetItemSize(TechType.PrecursorIonCrystal);
         private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
-        private const float CubeCreationTime = 90f;
+        private const float DelayedStartTime = 0.5f;
+        private const float RepeatingUpdateInterval = 1f;
+        private const float CubeCreationTimeInterval = 10f;
         private const float CubeEnergyCost = 1200f;
-        private const float EnergyConsumptionPerSecond = CubeEnergyCost / CubeCreationTime;
 
-        [ProtoMember(1)]
-        [NonSerialized]
+        private float CubeCreationTime = 0f;
+        private float EnergyConsumptionPerSecond = 0f;
+
         private bool isGenerating = false;
-
-        [ProtoMember(2)]
-        [NonSerialized]
         private float timeToNextCube = -1f;
+        private SpeedModes currentMode = SpeedModes.High;
+
+        private SpeedModes CurrentSpeedMode
+        {
+            get => currentMode;
+            set
+            {
+                currentMode = value;
+                CubeCreationTime = CubeCreationTimeInterval * (int)currentMode;
+                EnergyConsumptionPerSecond = currentMode != SpeedModes.Off
+                                            ? CubeEnergyCost / CubeCreationTime
+                                            : 0f;
+            }
+        }
 
         private PowerRelay _connectedRelay = null;
 
@@ -61,6 +72,8 @@
 
             if (!coroutineStarted)
                 base.InvokeRepeating(nameof(UpdateCubeGeneration), DelayedStartTime * 3f, RepeatingUpdateInterval);
+            else
+                QuickLogger.Debug("Start attempted to invoke coroutine twice but was prevented");
         }
 
         private void Update()
@@ -77,7 +90,7 @@
 
             bool isCurrentlyGenerating = false;
 
-            if (this.IsConstructed && timeToNextCube > 0f)
+            if (this.IsConstructed && currentMode > SpeedModes.Off && timeToNextCube > 0f)
             {
                 float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
 

@@ -9,8 +9,6 @@
         private const int ContainerHeight = 2;
         private const int ContainerWidth = 2;
         private const int MaxAvailableSpaces = ContainerHeight * ContainerWidth;
-        private const float DelayedStartTime = 0.5f;
-        private const float RepeatingUpdateInterval = 1f;
 
         private ItemsContainer _cubeContainer = null;
         private ChildObjectIdentifier _containerRoot = null;

@@ -27,6 +27,8 @@
 
                 for (int i = 0; i < numberOfCubes; i++)
                     SpawnCube();
+
+                this.CurrentSpeedMode = _saveData.Mode;
             }
 
             _isLoadingSaveData = false;
@@ -37,6 +39,7 @@
             QuickLogger.Debug("Saving state to file");
             _saveData.NumberOfCubes = this.CurrentCubeCount;
             _saveData.RemainingTimeToNextCube = isGenerating ? timeToNextCube : -1f;
+            _saveData.Mode = this.CurrentSpeedMode;
             _saveData.SaveData();
         }
     }
