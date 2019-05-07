@@ -28,15 +28,24 @@
             return Language.main.Get(OnHoverFullKey);
         }
 
+        private const string BlueprintUnlockedKey = "CubeGenUnlock";
+        public static string BlueprintUnlockedMsg()
+        {
+            return Language.main.Get(BlueprintUnlockedKey);
+        }
+
         public static string BuildableName { get; private set; }
+        public static TechType TechTypeID { get; private set; }
 
         private void AdditionalPatching()
         {
             BuildableName = this.FriendlyName;
+            TechTypeID = this.TechType;
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Ion Cube Generator Receptical");
             LanguageHandler.SetLanguageLine(OnHoverProgressKey, "Ion Cube Generator ({0}%)");
             LanguageHandler.SetLanguageLine(OnHoverUnpoweredKey, "Insuficient power");
             LanguageHandler.SetLanguageLine(OnHoverFullKey, "Ion cubes ready!");
+            LanguageHandler.SetLanguageLine(BlueprintUnlockedKey, "Ion cube generator blueprint discovered!");
         }
     }
 }

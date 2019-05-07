@@ -29,7 +29,7 @@
         public override TechGroup GroupForPDA { get; } = TechGroup.BasePieces;
         public override TechCategory CategoryForPDA { get; } = TechCategory.BasePiece;
         public override string AssetsFolder { get; } = "IonCubeGenerator/Assets";
-        public override TechType RequiredForUnlock { get; } = TechType.PrecursorIonPowerCell;
+        public override TechType RequiredForUnlock { get; } = TechType.PrecursorPrisonIonGenerator;
 
         public override GameObject GetGameObject()
         {

@@ -66,6 +66,7 @@
     <Compile Include="Mono\CubeGeneratorInteraction.cs" />
     <Compile Include="Mono\CubeGeneratorProducer.cs" />
     <Compile Include="Mono\CubeGeneratorSaveHandler.cs" />
+    <Compile Include="Patchers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
     <Compile Include="SpeedModes.cs" />
