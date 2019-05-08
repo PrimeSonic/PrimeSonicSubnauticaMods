@@ -84,8 +84,8 @@
         internal void OnHover()
         {
             HandReticle main = HandReticle.main;
-
-            // All this is getting updated in Unity 2018
+            
+            main.SetInteractText(Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText), "Tooltip_UseBaseBioReactor", false, true, true);
             string text1 = Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText);
 #if SUBNAUTICA
             main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
@@ -161,14 +161,15 @@
             }
         }
 
-#endregion
+        #endregion
 
         // This method completely replaces the original ProducePower method in the BaseBioReactor
         internal float ProducePower(float chargePerSecond)
         {
             float powerProduced = 0f;
 
-            if (chargePerSecond > 0f && // More than zero energy being produced per item per time delta
+            if (GameModeUtils.RequiresPower() && // Don't consume items when in Creative or NoEnergy modes
+                chargePerSecond > 0f && // More than zero energy being produced per item per time delta
                 MaterialsProcessing.Count > 0) // There should be materials in the reactor to process
             {
                 float chargePerSecondPerItem = chargePerSecond / numberOfContainerSlots * 2;
@@ -216,10 +217,10 @@
 #endif
                 if (displayText != null)
                 {
-                    string maxPowerText = this.MaxPowerText;
-                    string currentPowerString = this.CurrentPower.ToString().PadLeft(maxPowerText.Length, ' ');
+                string maxPowerText = this.MaxPowerText;
+                string currentPowerString = this.CurrentPower.ToString().PadLeft(maxPowerText.Length, ' ');
                     displayText.text = $"<color=#00ff00>{Language.main.Get("BaseBioReactorActive")}\n{currentPowerString}/{maxPowerText}</color>";
-                }
+            }
             }
 
             if (!PdaIsOpen)
@@ -229,7 +230,7 @@
                 material.UpdateInventoryText();
         }
 
-#region Save data handling
+        #region Save data handling
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
@@ -275,7 +276,7 @@
             isLoadingSaveData = false;
         }
 
-#endregion
+        #endregion
 
         public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
         {
