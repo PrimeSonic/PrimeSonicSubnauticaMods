@@ -19,6 +19,7 @@
         private float EnergyConsumptionPerSecond = 0f;
 
         internal bool IsGenerating { get; private set; } = false;
+
         internal float TimeToNextCube = -1f;
 
         private SpeedModes currentMode = SpeedModes.High;
@@ -147,11 +148,12 @@
         private void Update()
         {
             // Monobehavior Update method
+            UpdatePercentageBar();
         }
 
         private void UpdateCubeGeneration()
         {
-            if (!HasBreakerTripped || !_AnimatorPausedState)
+            if (!HasBreakerTripped || !_animatorPausedState)
             {
                 coroutineStarted = true;
 

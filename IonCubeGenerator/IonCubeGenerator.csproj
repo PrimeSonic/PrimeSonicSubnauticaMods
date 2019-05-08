@@ -65,7 +65,6 @@
     <Compile Include="Display\IonGeneratorDisplay.cs" />
     <Compile Include="Display\OnScreenButton.cs" />
     <Compile Include="Enums\InterfaceButtonMode.cs" />
-    <Compile Include="Enums\PowerState.cs" />
     <Compile Include="Mono\CubeGeneratorAnimator.cs" />
     <Compile Include="Mono\CubeGeneratorContainer.cs" />
     <Compile Include="Mono\CubeGeneratorInteraction.cs" />

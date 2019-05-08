@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
 namespace IonCubeGenerator.Mono
 {
@@ -11,8 +10,8 @@ namespace IonCubeGenerator.Mono
     {
         private bool _safeToAnimate;
         private Animator _animator;
-        private bool _AnimatorPausedState;
-        private bool _IsWorking;
+        private bool _animatorPausedState;
+        private bool _isWorking;
         private int _speedHash;
         private int _workingHash;
 
@@ -27,7 +26,7 @@ namespace IonCubeGenerator.Mono
 
         private Image _healthBar;
         private Image _statusBar;
-        public Text percentDisplay;
+        private Text _percentDisplay;
 
 
         private void RetrieveAnimator()
@@ -46,15 +45,16 @@ namespace IonCubeGenerator.Mono
                 _animator.enabled = true;
                 _speedHash = Animator.StringToHash("speed");
                 _workingHash = Animator.StringToHash("Working");
+
             }
 
             if (!GetVisualBars())
             {
-                QuickLogger.Error("Failed Getting all Visual bars and componenets");
+                QuickLogger.Error("Failed getting all visual bars and components");
             }
             SetBar();
             InvokeRepeating("UpdateStatusBar", 1f, 0.5f);
-            InvokeRepeating("UpdatePercentageBar", 1f, 0.5f);
+
         }
 
         private bool GetVisualBars()
@@ -67,7 +67,7 @@ namespace IonCubeGenerator.Mono
                 return false;
             }
             #endregion
-            
+
             #region OperationPage
 
             var operationPage = canvasGameObject.FindChild("OperationPage")?.gameObject;
@@ -122,7 +122,7 @@ namespace IonCubeGenerator.Mono
                 return false;
             }
 
-            percentDisplay = complete.GetComponent<Text>();
+            _percentDisplay = complete.GetComponent<Text>();
             #endregion
 
             #region Full_Bar
@@ -153,10 +153,10 @@ namespace IonCubeGenerator.Mono
 
         private void AnimationWorkingState()
         {
-            if (_IsWorking) return;
+            if (_isWorking) return;
             QuickLogger.Debug(@"Working State");
             StartCoroutine(PlayAnimationEnu(1));
-            _AnimatorPausedState = false;
+            _animatorPausedState = false;
         }
 
         private void AnimationIdleState()
@@ -167,18 +167,18 @@ namespace IonCubeGenerator.Mono
 
         private void PauseAnimation()
         {
-            if (_AnimatorPausedState) return;
+            if (_animatorPausedState) return;
 
             StartCoroutine(PauseAnimationEnu());
-            _AnimatorPausedState = true;
-            _IsWorking = false;
+            _animatorPausedState = true;
+            _isWorking = false;
         }
 
         private void ResumeAnimation()
         {
-            //if (!_IsWorking) return;
+            if (Mathf.Approximately(_animator.GetFloat(_speedHash), 0f)) return;
             StartCoroutine(ResumeAnimationEnu());
-            _AnimatorPausedState = false;
+            _animatorPausedState = false;
         }
 
         void UpdateStatusBar()
@@ -195,20 +195,12 @@ namespace IonCubeGenerator.Mono
                 _statusBar.color = Color.Lerp(_endColor, _startColor, rand);
             }
 
-            if (percentDisplay != null)
+            if (_percentDisplay != null)
             {
-                percentDisplay.text = NextCubePercentage + "%";
+                _percentDisplay.text = NextCubePercentage + "%";
             }
 
         }
-
-        //IEnumerator Change()
-        //{
-        //    yield return new WaitForEndOfFrame();
-        //    yield return new WaitForSeconds(4);
-        //    InvokeRepeating("DecreaseBar", 1f, 1f);
-        //    _run = true;
-        //}
 
         void UpdatePercentageBar()
         {
@@ -218,14 +210,16 @@ namespace IonCubeGenerator.Mono
                 float outputBar = calcBar * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
                 _animator.Play("Main", 0, outputBar);
             }
+
+            SetBar();
         }
 
         private void SetBar()
         {
             float calcBar = NextCubePercentage / MaxBar;
-            float output_bar = calcBar * (MaxValue - MinValue) + MinValue;
+            float outputBar = calcBar * (MaxValue - MinValue) + MinValue;
 
-            _healthBar.fillAmount = Mathf.Clamp(output_bar, MinValue, MaxValue);
+            _healthBar.fillAmount = Mathf.Clamp(outputBar, MinValue, MaxValue);
         }
 
         #region IEnumerators
@@ -237,7 +231,7 @@ namespace IonCubeGenerator.Mono
             if (_safeToAnimate)
             {
                 _animator.SetBool(_workingHash, true);
-                _IsWorking = true;
+                _isWorking = true;
             }
         }
 
@@ -256,7 +250,7 @@ namespace IonCubeGenerator.Mono
             if (_safeToAnimate)
             {
                 QuickLogger.Debug(@"Paused State");
-                _animator.SetFloat(_speedHash,0);
+                _animator.SetFloat(_speedHash, 0);
             }
         }
 

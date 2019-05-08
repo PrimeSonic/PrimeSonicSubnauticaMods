@@ -80,7 +80,7 @@ namespace IonCubeGenerator.Display
         #endregion
 
         #region Public Overrides
-        
+
         public override void OnDisable()
         {
             base.OnDisable();
@@ -116,8 +116,6 @@ namespace IonCubeGenerator.Display
             base.OnPointerEnter(eventData);
             if (IsHovered)
             {
-                QuickLogger.Debug($"Button Mode: {ButtonMode}");
-
                 switch (ButtonMode)
                 {
                     case InterfaceButtonMode.TextScale:
@@ -176,7 +174,7 @@ namespace IonCubeGenerator.Display
             base.OnPointerClick(eventData);
 
             if (BtnName == null) return; // Returning null at some points so I am returning until solved
-            
+
             if (IsHovered)
             {
                 QuickLogger.Debug($"Clicked Button: {BtnName}", true);
@@ -184,6 +182,6 @@ namespace IonCubeGenerator.Display
             }
         }
         #endregion
-        
+
     }
 }

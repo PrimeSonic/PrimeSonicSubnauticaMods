@@ -2,7 +2,6 @@
 using IonCubeGenerator.Enums;
 using System;
 using System.Collections;
-using IonCubeGenerator.Mono;
 using UnityEngine;
 
 namespace IonCubeGenerator.Display
@@ -15,15 +14,12 @@ namespace IonCubeGenerator.Display
         private GameObject _uI_Frame;
         private Action _storage;
         private Animator _animator;
-        private int _powerStateHash;
-        private int _standbyHash;
         private Action<bool> _updateBreaker;
         private int _stateHash;
 
         /// <summary>
         /// The max distance to the screen
         /// </summary>
-        public float MAX_INTERACTION_DISTANCE { get; set; } = 2.5f;
 
         #region Public Properties
         //public DeepDrillerController Controller { get; set; }
@@ -31,16 +27,14 @@ namespace IonCubeGenerator.Display
 
         private void Awake()
         {
-            _powerStateHash = Animator.StringToHash("PowerState");
-            _standbyHash = Animator.StringToHash("StandBy");
             _stateHash = Animator.StringToHash("State");
         }
-        
+
         public void Setup(Action storage, Action<bool> updateBreaker)
         {
             _storage = storage;
             _updateBreaker = updateBreaker;
-            
+
 
             if (FindAllComponents() == false)
             {
@@ -193,16 +187,14 @@ namespace IonCubeGenerator.Display
 
         public void PowerOffDisplay()
         {
-           StartCoroutine(PowerOff());
+            StartCoroutine(PowerOff());
         }
 
         public IEnumerator PowerOff()
         {
             yield return new WaitForEndOfFrame();
             _animator.enabled = true;
-            _animator.SetFloat(_stateHash,0.5f);
-            QuickLogger.Debug($"State {_animator.GetFloat(_stateHash)}");
-
+            _animator.SetFloat(_stateHash, 0.5f);
         }
 
         public IEnumerator PowerOn()
@@ -210,8 +202,6 @@ namespace IonCubeGenerator.Display
             yield return new WaitForEndOfFrame();
             _animator.enabled = true;
             _animator.SetFloat(_stateHash, 1.0f);
-            QuickLogger.Debug($"State {_animator.GetFloat(_stateHash)}");
-
         }
 
         public IEnumerator ShutDown()
@@ -219,7 +209,6 @@ namespace IonCubeGenerator.Display
             yield return new WaitForEndOfFrame();
             _animator.enabled = true;
             _animator.SetFloat(_stateHash, 0.0f);
-            QuickLogger.Debug($"State {_animator.GetFloat(_stateHash)}");
 
         }
     }
