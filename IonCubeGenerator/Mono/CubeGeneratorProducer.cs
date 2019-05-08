@@ -1,4 +1,9 @@
-﻿namespace IonCubeGenerator.Mono
+﻿using IonCubeGenerator.Display;
+using IonCubeGenerator.Enums;
+using System;
+using Serialization;
+
+namespace IonCubeGenerator.Mono
 {
     using Common;
     using UnityEngine;
@@ -18,7 +23,9 @@
 
         internal bool IsGenerating { get; private set; } = false;
         internal float TimeToNextCube = -1f;
+
         private SpeedModes currentMode = SpeedModes.High;
+        private PowerState _powerState = PowerState.None;
 
         internal SpeedModes CurrentSpeedMode
         {
@@ -57,11 +64,64 @@
                                                 : 0; // default to zero when not generating
 
         private bool coroutineStarted = false;
+        private IonGeneratorDisplay _display;
+        public bool HasBreakerTripped;
 
+        private void UpdateSystem()
+        {
+            if (AvailablePower <= 0)
+            {
+                QuickLogger.Debug("No Power", true);
+                if (_display != null)
+                {
+                    //There is no power so lets turn off the display
+                    _display.ShutDownDisplay();
+                }
+
+                //Pause the animator
+                PauseAnimation();
+
+                //return to prevent any other code from running
+                return;
+            }
+            
+            if (HasBreakerTripped)
+            {
+                QuickLogger.Debug("Breaker Tripped", true);
+                if (_display != null)
+                {
+                    //There is no power so lets turn off the display
+                    _display.PowerOffDisplay();
+                }
+
+                //Pause the animator
+                PauseAnimation();
+
+                return;
+            }
+            
+            if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
+            {
+                QuickLogger.Debug("Storage Full", true);
+                //Pause the animator
+                PauseAnimation();
+                return;
+            }
+
+            //If we pass all these conditions show the screen
+            ResumeAnimation();
+            AnimationWorkingState();
+            _display.PowerOnDisplay();
+            
+        }
+        
         private void Start()
         {
             UpdatePowerRelay();
 
+            _display = gameObject.GetComponent<IonGeneratorDisplay>();
+            _display.Setup(ChangeStorageState, UpdateBreaker);
+            
             if (_connectedRelay == null)
             {
                 QuickLogger.Debug("Did not find PowerRelay in parent during Start. Trying again.");
@@ -71,9 +131,21 @@
             base.Invoke(nameof(TryStartingNextCube), DelayedStartTime);
 
             if (!coroutineStarted)
+            {
                 base.InvokeRepeating(nameof(UpdateCubeGeneration), DelayedStartTime * 3f, RepeatingUpdateInterval);
+                base.InvokeRepeating(nameof(UpdateSystem), DelayedStartTime * 3f, RepeatingUpdateInterval);
+            }
             else
                 QuickLogger.Debug("Start attempted to invoke coroutine twice but was prevented");
+
+        }
+
+        private void UpdateBreaker(bool value)
+        {
+            QuickLogger.Debug($"Changed Breaker Value to {value}", true);
+            HasBreakerTripped = value;
+            QuickLogger.Debug($"Current Breaker Value {HasBreakerTripped}", true);
+
         }
 
         private void Update()
@@ -83,79 +155,59 @@
 
         private void UpdateCubeGeneration()
         {
-            coroutineStarted = true;
-
-            if (_isLoadingSaveData)
-                return;
-
-            bool isCurrentlyGenerating = false;
-
-            if (this.IsConstructed && currentMode > SpeedModes.Off && TimeToNextCube > 0f)
+            if (!HasBreakerTripped || !_AnimatorPausedState)
             {
-                float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
+                coroutineStarted = true;
 
-                bool requiresEnergy = GameModeUtils.RequiresPower();
+                if (_isLoadingSaveData)
+                    return;
 
-                bool hasPowerToConsume = !requiresEnergy || (this.AvailablePower >= energyToConsume); // Has enough power
+                bool isCurrentlyGenerating = false;
 
-                if (hasPowerToConsume)
+                if (this.IsConstructed && currentMode > SpeedModes.Off && TimeToNextCube > 0f)
                 {
-                    if (_AnimatorPausedState)
+                    float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
+
+                    bool requiresEnergy = GameModeUtils.RequiresPower();
+
+                    bool _hasPowerToConsume = !requiresEnergy || (this.AvailablePower >= energyToConsume); // Has enough power
+
+                    if (_hasPowerToConsume)
                     {
-                        ResumeAnimation();
+                        if (requiresEnergy && _connectedRelay != null)
+                        {
+                            _connectedRelay.ConsumeEnergy(energyToConsume, out float amountConsumed);
+                        }
+
+                        if (TimeToNextCube > 0f)
+                        {
+                            TimeToNextCube = Mathf.Max(0f, TimeToNextCube - energyToConsume);
+                            isCurrentlyGenerating = true;
+                        }
+
+                        if (TimeToNextCube == 0f)
+                        {
+                            TimeToNextCube = -1f;
+                            bool successfullySpawnedCube = SpawnCube();
+
+                            if (successfullySpawnedCube)
+                                TryStartingNextCube();
+                        }
                     }
 
-                    if (requiresEnergy && _connectedRelay != null)
+                    if (TimeToNextCube == -1f)
                     {
-                        _connectedRelay.ConsumeEnergy(energyToConsume, out float amountConsumed);
-                    }
-
-                    if (TimeToNextCube > 0f)
-                    {
-                        TimeToNextCube = Mathf.Max(0f, TimeToNextCube - energyToConsume);
-                        isCurrentlyGenerating = true;
-                    }
-
-                    if (TimeToNextCube == 0f)
-                    {
-                        TimeToNextCube = -1f;
-                        bool successfullySpawnedCube = SpawnCube();
-
-                        if (successfullySpawnedCube)
-                            TryStartingNextCube();
+                        isCurrentlyGenerating = false;
                     }
                 }
-                else
-                {
-                    PauseAnimation();
-                }
 
-                if (TimeToNextCube == -1f)
-                {
-                    isCurrentlyGenerating = false;
-                }
-            }
-
-            bool wasPreviouslyGenerating = this.IsGenerating;
-            this.IsGenerating = isCurrentlyGenerating;
-
-            if (this.IsGenerating && !wasPreviouslyGenerating)
-            {
-                AnimationWorkingState();
-            }
-            else if (!this.IsGenerating && wasPreviouslyGenerating)
-            {
-                AnimationIdleState();
+                this.IsGenerating = isCurrentlyGenerating;
             }
         }
 
         internal bool SpawnCube()
         {
-            if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
-            {
-                AnimationIdleState();
-                return false;
-            }
+            if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y)) return false;
 
             var gameObject = GameObject.Instantiate<GameObject>(CubePrefab);
 

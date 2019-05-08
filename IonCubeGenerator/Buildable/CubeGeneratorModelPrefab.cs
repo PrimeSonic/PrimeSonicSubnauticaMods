@@ -1,11 +1,9 @@
 ﻿using Common;
 using Common.Helpers;
+using IonCubeGenerator.Display;
 
 namespace IonCubeGenerator.Buildable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using UnityEngine;
 
     internal partial class CubeGeneratorBuildable
@@ -37,8 +35,13 @@ namespace IonCubeGenerator.Buildable
             {
                 _ionCubeGenPrefab = ionCubeGenPrefab;
 
+                //Add a display to the prefab
+                _ionCubeGenPrefab.AddComponent<IonGeneratorDisplay>();
+
                 //Lets apply the material shader
                 ApplyShaders(_ionCubeGenPrefab);
+
+
 
                 QuickLogger.Debug($"IonCubeGen Prefab Found!");
             }
@@ -73,8 +76,15 @@ namespace IonCubeGenerator.Buildable
             MaterialHelpers.ApplyEmissionShader("precursor_crystal_cube_normal", "precursor_crystal_cube_spec", prefab, _assetBundle, Color.green, 3f);
             #endregion
 
+            #region Precursor_Tech1
+            MaterialHelpers.ApplyEmissionShader("Precursor_Tech1", "Precursor_Tech1_Emissive", prefab, _assetBundle, new Color(0f, 4.521441f, 0.0311821f), 4f);
+            MaterialHelpers.ApplyNormalShader("Precursor_Tech1", "Precursor_Tech1_Norm", prefab, _assetBundle);
+            MaterialHelpers.ApplyMetallicShader("Precursor_Tech1", "Precursor_Tech1_Spec", prefab, _assetBundle, 0.2f);
+
+            #endregion
+
             #region BaseCol1
-            MaterialHelpers.ApplyMetallicShader("BaseCol1", "BaseCol1_Metallic",prefab,_assetBundle, 0.2f);
+            MaterialHelpers.ApplyMetallicShader("BaseCol1", "BaseCol1_Metallic", prefab, _assetBundle, 0.2f);
             MaterialHelpers.ApplyNormalShader("BaseCol1", "BaseCol1_Norm", prefab, _assetBundle);
             #endregion
 

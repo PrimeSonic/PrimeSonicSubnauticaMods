@@ -17,10 +17,8 @@
         private bool IsConstructed => _buildable != null && _buildable.constructed;
         internal int CurrentCubeCount => _cubeContainer.count;
 
-        public override void Awake()
+        public void Awake()
         {
-            base.Awake();
-
             if (_buildable == null)
             {
                 _buildable = GetComponentInParent<Constructable>();

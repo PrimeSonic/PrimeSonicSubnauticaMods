@@ -1,11 +1,14 @@
-﻿namespace IonCubeGenerator.Mono
-{
-    using IonCubeGenerator.Buildable;
+﻿using Common;
+using UnityEngine;
 
-    internal partial class CubeGeneratorMono : HandTarget, IHandTarget
+namespace IonCubeGenerator.Mono
+{
+    internal partial class CubeGeneratorMono : MonoBehaviour
     {
-        public void OnHandClick(GUIHand hand)
+        private void ChangeStorageState()
         {
+            QuickLogger.Debug($"Storage Button Clicked", true);
+
             if (!this.IsConstructed)
                 return;
 
@@ -13,34 +16,6 @@
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(_cubeContainer, false);
             pda.Open(PDATab.Inventory, null, null, 4f);
-        }
-
-        public void OnHandHover(GUIHand hand)
-        {
-            if (!this.IsConstructed)
-                return;
-
-            string text;
-            if (this.CurrentCubeCount == MaxAvailableSpaces)
-            {
-                text = CubeGeneratorBuildable.OnHoverTextFull();
-            }
-            else if (GameModeUtils.RequiresPower() && this.AvailablePower < EnergyConsumptionPerSecond)
-            {
-                text = CubeGeneratorBuildable.OnHoverTextNoPower();
-            }
-            else if (this.IsGenerating && TimeToNextCube > 0f)
-            {
-                text = CubeGeneratorBuildable.OnHoverTextProgress(this.NextCubePercentage);
-            }
-            else
-            {
-                text = CubeGeneratorBuildable.BuildableName;
-            }
-
-            HandReticle main = HandReticle.main;
-            main.SetInteractText(text);
-            main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
     }
 }
