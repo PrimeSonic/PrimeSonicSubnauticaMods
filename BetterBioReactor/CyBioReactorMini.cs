@@ -70,9 +70,9 @@
         internal void OnHover()
         {
             HandReticle main = HandReticle.main;
-
-            // All this is getting updated in Unity 2018
-            main.SetInteractText(Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText), "Tooltip_UseBaseBioReactor", false, true, true);
+            
+            main.SetText(HandReticle.TextType.Hand, Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText), false, GameInput.Button.LeftHand);
+            main.SetText(HandReticle.TextType.HandSubscript, "Tooltip_UseBaseBioReactor", true, GameInput.Button.None);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -143,7 +143,8 @@
         {
             float powerProduced = 0f;
 
-            if (chargePerSecond > 0f && // More than zero energy being produced per item per time delta
+            if (GameModeUtils.RequiresPower() && // Don't consume items when in Creative or NoEnergy modes
+                chargePerSecond > 0f && // More than zero energy being produced per item per time delta
                 MaterialsProcessing.Count > 0) // There should be materials in the reactor to process
             {
                 float chargePerSecondPerItem = chargePerSecond / numberOfContainerSlots * 2;
