@@ -1,11 +1,8 @@
-﻿using IonCubeGenerator.Display;
-using IonCubeGenerator.Enums;
-using System;
-using Serialization;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
     using Common;
+    using IonCubeGenerator.Display;
+    using IonCubeGenerator.Enums;
     using UnityEngine;
 
     internal partial class CubeGeneratorMono
@@ -25,7 +22,6 @@ namespace IonCubeGenerator.Mono
         internal float TimeToNextCube = -1f;
 
         private SpeedModes currentMode = SpeedModes.High;
-        private PowerState _powerState = PowerState.None;
 
         internal SpeedModes CurrentSpeedMode
         {
@@ -69,7 +65,7 @@ namespace IonCubeGenerator.Mono
 
         private void UpdateSystem()
         {
-            if (AvailablePower <= 0)
+            if (this.AvailablePower <= 0)
             {
                 QuickLogger.Debug("No Power", true);
                 if (_display != null)
@@ -84,7 +80,7 @@ namespace IonCubeGenerator.Mono
                 //return to prevent any other code from running
                 return;
             }
-            
+
             if (HasBreakerTripped)
             {
                 QuickLogger.Debug("Breaker Tripped", true);
@@ -99,7 +95,7 @@ namespace IonCubeGenerator.Mono
 
                 return;
             }
-            
+
             if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
             {
                 QuickLogger.Debug("Storage Full", true);
@@ -112,16 +108,16 @@ namespace IonCubeGenerator.Mono
             ResumeAnimation();
             AnimationWorkingState();
             _display.PowerOnDisplay();
-            
+
         }
-        
+
         private void Start()
         {
             UpdatePowerRelay();
 
-            _display = gameObject.GetComponent<IonGeneratorDisplay>();
+            _display = this.gameObject.GetComponent<IonGeneratorDisplay>();
             _display.Setup(ChangeStorageState, UpdateBreaker);
-            
+
             if (_connectedRelay == null)
             {
                 QuickLogger.Debug("Did not find PowerRelay in parent during Start. Trying again.");
@@ -207,7 +203,8 @@ namespace IonCubeGenerator.Mono
 
         internal bool SpawnCube()
         {
-            if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y)) return false;
+            if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
+                return false;
 
             var gameObject = GameObject.Instantiate<GameObject>(CubePrefab);
 
@@ -220,7 +217,7 @@ namespace IonCubeGenerator.Mono
 
         private void TryStartingNextCube()
         {
-            if (TimeToNextCube > 0f || CurrentSpeedMode == SpeedModes.Off)
+            if (TimeToNextCube > 0f || this.CurrentSpeedMode == SpeedModes.Off)
                 return;
 
             if (this.CurrentCubeCount < MaxAvailableSpaces)

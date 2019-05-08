@@ -1,4 +1,4 @@
-﻿namespace IonCubeGenerator
+﻿namespace IonCubeGenerator.Enums
 {
     internal enum SpeedModes : int
     {

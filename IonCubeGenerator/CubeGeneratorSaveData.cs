@@ -2,6 +2,7 @@
 {
     using Common;
     using Common.EasyMarkup;
+    using IonCubeGenerator.Enums;
     using IonCubeGenerator.Mono;
     using SMLHelper.V2.Utility;
     using System;
@@ -59,6 +60,7 @@
         {
             _cubeCount = (EmProperty<int>)base.Properties[CubeCountKey];
             _timeToCube = (EmProperty<float>)base.Properties[TimeNextCubeKey];
+            _speedMode = (EmProperty<SpeedModes>)base.Properties[SpeedModesKey];
         }
 
         internal override EmProperty Copy()
