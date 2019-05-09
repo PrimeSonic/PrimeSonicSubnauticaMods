@@ -1,4 +1,4 @@
-﻿using UnityEngine.UI;
+﻿using System;
 
 namespace IonCubeGenerator.Mono
 {
@@ -8,8 +8,9 @@ namespace IonCubeGenerator.Mono
 
     internal partial class CubeGeneratorMono
     {
+        #region Private Members
         private bool _safeToAnimate;
-        private Animator _animator;
+        internal Animator Animator;
         private bool _animatorPausedState;
         private bool _isWorking;
         private int _speedHash;
@@ -17,138 +18,73 @@ namespace IonCubeGenerator.Mono
 
         private const float MinValue = 0.087f;
         private const float MaxValue = 0.409f;
-        private const float ArmAnimationStart = 0.1415817f;
-        private const float ArmAnimationEnd = 0.6440131f;
-
+        private const float ArmAnimationStart = 0.146606f; //0.1415817f;
+        private const float ArmAnimationEnd = 0.6554104f; //0.6440131f;
         private const float MaxBar = 100f;
-        private readonly Color _endColor = new Color(0.13671875f, 0.7421875f, 0.8046875f, 0.99609375f);
-        private readonly Color _startColor = new Color(0.99609375f, 0.0f, 0.0f, 0.99609375f);
 
-        private Image _healthBar;
-        private Image _statusBar;
-        private Text _percentDisplay;
+        private bool _coolDownPeriod;
+        private float _currentNormilzedTime;
+        private AnimatorStateInfo _animationState;
+        #endregion
 
-
+        #region Unity Methods
+        private void LateUpdate()
+        {
+            UpdatePercentageBar();
+        } 
+        #endregion
+        
+        #region Private Methods
         private void RetrieveAnimator()
         {
-            Animator animator = this.transform.GetComponent<Animator>();
+            if (!IsConstructed) return;
 
-            if (animator == null)
+            if (Animator == null)
             {
-                QuickLogger.Error("Animator component not found on the prefab");
-                _safeToAnimate = false;
+                Animator = this.transform.GetComponent<Animator>();
             }
             else
             {
-                _safeToAnimate = true;
-                _animator = animator;
-                _animator.enabled = true;
-                _speedHash = Animator.StringToHash("speed");
-                _workingHash = Animator.StringToHash("Working");
-
+                QuickLogger.Error("Animator component not found on the prefab trying again.");
+                _safeToAnimate = false;
+                return;
             }
-
-            if (!GetVisualBars())
-            {
-                QuickLogger.Error("Failed getting all visual bars and components");
-            }
+            
+            _safeToAnimate = true;
+            _speedHash = Animator.StringToHash("speed");
+            _workingHash = Animator.StringToHash("Working");
             SetBar();
-            InvokeRepeating("UpdateStatusBar", 1f, 0.5f);
-
         }
 
-        private bool GetVisualBars()
+        private void UpdateCoolDown()
         {
-            #region Canvas
-            var canvasGameObject = this.transform.GetComponentInChildren<Canvas>()?.gameObject;
-            if (canvasGameObject == null)
+            _animationState = Animator.GetCurrentAnimatorStateInfo(0);
+            _currentNormilzedTime = _animationState.normalizedTime;
+
+            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && NextCubePercentage != 100)
             {
-                QuickLogger.Error("Canvas not found.");
-                return false;
+                _coolDownPeriod = true;
+
             }
-            #endregion
-
-            #region OperationPage
-
-            var operationPage = canvasGameObject.FindChild("OperationPage")?.gameObject;
-
-            if (operationPage == null)
+            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && NextCubePercentage != 100)
             {
-                QuickLogger.Error("OperationPage not found.");
-                return false;
+                _coolDownPeriod = true;
             }
-            #endregion
-
-            #region UI_Frame
-
-            var uI_Frame = operationPage.FindChild("UI_Frame")?.gameObject;
-
-            if (uI_Frame == null)
+            else
             {
-                QuickLogger.Error("UI_Frame not found.");
-                return false;
-            }
-            #endregion
-
-            #region Mask
-
-            var mask = uI_Frame.FindChild("Mask")?.gameObject;
-
-            if (mask == null)
-            {
-                QuickLogger.Error("Mask not found.");
-                return false;
-            }
-            #endregion
-
-            #region Mask2
-
-            var mask2 = uI_Frame.FindChild("Mask_2")?.gameObject;
-
-            if (mask2 == null)
-            {
-                QuickLogger.Error("Mask_2 not found.");
-                return false;
-            }
-            #endregion
-
-            #region Complete
-
-            var complete = uI_Frame.FindChild("Complete")?.gameObject;
-
-            if (complete == null)
-            {
-                QuickLogger.Error("Complete not found.");
-                return false;
+                _coolDownPeriod = false;
             }
 
-            _percentDisplay = complete.GetComponent<Text>();
-            #endregion
-
-            #region Full_Bar
-            var fullBar = mask.FindChild("Full_Bar")?.gameObject;
-
-            if (fullBar == null)
+            if (Math.Round(_animationState.normalizedTime, 2) >= 1)
             {
-                QuickLogger.Error("Full_Bar not found.");
-                return false;
+                SetAnimationState(0);
+                if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
+                {
+                    //Pause the animator
+                    PauseAnimation();
+                }
             }
 
-            _healthBar = fullBar.GetComponent<Image>();
-            #endregion
-
-            #region Status_Full_Bar
-            var statusFullBar = mask2.FindChild("Status_Full_Bar")?.gameObject;
-
-            if (statusFullBar == null)
-            {
-                QuickLogger.Error("Status_Full_Bar not found.");
-                return false;
-            }
-
-            _statusBar = statusFullBar.GetComponent<Image>();
-            #endregion
-            return true;
         }
 
         private void AnimationWorkingState()
@@ -176,42 +112,49 @@ namespace IonCubeGenerator.Mono
 
         private void ResumeAnimation()
         {
-            if (Mathf.Approximately(_animator.GetFloat(_speedHash), 0f)) return;
+            if (Mathf.Approximately(Animator.GetFloat(_speedHash), 1f)) return;
             StartCoroutine(ResumeAnimationEnu());
             _animatorPausedState = false;
         }
 
-        void UpdateStatusBar()
+        private void UpdatePercentageBar()
         {
-            if (NextCubePercentage >= 100)
+            if (Animator != null)
             {
-                _statusBar.fillAmount = 0;
-                _statusBar.color = _endColor;
-            }
-            else
-            {
-                float rand = Random.Range(0.0f, 1.0f);
-                _statusBar.fillAmount = rand;
-                _statusBar.color = Color.Lerp(_endColor, _startColor, rand);
-            }
+                UpdateCoolDown();
 
-            if (_percentDisplay != null)
-            {
-                _percentDisplay.text = NextCubePercentage + "%";
-            }
+                if (NextCubePercentage < 100)
+                {
+                    float calcBar = NextCubePercentage / MaxBar;
+                    float outputBar = calcBar * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
 
+                    if (!_coolDownPeriod)
+                    {
+                        UpdateArmPosition(outputBar);
+                    }
+                }
+
+                //Update Percentage
+                if (_display != null)
+                {
+                    _display.UpdatePercentageText(NextCubePercentage);
+                }
+
+
+                SetBar();
+                SetStorageBar();
+            }
         }
 
-        void UpdatePercentageBar()
+        private void UpdateArmPosition(float percent)
         {
-            if (NextCubePercentage < 100)
-            {
-                float calcBar = NextCubePercentage / MaxBar;
-                float outputBar = calcBar * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
-                _animator.Play("Main", 0, outputBar);
-            }
+            SetAnimationState(percent);
+        }
 
-            SetBar();
+        private void SetAnimationState(float percent)
+        {
+            QuickLogger.Debug($"Arm position changed to {percent}"); 
+            Animator.Play("Main", 0, percent);
         }
 
         private void SetBar()
@@ -219,8 +162,24 @@ namespace IonCubeGenerator.Mono
             float calcBar = NextCubePercentage / MaxBar;
             float outputBar = calcBar * (MaxValue - MinValue) + MinValue;
 
-            _healthBar.fillAmount = Mathf.Clamp(outputBar, MinValue, MaxValue);
+            if (_display != null)
+            {
+                _display.UpdatePercentageBar(outputBar, MinValue, MaxValue);
+            }
         }
+
+        private void SetStorageBar()
+        {
+            float calcBar = (float)((CurrentCubeCount * 1.0) / (MaxAvailableSpaces * 1.0));
+            float outputBar = calcBar * (MaxValue - MinValue) + MinValue;
+
+            if (_display == null) return;
+
+            _display.UpdateStoragePercentBar(outputBar, MinValue, MaxValue);
+
+            _display.UpdateStorageAmount(CurrentCubeCount, MaxAvailableSpaces);
+        }
+        #endregion
 
         #region IEnumerators
 
@@ -230,7 +189,7 @@ namespace IonCubeGenerator.Mono
 
             if (_safeToAnimate)
             {
-                _animator.SetBool(_workingHash, true);
+                Animator.SetBool(_workingHash, true);
                 _isWorking = true;
             }
         }
@@ -240,7 +199,7 @@ namespace IonCubeGenerator.Mono
             yield return new WaitForEndOfFrame();
             if (_safeToAnimate)
             {
-                _animator.SetBool(_workingHash, false);
+                Animator.SetBool(_workingHash, false);
             }
         }
 
@@ -250,7 +209,7 @@ namespace IonCubeGenerator.Mono
             if (_safeToAnimate)
             {
                 QuickLogger.Debug(@"Paused State");
-                _animator.SetFloat(_speedHash, 0);
+                Animator.SetFloat(_speedHash, 0);
             }
         }
 
@@ -260,7 +219,7 @@ namespace IonCubeGenerator.Mono
             if (_safeToAnimate)
             {
                 QuickLogger.Debug(@"Resuming");
-                _animator.SetFloat(_speedHash, 1);
+                Animator.SetFloat(_speedHash, 1);
             }
         }
         #endregion

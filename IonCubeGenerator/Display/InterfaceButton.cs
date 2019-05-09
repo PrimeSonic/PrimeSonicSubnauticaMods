@@ -12,7 +12,7 @@ namespace IonCubeGenerator.Display
     /// For the color picker see the <see cref="ColorItemButton"/>
     /// For the paginator see the <see cref="PaginatorButton"/> 
     /// </summary>
-    public class InterfaceButton : OnScreenButton, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
+    internal class InterfaceButton : OnScreenButton, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
     {
         #region Public Properties
 

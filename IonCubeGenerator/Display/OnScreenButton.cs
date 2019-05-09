@@ -6,7 +6,7 @@ namespace IonCubeGenerator.Display
     /**
      * Component that buttons on the power storage ui will inherit from. Handles working on whether something is hovered via IsHovered as well as interaction text.
      */
-    public abstract class OnScreenButton : MonoBehaviour
+    internal abstract class OnScreenButton : MonoBehaviour
     {
         protected bool IsHovered { get; set; }
         public string TextLineOne { get; set; }

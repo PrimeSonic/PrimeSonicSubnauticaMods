@@ -32,7 +32,7 @@
 
             InitializeContainer();
 
-            RetrieveAnimator();
+            CreateDisplayedIonCube();
         }
 
         internal void ClearContainer()

@@ -24,7 +24,6 @@ namespace IonCubeGenerator.Buildable
                 return false;
             }
 
-
             _assetBundle = assetBundle;
             QuickLogger.Debug($"AssetBundle Set");
             //We have found the asset bundle and now we are going to continue by looking for the model.
@@ -40,8 +39,6 @@ namespace IonCubeGenerator.Buildable
 
                 //Lets apply the material shader
                 ApplyShaders(_ionCubeGenPrefab);
-
-
 
                 QuickLogger.Debug($"IonCubeGen Prefab Found!");
             }
@@ -72,8 +69,9 @@ namespace IonCubeGenerator.Buildable
 
             #endregion
 
-            #region precursor_crystal_cube_normal
-            MaterialHelpers.ApplyEmissionShader("precursor_crystal_cube_normal", "precursor_crystal_cube_spec", prefab, _assetBundle, Color.green, 3f);
+            #region precursor_crystal_cube
+            MaterialHelpers.ApplyEmissionShader("precursor_crystal_cube", "precursor_crystal_cube_spec", prefab, _assetBundle, Color.green, 3f);
+            MaterialHelpers.ApplyNormalShader("precursor_crystal_cube", "precursor_crystal_cube_normal", prefab, _assetBundle);
             #endregion
 
             #region Precursor_Tech1

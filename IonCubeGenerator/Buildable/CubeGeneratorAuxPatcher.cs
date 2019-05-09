@@ -43,7 +43,7 @@
             TechTypeID = this.TechType;
             LanguageHandler.SetLanguageLine(StorageLabelKey, "Ion Cube Generator Receptical");
             LanguageHandler.SetLanguageLine(OnHoverProgressKey, "Ion Cube Generator ({0}%)");
-            LanguageHandler.SetLanguageLine(OnHoverUnpoweredKey, "Insuficient power");
+            LanguageHandler.SetLanguageLine(OnHoverUnpoweredKey, "Insufficient power");
             LanguageHandler.SetLanguageLine(OnHoverFullKey, "Ion cubes ready!");
             LanguageHandler.SetLanguageLine(BlueprintUnlockedKey, "Ion cube generator blueprint discovered!");
         }

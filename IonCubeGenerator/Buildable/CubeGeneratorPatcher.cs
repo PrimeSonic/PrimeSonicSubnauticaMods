@@ -1,4 +1,6 @@
-﻿namespace IonCubeGenerator.Buildable
+﻿using IonCubeGenerator.Display.Patching;
+
+namespace IonCubeGenerator.Buildable
 {
     using IonCubeGenerator.Mono;
     using SMLHelper.V2.Assets;
@@ -24,6 +26,7 @@
             : base("CubeGenerator", "Ion Cube Generator", "Condenses large quantities of power into Ion Cubes")
         {
             OnFinishedPatching += AdditionalPatching;
+            OnFinishedPatching += DisplayLanguagePatching.AdditionPatching;
         }
 
         public override TechGroup GroupForPDA { get; } = TechGroup.BasePieces;

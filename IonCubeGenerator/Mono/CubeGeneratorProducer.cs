@@ -64,6 +64,7 @@
         private IonGeneratorDisplay _display;
         public bool HasBreakerTripped;
 
+
         private void UpdateSystem()
         {
             if (this.AvailablePower <= 0)
@@ -97,27 +98,21 @@
                 return;
             }
 
-            if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
-            {
-                QuickLogger.Debug("Storage Full", true);
-                //Pause the animator
-                PauseAnimation();
-                return;
-            }
-
             //If we pass all these conditions show the screen
+            if ((this.CurrentCubeCount == MaxAvailableSpaces ||
+                 !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))) return;
             ResumeAnimation();
             AnimationWorkingState();
             _display.PowerOnDisplay();
-
         }
 
         private void Start()
         {
+            RetrieveAnimator();
             UpdatePowerRelay();
 
             _display = this.gameObject.GetComponent<IonGeneratorDisplay>();
-            _display.Setup(ChangeStorageState, UpdateBreaker);
+            _display.Setup(this, ChangeStorageState, UpdateBreaker);
 
             if (_connectedRelay == null)
             {
@@ -130,36 +125,35 @@
             if (!coroutineStarted)
             {
                 base.InvokeRepeating(nameof(UpdateCubeGeneration), DelayedStartTime * 3f, RepeatingUpdateInterval);
-                base.InvokeRepeating(nameof(UpdateSystem), DelayedStartTime * 3f, RepeatingUpdateInterval);
+                //base.InvokeRepeating(nameof(UpdateSystem), DelayedStartTime * 3f, RepeatingUpdateInterval);
             }
             else
                 QuickLogger.Debug("Start attempted to invoke coroutine twice but was prevented");
 
         }
 
-        private void UpdateBreaker(bool value)
+        internal void UpdateBreaker(bool value)
         {
-            QuickLogger.Debug($"Changed Breaker Value to {value}", true);
             HasBreakerTripped = value;
             QuickLogger.Debug($"Current Breaker Value {HasBreakerTripped}", true);
-
         }
 
         private void Update()
         {
             // Monobehavior Update method
-            UpdatePercentageBar();
         }
 
         private void UpdateCubeGeneration()
         {
-            if (!HasBreakerTripped || !_animatorPausedState)
+            UpdateSystem();
+
+            if (!HasBreakerTripped && !_animatorPausedState && !_coolDownPeriod)
             {
                 coroutineStarted = true;
 
                 if (_isLoadingSaveData)
                     return;
-
+                
                 bool isCurrentlyGenerating = false;
 
                 if (this.IsConstructed && currentMode > SpeedModes.Off && TimeToNextCube > 0f)
@@ -197,6 +191,7 @@
                     {
                         isCurrentlyGenerating = false;
                     }
+
                 }
 
                 this.IsGenerating = isCurrentlyGenerating;
@@ -239,6 +234,25 @@
             else
             {
                 _connectedRelay = null;
+            }
+        }
+
+        private void CreateDisplayedIonCube()
+        {
+            GameObject ionSlot = gameObject.FindChild("model").FindChild("Platform_Lifter").FindChild("Ion_Lifter")
+                .FindChild("IonCube").FindChild("precursor_crystal")?.gameObject;
+            if (ionSlot != null)
+            {
+                QuickLogger.Debug("Ion Cube Display Object Created", true);
+                GameObject displayedIonCube = GameObject.Instantiate<GameObject>(CubePrefab);
+                displayedIonCube.transform.SetParent(ionSlot.transform);
+                displayedIonCube.transform.localPosition = new Vector3(-0.1152f, 0.05f, 0f); // Is to high maybe the axis is flipped
+                displayedIonCube.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                displayedIonCube.transform.Rotate(new Vector3(0, 0, 90));
+            }
+            else
+            {
+                QuickLogger.Error("Cannot Find IonCube in the prefab");
             }
         }
     }
