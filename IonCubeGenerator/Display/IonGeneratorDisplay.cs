@@ -3,7 +3,6 @@
     using Common;
     using IonCubeGenerator.Display.Patching;
     using IonCubeGenerator.Enums;
-    using IonCubeGenerator.Extensions;
     using IonCubeGenerator.Mono;
     using System;
     using System.Collections;
@@ -99,12 +98,42 @@
                     break;
 
                 case "LButton":
-                    _mono.CurrentSpeedMode = _mono.CurrentSpeedMode.Prev();
+                    switch (_mono.CurrentSpeedMode)
+                    {
+                        case SpeedModes.Max:
+                            _mono.CurrentSpeedMode = SpeedModes.High;
+                            break;
+                        case SpeedModes.High:
+                            _mono.CurrentSpeedMode = SpeedModes.Low;
+                            break;
+                        case SpeedModes.Low:
+                            _mono.CurrentSpeedMode = SpeedModes.Min;
+                            break;
+                        case SpeedModes.Min:
+                            _mono.CurrentSpeedMode = SpeedModes.Off;
+                            break;
+                    }
                     UpdateSpeedModeText();
                     break;
 
                 case "RButton":
-                    _mono.CurrentSpeedMode = _mono.CurrentSpeedMode.Next();
+                    switch (_mono.CurrentSpeedMode)
+                    {
+                        case SpeedModes.High:
+                            _mono.CurrentSpeedMode = SpeedModes.Max;
+                            break;
+                        case SpeedModes.Low:
+                            _mono.CurrentSpeedMode = SpeedModes.High;
+                            break;
+                        case SpeedModes.Min:
+                            _mono.CurrentSpeedMode = SpeedModes.Low;
+                            break;
+                        case SpeedModes.Off:
+                            _mono.CurrentSpeedMode = SpeedModes.Min;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                     UpdateSpeedModeText();
                     break;
             }
@@ -178,11 +207,11 @@
 
         internal void TurnOnDisplay()
         {
-            QuickLogger.Debug($"Turning On Display",true);
+            QuickLogger.Debug($"Turning On Display", true);
             switch (_prevState)
             {
                 case powerOn:
-                    QuickLogger.Debug($"Powering On Display",true);
+                    QuickLogger.Debug($"Powering On Display", true);
                     PowerOnDisplay();
                     break;
                 case powerOff:
