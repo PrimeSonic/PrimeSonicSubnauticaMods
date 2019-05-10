@@ -15,7 +15,11 @@ namespace IonCubeGenerator.Display
     /// </summary>
     internal class IonGeneratorDisplay : MonoBehaviour
     {
+
         #region Private Members
+        private const float powerOn = 1.0f;
+        private const float powerOff = 0.5f;
+        private const float shutDown = 0.0f;
         private GameObject _canvasGameObject;
         private GameObject _powerOffPage;
         private GameObject _operationPage;
@@ -37,11 +41,13 @@ namespace IonCubeGenerator.Display
         private readonly Color _cyan = new Color(0.13671875f, 0.7421875f, 0.8046875f);
         private readonly Color _green = new Color(0.0703125f, 0.92578125f, 0.08203125f);
         private readonly Color _orange = new Color(0.95703125f, 0.4609375f, 0f);
-
+        private float _prevState;
         #endregion
 
         #region Public Properties
         public bool DisplayCreated { get; private set; }
+        public bool HasBeenShutDown { get; set; }
+
         #endregion
 
         #region Unity Methods
@@ -106,6 +112,15 @@ namespace IonCubeGenerator.Display
 
         internal void ShutDownDisplay()
         {
+            HasBeenShutDown = true;
+
+            if (!Mathf.Approximately(_animator.GetFloat(_stateHash), 0.0f))
+            {
+                _prevState = _animator.GetFloat(_stateHash);
+            }
+
+            QuickLogger.Debug($"PrevState: {_prevState}", true);
+
             StartCoroutine(ShutDown());
         }
 
@@ -160,6 +175,25 @@ namespace IonCubeGenerator.Display
                 _storageBar.color = _fireBrick;
             }
         }
+
+        internal void TurnOnDisplay()
+        {
+            QuickLogger.Debug($"Turning On Display",true);
+            switch (_prevState)
+            {
+                case powerOn:
+                    QuickLogger.Debug($"Powering On Display",true);
+                    PowerOnDisplay();
+                    break;
+                case powerOff:
+                    QuickLogger.Debug($"Powering Off Display", true);
+                    PowerOnDisplay();
+                    break;
+            }
+
+            HasBeenShutDown = false;
+        }
+
         #endregion
 
         #region Private Methods
@@ -512,5 +546,6 @@ namespace IonCubeGenerator.Display
 
         }
         #endregion
+
     }
 }

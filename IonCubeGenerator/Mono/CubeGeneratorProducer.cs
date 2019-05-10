@@ -1,4 +1,6 @@
-﻿namespace IonCubeGenerator.Mono
+﻿using System.Text;
+
+namespace IonCubeGenerator.Mono
 {
     using Common;
     using IonCubeGenerator.Display;
@@ -64,7 +66,6 @@
         private IonGeneratorDisplay _display;
         public bool HasBreakerTripped;
 
-
         private void UpdateSystem()
         {
             if (this.AvailablePower <= 0)
@@ -79,8 +80,12 @@
                 //Pause the animator
                 PauseAnimation();
 
-                //return to prevent any other code from running
                 return;
+            }
+
+            if (_display.HasBeenShutDown)
+            {
+                _display.TurnOnDisplay();
             }
 
             if (HasBreakerTripped)
@@ -97,6 +102,7 @@
 
                 return;
             }
+
 
             //If we pass all these conditions show the screen
             if ((this.CurrentCubeCount == MaxAvailableSpaces ||
@@ -153,7 +159,7 @@
 
                 if (_isLoadingSaveData)
                     return;
-                
+
                 bool isCurrentlyGenerating = false;
 
                 if (this.IsConstructed && currentMode > SpeedModes.Off && TimeToNextCube > 0f)
@@ -241,19 +247,24 @@
         {
             GameObject ionSlot = gameObject.FindChild("model").FindChild("Platform_Lifter").FindChild("Ion_Lifter")
                 .FindChild("IonCube").FindChild("precursor_crystal")?.gameObject;
+
+
             if (ionSlot != null)
             {
                 QuickLogger.Debug("Ion Cube Display Object Created", true);
                 GameObject displayedIonCube = GameObject.Instantiate<GameObject>(CubePrefab);
                 displayedIonCube.transform.SetParent(ionSlot.transform);
-                displayedIonCube.transform.localPosition = new Vector3(-0.1152f, 0.05f, 0f); // Is to high maybe the axis is flipped
+                displayedIonCube.transform.localPosition =
+                    new Vector3(-0.1152f, 0.05f, 0f); // Is to high maybe the axis is flipped
                 displayedIonCube.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
                 displayedIonCube.transform.Rotate(new Vector3(0, 0, 90));
             }
+
             else
             {
                 QuickLogger.Error("Cannot Find IonCube in the prefab");
             }
         }
+
     }
 }

@@ -153,7 +153,6 @@ namespace IonCubeGenerator.Mono
 
         private void SetAnimationState(float percent)
         {
-            QuickLogger.Debug($"Arm position changed to {percent}"); 
             Animator.Play("Main", 0, percent);
         }
 
