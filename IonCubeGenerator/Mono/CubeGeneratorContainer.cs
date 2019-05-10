@@ -85,5 +85,18 @@
             TryStartingNextCube();
             _buildable.deconstructionAllowed = _cubeContainer.count == 0;
         }
+
+        private void OpenStorageState()
+        {
+            QuickLogger.Debug($"Storage Button Clicked", true);
+
+            if (!this.IsConstructed)
+                return;
+
+            Player main = Player.main;
+            PDA pda = main.GetPDA();
+            Inventory.main.SetUsedStorage(_cubeContainer, false);
+            pda.Open(PDATab.Inventory, null, null, 4f);
+        }
     }
 }

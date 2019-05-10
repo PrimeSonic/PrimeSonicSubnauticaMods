@@ -68,7 +68,7 @@
             return new CubeGeneratorSaveData(this.Key, this.CopyDefinitions);
         }
 
-        public void SaveData(CubeGeneratorMono cubeGenerator)
+        internal void SaveData(CubeGeneratorMono cubeGenerator)
         {
             this.NumberOfCubes = cubeGenerator.CurrentCubeCount;
             this.RemainingTimeToNextCube = cubeGenerator.IsGenerating ? cubeGenerator.TimeToNextCube : -1f;
@@ -77,7 +77,7 @@
             this.Save(SaveDirectory, this.SaveFile);
         }
 
-        public void LoadData(CubeGeneratorMono cubeGenerator)
+        internal void LoadData(CubeGeneratorMono cubeGenerator)
         {
             if (this.Load(SaveDirectory, this.SaveFile))
             {

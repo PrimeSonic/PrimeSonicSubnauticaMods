@@ -69,7 +69,6 @@
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Mono\CubeGeneratorAnimator.cs" />
     <Compile Include="Mono\CubeGeneratorContainer.cs" />
-    <Compile Include="Mono\CubeGeneratorInteraction.cs" />
     <Compile Include="Mono\CubeGeneratorProducer.cs" />
     <Compile Include="Mono\CubeGeneratorSaveHandler.cs" />
     <Compile Include="Patchers.cs" />
