@@ -1,9 +1,8 @@
-﻿using Common;
-using Common.Helpers;
-using IonCubeGenerator.Display;
-
-namespace IonCubeGenerator.Buildable
+﻿namespace IonCubeGenerator.Buildable
 {
+    using Common;
+    using Common.Helpers;
+    using IonCubeGenerator.Display;
     using UnityEngine;
 
     internal partial class CubeGeneratorBuildable

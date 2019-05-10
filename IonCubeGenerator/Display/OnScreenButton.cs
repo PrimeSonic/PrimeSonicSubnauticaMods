@@ -1,11 +1,12 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
-namespace IonCubeGenerator.Display
+﻿namespace IonCubeGenerator.Display
 {
-    /**
-     * Component that buttons on the power storage ui will inherit from. Handles working on whether something is hovered via IsHovered as well as interaction text.
-     */
+    using UnityEngine;
+    using UnityEngine.EventSystems;
+
+    /// <summary>
+    /// Component that buttons on the power storage ui will inherit from. Handles working on whether something is hovered via IsHovered as well as interaction text. 
+    /// </summary>
+    /// <seealso cref="UnityEngine.MonoBehaviour" />
     internal abstract class OnScreenButton : MonoBehaviour
     {
         protected bool IsHovered { get; set; }
@@ -15,7 +16,7 @@ namespace IonCubeGenerator.Display
 
         public virtual void OnDisable()
         {
-            IsHovered = false;
+            this.IsHovered = false;
             isHoveredOutOfRange = false;
         }
 
@@ -23,19 +24,19 @@ namespace IonCubeGenerator.Display
         {
             bool inInteractionRange = InInteractionRange();
 
-            if (IsHovered && inInteractionRange)
+            if (this.IsHovered && inInteractionRange)
             {
-                HandReticle.main.SetInteractTextRaw(TextLineOne, TextLineTwo);
+                HandReticle.main.SetInteractTextRaw(this.TextLineOne, this.TextLineTwo);
             }
 
-            if (IsHovered && inInteractionRange == false)
+            if (this.IsHovered && inInteractionRange == false)
             {
-                IsHovered = false;
+                this.IsHovered = false;
             }
 
-            if (IsHovered == false && isHoveredOutOfRange && inInteractionRange)
+            if (this.IsHovered == false && isHoveredOutOfRange && inInteractionRange)
             {
-                IsHovered = true;
+                this.IsHovered = true;
             }
         }
 
@@ -43,7 +44,7 @@ namespace IonCubeGenerator.Display
         {
             if (InInteractionRange())
             {
-                IsHovered = true;
+                this.IsHovered = true;
             }
 
             isHoveredOutOfRange = true;
@@ -51,7 +52,7 @@ namespace IonCubeGenerator.Display
 
         public virtual void OnPointerExit(PointerEventData eventData)
         {
-            IsHovered = false;
+            this.IsHovered = false;
             isHoveredOutOfRange = false;
         }
 
@@ -62,7 +63,7 @@ namespace IonCubeGenerator.Display
 
         protected bool InInteractionRange()
         {
-            return Mathf.Abs(Vector3.Distance(gameObject.transform.position, Player.main.transform.position)) <= 2.5;
+            return Mathf.Abs(Vector3.Distance(this.gameObject.transform.position, Player.main.transform.position)) <= 2.5;
         }
     }
 }

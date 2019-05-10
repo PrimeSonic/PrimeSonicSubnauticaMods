@@ -1,8 +1,7 @@
-﻿using System;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
     using Common;
+    using System;
     using System.Collections;
     using UnityEngine;
 
@@ -31,13 +30,14 @@ namespace IonCubeGenerator.Mono
         private void LateUpdate()
         {
             UpdatePercentageBar();
-        } 
+        }
         #endregion
-        
+
         #region Private Methods
         private void RetrieveAnimator()
         {
-            if (!IsConstructed) return;
+            if (!this.IsConstructed)
+                return;
 
             if (Animator == null)
             {
@@ -49,7 +49,7 @@ namespace IonCubeGenerator.Mono
                 _safeToAnimate = false;
                 return;
             }
-            
+
             _safeToAnimate = true;
             _speedHash = Animator.StringToHash("speed");
             _workingHash = Animator.StringToHash("Working");
@@ -61,12 +61,12 @@ namespace IonCubeGenerator.Mono
             _animationState = Animator.GetCurrentAnimatorStateInfo(0);
             _currentNormilzedTime = _animationState.normalizedTime;
 
-            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && NextCubePercentage != 100)
+            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && this.NextCubePercentage != 100)
             {
                 _coolDownPeriod = true;
 
             }
-            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && NextCubePercentage != 100)
+            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && this.NextCubePercentage != 100)
             {
                 _coolDownPeriod = true;
             }
@@ -89,7 +89,8 @@ namespace IonCubeGenerator.Mono
 
         private void AnimationWorkingState()
         {
-            if (_isWorking) return;
+            if (_isWorking)
+                return;
             QuickLogger.Debug(@"Working State");
             StartCoroutine(PlayAnimationEnu(1));
             _animatorPausedState = false;
@@ -103,7 +104,8 @@ namespace IonCubeGenerator.Mono
 
         private void PauseAnimation()
         {
-            if (_animatorPausedState) return;
+            if (_animatorPausedState)
+                return;
 
             StartCoroutine(PauseAnimationEnu());
             _animatorPausedState = true;
@@ -112,7 +114,8 @@ namespace IonCubeGenerator.Mono
 
         private void ResumeAnimation()
         {
-            if (Mathf.Approximately(Animator.GetFloat(_speedHash), 1f)) return;
+            if (Mathf.Approximately(Animator.GetFloat(_speedHash), 1f))
+                return;
             StartCoroutine(ResumeAnimationEnu());
             _animatorPausedState = false;
         }
@@ -123,9 +126,9 @@ namespace IonCubeGenerator.Mono
             {
                 UpdateCoolDown();
 
-                if (NextCubePercentage < 100)
+                if (this.NextCubePercentage < 100)
                 {
-                    float calcBar = NextCubePercentage / MaxBar;
+                    float calcBar = this.NextCubePercentage / MaxBar;
                     float outputBar = calcBar * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
 
                     if (!_coolDownPeriod)
@@ -137,7 +140,7 @@ namespace IonCubeGenerator.Mono
                 //Update Percentage
                 if (_display != null)
                 {
-                    _display.UpdatePercentageText(NextCubePercentage);
+                    _display.UpdatePercentageText(this.NextCubePercentage);
                 }
 
 
@@ -158,7 +161,7 @@ namespace IonCubeGenerator.Mono
 
         private void SetBar()
         {
-            float calcBar = NextCubePercentage / MaxBar;
+            float calcBar = this.NextCubePercentage / MaxBar;
             float outputBar = calcBar * (MaxValue - MinValue) + MinValue;
 
             if (_display != null)
@@ -169,14 +172,15 @@ namespace IonCubeGenerator.Mono
 
         private void SetStorageBar()
         {
-            float calcBar = (float)((CurrentCubeCount * 1.0) / (MaxAvailableSpaces * 1.0));
+            float calcBar = (float)((this.CurrentCubeCount * 1.0) / (MaxAvailableSpaces * 1.0));
             float outputBar = calcBar * (MaxValue - MinValue) + MinValue;
 
-            if (_display == null) return;
+            if (_display == null)
+                return;
 
             _display.UpdateStoragePercentBar(outputBar, MinValue, MaxValue);
 
-            _display.UpdateStorageAmount(CurrentCubeCount, MaxAvailableSpaces);
+            _display.UpdateStorageAmount(this.CurrentCubeCount, MaxAvailableSpaces);
         }
         #endregion
 

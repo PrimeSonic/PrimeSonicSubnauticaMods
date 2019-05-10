@@ -1,15 +1,15 @@
-﻿using Common;
-using IonCubeGenerator.Display.Patching;
-using IonCubeGenerator.Enums;
-using IonCubeGenerator.Extensions;
-using IonCubeGenerator.Mono;
-using System;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
-
-namespace IonCubeGenerator.Display
+﻿namespace IonCubeGenerator.Display
 {
+    using Common;
+    using IonCubeGenerator.Display.Patching;
+    using IonCubeGenerator.Enums;
+    using IonCubeGenerator.Extensions;
+    using IonCubeGenerator.Mono;
+    using System;
+    using System.Collections;
+    using UnityEngine;
+    using UnityEngine.UI;
+
     /// <summary>
     /// A component that controls the screens UI input functions
     /// </summary>
@@ -75,7 +75,7 @@ namespace IonCubeGenerator.Display
 
             UpdateSpeedModeText();
 
-            DisplayCreated = true;
+            this.DisplayCreated = true;
         }
 
         internal void OnButtonClick(string btnName, object tag)
@@ -205,7 +205,7 @@ namespace IonCubeGenerator.Display
         private bool FindAllComponents()
         {
             #region Canvas
-            _canvasGameObject = gameObject.GetComponentInChildren<Canvas>()?.gameObject;
+            _canvasGameObject = this.gameObject.GetComponentInChildren<Canvas>()?.gameObject;
             if (_canvasGameObject == null)
             {
                 QuickLogger.Error("Canvas not found.");
@@ -248,7 +248,7 @@ namespace IonCubeGenerator.Display
 
             #region UI_Frame Power BTN
 
-            var uIFramePowerBtn = _uIFrame.FindChild("Power_BTN")?.gameObject;
+            GameObject uIFramePowerBtn = _uIFrame.FindChild("Power_BTN")?.gameObject;
 
             if (uIFramePowerBtn == null)
             {
@@ -256,7 +256,7 @@ namespace IonCubeGenerator.Display
                 return false;
             }
 
-            var powerBTN = uIFramePowerBtn.AddComponent<InterfaceButton>();
+            InterfaceButton powerBTN = uIFramePowerBtn.AddComponent<InterfaceButton>();
             powerBTN.OnButtonClick = OnButtonClick;
             powerBTN.BtnName = "UIFramePowerBTN";
             powerBTN.ButtonMode = InterfaceButtonMode.Background;
@@ -277,7 +277,7 @@ namespace IonCubeGenerator.Display
 
             #region SpeedMode
 
-            var speedMode = _clocking.FindChild("SpeedMode")?.gameObject;
+            GameObject speedMode = _clocking.FindChild("SpeedMode")?.gameObject;
 
             if (speedMode == null)
             {
@@ -298,7 +298,7 @@ namespace IonCubeGenerator.Display
                 return false;
             }
 
-            var lButton = _lButton.AddComponent<InterfaceButton>();
+            InterfaceButton lButton = _lButton.AddComponent<InterfaceButton>();
             lButton.OnButtonClick = OnButtonClick;
             lButton.BtnName = "LButton";
             lButton.ButtonMode = InterfaceButtonMode.Background;
@@ -316,7 +316,7 @@ namespace IonCubeGenerator.Display
                 return false;
             }
 
-            var rButton = _rButton.AddComponent<InterfaceButton>();
+            InterfaceButton rButton = _rButton.AddComponent<InterfaceButton>();
             rButton.OnButtonClick = OnButtonClick;
             rButton.BtnName = "RButton";
             rButton.ButtonMode = InterfaceButtonMode.Background;
@@ -326,7 +326,7 @@ namespace IonCubeGenerator.Display
 
             #region PowerOffPage Power BTN
 
-            var powerOffPagePowerBtn = _powerOffPage.FindChild("Power_BTN")?.gameObject;
+            GameObject powerOffPagePowerBtn = _powerOffPage.FindChild("Power_BTN")?.gameObject;
 
             if (powerOffPagePowerBtn == null)
             {
@@ -334,7 +334,7 @@ namespace IonCubeGenerator.Display
                 return false;
             }
 
-            var _powerOffPagePowerBTN = powerOffPagePowerBtn.AddComponent<InterfaceButton>();
+            InterfaceButton _powerOffPagePowerBTN = powerOffPagePowerBtn.AddComponent<InterfaceButton>();
             _powerOffPagePowerBTN.OnButtonClick = OnButtonClick;
             _powerOffPagePowerBTN.BtnName = "PowerOffPagePowerBTN";
             _powerOffPagePowerBTN.ButtonMode = InterfaceButtonMode.Background;
@@ -344,7 +344,7 @@ namespace IonCubeGenerator.Display
 
             #region Storage BTN
 
-            var storage_BTN = _uIFrame.FindChild("Storage_BTN")?.gameObject;
+            GameObject storage_BTN = _uIFrame.FindChild("Storage_BTN")?.gameObject;
 
             if (storage_BTN == null)
             {
@@ -352,7 +352,7 @@ namespace IonCubeGenerator.Display
                 return false;
             }
 
-            var _storage_BTN = storage_BTN.AddComponent<InterfaceButton>();
+            InterfaceButton _storage_BTN = storage_BTN.AddComponent<InterfaceButton>();
             _storage_BTN.OnButtonClick = OnButtonClick;
             _storage_BTN.BtnName = "StorageBTN";
             _storage_BTN.ButtonMode = InterfaceButtonMode.Background;
@@ -362,7 +362,7 @@ namespace IonCubeGenerator.Display
 
             #region Storage BTN PO
 
-            var storageBtnPo = _powerOffPage.FindChild("Storage_BTN_PO")?.gameObject;
+            GameObject storageBtnPo = _powerOffPage.FindChild("Storage_BTN_PO")?.gameObject;
 
             if (storageBtnPo == null)
             {
@@ -370,7 +370,7 @@ namespace IonCubeGenerator.Display
                 return false;
             }
 
-            var poStorageBtn = storageBtnPo.AddComponent<InterfaceButton>();
+            InterfaceButton poStorageBtn = storageBtnPo.AddComponent<InterfaceButton>();
             poStorageBtn.OnButtonClick = OnButtonClick;
             poStorageBtn.BtnName = "StorageBTNPO";
             poStorageBtn.ButtonMode = InterfaceButtonMode.Background;
@@ -380,7 +380,7 @@ namespace IonCubeGenerator.Display
 
             #region Complete
 
-            var complete = _uIFrame.FindChild("Complete")?.gameObject;
+            GameObject complete = _uIFrame.FindChild("Complete")?.gameObject;
 
             if (complete == null)
             {
@@ -393,7 +393,7 @@ namespace IonCubeGenerator.Display
 
             #region Mask
 
-            var mask = _uIFrame.FindChild("Mask")?.gameObject;
+            GameObject mask = _uIFrame.FindChild("Mask")?.gameObject;
 
             if (mask == null)
             {
@@ -404,7 +404,7 @@ namespace IonCubeGenerator.Display
 
             #region Mask2
 
-            var mask2 = _uIFrame.FindChild("Mask_2")?.gameObject;
+            GameObject mask2 = _uIFrame.FindChild("Mask_2")?.gameObject;
 
             if (mask2 == null)
             {
@@ -414,7 +414,7 @@ namespace IonCubeGenerator.Display
             #endregion
 
             #region Full_Bar
-            var fullBar = mask.FindChild("Full_Bar")?.gameObject;
+            GameObject fullBar = mask.FindChild("Full_Bar")?.gameObject;
 
             if (fullBar == null)
             {
@@ -426,7 +426,7 @@ namespace IonCubeGenerator.Display
             #endregion
 
             #region StorageBar
-            var statusFullBar = mask2.FindChild("Status_Full_Bar")?.gameObject;
+            GameObject statusFullBar = mask2.FindChild("Status_Full_Bar")?.gameObject;
 
             if (statusFullBar == null)
             {
@@ -439,7 +439,7 @@ namespace IonCubeGenerator.Display
 
             #region Storage
 
-            var storage = _uIFrame.FindChild("Storage")?.gameObject;
+            GameObject storage = _uIFrame.FindChild("Storage")?.gameObject;
 
             if (storage == null)
             {
@@ -452,7 +452,7 @@ namespace IonCubeGenerator.Display
 
             #region CompletedTXT
 
-            var completedTxt = _uIFrame.FindChild("Completed_Txt")?.gameObject;
+            GameObject completedTxt = _uIFrame.FindChild("Completed_Txt")?.gameObject;
 
             if (completedTxt == null)
             {
@@ -465,7 +465,7 @@ namespace IonCubeGenerator.Display
 
             #region Storage_LBL
 
-            var storageLbl = _uIFrame.FindChild("Storage_LBL")?.gameObject;
+            GameObject storageLbl = _uIFrame.FindChild("Storage_LBL")?.gameObject;
 
             if (storageLbl == null)
             {
@@ -478,7 +478,7 @@ namespace IonCubeGenerator.Display
 
             #region Overclock_Txt
 
-            var overClocking = _clocking.FindChild("Overclock_Txt")?.gameObject;
+            GameObject overClocking = _clocking.FindChild("Overclock_Txt")?.gameObject;
 
             if (overClocking == null)
             {
@@ -491,7 +491,7 @@ namespace IonCubeGenerator.Display
 
             #region PowerOffPage Power BTN
 
-            var powerOff = _powerOffPage.FindChild("PoweredOff")?.gameObject;
+            GameObject powerOff = _powerOffPage.FindChild("PoweredOff")?.gameObject;
 
             if (powerOff == null)
             {
@@ -505,7 +505,7 @@ namespace IonCubeGenerator.Display
 
             #region PowerOffPage Power BTN
 
-            var ready = _powerOffPage.FindChild("Ready")?.gameObject;
+            GameObject ready = _powerOffPage.FindChild("Ready")?.gameObject;
 
             if (ready == null)
             {

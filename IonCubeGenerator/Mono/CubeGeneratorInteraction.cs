@@ -1,8 +1,8 @@
-﻿using Common;
-using UnityEngine;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
+    using Common;
+    using UnityEngine;
+
     internal partial class CubeGeneratorMono : MonoBehaviour
     {
         private void ChangeStorageState()

@@ -1,7 +1,7 @@
-﻿using SMLHelper.V2.Handlers;
-
-namespace IonCubeGenerator.Display.Patching
+﻿namespace IonCubeGenerator.Display.Patching
 {
+    using SMLHelper.V2.Handlers;
+
     internal static class DisplayLanguagePatching
     {
         public const string OverClockKey = "OverClocked";

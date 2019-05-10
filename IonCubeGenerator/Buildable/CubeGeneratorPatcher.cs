@@ -1,7 +1,6 @@
-﻿using IonCubeGenerator.Display.Patching;
-
-namespace IonCubeGenerator.Buildable
+﻿namespace IonCubeGenerator.Buildable
 {
+    using IonCubeGenerator.Display.Patching;
     using IonCubeGenerator.Mono;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;

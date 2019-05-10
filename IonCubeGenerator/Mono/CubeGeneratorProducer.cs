@@ -106,7 +106,8 @@ namespace IonCubeGenerator.Mono
 
             //If we pass all these conditions show the screen
             if ((this.CurrentCubeCount == MaxAvailableSpaces ||
-                 !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))) return;
+                 !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y)))
+                return;
             ResumeAnimation();
             AnimationWorkingState();
             _display.PowerOnDisplay();
@@ -245,14 +246,14 @@ namespace IonCubeGenerator.Mono
 
         private void CreateDisplayedIonCube()
         {
-            GameObject ionSlot = gameObject.FindChild("model").FindChild("Platform_Lifter").FindChild("Ion_Lifter")
+            GameObject ionSlot = this.gameObject.FindChild("model").FindChild("Platform_Lifter").FindChild("Ion_Lifter")
                 .FindChild("IonCube").FindChild("precursor_crystal")?.gameObject;
 
 
             if (ionSlot != null)
             {
                 QuickLogger.Debug("Ion Cube Display Object Created", true);
-                GameObject displayedIonCube = GameObject.Instantiate<GameObject>(CubePrefab);
+                var displayedIonCube = GameObject.Instantiate<GameObject>(CubePrefab);
                 displayedIonCube.transform.SetParent(ionSlot.transform);
                 displayedIonCube.transform.localPosition =
                     new Vector3(-0.1152f, 0.05f, 0f); // Is to high maybe the axis is flipped

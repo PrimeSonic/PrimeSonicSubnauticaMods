@@ -1,12 +1,12 @@
-﻿using Common;
-using IonCubeGenerator.Enums;
-using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-
-namespace IonCubeGenerator.Display
+﻿namespace IonCubeGenerator.Display
 {
+    using Common;
+    using IonCubeGenerator.Enums;
+    using System;
+    using UnityEngine;
+    using UnityEngine.EventSystems;
+    using UnityEngine.UI;
+
     /// <summary>
     /// This class is a component for all interface buttons except the color picker and the paginator.
     /// For the color picker see the <see cref="ColorItemButton"/>
@@ -39,9 +39,9 @@ namespace IonCubeGenerator.Display
         {
             if (GetComponent<Image>() != null)
             {
-                if (ButtonMode != InterfaceButtonMode.None)
+                if (this.ButtonMode != InterfaceButtonMode.None)
                 {
-                    GetComponent<Image>().color = STARTING_COLOR;
+                    GetComponent<Image>().color = this.STARTING_COLOR;
                 }
                 else
                 {
@@ -53,24 +53,24 @@ namespace IonCubeGenerator.Display
 
         public void OnEnable()
         {
-            switch (ButtonMode)
+            switch (this.ButtonMode)
             {
                 case InterfaceButtonMode.TextScale:
-                    TextComponent.fontSize = TextComponent.fontSize;
+                    this.TextComponent.fontSize = this.TextComponent.fontSize;
                     break;
                 case InterfaceButtonMode.TextColor:
-                    TextComponent.color = STARTING_COLOR;
+                    this.TextComponent.color = this.STARTING_COLOR;
                     break;
                 case InterfaceButtonMode.Background:
                     if (GetComponent<Image>() != null)
                     {
-                        GetComponent<Image>().color = STARTING_COLOR;
+                        GetComponent<Image>().color = this.STARTING_COLOR;
                     }
                     break;
                 case InterfaceButtonMode.BackgroundScale:
-                    if (gameObject != null)
+                    if (this.gameObject != null)
                     {
-                        gameObject.transform.localScale = gameObject.transform.localScale;
+                        this.gameObject.transform.localScale = this.gameObject.transform.localScale;
                     }
                     break;
                 default:
@@ -85,24 +85,24 @@ namespace IonCubeGenerator.Display
         {
             base.OnDisable();
 
-            switch (ButtonMode)
+            switch (this.ButtonMode)
             {
                 case InterfaceButtonMode.TextScale:
-                    TextComponent.fontSize = TextComponent.fontSize;
+                    this.TextComponent.fontSize = this.TextComponent.fontSize;
                     break;
                 case InterfaceButtonMode.TextColor:
-                    TextComponent.color = STARTING_COLOR;
+                    this.TextComponent.color = this.STARTING_COLOR;
                     break;
                 case InterfaceButtonMode.Background:
                     if (GetComponent<Image>() != null)
                     {
-                        GetComponent<Image>().color = STARTING_COLOR;
+                        GetComponent<Image>().color = this.STARTING_COLOR;
                     }
                     break;
                 case InterfaceButtonMode.BackgroundScale:
-                    if (gameObject != null)
+                    if (this.gameObject != null)
                     {
-                        gameObject.transform.localScale = gameObject.transform.localScale;
+                        this.gameObject.transform.localScale = this.gameObject.transform.localScale;
                     }
                     break;
                 default:
@@ -114,27 +114,27 @@ namespace IonCubeGenerator.Display
         public override void OnPointerEnter(PointerEventData eventData)
         {
             base.OnPointerEnter(eventData);
-            if (IsHovered)
+            if (this.IsHovered)
             {
-                switch (ButtonMode)
+                switch (this.ButtonMode)
                 {
                     case InterfaceButtonMode.TextScale:
-                        TextComponent.fontSize = LargeFont;
+                        this.TextComponent.fontSize = this.LargeFont;
                         break;
                     case InterfaceButtonMode.TextColor:
-                        TextComponent.color = HOVER_COLOR;
+                        this.TextComponent.color = this.HOVER_COLOR;
                         break;
                     case InterfaceButtonMode.Background:
                         if (GetComponent<Image>() != null)
                         {
-                            GetComponent<Image>().color = HOVER_COLOR;
+                            GetComponent<Image>().color = this.HOVER_COLOR;
                         }
                         break;
                     case InterfaceButtonMode.BackgroundScale:
-                        if (gameObject != null)
+                        if (this.gameObject != null)
                         {
-                            gameObject.transform.localScale +=
-                                new Vector3(IncreaseButtonBy, IncreaseButtonBy, IncreaseButtonBy);
+                            this.gameObject.transform.localScale +=
+                                new Vector3(this.IncreaseButtonBy, this.IncreaseButtonBy, this.IncreaseButtonBy);
                         }
                         break;
                 }
@@ -145,25 +145,25 @@ namespace IonCubeGenerator.Display
         {
             base.OnPointerExit(eventData);
 
-            switch (ButtonMode)
+            switch (this.ButtonMode)
             {
                 case InterfaceButtonMode.TextScale:
-                    TextComponent.fontSize = SmallFont;
+                    this.TextComponent.fontSize = this.SmallFont;
                     break;
                 case InterfaceButtonMode.TextColor:
-                    TextComponent.color = STARTING_COLOR;
+                    this.TextComponent.color = this.STARTING_COLOR;
                     break;
                 case InterfaceButtonMode.Background:
                     if (GetComponent<Image>() != null)
                     {
-                        GetComponent<Image>().color = STARTING_COLOR;
+                        GetComponent<Image>().color = this.STARTING_COLOR;
                     }
                     break;
                 case InterfaceButtonMode.BackgroundScale:
-                    if (gameObject != null)
+                    if (this.gameObject != null)
                     {
-                        gameObject.transform.localScale -=
-                            new Vector3(IncreaseButtonBy, IncreaseButtonBy, IncreaseButtonBy);
+                        this.gameObject.transform.localScale -=
+                            new Vector3(this.IncreaseButtonBy, this.IncreaseButtonBy, this.IncreaseButtonBy);
                     }
                     break;
             }
@@ -173,12 +173,13 @@ namespace IonCubeGenerator.Display
         {
             base.OnPointerClick(eventData);
 
-            if (BtnName == null) return; // Returning null at some points so I am returning until solved
+            if (this.BtnName == null)
+                return; // Returning null at some points so I am returning until solved
 
-            if (IsHovered)
+            if (this.IsHovered)
             {
-                QuickLogger.Debug($"Clicked Button: {BtnName}", true);
-                OnButtonClick?.Invoke(BtnName, Tag);
+                QuickLogger.Debug($"Clicked Button: {this.BtnName}", true);
+                OnButtonClick?.Invoke(this.BtnName, this.Tag);
             }
         }
         #endregion
