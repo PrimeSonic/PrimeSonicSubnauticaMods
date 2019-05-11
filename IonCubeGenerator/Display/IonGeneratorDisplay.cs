@@ -16,22 +16,18 @@
     {
 
         #region Private Members
-        private const float powerOn = 1.0f;
-        private const float powerOff = 0.5f;
-        private const float shutDown = 0.0f;
+        private const float MaxBar = 100f;
+        private const float PowerOn = 1.0f;
+        private const float Boot = 0.0f;
         private GameObject _canvasGameObject;
         private GameObject _powerOffPage;
         private GameObject _operationPage;
         private GameObject _uIFrame;
-        private Action _storageAction;
-        private Animator _animator;
-        private Action<bool> _updateBreakerAction;
         private int _stateHash;
         private Text _speedMode;
         private GameObject _lButton;
         private GameObject _clocking;
         private GameObject _rButton;
-        private CubeGeneratorMono _mono;
         private Text _percentDisplay;
         private Image _percentageBar;
         private Image _storageBar;
@@ -40,64 +36,82 @@
         private readonly Color _cyan = new Color(0.13671875f, 0.7421875f, 0.8046875f);
         private readonly Color _green = new Color(0.0703125f, 0.92578125f, 0.08203125f);
         private readonly Color _orange = new Color(0.95703125f, 0.4609375f, 0f);
-        private float _prevState;
+        private bool _coroutineStarted;
+        private const float DelayedStartTime = 0.5f;
+        private const float RepeatingUpdateInterval = 1f;
+        private CubeGeneratorMono _mono;
+        private CubeGeneratorAnimator _animatorController;
+        private bool _initialized;
+        private const float BarMinValue = 0.087f;
+        private const float BarMaxValue = 0.409f;
+
         #endregion
 
         #region Public Properties
-        public bool DisplayCreated { get; private set; }
         public bool HasBeenShutDown { get; set; }
-
         #endregion
 
         #region Unity Methods
         private void Awake()
         {
-            _stateHash = Animator.StringToHash("State");
+            _stateHash = UnityEngine.Animator.StringToHash("State");
+        }
+
+        private void Start()
+        {
+            if (!_coroutineStarted)
+                base.InvokeRepeating(nameof(Updater), DelayedStartTime * 3f, RepeatingUpdateInterval);
+
+            DisplayLanguagePatching.AdditionPatching();
+
+            if (FindAllComponents() == false)
+            {
+                QuickLogger.Error("// ============== Error getting all Components ============== //");
+                BootScreen();
+                return;
+            }
+
+            _animatorController = this.transform.GetComponent<CubeGeneratorAnimator>();
+
+            if (_animatorController == null)
+            {
+                QuickLogger.Error("Animator component not found on the GameObject.");
+            }
+
+            _mono = this.transform.GetComponent<CubeGeneratorMono>();
+
+            if (_mono == null)
+            {
+                QuickLogger.Error("CubeGeneratorMono component not found on the GameObject.");
+            }
+
+            _initialized = true;
+
+            UpdateSpeedModeText();
+
+            PowerOnDisplay();
+
         }
         #endregion
 
         #region Internal Methods
 
-        internal void Setup(CubeGeneratorMono mono, Action storage, Action<bool> updateBreaker)
+        internal float GetBarPercent()
         {
-            DisplayLanguagePatching.AdditionPatching();
-            _storageAction = storage;
-            _updateBreakerAction = updateBreaker;
-            _mono = mono;
-            _animator = mono.Animator;
-            if (FindAllComponents() == false)
-            {
-                QuickLogger.Error("// ============== Error getting all Components ============== //");
-                ShutDownDisplay();
-                return;
-            }
-
-            UpdateSpeedModeText();
-
-            this.DisplayCreated = true;
+            return _mono.NextCubePercentage / MaxBar;
         }
 
-        internal void OnButtonClick(string btnName, object tag)
+        internal void OnButtonClick(string btnName, object additionalObject)
         {
             switch (btnName)
             {
                 case "StorageBTN":
-                    _storageAction?.Invoke();
-                    break;
-
-                case "StorageBTNPO":
-                    _storageAction?.Invoke();
-                    break;
-
-                case "UIFramePowerBTN":
-                    _updateBreakerAction?.Invoke(true);
-                    break;
-
-                case "PowerOffPagePowerBTN":
-                    _updateBreakerAction?.Invoke(false);
+                    _mono.OpenStorageState();
                     break;
 
                 case "LButton":
+                    //if (_animatorController.InCoolDown) break;
+                    QuickLogger.Debug($"UpdateCoolDown {_animatorController.InCoolDown} || {_mono.CurrentSpeedMode}", true);
                     switch (_mono.CurrentSpeedMode)
                     {
                         case SpeedModes.Max:
@@ -112,11 +126,16 @@
                         case SpeedModes.Min:
                             _mono.CurrentSpeedMode = SpeedModes.Off;
                             break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                     UpdateSpeedModeText();
+                    QuickLogger.Debug($"UpdateCoolDown {_animatorController.InCoolDown} || {_mono.CurrentSpeedMode}", true);
                     break;
 
                 case "RButton":
+                    //if (_animatorController.InCoolDown) break;
+                    QuickLogger.Debug($"UpdateCoolDown {_animatorController.InCoolDown} || {_mono.CurrentSpeedMode}", true);
                     switch (_mono.CurrentSpeedMode)
                     {
                         case SpeedModes.High:
@@ -131,96 +150,11 @@
                         case SpeedModes.Off:
                             _mono.CurrentSpeedMode = SpeedModes.Min;
                             break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
                     }
                     UpdateSpeedModeText();
+                    QuickLogger.Debug($"UpdateCoolDown {_animatorController.InCoolDown} || {_mono.CurrentSpeedMode}", true);
                     break;
             }
-        }
-
-        internal void ShutDownDisplay()
-        {
-            HasBeenShutDown = true;
-
-            if (!Mathf.Approximately(_animator.GetFloat(_stateHash), 0.0f))
-            {
-                _prevState = _animator.GetFloat(_stateHash);
-            }
-
-            QuickLogger.Debug($"PrevState: {_prevState}", true);
-
-            StartCoroutine(ShutDown());
-        }
-
-        internal void PowerOnDisplay()
-        {
-            StartCoroutine(PowerOn());
-        }
-
-        internal void PowerOffDisplay()
-        {
-            StartCoroutine(PowerOff());
-        }
-
-        internal void UpdatePercentageText(int percent)
-        {
-            _percentDisplay.text = $"{percent}%";
-        }
-
-        internal void UpdatePercentageBar(float percentage, float minBarValue, float maxBarValue)
-        {
-            _percentageBar.fillAmount = Mathf.Clamp(percentage, minBarValue, maxBarValue);
-        }
-
-        internal void UpdateStoragePercentBar(float percentage, float minBarValue, float maxBarValue)
-        {
-            _storageBar.fillAmount = Mathf.Clamp(percentage, minBarValue, maxBarValue);
-        }
-
-        internal void UpdateStorageAmount(int currentAmount, int maxAmount)
-        {
-            _storageAmount.text = $"{currentAmount}/{maxAmount}";
-
-            float percent = (float)(currentAmount * 1.0 / maxAmount * 1.0) * 100.0f;
-
-            if (Math.Round(percent) <= 25)
-            {
-                _storageBar.color = _cyan;
-            }
-
-            if (Math.Round(percent) > 25 && percent <= 50)
-            {
-                _storageBar.color = _green;
-            }
-
-            if (Math.Round(percent) > 50 && percent <= 75)
-            {
-                _storageBar.color = _orange;
-            }
-
-            if (Math.Round(percent) > 75 && percent <= 100)
-            {
-                _storageBar.color = _fireBrick;
-            }
-        }
-
-        internal void TurnOnDisplay()
-        {
-            QuickLogger.Debug($"Turning On Display", true);
-            switch (_prevState)
-            {
-                case powerOn:
-                    QuickLogger.Debug($"Powering On Display", true);
-                    PowerOnDisplay();
-                    break;
-                case powerOff:
-                    QuickLogger.Debug($"Powering Off Display", true);
-                    PowerOnDisplay();
-                    break;
-            }
-
-            HasBeenShutDown = false;
         }
 
         #endregion
@@ -228,7 +162,24 @@
         #region Private Methods
         private void UpdateSpeedModeText()
         {
-            _speedMode.text = _mono.CurrentSpeedMode.ToString();
+            switch (_mono.CurrentSpeedMode)
+            {
+                case SpeedModes.Off:
+                    _speedMode.text = GetLanguage(DisplayLanguagePatching.OffKey);
+                    break;
+                case SpeedModes.Max:
+                    _speedMode.text = GetLanguage(DisplayLanguagePatching.MaxKey);
+                    break;
+                case SpeedModes.High:
+                    _speedMode.text = GetLanguage(DisplayLanguagePatching.HighKey);
+                    break;
+                case SpeedModes.Low:
+                    _speedMode.text = GetLanguage(DisplayLanguagePatching.LowKey);
+                    break;
+                case SpeedModes.Min:
+                    _speedMode.text = GetLanguage(DisplayLanguagePatching.MinKey);
+                    break;
+            }
         }
 
         private bool FindAllComponents()
@@ -273,24 +224,6 @@
                 QuickLogger.Error("UI_Frame not found.");
                 return false;
             }
-            #endregion
-
-            #region UI_Frame Power BTN
-
-            GameObject uIFramePowerBtn = _uIFrame.FindChild("Power_BTN")?.gameObject;
-
-            if (uIFramePowerBtn == null)
-            {
-                QuickLogger.Error("UI_Frame Power Button not found.");
-                return false;
-            }
-
-            InterfaceButton powerBTN = uIFramePowerBtn.AddComponent<InterfaceButton>();
-            powerBTN.OnButtonClick = OnButtonClick;
-            powerBTN.BtnName = "UIFramePowerBTN";
-            powerBTN.ButtonMode = InterfaceButtonMode.Background;
-            powerBTN.TextLineOne = GetLanguage(DisplayLanguagePatching.ToggleIonPowerKey);
-            powerBTN.Tag = this;
             #endregion
 
             #region Clocking
@@ -353,24 +286,6 @@
             rButton.Tag = this;
             #endregion
 
-            #region PowerOffPage Power BTN
-
-            GameObject powerOffPagePowerBtn = _powerOffPage.FindChild("Power_BTN")?.gameObject;
-
-            if (powerOffPagePowerBtn == null)
-            {
-                QuickLogger.Error("PowerOffPage Power Button not found.");
-                return false;
-            }
-
-            InterfaceButton _powerOffPagePowerBTN = powerOffPagePowerBtn.AddComponent<InterfaceButton>();
-            _powerOffPagePowerBTN.OnButtonClick = OnButtonClick;
-            _powerOffPagePowerBTN.BtnName = "PowerOffPagePowerBTN";
-            _powerOffPagePowerBTN.ButtonMode = InterfaceButtonMode.Background;
-            _powerOffPagePowerBTN.TextLineOne = GetLanguage(DisplayLanguagePatching.ToggleIonPowerKey);
-            _powerOffPagePowerBTN.Tag = this;
-            #endregion
-
             #region Storage BTN
 
             GameObject storage_BTN = _uIFrame.FindChild("Storage_BTN")?.gameObject;
@@ -387,24 +302,6 @@
             _storage_BTN.ButtonMode = InterfaceButtonMode.Background;
             _storage_BTN.TextLineOne = GetLanguage(DisplayLanguagePatching.OpenStorageKey);
             _storage_BTN.Tag = this;
-            #endregion
-
-            #region Storage BTN PO
-
-            GameObject storageBtnPo = _powerOffPage.FindChild("Storage_BTN_PO")?.gameObject;
-
-            if (storageBtnPo == null)
-            {
-                QuickLogger.Error("Storage_BTN_PO not found.");
-                return false;
-            }
-
-            InterfaceButton poStorageBtn = storageBtnPo.AddComponent<InterfaceButton>();
-            poStorageBtn.OnButtonClick = OnButtonClick;
-            poStorageBtn.BtnName = "StorageBTNPO";
-            poStorageBtn.ButtonMode = InterfaceButtonMode.Background;
-            poStorageBtn.TextLineOne = GetLanguage(DisplayLanguagePatching.OpenStorageKey);
-            poStorageBtn.Tag = this;
             #endregion
 
             #region Complete
@@ -518,33 +415,6 @@
             overClocking.GetComponent<Text>().text = GetLanguage(DisplayLanguagePatching.OverClockKey);
             #endregion
 
-            #region PowerOffPage Power BTN
-
-            GameObject powerOff = _powerOffPage.FindChild("PoweredOff")?.gameObject;
-
-            if (powerOff == null)
-            {
-                QuickLogger.Error("PoweredOff not found.");
-                return false;
-            }
-
-            powerOff.GetComponent<Text>().text = GetLanguage(DisplayLanguagePatching.PoweredOffKey);
-
-            #endregion
-
-            #region PowerOffPage Power BTN
-
-            GameObject ready = _powerOffPage.FindChild("Ready")?.gameObject;
-
-            if (ready == null)
-            {
-                QuickLogger.Error("Ready not found.");
-                return false;
-            }
-
-            ready.GetComponent<Text>().text = GetLanguage(DisplayLanguagePatching.ReadyKey);
-
-            #endregion
 
             return true;
         }
@@ -553,28 +423,105 @@
         {
             return Language.main.Get(key);
         }
+
+        private void Updater()
+        {
+            if (!_initialized) return;
+
+            _coroutineStarted = true;
+
+            UpdatePercentageBar();
+
+            UpdateStoragePercentBar();
+
+            UpdateStorageAmount();
+
+            UpdatePercentageText();
+        }
+
+        private void BootScreen()
+        {
+            StartCoroutine(BootScreenEnu());
+        }
+
+        private void PowerOnDisplay()
+        {
+            StartCoroutine(PowerOnDisplayEnu());
+        }
+
+        private void UpdatePercentageText()
+        {
+            _percentDisplay.text = $"{_mono.NextCubePercentage}%";
+        }
+
+        private void UpdatePercentageBar()
+        {
+            if (_mono == null)
+            {
+                QuickLogger.Error("Mono is null");
+                return;
+            }
+
+            float calcBar = _mono.NextCubePercentage / MaxBar;
+
+            float outputBar = calcBar * (BarMaxValue - BarMinValue) + BarMinValue;
+
+            _percentageBar.fillAmount = Mathf.Clamp(outputBar, BarMinValue, BarMaxValue);
+
+        }
+
+        private void UpdateStoragePercentBar()
+        {
+            float calcBar = (float)((_mono.CurrentCubeCount * 1.0) / (_mono.GetMaxAvailableSpaces() * 1.0));
+            float outputBar = calcBar * (BarMaxValue - BarMinValue) + BarMinValue;
+            _storageBar.fillAmount = Mathf.Clamp(outputBar, BarMinValue, BarMaxValue);
+
+        }
+
+        private void UpdateStorageAmount()
+        {
+            _storageAmount.text = $"{_mono.CurrentCubeCount}/{_mono.GetMaxAvailableSpaces()}";
+
+            float percent = (float)(_mono.CurrentCubeCount * 1.0 / _mono.GetMaxAvailableSpaces() * 1.0) * 100.0f;
+
+            if (Math.Round(percent) <= 25)
+            {
+                _storageBar.color = _cyan;
+            }
+
+            if (Math.Round(percent) > 25 && percent <= 50)
+            {
+                _storageBar.color = _green;
+            }
+
+            if (Math.Round(percent) > 50 && percent <= 75)
+            {
+                _storageBar.color = _orange;
+            }
+
+            if (Math.Round(percent) > 75 && percent <= 100)
+            {
+                _storageBar.color = _fireBrick;
+            }
+        }
         #endregion
 
         #region IEnumerators
-        private IEnumerator PowerOff()
+
+        private IEnumerator PowerOnDisplayEnu()
         {
             yield return new WaitForEndOfFrame();
-            _animator.SetFloat(_stateHash, 0.5f);
+            _animatorController.SetFloatHash(_stateHash, PowerOn);
         }
 
-        private IEnumerator PowerOn()
+        private IEnumerator BootScreenEnu()
         {
             yield return new WaitForEndOfFrame();
-            _animator.SetFloat(_stateHash, 1.0f);
+            _animatorController.SetFloatHash(_stateHash, Boot);
+            yield return new WaitForSeconds(3);
+            PowerOnDisplay();
         }
 
-        private IEnumerator ShutDown()
-        {
-            yield return new WaitForEndOfFrame();
-            _animator.SetFloat(_stateHash, 0.0f);
-
-        }
         #endregion
-
     }
 }

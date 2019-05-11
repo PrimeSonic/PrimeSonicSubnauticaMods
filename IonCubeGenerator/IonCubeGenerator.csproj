@@ -66,7 +66,6 @@
     <Compile Include="Display\OnScreenButton.cs" />
     <Compile Include="Display\Patching\DisplayLanguagePatching.cs" />
     <Compile Include="Enums\InterfaceButtonMode.cs" />
-    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Mono\CubeGeneratorAnimator.cs" />
     <Compile Include="Mono\CubeGeneratorContainer.cs" />
     <Compile Include="Mono\CubeGeneratorProducer.cs" />
@@ -88,7 +87,6 @@
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy "$(ProjectDir)bin\$(Configuration)\IonCubeGenerator.dll" "F:\Program Files\Epic Games\Subnautica\QMods\IonCubeGenerator\" /Y /I</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -12,11 +12,17 @@
             _saveData.LoadData(this);
 
             _isLoadingSaveData = false;
+
         }
 
         public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
         {
             _saveData.SaveData(this);
+        }
+
+        internal bool IsLoadingSaveData()
+        {
+            return _isLoadingSaveData;
         }
     }
 }

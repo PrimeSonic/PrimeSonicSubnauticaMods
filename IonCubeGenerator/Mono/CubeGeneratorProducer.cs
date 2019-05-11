@@ -1,9 +1,6 @@
-﻿using System.Text;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
     using Common;
-    using IonCubeGenerator.Display;
     using IonCubeGenerator.Enums;
     using System;
     using UnityEngine;
@@ -58,72 +55,27 @@ namespace IonCubeGenerator.Mono
             }
         }
 
-        private int NextCubePercentage
-        {
-            get => TimeToNextCube > 0f
+        internal int NextCubePercentage => TimeToNextCube > 0f
                     ? Mathf.RoundToInt((1f - TimeToNextCube / CubeEnergyCost) * 100)
                     : 0; // default to zero when not generating
-        }
 
         private bool coroutineStarted = false;
-        private IonGeneratorDisplay _display;
+
         public bool HasBreakerTripped;
-
-        private void UpdateSystem()
-        {
-            if (this.AvailablePower <= 0)
-            {
-                QuickLogger.Debug("No Power", true);
-                if (_display != null)
-                {
-                    //There is no power so lets turn off the display
-                    _display.ShutDownDisplay();
-                }
-
-                //Pause the animator
-                PauseAnimation();
-
-                return;
-            }
-
-            if (_display.HasBeenShutDown)
-            {
-                _display.TurnOnDisplay();
-            }
-
-            if (HasBreakerTripped)
-            {
-                QuickLogger.Debug("Breaker Tripped", true);
-                if (_display != null)
-                {
-                    //There is no power so lets turn off the display
-                    _display.PowerOffDisplay();
-                }
-
-                //Pause the animator
-                PauseAnimation();
-
-                return;
-            }
-
-
-            //If we pass all these conditions show the screen
-            if ((this.CurrentCubeCount == MaxAvailableSpaces ||
-                 !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y)))
-                return;
-
-            ResumeAnimation();
-            AnimationWorkingState();
-            _display.PowerOnDisplay();
-        }
+        private CubeGeneratorAnimator _animator;
 
         private void Start()
         {
-            RetrieveAnimator();
+
             UpdatePowerRelay();
 
-            _display = this.gameObject.GetComponent<IonGeneratorDisplay>();
-            _display.Setup(this, OpenStorageState, UpdateBreaker);
+            _animator = gameObject.GetComponent<CubeGeneratorAnimator>();
+
+            if (_animator == null)
+            {
+                QuickLogger.Error("Did not find Animator in parent during Start.");
+            }
+
 
             if (_connectedRelay == null)
             {
@@ -155,9 +107,7 @@ namespace IonCubeGenerator.Mono
         {
             coroutineStarted = true;
 
-            UpdateSystem();
-
-            if (_isLoadingSaveData || HasBreakerTripped || _animatorPausedState || _coolDownPeriod)
+            if (_isLoadingSaveData || _animator.InCoolDown)
                 return;
 
             bool isCurrentlyGenerating = false;
@@ -241,32 +191,6 @@ namespace IonCubeGenerator.Mono
                 _connectedRelay = null;
             }
         }
-
-        private void CreateDisplayedIonCube()
-        {
-            GameObject ionSlot = this.gameObject.FindChild("model")
-                                                .FindChild("Platform_Lifter")
-                                                .FindChild("Ion_Lifter")
-                                                .FindChild("IonCube")
-                                                .FindChild("precursor_crystal")?.gameObject;
-
-
-            if (ionSlot != null)
-            {
-                QuickLogger.Debug("Ion Cube Display Object Created", true);
-                var displayedIonCube = GameObject.Instantiate<GameObject>(CubePrefab);
-                displayedIonCube.transform.SetParent(ionSlot.transform);
-                displayedIonCube.transform.localPosition =
-                    new Vector3(-0.1152f, 0.05f, 0f); // Is to high maybe the axis is flipped
-                displayedIonCube.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-                displayedIonCube.transform.Rotate(new Vector3(0, 0, 90));
-            }
-
-            else
-            {
-                QuickLogger.Error("Cannot Find IonCube in the prefab");
-            }
-        }
-
+        
     }
 }

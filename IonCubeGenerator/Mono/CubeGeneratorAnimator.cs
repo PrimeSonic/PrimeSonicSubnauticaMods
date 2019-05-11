@@ -1,90 +1,162 @@
-﻿namespace IonCubeGenerator.Mono
+﻿using IonCubeGenerator.Display;
+
+namespace IonCubeGenerator.Mono
 {
     using Common;
     using System;
     using System.Collections;
     using UnityEngine;
 
-    internal partial class CubeGeneratorMono
+    internal class CubeGeneratorAnimator : MonoBehaviour
     {
         #region Private Members
-        private bool _safeToAnimate;
-        internal Animator Animator;
         private bool _animatorPausedState;
         private bool _isWorking;
         private int _speedHash;
         private int _workingHash;
+        private IonGeneratorDisplay _display;
+        private CubeGeneratorMono _mono;
 
-        private const float MinValue = 0.087f;
-        private const float MaxValue = 0.409f;
         private const float ArmAnimationStart = 0.146606f; //0.1415817f;
         private const float ArmAnimationEnd = 0.6554104f; //0.6440131f;
-        private const float MaxBar = 100f;
 
-        private bool _coolDownPeriod;
         private float _currentNormilzedTime;
         private AnimatorStateInfo _animationState;
+        private bool _loaded;
+        private const float ANIMATION_START_BUFFER = 0.1f;
+        private const float ANIMATION_START = 0.0f;
+        private const float ANIMATION_END = 1.0f;
+        private const float ANIMATION_SPEED_MAX = 1.0f;
+        private const float ANIMATION_SPEED_MIN = 0.0f;
+        private const int MAIN_ANIMATION_LAYER = 0;
+        #endregion
+
+        #region Public Members
+        /// <summary>
+        /// The animator component from the gameObject.
+        /// </summary>
+        public Animator Animator { get; private set; }
+
+        /// <summary>
+        /// Boole that shows is the animator is in the cool down portion of the animation
+        /// </summary>
+        public bool InCoolDown { get; private set; }
         #endregion
 
         #region Unity Methods
+
+        private void Awake()
+        {
+
+        }
+
+        private void Start()
+        {
+            Animator = this.transform.GetComponent<Animator>();
+
+            if (Animator == null)
+            {
+                QuickLogger.Error("Animator component not found on the GameObject.");
+                _loaded = false;
+            }
+
+            _display = this.transform.GetComponent<IonGeneratorDisplay>();
+
+            if (_display == null)
+            {
+                QuickLogger.Error("Display component not found on the GameObject.");
+                _loaded = false;
+            }
+
+            _mono = this.transform.GetComponent<CubeGeneratorMono>();
+
+            if (_mono == null)
+            {
+                QuickLogger.Error("CubeGeneratorMono component not found on the GameObject.");
+                _loaded = false;
+            }
+
+            _speedHash = Animator.StringToHash("speed");
+            _workingHash = Animator.StringToHash("Working");
+
+            if (Animator != null && Animator.enabled == false)
+            {
+                QuickLogger.Debug("Animator was disabled and now has been enabled");
+                Animator.enabled = true;
+            }
+
+            _loaded = true;
+
+            AnimationWorkingState();
+        }
+
         private void LateUpdate()
         {
-            UpdatePercentageBar();
+            if (!_loaded) return;
+
+            UpdateCoolDown();
+
+            UpdatePauseOrResumeToggle();
+
+            UpdateArm();
         }
         #endregion
 
         #region Private Methods
-        private void RetrieveAnimator()
-        {
-            if (!this.IsConstructed)
-                return;
-
-            if (Animator == null)
-            {
-                Animator = this.transform.GetComponent<Animator>();
-            }
-            else
-            {
-                QuickLogger.Error("Animator component not found on the prefab trying again.");
-                _safeToAnimate = false;
-                return;
-            }
-
-            _safeToAnimate = true;
-            _speedHash = Animator.StringToHash("speed");
-            _workingHash = Animator.StringToHash("Working");
-            SetBar();
-        }
 
         private void UpdateCoolDown()
         {
+            if (_mono.IsLoadingSaveData() || !_mono.IsConstructed) return;
+
             _animationState = Animator.GetCurrentAnimatorStateInfo(0);
             _currentNormilzedTime = _animationState.normalizedTime;
 
-            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && this.NextCubePercentage != 100)
-            {
-                _coolDownPeriod = true;
 
-            }
-            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && this.NextCubePercentage != 100)
+            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.NextCubePercentage != 100)
             {
-                _coolDownPeriod = true;
+                InCoolDown = true;
+            }
+            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && _mono.NextCubePercentage != 100)
+            {
+                InCoolDown = true;
             }
             else
             {
-                _coolDownPeriod = false;
+                InCoolDown = false;
+            }
+        }
+
+        private void UpdatePauseOrResumeToggle()
+        {
+            if (_mono.CurrentCubeCount == _mono.GetMaxAvailableSpaces() && Math.Round(_animationState.normalizedTime, 2) <= ANIMATION_START_BUFFER)
+            {
+                //Pause the animator
+                PauseAnimation();
+            }
+            else
+            {
+                //Resume the animator
+                ResumeAnimation();
+            }
+        }
+
+        private void UpdateArm()
+        {
+            if (Math.Round(_animationState.normalizedTime, 2) >= ANIMATION_END)
+            {
+                ChangeAnimationPointer(ANIMATION_START);
+                return;
             }
 
-            if (Math.Round(_animationState.normalizedTime, 2) >= 1)
+            if (_mono.NextCubePercentage < 100 && _display != null)
             {
-                SetAnimationState(0);
-                if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
+                float outputBar = _display.GetBarPercent() * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
+
+                if (!InCoolDown)
                 {
-                    //Pause the animator
-                    PauseAnimation();
+                    ChangeAnimationPointer(outputBar);
                 }
             }
-
         }
 
         private void AnimationWorkingState()
@@ -114,74 +186,17 @@
 
         private void ResumeAnimation()
         {
-            if (Mathf.Approximately(Animator.GetFloat(_speedHash), 1f))
+            if (Mathf.Approximately(Animator.GetFloat(_speedHash), ANIMATION_SPEED_MAX))
                 return;
             StartCoroutine(ResumeAnimationEnu());
             _animatorPausedState = false;
         }
 
-        private void UpdatePercentageBar()
+        private void ChangeAnimationPointer(float percent)
         {
-            if (Animator != null)
-            {
-                UpdateCoolDown();
-
-                if (this.NextCubePercentage < 100)
-                {
-                    float calcBar = this.NextCubePercentage / MaxBar;
-                    float outputBar = calcBar * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
-
-                    if (!_coolDownPeriod)
-                    {
-                        UpdateArmPosition(outputBar);
-                    }
-                }
-
-                //Update Percentage
-                if (_display != null)
-                {
-                    _display.UpdatePercentageText(this.NextCubePercentage);
-                }
-
-
-                SetBar();
-                SetStorageBar();
-            }
+            Animator.Play("Main", MAIN_ANIMATION_LAYER, percent);
         }
 
-        private void UpdateArmPosition(float percent)
-        {
-            SetAnimationState(percent);
-        }
-
-        private void SetAnimationState(float percent)
-        {
-            Animator.Play("Main", 0, percent);
-        }
-
-        private void SetBar()
-        {
-            float calcBar = this.NextCubePercentage / MaxBar;
-            float outputBar = calcBar * (MaxValue - MinValue) + MinValue;
-
-            if (_display != null)
-            {
-                _display.UpdatePercentageBar(outputBar, MinValue, MaxValue);
-            }
-        }
-
-        private void SetStorageBar()
-        {
-            float calcBar = (float)((this.CurrentCubeCount * 1.0) / (MaxAvailableSpaces * 1.0));
-            float outputBar = calcBar * (MaxValue - MinValue) + MinValue;
-
-            if (_display == null)
-                return;
-
-            _display.UpdateStoragePercentBar(outputBar, MinValue, MaxValue);
-
-            _display.UpdateStorageAmount(this.CurrentCubeCount, MaxAvailableSpaces);
-        }
         #endregion
 
         #region IEnumerators
@@ -190,40 +205,40 @@
         {
             yield return new WaitForSeconds(waitTime);
 
-            if (_safeToAnimate)
-            {
-                Animator.SetBool(_workingHash, true);
-                _isWorking = true;
-            }
+            Animator.SetBool(_workingHash, true);
+            _isWorking = true;
         }
 
         private IEnumerator IdleAnimationEnu()
         {
             yield return new WaitForEndOfFrame();
-            if (_safeToAnimate)
-            {
-                Animator.SetBool(_workingHash, false);
-            }
+            Animator.SetBool(_workingHash, false);
         }
 
         private IEnumerator PauseAnimationEnu()
         {
             yield return new WaitForEndOfFrame();
-            if (_safeToAnimate)
-            {
-                QuickLogger.Debug(@"Paused State");
-                Animator.SetFloat(_speedHash, 0);
-            }
+            QuickLogger.Debug(@"Paused State");
+            Animator.SetFloat(_speedHash, ANIMATION_SPEED_MIN);
         }
 
         private IEnumerator ResumeAnimationEnu()
         {
             yield return new WaitForEndOfFrame();
-            if (_safeToAnimate)
-            {
-                QuickLogger.Debug(@"Resuming");
-                Animator.SetFloat(_speedHash, 1);
-            }
+            QuickLogger.Debug(@"Resuming");
+            Animator.SetFloat(_speedHash, ANIMATION_SPEED_MAX);
+        }
+        #endregion
+
+        #region Internal Methods
+        /// <summary>
+        /// Sets the an animator float to a certain value (For use with setting the page on the screen)
+        /// </summary>
+        /// <param name="stateHash">The hash of the parameter</param>
+        /// <param name="value">Float to set</param>
+        internal void SetFloatHash(int stateHash, float value)
+        {
+            Animator.SetFloat(stateHash, value);
         }
         #endregion
     }

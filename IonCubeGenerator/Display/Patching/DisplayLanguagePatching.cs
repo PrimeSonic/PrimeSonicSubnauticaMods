@@ -13,6 +13,11 @@
         public const string OpenStorageKey = "OpenStorage";
         public const string PoweredOffKey = "PoweredOff";
         public const string ReadyKey = "Ready";
+        public const string MaxKey = "Max";
+        public const string HighKey = "High";
+        public const string MinKey = "Min";
+        public const string LowKey = "Low";
+        public const string OffKey = "Off";
 
         internal static void AdditionPatching()
         {
@@ -25,6 +30,11 @@
             LanguageHandler.SetLanguageLine(StorageKey, "STORAGE");
             LanguageHandler.SetLanguageLine(CompletedKey, "COMPLETED");
             LanguageHandler.SetLanguageLine(OverClockKey, "OVERCLOCK");
+            LanguageHandler.SetLanguageLine(MaxKey, "Max");
+            LanguageHandler.SetLanguageLine(HighKey, "High");
+            LanguageHandler.SetLanguageLine(MinKey, "Min");
+            LanguageHandler.SetLanguageLine(LowKey, "Low");
+            LanguageHandler.SetLanguageLine(OffKey, "Off");
         }
     }
 }

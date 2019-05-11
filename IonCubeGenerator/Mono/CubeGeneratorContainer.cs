@@ -14,7 +14,7 @@
         private ChildObjectIdentifier _containerRoot = null;
         private Constructable _buildable = null;
 
-        private bool IsConstructed => _buildable != null && _buildable.constructed;
+        internal bool IsConstructed => _buildable != null && _buildable.constructed;
         internal int CurrentCubeCount => _cubeContainer.count;
 
         public void Awake()
@@ -31,8 +31,6 @@
             }
 
             InitializeContainer();
-
-            CreateDisplayedIonCube();
         }
 
         internal void ClearContainer()
@@ -86,7 +84,7 @@
             _buildable.deconstructionAllowed = _cubeContainer.count == 0;
         }
 
-        private void OpenStorageState()
+        internal void OpenStorageState()
         {
             QuickLogger.Debug($"Storage Button Clicked", true);
 
@@ -97,6 +95,15 @@
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(_cubeContainer, false);
             pda.Open(PDATab.Inventory, null, null, 4f);
+        }
+
+        /// <summary>
+        /// The maximum allowed storage in the container
+        /// </summary>
+        /// <returns>An <see cref="int"/> of storage slots</returns>
+        internal int GetMaxAvailableSpaces()
+        {
+            return MaxAvailableSpaces;
         }
     }
 }

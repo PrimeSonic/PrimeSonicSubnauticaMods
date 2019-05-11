@@ -169,12 +169,12 @@
             }
         }
 
-        public override void OnPointerClick(PointerEventData eventData)
+        public void OnPointerClick(PointerEventData eventData)
         {
-            base.OnPointerClick(eventData);
+            //base.OnPointerClick(eventData);
 
-            if (this.BtnName == null)
-                return; // Returning null at some points so I am returning until solved
+            //if (this.BtnName == null)
+            //    return; // Returning null at some points so I am returning until solved
 
             if (this.IsHovered)
             {

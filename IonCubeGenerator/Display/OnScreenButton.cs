@@ -56,11 +56,6 @@
             isHoveredOutOfRange = false;
         }
 
-        public virtual void OnPointerClick(PointerEventData eventData)
-        {
-
-        }
-
         protected bool InInteractionRange()
         {
             return Mathf.Abs(Vector3.Distance(this.gameObject.transform.position, Player.main.transform.position)) <= 2.5;

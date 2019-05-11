@@ -2,7 +2,6 @@
 {
     using Common;
     using Common.Helpers;
-    using IonCubeGenerator.Display;
     using UnityEngine;
 
     internal partial class CubeGeneratorBuildable
@@ -32,9 +31,6 @@
             if (ionCubeGenPrefab != null)
             {
                 _ionCubeGenPrefab = ionCubeGenPrefab;
-
-                //Add a display to the prefab
-                _ionCubeGenPrefab.AddComponent<IonGeneratorDisplay>();
 
                 //Lets apply the material shader
                 ApplyShaders(_ionCubeGenPrefab);
@@ -69,8 +65,7 @@
             #endregion
 
             #region precursor_crystal_cube
-            MaterialHelpers.ApplyEmissionShader("precursor_crystal_cube", "precursor_crystal_cube_spec", prefab, _assetBundle, Color.green, 3f);
-            MaterialHelpers.ApplyNormalShader("precursor_crystal_cube", "precursor_crystal_cube_normal", prefab, _assetBundle);
+            MaterialHelpers.ApplyPrecursorShader("precursor_crystal_cube", "precursor_crystal_cube_normal", "precursor_crystal_cube_spec", prefab, _assetBundle, 3f);
             #endregion
 
             #region Precursor_Tech1
@@ -90,5 +85,6 @@
             MaterialHelpers.ApplyNormalShader("BaseCol1_Dark", "BaseCol1_Norm", prefab, _assetBundle);
             #endregion
         }
+
     }
 }
