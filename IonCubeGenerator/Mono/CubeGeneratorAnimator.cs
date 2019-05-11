@@ -55,7 +55,7 @@ namespace IonCubeGenerator.Mono
         private void Start()
         {
             this.Animator = this.transform.GetComponent<Animator>();
-            this.loopingEmitter = this.transform.GetComponent<FMOD_CustomLoopingEmitter>();
+            loopingEmitter = this.transform.GetComponent<FMOD_CustomLoopingEmitter>();
             loopingEmitter.asset = _audioHandler.WATER_FILTER_LOOP;
 
             if (this.Animator == null)
@@ -152,7 +152,7 @@ namespace IonCubeGenerator.Mono
                 if (!this.InCoolDown)
                 {
                     ChangeAnimationPointer(outputBar);
-                   
+
                 }
             }
         }

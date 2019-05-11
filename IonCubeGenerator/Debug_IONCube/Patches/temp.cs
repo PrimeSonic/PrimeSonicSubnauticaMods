@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if DEBUG
+using UnityEngine;
 
 namespace IonCubeGenerator.Debug_IONCube.Patches
 {
@@ -10,3 +11,4 @@ namespace IonCubeGenerator.Debug_IONCube.Patches
         public static GameObject Slot { get; set; }
     }
 }
+#endif

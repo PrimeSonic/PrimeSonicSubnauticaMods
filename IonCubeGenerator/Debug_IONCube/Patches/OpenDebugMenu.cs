@@ -1,4 +1,5 @@
-﻿using Harmony;
+﻿#if DEBUG
+using Harmony;
 using UnityEngine;
 
 namespace IonCubeGenerator.Debug_IONCube.Patches
@@ -17,3 +18,4 @@ namespace IonCubeGenerator.Debug_IONCube.Patches
         }
     }
 }
+#endif

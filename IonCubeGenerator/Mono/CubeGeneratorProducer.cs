@@ -1,6 +1,4 @@
-﻿using Steamworks;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
     using Common;
     using IonCubeGenerator.Enums;
@@ -17,7 +15,7 @@ namespace IonCubeGenerator.Mono
         private const float DelayedStartTime = 0.5f;
         private const float RepeatingUpdateInterval = 1f;
         private const float CubeEnergyCost = 1200f;
-
+        private const int MaxContainerSpaces = CubeGeneratorContainer.MaxAvailableSpaces;
         private SpeedModes _currentMode = SpeedModes.High;
         private PowerRelay _connectedRelay = null;
         private Constructable _buildable = null;
@@ -103,7 +101,7 @@ namespace IonCubeGenerator.Mono
             if (_saveData == null)
             {
                 string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CubeGeneratorSaveData(id, CubeGeneratorContainer.MaxAvailableSpaces);
+                _saveData = new CubeGeneratorSaveData(id, MaxContainerSpaces);
             }
 
             _cubeContainer = new CubeGeneratorContainer(this);

@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
+    using UnityEngine;
+
     internal class CubeGeneratorAudioHandler
     {
 
@@ -33,7 +33,7 @@ namespace IonCubeGenerator.Mono
                 switch (fmod.name.ToLower())
                 {
                     case "water_filter_loop":
-                        WATER_FILTER_LOOP = fmod;
+                        this.WATER_FILTER_LOOP = fmod;
                         break;
                 }
             }

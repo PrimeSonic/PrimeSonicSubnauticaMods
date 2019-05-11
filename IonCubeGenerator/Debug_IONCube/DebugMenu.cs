@@ -1,4 +1,5 @@
-﻿using Common;
+﻿#if DEBUG
+using Common;
 using IonCubeGenerator.Debug_IONCube.Patches;
 using IonCubeGenerator.Mono;
 using UnityEngine;
@@ -267,3 +268,4 @@ namespace IonCubeGenerator.Debug_IONCube
         private readonly string _filterAudio;
     }
 }
+#endif
