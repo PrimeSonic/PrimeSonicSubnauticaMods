@@ -228,11 +228,10 @@
 
         public static void ApplyPrecursorShader(string materialName, string normalMap, string metalicmap, GameObject gameObject, AssetBundle assetBundle, float glossiness)
         {
-            var shader = GetPrecursorShader();
+            var shader = Shader.Find("UWE/Marmoset/IonCrystal");
 
-
-           QuickLogger.Info(shader.ToString());
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+
             foreach (Renderer renderer in renderers)
             {
                 foreach (Material material in renderer.materials)
@@ -241,16 +240,19 @@
                     {
                         material.shader = shader;
                         material.EnableKeyword("_NORMALMAP");
+
                         material.EnableKeyword("_METALLICGLOSSMAP");
 
                         material.SetTexture("_BumpMap", FindTexture2D(normalMap, assetBundle));
 
- 
                         material.SetColor("_BorderColor", new Color(0.14f, 0.55f, 0.43f));
 
                         material.SetColor("_Color",new Color(0.33f, 0.83f, 0.17f));
+
                         material.SetColor("_DetailsColor", new Color(0.42f, 0.85f, 0.26f));
+
                         material.SetTexture("_MarmoSpecEnum", MaterialHelpers.FindTexture2D(metalicmap, assetBundle));
+
                         material.SetFloat("_Glossiness", glossiness);
 
                     }
@@ -269,7 +271,6 @@
                     if (material.name.StartsWith("precursor_crystal_cube"))
                     {
                         Destroy(displayedIonCube);
-                        QuickLogger.Debug("Found the Precursor Shader");
                         QuickLogger.Debug("Found the Precursor Shader");
   
                         return material.shader;

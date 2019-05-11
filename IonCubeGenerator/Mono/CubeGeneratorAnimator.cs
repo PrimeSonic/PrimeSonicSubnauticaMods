@@ -1,4 +1,4 @@
-﻿namespace IonCubeGenerator.Mono
+namespace IonCubeGenerator.Mono
 {
     using Common;
     using System;
@@ -22,6 +22,9 @@
         private float _currentNormilzedTime;
         private AnimatorStateInfo _animationState;
         private bool _loaded;
+        private bool _soundPlaying;
+        private CubeGeneratorAudioHandler _audioHandler;
+        private FMOD_CustomLoopingEmitter loopingEmitter;
         private const float ANIMATION_START_BUFFER = 0.1f;
         private const float ANIMATION_START = 0.0f;
         private const float ANIMATION_END = 1.0f;
@@ -30,7 +33,7 @@
         private const int MAIN_ANIMATION_LAYER = 0;
         #endregion
 
-        #region Public Members
+        #region Public Properties
         /// <summary>
         /// The animator component from the gameObject.
         /// </summary>
@@ -46,12 +49,14 @@
 
         private void Awake()
         {
-
+            _audioHandler = new CubeGeneratorAudioHandler();
         }
 
         private void Start()
         {
             this.Animator = this.transform.GetComponent<Animator>();
+            this.loopingEmitter = this.transform.GetComponent<FMOD_CustomLoopingEmitter>();
+            loopingEmitter.asset = _audioHandler.WATER_FILTER_LOOP;
 
             if (this.Animator == null)
             {
@@ -147,6 +152,7 @@
                 if (!this.InCoolDown)
                 {
                     ChangeAnimationPointer(outputBar);
+                   
                 }
             }
         }
@@ -170,6 +176,7 @@
         {
             if (_animatorPausedState)
                 return;
+            StopAudio();
 
             StartCoroutine(PauseAnimationEnu());
             _animatorPausedState = true;
@@ -180,6 +187,9 @@
         {
             if (Mathf.Approximately(this.Animator.GetFloat(_speedHash), ANIMATION_SPEED_MAX))
                 return;
+
+            PlayAudio();
+
             StartCoroutine(ResumeAnimationEnu());
             _animatorPausedState = false;
         }
@@ -232,6 +242,25 @@
         {
             this.Animator.SetFloat(stateHash, value);
         }
+
+        internal void PlayAudio()
+        {
+            if (!_soundPlaying)
+            {
+                loopingEmitter.Play();
+                _soundPlaying = true;
+            }
+        }
+
+        internal void StopAudio()
+        {
+            if (_soundPlaying)
+            {
+                loopingEmitter.Stop();
+                _soundPlaying = false;
+            }
+        }
+
         #endregion
     }
 }

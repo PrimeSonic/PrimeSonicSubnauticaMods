@@ -1,4 +1,6 @@
-﻿namespace IonCubeGenerator.Mono
+﻿using Steamworks;
+
+namespace IonCubeGenerator.Mono
 {
     using Common;
     using IonCubeGenerator.Enums;
@@ -105,6 +107,8 @@
             }
 
             _cubeContainer = new CubeGeneratorContainer(this);
+
+
         }
 
         private void Start()

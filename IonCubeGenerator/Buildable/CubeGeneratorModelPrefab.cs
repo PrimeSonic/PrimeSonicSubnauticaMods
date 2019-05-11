@@ -49,7 +49,7 @@
         /// <summary>
         /// Applies the shader to the materials of the reactor
         /// </summary>
-        /// <param name="prefab"></param>
+        /// <param name="prefab">The prefab to apply shaders.</param>
         private void ApplyShaders(GameObject prefab)
         {
             #region SystemLights_BaseColor

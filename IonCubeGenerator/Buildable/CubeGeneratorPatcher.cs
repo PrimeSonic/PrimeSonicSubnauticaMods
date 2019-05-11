@@ -73,6 +73,8 @@
 
             IonGeneratorDisplay cubeGeneratorDisplay = prefab.AddComponent<IonGeneratorDisplay>();
 
+            FMOD_CustomLoopingEmitter FMOD_CustomLoopingEmitter = prefab.AddComponent<FMOD_CustomLoopingEmitter>();
+
             return prefab;
         }
 
