@@ -3,12 +3,13 @@
     using Common;
     using Common.EasyMarkup;
     using IonCubeGenerator.Enums;
+    using IonCubeGenerator.Interfaces;
     using SMLHelper.V2.Utility;
     using System;
     using System.Collections.Generic;
     using System.IO;
 
-    internal class CubeGeneratorSaveData : EmPropertyCollection, ICubeGeneratorSaveData
+    internal class CubeGeneratorSaveData : EmPropertyCollection, ICubeGeneratorSaveHandler
     {
         private const string CubeCountKey = "CC";
         private const string TimeNextCubeKey = "TNC";
@@ -31,19 +32,19 @@
         private readonly string SaveDirectory = Path.Combine(SaveUtils.GetCurrentSaveDataDir(), "IonCubeGenerator");
         private string SaveFile => Path.Combine(SaveDirectory, _preFabID + ".txt");
 
-        public int NumberOfCubes
+        internal int NumberOfCubes
         {
             get => Math.Min(_maxCubes, _cubeCount.Value);
             set => _cubeCount.Value = Math.Min(_maxCubes, value);
         }
 
-        public float RemainingTimeToNextCube
+        internal float RemainingTimeToNextCube
         {
             get => _timeToCube.Value;
             set => _timeToCube.Value = value;
         }
 
-        public SpeedModes CurrentSpeedMode
+        internal SpeedModes CurrentSpeedMode
         {
             get => _speedMode.Value;
             set => _speedMode.Value = value;
@@ -67,7 +68,7 @@
             return new CubeGeneratorSaveData(this.Key, this.CopyDefinitions);
         }
 
-        internal void SaveData(ICubeGeneratorSaveData cubeGenerator)
+        public void SaveData(ICubeGeneratorSaveData cubeGenerator)
         {
             this.NumberOfCubes = cubeGenerator.NumberOfCubes;
             this.RemainingTimeToNextCube = cubeGenerator.RemainingTimeToNextCube;
@@ -76,13 +77,17 @@
             this.Save(SaveDirectory, this.SaveFile);
         }
 
-        internal void LoadData(ICubeGeneratorSaveData cubeGenerator)
+        public void LoadData(ICubeGeneratorSaveData cubeGenerator)
         {
             if (this.Load(SaveDirectory, this.SaveFile))
             {
+                cubeGenerator.IsLoadingSaveData = true;
+
                 cubeGenerator.NumberOfCubes = this.NumberOfCubes;
                 cubeGenerator.RemainingTimeToNextCube = this.RemainingTimeToNextCube;
                 cubeGenerator.CurrentSpeedMode = this.CurrentSpeedMode;
+
+                cubeGenerator.IsLoadingSaveData = false;
             }
         }
     }

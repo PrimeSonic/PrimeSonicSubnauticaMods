@@ -2,10 +2,11 @@
 {
     using Common;
     using IonCubeGenerator.Enums;
+    using IonCubeGenerator.Interfaces;
     using System;
     using UnityEngine;
 
-    internal partial class CubeGeneratorMono : MonoBehaviour, ICubeGeneratorSaveData, IProtoTreeEventListener
+    internal class CubeGeneratorMono : MonoBehaviour, ICubeGeneratorSaveData, IProtoTreeEventListener, ICubeContainer, ICubeProduction
     {
         private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
@@ -13,37 +14,41 @@
         private const float RepeatingUpdateInterval = 1f;
         private const float CubeEnergyCost = 1200f;
 
+        private SpeedModes _currentMode = SpeedModes.High;
+        private PowerRelay _connectedRelay = null;
+        private Constructable _buildable = null;
+        private ICubeContainer _cubeContainer;
+        private ICubeGeneratorSaveHandler _saveData;
+
         private float CubeCreationTime = 0f;
         private float EnergyConsumptionPerSecond = 0f;
 
         internal bool IsGenerating { get; private set; } = false;
-        internal bool IsLoadingSaveData { get; private set; } = false;
+        public bool IsLoadingSaveData { get; set; } = false;
 
         public float RemainingTimeToNextCube { get; set; } = -1f;
 
-        private SpeedModes currentMode = SpeedModes.High;
-
         public SpeedModes CurrentSpeedMode
         {
-            get => currentMode;
+            get => _currentMode;
             set
             {
-                currentMode = value;
-                CubeCreationTime = Convert.ToSingle(currentMode);
-                EnergyConsumptionPerSecond = currentMode != SpeedModes.Off
-                                            ? CubeEnergyCost / CubeCreationTime
-                                            : 0f;
+                _currentMode = value;
+                if (_currentMode != SpeedModes.Off)
+                {
+                    CubeCreationTime = Convert.ToSingle(_currentMode);
+                    EnergyConsumptionPerSecond = CubeEnergyCost / CubeCreationTime;
+                }
+                else
+                {
+                    CubeCreationTime = -1f;
+                    EnergyConsumptionPerSecond = -1f;
+                }
             }
         }
 
-        private PowerRelay _connectedRelay = null;
-        private Constructable _buildable = null;
-        private CubeGeneratorContainer _cubeContainer;
-
-        private CubeGeneratorSaveData _saveData;
-
         internal bool IsConstructed => _buildable != null && _buildable.constructed;
-        internal bool IsContainerFull => _cubeContainer.IsFull;
+        public bool IsFull => _cubeContainer.IsFull;
 
         private float AvailablePower
         {
@@ -62,9 +67,15 @@
             }
         }
 
-        internal int NextCubePercentage => this.RemainingTimeToNextCube > 0f
-                    ? Mathf.RoundToInt((1f - this.RemainingTimeToNextCube / CubeEnergyCost) * 100)
-                    : 0; // default to zero when not generating
+        public float CubeProgress
+        {
+            get
+            {
+                return this.RemainingTimeToNextCube > 0f
+                        ? ((1f - (this.RemainingTimeToNextCube / CubeEnergyCost)) * 100f)
+                        : 0f; // default to zero when not generating
+            }
+        }
 
         public int NumberOfCubes
         {
@@ -72,10 +83,9 @@
             set => _cubeContainer.NumberOfCubes = value;
         }
 
-        private bool coroutineStarted = false;
-
-        public bool HasBreakerTripped;
         private CubeGeneratorAnimator _animator;
+
+        #region Unity methods
 
         public void Awake()
         {
@@ -95,7 +105,6 @@
 
         private void Start()
         {
-
             UpdatePowerRelay();
 
             _animator = this.gameObject.GetComponent<CubeGeneratorAnimator>();
@@ -105,7 +114,6 @@
                 QuickLogger.Error("Did not find Animator in parent during Start.");
             }
 
-
             if (_connectedRelay == null)
             {
                 QuickLogger.Debug("Did not find PowerRelay in parent during Start. Trying again.");
@@ -113,40 +121,32 @@
             }
 
             base.Invoke(nameof(TryStartingNextCube), DelayedStartTime);
-
-            if (!coroutineStarted)
-                base.InvokeRepeating(nameof(UpdateCubeGeneration), DelayedStartTime * 3f, RepeatingUpdateInterval);
-            else
-                QuickLogger.Debug("Start attempted to invoke coroutine twice but was prevented");
-
-        }
-
-        internal void OpenStorageState()
-        {
-            _cubeContainer.OpenStorageState();
-        }
-
-        internal void UpdateBreaker(bool value)
-        {
-            HasBreakerTripped = value;
-            QuickLogger.Debug($"Current Breaker Value {HasBreakerTripped}", true);
+            base.InvokeRepeating(nameof(UpdateCubeGeneration), DelayedStartTime * 3f, RepeatingUpdateInterval);
         }
 
         private void Update()
         {
-            // Monobehavior Update method
+        }
+
+        private void LateUpdate()
+        {
+        }
+
+        #endregion
+
+        public void OpenStorage()
+        {
+            _cubeContainer.OpenStorage();
         }
 
         private void UpdateCubeGeneration()
         {
-            coroutineStarted = true;
-
             if (this.IsLoadingSaveData || _animator.InCoolDown)
                 return;
 
             bool isCurrentlyGenerating = false;
 
-            if (this.IsConstructed && currentMode > SpeedModes.Off && this.RemainingTimeToNextCube > 0f)
+            if (this.IsConstructed && this.CurrentSpeedMode > SpeedModes.Off && this.RemainingTimeToNextCube > 0f)
             {
                 float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
 
@@ -186,8 +186,6 @@
             this.IsGenerating = isCurrentlyGenerating;
         }
 
-
-
         private void TryStartingNextCube()
         {
             if (this.RemainingTimeToNextCube > 0f || this.CurrentSpeedMode == SpeedModes.Off)
@@ -224,19 +222,18 @@
             _buildable.deconstructionAllowed = _cubeContainer.NumberOfCubes == 0;
         }
 
+        #region ProtoTree methods
+
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
-            this.IsLoadingSaveData = true;
-
             _saveData.LoadData(this);
-
-            this.IsLoadingSaveData = false;
-
         }
 
         public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
         {
             _saveData.SaveData(this);
         }
+
+        #endregion
     }
 }

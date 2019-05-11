@@ -105,11 +105,11 @@ namespace IonCubeGenerator.Buildable
                 .FindChild("Ion_Lifter")
                 .FindChild("IonCube")
                 .FindChild("precursor_crystal")?.gameObject;
-            
+
             if (ionSlot != null)
             {
                 QuickLogger.Debug("Ion Cube Display Object Created", true);
-                GameObject displayedIonCube = GameObject.Instantiate<GameObject>(CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal));
+                var displayedIonCube = GameObject.Instantiate<GameObject>(CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal));
                 displayedIonCube.transform.SetParent(ionSlot.transform);
                 displayedIonCube.transform.localPosition =
                     new Vector3(-0.1152f, 0.05f, 0f); // Is to high maybe the axis is flipped
@@ -121,6 +121,6 @@ namespace IonCubeGenerator.Buildable
                 QuickLogger.Error("Cannot Find IonCube in the prefab");
             }
         }
-        
+
     }
 }

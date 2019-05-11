@@ -1,8 +1,7 @@
-﻿using IonCubeGenerator.Display;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
     using Common;
+    using IonCubeGenerator.Display;
     using System;
     using System.Collections;
     using UnityEngine;
@@ -114,11 +113,11 @@ namespace IonCubeGenerator.Mono
             _currentNormilzedTime = _animationState.normalizedTime;
 
 
-            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.NextCubePercentage != 100)
+            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.CubeProgress != 100)
             {
                 this.InCoolDown = true;
             }
-            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && _mono.NextCubePercentage != 100)
+            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && _mono.CubeProgress != 100)
             {
                 this.InCoolDown = true;
             }
@@ -130,7 +129,7 @@ namespace IonCubeGenerator.Mono
 
         private void UpdatePauseOrResumeToggle()
         {
-            if (_mono.IsContainerFull && Math.Round(_animationState.normalizedTime, 2) <= ANIMATION_START_BUFFER)
+            if (_mono.IsFull && Math.Round(_animationState.normalizedTime, 2) <= ANIMATION_START_BUFFER)
             {
                 //Pause the animator
                 PauseAnimation();
@@ -150,7 +149,7 @@ namespace IonCubeGenerator.Mono
                 return;
             }
 
-            if (_mono.NextCubePercentage < 100 && _display != null)
+            if (_mono.CubeProgress < 100 && _display != null)
             {
                 float outputBar = _display.GetBarPercent() * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
 

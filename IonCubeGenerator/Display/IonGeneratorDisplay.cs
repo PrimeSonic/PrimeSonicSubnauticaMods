@@ -60,7 +60,7 @@
         private void Start()
         {
             if (!_coroutineStarted)
-                base.InvokeRepeating(nameof(Updater), DelayedStartTime * 3f, RepeatingUpdateInterval);
+                base.InvokeRepeating(nameof(UpdateDisplay), DelayedStartTime * 3f, RepeatingUpdateInterval);
 
             DisplayLanguagePatching.AdditionPatching();
 
@@ -92,13 +92,14 @@
             PowerOnDisplay();
 
         }
+
         #endregion
 
         #region Internal Methods
 
         internal float GetBarPercent()
         {
-            return _mono.NextCubePercentage / MaxBar;
+            return _mono.CubeProgress / MaxBar;
         }
 
         internal void OnButtonClick(string btnName, object additionalObject)
@@ -106,7 +107,7 @@
             switch (btnName)
             {
                 case "StorageBTN":
-                    _mono.OpenStorageState();
+                    _mono.OpenStorage();
                     break;
 
                 case "LButton":
@@ -424,7 +425,7 @@
             return Language.main.Get(key);
         }
 
-        private void Updater()
+        private void UpdateDisplay()
         {
             if (!_initialized)
                 return;
@@ -452,7 +453,7 @@
 
         private void UpdatePercentageText()
         {
-            _percentDisplay.text = $"{_mono.NextCubePercentage}%";
+            _percentDisplay.text = $"{_mono.CubeProgress}%";
         }
 
         private void UpdatePercentageBar()
@@ -463,7 +464,7 @@
                 return;
             }
 
-            float calcBar = _mono.NextCubePercentage / MaxBar;
+            float calcBar = _mono.CubeProgress / MaxBar;
 
             float outputBar = calcBar * (BarMaxValue - BarMinValue) + BarMinValue;
 

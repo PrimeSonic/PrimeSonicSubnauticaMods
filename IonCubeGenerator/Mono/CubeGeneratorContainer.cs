@@ -2,11 +2,12 @@
 {
     using Common;
     using IonCubeGenerator.Buildable;
+    using IonCubeGenerator.Interfaces;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
 
-    internal class CubeGeneratorContainer
+    internal class CubeGeneratorContainer : ICubeContainer
     {
         private static readonly Vector2int CubeSize = CraftData.GetItemSize(TechType.PrecursorIonCrystal);
         private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
@@ -46,7 +47,7 @@
             }
         }
 
-        internal bool IsFull => _cubeContainer.count == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y);
+        public bool IsFull => _cubeContainer.count == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y);
 
         internal CubeGeneratorContainer(CubeGeneratorMono cubeGenerator)
         {
@@ -83,7 +84,7 @@
             return true;
         }
 
-        internal void OpenStorageState()
+        public void OpenStorage()
         {
             QuickLogger.Debug($"Storage Button Clicked", true);
 
