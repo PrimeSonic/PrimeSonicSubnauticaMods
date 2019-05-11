@@ -1,8 +1,7 @@
-﻿using Common;
-using IonCubeGenerator.Display;
-
-namespace IonCubeGenerator.Buildable
+﻿namespace IonCubeGenerator.Buildable
 {
+    using Common;
+    using IonCubeGenerator.Display;
     using IonCubeGenerator.Display.Patching;
     using IonCubeGenerator.Mono;
     using SMLHelper.V2.Assets;
@@ -83,17 +82,17 @@ namespace IonCubeGenerator.Buildable
             {
                 Ingredients =
                 {
-                    new Ingredient(TechType.PrecursorIonCrystal, 4),
-                    new Ingredient(TechType.AdvancedWiringKit, 1),
+                    new Ingredient(TechType.PrecursorIonCrystal, 8),
+                    new Ingredient(TechType.AdvancedWiringKit, 1), // Replace with a new modded craftable just for this
                     new Ingredient(TechType.Benzene, 2),
 
                     new Ingredient(TechType.PlasteelIngot, 2),
-                    new Ingredient(TechType.Lithium, 2),
-                    new Ingredient(TechType.Magnetite, 2),
+                    new Ingredient(TechType.Nickel, 3),
+                    new Ingredient(TechType.Magnetite, 3),
 
-                    new Ingredient(TechType.PrecursorKey_Blue, 2),
-                    new Ingredient(TechType.PrecursorKey_Purple, 2),
-                    new Ingredient(TechType.PrecursorKey_Orange, 2),
+                    new Ingredient(TechType.Kyanite, 3),
+                    new Ingredient(TechType.Aerogel, 2),
+                    new Ingredient(TechType.Diamond, 2),
                 }
             };
         }
