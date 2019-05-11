@@ -11,12 +11,13 @@
         private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
         internal const float ProgressComplete = 100f;
+        internal const SpeedModes StartingMode = SpeedModes.Off;
 
         private const float DelayedStartTime = 0.5f;
         private const float RepeatingUpdateInterval = 1f;
         private const float CubeEnergyCost = 1200f;
         private const int MaxContainerSpaces = CubeGeneratorContainer.MaxAvailableSpaces;
-        private SpeedModes _currentMode = SpeedModes.High;
+        private SpeedModes _currentMode = StartingMode;
         private PowerRelay _connectedRelay = null;
         private Constructable _buildable = null;
         private ICubeContainer _cubeContainer;
