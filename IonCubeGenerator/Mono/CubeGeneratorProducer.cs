@@ -5,9 +5,8 @@
     using System;
     using UnityEngine;
 
-    internal partial class CubeGeneratorMono : MonoBehaviour
+    internal partial class CubeGeneratorMono : MonoBehaviour, ICubeGeneratorSaveData, IProtoTreeEventListener
     {
-        private static readonly Vector2int CubeSize = CraftData.GetItemSize(TechType.PrecursorIonCrystal);
         private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
         private const float DelayedStartTime = 0.5f;
@@ -18,12 +17,13 @@
         private float EnergyConsumptionPerSecond = 0f;
 
         internal bool IsGenerating { get; private set; } = false;
+        internal bool IsLoadingSaveData { get; private set; } = false;
 
-        internal float TimeToNextCube = -1f;
+        public float RemainingTimeToNextCube { get; set; } = -1f;
 
         private SpeedModes currentMode = SpeedModes.High;
 
-        internal SpeedModes CurrentSpeedMode
+        public SpeedModes CurrentSpeedMode
         {
             get => currentMode;
             set
@@ -37,6 +37,13 @@
         }
 
         private PowerRelay _connectedRelay = null;
+        private Constructable _buildable = null;
+        private CubeGeneratorContainer _cubeContainer;
+
+        private CubeGeneratorSaveData _saveData;
+
+        internal bool IsConstructed => _buildable != null && _buildable.constructed;
+        internal bool IsContainerFull => _cubeContainer.IsFull;
 
         private float AvailablePower
         {
@@ -55,21 +62,43 @@
             }
         }
 
-        internal int NextCubePercentage => TimeToNextCube > 0f
-                    ? Mathf.RoundToInt((1f - TimeToNextCube / CubeEnergyCost) * 100)
+        internal int NextCubePercentage => this.RemainingTimeToNextCube > 0f
+                    ? Mathf.RoundToInt((1f - this.RemainingTimeToNextCube / CubeEnergyCost) * 100)
                     : 0; // default to zero when not generating
+
+        public int NumberOfCubes
+        {
+            get => _cubeContainer.NumberOfCubes;
+            set => _cubeContainer.NumberOfCubes = value;
+        }
 
         private bool coroutineStarted = false;
 
         public bool HasBreakerTripped;
         private CubeGeneratorAnimator _animator;
 
+        public void Awake()
+        {
+            if (_buildable == null)
+            {
+                _buildable = GetComponentInParent<Constructable>();
+            }
+
+            if (_saveData == null)
+            {
+                string id = GetComponentInParent<PrefabIdentifier>().Id;
+                _saveData = new CubeGeneratorSaveData(id, CubeGeneratorContainer.MaxAvailableSpaces);
+            }
+
+            _cubeContainer = new CubeGeneratorContainer(this);
+        }
+
         private void Start()
         {
 
             UpdatePowerRelay();
 
-            _animator = gameObject.GetComponent<CubeGeneratorAnimator>();
+            _animator = this.gameObject.GetComponent<CubeGeneratorAnimator>();
 
             if (_animator == null)
             {
@@ -92,6 +121,11 @@
 
         }
 
+        internal void OpenStorageState()
+        {
+            _cubeContainer.OpenStorageState();
+        }
+
         internal void UpdateBreaker(bool value)
         {
             HasBreakerTripped = value;
@@ -107,12 +141,12 @@
         {
             coroutineStarted = true;
 
-            if (_isLoadingSaveData || _animator.InCoolDown)
+            if (this.IsLoadingSaveData || _animator.InCoolDown)
                 return;
 
             bool isCurrentlyGenerating = false;
 
-            if (this.IsConstructed && currentMode > SpeedModes.Off && TimeToNextCube > 0f)
+            if (this.IsConstructed && currentMode > SpeedModes.Off && this.RemainingTimeToNextCube > 0f)
             {
                 float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
 
@@ -127,23 +161,22 @@
                         _connectedRelay.ConsumeEnergy(energyToConsume, out float amountConsumed);
                     }
 
-                    if (TimeToNextCube > 0f)
+                    if (this.RemainingTimeToNextCube > 0f)
                     {
-                        TimeToNextCube = Mathf.Max(0f, TimeToNextCube - energyToConsume);
+                        this.RemainingTimeToNextCube = Mathf.Max(0f, this.RemainingTimeToNextCube - energyToConsume);
                         isCurrentlyGenerating = true;
                     }
 
-                    if (TimeToNextCube == 0f)
+                    if (this.RemainingTimeToNextCube == 0f)
                     {
-                        TimeToNextCube = -1f;
-                        bool successfullySpawnedCube = SpawnCube();
+                        this.RemainingTimeToNextCube = -1f;
+                        _cubeContainer.NumberOfCubes++;
 
-                        if (successfullySpawnedCube)
-                            TryStartingNextCube();
+                        TryStartingNextCube();
                     }
                 }
 
-                if (TimeToNextCube == -1f)
+                if (this.RemainingTimeToNextCube == -1f)
                 {
                     isCurrentlyGenerating = false;
                 }
@@ -153,28 +186,16 @@
             this.IsGenerating = isCurrentlyGenerating;
         }
 
-        internal bool SpawnCube()
-        {
-            if (this.CurrentCubeCount == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y))
-                return false;
 
-            var gameObject = GameObject.Instantiate<GameObject>(CubePrefab);
-
-            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
-            var item = new InventoryItem(pickupable);
-
-            _cubeContainer.UnsafeAdd(item);
-            return true;
-        }
 
         private void TryStartingNextCube()
         {
-            if (TimeToNextCube > 0f || this.CurrentSpeedMode == SpeedModes.Off)
+            if (this.RemainingTimeToNextCube > 0f || this.CurrentSpeedMode == SpeedModes.Off)
                 return;
 
-            if (this.CurrentCubeCount < MaxAvailableSpaces)
+            if (!_cubeContainer.IsFull)
             {
-                TimeToNextCube = CubeEnergyCost;
+                this.RemainingTimeToNextCube = CubeEnergyCost;
             }
         }
 
@@ -191,6 +212,31 @@
                 _connectedRelay = null;
             }
         }
-        
+
+        internal void OnAddItemEvent(InventoryItem item)
+        {
+            _buildable.deconstructionAllowed = false;
+        }
+
+        internal void OnRemoveItemEvent(InventoryItem item)
+        {
+            TryStartingNextCube();
+            _buildable.deconstructionAllowed = _cubeContainer.NumberOfCubes == 0;
+        }
+
+        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
+        {
+            this.IsLoadingSaveData = true;
+
+            _saveData.LoadData(this);
+
+            this.IsLoadingSaveData = false;
+
+        }
+
+        public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
+        {
+            _saveData.SaveData(this);
+        }
     }
 }

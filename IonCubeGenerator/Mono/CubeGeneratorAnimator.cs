@@ -52,9 +52,9 @@ namespace IonCubeGenerator.Mono
 
         private void Start()
         {
-            Animator = this.transform.GetComponent<Animator>();
+            this.Animator = this.transform.GetComponent<Animator>();
 
-            if (Animator == null)
+            if (this.Animator == null)
             {
                 QuickLogger.Error("Animator component not found on the GameObject.");
                 _loaded = false;
@@ -79,10 +79,10 @@ namespace IonCubeGenerator.Mono
             _speedHash = Animator.StringToHash("speed");
             _workingHash = Animator.StringToHash("Working");
 
-            if (Animator != null && Animator.enabled == false)
+            if (this.Animator != null && this.Animator.enabled == false)
             {
                 QuickLogger.Debug("Animator was disabled and now has been enabled");
-                Animator.enabled = true;
+                this.Animator.enabled = true;
             }
 
             _loaded = true;
@@ -92,7 +92,8 @@ namespace IonCubeGenerator.Mono
 
         private void LateUpdate()
         {
-            if (!_loaded) return;
+            if (!_loaded)
+                return;
 
             UpdateCoolDown();
 
@@ -106,29 +107,30 @@ namespace IonCubeGenerator.Mono
 
         private void UpdateCoolDown()
         {
-            if (_mono.IsLoadingSaveData() || !_mono.IsConstructed) return;
+            if (_mono.IsLoadingSaveData || !_mono.IsConstructed)
+                return;
 
-            _animationState = Animator.GetCurrentAnimatorStateInfo(0);
+            _animationState = this.Animator.GetCurrentAnimatorStateInfo(0);
             _currentNormilzedTime = _animationState.normalizedTime;
 
 
             if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.NextCubePercentage != 100)
             {
-                InCoolDown = true;
+                this.InCoolDown = true;
             }
             else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && _mono.NextCubePercentage != 100)
             {
-                InCoolDown = true;
+                this.InCoolDown = true;
             }
             else
             {
-                InCoolDown = false;
+                this.InCoolDown = false;
             }
         }
 
         private void UpdatePauseOrResumeToggle()
         {
-            if (_mono.CurrentCubeCount == _mono.GetMaxAvailableSpaces() && Math.Round(_animationState.normalizedTime, 2) <= ANIMATION_START_BUFFER)
+            if (_mono.IsContainerFull && Math.Round(_animationState.normalizedTime, 2) <= ANIMATION_START_BUFFER)
             {
                 //Pause the animator
                 PauseAnimation();
@@ -152,7 +154,7 @@ namespace IonCubeGenerator.Mono
             {
                 float outputBar = _display.GetBarPercent() * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
 
-                if (!InCoolDown)
+                if (!this.InCoolDown)
                 {
                     ChangeAnimationPointer(outputBar);
                 }
@@ -186,7 +188,7 @@ namespace IonCubeGenerator.Mono
 
         private void ResumeAnimation()
         {
-            if (Mathf.Approximately(Animator.GetFloat(_speedHash), ANIMATION_SPEED_MAX))
+            if (Mathf.Approximately(this.Animator.GetFloat(_speedHash), ANIMATION_SPEED_MAX))
                 return;
             StartCoroutine(ResumeAnimationEnu());
             _animatorPausedState = false;
@@ -194,7 +196,7 @@ namespace IonCubeGenerator.Mono
 
         private void ChangeAnimationPointer(float percent)
         {
-            Animator.Play("Main", MAIN_ANIMATION_LAYER, percent);
+            this.Animator.Play("Main", MAIN_ANIMATION_LAYER, percent);
         }
 
         #endregion
@@ -205,28 +207,28 @@ namespace IonCubeGenerator.Mono
         {
             yield return new WaitForSeconds(waitTime);
 
-            Animator.SetBool(_workingHash, true);
+            this.Animator.SetBool(_workingHash, true);
             _isWorking = true;
         }
 
         private IEnumerator IdleAnimationEnu()
         {
             yield return new WaitForEndOfFrame();
-            Animator.SetBool(_workingHash, false);
+            this.Animator.SetBool(_workingHash, false);
         }
 
         private IEnumerator PauseAnimationEnu()
         {
             yield return new WaitForEndOfFrame();
             QuickLogger.Debug(@"Paused State");
-            Animator.SetFloat(_speedHash, ANIMATION_SPEED_MIN);
+            this.Animator.SetFloat(_speedHash, ANIMATION_SPEED_MIN);
         }
 
         private IEnumerator ResumeAnimationEnu()
         {
             yield return new WaitForEndOfFrame();
             QuickLogger.Debug(@"Resuming");
-            Animator.SetFloat(_speedHash, ANIMATION_SPEED_MAX);
+            this.Animator.SetFloat(_speedHash, ANIMATION_SPEED_MAX);
         }
         #endregion
 
@@ -238,7 +240,7 @@ namespace IonCubeGenerator.Mono
         /// <param name="value">Float to set</param>
         internal void SetFloatHash(int stateHash, float value)
         {
-            Animator.SetFloat(stateHash, value);
+            this.Animator.SetFloat(stateHash, value);
         }
         #endregion
     }

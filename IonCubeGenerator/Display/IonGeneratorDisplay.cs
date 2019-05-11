@@ -426,7 +426,8 @@
 
         private void Updater()
         {
-            if (!_initialized) return;
+            if (!_initialized)
+                return;
 
             _coroutineStarted = true;
 
@@ -472,7 +473,7 @@
 
         private void UpdateStoragePercentBar()
         {
-            float calcBar = (float)((_mono.CurrentCubeCount * 1.0) / (_mono.GetMaxAvailableSpaces() * 1.0));
+            float calcBar = (float)((_mono.NumberOfCubes * 1.0) / (CubeGeneratorContainer.MaxAvailableSpaces * 1.0));
             float outputBar = calcBar * (BarMaxValue - BarMinValue) + BarMinValue;
             _storageBar.fillAmount = Mathf.Clamp(outputBar, BarMinValue, BarMaxValue);
 
@@ -480,9 +481,9 @@
 
         private void UpdateStorageAmount()
         {
-            _storageAmount.text = $"{_mono.CurrentCubeCount}/{_mono.GetMaxAvailableSpaces()}";
+            _storageAmount.text = $"{_mono.NumberOfCubes}/{CubeGeneratorContainer.MaxAvailableSpaces}";
 
-            float percent = (float)(_mono.CurrentCubeCount * 1.0 / _mono.GetMaxAvailableSpaces() * 1.0) * 100.0f;
+            float percent = (float)(_mono.NumberOfCubes * 1.0 / CubeGeneratorContainer.MaxAvailableSpaces * 1.0) * 100.0f;
 
             if (Math.Round(percent) <= 25)
             {

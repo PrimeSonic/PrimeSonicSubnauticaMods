@@ -2,51 +2,61 @@
 {
     using Common;
     using IonCubeGenerator.Buildable;
+    using System;
+    using System.Collections.Generic;
     using UnityEngine;
 
-    internal partial class CubeGeneratorMono
+    internal class CubeGeneratorContainer
     {
+        private static readonly Vector2int CubeSize = CraftData.GetItemSize(TechType.PrecursorIonCrystal);
+        private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
+
         private const int ContainerHeight = 2;
         private const int ContainerWidth = 2;
-        private const int MaxAvailableSpaces = ContainerHeight * ContainerWidth;
+
+        /// <summary>
+        /// The maximum allowed storage in the container
+        /// </summary>
+        /// <returns>An <see cref="int"/> of storage slots</returns>
+        internal const int MaxAvailableSpaces = ContainerHeight * ContainerWidth;
 
         private ItemsContainer _cubeContainer = null;
         private ChildObjectIdentifier _containerRoot = null;
-        private Constructable _buildable = null;
+        private Func<bool> isContstructed;
 
-        internal bool IsConstructed => _buildable != null && _buildable.constructed;
-        internal int CurrentCubeCount => _cubeContainer.count;
-
-        public void Awake()
+        public int NumberOfCubes
         {
-            if (_buildable == null)
+            get => _cubeContainer.count;
+            set
             {
-                _buildable = GetComponentInParent<Constructable>();
+                if (value >= 0 && value < _cubeContainer.count)
+                {
+                    do
+                    {
+                        RemoveSingleCube();
+                    } while (--value < _cubeContainer.count);
+                }
+                else if (value <= MaxAvailableSpaces && value > _cubeContainer.count)
+                {
+                    do
+                    {
+                        SpawnCube();
+                    } while (++value > _cubeContainer.count);
+                }
             }
-
-            if (_saveData == null)
-            {
-                string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CubeGeneratorSaveData(id, MaxAvailableSpaces);
-            }
-
-            InitializeContainer();
         }
 
-        internal void ClearContainer()
-        {
-            InitializeContainer();
+        internal bool IsFull => _cubeContainer.count == MaxAvailableSpaces || !_cubeContainer.HasRoomFor(CubeSize.x, CubeSize.y);
 
-            _cubeContainer.Clear(false);
-        }
-
-        private void InitializeContainer()
+        internal CubeGeneratorContainer(CubeGeneratorMono cubeGenerator)
         {
+            isContstructed = () => { return cubeGenerator.IsConstructed; };
+
             if (_containerRoot == null)
             {
                 QuickLogger.Debug("Initializing StorageRoot");
                 var storageRoot = new GameObject("StorageRoot");
-                storageRoot.transform.SetParent(this.transform, false);
+                storageRoot.transform.SetParent(cubeGenerator.transform, false);
                 _containerRoot = storageRoot.AddComponent<ChildObjectIdentifier>();
             }
 
@@ -58,8 +68,8 @@
                 _cubeContainer.isAllowedToAdd += IsAllowedToAdd;
                 _cubeContainer.isAllowedToRemove += IsAllowedToRemove;
 
-                _cubeContainer.onAddItem += OnAddItemEvent;
-                _cubeContainer.onRemoveItem += OnRemoveItemEvent;
+                _cubeContainer.onAddItem += cubeGenerator.OnAddItemEvent;
+                _cubeContainer.onRemoveItem += cubeGenerator.OnRemoveItemEvent;
             }
         }
 
@@ -73,22 +83,11 @@
             return true;
         }
 
-        private void OnAddItemEvent(InventoryItem item)
-        {
-            _buildable.deconstructionAllowed = false;
-        }
-
-        private void OnRemoveItemEvent(InventoryItem item)
-        {
-            TryStartingNextCube();
-            _buildable.deconstructionAllowed = _cubeContainer.count == 0;
-        }
-
         internal void OpenStorageState()
         {
             QuickLogger.Debug($"Storage Button Clicked", true);
 
-            if (!this.IsConstructed)
+            if (!isContstructed.Invoke())
                 return;
 
             Player main = Player.main;
@@ -97,13 +96,24 @@
             pda.Open(PDATab.Inventory, null, null, 4f);
         }
 
-        /// <summary>
-        /// The maximum allowed storage in the container
-        /// </summary>
-        /// <returns>An <see cref="int"/> of storage slots</returns>
-        internal int GetMaxAvailableSpaces()
+        internal bool SpawnCube()
         {
-            return MaxAvailableSpaces;
+            if (this.IsFull)
+                return false;
+
+            var gameObject = GameObject.Instantiate<GameObject>(CubePrefab);
+
+            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
+            var item = new InventoryItem(pickupable);
+
+            _cubeContainer.UnsafeAdd(item);
+            return true;
+        }
+
+        private void RemoveSingleCube()
+        {
+            IList<InventoryItem> cubes = _cubeContainer.GetItems(TechType.PrecursorIonCrystal);
+            _cubeContainer.RemoveItem(cubes[0].item);
         }
     }
 }
