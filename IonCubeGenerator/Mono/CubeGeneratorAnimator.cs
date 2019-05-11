@@ -1,7 +1,6 @@
 ﻿namespace IonCubeGenerator.Mono
 {
     using Common;
-    using IonCubeGenerator.Display;
     using System;
     using System.Collections;
     using UnityEngine;
@@ -9,11 +8,12 @@
     internal class CubeGeneratorAnimator : MonoBehaviour
     {
         #region Private Members
+        private const float MaxProgress = CubeGeneratorMono.ProgressComplete;
+
         private bool _animatorPausedState;
         private bool _isWorking;
         private int _speedHash;
         private int _workingHash;
-        private IonGeneratorDisplay _display;
         private CubeGeneratorMono _mono;
 
         private const float ArmAnimationStart = 0.146606f; //0.1415817f;
@@ -59,14 +59,6 @@
                 _loaded = false;
             }
 
-            _display = this.transform.GetComponent<IonGeneratorDisplay>();
-
-            if (_display == null)
-            {
-                QuickLogger.Error("Display component not found on the GameObject.");
-                _loaded = false;
-            }
-
             _mono = this.transform.GetComponent<CubeGeneratorMono>();
 
             if (_mono == null)
@@ -106,12 +98,11 @@
 
         private void UpdateCoolDown()
         {
-            if (_mono.IsLoadingSaveData || !_mono.IsConstructed)
+            if (_mono.IsProductionStopped)
                 return;
 
             _animationState = this.Animator.GetCurrentAnimatorStateInfo(0);
             _currentNormilzedTime = _animationState.normalizedTime;
-
 
             if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.CubeProgress != 100)
             {
@@ -149,9 +140,9 @@
                 return;
             }
 
-            if (_mono.CubeProgress < 100 && _display != null)
+            if (_mono.CubeProgress < MaxProgress)
             {
-                float outputBar = _display.GetBarPercent() * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
+                float outputBar = _mono.CubeProgress / MaxProgress * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
 
                 if (!this.InCoolDown)
                 {
@@ -237,7 +228,7 @@
         /// </summary>
         /// <param name="stateHash">The hash of the parameter</param>
         /// <param name="value">Float to set</param>
-        internal void SetFloatHash(int stateHash, float value)
+        public void SetFloatHash(int stateHash, float value)
         {
             this.Animator.SetFloat(stateHash, value);
         }

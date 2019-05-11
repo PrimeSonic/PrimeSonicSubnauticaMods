@@ -16,7 +16,7 @@
     {
 
         #region Private Members
-        private const float MaxBar = 100f;
+        private const float MaxBar = CubeGeneratorMono.ProgressComplete;
         private const float PowerOn = 1.0f;
         private const float Boot = 0.0f;
         private GameObject _canvasGameObject;

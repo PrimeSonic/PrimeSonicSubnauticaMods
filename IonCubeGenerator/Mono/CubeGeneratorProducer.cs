@@ -10,6 +10,8 @@
     {
         private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
+        internal const float ProgressComplete = 100f;
+
         private const float DelayedStartTime = 0.5f;
         private const float RepeatingUpdateInterval = 1f;
         private const float CubeEnergyCost = 1200f;
@@ -72,7 +74,7 @@
             get
             {
                 return this.RemainingTimeToNextCube > 0f
-                        ? ((1f - (this.RemainingTimeToNextCube / CubeEnergyCost)) * 100f)
+                        ? ((1f - (this.RemainingTimeToNextCube / CubeEnergyCost)) * ProgressComplete)
                         : 0f; // default to zero when not generating
             }
         }
@@ -82,6 +84,8 @@
             get => _cubeContainer.NumberOfCubes;
             set => _cubeContainer.NumberOfCubes = value;
         }
+
+        public bool IsProductionStopped => this.IsLoadingSaveData || !this.IsConstructed;
 
         private CubeGeneratorAnimator _animator;
 
@@ -124,14 +128,6 @@
             base.InvokeRepeating(nameof(UpdateCubeGeneration), DelayedStartTime * 3f, RepeatingUpdateInterval);
         }
 
-        private void Update()
-        {
-        }
-
-        private void LateUpdate()
-        {
-        }
-
         #endregion
 
         public void OpenStorage()
@@ -141,12 +137,12 @@
 
         private void UpdateCubeGeneration()
         {
-            if (this.IsLoadingSaveData || _animator.InCoolDown)
+            if (this.IsProductionStopped || _animator.InCoolDown)
                 return;
 
             bool isCurrentlyGenerating = false;
 
-            if (this.IsConstructed && this.CurrentSpeedMode > SpeedModes.Off && this.RemainingTimeToNextCube > 0f)
+            if (this.CurrentSpeedMode > SpeedModes.Off && this.RemainingTimeToNextCube > 0f)
             {
                 float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
 
