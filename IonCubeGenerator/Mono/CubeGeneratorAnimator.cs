@@ -83,16 +83,17 @@ namespace IonCubeGenerator.Mono
             AnimationWorkingState();
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             if (!_loaded)
                 return;
 
             UpdateCoolDown();
 
-            UpdatePauseOrResumeToggle();
+            //UpdatePauseOrResumeToggle();
 
-            UpdateArm();
+            //UpdateArm();
+
         }
         #endregion
 
@@ -106,18 +107,22 @@ namespace IonCubeGenerator.Mono
             _animationState = this.Animator.GetCurrentAnimatorStateInfo(0);
             _currentNormilzedTime = _animationState.normalizedTime;
 
-            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.CubeProgress != 100)
-            {
-                this.InCoolDown = true;
-            }
-            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && _mono.CubeProgress != 100)
-            {
-                this.InCoolDown = true;
-            }
-            else
-            {
-                this.InCoolDown = false;
-            }
+            //QuickLogger.Debug($"Startup Percent = {_mono.StartUpPercent}");
+            //QuickLogger.Debug($"Generation Percent = {_mono.GenerationPercent}");
+            //QuickLogger.Debug($"Cool DOwn Percent = {_mono.CoolDownPercent}");
+
+            //if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.GenerationPercent != 100)
+            //{
+            //    this.InCoolDown = true;
+            //}
+            //else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && _mono.GenerationPercent != 100)
+            //{
+            //    this.InCoolDown = true;
+            //}
+            //else
+            //{
+            //    this.InCoolDown = false;
+            //}
         }
         #endregion
 
@@ -148,9 +153,9 @@ namespace IonCubeGenerator.Mono
                 return;
             }
 
-            if (_mono.CubeProgress < MaxProgress)
+            if (_mono.GenerationPercent < MaxProgress)
             {
-                float outputBar = _mono.CubeProgress / MaxProgress * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
+                float outputBar = _mono.GenerationPercent / MaxProgress * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
 
                 if (!this.InCoolDown)
                 {

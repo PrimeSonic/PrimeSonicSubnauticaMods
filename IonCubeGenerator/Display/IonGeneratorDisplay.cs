@@ -100,7 +100,7 @@
 
         internal float GetBarPercent()
         {
-            return _mono.CubeProgress / MaxBar;
+            return _mono.GenerationPercent / MaxBar;
         }
 
         internal void OnButtonClick(string btnName, object additionalObject)
@@ -454,7 +454,7 @@
 
         private void UpdatePercentageText()
         {
-            _percentDisplay.text = $"{Mathf.RoundToInt(_mono.CubeProgress)}%";
+            _percentDisplay.text = $"{Mathf.RoundToInt(_mono.GenerationPercent)}%";
         }
 
         private void UpdatePercentageBar()
@@ -465,7 +465,7 @@
                 return;
             }
 
-            float calcBar = _mono.CubeProgress / MaxBar;
+            float calcBar = _mono.GenerationPercent / MaxBar;
 
             float outputBar = calcBar * (BarMaxValue - BarMinValue) + BarMinValue;
 
