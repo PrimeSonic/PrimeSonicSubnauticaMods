@@ -454,7 +454,7 @@
 
         private void UpdatePercentageText()
         {
-            _percentDisplay.text = $"{_mono.CubeProgress}%";
+            _percentDisplay.text = $"{Mathf.RoundToInt(_mono.CubeProgress)}%";
         }
 
         private void UpdatePercentageBar()

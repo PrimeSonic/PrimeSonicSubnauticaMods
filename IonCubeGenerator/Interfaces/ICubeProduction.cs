@@ -4,7 +4,7 @@
 
     internal interface ICubeProduction
     {
-        bool IsProductionStopped { get; }
+        bool NotAllowToGenerate { get; }
         float CubeProgress { get; }
         SpeedModes CurrentSpeedMode { get; set; }
         float RemainingTimeToNextCube { get; set; }

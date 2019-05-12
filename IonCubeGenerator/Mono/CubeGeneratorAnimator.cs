@@ -42,7 +42,27 @@ namespace IonCubeGenerator.Mono
         /// <summary>
         /// Boole that shows is the animator is in the cool down portion of the animation
         /// </summary>
-        public bool InCoolDown { get; private set; }
+        public bool InCoolDown
+        {
+            get
+            {
+                _animationState = this.Animator.GetCurrentAnimatorStateInfo(0);
+                _currentNormilzedTime = _animationState.normalizedTime;
+
+                if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && !Mathf.Approximately(_mono.CubeProgress, MaxProgress))
+                {
+                    return true;
+                }
+                else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && !Mathf.Approximately(_mono.CubeProgress, MaxProgress))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
         #endregion
 
         #region Unity Methods
@@ -91,8 +111,6 @@ namespace IonCubeGenerator.Mono
             if (!_loaded)
                 return;
 
-            UpdateCoolDown();
-
             UpdatePauseOrResumeToggle();
 
             UpdateArm();
@@ -100,28 +118,6 @@ namespace IonCubeGenerator.Mono
         #endregion
 
         #region Private Methods
-
-        private void UpdateCoolDown()
-        {
-            if (_mono.IsProductionStopped)
-                return;
-
-            _animationState = this.Animator.GetCurrentAnimatorStateInfo(0);
-            _currentNormilzedTime = _animationState.normalizedTime;
-
-            if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.CubeProgress != 100)
-            {
-                this.InCoolDown = true;
-            }
-            else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && _mono.CubeProgress != 100)
-            {
-                this.InCoolDown = true;
-            }
-            else
-            {
-                this.InCoolDown = false;
-            }
-        }
 
         private void UpdatePauseOrResumeToggle()
         {

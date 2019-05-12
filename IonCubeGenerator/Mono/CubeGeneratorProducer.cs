@@ -26,6 +26,17 @@
         private float CubeCreationTime = 0f;
         private float EnergyConsumptionPerSecond = 0f;
 
+        private PowerRelay ConnectedRelay
+        {
+            get
+            {
+                while (_connectedRelay == null)
+                    UpdatePowerRelay();
+
+                return _connectedRelay;
+            }
+        }
+
         internal bool IsGenerating { get; private set; } = false;
         public bool IsLoadingSaveData { get; set; } = false;
 
@@ -53,22 +64,7 @@
         internal bool IsConstructed => _buildable != null && _buildable.constructed;
         public bool IsFull => _cubeContainer.IsFull;
 
-        private float AvailablePower
-        {
-            get
-            {
-                if (_connectedRelay == null)
-                    UpdatePowerRelay();
-
-                if (_connectedRelay == null)
-                {
-                    QuickLogger.Debug("Late call to find PowerRelay in parent failed.");
-                    return 0f;
-                }
-
-                return _connectedRelay.GetPower();
-            }
-        }
+        private float AvailablePower => this.ConnectedRelay.GetPower();
 
         public float CubeProgress
         {
@@ -86,7 +82,8 @@
             set => _cubeContainer.NumberOfCubes = value;
         }
 
-        public bool IsProductionStopped => this.IsLoadingSaveData || !this.IsConstructed;
+        public bool NotAllowToGenerate => this.IsLoadingSaveData || !this.IsConstructed;
+
 
         private CubeGeneratorAnimator _animator;
 
@@ -121,12 +118,6 @@
                 QuickLogger.Error("Did not find Animator in parent during Start.");
             }
 
-            if (_connectedRelay == null)
-            {
-                QuickLogger.Debug("Did not find PowerRelay in parent during Start. Trying again.");
-                UpdatePowerRelay();
-            }
-
             base.Invoke(nameof(TryStartingNextCube), DelayedStartTime);
             base.InvokeRepeating(nameof(UpdateCubeGeneration), DelayedStartTime * 3f, RepeatingUpdateInterval);
         }
@@ -140,12 +131,12 @@
 
         private void UpdateCubeGeneration()
         {
-            if (this.IsProductionStopped || _animator.InCoolDown)
+            if (this.NotAllowToGenerate || _animator.InCoolDown)
                 return;
 
             bool isCurrentlyGenerating = false;
 
-            if (this.CurrentSpeedMode > SpeedModes.Off && this.RemainingTimeToNextCube > 0f)
+            if (this.CurrentSpeedMode != SpeedModes.Off && this.RemainingTimeToNextCube > 0f)
             {
                 float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
 
@@ -155,9 +146,9 @@
 
                 if (_hasPowerToConsume)
                 {
-                    if (requiresEnergy && _connectedRelay != null)
+                    if (requiresEnergy)
                     {
-                        _connectedRelay.ConsumeEnergy(energyToConsume, out float amountConsumed);
+                        this.ConnectedRelay.ConsumeEnergy(energyToConsume, out float amountConsumed);
                     }
 
                     if (this.RemainingTimeToNextCube > 0f)
