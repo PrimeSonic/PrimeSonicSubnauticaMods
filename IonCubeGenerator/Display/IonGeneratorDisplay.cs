@@ -454,7 +454,7 @@
 
         private void UpdatePercentageText()
         {
-            _percentDisplay.text = $"{Mathf.RoundToInt(_mono.GenerationPercent)}%";
+            _percentDisplay.text = $"{Mathf.RoundToInt(_mono.GenerationPercent * 100)}%";
         }
 
         private void UpdatePercentageBar()
@@ -465,9 +465,9 @@
                 return;
             }
 
-            float calcBar = _mono.GenerationPercent / MaxBar;
+            //float calcBar = _mono.GenerationPercent / MaxBar;
 
-            float outputBar = calcBar * (BarMaxValue - BarMinValue) + BarMinValue;
+            float outputBar = _mono.GenerationPercent * (BarMaxValue - BarMinValue) + BarMinValue;
 
             _percentageBar.fillAmount = Mathf.Clamp(outputBar, BarMinValue, BarMaxValue);
 
