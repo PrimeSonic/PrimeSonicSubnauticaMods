@@ -1,12 +1,10 @@
 ﻿namespace IonCubeGenerator.Interfaces
 {
-    using IonCubeGenerator.Enums;
-
-    internal interface ICubeProduction
+    internal interface ICubeProduction : ICubeGeneratorSaveData
     {
         bool NotAllowToGenerate { get; }
-        float CubeProgress { get; }
-        SpeedModes CurrentSpeedMode { get; set; }
-        float RemainingTimeToNextCube { get; set; }
+        float StartUpPercent { get; }
+        float GenerationPercent { get; }
+        float CoolDownPercent { get; }
     }
 }

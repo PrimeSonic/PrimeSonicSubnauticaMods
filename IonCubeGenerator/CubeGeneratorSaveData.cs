@@ -12,21 +12,21 @@
     internal class CubeGeneratorSaveData : EmPropertyCollection, ICubeGeneratorSaveHandler
     {
         private const string CubeCountKey = "CC";
-        private const string TimeNextCubeKey = "TNC";
+        private const string ProgressKey = "P";
         private const string SpeedModesKey = "SM";
         private const string MainKey = "IG";
 
         private static readonly ICollection<EmProperty> emProperties = new List<EmProperty>(2)
         {
             new EmProperty<int>(CubeCountKey),
-            new EmProperty<float>(TimeNextCubeKey),
+            new EmPropertyList<float>(ProgressKey, new []{ -1f, -1f, -1f }),
             new EmProperty<SpeedModes>(SpeedModesKey, SpeedModes.Low),
         };
 
         private readonly string _preFabID;
         private readonly int _maxCubes;
         private readonly EmProperty<int> _cubeCount;
-        private readonly EmProperty<float> _timeToCube;
+        private readonly EmPropertyList<float> _progress;
         private readonly EmProperty<SpeedModes> _speedMode;
 
         private readonly string SaveDirectory = Path.Combine(SaveUtils.GetCurrentSaveDataDir(), "IonCubeGenerator");
@@ -38,10 +38,15 @@
             set => _cubeCount.Value = Math.Min(_maxCubes, value);
         }
 
-        internal float RemainingTimeToNextCube
+        internal IList<float> Progress
         {
-            get => _timeToCube.Value;
-            set => _timeToCube.Value = value;
+            get => _progress.Values;
+            set
+            {
+                _progress.Values[(int)CubePhases.StartUp] = value[(int)CubePhases.StartUp];
+                _progress.Values[(int)CubePhases.Generating] = value[(int)CubePhases.Generating];
+                _progress.Values[(int)CubePhases.CoolDown] = value[(int)CubePhases.CoolDown];
+            }
         }
 
         internal SpeedModes CurrentSpeedMode
@@ -59,7 +64,7 @@
         private CubeGeneratorSaveData(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
             _cubeCount = (EmProperty<int>)base.Properties[CubeCountKey];
-            _timeToCube = (EmProperty<float>)base.Properties[TimeNextCubeKey];
+            _progress = (EmPropertyList<float>)base.Properties[ProgressKey];
             _speedMode = (EmProperty<SpeedModes>)base.Properties[SpeedModesKey];
         }
 
@@ -71,7 +76,7 @@
         public void SaveData(ICubeGeneratorSaveData cubeGenerator)
         {
             this.NumberOfCubes = cubeGenerator.NumberOfCubes;
-            this.RemainingTimeToNextCube = cubeGenerator.RemainingTimeToNextCube;
+            this.Progress = cubeGenerator.Progress;
             this.CurrentSpeedMode = cubeGenerator.CurrentSpeedMode;
 
             this.Save(SaveDirectory, this.SaveFile);
@@ -84,7 +89,7 @@
                 cubeGenerator.IsLoadingSaveData = true;
 
                 cubeGenerator.NumberOfCubes = this.NumberOfCubes;
-                cubeGenerator.RemainingTimeToNextCube = this.RemainingTimeToNextCube;
+                cubeGenerator.Progress = this.Progress;
                 cubeGenerator.CurrentSpeedMode = this.CurrentSpeedMode;
 
                 cubeGenerator.IsLoadingSaveData = false;
