@@ -14,20 +14,20 @@
         internal const float ProgressComplete = 100f;
         internal const SpeedModes StartingMode = SpeedModes.Off;
         internal const float StartUpComplete = 10f;
-        internal const float CooldownComplete = 20f;
+        internal const float CooldownComplete = 10f;
 
-        private const float DelayedStartTime = 0.5f;
+        private const float DelayedStartTime = 3f;
         private const float CubeEnergyCost = 1200f;
 
-        private const int MaxContainerSpaces = CubeGeneratorContainer.MaxAvailableSpaces;
         private SpeedModes _currentMode = StartingMode;
         private PowerRelay _connectedRelay = null;
         private Constructable _buildable = null;
         private ICubeContainer _cubeContainer;
         private ICubeGeneratorSaveHandler _saveData;
 
-        private float CubeCreationTime = 0f;
+        private float CubeCreationTime = CubeEnergyCost;
         private float EnergyConsumptionPerSecond = 0f;
+
         private readonly IList<float> _progress = new List<float>(new[] { -1f, -1f, -1f });
 
         private PowerRelay ConnectedRelay
@@ -47,47 +47,46 @@
 
         private float AvailablePower => this.ConnectedRelay.GetPower();
 
-        public bool IsLoadingSaveData { get; set; } = false;
+        public bool PauseUpdates { get; set; } = false;
 
         public SpeedModes CurrentSpeedMode
         {
             get => _currentMode;
             set
             {
-                SpeedModes previousState = _currentMode;
+                SpeedModes previousMode = _currentMode;
                 _currentMode = value;
-                if (value != SpeedModes.Off)
+                if (_currentMode != SpeedModes.Off)
                 {
                     CubeCreationTime = Convert.ToSingle(_currentMode);
                     EnergyConsumptionPerSecond = CubeEnergyCost / CubeCreationTime;
 
-                    if (previousState == SpeedModes.Off)
+                    if (previousMode == SpeedModes.Off)
                         TryStartingNextCube();
                 }
                 else // Off State
                 {
-                    CubeCreationTime = -1f;
-                    EnergyConsumptionPerSecond = -1f;
+                    EnergyConsumptionPerSecond = 0f;
                 }
             }
         }
 
-        private float StartUpProgress
+        public float StartUpProgress
         {
-            get => this.Progress[(int)CubePhases.StartUp];
-            set => this.Progress[(int)CubePhases.StartUp] = value;
+            get => _progress[(int)CubePhases.StartUp];
+            set => _progress[(int)CubePhases.StartUp] = value;
         }
 
-        private float GenerationProgress
+        public float GenerationProgress
         {
-            get => this.Progress[(int)CubePhases.Generating];
-            set => this.Progress[(int)CubePhases.Generating] = value;
+            get => _progress[(int)CubePhases.Generating];
+            set => _progress[(int)CubePhases.Generating] = value;
         }
 
-        private float CoolDownProgress
+        public float CoolDownProgress
         {
-            get => this.Progress[(int)CubePhases.CoolDown];
-            set => this.Progress[(int)CubePhases.CoolDown] = value;
+            get => _progress[(int)CubePhases.CoolDown];
+            set => _progress[(int)CubePhases.CoolDown] = value;
         }
 
         public float StartUpPercent => Mathf.Max(0f, this.StartUpProgress / StartUpComplete);
@@ -100,18 +99,7 @@
             set => _cubeContainer.NumberOfCubes = value;
         }
 
-        public bool NotAllowToGenerate => this.IsLoadingSaveData || !this.IsConstructed || this.CurrentSpeedMode == SpeedModes.Off;
-
-        public IList<float> Progress
-        {
-            get => _progress;
-            set
-            {
-                _progress[(int)CubePhases.StartUp] = value[(int)CubePhases.StartUp];
-                _progress[(int)CubePhases.Generating] = value[(int)CubePhases.Generating];
-                _progress[(int)CubePhases.CoolDown] = value[(int)CubePhases.CoolDown];
-            }
-        }
+        public bool NotAllowToGenerate => this.PauseUpdates || !this.IsConstructed || this.CurrentSpeedMode == SpeedModes.Off;
 
         #region Unity methods
 
@@ -125,17 +113,17 @@
             if (_saveData == null)
             {
                 string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CubeGeneratorSaveData(id, MaxContainerSpaces);
+                _saveData = new CubeGeneratorSaveData(id);
             }
 
             _cubeContainer = new CubeGeneratorContainer(this);
+
+            UpdatePowerRelay();
         }
 
         private void Start()
         {
             UpdatePowerRelay();
-
-            base.Invoke(nameof(TryStartingNextCube), DelayedStartTime);
         }
 
         private void Update()
@@ -143,46 +131,53 @@
             if (this.NotAllowToGenerate)
                 return;
 
-            float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.dayNightSpeed;
+            float energyToConsume = EnergyConsumptionPerSecond * DayNightCycle.main.deltaTime;
             bool requiresEnergy = GameModeUtils.RequiresPower();
             bool hasPowerToConsume = !requiresEnergy || (this.AvailablePower >= energyToConsume);
 
             if (!hasPowerToConsume)
                 return;
 
-            if (this.CoolDownProgress == CooldownComplete)
+            if (this.CoolDownProgress >= CooldownComplete)
             {
-                // Finished cool down - See if the next cube can be started
-                _cubeContainer.NumberOfCubes++;
+                QuickLogger.Debug("IonCube Generator - Finished Cooldown", true);
+
+                this.PauseUpdates = true;
+                // Finished cool down - See if the next cube can be started                
                 TryStartingNextCube();
+
+                this.PauseUpdates = false;
             }
             else if (this.CoolDownProgress >= 0f)
             {
                 // Is currently cooling down
-                this.CoolDownProgress = Mathf.Min(CooldownComplete, this.CoolDownProgress + DayNightCycle.main.dayNightSpeed);
+                this.CoolDownProgress = Mathf.Min(CooldownComplete, this.CoolDownProgress + DayNightCycle.main.deltaTime);
             }
-            else if (this.GenerationProgress == CubeEnergyCost)
+            else if (this.GenerationProgress >= CubeEnergyCost)
             {
+                QuickLogger.Debug("IonCube Generator - Cooldown", true);
+                _cubeContainer.NumberOfCubes++;
                 // Finished generating cube - Start cool down
                 this.CoolDownProgress = 0f;
             }
             else if (this.GenerationProgress >= 0f)
-            {                
+            {
                 if (requiresEnergy)
                     this.ConnectedRelay.ConsumeEnergy(energyToConsume, out float amountConsumed);
 
                 // Is currently generating cube
                 this.GenerationProgress = Mathf.Min(CubeEnergyCost, this.GenerationProgress + energyToConsume);
             }
-            else if (this.StartUpProgress == StartUpComplete)
+            else if (this.StartUpProgress >= StartUpComplete)
             {
+                QuickLogger.Debug("IonCube Generator - Generating", true);
                 // Finished start up - Start generating cube
                 this.GenerationProgress = 0f;
             }
             else if (this.StartUpProgress >= 0f)
             {
                 // Is currently in start up routine
-                this.StartUpProgress = Mathf.Min(StartUpComplete, this.StartUpProgress + DayNightCycle.main.dayNightSpeed);
+                this.StartUpProgress = Mathf.Min(StartUpComplete, this.StartUpProgress + DayNightCycle.main.deltaTime);
             }
         }
 
@@ -195,22 +190,30 @@
 
         private void TryStartingNextCube()
         {
+            QuickLogger.Debug("Trying to start another cube", true);
+
             if (this.CurrentSpeedMode == SpeedModes.Off)
                 return;// Powered off, can't start a new cube
 
-            if (this.Progress[(int)CubePhases.StartUp] <= 0f || // Has not started a cube yet
-                this.Progress[(int)CubePhases.CoolDown] == CooldownComplete) // Has finished a cube
+            if (this.StartUpProgress < 0f || // Has not started a cube yet
+                this.CoolDownProgress == CooldownComplete) // Has finished a cube
             {
                 if (!_cubeContainer.IsFull)
-                    StartNextCube();
+                {
+                    QuickLogger.Debug("IonCube Generator - Start up", true);
+                    this.CoolDownProgress = -1f;
+                    this.GenerationProgress = -1f;
+                    this.StartUpProgress = 0f;
+                }
+                else
+                {
+                    QuickLogger.Debug("Cannot start another cube, container is full", true);
+                }
             }
-        }
-
-        private void StartNextCube()
-        {
-            this.Progress[(int)CubePhases.StartUp] = 0f;
-            this.Progress[(int)CubePhases.Generating] = -1f;
-            this.Progress[(int)CubePhases.CoolDown] = -1f;
+            else
+            {
+                QuickLogger.Debug("Cannot start another cube, another cube is currently in progress", true);
+            }
         }
 
         private void UpdatePowerRelay()
@@ -242,12 +245,16 @@
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
+            this.PauseUpdates = true;
             _saveData.LoadData(this);
+            this.PauseUpdates = false;
         }
 
         public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
         {
+            this.PauseUpdates = true;
             _saveData.SaveData(this);
+            this.PauseUpdates = false;
         }
 
         #endregion

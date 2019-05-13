@@ -84,17 +84,17 @@
             {
                 Ingredients =
                 {
-                    new Ingredient(TechType.PrecursorIonCrystal, 8),
+                    new Ingredient(TechType.PrecursorIonCrystal, 6),
                     new Ingredient(TechType.AdvancedWiringKit, 1), // Replace with a new modded craftable just for this
-                    new Ingredient(TechType.Benzene, 2),
+                    new Ingredient(TechType.Benzene, 1),
 
-                    new Ingredient(TechType.PlasteelIngot, 2),
-                    new Ingredient(TechType.Nickel, 3),
-                    new Ingredient(TechType.Magnetite, 3),
+                    new Ingredient(TechType.PlasteelIngot, 1),
+                    new Ingredient(TechType.Nickel, 1),
+                    new Ingredient(TechType.Magnetite, 1),
 
-                    new Ingredient(TechType.Kyanite, 3),
-                    new Ingredient(TechType.Aerogel, 2),
-                    new Ingredient(TechType.Diamond, 2),
+                    new Ingredient(TechType.Kyanite, 1),
+                    new Ingredient(TechType.Aerogel, 1),
+                    new Ingredient(TechType.Diamond, 1),
                 }
             };
         }

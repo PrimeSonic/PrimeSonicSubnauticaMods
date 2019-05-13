@@ -30,19 +30,22 @@
             get => _cubeContainer.count;
             set
             {
-                if (value >= 0 && value < _cubeContainer.count)
+                if (value < 0 || value > MaxAvailableSpaces)
+                    return;
+
+                if (value < _cubeContainer.count)
                 {
                     do
                     {
                         RemoveSingleCube();
-                    } while (--value < _cubeContainer.count);
+                    } while (value < _cubeContainer.count);
                 }
-                else if (value <= MaxAvailableSpaces && value > _cubeContainer.count)
+                else if (value > _cubeContainer.count)
                 {
                     do
                     {
                         SpawnCube();
-                    } while (++value > _cubeContainer.count);
+                    } while (value > _cubeContainer.count);
                 }
             }
         }
