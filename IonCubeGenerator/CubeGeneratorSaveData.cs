@@ -87,6 +87,10 @@
 
             this.NumberOfCubes = cubeGenerator.NumberOfCubes;
 
+            _progress.Values.Clear();
+            _progress.Add(-1f);
+            _progress.Add(-1f);
+            _progress.Add(-1f);
             this.StartUpProgress = cubeGenerator.StartUpProgress;
             this.GenerationProgress = cubeGenerator.GenerationProgress;
             this.CoolDownProgress = cubeGenerator.CoolDownProgress;
