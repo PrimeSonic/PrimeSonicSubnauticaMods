@@ -22,12 +22,25 @@
             }
 
             var alienIngot = new AlienIngot();
+
+            if (!alienIngot.GetPrefabs(singleton._assetBundle))
+            {
+                throw new FileNotFoundException("Failed to retrieve the Alien Ingot Case prefab from the asset bundle");
+            }
+
             alienIngot.Patch();
 
             var alienCase = new AlienEletronicsCase();
+
+            if (!alienCase.GetPrefabs(singleton._assetBundle))
+            {
+                throw new FileNotFoundException("Failed to retrieve the Alien Eletronics Case prefab from the asset bundle");
+            }
+
             alienCase.Patch();
 
             singleton.Patch();
+
         }
 
         public CubeGeneratorBuildable()
