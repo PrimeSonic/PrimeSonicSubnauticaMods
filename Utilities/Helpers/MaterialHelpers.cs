@@ -226,31 +226,6 @@
             }
         }
 
-        /// <summary>
-        /// Applies the properties for the Sprite shader.
-        /// </summary>
-        /// <param name="materialName">The name of the material to look for on the object.</param>
-        /// <param name="gameObject">The game object to process.</param>
-        /// <param name="glossiness">The amount of gloss for the metallic property.</param>
-        public static void ApplySpriteShaderTemplate(string materialName, GameObject gameObject, float glossiness)
-        {
-            var shader = Shader.Find("Sprites/Default");
-            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-            foreach (Renderer renderer in renderers)
-            {
-                foreach (Material material in renderer.materials)
-                {
-                    if (material.name.StartsWith(materialName))
-                    {
-                        material.shader = shader;
-                        material.SetFloat("_Mode", 3f);
-                        material.EnableKeyword("_METALLICGLOSSMAP");
-                        material.SetFloat("_Glossiness", glossiness);
-                    }
-                }
-            }
-        }
-
         public static void ApplyPrecursorShader(string materialName, string normalMap, string metalicmap, GameObject gameObject, AssetBundle assetBundle, float glossiness)
         {
             var shader = Shader.Find("UWE/Marmoset/IonCrystal");

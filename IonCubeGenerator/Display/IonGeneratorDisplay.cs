@@ -14,7 +14,6 @@
     /// </summary>
     internal class IonGeneratorDisplay : MonoBehaviour
     {
-
         #region Private Members
         private const float MaxBar = CubeGeneratorMono.ProgressComplete;
         private const float PowerOn = 1.0f;
@@ -49,7 +48,8 @@
         #endregion
 
         #region Public Properties
-        public bool HasBeenShutDown { get; set; }
+        public bool ShowBootScreen { get; set; } = true;
+        public int BootTime { get; set; } = 3;
         #endregion
 
         #region Unity Methods
@@ -68,7 +68,6 @@
             if (FindAllComponents() == false)
             {
                 QuickLogger.Error("// ============== Error getting all Components ============== //");
-                BootScreen();
                 return;
             }
 
@@ -90,19 +89,13 @@
 
             UpdateSpeedModeText();
 
-            PowerOnDisplay();
+            BootScreen();
 
         }
 
         #endregion
 
         #region Internal Methods
-
-        internal float GetBarPercent()
-        {
-            return _mono.GenerationPercent / MaxBar;
-        }
-
         internal void OnButtonClick(string btnName, object additionalObject)
         {
             switch (btnName)
@@ -112,8 +105,6 @@
                     break;
 
                 case "LButton":
-                    //if (_animatorController.InCoolDown) break;
-                    QuickLogger.Debug($"UpdateCoolDown {_animatorController.InCoolDown} || {_mono.CurrentSpeedMode}", true);
                     switch (_mono.CurrentSpeedMode)
                     {
                         case SpeedModes.Max:
@@ -132,12 +123,9 @@
                             throw new ArgumentOutOfRangeException();
                     }
                     UpdateSpeedModeText();
-                    QuickLogger.Debug($"UpdateCoolDown {_animatorController.InCoolDown} || {_mono.CurrentSpeedMode}", true);
                     break;
 
                 case "RButton":
-                    //if (_animatorController.InCoolDown) break;
-                    QuickLogger.Debug($"UpdateCoolDown {_animatorController.InCoolDown} || {_mono.CurrentSpeedMode}", true);
                     switch (_mono.CurrentSpeedMode)
                     {
                         case SpeedModes.High:
@@ -154,7 +142,6 @@
                             break;
                     }
                     UpdateSpeedModeText();
-                    QuickLogger.Debug($"UpdateCoolDown {_animatorController.InCoolDown} || {_mono.CurrentSpeedMode}", true);
                     break;
             }
         }
@@ -520,8 +507,13 @@
         private IEnumerator BootScreenEnu()
         {
             yield return new WaitForEndOfFrame();
-            _animatorController.SetFloatHash(_stateHash, Boot);
-            yield return new WaitForSeconds(3);
+
+            if (ShowBootScreen)
+            {
+                _animatorController.SetFloatHash(_stateHash, Boot);
+                yield return new WaitForSeconds(BootTime);
+            }
+
             PowerOnDisplay();
         }
 

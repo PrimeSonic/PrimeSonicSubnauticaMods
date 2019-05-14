@@ -1,35 +1,18 @@
 namespace IonCubeGenerator.Mono
 {
     using Common;
-    using System;
-    using System.Collections;
     using UnityEngine;
 
     internal class CubeGeneratorAnimator : MonoBehaviour
     {
         #region Private Members
-        private const float MaxProgress = CubeGeneratorMono.ProgressComplete;
-
-        private bool _animatorPausedState;
-        private bool _isWorking;
-        private int _speedHash;
-        private int _workingHash;
         private CubeGeneratorMono _mono;
-
         private const float ArmAnimationStart = 0.146606f; //0.1415817f;
         private const float ArmAnimationEnd = 0.6554104f; //0.6440131f;
-
-        private float _currentNormilzedTime;
-        private AnimatorStateInfo _animationState;
         private bool _loaded;
         private bool _soundPlaying;
         private CubeGeneratorAudioHandler _audioHandler;
-        private FMOD_CustomLoopingEmitter loopingEmitter;
-        private const float ANIMATION_START_BUFFER = 0.1f;
-        private const float ANIMATION_START = 0.0f;
-        private const float ANIMATION_END = 1.0f;
-        private const float ANIMATION_SPEED_MAX = 1.0f;
-        private const float ANIMATION_SPEED_MIN = 0.0f;
+
         private const int MAIN_ANIMATION_LAYER = 0;
         #endregion
 
@@ -38,22 +21,15 @@ namespace IonCubeGenerator.Mono
         /// The animator component from the gameObject.
         /// </summary>
         public Animator Animator { get; private set; }
-        public bool InCoolDown { get; private set; }
 
         #endregion
 
         #region Unity Methods
-
-        private void Awake()
-        {
-            _audioHandler = new CubeGeneratorAudioHandler();
-        }
-
         private void Start()
         {
             this.Animator = this.transform.GetComponent<Animator>();
-            loopingEmitter = this.transform.GetComponent<FMOD_CustomLoopingEmitter>();
-            loopingEmitter.asset = _audioHandler.WATER_FILTER_LOOP;
+
+            _audioHandler = new CubeGeneratorAudioHandler(gameObject.GetComponent<FMOD_CustomLoopingEmitter>());
 
             if (this.Animator == null)
             {
@@ -69,9 +45,6 @@ namespace IonCubeGenerator.Mono
                 _loaded = false;
             }
 
-            _speedHash = Animator.StringToHash("speed");
-            _workingHash = Animator.StringToHash("Working");
-
             if (this.Animator != null && this.Animator.enabled == false)
             {
                 QuickLogger.Debug("Animator was disabled and now has been enabled");
@@ -79,8 +52,6 @@ namespace IonCubeGenerator.Mono
             }
 
             _loaded = true;
-
-            AnimationWorkingState();
         }
 
         private void Update()
@@ -88,155 +59,55 @@ namespace IonCubeGenerator.Mono
             if (!_loaded)
                 return;
 
-            UpdateCoolDown();
+            UpdateAudioState();
 
-            //UpdatePauseOrResumeToggle();
-
-            //UpdateArm();
-
+            UpdateArm();
         }
-        #endregion
 
-        #region Private Methods
-
-        private void UpdateCoolDown()
+        private void UpdateAudioState()
         {
-            if (_mono.NotAllowToGenerate)
-                return;
+            if (!_mono.IsConstructed) return;
 
-            _animationState = this.Animator.GetCurrentAnimatorStateInfo(0);
-            _currentNormilzedTime = _animationState.normalizedTime;
-
-            //QuickLogger.Debug($"Startup Percent = {_mono.StartUpPercent}");
-            //QuickLogger.Debug($"Generation Percent = {_mono.GenerationPercent}");
-            //QuickLogger.Debug($"Cool DOwn Percent = {_mono.CoolDownPercent}");
-
-            //if (Math.Round(_currentNormilzedTime, 2) < Math.Round(ArmAnimationStart, 2) && _mono.GenerationPercent != 100)
-            //{
-            //    this.InCoolDown = true;
-            //}
-            //else if (Math.Round(_currentNormilzedTime, 2) > Math.Round(ArmAnimationEnd, 2) && _mono.GenerationPercent != 100)
-            //{
-            //    this.InCoolDown = true;
-            //}
-            //else
-            //{
-            //    this.InCoolDown = false;
-            //}
-        }
-        #endregion
-
-        #region Private Methods
-
-        private void UpdatePauseOrResumeToggle()
-        {
-            if (_mono.IsFull && Math.Round(_animationState.normalizedTime, 2) <= ANIMATION_START_BUFFER)
+            if (_mono.GenerationPercent > 0.01 && _mono.GenerationPercent < 1)
             {
-                //Pause the animator
-                PauseAnimation();
+                _audioHandler.PlayFilterMachineAudio();
             }
             else
             {
-                //Resume the animator
-                ResumeAnimation();
+                _audioHandler.StopFilterMachineAudio();
             }
         }
+
+        #endregion
+
+        #region Private Methods
 
         private void UpdateArm()
         {
             if (_mono.NotAllowToGenerate)
                 return;
 
-            if (Math.Round(_animationState.normalizedTime, 2) >= ANIMATION_END)
+            float outputBar = 0;
+
+            if (_mono.StartUpPercent < 1)
             {
-                ChangeAnimationPointer(ANIMATION_START);
-                return;
+                outputBar = _mono.StartUpPercent * ArmAnimationStart;
+            }
+            else if (_mono.GenerationPercent < 1)
+            {
+                outputBar = _mono.GenerationPercent * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
+            }
+            else if (_mono.CoolDownPercent < 1)
+            {
+                outputBar = _mono.CoolDownPercent * (1 - ArmAnimationEnd) + ArmAnimationEnd;
             }
 
-            if (_mono.GenerationPercent < MaxProgress)
-            {
-                float outputBar = _mono.GenerationPercent / MaxProgress * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
-
-                if (!this.InCoolDown)
-                {
-                    ChangeAnimationPointer(outputBar);
-
-                }
-            }
-        }
-
-        private void AnimationWorkingState()
-        {
-            if (_isWorking)
-                return;
-            QuickLogger.Debug(@"Working State");
-            StartCoroutine(PlayAnimationEnu(1));
-            _animatorPausedState = false;
-        }
-
-        private void AnimationIdleState()
-        {
-            QuickLogger.Debug(@"Idle State");
-            StartCoroutine(IdleAnimationEnu());
-        }
-
-        private void PauseAnimation()
-        {
-            if (_animatorPausedState)
-                return;
-            StopAudio();
-
-            StartCoroutine(PauseAnimationEnu());
-            _animatorPausedState = true;
-            _isWorking = false;
-        }
-
-        private void ResumeAnimation()
-        {
-            if (Mathf.Approximately(this.Animator.GetFloat(_speedHash), ANIMATION_SPEED_MAX))
-                return;
-
-            PlayAudio();
-
-            StartCoroutine(ResumeAnimationEnu());
-            _animatorPausedState = false;
+            ChangeAnimationPointer(outputBar);
         }
 
         private void ChangeAnimationPointer(float percent)
         {
-            this.Animator.Play("Main", MAIN_ANIMATION_LAYER, percent);
-        }
-
-        #endregion
-
-        #region IEnumerators
-
-        private IEnumerator PlayAnimationEnu(float waitTime)
-        {
-            yield return new WaitForSeconds(waitTime);
-
-            this.Animator.SetBool(_workingHash, true);
-            _isWorking = true;
-        }
-
-        private IEnumerator IdleAnimationEnu()
-        {
-            yield return new WaitForEndOfFrame();
-            this.Animator.SetBool(_workingHash, false);
-        }
-
-        private IEnumerator PauseAnimationEnu()
-        {
-            yield return new WaitForEndOfFrame();
-            QuickLogger.Debug(@"Paused State");
-            this.Animator.SetFloat(_speedHash, ANIMATION_SPEED_MIN);
-        }
-
-        private IEnumerator ResumeAnimationEnu()
-        {
-            yield return new WaitForEndOfFrame();
-            QuickLogger.Debug(@"Resuming");
-            this.Animator.SetFloat(_speedHash, ANIMATION_SPEED_MAX);
+            this.Animator.Play("Main_BK", MAIN_ANIMATION_LAYER, percent);
         }
         #endregion
 
@@ -250,25 +121,6 @@ namespace IonCubeGenerator.Mono
         {
             this.Animator.SetFloat(stateHash, value);
         }
-
-        internal void PlayAudio()
-        {
-            if (!_soundPlaying)
-            {
-                loopingEmitter.Play();
-                _soundPlaying = true;
-            }
-        }
-
-        internal void StopAudio()
-        {
-            if (_soundPlaying)
-            {
-                loopingEmitter.Stop();
-                _soundPlaying = false;
-            }
-        }
-
         #endregion
     }
 }

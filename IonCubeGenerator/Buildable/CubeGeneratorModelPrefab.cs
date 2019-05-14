@@ -69,10 +69,9 @@
             #endregion
 
             #region Precursor_Tech1
-            MaterialHelpers.ApplyEmissionShader("Precursor_Tech1", "Precursor_Tech1_Emissive", prefab, _assetBundle, new Color(0f, 4.521441f, 0.0311821f), 4f);
+            MaterialHelpers.ApplyEmissionShader("Precursor_Tech1", "Precursor_Tech1_Emissive", prefab, _assetBundle, new Color(0f, 4.521441f, 0.0311821f));
             MaterialHelpers.ApplyNormalShader("Precursor_Tech1", "Precursor_Tech1_Norm", prefab, _assetBundle);
             MaterialHelpers.ApplyMetallicShader("Precursor_Tech1", "Precursor_Tech1_Spec", prefab, _assetBundle, 0.2f);
-
             #endregion
 
             #region BaseCol1
@@ -85,6 +84,5 @@
             MaterialHelpers.ApplyNormalShader("BaseCol1_Dark", "BaseCol1_Norm", prefab, _assetBundle);
             #endregion
         }
-
     }
 }

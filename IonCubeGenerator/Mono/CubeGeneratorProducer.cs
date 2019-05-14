@@ -13,8 +13,8 @@
 
         internal const float ProgressComplete = 100f;
         internal const SpeedModes StartingMode = SpeedModes.Off;
-        internal const float StartUpComplete = 10f;
-        internal const float CooldownComplete = 10f;
+        internal const float StartUpComplete = 4f;
+        internal const float CooldownComplete = 19f;
 
         private const float DelayedStartTime = 3f;
         private const float CubeEnergyCost = 1200f;
