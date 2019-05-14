@@ -60,6 +60,8 @@
     <Compile Include="Buildable\CubeGeneratorAuxPatcher.cs" />
     <Compile Include="Buildable\CubeGeneratorModelPrefab.cs" />
     <Compile Include="Buildable\CubeGeneratorPatcher.cs" />
+    <Compile Include="Craftables\AlienEletronicsCase.cs" />
+    <Compile Include="Craftables\AlienIngot.cs" />
     <Compile Include="CubeGeneratorSaveData.cs" />
     <Compile Include="Debug_IONCube\DebugMenu.cs" />
     <Compile Include="Debug_IONCube\Patches\OpenDebugMenu.cs" />
@@ -92,6 +94,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\AlienCase.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\AlienIngot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\CubeGenerator.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -99,6 +107,7 @@
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)bin\$(Configuration)\IonCubeGenerator.dll" "F:\Program Files\Epic Games\Subnautica\QMods\IonCubeGenerator\" /Y /I</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

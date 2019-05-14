@@ -1,6 +1,7 @@
 ﻿namespace IonCubeGenerator.Buildable
 {
     using Common;
+    using IonCubeGenerator.Craftables;
     using IonCubeGenerator.Display;
     using IonCubeGenerator.Display.Patching;
     using IonCubeGenerator.Mono;
@@ -19,6 +20,12 @@
             {
                 throw new FileNotFoundException("Failed to retrieve the IonCubeGenerator prefab from the asset bundle");
             }
+
+            var alienIngot = new AlienIngot();
+            alienIngot.Patch();
+
+            var alienCase = new AlienEletronicsCase();
+            alienCase.Patch();
 
             singleton.Patch();
         }
@@ -84,17 +91,12 @@
             {
                 Ingredients =
                 {
-                    new Ingredient(TechType.PrecursorIonCrystal, 6),
-                    new Ingredient(TechType.AdvancedWiringKit, 1), // Replace with a new modded craftable just for this
-                    new Ingredient(TechType.Benzene, 1),
+                    new Ingredient(AlienIngot.TechTypeID, 2),
+                    new Ingredient(AlienEletronicsCase.TechTypeID, 1),
 
-                    new Ingredient(TechType.PlasteelIngot, 1),
-                    new Ingredient(TechType.Nickel, 1),
-                    new Ingredient(TechType.Magnetite, 1),
-
-                    new Ingredient(TechType.Kyanite, 1),
-                    new Ingredient(TechType.Aerogel, 1),
-                    new Ingredient(TechType.Diamond, 1),
+                    new Ingredient(TechType.Glass, 1),
+                    new Ingredient(TechType.Lubricant, 1),
+                    new Ingredient(TechType.Kyanite, 2),
                 }
             };
         }
