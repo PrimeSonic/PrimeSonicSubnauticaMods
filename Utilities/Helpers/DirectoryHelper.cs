@@ -1,4 +1,4 @@
-﻿namespace CyclopsNuclearReactor.Helpers
+﻿namespace Common.Helpers
 {
     using System;
     using System.IO;

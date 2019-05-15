@@ -1,4 +1,4 @@
-﻿namespace CyclopsNuclearReactor.Helpers
+﻿namespace Common.Helpers
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -6,7 +6,7 @@
     /// <summary>
     /// A class the helps applies a shader to a material and adds settings to the material specified
     /// </summary>
-    public class MaterialHelpers
+    public class MaterialHelpers : MonoBehaviour
     {
         /// <summary>
         /// Finds a <see cref="Texture2D"/> in the asset bundle with the specified name.
@@ -64,7 +64,7 @@
         /// <param name="gameObject">The game object to process.</param>
         /// <param name="assetBundle">The assetBundle to search in.</param>
         /// <param name="emissionColor">The color to use on the emission material.</param>
-        public static void ApplyEmissionShader(string materialName, string textureName, GameObject gameObject, AssetBundle assetBundle, Color emissionColor)
+        public static void ApplyEmissionShader(string materialName, string textureName, GameObject gameObject, AssetBundle assetBundle, Color emissionColor, float emissionMuli = 1.0f)
         {
             //Use this to do the Emission
             var shader = Shader.Find("MarmosetUBER");
@@ -79,7 +79,7 @@
                         //material.EnableKeyword("_EMISSION");
                         material.EnableKeyword("MARMO_EMISSION");
 
-                        material.SetVector("_EmissionColor", emissionColor * 1.0f);
+                        material.SetVector("_EmissionColor", emissionColor * emissionMuli);
                         material.SetTexture("_Illum", FindTexture2D(textureName, assetBundle));
                         material.SetVector("_Illum_ST", new Vector4(1.0f, 1.0f, 0.0f, 0.0f));
                     }
@@ -221,6 +221,40 @@
                         material.SetFloat("_Mode", 3f);
                         material.EnableKeyword("_METALLICGLOSSMAP");
                         material.SetFloat("_Glossiness", glossiness);
+                    }
+                }
+            }
+        }
+
+        public static void ApplyPrecursorShader(string materialName, string normalMap, string metalicmap, GameObject gameObject, AssetBundle assetBundle, float glossiness)
+        {
+            var shader = Shader.Find("UWE/Marmoset/IonCrystal");
+
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+
+            foreach (Renderer renderer in renderers)
+            {
+                foreach (Material material in renderer.materials)
+                {
+                    if (material.name.StartsWith(materialName))
+                    {
+                        material.shader = shader;
+                        material.EnableKeyword("_NORMALMAP");
+
+                        material.EnableKeyword("_METALLICGLOSSMAP");
+
+                        material.SetTexture("_BumpMap", FindTexture2D(normalMap, assetBundle));
+
+                        material.SetColor("_BorderColor", new Color(0.14f, 0.55f, 0.43f));
+
+                        material.SetColor("_Color", new Color(0.33f, 0.83f, 0.17f));
+
+                        material.SetColor("_DetailsColor", new Color(0.42f, 0.85f, 0.26f));
+
+                        material.SetTexture("_MarmoSpecEnum", MaterialHelpers.FindTexture2D(metalicmap, assetBundle));
+
+                        material.SetFloat("_Glossiness", glossiness);
+
                     }
                 }
             }
