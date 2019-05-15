@@ -12,6 +12,7 @@ namespace IonCubeGenerator.Mono
         private bool _loaded;
         private bool _soundPlaying;
         private CubeGeneratorAudioHandler _audioHandler;
+        private float _outputBar;
 
         private const int MAIN_ANIMATION_LAYER = 0;
         #endregion
@@ -85,24 +86,27 @@ namespace IonCubeGenerator.Mono
         private void UpdateArm()
         {
             if (_mono.NotAllowToGenerate)
+            {
+                ChangeAnimationPointer(_outputBar);
                 return;
+            }
 
-            float outputBar = 0;
+            _outputBar = 0;
 
             if (_mono.StartUpPercent < 1)
             {
-                outputBar = _mono.StartUpPercent * ArmAnimationStart;
+                _outputBar = _mono.StartUpPercent * ArmAnimationStart;
             }
             else if (_mono.GenerationPercent < 1)
             {
-                outputBar = _mono.GenerationPercent * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
+                _outputBar = _mono.GenerationPercent * (ArmAnimationEnd - ArmAnimationStart) + ArmAnimationStart;
             }
             else if (_mono.CoolDownPercent < 1)
             {
-                outputBar = _mono.CoolDownPercent * (1 - ArmAnimationEnd) + ArmAnimationEnd;
+                _outputBar = _mono.CoolDownPercent * (1 - ArmAnimationEnd) + ArmAnimationEnd;
             }
 
-            ChangeAnimationPointer(outputBar);
+            ChangeAnimationPointer(_outputBar);
         }
 
         private void ChangeAnimationPointer(float percent)
