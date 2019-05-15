@@ -3,9 +3,9 @@
     internal enum SpeedModes : int
     {
         Off = 0,
-        Max = 60,
-        High = 120,
-        Low = 240,
-        Min = 480,
+        Max = 1 * 80,
+        High = 3 * 90,
+        Low = 6 * 100,
+        Min = 10 * 110,
     }
 }

@@ -50,8 +50,8 @@
             OnFinishedPatching += DisplayLanguagePatching.AdditionPatching;
         }
 
-        public override TechGroup GroupForPDA { get; } = TechGroup.BasePieces;
-        public override TechCategory CategoryForPDA { get; } = TechCategory.BasePiece;
+        public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
+        public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
         public override string AssetsFolder { get; } = "IonCubeGenerator/Assets";
         public override TechType RequiredForUnlock { get; } = TechType.PrecursorPrisonIonGenerator;
 

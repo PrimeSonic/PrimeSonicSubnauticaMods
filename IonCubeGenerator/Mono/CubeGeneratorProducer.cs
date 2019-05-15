@@ -17,7 +17,7 @@
         internal const float CooldownComplete = 19f;
 
         private const float DelayedStartTime = 3f;
-        private const float CubeEnergyCost = 1200f;
+        private const float CubeEnergyCost = 1500f;
 
         private SpeedModes _currentMode = StartingMode;
         private PowerRelay _connectedRelay = null;
@@ -143,6 +143,7 @@
                 QuickLogger.Debug("IonCube Generator - Finished Cooldown", true);
 
                 this.PauseUpdates = true;
+                _cubeContainer.NumberOfCubes++;
                 // Finished cool down - See if the next cube can be started                
                 TryStartingNextCube();
 
@@ -156,7 +157,7 @@
             else if (this.GenerationProgress >= CubeEnergyCost)
             {
                 QuickLogger.Debug("IonCube Generator - Cooldown", true);
-                _cubeContainer.NumberOfCubes++;
+                
                 // Finished generating cube - Start cool down
                 this.CoolDownProgress = 0f;
             }
