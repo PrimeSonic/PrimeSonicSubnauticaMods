@@ -101,7 +101,7 @@
             {
                 var mgr = CyNukeChargeManager.GetManager(cyclops);
 
-                if (mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
+                if (mgr != null && mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitMessage());
                     return null;
