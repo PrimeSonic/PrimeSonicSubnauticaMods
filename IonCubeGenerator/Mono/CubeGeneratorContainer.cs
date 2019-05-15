@@ -10,7 +10,7 @@
     internal class CubeGeneratorContainer : ICubeContainer
     {
         private static readonly Vector2int CubeSize = CraftData.GetItemSize(TechType.PrecursorIonCrystal);
-        private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
+        internal static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
         private const int ContainerHeight = 2;
         private const int ContainerWidth = 2;

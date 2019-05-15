@@ -125,7 +125,11 @@
             if (ionSlot != null)
             {
                 QuickLogger.Debug("Ion Cube Display Object Created", true);
-                var displayedIonCube = GameObject.Instantiate<GameObject>(CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal));
+                var displayedIonCube = GameObject.Instantiate<GameObject>(CubeGeneratorContainer.CubePrefab);
+                Pickupable pickupable = displayedIonCube.GetComponent<Pickupable>();
+                pickupable.isPickupable = false;
+                pickupable.destroyOnDeath = true;
+
                 displayedIonCube.transform.SetParent(ionSlot.transform);
                 displayedIonCube.transform.localPosition =
                     new Vector3(-0.1152f, 0.05f, 0f); // Is to high maybe the axis is flipped

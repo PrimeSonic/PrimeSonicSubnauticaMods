@@ -9,8 +9,6 @@
 
     internal class CubeGeneratorMono : MonoBehaviour, ICubeGeneratorSaveData, IProtoTreeEventListener, ICubeContainer, ICubeProduction
     {
-        private static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
-
         internal const float ProgressComplete = 100f;
         internal const SpeedModes StartingMode = SpeedModes.Off;
         internal const float StartUpComplete = 4f;
