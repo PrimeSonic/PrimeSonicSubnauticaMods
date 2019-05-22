@@ -121,12 +121,16 @@
             int max = Math.Min(this.MaxActiveSlots, this.TotalItemCount);
             for (int i = 0; i < max; i++)
             {
+                if (powerDeficit <= PowerManager.MinimalPowerValue)
+                    break;
+
                 SlotData slotData = reactorRodData[i];
 
                 if (!slotData.HasPower())
                     continue;
 
                 float powerProduced = Mathf.Min(PowerMultiplier * DayNightCycle.main.deltaTime, slotData.Charge);
+                powerProduced = Mathf.Min(powerDeficit, powerProduced);
 
                 slotData.Charge -= powerProduced;
                 totalPowerProduced += powerProduced;
@@ -259,7 +263,7 @@
                 }
                 else
                 {
-                    CyNukeRodHelper.EmptyRod(this.gameObject,i);
+                    CyNukeRodHelper.EmptyRod(this.gameObject, i);
                 }
             }
         }
@@ -510,7 +514,7 @@
                 return Vector3.zero;
             float fuelPercentage = slotData.Charge / InitialReactorRodCharge;
 
-            Vector3 positon = new Vector3(uranium.transform.localPosition.x, fuelPercentage,
+            var positon = new Vector3(uranium.transform.localPosition.x, fuelPercentage,
                 uranium.transform.localPosition.z);
             return positon;
         }
