@@ -138,7 +138,7 @@
             new EmYesNo(EmAuxEnabledKey, true),
             new EmYesNo(EmUpgradesEnabledKey, true),
             new EmYesNo(EmBioEnergyEnabledKey, true),
-            new EmProperty<CyclopsPowerLevels>(EmPowerLevelKey, CyclopsPowerLevels.Ampeel),
+            new EmProperty<CyclopsPowerLevels>(EmPowerLevelKey, CyclopsPowerLevels.Leviathan),
         };
 
         public ModConfig() : base(ConfigKey, definitions)

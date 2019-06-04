@@ -8,7 +8,7 @@
         private const string MaxRatingKey = "CySpeedMaxed";
         public static string MaxRatingAchived => Language.main.Get(MaxRatingKey);
 
-        private const string SpeedRatingKey = "CySpeedMaxed";
+        private const string SpeedRatingKey = "CySpeedCurrent";
         public static string SpeedRatingText(int boosterCount, int multiplier)
         {
             return Language.main.GetFormat(SpeedRatingKey, boosterCount, multiplier);
