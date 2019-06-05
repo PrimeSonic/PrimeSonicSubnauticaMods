@@ -8,5 +8,5 @@
   "AssemblyName": "MoreCyclopsUpgrades.dll",
   "Dependencies": [ "SMLHelper" ],
   "AssemblyName": "MoreCyclopsUpgrades.dll",
-  "EntryMethod": "MoreCyclopsUpgrades.QPatch.Patch",
+  "EntryMethod": "MoreCyclopsUpgrades.QPatch.Patch"
 }
