@@ -1,6 +1,5 @@
-﻿namespace MoreCyclopsUpgrades.Modules
+﻿namespace MoreCyclopsUpgrades.API
 {
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Managers;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
@@ -27,10 +26,7 @@
             return obj;
         }
 
-        protected virtual UpgradeHandler CreateUpgradeHandler(SubRoot cyclops)
-        {
-            return new UpgradeHandler(this.TechType, cyclops);
-        }
+        protected abstract UpgradeHandler CreateUpgradeHandler(SubRoot cyclops);
 
         private void MakeEquipable()
         {

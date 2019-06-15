@@ -8,6 +8,7 @@
     using Common;
     using Harmony;
     using Modules;
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.Modules.Enhancement;

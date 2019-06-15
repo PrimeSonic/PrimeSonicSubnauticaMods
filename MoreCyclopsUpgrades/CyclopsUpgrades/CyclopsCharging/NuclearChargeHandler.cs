@@ -3,6 +3,7 @@
     using Caching;
     using Managers;
     using Modules;
+    using MoreCyclopsUpgrades.API;
     using SaveData;
     using UnityEngine;
 
@@ -31,6 +32,8 @@
         private bool HasRenewablePower => this.SolarCharger.SolarState != SolarState.None ||
                                           this.ThermalCharger.ThermalState != ThermalState.None ||
                                           this.BioCharger.ProducingPower;
+
+        public bool IsRenewable { get; } = false;
 
         private readonly Atlas.Sprite sprite = SpriteManager.Get(CyclopsModule.NuclearChargerID);
 

@@ -1,7 +1,7 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Common;
-    using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
+    using MoreCyclopsUpgrades.API;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -55,6 +55,8 @@
         public readonly int InstanceID;
         internal CyNukeEnhancerHandler UpgradeHandler;
         internal int UpgradeLevel => UpgradeHandler == null ? 0 : UpgradeHandler.HighestValue;
+
+        public bool IsRenewable { get; } = false;
 
         private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, CyNukReactorBuildable.PowerIndicatorIconID);
 

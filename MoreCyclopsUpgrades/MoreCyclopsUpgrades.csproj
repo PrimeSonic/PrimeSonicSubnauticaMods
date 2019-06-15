@@ -66,16 +66,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\ChargingCyclopsUpgrade.cs" />
+    <Compile Include="API\IMoreCyclopsUpgradesService.cs" />
+    <Compile Include="API\MoreCyclopsUpgradesService.cs" />
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\BioEnergyCollection.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\BioChargeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\ICyclopsCharger.cs" />
+    <Compile Include="API\ICyclopsCharger.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\NuclearChargeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\SolarChargeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
-    <Compile Include="Modules\CyclopsUpgrade.cs" />
+    <Compile Include="API\CyclopsUpgrade.cs" />
     <Compile Include="NumberFormat.cs" />
     <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
@@ -85,7 +88,7 @@
     <Compile Include="CyclopsUpgrades\NuclearUpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\TieredUpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\TieredUpgradesHandlerCollection.cs" />
-    <Compile Include="CyclopsUpgrades\UpgradeHandler.cs" />
+    <Compile Include="API\UpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\ChargingCyclopsUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="Caching\OtherMods.cs" />

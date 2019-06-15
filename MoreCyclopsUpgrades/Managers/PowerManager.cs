@@ -1,20 +1,18 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Common;
-    using CyclopsUpgrades;
-    using CyclopsUpgrades.CyclopsCharging;
-    using Modules.Enhancement;
-    using MoreCyclopsUpgrades.Modules;
-    using MoreCyclopsUpgrades.SaveData;
-    using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using Common;
+    using CyclopsUpgrades;
+    using Modules.Enhancement;
+    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.SaveData;
     using UnityEngine;
 
     /// <summary>
     /// Handles recharging the Cyclops and other power related tasks.
     /// </summary>
-    public class PowerManager
+    internal class PowerManager
     {
         private static readonly ICollection<ChargerCreator> CyclopsChargers = new List<ChargerCreator>();
 
@@ -22,7 +20,7 @@
         /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ChargerCreator"/>.</param>
-        public static void RegisterChargerCreator(ChargerCreator createEvent)
+        internal static void RegisterChargerCreator(ChargerCreator createEvent)
         {
             if (CyclopsChargers.Contains(createEvent))
             {
@@ -85,7 +83,21 @@
             50f, 50f, 45f, 35f // Lower costs here don't show up until the Mk2
         };
 
-        internal readonly ICollection<ICyclopsCharger> PowerChargers = new HashSet<ICyclopsCharger>();
+        internal int PowerChargersCount => RenewablePowerChargers.Count + NonRenewablePowerChargers.Count;
+        internal IEnumerable<ICyclopsCharger> PowerChargers
+        {
+            get
+            {
+                foreach (ICyclopsCharger charger in RenewablePowerChargers)                
+                    yield return charger;
+
+                foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
+                    yield return charger;
+            }
+        }
+
+        private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new HashSet<ICyclopsCharger>();
+        private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new HashSet<ICyclopsCharger>();
 
         internal UpgradeHandler SpeedBoosters;
         internal TieredUpgradesHandlerCollection<int> EngineEfficientyUpgrades;
@@ -136,14 +148,16 @@
 
         internal void InitializeChargingHandlers()
         {
-            QuickLogger.Debug("PowerManager InitializeChargingHandlers");            
+            QuickLogger.Debug("PowerManager InitializeChargingHandlers");
 
             foreach (ChargerCreator method in CyclopsChargers)
             {
                 ICyclopsCharger charger = method.Invoke(Cyclops);
 
-                if (!PowerChargers.Contains(charger))
-                    PowerChargers.Add(charger);
+                ICollection<ICyclopsCharger> powerChargers = charger.IsRenewable ? RenewablePowerChargers : NonRenewablePowerChargers;
+
+                if (!powerChargers.Contains(charger))
+                    powerChargers.Add(charger);
                 else
                     QuickLogger.Warning($"Duplicate Reusable ICyclopsCharger '{charger.GetType()?.Name}' was blocked");
             }
@@ -242,18 +256,28 @@
             rechargeSkip = 0;
 
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
-            // This is so that each charge can decide what to do individually rather than skip the entire charging cycle all together.
+            // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
             float powerDeficit = GameModeUtils.RequiresPower()
                                  ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
                                  : 0f;
 
             Manager.HUDManager.UpdateTextVisibility();
 
-            float power = 0f;
-            foreach (ICyclopsCharger charger in PowerChargers)
-                power += charger.ProducePower(powerDeficit);
+            float producedPower = 0f;
+            foreach (ICyclopsCharger charger in RenewablePowerChargers)
+                producedPower += charger.ProducePower(powerDeficit);
 
-            ChargeCyclops(power, ref powerDeficit);
+            // Charge with renewable energy first
+            ChargeCyclops(producedPower, ref powerDeficit);
+
+            if (producedPower <= MinimalPowerValue || (powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit))
+            {
+                // If needed, produce and charge with non-renewable energy
+                foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
+                    producedPower += charger.ProducePower(powerDeficit);
+
+                ChargeCyclops(producedPower, ref powerDeficit);
+            }
         }
 
         private void ChargeCyclops(float availablePower, ref float powerDeficit)

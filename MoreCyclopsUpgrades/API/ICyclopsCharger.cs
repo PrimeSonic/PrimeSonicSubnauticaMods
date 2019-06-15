@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging
+﻿namespace MoreCyclopsUpgrades.API
 {
     using Managers;
     using UnityEngine;
@@ -28,6 +28,13 @@
         /// <param name="requestedPower">The amount of power being requested by the cyclops; This is the current Power Deficit of the cyclops.</param>
         /// <returns>The amount of power produced by this cyclops charger.</returns>
         float ProducePower(float requestedPower);
+
+        /// <summary>
+        /// Gets a value indicating if this type of cyclops energy source is renewable.</param>
+        /// Use <c>true</c> for rechargable batteries and energy drawn from the environment.</param>
+        /// Use <c>false</c> for depletable sources like nuclear reactor rods.
+        /// </summary>
+        bool IsRenewable { get; }
 
         /// <summary>
         /// <para>Determines whether this charger should display any power indicator info.</para>

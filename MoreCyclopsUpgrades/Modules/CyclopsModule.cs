@@ -13,6 +13,7 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    // TODO - Delete this class and move all upgrades into their own (optional) mods
     internal abstract class CyclopsModule : ModPrefab
     {
         private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>();

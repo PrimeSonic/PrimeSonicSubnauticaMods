@@ -5,12 +5,13 @@
     using Common;
     using CyclopsUpgrades;
     using Monobehaviors;
+    using MoreCyclopsUpgrades.API;
     using UnityEngine;
 
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
     /// </summary>
-    public class UpgradeManager
+    internal class UpgradeManager
     {
         private static readonly ICollection<HandlerCreator> UpgradeHandlers = new List<HandlerCreator>();
 
@@ -18,7 +19,7 @@
         /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        public static void RegisterHandlerCreator(HandlerCreator createEvent)
+        internal static void RegisterHandlerCreator(HandlerCreator createEvent)
         {
             if (UpgradeHandlers.Contains(createEvent))
             {

@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.API
 {
     using MoreCyclopsUpgrades.Managers;
     using System;

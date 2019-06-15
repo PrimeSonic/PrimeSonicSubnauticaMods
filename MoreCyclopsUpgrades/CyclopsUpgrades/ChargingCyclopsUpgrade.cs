@@ -1,5 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
+    using MoreCyclopsUpgrades.API;
+
     internal class ChargingUpgradeHandler : UpgradeHandler
     {
         internal ChargingUpgradeHandler SiblingUpgrade = null;

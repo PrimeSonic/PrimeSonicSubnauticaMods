@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging
 {
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.Modules;
@@ -16,6 +17,8 @@
         private BioBoosterUpgradeHandler BioBoosters => ChargeManager.BioBoosters;
 
         private List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
+
+        public bool IsRenewable { get; } = false;
 
         internal readonly int MaxBioReactors = ModConfig.Settings.MaxBioReactors();
         internal bool ProducingPower = false;

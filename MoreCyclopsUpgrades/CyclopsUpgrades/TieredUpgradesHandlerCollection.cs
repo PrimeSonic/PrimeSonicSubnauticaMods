@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using MoreCyclopsUpgrades.API;
 
     /// <summary>
     /// Represents the complete tier of <see cref="TieredUpgradeHandler{T}"/> instances.

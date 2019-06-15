@@ -5,6 +5,7 @@
     using Modules;
     using Modules.Enhancement;
     using Monobehaviors;
+    using MoreCyclopsUpgrades.API;
     using System.Collections.Generic;
     using UnityEngine;
 

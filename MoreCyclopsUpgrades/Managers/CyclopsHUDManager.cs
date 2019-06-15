@@ -1,10 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Common;
-    using MoreCyclopsUpgrades.Caching;
-    using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
-    using SaveData;
     using System.Collections.Generic;
+    using Common;
+    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.Caching;
+    using SaveData;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -247,7 +247,7 @@
             if (!powerIconsInitialized)
                 return;
 
-            ICollection<ICyclopsCharger> cyclopsChargers = this.PowerManager.PowerChargers;
+            IEnumerable<ICyclopsCharger> cyclopsChargers = this.PowerManager.PowerChargers;
 
             foreach (Indicator indicator in HelmIndicatorsOdd)
                 indicator.Enabled = false;

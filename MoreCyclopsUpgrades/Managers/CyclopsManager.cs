@@ -12,7 +12,7 @@
         public readonly ChargeManager ChargeManager;
 
         public List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
-        public int TotalPowerChargers => PowerManager.PowerChargers.Count;
+        public int TotalPowerChargers => PowerManager.PowerChargersCount;
 
         public readonly SubRoot Cyclops;
 

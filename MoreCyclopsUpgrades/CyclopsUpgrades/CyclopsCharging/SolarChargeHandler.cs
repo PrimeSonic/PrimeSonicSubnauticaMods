@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging
 {
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Managers;
     using MoreCyclopsUpgrades.Modules;
@@ -22,6 +23,9 @@
         internal ChargingUpgradeHandler SolarChargers => ChargeManager.SolarCharger;
         internal BatteryUpgradeHandler SolarChargerMk2 => ChargeManager.SolarChargerMk2;
         internal ThermalChargeHandler ThermalCharginer => ChargeManager.ThermalCharging;
+
+        public bool IsRenewable { get; } = true;
+
         public readonly SubRoot Cyclops;
 
         private readonly Atlas.Sprite solar1Sprite = SpriteManager.Get(CyclopsModule.SolarChargerID);
