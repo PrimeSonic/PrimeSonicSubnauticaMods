@@ -21,25 +21,25 @@
         /// </summary>
         public readonly TieredUpgradesHandlerCollection<T> ParentCollection;
 
-        internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredUpgradesHandlerCollection<T> parentCollection) : base(techType)
+        internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredUpgradesHandlerCollection<T> parentCollection) : base(techType, parentCollection.cyclops)
         {
             TieredValue = tieredValue;
             ParentCollection = parentCollection;
         }
 
-        internal override void UpgradesCleared(SubRoot cyclops)
+        internal override void UpgradesCleared()
         {            
-            ParentCollection.UpgradesCleared(cyclops);
+            ParentCollection.UpgradesCleared();
         }
 
-        internal override void UpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
+        internal override void UpgradeCounted(Equipment modules, string slot)
         {
-            ParentCollection.TierCounted(TieredValue, cyclops, modules, slot);
+            ParentCollection.TierCounted(TieredValue, modules, slot);
         }
 
-        internal override void UpgradesFinished(SubRoot cyclops)
+        internal override void UpgradesFinished()
         {
-            ParentCollection.UpgradesFinished(cyclops);
+            ParentCollection.UpgradesFinished();
         }
     }
 }

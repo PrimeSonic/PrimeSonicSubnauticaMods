@@ -16,33 +16,22 @@
     /// </summary>
     public class PowerManager
     {
-        private static readonly ICollection<ChargerCreator> OneTimeUseCyclopsChargers = new List<ChargerCreator>();
-        private static readonly ICollection<ChargerCreator> ReusableCyclopsChargers = new List<ChargerCreator>();
-
-        /// <summary>
-        /// <para>This event happens right before the PowerManager starts initializing a the registered <see cref="ICyclopsCharger"/>s.</para>
-        /// <para>Use this if you need a way to know when you should call <see cref="RegisterOneTimeUseChargerCreator"/> for <see cref="ChargerCreator"/>s that cannot be created from a static context.</para>
-        /// </summary>
-        public static Action CyclopsChargersInitializing;
+        private static readonly ICollection<ChargerCreator> CyclopsChargers = new List<ChargerCreator>();
 
         /// <summary>
         /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ChargerCreator"/>.</param>
-        public static void RegisterOneTimeUseChargerCreator(ChargerCreator createEvent)
+        public static void RegisterChargerCreator(ChargerCreator createEvent)
         {
-            QuickLogger.Info($"Received OneTimeUse ChargerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
-            OneTimeUseCyclopsChargers.Add(createEvent);
-        }
+            if (CyclopsChargers.Contains(createEvent))
+            {
+                QuickLogger.Warning($"Duplicate ChargerCreator blocked from {Assembly.GetCallingAssembly().GetName().Name}");
+                return;
+            }
 
-        /// <summary>
-        /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand that can is reused for each new Cyclops.
-        /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ICyclopsCharger"/>.</param>
-        public static void RegisterReusableChargerCreator(ChargerCreator createEvent)
-        {
-            QuickLogger.Info($"Received Reusable ChargerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
-            ReusableCyclopsChargers.Add(createEvent);
+            QuickLogger.Info($"Received ChargerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
+            CyclopsChargers.Add(createEvent);
         }
 
         internal const float BatteryDrainRate = 0.01f;
@@ -122,7 +111,6 @@
         internal PowerManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
-            UpgradeManager.UpgradeManagerInitializing += SetupPowerManagerUpgrades;
         }
 
         private float[] OriginalSpeeds { get; } = new float[3];
@@ -148,11 +136,9 @@
 
         internal void InitializeChargingHandlers()
         {
-            QuickLogger.Debug("PowerManager InitializeChargingHandlers");
-            CyclopsChargersInitializing?.Invoke();
-            QuickLogger.Debug("External CyclopsChargersInitializing methods invoked");
+            QuickLogger.Debug("PowerManager InitializeChargingHandlers");            
 
-            foreach (ChargerCreator method in ReusableCyclopsChargers)
+            foreach (ChargerCreator method in CyclopsChargers)
             {
                 ICyclopsCharger charger = method.Invoke(Cyclops);
 
@@ -161,18 +147,6 @@
                 else
                     QuickLogger.Warning($"Duplicate Reusable ICyclopsCharger '{charger.GetType()?.Name}' was blocked");
             }
-
-            foreach (ChargerCreator method in OneTimeUseCyclopsChargers)
-            {
-                ICyclopsCharger charger = method.Invoke(Cyclops);
-
-                if (!PowerChargers.Contains(charger))
-                    PowerChargers.Add(charger);
-                else
-                    QuickLogger.Warning($"Duplicate OneTimeUse ICyclopsCharger '{charger.GetType()?.Name}' was blocked");
-            }
-
-            OneTimeUseCyclopsChargers.Clear();
         }
 
         /// <summary>
@@ -294,46 +268,6 @@
 
             Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
-        }
-
-        private void SetupPowerManagerUpgrades()
-        {
-            int maxModules = ModConfig.Settings.MaxChargingModules();
-
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrades Collection");
-                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0);
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk1");
-                TieredUpgradeHandler<int> engine1 = efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk2");
-                TieredUpgradeHandler<int> engine2 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk3");
-                TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
-
-                EngineEfficientyUpgrades = efficiencyUpgrades;
-                return efficiencyUpgrades;
-            });
-
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: SpeedBooster Upgrade");
-                var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID)
-                {
-                    MaxCount = maxModules,
-                    OnFirstTimeMaxCountReached = () =>
-                    {
-                        ErrorMessage.AddMessage(CyclopsSpeedBooster.MaxRatingAchived);
-                    }
-                };
-                SpeedBoosters = speed;
-                return speed;
-            });
-
-            UpgradeManager.UpgradeManagerInitializing -= SetupPowerManagerUpgrades;
         }
     }
 }

@@ -75,6 +75,7 @@
     <Compile Include="CyclopsUpgrades\CyclopsCharging\SolarChargeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
+    <Compile Include="Modules\CyclopsUpgrade.cs" />
     <Compile Include="NumberFormat.cs" />
     <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />

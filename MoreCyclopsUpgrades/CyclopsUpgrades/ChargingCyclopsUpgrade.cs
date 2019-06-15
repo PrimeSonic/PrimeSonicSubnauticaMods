@@ -4,9 +4,9 @@
     {
         internal ChargingUpgradeHandler SiblingUpgrade = null;
 
-        public ChargingUpgradeHandler(TechType techType) : base(techType)
+        public ChargingUpgradeHandler(TechType techType, SubRoot cyclops) : base(techType, cyclops)
         {
-            IsAllowedToAdd = (SubRoot cyclops, Pickupable item, bool verbose) =>
+            IsAllowedToAdd = (Pickupable item, bool verbose) =>
             {
                 if (SiblingUpgrade == null)
                     return this.Count < this.MaxCount;

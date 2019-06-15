@@ -37,16 +37,16 @@
 
         private static void RegisterWithMoreCyclopsUpgrades()
         {
-            PowerManager.RegisterReusableChargerCreator((SubRoot cyclops) =>
+            PowerManager.RegisterChargerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("Registering CyclopsNuclearReactor ICyclopsCharger");
                 return CyNukeChargeManager.GetManager(cyclops);
             });
 
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("Registering CyNukeEnhancerHandler UpgradeHandler");
-                return new CyNukeEnhancerHandler();
+                return new CyNukeEnhancerHandler(cyclops);
             });
         }
     }

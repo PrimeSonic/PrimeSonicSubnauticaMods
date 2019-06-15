@@ -13,11 +13,11 @@
         private float errorDelay = 0f;
         private const float delayInterval = 10f;
 
-        public BioBoosterUpgradeHandler() : base(CyclopsModule.BioReactorBoosterID)
+        public BioBoosterUpgradeHandler(SubRoot cyclops) : base(CyclopsModule.BioReactorBoosterID, cyclops)
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
 
-            OnFinishedUpgrades += (SubRoot cyclops) =>
+            OnFinishedUpgrades += () =>
             {
                 List<CyBioReactorMono> bioreactors = CyclopsManager.GetBioReactors(cyclops);
 
@@ -36,7 +36,7 @@
                 ErrorMessage.AddMessage(BioReactorBooster.MaxBoostAchived);
             };
 
-            IsAllowedToRemove += (SubRoot cyclops, Pickupable item, bool verbose) =>
+            IsAllowedToRemove += (Pickupable item, bool verbose) =>
             {
                 List<CyBioReactorMono> bioreactors = CyclopsManager.GetBioReactors(cyclops);
 

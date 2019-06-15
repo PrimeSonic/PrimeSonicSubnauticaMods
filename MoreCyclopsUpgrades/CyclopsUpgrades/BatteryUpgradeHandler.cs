@@ -17,17 +17,17 @@
 
         internal bool BatteryHasCharge => this.Count > 0 && TotalBatteryCharge > PowerManager.MinimalPowerValue;
 
-        public BatteryUpgradeHandler(TechType techType, bool canRecharge) : base(techType)
+        public BatteryUpgradeHandler(TechType techType, bool canRecharge, SubRoot cyclops) : base(techType, cyclops)
         {
             BatteryRecharges = canRecharge;
-            OnClearUpgrades += (SubRoot cyclops) =>
+            OnClearUpgrades += () =>
             {
                 TotalBatteryCharge = 0f;
                 TotalBatteryCapacity = 0f;
                 this.Batteries.Clear();
             };
 
-            OnUpgradeCounted += (SubRoot cyclops, Equipment modules, string slot) =>
+            OnUpgradeCounted += (Equipment modules, string slot) =>
             {
                 var details = new BatteryDetails(modules, slot, modules.GetItemInSlot(slot).item.GetComponent<Battery>());
                 this.Batteries.Add(details);

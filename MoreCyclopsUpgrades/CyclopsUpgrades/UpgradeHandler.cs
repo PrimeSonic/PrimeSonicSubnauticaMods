@@ -8,13 +8,13 @@
     /// Defines a method that creates a new <see cref="UpgradeHandler"/> when needed by the <seealso cref="UpgradeManager"/>.
     /// </summary>
     /// <returns>A newly instantiated <see cref="UpgradeHandler"/> ready to handle upgrade events.</returns>
-    public delegate UpgradeHandler HandlerCreator();
+    public delegate UpgradeHandler HandlerCreator(SubRoot cyclops);
 
     /// <summary>
     /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="UpgradeHandler.OnClearUpgrades"/> and <see cref="UpgradeHandler.OnFinishedUpgrades"/>.
     /// </summary>
     /// <param name="cyclops">The cyclops where the event took place.</param>
-    public delegate void UpgradeEvent(SubRoot cyclops);
+    public delegate void UpgradeEvent();
 
     /// <summary>
     /// Defines a method to invoke that takes all the needed references to identify a single upgrade module instance. Used for <seealso cref="UpgradeHandler.OnUpgradeCounted"/>.
@@ -22,7 +22,7 @@
     /// <param name="cyclops">The cyclops where the event took place.</param>
     /// <param name="modules">The equipment module where the event took place.</param>
     /// <param name="slot">The equipment slot where the event took place.</param>
-    public delegate void UpgradeEventSlotBound(SubRoot cyclops, Equipment modules, string slot);
+    public delegate void UpgradeEventSlotBound(Equipment modules, string slot);
 
     /// <summary>
     /// Defines a method to invoke that returns whether or not an item is allowed in or out. Used for <seealso cref="UpgradeHandler.IsAllowedToAdd"/> and <seealso cref="UpgradeHandler.IsAllowedToRemove"/>.
@@ -31,13 +31,18 @@
     /// <param name="item">The item being checked.</param>
     /// <param name="verbose">if set to <c>true</c> verbose text display was requested; Otherwise <c>false</c>.</param>
     /// <returns></returns>
-    public delegate bool UpgradeAllowedEvent(SubRoot cyclops, Pickupable item, bool verbose);
+    public delegate bool UpgradeAllowedEvent(Pickupable item, bool verbose);
 
     /// <summary>
     /// Represents all the behaviors for a cyclops upgrade module at the time of the module being installed and counted.
     /// </summary>
     public class UpgradeHandler
     {
+        /// <summary>
+        /// The cyclops sub where this upgrade handler is being used.
+        /// </summary>
+        public readonly SubRoot cyclops;
+
         /// <summary>
         /// The TechType that identifies this type of upgrade module.
         /// </summary>
@@ -53,11 +58,7 @@
         /// <value>
         /// The total number of upgrade modules of this <see cref="techType"/> found.
         /// </value>
-        public int Count
-        {
-            get => Math.Min(this.MaxCount, count);
-            internal set => count = value;
-        }
+        public int Count => Math.Min(this.MaxCount, count);
 
         /// <summary>
         /// Gets or sets the maximum number of copies of the upgrade module allowed.
@@ -121,29 +122,30 @@
         /// Initializes a new instance of the <see cref="UpgradeHandler"/> class.
         /// </summary>
         /// <param name="techType">The TechType of the upgrade module.</param>
-        public UpgradeHandler(TechType techType)
+        public UpgradeHandler(TechType techType, SubRoot cyclops)
         {
             this.techType = techType;
+            this.cyclops = cyclops;
         }
 
-        internal virtual void UpgradesCleared(SubRoot cyclops)
+        internal virtual void UpgradesCleared()
         {
             count = 0;
-            OnClearUpgrades?.Invoke(cyclops);
+            OnClearUpgrades?.Invoke();
         }
 
-        internal virtual void UpgradeCounted(SubRoot cyclops, Equipment modules, string slot)
+        internal virtual void UpgradeCounted(Equipment modules, string slot)
         {
             count++;
-            OnUpgradeCounted?.Invoke(cyclops, modules, slot);
+            OnUpgradeCounted?.Invoke(modules, slot);
         }
 
-        internal virtual void UpgradesFinished(SubRoot cyclops)
+        internal virtual void UpgradesFinished()
         {
             if (count > this.MaxCount)
                 return;
 
-            OnFinishedUpgrades?.Invoke(cyclops);
+            OnFinishedUpgrades?.Invoke();
 
             if (!maxedOut) // If we haven't maxed out before, check this block
             {
@@ -163,21 +165,21 @@
             dictionary.Add(techType, this);
         }
 
-        internal virtual bool CanUpgradeBeAdded(SubRoot cyclops, Pickupable item, bool verbose)
+        internal virtual bool CanUpgradeBeAdded(Pickupable item, bool verbose)
         {
             if (IsAllowedToAdd != null)
             {
-                return IsAllowedToAdd.Invoke(cyclops, item, verbose);
+                return IsAllowedToAdd.Invoke(item, verbose);
             }
 
             return count < this.MaxCount;
         }
 
-        internal virtual bool CanUpgradeBeRemoved(SubRoot cyclops, Pickupable item, bool verbose)
+        internal virtual bool CanUpgradeBeRemoved(Pickupable item, bool verbose)
         {
             if (IsAllowedToRemove != null)
             {
-                return IsAllowedToRemove.Invoke(cyclops, item, verbose);
+                return IsAllowedToRemove.Invoke(item, verbose);
             }
 
             return true;

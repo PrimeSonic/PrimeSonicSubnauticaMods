@@ -1,11 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
+    using System.Collections.Generic;
+    using System.Reflection;
     using Common;
     using CyclopsUpgrades;
     using Monobehaviors;
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
     using UnityEngine;
 
     /// <summary>
@@ -13,33 +12,22 @@
     /// </summary>
     public class UpgradeManager
     {
-        private static readonly ICollection<HandlerCreator> ReusableUpgradeHandlers = new List<HandlerCreator>();
-        private static readonly ICollection<HandlerCreator> OneTimeUseUpgradeHandlers = new List<HandlerCreator>();
-
-        /// <summary>
-        /// <para>This event happens whenever a new UpgradeManager is initialized, before <see cref="HandlerCreator"/>s are registered.</para>
-        /// <para>Use this if you need a way to know when you should call <see cref="RegisterOneTimeUseHandlerCreator"/> for <see cref="HandlerCreator"/>s that cannot be created from a static context.</para>
-        /// </summary>
-        public static Action UpgradeManagerInitializing;
+        private static readonly ICollection<HandlerCreator> UpgradeHandlers = new List<HandlerCreator>();
 
         /// <summary>
         /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        public static void RegisterOneTimeUseHandlerCreator(HandlerCreator createEvent)
+        public static void RegisterHandlerCreator(HandlerCreator createEvent)
         {
-            QuickLogger.Info($"Received OneTimeUse HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
-            OneTimeUseUpgradeHandlers.Add(createEvent);
-        }
+            if (UpgradeHandlers.Contains(createEvent))
+            {
+                QuickLogger.Warning($"Duplicate HandlerCreator blocked from {Assembly.GetCallingAssembly().GetName().Name}");
+                return;
+            }
 
-        /// <summary>
-        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand that can be reused for each new Cyclops.
-        /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        public static void RegisterReusableHandlerCreator(HandlerCreator createEvent)
-        {
-            QuickLogger.Info($"Received Reusable HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
-            ReusableUpgradeHandlers.Add(createEvent);
+            QuickLogger.Info($"Received HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
+            UpgradeHandlers.Add(createEvent);
         }
 
         private class UpgradeSlot
@@ -103,31 +91,17 @@
         private void RegisterUpgradeHandlers()
         {
             QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
-            UpgradeManagerInitializing?.Invoke();
-            QuickLogger.Debug("External UpgradeManagerInitializing methods invoked");
 
             // Register upgrades from other mods
-            foreach (HandlerCreator upgradeHandlerCreator in ReusableUpgradeHandlers)
+            foreach (HandlerCreator upgradeHandlerCreator in UpgradeHandlers)
             {
-                UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
+                UpgradeHandler upgrade = upgradeHandlerCreator.Invoke(Cyclops);
 
                 if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
                     upgrade.RegisterSelf(KnownsUpgradeModules);
                 else
                     QuickLogger.Warning($"Duplicate Reusable UpgradeHandler for '{upgrade.techType}' was blocked");
             }
-
-            foreach (HandlerCreator upgradeHandlerCreator in OneTimeUseUpgradeHandlers)
-            {
-                UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
-
-                if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
-                    upgrade.RegisterSelf(KnownsUpgradeModules);
-                else
-                    QuickLogger.Warning($"Duplicate OneTimeUse UpgradeHandler for '{upgrade.techType}' was blocked");
-            }
-
-            OneTimeUseUpgradeHandlers.Clear();
         }
 
         internal void SyncUpgradeConsoles()
@@ -173,7 +147,7 @@
         {
             // Turn off all upgrades and clear all values
             foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
-                upgradeType.UpgradesCleared(Cyclops); // UpgradeHandler event
+                upgradeType.UpgradesCleared(); // UpgradeHandler event
 
             var foundUpgrades = new List<TechType>();
 
@@ -192,7 +166,7 @@
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
-                    handler.UpgradeCounted(Cyclops, modules, slot); // UpgradeHandler event
+                    handler.UpgradeCounted(modules, slot); // UpgradeHandler event
                 }
             }
 
@@ -202,7 +176,7 @@
                 Cyclops.slotModSFX?.Play();
 
                 foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
-                    upgradeType.UpgradesFinished(Cyclops); // UpgradeHandler event
+                    upgradeType.UpgradesFinished(); // UpgradeHandler event
             }
 
             Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
@@ -212,7 +186,7 @@
         {
             if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
             {
-                return handler.CanUpgradeBeAdded(Cyclops, pickupable, verbose);
+                return handler.CanUpgradeBeAdded(pickupable, verbose);
             }
 
             return true;
@@ -222,7 +196,7 @@
         {
             if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
             {
-                return handler.CanUpgradeBeRemoved(Cyclops, pickupable, verbose);
+                return handler.CanUpgradeBeRemoved(pickupable, verbose);
             }
 
             return true;

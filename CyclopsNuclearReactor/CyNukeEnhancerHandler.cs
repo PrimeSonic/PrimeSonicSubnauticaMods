@@ -13,7 +13,7 @@
         private readonly TieredUpgradeHandler<int> tier1;
         private readonly TieredUpgradeHandler<int> tier2;
 
-        public CyNukeEnhancerHandler() : base(NoUpgradesValue)
+        public CyNukeEnhancerHandler(SubRoot cyclops) : base(NoUpgradesValue, cyclops)
         {
             // CyNukeEnhancerMk1
             tier1 = CreateTier(CyNukeEnhancerMk1.TechTypeID, Mk1UpgradeValue);
@@ -23,7 +23,7 @@
             tier2 = CreateTier(CyNukeEnhancerMk2.TechTypeID, Mk2UpgradeValue);
             tier2.MaxCount = 1;
 
-            OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
+            OnUpgradeCounted = (Equipment modules, string slot) =>
             {
                 var mgr = CyNukeChargeManager.GetManager(cyclops);
                 mgr.UpgradeHandler = this; // Link this to the upgrade manager
@@ -31,7 +31,7 @@
             };
 
             // Collection
-            OnFinishedUpgrades += (SubRoot cyclops) =>
+            OnFinishedUpgrades += () =>
             {
                 List<CyNukeReactorMono> reactors = CyNukeChargeManager.GetReactors(cyclops);
 

@@ -35,8 +35,6 @@
         public ChargeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
-            UpgradeManager.UpgradeManagerInitializing += SetupChargingUpgrades;
-            PowerManager.CyclopsChargersInitializing += RegisterPowerChargers;
         }
 
         internal bool Initialize(CyclopsManager manager)
@@ -62,9 +60,9 @@
             return Mathf.FloorToInt(availableReservePower);
         }
 
-        private void RegisterPowerChargers()
+        private void RegisterPowerChargers(SubRoot cyclops)
         {
-            PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
+            PowerManager.RegisterChargerCreator((SubRoot cyclopsRef) =>
             {
                 QuickLogger.Debug("CyclopsCharger Registered: Solar charging ready");
                 var solarChargeHandler = new SolarChargeHandler(this);
@@ -72,7 +70,7 @@
                 return solarChargeHandler;
             });
 
-            PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
+            PowerManager.RegisterChargerCreator((SubRoot cyclopsRef) =>
             {
                 QuickLogger.Debug("CyclopsCharger Registered: Thermal charging ready");
                 var thermalChargeHandler = new ThermalChargeHandler(this);
@@ -80,7 +78,7 @@
                 return thermalChargeHandler;
             });
 
-            PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
+            PowerManager.RegisterChargerCreator((SubRoot cyclopsRef) =>
             {
                 QuickLogger.Debug("CyclopsCharger Registered: Bio charging ready");
                 var bioChargeHandler = new BioChargeHandler(this);
@@ -88,25 +86,23 @@
                 return bioChargeHandler;
             });
 
-            PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
+            PowerManager.RegisterChargerCreator((SubRoot cyclopsRef) =>
             {
                 QuickLogger.Debug("CyclopsCharger Registered: Nuclear charging ready");
                 var nuclearChargeHandler = new NuclearChargeHandler(this);
                 NuclearCharging = nuclearChargeHandler;
                 return nuclearChargeHandler;
             });
-
-            PowerManager.CyclopsChargersInitializing -= RegisterPowerChargers;
         }
 
-        private void SetupChargingUpgrades()
+        private void SetupChargingUpgrades(SubRoot cyclops1)
         {
             int maxChargingModules = ModConfig.Settings.MaxChargingModules();
 
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: SolarCharger Upgrade");
-                SolarCharger = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID)
+                SolarCharger = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID, cyclops)
                 {
                     MaxCount = maxChargingModules
                 };
@@ -117,10 +113,10 @@
                 return SolarCharger;
             });
 
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: SolarChargerMk2 Upgrade");
-                SolarChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true)
+                SolarChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true, cyclops)
                 {
                     MaxCount = maxChargingModules
                 };
@@ -134,10 +130,10 @@
                 return SolarChargerMk2;
             });
 
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: ThermalCharger Upgrade");
-                ThermalCharger = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule)
+                ThermalCharger = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule, cyclops)
                 {
                     MaxCount = maxChargingModules
                 };
@@ -148,10 +144,10 @@
                 return ThermalCharger;
             });
 
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: ThermalChargerMk2 Upgrade");
-                ThermalChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true)
+                ThermalChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true, cyclops)
                 {
                     MaxCount = maxChargingModules
                 };
@@ -164,24 +160,22 @@
                 return ThermalChargerMk2;
             });
 
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: NuclearReactor Upgrade");
-                NuclearCharger = new NuclearUpgradeHandler()
+                NuclearCharger = new NuclearUpgradeHandler(cyclops)
                 {
                     MaxCount = Math.Min(maxChargingModules, 3) // No more than 3 no matter what the difficulty
                 };
                 return NuclearCharger;
             });
 
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: BioBooster Upgrade");
-                BioBoosters = new BioBoosterUpgradeHandler();
+                BioBoosters = new BioBoosterUpgradeHandler(cyclops);
                 return BioBoosters;
             });
-
-            UpgradeManager.UpgradeManagerInitializing -= SetupChargingUpgrades;
         }
 
         internal void SyncBioReactors()

@@ -1,5 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades
 {
+    using System;
+    using System.IO;
+    using System.Reflection;
     using Buildables;
     using Caching;
     using Common;
@@ -7,10 +10,8 @@
     using Modules;
     using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Managers;
+    using MoreCyclopsUpgrades.Modules.Enhancement;
     using SaveData;
-    using System;
-    using System.IO;
-    using System.Reflection;
 
     /// <summary>
     /// Entry point class for patching. For use by QModManager only.
@@ -23,7 +24,7 @@
         public static void Patch()
         {
 #if RELEASE
-                QuickLogger.DebugLogsEnabled = false;
+            QuickLogger.DebugLogsEnabled = false;
 #endif
 
 #if DEBUG
@@ -45,13 +46,15 @@
 
                 // TODO - Configure cyclops power levels
 
+                RegisterOriginalUpgrades();
+
                 PatchUpgradeModules(ModConfig.Settings.EnableNewUpgradeModules);
 
                 PatchAuxUpgradeConsole(ModConfig.Settings.EnableAuxiliaryUpgradeConsoles);
 
                 PatchBioEnergy(ModConfig.Settings.EnableBioReactors);
 
-                RegisterExternalUpgrades();
+                RegisterPowerManagerUpgrades();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -95,72 +98,124 @@
             CyBioReactor.PatchCyBioReactor(enableBioreactors);
         }
 
-        private static void RegisterExternalUpgrades()
+        private static void RegisterOriginalUpgrades()
         {
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: Depth Upgrades Collection");
-                return new CrushDepthUpgradesHandler();
+                return new CrushDepthUpgradesHandler(cyclops);
             });
 
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsShieldModule");
-                return new UpgradeHandler(TechType.CyclopsShieldModule)
+                return new UpgradeHandler(TechType.CyclopsShieldModule, cyclops)
                 {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.shieldUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
+                    OnClearUpgrades = () => { cyclops.shieldUpgrade = false; },
+                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
                 };
             });
 
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsSonarModule");
-                return new UpgradeHandler(TechType.CyclopsSonarModule)
+                return new UpgradeHandler(TechType.CyclopsSonarModule, cyclops)
                 {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.sonarUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
+                    OnClearUpgrades = () => { cyclops.sonarUpgrade = false; },
+                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
                 };
             });
 
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsSeamothRepairModule");
-                return new UpgradeHandler(TechType.CyclopsSeamothRepairModule)
+                return new UpgradeHandler(TechType.CyclopsSeamothRepairModule, cyclops)
                 {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
+                    OnClearUpgrades = () => { cyclops.vehicleRepairUpgrade = false; },
+                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
                 };
             });
 
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsDecoyModule");
-                return new UpgradeHandler(TechType.CyclopsDecoyModule)
+                return new UpgradeHandler(TechType.CyclopsDecoyModule, cyclops)
                 {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
+                    OnClearUpgrades = () => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
+                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
                 };
             });
 
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsFireSuppressionModule");
-                return new UpgradeHandler(TechType.CyclopsFireSuppressionModule)
+                return new UpgradeHandler(TechType.CyclopsFireSuppressionModule, cyclops)
                 {
-                    OnClearUpgrades = (SubRoot cyclops) =>
+                    OnClearUpgrades = () =>
                     {
                         CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
                         if (fss != null)
                             fss.fireSuppressionSystem.SetActive(false);
                     },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
+                    OnUpgradeCounted = (Equipment modules, string slot) =>
                     {
                         CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
                         if (fss != null)
                             fss.fireSuppressionSystem.SetActive(true);
                     },
                 };
+            });
+        }
+
+        private static void RegisterPowerManagerUpgrades()
+        {
+            int maxModules = ModConfig.Settings.MaxChargingModules();
+
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrades Collection");
+                PowerManager powerManager = CyclopsManager.GetPowerManager(cyclops);
+
+                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0, cyclops)
+                {
+                    OnFinishedUpgrades = () =>
+                    {
+                        powerManager.UpdatePowerSpeedRating();
+                    }
+                };
+
+                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk1");
+                TieredUpgradeHandler<int> engine1 = efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
+
+                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk2");
+                TieredUpgradeHandler<int> engine2 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
+
+                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk3");
+                TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
+
+                powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
+                return efficiencyUpgrades;
+            });
+
+            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: SpeedBooster Upgrade");
+                PowerManager powerManager = CyclopsManager.GetPowerManager(cyclops);
+
+                var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID, cyclops)
+                {
+                    MaxCount = maxModules,
+                    OnFirstTimeMaxCountReached = () =>
+                    {
+                        ErrorMessage.AddMessage(CyclopsSpeedBooster.MaxRatingAchived);
+                    },
+                    OnFinishedUpgrades = () =>
+                    {
+                        powerManager.UpdatePowerSpeedRating();
+                    }
+                };
+
+                return speed;
             });
         }
     }

@@ -47,9 +47,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DependenciesUnity5\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="MoreCyclopsUpgrades">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\MoreCyclopsUpgrades\MoreCyclopsUpgrades.dll</HintPath>
-    </Reference>
     <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
@@ -100,6 +97,12 @@
     <Content Include="Assets\CyNukReactor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
+      <Project>{fc87af94-413d-482e-ab0d-501e120e6e2d}</Project>
+      <Name>MoreCyclopsUpgrades</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

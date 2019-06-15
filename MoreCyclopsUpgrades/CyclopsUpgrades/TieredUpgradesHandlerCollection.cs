@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
-    using Common;
     using System;
     using System.Collections.Generic;
 
@@ -40,7 +39,7 @@
         /// Initializes a new instance of the <see cref="TieredUpgradesHandlerCollection{T}"/> class with the default tier value.
         /// </summary>
         /// <param name="defaultValue">The default value to use when upgrades are cleared.</param>
-        public TieredUpgradesHandlerCollection(T defaultValue) : base(TechType.None)
+        public TieredUpgradesHandlerCollection(T defaultValue, SubRoot cyclops) : base(TechType.None, cyclops)
         {
             DefaultValue = defaultValue;
         }
@@ -59,7 +58,7 @@
             return tieredUpgrade;
         }
 
-        internal override void UpgradesCleared(SubRoot cyclops)
+        internal override void UpgradesCleared()
         {
             if (cleared) // Because this might be called multiple times by the various members of the tier,
                 return; // exit if we've already made this call.
@@ -69,20 +68,20 @@
 
             this.HighestValue = DefaultValue;
 
-            OnClearUpgrades?.Invoke(cyclops);
+            OnClearUpgrades?.Invoke();
         }
 
-        internal void TierCounted(T countedValue, SubRoot cyclops, Equipment modules, string slot)
+        internal void TierCounted(T countedValue, Equipment modules, string slot)
         {
             int comparison = countedValue.CompareTo(this.HighestValue);
 
             if (comparison > 0)
                 this.HighestValue = countedValue;
 
-            OnUpgradeCounted?.Invoke(cyclops, modules, slot);
+            OnUpgradeCounted?.Invoke(modules, slot);
         }
 
-        internal override void UpgradesFinished(SubRoot cyclops)
+        internal override void UpgradesFinished()
         {
             if (finished) // Because this might be called multiple times by the various members of the tier,
                 return; // exit if we've already made this call.
@@ -90,7 +89,7 @@
             finished = true;
             cleared = false;
 
-            OnFinishedUpgrades?.Invoke(cyclops);
+            OnFinishedUpgrades?.Invoke();
         }
 
         internal override void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)

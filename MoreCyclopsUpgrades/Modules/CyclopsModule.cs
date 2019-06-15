@@ -17,8 +17,6 @@
     {
         private static readonly List<CyclopsModule> ModulesToPatch = new List<CyclopsModule>();
 
-        internal static readonly Dictionary<TechType, CyclopsModule> CyclopsModulesByTechType = new Dictionary<TechType, CyclopsModule>(8);
-
         internal static bool ModulesEnabled { get; private set; } = true;
 
         private const string MaxSolarReachedKey = "MaxSolarMsg";
@@ -146,7 +144,6 @@
             {
                 QuickLogger.Debug($"Patching {module.NameID}");
                 module.Patch();
-                CyclopsModulesByTechType.Add(module.TechType, module);
             }
 
             LanguageHandler.SetLanguageLine(MaxSolarReachedKey, "Max number of solar chargers reached.");

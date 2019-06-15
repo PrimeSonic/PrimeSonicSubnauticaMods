@@ -6,7 +6,7 @@
 
     internal class NuclearUpgradeHandler : BatteryUpgradeHandler
     {
-        public NuclearUpgradeHandler() : base(CyclopsModule.NuclearChargerID, canRecharge: false)
+        public NuclearUpgradeHandler(SubRoot cyclops) : base(CyclopsModule.NuclearChargerID, canRecharge: false, cyclops)
         {
             OnBatteryDrained += (BatteryDetails details) =>
             {

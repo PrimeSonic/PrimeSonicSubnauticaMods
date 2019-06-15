@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleUpgradesInCyclops", "VehicleUpgradesInCyclops\VehicleUpgradesInCyclops.csproj", "{4186CF53-C9F3-4635-A108-84CF60A2ED0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VModFabricator", "VModFabricator\VModFabricator.csproj", "{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Utilities\Common.shproj", "{91D8D243-2590-4911-A827-C4C929E0AB69}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreCyclopsUpgrades", "MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj", "{FC87AF94-413D-482E-AB0D-501E120E6E2D}"
@@ -42,7 +40,6 @@ Global
 		Utilities\Utilities.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
 		Utilities\Utilities.projitems*{a14a9bd2-6817-4beb-9664-8b24279a3dab}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{c8dc0fc6-b816-4f66-aa20-c1c61f80813f}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
 	EndGlobalSection
@@ -55,10 +52,6 @@ Global
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4186CF53-C9F3-4635-A108-84CF60A2ED0E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C8DC0FC6-B816-4F66-AA20-C1C61F80813F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC87AF94-413D-482E-AB0D-501E120E6E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU

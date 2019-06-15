@@ -6,9 +6,9 @@
     {
         private const float NoBonusCrushDepth = 0f;
 
-        public CrushDepthUpgradesHandler() : base(NoBonusCrushDepth)
+        public CrushDepthUpgradesHandler(SubRoot cyclops) : base(NoBonusCrushDepth, cyclops)
         {
-            OnFinishedUpgrades += (SubRoot cyclops) =>
+            OnFinishedUpgrades += () =>
             {
                 CrushDamage crushDmg = cyclops.gameObject.GetComponent<CrushDamage>();
 
