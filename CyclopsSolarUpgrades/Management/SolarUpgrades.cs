@@ -1,9 +1,8 @@
 ﻿namespace CyclopsSolarUpgrades.Management
 {
     using System.Collections.Generic;
+    using CyclopsSolarUpgrades.Craftables;
     using MoreCyclopsUpgrades.API;
-    using UnityEngine;
-
 
     internal partial class Solar : StackingGroupHandler
     {
@@ -23,8 +22,8 @@
 
         public Solar(SubRoot cyclops) : base(cyclops)
         {
-            solarTier1 = CyclopsSolarCharger;
-            solarTier2 = CyclopsSolarChargerMk2;
+            solarTier1 = CyclopsSolarChargerID;
+            solarTier2 = CyclopsSolarChargerMk2ID;
             solar1Sprite = SpriteManager.Get(solarTier1);
             solar2Sprite = SpriteManager.Get(solarTier2);
 
@@ -35,13 +34,13 @@
                 batteries.Clear();
             };
 
-            StackingUpgradeHandler tier1 = CreateStackingTier(CyclopsSolarCharger);
+            StackingUpgradeHandler tier1 = CreateStackingTier(CyclopsSolarChargerID);
             tier1.IsAllowedToAdd += (Pickupable item, bool verbose) =>
             {
                 return this.TotalCount < MaxSolarChargers;
             };
 
-            StackingUpgradeHandler tier2 = CreateStackingTier(CyclopsSolarChargerMk2);
+            StackingUpgradeHandler tier2 = CreateStackingTier(CyclopsSolarChargerMk2ID);
             tier2.IsAllowedToAdd += (Pickupable item, bool verbose) =>
             {
                 return this.TotalCount < MaxSolarChargers;
@@ -65,6 +64,11 @@
             {
                 this.TotalBatteryCapacity = totalBatteryCapacity;
                 this.TotalBatteryCharge = totalBatteryCharge;
+            };
+
+            OnFirstTimeMaxCountReached += () =>
+            {
+                ErrorMessage.AddMessage(CyclopsSolarCharger.MaxSolarReached());
             };
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Caching
+﻿namespace CyclopsBioReactor
 {
     using UnityEngine;
     using UnityEngine.UI;

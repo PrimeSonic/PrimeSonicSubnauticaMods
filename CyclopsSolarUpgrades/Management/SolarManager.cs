@@ -6,16 +6,16 @@
     {
         private const string ManagerName = "CySolarMgr";
 
-        internal static TechType CyclopsSolarCharger { get; set; }
-        internal static TechType CyclopsSolarChargerMk2 { get; set; }
+        internal static TechType CyclopsSolarChargerID { get; set; }
+        internal static TechType CyclopsSolarChargerMk2ID { get; set; }
 
         public string Name { get; } = ManagerName;
 
         public bool Initialize(SubRoot cyclops)
         {
             return
-                CyclopsSolarCharger != TechType.None &&
-                CyclopsSolarChargerMk2 != TechType.None;
+                CyclopsSolarChargerID != TechType.None &&
+                CyclopsSolarChargerMk2ID != TechType.None;
         }
 
         internal static Solar CreateHandler(SubRoot cyclops)

@@ -1,7 +1,7 @@
-﻿namespace MoreCyclopsUpgrades.Buildables
+﻿namespace CyclopsBioReactor.Items
 {
-    using MoreCyclopsUpgrades.Managers;
-    using MoreCyclopsUpgrades.Monobehaviors;
+    using CyclopsBioReactor.Management;
+    using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -10,8 +10,6 @@
 
     internal class CyBioReactor : Buildable
     {
-        internal const string CyBioReactorID = "CyBioReactor";
-
         private static readonly CyBioReactor main = new CyBioReactor();
 
         public static void PatchCyBioReactor(bool enableBioreactor)
@@ -37,9 +35,17 @@
         public static string StorageLabel => Language.main.Get(StorageLabelKey);
 
         public CyBioReactor()
-            : base(CyBioReactorID, "Cyclops Bioreactor", "Composts organic matter into electrical energy.")
+            : base("CyBioReactor", "Cyclops Bioreactor", "Composts organic matter into electrical energy.")
         {
-            OnFinishedPatching += HandleLanguageLines;
+            OnFinishedPatching += () => 
+            {
+                BioManager.CyBioReactorID = this.TechType;
+                LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
+                LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
+                LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");
+
+            };
+            
         }
 
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
@@ -52,9 +58,9 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                ChargeManager mgr = CyclopsManager.GetChargeManager(cyclops);
+                BioManager mgr = MCUServices.Client.GetManager<BioManager>(cyclops, BioManager.ManagerName);
 
-                if (mgr.CyBioReactors.Count >= mgr.MaxBioReactors)
+                if (mgr.CyBioReactors.Count >= BioManager.MaxBioReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitString());
                     return null;
@@ -127,13 +133,6 @@
             }
 
             TechTypeID = this.TechType;
-        }
-
-        private void HandleLanguageLines()
-        {
-            LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
-            LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
-            LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");
         }
     }
 }

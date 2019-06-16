@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Modules
 {
     using Common;
-    using Enhancement;
     using MoreCyclopsUpgrades.API;
     using Recharging.Nuclear;
     using Recharging.Thermal;
@@ -18,11 +17,7 @@
 
         internal static bool ModulesEnabled { get; private set; } = true;
 
-        private const string MaxSolarReachedKey = "MaxSolarMsg";
-        internal static string MaxSolarReached()
-        {
-            return Language.main.Get(MaxSolarReachedKey);
-        }
+
 
         private const string MaxThermalReachedKey = "MaxThermalMsg";
         internal static string MaxThermalReached()
@@ -127,7 +122,6 @@
             ModulesEnabled = modulesEnabled;
             bool vehicleUpgradesInCyclops = MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab;
             ModulesToPatch.Add(new ThermalChargerMk2());
-            ModulesToPatch.Add(new BioReactorBooster(vehicleUpgradesInCyclops));
             ModulesToPatch.Add(new NuclearCharger());
             ModulesToPatch.Add(new DepletedNuclearModule());
 
@@ -137,7 +131,7 @@
                 module.Patch();
             }
 
-            LanguageHandler.SetLanguageLine(MaxSolarReachedKey, "Max number of solar chargers reached.");
+            
             LanguageHandler.SetLanguageLine(MaxThermalReachedKey, "Max number of thermal chargers reached.");
             LanguageHandler.SetLanguageLine(MaxNuclearReachedKey, "Max number of nuclear chargers.");
         }

@@ -1,5 +1,6 @@
 ﻿namespace CyclopsSolarUpgrades
 {
+    using System;
     using Common;
     using CyclopsSolarUpgrades.Craftables;
     using CyclopsSolarUpgrades.Management;
@@ -9,19 +10,26 @@
     {
         public static void Patch()
         {
-            QuickLogger.Info($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
+            try
+            {
+                QuickLogger.Info($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
 
-            var solar1 = new CyclopsSolarCharger();
-            var solar2 = new CyclopsSolarChargerMk2(solar1);
+                var solar1 = new CyclopsSolarCharger();
+                var solar2 = new CyclopsSolarChargerMk2(solar1);
 
-            solar1.Patch();
-            solar2.Patch();
+                solar1.Patch();
+                solar2.Patch();
 
-            MCUServices.Client.RegisterAuxManagerCreators(Solar.CreateHandler);
-            MCUServices.Client.RegisterChargerCreator(Solar.FindHandler);
-            MCUServices.Client.RegisterHandlerCreator(Solar.FindHandler);
+                MCUServices.Client.RegisterAuxManagerCreators(Solar.CreateHandler);
+                MCUServices.Client.RegisterChargerCreator(Solar.FindHandler);
+                MCUServices.Client.RegisterHandlerCreator(Solar.FindHandler);
 
-            QuickLogger.Info($"Finished patching.");
+                QuickLogger.Info($"Finished patching.");
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error(ex);
+            }
         }
     }
 }

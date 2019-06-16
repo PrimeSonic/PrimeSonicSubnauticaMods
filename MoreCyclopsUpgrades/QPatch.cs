@@ -50,8 +50,6 @@
 
                 PatchAuxUpgradeConsole(ModConfig.Settings.EnableAuxiliaryUpgradeConsoles);
 
-                PatchBioEnergy(ModConfig.Settings.EnableBioReactors);
-
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
@@ -82,16 +80,6 @@
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
 
             CyUpgradeConsole.PatchAuxUpgradeConsole(enableAuxiliaryUpgradeConsoles);
-        }
-
-        private static void PatchBioEnergy(bool enableBioreactors)
-        {
-            if (enableBioreactors)
-                QuickLogger.Info("Patching Cyclops Bioreactor");
-            else
-                QuickLogger.Info("Cyclops Bioreactor disabled by config settings");
-
-            CyBioReactor.PatchCyBioReactor(enableBioreactors);
         }
 
         private static void RegisterOriginalUpgrades()

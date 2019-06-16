@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Caching
+﻿namespace CyclopsBioReactor
 {
     using System.Collections;
     using System.Collections.Generic;

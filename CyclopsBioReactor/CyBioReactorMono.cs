@@ -1,10 +1,10 @@
-﻿namespace MoreCyclopsUpgrades.Monobehaviors
+﻿namespace CyclopsBioReactor
 {
     using Common;
-    using MoreCyclopsUpgrades.Buildables;
-    using MoreCyclopsUpgrades.Caching;
-    using MoreCyclopsUpgrades.Managers;
-    using MoreCyclopsUpgrades.SaveData;
+    using CyclopsBioReactor.Items;
+    using CyclopsBioReactor.Management;
+    using CyclopsBioReactor.SaveData;
+    using MoreCyclopsUpgrades.API;
     using ProtoBuf;
     using System.Collections.Generic;
     using UnityEngine;
@@ -12,7 +12,7 @@
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
-        internal const float MinimalPowerValue = ChargeManager.MinimalPowerValue;
+        internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
 
         private const float baselineChargeRate = 0.80f;
         public const int MaxBoosters = 3;
@@ -39,7 +39,7 @@
         private CyBioReactorSaveData SaveData;
 
         public SubRoot ParentCyclops;
-        internal ChargeManager Manager;
+        internal BioManager Manager;
         public Constructable Buildable;
         public ItemsContainer Container;
         public Battery Battery;
@@ -68,7 +68,7 @@
             if (cyclops is null)
             {
                 QuickLogger.Debug("CyBioReactorMono: Could not find Cyclops during Start. Attempting external syncronize.");
-                CyclopsManager.SyncBioReactors();
+                BioManager.SyncAllBioReactors();
             }
             else
             {
@@ -396,21 +396,21 @@
 
         #endregion 
 
-        public void ConnectToCyclops(SubRoot parentCyclops, ChargeManager manager = null)
+        public void ConnectToCyclops(SubRoot parentCyclops, BioManager manager = null)
         {
             if (ParentCyclops != null)
                 return;
 
             ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            Manager = manager ?? CyclopsManager.GetChargeManager(parentCyclops);
+            Manager = manager ?? MCUServices.Client.GetManager<BioManager>(parentCyclops, BioManager.ManagerName);
 
             if (!Manager.CyBioReactors.Contains(this))
             {
                 Manager.CyBioReactors.Add(this);
             }
 
-            UpdateBoosterCount(Manager.BioBoosters.Count);
+            UpdateBoosterCount(Manager.TotalBoosters);
             QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 
@@ -494,7 +494,7 @@
             if (Manager != null)
                 Manager.CyBioReactors.Remove(this);
             else
-                CyclopsManager.RemoveReactor(this);
+                BioManager.RemoveReactor(this);
 
             ParentCyclops = null;
             Manager = null;

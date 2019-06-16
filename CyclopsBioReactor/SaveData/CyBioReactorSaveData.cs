@@ -1,11 +1,9 @@
-﻿namespace MoreCyclopsUpgrades.SaveData
+﻿namespace CyclopsBioReactor.SaveData
 {
     using System.Collections.Generic;
     using System.IO;
     using Common;
     using Common.EasyMarkup;
-    using MoreCyclopsUpgrades.Caching;
-    using MoreCyclopsUpgrades.Monobehaviors;
     using SMLHelper.V2.Utility;
     using UnityEngine;
 

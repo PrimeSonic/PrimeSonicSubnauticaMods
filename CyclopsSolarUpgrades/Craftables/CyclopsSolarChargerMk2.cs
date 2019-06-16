@@ -25,7 +25,7 @@
 
             OnFinishedPatching += () =>
             {
-                Solar.CyclopsSolarChargerMk2 = this.TechType;
+                Solar.CyclopsSolarChargerMk2ID = this.TechType;
             };
         }
 

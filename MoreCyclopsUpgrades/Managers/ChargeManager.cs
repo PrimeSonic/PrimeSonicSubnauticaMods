@@ -38,21 +38,13 @@
         internal readonly SubRoot Cyclops;
 
         internal ThermalChargeHandler ThermalCharging;
-        internal BioChargeHandler BioCharging;
         internal NuclearChargeHandler NuclearCharging;
 
         internal ChargingUpgradeHandler ThermalCharger;
         internal BatteryUpgradeHandler ThermalChargerMk2;
         internal BatteryUpgradeHandler NuclearCharger;
-        internal BioBoosterUpgradeHandler BioBoosters;
-
-        internal int MaxBioReactors => BioCharging.MaxBioReactors;
-
 
         private int rechargeSkip = 10;
-
-        internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
-        private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
 
         private readonly int skips = ModConfig.Settings.RechargeSkipRate();
         private readonly float rechargePenalty = ModConfig.Settings.RechargePenalty();
@@ -108,9 +100,6 @@
             float availableReservePower = 0f;
             availableReservePower += ThermalChargerMk2.TotalBatteryCharge;
             availableReservePower += NuclearCharger.TotalBatteryCharge;
-
-            foreach (CyBioReactorMono reactor in CyBioReactors)
-                availableReservePower += reactor.Battery._charge;
 
             return Mathf.FloorToInt(availableReservePower);
         }
@@ -214,45 +203,6 @@
                 };
                 return NuclearCharger;
             });
-
-            MCUServices.Client.RegisterHandlerCreator((cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: BioBooster Upgrade");
-                BioBoosters = new BioBoosterUpgradeHandler(cyclops);
-                return BioBoosters;
-            });
         }
-
-        internal void SyncBioReactors()
-        {
-            TempCache.Clear();
-
-            SubRoot cyclops = Cyclops;
-
-            CyBioReactorMono[] cyBioReactors = cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
-
-            foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
-            {
-                if (TempCache.Contains(cyBioReactor))
-                    continue; // This is a workaround because of the object references being returned twice in this array.
-
-                TempCache.Add(cyBioReactor);
-
-                if (cyBioReactor.ParentCyclops == null)
-                {
-                    QuickLogger.Debug("CyBioReactorMono synced externally");
-                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    cyBioReactor.ConnectToCyclops(cyclops, this);
-                }
-            }
-
-            if (TempCache.Count != CyBioReactors.Count)
-            {
-                CyBioReactors.Clear();
-                CyBioReactors.AddRange(TempCache);
-            }
-        }
-
-
     }
 }

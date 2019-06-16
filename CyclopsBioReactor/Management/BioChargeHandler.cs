@@ -1,41 +1,32 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging
+﻿namespace CyclopsBioReactor.Management
 {
+    using Common;
     using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.Caching;
-    using MoreCyclopsUpgrades.Managers;
-    using MoreCyclopsUpgrades.Modules;
-    using MoreCyclopsUpgrades.Monobehaviors;
-    using MoreCyclopsUpgrades.SaveData;
     using System.Collections.Generic;
     using UnityEngine;
 
-    internal class BioChargeHandler : ICyclopsCharger
+    internal partial class BioManager : ICyclopsCharger
     {
-        internal const float BatteryDrainRate = ChargeManager.BatteryDrainRate;
+        internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
+        private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
+
+        internal const float BatteryDrainRate = 0.01f;
         private const float BioReactorRateLimiter = 0.90f;
 
-        private readonly ChargeManager ChargeManager;
-        private BioBoosterUpgradeHandler BioBoosters => ChargeManager.BioBoosters;
-
-        private List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
+        private readonly List<CyBioReactorMono> BioReactors = new List<CyBioReactorMono>();
 
         public bool IsRenewable { get; } = false;
 
-        internal readonly int MaxBioReactors = ModConfig.Settings.MaxBioReactors();
+        internal const int MaxBioReactors = 6;
         internal bool ProducingPower = false;
 
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
 
-        private readonly Atlas.Sprite sprite = SpriteManager.Get(CyclopsModule.BioReactorBoosterID);
+        private readonly Atlas.Sprite sprite = SpriteManager.Get(CyBioBoosterID);
 
         public readonly SubRoot Cyclops;
 
-        public BioChargeHandler(ChargeManager chargeManager)
-        {
-            ChargeManager = chargeManager;
-            Cyclops = chargeManager.Cyclops;
-        }
 
         public Atlas.Sprite GetIndicatorSprite()
         {
@@ -44,7 +35,7 @@
 
         public string GetIndicatorText()
         {
-            return NumberFormatter.FormatNumber(Mathf.RoundToInt(totalBioCharge), NumberFormat.Amount);
+            return NumberFormatter.FormatNumber(Mathf.RoundToInt(totalBioCharge));
         }
 
         public Color GetIndicatorTextColor()
@@ -94,10 +85,14 @@
             return charge;
         }
 
+
         public float TotalReservePower()
         {
             throw new System.NotImplementedException();
         }
+
+
+
     }
 
 

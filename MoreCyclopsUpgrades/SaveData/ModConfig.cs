@@ -24,14 +24,11 @@
         private const string ConfigKey = "MoreCyclopsUpgradesConfig";
         private const string EmAuxEnabledKey = "EnableAuxiliaryUpgradeConsoles";
         private const string EmUpgradesEnabledKey = "EnableNewUpgradeModules";
-        private const string EmBioEnergyEnabledKey = "EnableCyclopsBioReactor";
         private const string EmPowerLevelKey = "CyclopsPowerLevel";
 
         internal bool EnableAuxiliaryUpgradeConsoles => EmAuxEnabled.Value;
 
         internal bool EnableNewUpgradeModules => EmUpgradesEnabled.Value;
-
-        internal bool EnableBioReactors => EmBioEnergyEnabled.Value;
 
         internal CyclopsPowerLevels PowerLevel
         {
@@ -137,7 +134,6 @@
         {
             new EmYesNo(EmAuxEnabledKey, true),
             new EmYesNo(EmUpgradesEnabledKey, true),
-            new EmYesNo(EmBioEnergyEnabledKey, true),
             new EmProperty<CyclopsPowerLevels>(EmPowerLevelKey, CyclopsPowerLevels.Leviathan),
         };
 
@@ -145,7 +141,6 @@
         {
             EmAuxEnabled = (EmYesNo)Properties[EmAuxEnabledKey];
             EmUpgradesEnabled = (EmYesNo)Properties[EmUpgradesEnabledKey];
-            EmBioEnergyEnabled = (EmYesNo)Properties[EmBioEnergyEnabledKey];
             EmPowerLevel = (EmProperty<CyclopsPowerLevels>)Properties[EmPowerLevelKey];
 
             OnValueExtractedEvent += Validate;

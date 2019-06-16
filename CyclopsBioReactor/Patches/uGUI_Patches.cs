@@ -1,10 +1,10 @@
-﻿namespace MoreCyclopsUpgrades.SaveData
+﻿namespace CyclopsBioReactor.Patches
 {
     using System.Collections.Generic;
+    using CyclopsBioReactor.Items;
+    using CyclopsBioReactor.Management;
     using Harmony;
-    using Managers;
-    using Monobehaviors;
-    using Buildables;
+    using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
     [HarmonyPatch("OnOpenPDA")]
@@ -35,7 +35,7 @@
             if (label != CyBioReactor.StorageLabel)
                 return; // Not a Cyclops Bioreactor storage
 
-            List<CyBioReactorMono> reactors = CyclopsManager.GetBioReactors(Player.main.currentSub);
+            List<CyBioReactorMono> reactors = MCUServices.Client.GetManager<BioManager>(Player.main.currentSub, BioManager.ManagerName).CyBioReactors;
 
             if (reactors is null || reactors.Count == 0)
                 return; // Cyclops has no bioreactors

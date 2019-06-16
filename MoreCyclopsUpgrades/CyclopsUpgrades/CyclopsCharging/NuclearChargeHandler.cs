@@ -25,11 +25,9 @@
 
         private readonly ChargeManager ChargeManager;
         private ThermalChargeHandler ThermalCharger => ChargeManager.ThermalCharging;
-        private BioChargeHandler BioCharger => ChargeManager.BioCharging;
         internal BatteryUpgradeHandler NuclearCharger => ChargeManager.NuclearCharger;
 
-        private bool HasRenewablePower => this.ThermalCharger.ThermalState != ThermalState.None ||
-                                          this.BioCharger.ProducingPower;
+        private bool HasRenewablePower => this.ThermalCharger.ThermalState != ThermalState.None;
 
         public bool IsRenewable { get; } = false;
 

@@ -1,31 +1,26 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
+﻿namespace CyclopsBioReactor.Management
 {
     using Common;
-    using Modules;
-    using Modules.Enhancement;
-    using Monobehaviors;
+    using CyclopsBioReactor.Items;
     using MoreCyclopsUpgrades.API;
-    using System.Collections.Generic;
     using UnityEngine;
 
-    internal class BioBoosterUpgradeHandler : UpgradeHandler
+    internal partial class BioManager : UpgradeHandler
     {
         private float errorDelay = 0f;
         private const float delayInterval = 10f;
 
-        public BioBoosterUpgradeHandler(SubRoot cyclops) : base(CyclopsModule.BioReactorBoosterID, cyclops)
+        internal int TotalBoosters => this.Count;
+
+        public BioManager(SubRoot cyclops)
+            : base(CyBioBoosterID, cyclops)
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
 
             OnFinishedWithUpgrades += () =>
             {
-                List<CyBioReactorMono> bioreactors = Managers.CyclopsManager.GetBioReactors(cyclops);
-
-                if (bioreactors == null)
-                    return;
-
                 QuickLogger.Debug($"Handling BioBooster at {this.Count}");
-                foreach (CyBioReactorMono reactor in bioreactors)
+                foreach (CyBioReactorMono reactor in CyBioReactors)
                 {
                     reactor.UpdateBoosterCount(this.Count);
                 }
@@ -38,12 +33,7 @@
 
             IsAllowedToRemove += (Pickupable item, bool verbose) =>
             {
-                List<CyBioReactorMono> bioreactors = Managers.CyclopsManager.GetBioReactors(cyclops);
-
-                if (bioreactors == null)
-                    return true;
-
-                foreach (CyBioReactorMono reactor in bioreactors)
+                foreach (CyBioReactorMono reactor in CyBioReactors)
                 {
                     if (!reactor.HasRoomToShrink())
                     {

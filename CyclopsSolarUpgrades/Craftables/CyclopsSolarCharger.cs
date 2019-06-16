@@ -3,9 +3,16 @@
     using CyclopsSolarUpgrades.Management;
     using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Crafting;
+    using SMLHelper.V2.Handlers;
 
     internal class CyclopsSolarCharger : CyclopsUpgrade
     {
+        private const string MaxSolarReachedKey = "MaxSolarMsg";
+        internal static string MaxSolarReached()
+        {
+            return Language.main.Get(MaxSolarReachedKey);
+        }
+
         public CyclopsSolarCharger()
             : base("CyclopsSolarCharger",
                    "Cyclops Solar Charger",
@@ -14,7 +21,8 @@
         {
             OnFinishedPatching += () =>
             {
-                Solar.CyclopsSolarCharger = this.TechType;
+                Solar.CyclopsSolarChargerID = this.TechType;
+                LanguageHandler.SetLanguageLine(MaxSolarReachedKey, "Max number of solar chargers reached.");
             };
         }
 

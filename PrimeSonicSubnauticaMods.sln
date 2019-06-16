@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsEngineUpgrades", "Cy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSolarUpgrades", "CyclopsSolarUpgrades\CyclopsSolarUpgrades.csproj", "{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsBioReactor", "CyclopsBioReactor\CyclopsBioReactor.csproj", "{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
@@ -42,6 +44,7 @@ Global
 		Utilities\Utilities.projitems*{405a8ab5-3671-4bc7-9fcb-b8a2f6a456f1}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{4186cf53-c9f3-4635-a108-84cf60a2ed0e}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{55314209-de35-4a05-a188-ea01fc1dca95}*SharedItemsImports = 4
+		Utilities\Utilities.projitems*{63ed29ed-9c34-47b8-ba79-c3392ac44edc}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
@@ -102,6 +105,10 @@ Global
 		{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BA0C9F3-9288-4D34-BFF8-3F402EF5E3A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

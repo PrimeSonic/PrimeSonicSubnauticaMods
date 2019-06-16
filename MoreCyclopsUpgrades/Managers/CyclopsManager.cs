@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using Common;
-    using MoreCyclopsUpgrades.Monobehaviors;
     using System.Collections.Generic;
 
     internal class CyclopsManager
@@ -10,7 +9,6 @@
         public readonly CyclopsHUDManager HUDManager;
         public readonly ChargeManager ChargeManager;
 
-        public List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
         public int TotalPowerChargers => ChargeManager.PowerChargersCount;
 
         public readonly SubRoot Cyclops;
@@ -42,11 +40,6 @@
         public static ChargeManager GetChargeManager(SubRoot cyclops)
         {
             return GetManager(cyclops.GetInstanceID(), cyclops)?.ChargeManager;
-        }
-
-        public static List<CyBioReactorMono> GetBioReactors(SubRoot cyclops)
-        {
-            return GetManager(cyclops.GetInstanceID(), cyclops)?.BioReactors;
         }
 
         public static CyclopsHUDManager GetHUDManager(SubRoot cyclops)
@@ -91,18 +84,6 @@
         {
             foreach (CyclopsManager mgr in Managers)
                 mgr.UpgradeManager.SyncUpgradeConsoles();
-        }
-
-        public static void SyncBioReactors()
-        {
-            foreach (CyclopsManager mgr in Managers)
-                mgr.ChargeManager.SyncBioReactors();
-        }
-
-        internal static void RemoveReactor(CyBioReactorMono cyBioReactorMono)
-        {
-            foreach (CyclopsManager mgr in Managers)
-                mgr.BioReactors.Remove(cyBioReactorMono);
         }
     }
 }
