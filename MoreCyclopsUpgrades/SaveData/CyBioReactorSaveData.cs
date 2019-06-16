@@ -74,7 +74,7 @@
         public float ReactorBatterCharge
         {
             get => _batteryCharge.HasValue ? Mathf.Min(_batteryCharge.Value, CyBioReactorMono.MaxPowerBaseline) : 0;
-            set => _batteryCharge.Value = Mathf.Min(value, CyBioReactorMono.MaxPowerBaseline);
+            set => _batteryCharge.Value = value;
         }
 
         public int BoosterCount
