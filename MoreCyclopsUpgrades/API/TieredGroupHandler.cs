@@ -4,19 +4,13 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// Represents the complete tier of <see cref="TieredUpgradeHandler{T}"/> instances.
+    /// Represents the complete collection of <see cref="TieredUpgradeHandler{T}"/> instances.<para/>
     /// The events for this collection will be invoked only as few times as needed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The data type used to sort the tiers.</typeparam>
     /// <seealso cref="UpgradeHandler" />
-    public class TieredUpgradesHandlerCollection<T> : UpgradeHandler where T : IComparable<T>
-    {
-        /// <summary>
-        /// Gets the collection.
-        /// </summary>
-        /// <value>
-        /// The collection.
-        /// </value>
+    public class TieredGroupHandler<T> : UpgradeHandler where T : IComparable<T>
+    {        
         private readonly ICollection<TieredUpgradeHandler<T>> collection = new List<TieredUpgradeHandler<T>>();
 
         /// <summary>
@@ -36,20 +30,20 @@
         private bool finished = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TieredUpgradesHandlerCollection{T}"/> class with the default tier value.
+        /// Initializes a new instance of the <see cref="TieredGroupHandler{T}"/> class with the default tier value.
         /// </summary>
         /// <param name="defaultValue">The default value to use when upgrades are cleared.</param>
-        public TieredUpgradesHandlerCollection(T defaultValue, SubRoot cyclops) : base(TechType.None, cyclops)
+        public TieredGroupHandler(T defaultValue, SubRoot cyclops) : base(TechType.None, cyclops)
         {
             DefaultValue = defaultValue;
         }
 
         /// <summary>
-        /// Adds a new <see cref="TieredUpgradeHandler{T}" /> to the collection, with all default events created.
+        /// Adds a new <see cref="TieredUpgradeHandler{T}" /> to the collection, with all necessary default events created.
         /// </summary>
         /// <param name="techType">The TechType of the upgrade module.</param>
         /// <param name="tieredValue">The tiered value this upgrade module represents.</param>
-        /// <returns>THe newly created <see cref="TieredUpgradeHandler{T}"/> instance.</returns>
+        /// <returns>The newly created <see cref="TieredUpgradeHandler{T}"/> instance.</returns>
         public TieredUpgradeHandler<T> CreateTier(TechType techType, T tieredValue)
         {
             var tieredUpgrade = new TieredUpgradeHandler<T>(techType, tieredValue, this);

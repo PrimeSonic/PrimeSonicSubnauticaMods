@@ -6,14 +6,14 @@
     internal class SpeedHandler : UpgradeHandler
     {
         private readonly CyclopsSpeedModule speedModule;
-        private readonly PowerManager powerManager;
+        private readonly EngineManager powerManager;
 
         public SpeedHandler(CyclopsSpeedModule cyclopsSpeedModule, SubRoot cyclops) : base(cyclopsSpeedModule.TechType, cyclops)
         {
-            powerManager = PowerManager.GetManager(cyclops);
+            powerManager = EngineManager.GetManager(cyclops);
             powerManager.SpeedBoosters = this;
             speedModule = cyclopsSpeedModule;            
-            this.MaxCount = PowerManager.MaxSpeedBoosters;
+            this.MaxCount = EngineManager.MaxSpeedBoosters;
 
             OnFirstTimeMaxCountReached = () =>
             {

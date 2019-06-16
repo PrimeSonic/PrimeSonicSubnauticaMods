@@ -3,10 +3,10 @@
     using System;
 
     /// <summary>
-    /// Represents a specialized type of upgrade module that is intended to be non-stacking, where only the best version applies.
-    /// This is always created through <see cref="TieredUpgradesHandlerCollection{T}.CreateTier(TechType, T)"/>.
+    /// Represents a specialized type of upgrade module that is intended to be non-stacking, where only the best version applies.<para/>
+    /// This is always created through <see cref="TieredGroupHandler{T}.CreateTier(TechType, T)"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The data type used to sort the tiers.</typeparam>
     /// <seealso cref="UpgradeHandler" />
     public class TieredUpgradeHandler<T> : UpgradeHandler
          where T : IComparable<T>
@@ -19,9 +19,9 @@
         /// <summary>
         /// The parent collection. Create this first.
         /// </summary>
-        public readonly TieredUpgradesHandlerCollection<T> ParentCollection;
+        public readonly TieredGroupHandler<T> ParentCollection;
 
-        internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredUpgradesHandlerCollection<T> parentCollection) : base(techType, parentCollection.cyclops)
+        internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredGroupHandler<T> parentCollection) : base(techType, parentCollection.cyclops)
         {
             TieredValue = tieredValue;
             ParentCollection = parentCollection;

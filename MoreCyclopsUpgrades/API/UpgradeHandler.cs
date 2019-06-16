@@ -58,7 +58,11 @@
         /// <value>
         /// The total number of upgrade modules of this <see cref="techType"/> found.
         /// </value>
-        public int Count => Math.Min(this.MaxCount, count);
+        public int Count
+        {
+            get => Math.Min(this.MaxCount, count);
+            internal set => count = Math.Min(this.MaxCount, value);
+        }
 
         /// <summary>
         /// Gets or sets the maximum number of copies of the upgrade module allowed.

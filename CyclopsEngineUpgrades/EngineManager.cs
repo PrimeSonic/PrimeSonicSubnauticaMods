@@ -6,18 +6,18 @@
     using MoreCyclopsUpgrades.API;
     using UnityEngine;
 
-    internal class PowerManager
+    internal class EngineManager
     {
-        private static readonly IDictionary<SubRoot, PowerManager> Managers = new Dictionary<SubRoot, PowerManager>(3);
+        private static readonly IDictionary<SubRoot, EngineManager> Managers = new Dictionary<SubRoot, EngineManager>(3);
 
-        internal static PowerManager GetManager(SubRoot cyclops)
+        internal static EngineManager GetManager(SubRoot cyclops)
         {
-            if (Managers.TryGetValue(cyclops, out PowerManager manager))
+            if (Managers.TryGetValue(cyclops, out EngineManager manager))
             {
                 return manager;
             }
 
-            var mgr = new PowerManager(cyclops);
+            var mgr = new EngineManager(cyclops);
 
             Managers.Add(cyclops, mgr);
 
@@ -88,7 +88,7 @@
         private SubControl subControl;
         private SubControl SubControl => subControl ?? (subControl = Cyclops.GetComponentInChildren<SubControl>());
 
-        private PowerManager(SubRoot cyclops)
+        private EngineManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
 

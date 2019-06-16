@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.API
 {
-    using Managers;
     using UnityEngine;
 
     /// <summary>
@@ -62,5 +61,11 @@
         /// </summary>
         /// <returns>A Unity <see cref="Color"/> value for the text. When in doubt, just set this to white.</returns>
         Color GetIndicatorTextColor();
+
+        /// <summary>
+        /// If the charger has its own store of energy, return the total available reserve power.
+        /// </summary>
+        /// <returns>The total power the charger is capable of providing over time; Return 0f if there are no power reserves.</returns>
+        float TotalReservePower();
     }
 }

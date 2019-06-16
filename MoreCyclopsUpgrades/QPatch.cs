@@ -96,13 +96,13 @@
 
         private static void RegisterOriginalUpgrades()
         {
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: Depth Upgrades Collection");
                 return new CrushDepthUpgradesHandler(cyclops);
             });
 
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsShieldModule");
                 return new UpgradeHandler(TechType.CyclopsShieldModule, cyclops)
@@ -112,7 +112,7 @@
                 };
             });
 
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsSonarModule");
                 return new UpgradeHandler(TechType.CyclopsSonarModule, cyclops)
@@ -122,7 +122,7 @@
                 };
             });
 
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsSeamothRepairModule");
                 return new UpgradeHandler(TechType.CyclopsSeamothRepairModule, cyclops)
@@ -132,7 +132,7 @@
                 };
             });
 
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsDecoyModule");
                 return new UpgradeHandler(TechType.CyclopsDecoyModule, cyclops)
@@ -142,7 +142,7 @@
                 };
             });
 
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsFireSuppressionModule");
                 return new UpgradeHandler(TechType.CyclopsFireSuppressionModule, cyclops)

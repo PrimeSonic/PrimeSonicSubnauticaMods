@@ -66,14 +66,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\CyclopsManager.cs" />
+    <Compile Include="API\IAuxCyclopsManager.cs" />
     <Compile Include="API\MCUServices.cs" />
+    <Compile Include="API\StackingGroupHandler.cs" />
+    <Compile Include="API\StackingUpgradeHandler.cs" />
+    <Compile Include="API\TieredGroupHandler.cs" />
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\BioEnergyCollection.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\BioChargeHandler.cs" />
     <Compile Include="API\ICyclopsCharger.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\NuclearChargeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\SolarChargeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
     <Compile Include="API\CyclopsUpgrade.cs" />
@@ -86,7 +90,6 @@
     <Compile Include="CyclopsUpgrades\CrushDepthUpgradesHandler.cs" />
     <Compile Include="CyclopsUpgrades\NuclearUpgradeHandler.cs" />
     <Compile Include="API\TieredUpgradeHandler.cs" />
-    <Compile Include="API\TieredUpgradesHandlerCollection.cs" />
     <Compile Include="API\UpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\ChargingCyclopsUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
@@ -111,8 +114,6 @@
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
     <Compile Include="SaveData\ModConfigOptions.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
-    <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
-    <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />
     <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
     <Compile Include="SaveData\AuxUpgradeConsoleSaveData.cs" />
     <Compile Include="Patchers\CyclopsHelmHUDManager_Update_Patcher.cs" />
@@ -143,12 +144,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\NuclearFabricatorT.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyclopsSolarCharger.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyclopsSolarChargerMk2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\CyclopsThermalChargerMk2.png">

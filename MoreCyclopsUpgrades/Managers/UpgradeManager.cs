@@ -13,22 +13,22 @@
     /// </summary>
     internal class UpgradeManager
     {
-        private static readonly ICollection<HandlerCreator> UpgradeHandlers = new List<HandlerCreator>();
+        private static readonly ICollection<HandlerCreator> HandlerCreators = new List<HandlerCreator>();
 
         /// <summary>
         /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        internal static void RegisterHandlerCreator(HandlerCreator createEvent)
+        internal static void RegisterHandlerCreator(HandlerCreator createEvent, string assemblyName)
         {
-            if (UpgradeHandlers.Contains(createEvent))
+            if (HandlerCreators.Contains(createEvent))
             {
-                QuickLogger.Warning($"Duplicate HandlerCreator blocked from {Assembly.GetCallingAssembly().GetName().Name}");
+                QuickLogger.Warning($"Duplicate HandlerCreator blocked from {assemblyName}");
                 return;
             }
 
-            QuickLogger.Info($"Received HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
-            UpgradeHandlers.Add(createEvent);
+            QuickLogger.Info($"Received HandlerCreator from {assemblyName}");
+            HandlerCreators.Add(createEvent);
         }
 
         private class UpgradeSlot
@@ -94,7 +94,7 @@
             QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
 
             // Register upgrades from other mods
-            foreach (HandlerCreator upgradeHandlerCreator in UpgradeHandlers)
+            foreach (HandlerCreator upgradeHandlerCreator in HandlerCreators)
             {
                 UpgradeHandler upgrade = upgradeHandlerCreator.Invoke(Cyclops);
 

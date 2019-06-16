@@ -21,7 +21,8 @@
         public CyclopsSpeedModule()
             : base("CyclopsSpeedModule",
                    "Cyclops Speed Boost Module",
-                   "Increases the drive power of the cyclops engines, adding greater speeds at the cost of higher energy consumption.")
+                   "Increases the drive power of the cyclops engines, adding greater speeds at the cost of higher energy consumption.\n" +
+                   $"Can stack up to {EngineManager.MaxSpeedBoosters} boosters for maximum effect at highest cost.")
         {
             OnFinishedPatching += () =>
             {
@@ -39,7 +40,9 @@
         {
             get
             {
-                //if (MoreCyclopsUpgradesService.ModClient.)
+                if (MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab)
+                    return MCUServices.Client.StepsToCyclopsModulesTab;
+
                 return base.StepsToFabricatorTab;
             }
         }

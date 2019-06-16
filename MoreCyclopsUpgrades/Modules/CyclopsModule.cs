@@ -4,7 +4,6 @@
     using Enhancement;
     using MoreCyclopsUpgrades.API;
     using Recharging.Nuclear;
-    using Recharging.Solar;
     using Recharging.Thermal;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -128,8 +127,6 @@
             ModulesEnabled = modulesEnabled;
             bool vehicleUpgradesInCyclops = MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab;
             ModulesToPatch.Add(new ThermalChargerMk2());
-            ModulesToPatch.Add(new SolarCharger(vehicleUpgradesInCyclops));
-            ModulesToPatch.Add(new SolarChargerMk2());
             ModulesToPatch.Add(new BioReactorBooster(vehicleUpgradesInCyclops));
             ModulesToPatch.Add(new NuclearCharger());
             ModulesToPatch.Add(new DepletedNuclearModule());

@@ -94,6 +94,10 @@
             return charge;
         }
 
+        public float TotalReservePower()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
 

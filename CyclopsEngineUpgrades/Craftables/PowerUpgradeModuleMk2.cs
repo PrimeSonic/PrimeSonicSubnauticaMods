@@ -8,12 +8,15 @@
         public PowerUpgradeModuleMk2() 
             : base("PowerUpgradeModuleMk2",
                   "Cyclops Engine Efficiency Module MK2",
-                  "Additional enhancement to engine efficiency.\nSilent running, Sonar, and Shield optimized.\nDoes not stack with other engine upgrades.")
+                  "Additional enhancement to engine efficiency.\n" +
+                  "Silent running, Sonar, and Shield optimized.\n" +
+                  "Does not stack with other engine upgrades.")
         {
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
         public override string AssetsFolder { get; } = "CyclopsEngineUpgrades/Assets";
+        public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
 
         protected override TechData GetBlueprintRecipe()
         {

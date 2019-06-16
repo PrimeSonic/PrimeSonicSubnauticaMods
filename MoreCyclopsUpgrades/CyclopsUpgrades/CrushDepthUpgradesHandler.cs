@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
 
-    internal class CrushDepthUpgradesHandler : TieredUpgradesHandlerCollection<float>
+    internal class CrushDepthUpgradesHandler : TieredGroupHandler<float>
     {
         private const float NoBonusCrushDepth = 0f;
 

@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
     using Common;
-    using Managers;
     using Modules;
     using Modules.Enhancement;
     using Monobehaviors;
@@ -20,7 +19,7 @@
 
             OnFinishedWithUpgrades += () =>
             {
-                List<CyBioReactorMono> bioreactors = CyclopsManager.GetBioReactors(cyclops);
+                List<CyBioReactorMono> bioreactors = Managers.CyclopsManager.GetBioReactors(cyclops);
 
                 if (bioreactors == null)
                     return;
@@ -39,7 +38,7 @@
 
             IsAllowedToRemove += (Pickupable item, bool verbose) =>
             {
-                List<CyBioReactorMono> bioreactors = CyclopsManager.GetBioReactors(cyclops);
+                List<CyBioReactorMono> bioreactors = Managers.CyclopsManager.GetBioReactors(cyclops);
 
                 if (bioreactors == null)
                     return true;

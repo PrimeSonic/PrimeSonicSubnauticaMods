@@ -24,13 +24,11 @@
         private const float MaxHeat = 1200f;
 
         private readonly ChargeManager ChargeManager;
-        private SolarChargeHandler SolarCharger => ChargeManager.SolarCharging;
         private ThermalChargeHandler ThermalCharger => ChargeManager.ThermalCharging;
         private BioChargeHandler BioCharger => ChargeManager.BioCharging;
         internal BatteryUpgradeHandler NuclearCharger => ChargeManager.NuclearCharger;
 
-        private bool HasRenewablePower => this.SolarCharger.SolarState != SolarState.None ||
-                                          this.ThermalCharger.ThermalState != ThermalState.None ||
+        private bool HasRenewablePower => this.ThermalCharger.ThermalState != ThermalState.None ||
                                           this.BioCharger.ProducingPower;
 
         public bool IsRenewable { get; } = false;
@@ -121,6 +119,11 @@
                 heat += generatedPower;
                 return generatedPower;
             }
+        }
+
+        public float TotalReservePower()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

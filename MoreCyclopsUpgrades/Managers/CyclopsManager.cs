@@ -76,7 +76,7 @@
 
             // Managers must be initialized in this order
             if (!upgradeMgr.Initialize(mgr) ||
-                !chargeMgr.Initialize(mgr) ||
+                //!chargeMgr.Initialize(mgr) ||
                 !hudManager.Initialize(mgr))
             {
                 QuickLogger.Error("Failed to initialized manager", true);

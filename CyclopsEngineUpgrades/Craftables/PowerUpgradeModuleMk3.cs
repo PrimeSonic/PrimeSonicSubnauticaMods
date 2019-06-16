@@ -11,7 +11,8 @@
         public PowerUpgradeModuleMk3(PowerUpgradeModuleMk2 mk2Upgrade)
             : base("PowerUpgradeModuleMk3",
                   "Cyclops Engine Efficiency Module MK3",
-                  "Maximum engine efficiency. Silent running, Sonar, and Shield greatly optimized.\nDoes not stack with other engine upgrades.")
+                  "Maximum engine efficiency. Silent running, Sonar, and Shield greatly optimized.\n" +
+                  "Does not stack with other engine upgrades.")
         {
             previousTier = mk2Upgrade;
 
@@ -29,6 +30,7 @@
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
         public override string AssetsFolder { get; } = "CyclopsEngineUpgrades/Assets";
+        public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
 
         protected override TechData GetBlueprintRecipe()
         {

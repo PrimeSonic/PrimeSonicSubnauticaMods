@@ -9,10 +9,9 @@
     using MoreCyclopsUpgrades.SaveData;
     using System;
     using System.Collections.Generic;
-    using System.Reflection;
     using UnityEngine;
 
-    internal class ChargeManager
+    internal class ChargeManager : IAuxCyclopsManager
     {
         internal const float BatteryDrainRate = 0.01f;
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
@@ -24,29 +23,25 @@
         /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ChargerCreator"/>.</param>
-        internal static void RegisterChargerCreator(ChargerCreator createEvent)
+        internal static void RegisterChargerCreator(ChargerCreator createEvent, string assemblyName)
         {
             if (CyclopsChargers.Contains(createEvent))
             {
-                QuickLogger.Warning($"Duplicate ChargerCreator blocked from {Assembly.GetCallingAssembly().GetName().Name}");
+                QuickLogger.Warning($"Duplicate ChargerCreator blocked from {assemblyName}");
                 return;
             }
 
-            QuickLogger.Info($"Received ChargerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
+            QuickLogger.Info($"Received ChargerCreator from {assemblyName}");
             CyclopsChargers.Add(createEvent);
         }
 
         internal readonly SubRoot Cyclops;
-        internal CyclopsManager Manager;
 
-        internal SolarChargeHandler SolarCharging;
         internal ThermalChargeHandler ThermalCharging;
         internal BioChargeHandler BioCharging;
         internal NuclearChargeHandler NuclearCharging;
 
-        internal ChargingUpgradeHandler SolarCharger;
         internal ChargingUpgradeHandler ThermalCharger;
-        internal BatteryUpgradeHandler SolarChargerMk2;
         internal BatteryUpgradeHandler ThermalChargerMk2;
         internal BatteryUpgradeHandler NuclearCharger;
         internal BioBoosterUpgradeHandler BioBoosters;
@@ -75,6 +70,8 @@
             }
         }
 
+        public string Name { get; } = "Charge";
+
         private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new HashSet<ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new HashSet<ICyclopsCharger>();
 
@@ -83,16 +80,7 @@
             Cyclops = cyclops;
         }
 
-        internal bool Initialize(CyclopsManager manager)
-        {
-            Manager = manager;
-
-            InitializeChargingHandlers();
-
-            return true;
-        }
-
-        internal void InitializeChargingHandlers()
+        public bool Initialize(SubRoot cyclops)
         {
             QuickLogger.Debug("PowerManager InitializeChargingHandlers");
 
@@ -107,6 +95,8 @@
                 else
                     QuickLogger.Warning($"Duplicate Reusable ICyclopsCharger '{charger.GetType()?.Name}' was blocked");
             }
+
+            return true;
         }
 
         /// <summary>
@@ -116,7 +106,6 @@
         internal int GetTotalReservePower()
         {
             float availableReservePower = 0f;
-            availableReservePower += SolarChargerMk2.TotalBatteryCharge;
             availableReservePower += ThermalChargerMk2.TotalBatteryCharge;
             availableReservePower += NuclearCharger.TotalBatteryCharge;
 
@@ -148,7 +137,8 @@
                                  ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
                                  : 0f;
 
-            Manager.HUDManager.UpdateTextVisibility();
+            // TODO
+            //HUDManager.UpdateTextVisibility();
 
             float producedPower = 0f;
             foreach (ICyclopsCharger charger in RenewablePowerChargers)
@@ -185,38 +175,7 @@
         {
             int maxChargingModules = ModConfig.Settings.MaxChargingModules();
 
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: SolarCharger Upgrade");
-                SolarCharger = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID, cyclops)
-                {
-                    MaxCount = maxChargingModules
-                };
-                SolarCharger.OnFirstTimeMaxCountReached += () =>
-                {
-                    ErrorMessage.AddMessage(CyclopsModule.MaxSolarReached());
-                };
-                return SolarCharger;
-            });
-
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: SolarChargerMk2 Upgrade");
-                SolarChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true, cyclops)
-                {
-                    MaxCount = maxChargingModules
-                };
-                SolarChargerMk2.OnFirstTimeMaxCountReached += () =>
-                {
-                    ErrorMessage.AddMessage(CyclopsModule.MaxSolarReached());
-                };
-
-                SolarCharger.SiblingUpgrade = SolarChargerMk2;
-                SolarChargerMk2.SiblingUpgrade = SolarCharger;
-                return SolarChargerMk2;
-            });
-
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: ThermalCharger Upgrade");
                 ThermalCharger = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule, cyclops)
@@ -230,7 +189,7 @@
                 return ThermalCharger;
             });
 
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: ThermalChargerMk2 Upgrade");
                 ThermalChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true, cyclops)
@@ -246,7 +205,7 @@
                 return ThermalChargerMk2;
             });
 
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: NuclearReactor Upgrade");
                 NuclearCharger = new NuclearUpgradeHandler(cyclops)
@@ -256,7 +215,7 @@
                 return NuclearCharger;
             });
 
-            UpgradeManager.RegisterHandlerCreator((cyclops) =>
+            MCUServices.Client.RegisterHandlerCreator((cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: BioBooster Upgrade");
                 BioBoosters = new BioBoosterUpgradeHandler(cyclops);
@@ -266,9 +225,6 @@
 
         internal void SyncBioReactors()
         {
-            if (Manager == null)
-                return;
-
             TempCache.Clear();
 
             SubRoot cyclops = Cyclops;
@@ -296,5 +252,7 @@
                 CyBioReactors.AddRange(TempCache);
             }
         }
+
+
     }
 }

@@ -23,7 +23,6 @@
         internal readonly ChargeManager ChargeManager;
         internal ChargingUpgradeHandler ThermalChargers => ChargeManager.ThermalCharger;
         internal BatteryUpgradeHandler ThermalChargerMk2 => ChargeManager.ThermalChargerMk2;
-        internal SolarChargeHandler SolarCharger => ChargeManager.SolarCharging;
 
         public bool IsRenewable { get; } = true;
 
@@ -109,7 +108,7 @@
 
                 return mk1Power + mk2Power;
             }
-            else if (this.SolarCharger.SolarState != SolarState.SunAvailable && this.ThermalChargerMk2.BatteryHasCharge)
+            else if (this.ThermalChargerMk2.BatteryHasCharge)
             {
                 ThermalState = ThermalState.BatteryAvailable;
                 return this.ThermalChargerMk2.GetBatteryPower(BatteryDrainRate, requestedPower);
@@ -143,6 +142,11 @@
                 return 0f; // Safety check
 
             return WaterTemperatureSimulation.main.GetTemperature(cyclops.transform.position);
+        }
+
+        public float TotalReservePower()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

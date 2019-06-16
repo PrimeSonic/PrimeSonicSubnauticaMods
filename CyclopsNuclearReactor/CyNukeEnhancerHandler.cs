@@ -1,10 +1,10 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Common;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
+    using MoreCyclopsUpgrades.API;
     using System.Collections.Generic;
 
-    internal class CyNukeEnhancerHandler : TieredUpgradesHandlerCollection<int>
+    internal class CyNukeEnhancerHandler : TieredGroupHandler<int>
     {
         private const int NoUpgradesValue = 0;
         private const int Mk1UpgradeValue = 1;

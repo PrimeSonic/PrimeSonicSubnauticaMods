@@ -1,8 +1,8 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API;
-    using System.Collections.Generic;
     using UnityEngine;
 
     internal class CyNukeChargeManager : ICyclopsCharger
@@ -188,6 +188,16 @@
 
             // Some slots depleted
             return Color.yellow;
+        }
+
+        public float TotalReservePower()
+        {
+            float total = 0f;
+            foreach (CyNukeReactorMono reactor in CyNukeReactors)
+            {
+                total += reactor.GetTotalAvailablePower();
+            }
+            return total;
         }
 
         #endregion
