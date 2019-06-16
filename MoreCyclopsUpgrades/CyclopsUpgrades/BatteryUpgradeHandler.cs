@@ -1,11 +1,12 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
-    using Managers;
+    using MoreCyclopsUpgrades.API;
     using System.Collections.Generic;
     using UnityEngine;
 
     internal class BatteryUpgradeHandler : ChargingUpgradeHandler
     {
+        internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         public delegate void BatteryDrainedEvent(BatteryDetails details);
         public BatteryDrainedEvent OnBatteryDrained;
 
@@ -15,7 +16,7 @@
         public float TotalBatteryCharge = 0f;
         public float TotalBatteryCapacity = 0f;
 
-        internal bool BatteryHasCharge => this.Count > 0 && TotalBatteryCharge > PowerManager.MinimalPowerValue;
+        internal bool BatteryHasCharge => this.Count > 0 && TotalBatteryCharge > MinimalPowerValue;
 
         public BatteryUpgradeHandler(TechType techType, bool canRecharge, SubRoot cyclops) : base(techType, cyclops)
         {
@@ -38,7 +39,7 @@
 
         public float GetBatteryPower(float drainingRate, float requestedPower)
         {
-            if (requestedPower < PowerManager.MinimalPowerValue) // No power deficit left to charge
+            if (requestedPower < MinimalPowerValue) // No power deficit left to charge
                 return 0f; // Exit
             float totalDrainedAmt = 0f;
             foreach (BatteryDetails details in this.Batteries)
@@ -48,7 +49,7 @@
 
                 Battery battery = details.BatteryRef;
 
-                if (battery._charge < PowerManager.MinimalPowerValue) // The battery has no charge left
+                if (battery._charge < MinimalPowerValue) // The battery has no charge left
                     continue; // Skip this battery
 
                 // Mathf.Min is to prevent accidentally taking too much power from the battery
@@ -86,7 +87,7 @@
                 if (batteryCharged)
                     continue;
 
-                if (surplusPower < PowerManager.MinimalPowerValue)
+                if (surplusPower < MinimalPowerValue)
                     continue;
 
                 if (details.IsFull)

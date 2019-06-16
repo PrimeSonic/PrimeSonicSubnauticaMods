@@ -11,6 +11,7 @@
 
     internal class BioChargeHandler : ICyclopsCharger
     {
+        internal const float BatteryDrainRate = ChargeManager.BatteryDrainRate;
         private const float BioReactorRateLimiter = 0.90f;
 
         private readonly ChargeManager ChargeManager;
@@ -78,7 +79,7 @@
                 {
                     poweredReactors++;
 
-                    charge += reactor.GetBatteryPower(PowerManager.BatteryDrainRate * BioReactorRateLimiter, requestedPower);
+                    charge += reactor.GetBatteryPower(BatteryDrainRate * BioReactorRateLimiter, requestedPower);
 
                     tempBioCharge += reactor.Battery._charge;
                     tempBioCapacity = reactor.Battery._capacity;

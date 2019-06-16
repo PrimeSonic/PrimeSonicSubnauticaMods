@@ -7,21 +7,19 @@
     internal class CyclopsManager
     {
         public readonly UpgradeManager UpgradeManager;
-        public readonly PowerManager PowerManager;
         public readonly CyclopsHUDManager HUDManager;
         public readonly ChargeManager ChargeManager;
 
         public List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
-        public int TotalPowerChargers => PowerManager.PowerChargersCount;
+        public int TotalPowerChargers => ChargeManager.PowerChargersCount;
 
         public readonly SubRoot Cyclops;
 
         public readonly int InstanceID;
 
-        public CyclopsManager(SubRoot cyclops, UpgradeManager upgradeManager, PowerManager powerManager, CyclopsHUDManager hUDManager, ChargeManager chargeManager)
+        public CyclopsManager(SubRoot cyclops, UpgradeManager upgradeManager, CyclopsHUDManager hUDManager, ChargeManager chargeManager)
         {
             UpgradeManager = upgradeManager;
-            PowerManager = powerManager;
             HUDManager = hUDManager;
             ChargeManager = chargeManager;
             Cyclops = cyclops;
@@ -39,11 +37,6 @@
         public static UpgradeManager GetUpgradeManager(SubRoot cyclops)
         {
             return GetManager(cyclops.GetInstanceID(), cyclops)?.UpgradeManager;
-        }
-
-        public static PowerManager GetPowerManager(SubRoot cyclops)
-        {
-            return GetManager(cyclops.GetInstanceID(), cyclops)?.PowerManager;
         }
 
         public static ChargeManager GetChargeManager(SubRoot cyclops)
@@ -74,18 +67,16 @@
         private static CyclopsManager CreateNewManagers(SubRoot cyclops)
         {
             var upgradeMgr = new UpgradeManager(cyclops);
-            var powerMgr = new PowerManager(cyclops);
             var hudManager = new CyclopsHUDManager(cyclops);
             var chargeMgr = new ChargeManager(cyclops);
 
-            var mgr = new CyclopsManager(cyclops, upgradeMgr, powerMgr, hudManager, chargeMgr);
+            var mgr = new CyclopsManager(cyclops, upgradeMgr, hudManager, chargeMgr);
 
             Managers.Add(mgr);
 
             // Managers must be initialized in this order
             if (!upgradeMgr.Initialize(mgr) ||
                 !chargeMgr.Initialize(mgr) ||
-                !powerMgr.Initialize(mgr) ||
                 !hudManager.Initialize(mgr))
             {
                 QuickLogger.Error("Failed to initialized manager", true);

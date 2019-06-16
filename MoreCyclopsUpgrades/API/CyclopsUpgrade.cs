@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.API
 {
-    using MoreCyclopsUpgrades.Managers;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -11,7 +10,6 @@
             : base(classId, friendlyName, description)
         {
             base.OnFinishedPatching += MakeEquipable;
-            base.OnFinishedPatching += RegisterWithUpgradeManager;
         }
 
         public override TechGroup GroupForPDA { get; } = TechGroup.Cyclops;
@@ -26,17 +24,10 @@
             return obj;
         }
 
-        protected abstract UpgradeHandler CreateUpgradeHandler(SubRoot cyclops);
-
         private void MakeEquipable()
         {
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
             CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
-        }
-
-        private void RegisterWithUpgradeManager()
-        {
-            UpgradeManager.RegisterHandlerCreator(CreateUpgradeHandler);
         }
     }
 }

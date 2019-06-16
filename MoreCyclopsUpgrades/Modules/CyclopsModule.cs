@@ -1,9 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.Modules
 {
-    using Caching;
     using Common;
     using Enhancement;
-    using PowerUpgrade;
+    using MoreCyclopsUpgrades.API;
     using Recharging.Nuclear;
     using Recharging.Solar;
     using Recharging.Thermal;
@@ -42,9 +41,6 @@
         public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld;
         public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld;
         public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld;
-        public static TechType PowerUpgradeMk2ID { get; protected set; } = TechType.UnusedOld;
-        public static TechType PowerUpgradeMk3ID { get; protected set; } = TechType.UnusedOld;
-        public static TechType SpeedBoosterModuleID { get; protected set; } = TechType.UnusedOld;
         public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld;
         public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld;
         public static TechType BioReactorBoosterID { get; protected set; } = TechType.UnusedOld;
@@ -130,14 +126,11 @@
         internal static void PatchAllModules(bool modulesEnabled)
         {
             ModulesEnabled = modulesEnabled;
-
+            bool vehicleUpgradesInCyclops = MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab;
             ModulesToPatch.Add(new ThermalChargerMk2());
-            ModulesToPatch.Add(new SolarCharger(OtherMods.VehicleUpgradesInCyclops));
+            ModulesToPatch.Add(new SolarCharger(vehicleUpgradesInCyclops));
             ModulesToPatch.Add(new SolarChargerMk2());
-            ModulesToPatch.Add(new PowerUpgradeMk2());
-            ModulesToPatch.Add(new PowerUpgradeMk3());
-            ModulesToPatch.Add(new CyclopsSpeedBooster(OtherMods.VehicleUpgradesInCyclops));
-            ModulesToPatch.Add(new BioReactorBooster(OtherMods.VehicleUpgradesInCyclops));
+            ModulesToPatch.Add(new BioReactorBooster(vehicleUpgradesInCyclops));
             ModulesToPatch.Add(new NuclearCharger());
             ModulesToPatch.Add(new DepletedNuclearModule());
 

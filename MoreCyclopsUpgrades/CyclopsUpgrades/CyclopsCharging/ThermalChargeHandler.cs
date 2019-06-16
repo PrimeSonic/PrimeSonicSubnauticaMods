@@ -15,9 +15,10 @@
 
     internal class ThermalChargeHandler : ICyclopsCharger
     {
+        internal const float BatteryDrainRate = ChargeManager.BatteryDrainRate;
+        internal const float MinimalPowerValue = ChargeManager.MinimalPowerValue;
+        internal const float Mk2ChargeRateModifier = ChargeManager.Mk2ChargeRateModifier;
         internal const float ThermalChargingFactor = 1.5f;
-        internal const float BatteryDrainRate = 0.01f;
-        internal const float Mk2ChargeRateModifier = 1.15f;
 
         internal readonly ChargeManager ChargeManager;
         internal ChargingUpgradeHandler ThermalChargers => ChargeManager.ThermalCharger;
@@ -98,11 +99,11 @@
             temperature = GetThermalStatus(Cyclops);
             float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * Cyclops.thermalReactorCharge.Evaluate(temperature);
 
-            if (availableThermalEnergy > PowerManager.MinimalPowerValue)
+            if (availableThermalEnergy > MinimalPowerValue)
             {
                 ThermalState = ThermalState.HeatAvailable;
                 float mk1Power = this.ThermalChargers.Count * availableThermalEnergy;
-                float mk2Power = this.ThermalChargerMk2.Count * availableThermalEnergy * PowerManager.Mk2ChargeRateModifier;
+                float mk2Power = this.ThermalChargerMk2.Count * availableThermalEnergy * Mk2ChargeRateModifier;
 
                 this.ThermalChargerMk2.RechargeBatteries(mk1Power + mk2Power);
 
@@ -111,7 +112,7 @@
             else if (this.SolarCharger.SolarState != SolarState.SunAvailable && this.ThermalChargerMk2.BatteryHasCharge)
             {
                 ThermalState = ThermalState.BatteryAvailable;
-                return this.ThermalChargerMk2.GetBatteryPower(PowerManager.BatteryDrainRate, requestedPower);
+                return this.ThermalChargerMk2.GetBatteryPower(BatteryDrainRate, requestedPower);
             }
             else
             {

@@ -66,9 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\ChargingCyclopsUpgrade.cs" />
-    <Compile Include="API\IMoreCyclopsUpgradesService.cs" />
-    <Compile Include="API\MoreCyclopsUpgradesService.cs" />
+    <Compile Include="API\MCUServices.cs" />
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="Buildables\CyBioReactor.cs" />
     <Compile Include="Caching\BioEnergyCollection.cs" />
@@ -79,6 +77,7 @@
     <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
     <Compile Include="API\CyclopsUpgrade.cs" />
+    <Compile Include="Modules\DefaultEngineUpgrade.cs" />
     <Compile Include="NumberFormat.cs" />
     <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
@@ -86,15 +85,13 @@
     <Compile Include="CyclopsUpgrades\BioBoosterUpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CrushDepthUpgradesHandler.cs" />
     <Compile Include="CyclopsUpgrades\NuclearUpgradeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\TieredUpgradeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\TieredUpgradesHandlerCollection.cs" />
+    <Compile Include="API\TieredUpgradeHandler.cs" />
+    <Compile Include="API\TieredUpgradesHandlerCollection.cs" />
     <Compile Include="API\UpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\ChargingCyclopsUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
-    <Compile Include="Caching\OtherMods.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
     <Compile Include="Modules\Enhancement\BioReactorBooster.cs" />
-    <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
     <Compile Include="Caching\BioEnergy.cs" />
     <Compile Include="Monobehaviors\CyBioReactorMono.cs" />
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
@@ -105,7 +102,6 @@
     <Compile Include="SaveData\ModConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
-    <Compile Include="Managers\PowerManager.cs" />
     <Compile Include="Patchers\uGUI_Patches.cs" />
     <Compile Include="Managers\UpgradeManager.cs" />
     <Compile Include="Buildables\NuclearFabricator.cs" />
@@ -113,8 +109,6 @@
     <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
     <Compile Include="SaveData\EmNuclearConfig.cs" />
     <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
-    <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
-    <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
     <Compile Include="SaveData\ModConfigOptions.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
     <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
@@ -142,9 +136,6 @@
     <Content Include="Assets\CyclopsNuclearModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\CyclopsSpeedModule.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\DepletedCyclopsNuclearModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -152,12 +143,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\NuclearFabricatorT.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\PowerUpgradeModuleMk2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\PowerUpgradeModuleMk3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\CyclopsSolarCharger.png">

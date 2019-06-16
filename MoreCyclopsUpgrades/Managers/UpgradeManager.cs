@@ -3,9 +3,9 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
-    using CyclopsUpgrades;
     using Monobehaviors;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
     /// <summary>
@@ -102,6 +102,12 @@
                     upgrade.RegisterSelf(KnownsUpgradeModules);
                 else
                     QuickLogger.Warning($"Duplicate Reusable UpgradeHandler for '{upgrade.techType}' was blocked");
+            }
+
+            if (!KnownsUpgradeModules.ContainsKey(TechType.PowerUpgradeModule))
+            {
+                QuickLogger.Debug("No UpgradeHandler for the original Engine Efficiency module detected. Adding it internally.");
+                KnownsUpgradeModules.Add(TechType.PowerUpgradeModule, new DefaultEngineUpgrade(Cyclops));
             }
         }
 

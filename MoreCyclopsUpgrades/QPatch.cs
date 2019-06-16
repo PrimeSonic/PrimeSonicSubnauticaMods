@@ -11,7 +11,6 @@
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Managers;
-    using MoreCyclopsUpgrades.Modules.Enhancement;
     using SaveData;
 
     /// <summary>
@@ -40,9 +39,7 @@
 
                 QuickLogger.Info($"Difficult set to {ModConfig.Settings.PowerLevel}");
 
-                OtherMods.VehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
-
-                if (OtherMods.VehicleUpgradesInCyclops)
+                if (MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab)
                     QuickLogger.Debug("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");
 
                 // TODO - Configure cyclops power levels
@@ -54,8 +51,6 @@
                 PatchAuxUpgradeConsole(ModConfig.Settings.EnableAuxiliaryUpgradeConsoles);
 
                 PatchBioEnergy(ModConfig.Settings.EnableBioReactors);
-
-                RegisterPowerManagerUpgrades();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -165,58 +160,6 @@
                             fss.fireSuppressionSystem.SetActive(true);
                     },
                 };
-            });
-        }
-
-        private static void RegisterPowerManagerUpgrades()
-        {
-            int maxModules = ModConfig.Settings.MaxChargingModules();
-
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrades Collection");
-                PowerManager powerManager = CyclopsManager.GetPowerManager(cyclops);
-
-                var efficiencyUpgrades = new TieredUpgradesHandlerCollection<int>(0, cyclops)
-                {
-                    OnFinishedUpgrades = () =>
-                    {
-                        powerManager.UpdatePowerSpeedRating();
-                    }
-                };
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk1");
-                TieredUpgradeHandler<int> engine1 = efficiencyUpgrades.CreateTier(TechType.PowerUpgradeModule, 1);
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk2");
-                TieredUpgradeHandler<int> engine2 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk2ID, 2);
-
-                QuickLogger.Debug("UpgradeHandler Registered: Engine Upgrade Mk3");
-                TieredUpgradeHandler<int> engine3 = efficiencyUpgrades.CreateTier(CyclopsModule.PowerUpgradeMk3ID, 3);
-
-                powerManager.EngineEfficientyUpgrades = efficiencyUpgrades;
-                return efficiencyUpgrades;
-            });
-
-            UpgradeManager.RegisterHandlerCreator((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: SpeedBooster Upgrade");
-                PowerManager powerManager = CyclopsManager.GetPowerManager(cyclops);
-
-                var speed = new UpgradeHandler(CyclopsModule.SpeedBoosterModuleID, cyclops)
-                {
-                    MaxCount = maxModules,
-                    OnFirstTimeMaxCountReached = () =>
-                    {
-                        ErrorMessage.AddMessage(CyclopsSpeedBooster.MaxRatingAchived);
-                    },
-                    OnFinishedUpgrades = () =>
-                    {
-                        powerManager.UpdatePowerSpeedRating();
-                    }
-                };
-
-                return speed;
             });
         }
     }

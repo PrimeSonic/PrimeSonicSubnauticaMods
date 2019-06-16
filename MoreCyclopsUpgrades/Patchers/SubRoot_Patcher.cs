@@ -10,14 +10,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            PowerManager powerMgr = CyclopsManager.GetPowerManager(__instance);
-
-            if (powerMgr == null)
-            {
-                return true; // safety check
-            }
-
-            powerMgr.RechargeCyclops();
+            CyclopsManager.GetChargeManager(__instance)?.RechargeCyclops();
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
@@ -31,17 +24,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            PowerManager powerMgr = CyclopsManager.GetPowerManager(__instance);
-
-            if (powerMgr == null)
-            {
-                return true; // safety check
-            }
-
-            powerMgr.UpdatePowerSpeedRating();
-
-            // No need to execute original method anymore
-            return false; // Completely override the method and do not continue with original execution
+            return false; // Now handled by UpgradeManager HandleUpgrades
         }
     }
 

@@ -1,7 +1,6 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.API
 {
     using System;
-    using MoreCyclopsUpgrades.API;
 
     /// <summary>
     /// Represents a specialized type of upgrade module that is intended to be non-stacking, where only the best version applies.

@@ -19,7 +19,7 @@
     internal class NuclearChargeHandler : ICyclopsCharger
     {
         private const float MaxNuclearChargeRate = 0.16f;
-        private const float MinNuclearChargeRate = PowerManager.MinimalPowerValue * 2;
+        private const float MinNuclearChargeRate = ChargeManager.MinimalPowerValue * 2;
         private const float CooldownRate = MaxNuclearChargeRate * 6f;
         private const float MaxHeat = 1200f;
 

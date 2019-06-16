@@ -15,6 +15,9 @@
 
     internal class SolarChargeHandler : ICyclopsCharger
     {
+        internal const float BatteryDrainRate = ChargeManager.BatteryDrainRate;
+        internal const float MinimalPowerValue = ChargeManager.MinimalPowerValue;
+        internal const float Mk2ChargeRateModifier = ChargeManager.Mk2ChargeRateModifier;
         private const float MaxSolarDepth = 200f;
         private const float SolarChargingFactor = 0.03f;
         private const float MaxSolarPercentage = 90f;
@@ -96,11 +99,11 @@
             float availableSolarEnergy = SolarChargingFactor * solarStatus;
             solarPercentage = solarStatus * 100;
 
-            if (availableSolarEnergy > PowerManager.MinimalPowerValue)
+            if (availableSolarEnergy > MinimalPowerValue)
             {
                 SolarState = SolarState.SunAvailable;
                 float mk1Power = this.SolarChargers.Count * availableSolarEnergy;
-                float mk2Power = this.SolarChargerMk2.Count * availableSolarEnergy * PowerManager.Mk2ChargeRateModifier;
+                float mk2Power = this.SolarChargerMk2.Count * availableSolarEnergy * Mk2ChargeRateModifier;
 
                 this.SolarChargerMk2.RechargeBatteries(mk1Power + mk2Power);
 
@@ -109,7 +112,7 @@
             else if (this.ThermalCharginer.ThermalState != ThermalState.HeatAvailable && this.SolarChargerMk2.BatteryHasCharge)
             {
                 SolarState = SolarState.BatteryAvailable;
-                return this.SolarChargerMk2.GetBatteryPower(PowerManager.BatteryDrainRate, requestedPower);
+                return this.SolarChargerMk2.GetBatteryPower(BatteryDrainRate, requestedPower);
             }
             else
             {

@@ -1,8 +1,7 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.API
 {
     using System;
     using System.Collections.Generic;
-    using MoreCyclopsUpgrades.API;
 
     /// <summary>
     /// Represents the complete tier of <see cref="TieredUpgradeHandler{T}"/> instances.
@@ -90,7 +89,7 @@
             finished = true;
             cleared = false;
 
-            OnFinishedUpgrades?.Invoke();
+            OnFinishedWithUpgrades?.Invoke();
         }
 
         internal override void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)

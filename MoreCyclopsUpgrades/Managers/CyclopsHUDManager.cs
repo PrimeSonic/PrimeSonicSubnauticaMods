@@ -42,7 +42,6 @@
 
         internal readonly SubRoot Cyclops;
         internal UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
-        internal PowerManager PowerManager => this.Manager.PowerManager;
         internal ChargeManager ChargeManager => this.Manager.ChargeManager;
 
         private bool powerIconsInitialized = false;
@@ -247,7 +246,7 @@
             if (!powerIconsInitialized)
                 return;
 
-            IEnumerable<ICyclopsCharger> cyclopsChargers = this.PowerManager.PowerChargers;
+            IEnumerable<ICyclopsCharger> cyclopsChargers = this.ChargeManager.PowerChargers;
 
             foreach (Indicator indicator in HelmIndicatorsOdd)
                 indicator.Enabled = false;

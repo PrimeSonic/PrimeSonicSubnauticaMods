@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
     using UnityEngine.UI;
@@ -35,7 +36,7 @@
         public bool HasPower()
         {
             return TechTypeID == TechType.ReactorRod &&
-                   Charge > PowerManager.MinimalPowerValue;
+                   Charge > MCUServices.MinimalPowerValue;
         }
 
         public void AddDisplayText(uGUI_ItemIcon icon)

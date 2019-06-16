@@ -18,7 +18,7 @@
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
 
-            OnFinishedUpgrades += () =>
+            OnFinishedWithUpgrades += () =>
             {
                 List<CyBioReactorMono> bioreactors = CyclopsManager.GetBioReactors(cyclops);
 

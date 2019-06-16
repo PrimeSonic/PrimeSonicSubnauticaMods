@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.SaveData
 {
     using Common;
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.Managers;
     using SMLHelper.V2.Options;
     using System;
@@ -22,7 +23,7 @@
 
         private static float CyclopsMaxPower = 1;
 
-        internal static float MinimumEnergyDeficit => EmConfig.ConserveNuclearModulePower ? RequiredEnergyDeficit : PowerManager.MinimalPowerValue;
+        internal static float MinimumEnergyDeficit => EmConfig.ConserveNuclearModulePower ? RequiredEnergyDeficit : MCUServices.MinimalPowerValue;
 
         internal static EmNuclearConfig EmConfig = new EmNuclearConfig(MinPercent, MaxPercent, DefaultPercent);
 

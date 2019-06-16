@@ -31,7 +31,7 @@
             };
 
             // Collection
-            OnFinishedUpgrades += () =>
+            OnFinishedWithUpgrades += () =>
             {
                 List<CyNukeReactorMono> reactors = CyNukeChargeManager.GetReactors(cyclops);
 

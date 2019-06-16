@@ -12,6 +12,8 @@
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
+        internal const float MinimalPowerValue = ChargeManager.MinimalPowerValue;
+
         private const float baselineChargeRate = 0.80f;
         public const int MaxBoosters = 3;
 
@@ -305,7 +307,7 @@
 
         public float GetBatteryPower(float drainingRate, float requestedAmount)
         {
-            if (requestedAmount < PowerManager.MinimalPowerValue) // No power deficit left to charge
+            if (requestedAmount < MinimalPowerValue) // No power deficit left to charge
                 return 0f; // Exit
 
             if (!this.HasPower)

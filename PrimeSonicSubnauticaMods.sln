@@ -30,10 +30,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsNuclearReactor", "Cy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IonCubeGenerator", "IonCubeGenerator\IonCubeGenerator.csproj", "{55314209-DE35-4A05-A188-EA01FC1DCA95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsEngineUpgrades", "CyclopsEngineUpgrades\CyclopsEngineUpgrades.csproj", "{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{0fdbc24d-27cf-435f-b49c-d0a8a580971a}*SharedItemsImports = 4
+		Utilities\Utilities.projitems*{405a8ab5-3671-4bc7-9fcb-b8a2f6a456f1}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{4186cf53-c9f3-4635-a108-84cf60a2ed0e}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{55314209-de35-4a05-a188-ea01fc1dca95}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 4
@@ -88,6 +91,10 @@ Global
 		{55314209-DE35-4A05-A188-EA01FC1DCA95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55314209-DE35-4A05-A188-EA01FC1DCA95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55314209-DE35-4A05-A188-EA01FC1DCA95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{405A8AB5-3671-4BC7-9FCB-B8A2F6A456F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
