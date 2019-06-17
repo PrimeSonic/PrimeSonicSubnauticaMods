@@ -74,7 +74,6 @@
     <Compile Include="API\TieredGroupHandler.cs" />
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="API\ICyclopsCharger.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\NuclearChargeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
     <Compile Include="API\CyclopsUpgrade.cs" />
@@ -84,11 +83,9 @@
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
     <Compile Include="CyclopsUpgrades\BatteryUpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CrushDepthUpgradesHandler.cs" />
-    <Compile Include="CyclopsUpgrades\NuclearUpgradeHandler.cs" />
     <Compile Include="API\TieredUpgradeHandler.cs" />
     <Compile Include="API\UpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\ChargingCyclopsUpgrade.cs" />
-    <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
     <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
     <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
@@ -98,11 +95,8 @@
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="Managers\UpgradeManager.cs" />
-    <Compile Include="Buildables\NuclearFabricator.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
-    <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
     <Compile Include="SaveData\EmNuclearConfig.cs" />
-    <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
     <Compile Include="SaveData\ModConfigOptions.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
     <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
@@ -114,18 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AuxCyUpgradeConsole.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyclopsNuclearModule.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\DepletedCyclopsNuclearModule.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\NuclearFabricatorI.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\NuclearFabricatorT.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\CyclopsThermalChargerMk2.png">

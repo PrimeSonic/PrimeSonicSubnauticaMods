@@ -15,6 +15,7 @@
 
     internal class ThermalChargeHandler : ICyclopsCharger
     {
+        internal const string ChargerName = "McuHeatChgr";
         internal const float BatteryDrainRate = ChargeManager.BatteryDrainRate;
         internal const float MinimalPowerValue = ChargeManager.MinimalPowerValue;
         internal const float Mk2ChargeRateModifier = ChargeManager.Mk2ChargeRateModifier;
@@ -25,6 +26,8 @@
         internal BatteryUpgradeHandler ThermalChargerMk2 => ChargeManager.ThermalChargerMk2;
 
         public bool IsRenewable { get; } = true;
+
+        public string Name { get; } = ChargerName;
 
         public readonly SubRoot Cyclops;
 

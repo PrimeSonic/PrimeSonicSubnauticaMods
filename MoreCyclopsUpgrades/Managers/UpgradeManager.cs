@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using System.Collections.Generic;
-    using System.Reflection;
     using Common;
     using Monobehaviors;
     using MoreCyclopsUpgrades.API;
@@ -11,8 +10,10 @@
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
     /// </summary>
-    internal class UpgradeManager
+    internal class UpgradeManager : IAuxCyclopsManager
     {
+        internal const string ManagerName = "McuUpgrdMgr";
+
         private static readonly ICollection<HandlerCreator> HandlerCreators = new List<HandlerCreator>();
 
         /// <summary>
@@ -59,13 +60,13 @@
             }
         }
 
-        internal CyclopsManager Manager { get; private set; }
-
         internal readonly SubRoot Cyclops;
 
         internal List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
 
-        private readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
+        public string Name { get; } = ManagerName;
+
+        internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
 
         internal UpgradeManager(SubRoot cyclops)
         {
@@ -74,11 +75,6 @@
 
         internal bool Initialize(CyclopsManager manager)
         {
-            if (this.Manager != null)
-                return false; // Already initialized
-
-            this.Manager = manager;
-
             RegisterUpgradeHandlers();
 
             Equipment cyclopsConsole = Cyclops.upgradeConsole.modules;
@@ -128,7 +124,7 @@
                 {
                     QuickLogger.Debug("CyUpgradeConsoleMono synced externally");
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    auxConsole.ConnectToCyclops(Cyclops, this.Manager);
+                    auxConsole.ConnectToCyclops(Cyclops, this);
                 }
             }
 
@@ -207,6 +203,11 @@
             }
 
             return true;
+        }
+
+        public bool Initialize(SubRoot cyclops)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

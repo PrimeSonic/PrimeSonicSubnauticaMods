@@ -1,22 +1,22 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
+    using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
     using MoreCyclopsUpgrades.Modules;
-    using MoreCyclopsUpgrades.Monobehaviors;
     using MoreCyclopsUpgrades.SaveData;
-    using System;
-    using System.Collections.Generic;
     using UnityEngine;
 
     internal class ChargeManager : IAuxCyclopsManager
     {
+        internal const string ManagerName = "McuChargeMgr";
+
         internal const float BatteryDrainRate = 0.01f;
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
-
+        
         private static readonly ICollection<ChargerCreator> CyclopsChargers = new List<ChargerCreator>();
 
         /// <summary>
@@ -38,11 +38,9 @@
         internal readonly SubRoot Cyclops;
 
         internal ThermalChargeHandler ThermalCharging;
-        internal NuclearChargeHandler NuclearCharging;
 
         internal ChargingUpgradeHandler ThermalCharger;
         internal BatteryUpgradeHandler ThermalChargerMk2;
-        internal BatteryUpgradeHandler NuclearCharger;
 
         private int rechargeSkip = 10;
 
@@ -62,10 +60,12 @@
             }
         }
 
-        public string Name { get; } = "Charge";
+        public string Name { get; } = ManagerName;
 
-        private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new HashSet<ICyclopsCharger>();
-        private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new HashSet<ICyclopsCharger>();
+        internal readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
+
+        private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
+        private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
 
         public ChargeManager(SubRoot cyclops)
         {
@@ -83,9 +83,14 @@
                 ICollection<ICyclopsCharger> powerChargers = charger.IsRenewable ? RenewablePowerChargers : NonRenewablePowerChargers;
 
                 if (!powerChargers.Contains(charger))
+                {
                     powerChargers.Add(charger);
+                    KnownChargers.Add(charger.Name, charger);
+                }
                 else
+                {
                     QuickLogger.Warning($"Duplicate Reusable ICyclopsCharger '{charger.GetType()?.Name}' was blocked");
+                }
             }
 
             return true;
@@ -98,8 +103,12 @@
         internal int GetTotalReservePower()
         {
             float availableReservePower = 0f;
-            availableReservePower += ThermalChargerMk2.TotalBatteryCharge;
-            availableReservePower += NuclearCharger.TotalBatteryCharge;
+
+            foreach (ICyclopsCharger charger in RenewablePowerChargers)
+                availableReservePower += charger.TotalReservePower();
+
+            foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
+                availableReservePower += charger.TotalReservePower();
 
             return Mathf.FloorToInt(availableReservePower);
         }
@@ -194,15 +203,7 @@
                 return ThermalChargerMk2;
             });
 
-            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: NuclearReactor Upgrade");
-                NuclearCharger = new NuclearUpgradeHandler(cyclops)
-                {
-                    MaxCount = Math.Min(maxChargingModules, 3) // No more than 3 no matter what the difficulty
-                };
-                return NuclearCharger;
-            });
+
         }
     }
 }

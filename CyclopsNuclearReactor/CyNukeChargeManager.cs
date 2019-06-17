@@ -49,6 +49,7 @@
         #endregion
 
         public const int MaxReactors = 2;
+        internal const string ChargerName = "CyNukeChgr";
 
         public readonly SubRoot Cyclops;
 
@@ -57,6 +58,7 @@
         internal int UpgradeLevel => UpgradeHandler == null ? 0 : UpgradeHandler.HighestValue;
 
         public bool IsRenewable { get; } = false;
+        public string Name { get; } = ChargerName;
 
         private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, CyNukReactorBuildable.PowerIndicatorIconID);
 

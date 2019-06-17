@@ -1,13 +1,13 @@
 ﻿namespace MoreCyclopsUpgrades.Monobehaviors
 {
+    using System;
+    using System.Reflection;
     using Buildables;
     using Common;
     using Managers;
-    using Modules;
+    using MoreCyclopsUpgrades.API;
     using ProtoBuf;
     using SaveData;
-    using System;
-    using System.Reflection;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -17,7 +17,7 @@
         // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
 
-        internal CyclopsManager Manager { get; private set; }
+        internal UpgradeManager UpgradeManager { get; private set; }
 
         public Equipment Modules { get; private set; }
 
@@ -51,7 +51,7 @@
             if (cyclops is null)
             {
                 QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Attempting external syncronize.");
-                CyclopsManager.SyncUpgradeConsoles();
+                this.UpgradeManager.SyncUpgradeConsoles();
             }
             else
             {
@@ -193,13 +193,13 @@
             Buildable.deconstructionAllowed = allEmpty;
         }
 
-        internal void ConnectToCyclops(SubRoot parentCyclops, CyclopsManager manager = null)
+        internal void ConnectToCyclops(SubRoot parentCyclops, UpgradeManager manager = null)
         {
             this.ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            this.Manager = manager ?? CyclopsManager.GetAllManagers(parentCyclops);
+            this.UpgradeManager = manager ?? CyclopsManager.GetManager<UpgradeManager>(parentCyclops, UpgradeManager.ManagerName);
 
-            UpgradeManager upgradeManager = this.Manager.UpgradeManager;
+            UpgradeManager upgradeManager = this.UpgradeManager;
 
             if (!upgradeManager.AuxUpgradeConsoles.Contains(this))
             {
@@ -332,7 +332,7 @@
                     if (savedModule.ItemID == 0) // (int)TechType.None
                         continue; // Nothing here
 
-                    InventoryItem spanwedItem = CyclopsModule.SpawnCyclopsModule((TechType)savedModule.ItemID);
+                    InventoryItem spanwedItem = CyclopsUpgrade.SpawnCyclopsModule((TechType)savedModule.ItemID);
                     QuickLogger.Debug($"Spawned in {savedModule.ItemID} from save data");
 
                     if (spanwedItem is null)

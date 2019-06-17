@@ -8,7 +8,7 @@
     using UnityEngine;
     using UnityEngine.UI;
 
-    internal class CyclopsHUDManager
+    internal class CyclopsHUDManager : IAuxCyclopsManager
     {
         private class Indicator
         {
@@ -34,6 +34,8 @@
 
         internal CyclopsManager Manager { get; private set; }
 
+        internal const string ManagerName = "McuHudMgr";
+
         private Indicator[] HelmIndicatorsOdd;
         private Indicator[] HelmIndicatorsEven;
 
@@ -41,8 +43,10 @@
         private Indicator[] HealthBarIndicatorsEven;
 
         internal readonly SubRoot Cyclops;
-        internal UpgradeManager UpgradeManager => this.Manager.UpgradeManager;
-        internal ChargeManager ChargeManager => this.Manager.ChargeManager;
+        internal UpgradeManager UpgradeManager { get; private set; }
+        internal ChargeManager ChargeManager { get; private set; }
+
+        public string Name { get; } = ManagerName;
 
         private bool powerIconsInitialized = false;
 
@@ -70,6 +74,11 @@
             }
         }
 
+        public bool Initialize(SubRoot cyclops)
+        {
+            throw new System.NotImplementedException();
+        }
+
         internal bool Initialize(CyclopsManager manager)
         {
             if (this.Manager != null)
@@ -93,7 +102,7 @@
                 return; // Same early exit
             }
 
-            if (this.UpgradeManager == null)
+            if (UpgradeManager == null)
             {
                 ErrorMessage.AddMessage("UpdateHelmHUD: UpgradeManager is null");
                 return;
@@ -101,7 +110,7 @@
 
             if (!powerIconsInitialized)
             {
-                AddPowerIcons(cyclopsHelmHUD, this.Manager.TotalPowerChargers);
+                AddPowerIcons(cyclopsHelmHUD, this.ChargeManager.PowerChargersCount);
             }
 
             // Change the color of the Cyclops energy percentage on the HUD
@@ -288,5 +297,7 @@
                 hpIcon.Text.color = helmIcon.Text.color = charger.GetIndicatorTextColor();
             }
         }
+
+
     }
 }

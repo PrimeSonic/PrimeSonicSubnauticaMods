@@ -29,5 +29,13 @@
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
             CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
         }
+
+        public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
+        {
+            var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
+
+            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
+            return new InventoryItem(pickupable);
+        }
     }
 }

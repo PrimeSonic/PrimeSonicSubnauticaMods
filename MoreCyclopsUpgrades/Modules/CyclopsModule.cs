@@ -2,7 +2,6 @@
 {
     using Common;
     using MoreCyclopsUpgrades.API;
-    using Recharging.Nuclear;
     using Recharging.Thermal;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -17,27 +16,15 @@
 
         internal static bool ModulesEnabled { get; private set; } = true;
 
-
-
         private const string MaxThermalReachedKey = "MaxThermalMsg";
         internal static string MaxThermalReached()
         {
             return Language.main.Get(MaxThermalReachedKey);
         }
 
-        private const string MaxNuclearReachedKey = "MaxNuclearMsg";
-        internal static string MaxNuclearReached()
-        {
-            return Language.main.Get(MaxNuclearReachedKey);
-        }
 
-        // Default value that shouldn't get hit. Only here for error testing.
-        public static TechType SolarChargerID { get; protected set; } = TechType.UnusedOld;
-        public static TechType SolarChargerMk2ID { get; protected set; } = TechType.UnusedOld;
+      
         public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld;
-        public static TechType NuclearChargerID { get; protected set; } = TechType.UnusedOld;
-        public static TechType DepletedNuclearModuleID { get; protected set; } = TechType.UnusedOld;
-        public static TechType BioReactorBoosterID { get; protected set; } = TechType.UnusedOld;
 
         public readonly string NameID;
         public readonly string FriendlyName;
@@ -122,8 +109,6 @@
             ModulesEnabled = modulesEnabled;
             bool vehicleUpgradesInCyclops = MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab;
             ModulesToPatch.Add(new ThermalChargerMk2());
-            ModulesToPatch.Add(new NuclearCharger());
-            ModulesToPatch.Add(new DepletedNuclearModule());
 
             foreach (CyclopsModule module in ModulesToPatch)
             {
@@ -133,15 +118,9 @@
 
             
             LanguageHandler.SetLanguageLine(MaxThermalReachedKey, "Max number of thermal chargers reached.");
-            LanguageHandler.SetLanguageLine(MaxNuclearReachedKey, "Max number of nuclear chargers.");
+            
         }
 
-        public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
-        {
-            var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 
-            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
-            return new InventoryItem(pickupable);
-        }
     }
 }

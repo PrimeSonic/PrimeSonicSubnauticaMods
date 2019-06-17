@@ -1,82 +1,55 @@
-﻿namespace MoreCyclopsUpgrades.Buildables
+﻿namespace CyclopsNuclearUpgrades
 {
-    using System.Collections.Generic;
-    using Modules;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
     using UnityEngine;
 
-    internal class NuclearFabricator : ModPrefab
+    internal class NuclearFabricator : Buildable
     {
-        public CraftTree.Type TreeTypeID { get; private set; }
+        private const string NameID = "NuclearFabricator";
+        private readonly CyclopsNuclearModule nuclearModule;
 
-        // This name will be used as both the new TechType of the buildable fabricator and the CraftTree Type for the custom crafting tree.
-        public const string NameID = "NuclearFabricator";
-        public const string FriendlyName = "Nuclear Fabricator";
+        public CraftTree.Type TreeTypeID { get; private set; }
+        public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
+        public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
+        public override string AssetsFolder { get; } = "CyclopsNuclearUpgrades/Assets";
+        public override TechType RequiredForUnlock { get; } = TechType.BaseNuclearReactor;
+
         private const string HandOverKey = "UseNukFabricator";
 
-        internal NuclearFabricator() : base(NameID, $"{NameID}PreFab")
+        internal NuclearFabricator(CyclopsNuclearModule module)
+            : base(NameID,
+                   "Nuclear Fabricator",
+                   "A specialized fabricator for safe handling of radioactive energy sources.")
         {
-        }
+            nuclearModule = module;
 
-        // This patch is handled by the Nuclear Charger
-        internal void Patch(bool nukFabricatorEnabled)
-        {
-            // Create new Craft Tree Type
-            CreateCustomTree(out CraftTree.Type craftType);
-            this.TreeTypeID = craftType;
-
-            // Create a new TechType for new fabricator
-            this.TechType = TechTypeHandler.AddTechType(NameID, FriendlyName,
-                "A specialized fabricator for safe handling of radioactive energy sources.", false);
-
-            if (!nukFabricatorEnabled) // Even if the options have this be disabled,
-                return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
-
-            // Create a Recipie for the new TechType
-            var customFabRecipe = new TechData()
+            OnStartedPatching += () =>
             {
-                craftAmount = 1,
-                Ingredients = new List<Ingredient>(new Ingredient[4]
-                             {
-                                 new Ingredient(TechType.Titanium, 2),
-                                 new Ingredient(TechType.ComputerChip, 1),
-                                 new Ingredient(TechType.Magnetite, 1),
-                                 new Ingredient(TechType.Lead, 2),
-                             })
+                if (!nuclearModule.IsPatched)
+                    nuclearModule.Patch();
             };
 
-            // Add the new TechType to the buildables
-            CraftDataHandler.AddBuildable(this.TechType);
-
-            // Add the new TechType to the group of Interior Module buildables
-            CraftDataHandler.AddToGroup(TechGroup.InteriorModules, TechCategory.InteriorModule, this.TechType);
-
-            // Set the buildable prefab
-            PrefabHandler.RegisterPrefab(this);
-
-            LanguageHandler.SetLanguageLine(HandOverKey, "Use Nuclear Fabricator");
-
-            // Set the custom sprite for the Habitat Builder Tool menu
-            SpriteHandler.RegisterSprite(this.TechType, @"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorI.png");
-
-            // Associate the recipie to the new TechType
-            CraftDataHandler.SetTechData(this.TechType, customFabRecipe);
-
-            KnownTechHandler.SetAnalysisTechEntry(TechType.BaseNuclearReactor, new TechType[1] { this.TechType }, $"{FriendlyName} blueprint discovered!");
+            OnFinishedPatching += () =>
+            {
+                LanguageHandler.SetLanguageLine(HandOverKey, "Use Nuclear Fabricator");
+                this.TreeTypeID = CreateCustomTree();
+            };
         }
 
-        private void CreateCustomTree(out CraftTree.Type craftType)
+        private CraftTree.Type CreateCustomTree()
         {
-            ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(NameID, out craftType);
+            ModCraftTreeRoot rootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(NameID, out CraftTree.Type craftType);
 
             rootNode.AddCraftingNode(TechType.ReactorRod);
-            rootNode.AddCraftingNode(CyclopsModule.NuclearChargerID);            
+            rootNode.AddCraftingNode(nuclearModule.TechType);
             rootNode.AddModdedCraftingNode("RReactorRodDUMMY"); // Refill nuclear reactor rod
             rootNode.AddModdedCraftingNode("CyNukeUpgrade1"); // Cyclops Nuclear Reactor Enhancer Mk1
             rootNode.AddModdedCraftingNode("CyNukeUpgrade2"); // Cyclops Nuclear Reactor Enhancer Mk2
+
+            return craftType;
         }
 
         public override GameObject GetGameObject()
@@ -92,7 +65,7 @@
             if (prefabId != null)
             {
                 prefabId.ClassId = NameID;
-                prefabId.name = FriendlyName;
+                prefabId.name = this.FriendlyName;
             }
 
             // Add tech tag
@@ -143,6 +116,19 @@
             return prefab;
         }
 
-
+        protected override TechData GetBlueprintRecipe()
+        {
+            return new TechData()
+            {
+                craftAmount = 1,
+                Ingredients =
+                {
+                    new Ingredient(TechType.Titanium, 2),
+                    new Ingredient(TechType.ComputerChip, 1),
+                    new Ingredient(TechType.Magnetite, 1),
+                    new Ingredient(TechType.Lead, 2),
+                }
+            };
+        }
     }
 }

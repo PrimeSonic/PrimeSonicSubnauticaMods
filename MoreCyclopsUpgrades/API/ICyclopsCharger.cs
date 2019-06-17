@@ -36,6 +36,11 @@
         bool IsRenewable { get; }
 
         /// <summary>
+        /// Gets the name that identifies this <see cref="ICyclopsCharger"/> among all others in the Cyclops sub.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// <para>Determines whether this charger should display any power indicator info.</para>
         /// <para>This method is called roughly every 3 seconds when the Cyclops HUD info is updated.</para>
         /// </summary>

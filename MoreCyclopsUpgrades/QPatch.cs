@@ -1,10 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System;
-    using System.IO;
     using System.Reflection;
     using Buildables;
-    using Caching;
     using Common;
     using Harmony;
     using Modules;
@@ -84,6 +82,21 @@
 
         private static void RegisterOriginalUpgrades()
         {
+            MCUServices.Client.RegisterAuxManagerCreators((SubRoot cyclops) => 
+            {
+                return new UpgradeManager(cyclops);
+            });
+
+            MCUServices.Client.RegisterAuxManagerCreators((SubRoot cyclops) =>
+            {
+                return new ChargeManager(cyclops);
+            });
+
+            MCUServices.Client.RegisterAuxManagerCreators((SubRoot cyclops) =>
+            {
+                return new CyclopsHUDManager(cyclops);
+            });
+
             MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: Depth Upgrades Collection");
