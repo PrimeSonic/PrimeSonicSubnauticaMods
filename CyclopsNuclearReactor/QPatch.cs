@@ -43,7 +43,7 @@
                 return CyNukeChargeManager.GetManager(cyclops);
             });
 
-            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
             {
                 return new CyNukeEnhancerHandler(cyclops);
             });

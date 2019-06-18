@@ -1,29 +1,47 @@
 ﻿namespace CyclopsBioReactor.Management
 {
-
+    using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API;
 
-    internal partial class BioManager : IAuxCyclopsManager
+    internal class BioAuxCyclopsManager : IAuxCyclopsManager
     {
-        internal const string ManagerName = "CyBioMgr";
+        private static IEnumerable<BioAuxCyclopsManager> GetAllBioManagers()
+        {
+            return MCUServices.Client.FindAllManagers<BioAuxCyclopsManager>(ManagerName);
+        }
 
-        internal static TechType CyBioBoosterID { get; set; }
-        internal static TechType CyBioReactorID { get; set; }
+        internal const string ManagerName = "CyBioMgr";
+        internal const int MaxBioReactors = BioChargeHandler.MaxBioReactors;
+
+        internal readonly TechType cyBioBooster;
+        internal readonly TechType cyBioReactor;
 
         public string Name { get; } = ManagerName;
+
+        internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
+        private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
+
+        internal readonly SubRoot Cyclops;
+
+        public BioAuxCyclopsManager(SubRoot cyclops, TechType bioBooster, TechType bioReactor)
+        {
+            Cyclops = cyclops;
+            cyBioBooster = bioBooster;
+            cyBioReactor = bioReactor;
+        }
 
         public bool Initialize(SubRoot cyclops)
         {
             return
                 Cyclops == cyclops &&
-                CyBioBoosterID != TechType.None &&
-                CyBioReactorID != TechType.None;
+                cyBioBooster != TechType.None &&
+                cyBioReactor != TechType.None;
         }
 
         internal static void SyncAllBioReactors()
         {
-            foreach (BioManager mgr in MCUServices.Client.GetAllManagers<BioManager>(ManagerName))
+            foreach (BioAuxCyclopsManager mgr in GetAllBioManagers())
                 mgr.SyncBioReactors();
         }
 
@@ -57,9 +75,15 @@
             }
         }
 
+        internal void RemoveSingleReactor(CyBioReactorMono cyBioReactorMono)
+        {
+            CyBioReactors.Remove(cyBioReactorMono);
+        }
+
         internal static void RemoveReactor(CyBioReactorMono cyBioReactorMono)
         {
-            throw new System.NotImplementedException();
+            foreach (BioAuxCyclopsManager mgr in GetAllBioManagers())
+                mgr.RemoveSingleReactor(cyBioReactorMono);
         }
     }
 }

@@ -14,7 +14,7 @@
             : base("CyclopsSolarChargerMk2",
                    "Cyclops Solar Charger Mk2",
                    "Improved solar charging and with integrated power storage for when you can't see the sun.\n" +
-                  $"Stacks with other solar chargers up to a maximum of {Solar.MaxSolarChargers} total solar chargers.")
+                  $"Stacks with other solar chargers up to a maximum of {SolarUpgrade.MaxSolarChargers} total solar chargers.")
         {
             previousTier = cyclopsSolarCharger;
             OnStartedPatching += () =>
@@ -25,7 +25,15 @@
 
             OnFinishedPatching += () =>
             {
-                Solar.CyclopsSolarChargerMk2ID = this.TechType;
+                MCUServices.Client.RegisterChargerCreator((SubRoot cyclops) =>
+                {
+                    return new SolarCharger(previousTier.TechType, this.TechType, cyclops);
+                });
+
+                MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
+                {
+                    return new SolarUpgrade(previousTier.TechType, this.TechType, cyclops);
+                });
             };
         }
 

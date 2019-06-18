@@ -1,21 +1,21 @@
 ﻿namespace CyclopsBioReactor.Management
 {
-    using Common;
     using MoreCyclopsUpgrades.API;
-    using System.Collections.Generic;
     using UnityEngine;
 
-    internal partial class BioManager : ICyclopsCharger
+    internal class BioChargeHandler : ICyclopsCharger
     {
-        internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
-        private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
+        internal const string ChargerName = "BioChrHldr";
 
         internal const float BatteryDrainRate = 0.01f;
         private const float BioReactorRateLimiter = 0.90f;
 
-        private readonly List<CyBioReactorMono> BioReactors = new List<CyBioReactorMono>();
+        private BioAuxCyclopsManager manager;
+        private BioAuxCyclopsManager Manager => manager ?? (manager = MCUServices.Client.FindManager<BioAuxCyclopsManager>(Cyclops, BioAuxCyclopsManager.ManagerName));
 
         public bool IsRenewable { get; } = false;
+
+        public string Name { get; } = ChargerName;
 
         internal const int MaxBioReactors = 6;
         internal bool ProducingPower = false;
@@ -23,10 +23,15 @@
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
 
-        private readonly Atlas.Sprite sprite = SpriteManager.Get(CyBioBoosterID);
+        private readonly Atlas.Sprite sprite;
 
         public readonly SubRoot Cyclops;
 
+        public BioChargeHandler(TechType cyBioBooster, SubRoot cyclops)
+        {
+            sprite = SpriteManager.Get(cyBioBooster);
+            Cyclops = cyclops;
+        }
 
         public Atlas.Sprite GetIndicatorSprite()
         {
@@ -50,7 +55,7 @@
 
         public float ProducePower(float requestedPower)
         {
-            if (this.BioReactors.Count == 0)
+            if (this.Manager.CyBioReactors.Count == 0)
             {
                 ProducingPower = false;
                 return 0f;
@@ -61,7 +66,7 @@
             float charge = 0f;
 
             int poweredReactors = 0;
-            foreach (CyBioReactorMono reactor in this.BioReactors)
+            foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
             {
                 if (!reactor.HasPower)
                     continue;
@@ -85,15 +90,13 @@
             return charge;
         }
 
-
         public float TotalReservePower()
         {
-            throw new System.NotImplementedException();
+            float totalPower = 0f;
+            foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
+                totalPower += reactor.Battery.charge;
+
+            return totalPower;
         }
-
-
-
     }
-
-
 }

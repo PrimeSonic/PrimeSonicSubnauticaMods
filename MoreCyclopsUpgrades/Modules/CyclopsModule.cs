@@ -21,8 +21,6 @@
         {
             return Language.main.Get(MaxThermalReachedKey);
         }
-
-
       
         public static TechType ThermalChargerMk2ID { get; protected set; } = TechType.UnusedOld;
 
@@ -107,8 +105,6 @@
         internal static void PatchAllModules(bool modulesEnabled)
         {
             ModulesEnabled = modulesEnabled;
-            bool vehicleUpgradesInCyclops = MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab;
-            ModulesToPatch.Add(new ThermalChargerMk2());
 
             foreach (CyclopsModule module in ModulesToPatch)
             {

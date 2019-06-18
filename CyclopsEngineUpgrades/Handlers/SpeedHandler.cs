@@ -10,7 +10,7 @@
 
         public SpeedHandler(CyclopsSpeedModule cyclopsSpeedModule, SubRoot cyclops) : base(cyclopsSpeedModule.TechType, cyclops)
         {
-            powerManager = EngineManager.GetManager(cyclops);
+            powerManager = MCUServices.Client.FindManager<EngineManager>(cyclops, EngineManager.ManagerName);
             powerManager.SpeedBoosters = this;
             speedModule = cyclopsSpeedModule;            
             this.MaxCount = EngineManager.MaxSpeedBoosters;

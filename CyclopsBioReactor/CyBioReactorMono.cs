@@ -39,7 +39,7 @@
         private CyBioReactorSaveData SaveData;
 
         public SubRoot ParentCyclops;
-        internal BioManager Manager;
+        internal BioAuxCyclopsManager Manager;
         public Constructable Buildable;
         public ItemsContainer Container;
         public Battery Battery;
@@ -68,7 +68,7 @@
             if (cyclops is null)
             {
                 QuickLogger.Debug("CyBioReactorMono: Could not find Cyclops during Start. Attempting external syncronize.");
-                BioManager.SyncAllBioReactors();
+                BioAuxCyclopsManager.SyncAllBioReactors();
             }
             else
             {
@@ -396,21 +396,22 @@
 
         #endregion 
 
-        public void ConnectToCyclops(SubRoot parentCyclops, BioManager manager = null)
+        public void ConnectToCyclops(SubRoot parentCyclops, BioAuxCyclopsManager manager = null)
         {
             if (ParentCyclops != null)
                 return;
 
             ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            Manager = manager ?? MCUServices.Client.GetManager<BioManager>(parentCyclops, BioManager.ManagerName);
+            Manager = manager ?? MCUServices.Client.FindManager<BioAuxCyclopsManager>(parentCyclops, BioAuxCyclopsManager.ManagerName);
 
             if (!Manager.CyBioReactors.Contains(this))
             {
                 Manager.CyBioReactors.Add(this);
             }
 
-            UpdateBoosterCount(Manager.TotalBoosters);
+            BioBoosterUpgradeHandler boosterHandler = MCUServices.Client.FindUpgradeHandler<BioBoosterUpgradeHandler>(parentCyclops, Manager.cyBioBooster);
+            UpdateBoosterCount(boosterHandler.TotalBoosters);
             QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 
@@ -494,7 +495,7 @@
             if (Manager != null)
                 Manager.CyBioReactors.Remove(this);
             else
-                BioManager.RemoveReactor(this);
+                BioAuxCyclopsManager.RemoveReactor(this);
 
             ParentCyclops = null;
             Manager = null;

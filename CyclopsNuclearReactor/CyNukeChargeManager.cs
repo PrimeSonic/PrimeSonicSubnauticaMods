@@ -9,8 +9,6 @@
     {
         #region Static Methods
 
-        // This system was modeled after the CyclopsManager of MoreCyclopsUpgrades given its proven reliability
-
         internal static readonly List<CyNukeChargeManager> Managers = new List<CyNukeChargeManager>();
 
         internal static CyNukeChargeManager GetManager(SubRoot cyclops)

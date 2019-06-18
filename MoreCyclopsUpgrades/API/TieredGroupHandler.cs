@@ -5,13 +5,42 @@
 
     /// <summary>
     /// Represents the complete collection of <see cref="TieredUpgradeHandler{T}"/> instances.<para/>
-    /// The events for this collection will be invoked only as few times as needed.
+    /// The events for this collection will be invoked only as needed.
     /// </summary>
     /// <typeparam name="T">The data type used to sort the tiers.</typeparam>
     /// <seealso cref="UpgradeHandler" />
-    public class TieredGroupHandler<T> : UpgradeHandler where T : IComparable<T>
-    {        
-        private readonly ICollection<TieredUpgradeHandler<T>> collection = new List<TieredUpgradeHandler<T>>();
+    public class TieredGroupHandler<T> : UpgradeHandler, IGroupHandler where T : IComparable<T>
+    {
+        private bool cleared = false;
+        private bool finished = false;
+        private readonly List<TieredUpgradeHandler<T>> collection = new List<TieredUpgradeHandler<T>>();
+
+        /// <summary>
+        /// Gets a readonly list of the <see cref="TechType"/>s managed by this group handler.
+        /// </summary>
+        /// <value>
+        /// The upgrade tiers managed by this group handler.
+        /// </value>
+        public IEnumerable<TechType> ManagedTiers
+        {
+            get
+            {
+                foreach (TieredUpgradeHandler<T> tier in collection)
+                    yield return tier.techType;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the specified tech type is managed by this group handler.
+        /// </summary>
+        /// <param name="techType">The TechTech to check.</param>
+        /// <returns>
+        ///   <c>true</c> if this group handler manages the specified TechTech; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsManaging(TechType techType)
+        {
+            return collection.Exists(t => t.techType == techType);
+        }
 
         /// <summary>
         /// Gets the highest value reported among the <see cref="TieredUpgradeHandler{T}" /> of this collection.
@@ -26,9 +55,6 @@
         /// </summary>
         public readonly T DefaultValue;
 
-        private bool cleared = false;
-        private bool finished = false;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TieredGroupHandler{T}"/> class with the default tier value.
         /// </summary>
@@ -39,7 +65,8 @@
         }
 
         /// <summary>
-        /// Adds a new <see cref="TieredUpgradeHandler{T}" /> to the collection, with all necessary default events created.
+        /// Adds a new <see cref="TieredUpgradeHandler{T}" /> to the collection, with all necessary default events created.<para/>
+        /// Use this for upgrades where only the highest tier is counted, no matter how many different tiers are equipped.
         /// </summary>
         /// <param name="techType">The TechType of the upgrade module.</param>
         /// <param name="tieredValue">The tiered value this upgrade module represents.</param>

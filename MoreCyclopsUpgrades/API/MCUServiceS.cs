@@ -27,24 +27,17 @@
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        void RegisterHandlerCreator(HandlerCreator createEvent);
-
-        /// <summary>
-        /// Gets a value indicating whether the Cyclops Fabricator has a "CyclopsModules" crafting tab.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if the "CyclopsModules" tab has been added to the Cyclops Fabricator; otherwise, <c>false</c>.
-        /// </value>
-        bool CyclopsFabricatorHasCyclopsModulesTab { get; }
+        void RegisterUpgradeCreator(HandlerCreator createEvent);
 
         /// <summary>
         /// Gets the steps to "CyclopsModules" crafting tab in the Cyclops Fabricator.<para/>
-        /// Use only if <see cref="CyclopsFabricatorHasCyclopsModulesTab"/> is <c>true</c>.
+        /// This would be necessary for best cross-compatibility with the [VehicleUpgradesInCyclops] mod.<para/>
+        /// Will return null if this mod isn't present, under the assumption that this mod isn't present and it is otherwise find to add crafting nodes to the Cyclops Fabricator root.
         /// </summary>
         /// <value>
-        /// The steps to  the Cyclops Fabricator's "CyclopsModules" crafting tab.
+        /// The steps to the Cyclops Fabricator's "CyclopsModules" crafting tab if it exists.
         /// </value>
-        string[] StepsToCyclopsModulesTab { get; }
+        string[] StepsToCyclopsModulesTabInCyclopsFabricator { get; }
 
         /// <summary>
         /// Gets the typed <see cref="IAuxCyclopsManager"/> at the specified Cyclops sub with the given <seealso cref="IAuxCyclopsManager.Name"/>.
@@ -54,7 +47,7 @@
         /// <param name="auxManagerName">The <seealso cref="IAuxCyclopsManager.Name"/> you defined for the auxilary cyclops manager.</param>
         /// <returns>A type casted <see cref="IAuxCyclopsManager"/> if found by name; Otherwise returns null if not found.</returns>
         /// <seealso cref="AuxManagerCreator"/>
-        T GetManager<T>(SubRoot cyclops, string auxManagerName) where T : class, IAuxCyclopsManager;
+        T FindManager<T>(SubRoot cyclops, string auxManagerName) where T : class, IAuxCyclopsManager;
 
         /// <summary>
         /// Gets all typed <see cref="IAuxCyclopsManager"/>s across all Cyclops subs with the given <seealso cref="IAuxCyclopsManager.Name"/>.
@@ -62,25 +55,37 @@
         /// <typeparam name="T">The class you created that implements <see cref="IAuxCyclopsManager"/>.</typeparam>
         /// <param name="auxManagerName">The <seealso cref="IAuxCyclopsManager.Name"/> you defined for the auxilary cyclops manager.</param>
         /// <returns>A type casted enumeration of all <see cref="IAuxCyclopsManager"/>s found across all Cyclops subs, identified by name.</returns>
-        IEnumerable<T> GetAllManagers<T>(string auxManagerName) where T : class, IAuxCyclopsManager;
+        IEnumerable<T> FindAllManagers<T>(string auxManagerName) where T : class, IAuxCyclopsManager;
 
         /// <summary>
-        /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.
+        /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
+        /// Use this if you need to obtain a reference to your <seealso cref="UpgradeHandler"/> for something else in your mod.
         /// </summary>
-        /// <typeparam name="T">The class created by the <seealso cref="HandlerCreator"/> you passed into <seealso cref="RegisterHandlerCreator(HandlerCreator)"/>.</typeparam>
+        /// <typeparam name="T">The class created by the <seealso cref="HandlerCreator"/> you passed into <seealso cref="RegisterUpgradeCreator(HandlerCreator)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="upgradeId">The upgrade module techtype ID.</param>
         /// <returns>A type casted <see cref="UpgradeHandler"/> if found by techtype; Otherwise returns null.</returns>
-        T GetUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler;
+        T FindUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler;
 
         /// <summary>
-        /// Gets the charge hangler at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.
+        /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
+        /// Use this if you need to obtain a reference to your <seealso cref="StackingGroupHandler"/> or <seealso cref="TieredGroupHandler{T}"/> for something else in your mod.
+        /// </summary>
+        /// <typeparam name="T">The class created by the <seealso cref="HandlerCreator"/> you passed into <seealso cref="RegisterUpgradeCreator(HandlerCreator)"/>.</typeparam>
+        /// <param name="cyclops">The cyclops to search in.</param>
+        /// <param name="upgradeId">The upgrade module techtype ID.</param>
+        /// <returns>A type casted <see cref="UpgradeHandler"/> if found by techtype; Otherwise returns null.</returns>
+        T FindGroupHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler;
+
+        /// <summary>
+        /// Gets the charge hangler at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
+        /// Use this if you need to obtain a reference to your <seealso cref="ICyclopsCharger"/> for something else in your mod.
         /// </summary>
         /// <typeparam name="T">The class created by the <seealso cref="ChargerCreator"/> you passed into <seealso cref="RegisterChargerCreator(ChargerCreator)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="chargeHandlerName">The <seealso cref="ICyclopsCharger.Name"/> of the charge handler.</param>
         /// <returns>A type casted <see cref="ICyclopsCharger"/> if found by name; Otherwise returns null.</returns>
-        T GetChargeHangler<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger;
+        T FindChargeHangler<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger;
     }
 
     /// <summary>
@@ -89,6 +94,11 @@
     /// <seealso cref="IMCUServices" />
     public class MCUServices : IMCUServices
     {
+        private static readonly string[] cyModulesTab = new[] { "CyclopsModules" };
+        private bool CyclopsFabricatorHasCyclopsModulesTab { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
+
+        public string[] StepsToCyclopsModulesTabInCyclopsFabricator => this.CyclopsFabricatorHasCyclopsModulesTab ? cyModulesTab : null;
+
         public static IMCUServices Client { get; } = new MCUServices();
 
         /// <summary>
@@ -107,7 +117,7 @@
             ChargeManager.RegisterChargerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
         }
 
-        public void RegisterHandlerCreator(HandlerCreator createEvent)
+        public void RegisterUpgradeCreator(HandlerCreator createEvent)
         {
             UpgradeManager.RegisterHandlerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
         }
@@ -117,30 +127,41 @@
             CyclopsManager.RegisterAuxManagerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
         }
 
-        public T GetManager<T>(SubRoot cyclops, string auxManagerName)
+        public T FindManager<T>(SubRoot cyclops, string auxManagerName)
             where T : class, IAuxCyclopsManager
         {
             return CyclopsManager.GetManager<T>(cyclops, auxManagerName);
         }
 
-        public IEnumerable<T> GetAllManagers<T>(string auxManagerName)
+        public IEnumerable<T> FindAllManagers<T>(string auxManagerName)
             where T : class, IAuxCyclopsManager
         {
             return CyclopsManager.GetAllManagers<T>(auxManagerName);
         }
 
-        public T GetUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler
+        public T FindUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler
         {
             UpgradeManager mgr = CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName);
-            if (mgr != null && mgr.KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
+            if (mgr != null)
             {
-                return (T)upgradeHandler;
+                return mgr.GetUpgradeHandler<T>(upgradeId);
             }
 
             return null;
         }
 
-        public T GetChargeHangler<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger
+        public T FindGroupHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
+        {
+            UpgradeManager mgr = CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName);
+            if (mgr != null)
+            {
+                return mgr.GetGroupHandler<T>(upgradeId);
+            }
+
+            return null;
+        }
+
+        public T FindChargeHangler<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger
         {
             ChargeManager mgr = CyclopsManager.GetManager<ChargeManager>(cyclops, ChargeManager.ManagerName);
             if (mgr != null && mgr.KnownChargers.TryGetValue(chargeHandlerName, out ICyclopsCharger cyclopsCharger))
@@ -150,9 +171,5 @@
 
             return null;
         }
-
-        public bool CyclopsFabricatorHasCyclopsModulesTab { get; private set; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
-
-        public string[] StepsToCyclopsModulesTab { get; } = new[] { "CyclopsModules" };
     }
 }

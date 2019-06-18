@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
+    using CyclopsNuclearUpgrades.Management;
     using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
@@ -30,6 +31,14 @@
             OnFinishedPatching += () =>
             {
                 LanguageHandler.SetLanguageLine(DepletedEventKey, "Nuclear Reactor Module depleted");
+                MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) => 
+                {
+                    return new NuclearUpgradeHandler(nuclearModule.TechType, DepleteNuclearModule, cyclops);
+                });
+                MCUServices.Client.RegisterChargerCreator((SubRoot cyclops) =>
+                {
+                    return new NuclearChargeHandler(cyclops, nuclearModule.TechType);
+                });
             };
         }
 

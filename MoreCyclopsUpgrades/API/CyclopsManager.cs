@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
+    using MoreCyclopsUpgrades.Managers;
 
     internal class CyclopsManager
     {
@@ -39,7 +40,7 @@
         internal static T GetManager<T>(SubRoot cyclops, string auxManagerName)
             where T : class, IAuxCyclopsManager
         {
-            CyclopsManager mgr = GetManager(cyclops.GetInstanceID(), cyclops);
+            CyclopsManager mgr = GetManager(cyclops);
 
             if (mgr != null && mgr.AuxiliaryManagers.TryGetValue(auxManagerName, out IAuxCyclopsManager auxManager))
             {
@@ -49,12 +50,12 @@
             return null;
         }
 
-        private static CyclopsManager GetManager(int id, SubRoot cyclops)
+        internal static CyclopsManager GetManager(SubRoot cyclops)
         {
             if (cyclops.isBase || !cyclops.isCyclops)
                 return null;
 
-            CyclopsManager mgr = Managers.Find(m => m.InstanceID == cyclops.GetInstanceID());
+            CyclopsManager mgr = Managers.Find(m => m.Cyclops == cyclops && m.InstanceID == cyclops.GetInstanceID());
 
             return mgr ?? CreateNewManager(cyclops);
         }
@@ -63,15 +64,17 @@
         {
             var mgr = new CyclopsManager(cyclops);
 
-            foreach (KeyValuePair<string, IAuxCyclopsManager> auxMgr in mgr.AuxiliaryManagers)
+            foreach (IAuxCyclopsManager auxMgr in mgr.AuxiliaryManagers.Values)
             {
-                bool success = auxMgr.Value.Initialize(cyclops);
+                bool success = auxMgr.Initialize(cyclops);
 
                 if (!success)
                 {
-                    QuickLogger.Error($"Failed to initialized manager {auxMgr.Key}", true);
+                    QuickLogger.Error($"Failed to initialize IAuxCyclopsManager {auxMgr.Name}", true);
                     return null;
                 }
+
+                QuickLogger.Debug($"Initialized IAuxCyclopsManager {auxMgr.Name}");
             }
 
             return mgr;
@@ -86,6 +89,9 @@
 
         internal readonly IDictionary<string, IAuxCyclopsManager> AuxiliaryManagers = new Dictionary<string, IAuxCyclopsManager>();
 
+        // Because this is going to be called on every Update cycle, it's getting elevated privilege within the mod.
+        internal ChargeManager QuickChargeManager;
+
         private CyclopsManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
@@ -94,7 +100,25 @@
             foreach (AuxManagerCreator creator in AuxManagerCreators)
             {
                 IAuxCyclopsManager auxMgr = creator.Invoke(cyclops);
-                AuxiliaryManagers.Add(auxMgr.Name, auxMgr);
+                if (auxMgr != null)
+                {
+                    if (string.IsNullOrEmpty(auxMgr.Name))
+                    {
+                        QuickLogger.Error($"Failed IAuxCyclopsManager with no name value from '{creator.GetType().Assembly.GetName().Name}'");
+                    }
+                    else
+                    {
+                        QuickLogger.Debug($"Created new IAuxCyclopsManager {auxMgr.Name}");
+                        AuxiliaryManagers.Add(auxMgr.Name, auxMgr);
+
+                        if (QuickChargeManager == null && auxMgr is ChargeManager chargeManager)
+                            QuickChargeManager = chargeManager;
+                    }
+                }
+                else
+                {
+                    QuickLogger.Error($"Failed in creating IAuxCyclopsManager from '{creator.GetType().Assembly.GetName().Name}'");
+                }
             }
         }
 

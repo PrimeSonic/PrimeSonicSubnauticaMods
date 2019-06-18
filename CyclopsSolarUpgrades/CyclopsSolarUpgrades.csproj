@@ -53,9 +53,7 @@
   <ItemGroup>
     <Compile Include="Craftables\CyclopsSolarCharger.cs" />
     <Compile Include="Craftables\CyclopsSolarChargerMk2.cs" />
-    <Compile Include="Management\SolarBatteries.cs" />
     <Compile Include="Management\SolarCharger.cs" />
-    <Compile Include="Management\SolarManager.cs" />
     <Compile Include="Management\SolarUpgrades.cs" />
     <Compile Include="Management\BatteryDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

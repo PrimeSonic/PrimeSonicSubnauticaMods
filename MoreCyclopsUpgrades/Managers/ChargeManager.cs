@@ -16,7 +16,7 @@
         internal const float BatteryDrainRate = 0.01f;
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
-        
+
         private static readonly ICollection<ChargerCreator> CyclopsChargers = new List<ChargerCreator>();
 
         /// <summary>
@@ -36,11 +36,12 @@
         }
 
         internal readonly SubRoot Cyclops;
-
         internal ThermalChargeHandler ThermalCharging;
-
         internal ChargingUpgradeHandler ThermalCharger;
         internal BatteryUpgradeHandler ThermalChargerMk2;
+
+        private CyclopsHUDManager cyclopsHUDManager;
+        private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = MCUServices.Client.FindManager<CyclopsHUDManager>(Cyclops, CyclopsHUDManager.ManagerName));
 
         private int rechargeSkip = 10;
 
@@ -63,7 +64,6 @@
         public string Name { get; } = ManagerName;
 
         internal readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
-
         private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
 
@@ -104,10 +104,7 @@
         {
             float availableReservePower = 0f;
 
-            foreach (ICyclopsCharger charger in RenewablePowerChargers)
-                availableReservePower += charger.TotalReservePower();
-
-            foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
+            foreach (ICyclopsCharger charger in KnownChargers.Values)
                 availableReservePower += charger.TotalReservePower();
 
             return Mathf.FloorToInt(availableReservePower);
@@ -135,8 +132,7 @@
                                  ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
                                  : 0f;
 
-            // TODO
-            //HUDManager.UpdateTextVisibility();
+            this.HUDManager.UpdateTextVisibility();
 
             float producedPower = 0f;
             foreach (ICyclopsCharger charger in RenewablePowerChargers)
@@ -173,7 +169,7 @@
         {
             int maxChargingModules = ModConfig.Settings.MaxChargingModules();
 
-            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: ThermalCharger Upgrade");
                 ThermalCharger = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule, cyclops)
@@ -187,7 +183,7 @@
                 return ThermalCharger;
             });
 
-            MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
+            MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: ThermalChargerMk2 Upgrade");
                 ThermalChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true, cyclops)

@@ -19,23 +19,8 @@
                 var booster = new BioReactorBooster();
                 booster.Patch();
 
-                var reactor = new CyBioReactor();
+                var reactor = new CyBioReactor(booster);
                 reactor.Patch();
-
-                MCUServices.Client.RegisterAuxManagerCreators((SubRoot cyclops) =>
-                {
-                    return new BioManager(cyclops);
-                });
-
-                MCUServices.Client.RegisterChargerCreator((SubRoot cyclops) =>
-                {
-                    return MCUServices.Client.GetManager<BioManager>(cyclops, BioManager.ManagerName);
-                });
-
-                MCUServices.Client.RegisterHandlerCreator((SubRoot cyclops) =>
-                {
-                    return MCUServices.Client.GetManager<BioManager>(cyclops, BioManager.ManagerName);
-                });
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());

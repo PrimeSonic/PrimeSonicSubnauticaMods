@@ -68,6 +68,45 @@
 
         internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
 
+        internal T GetUpgradeHandler<T>(TechType upgradeId) where T : UpgradeHandler
+        {
+            if (KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
+            {
+                if (upgradeHandler is IGroupedUpgradeHandler groupMember)
+                    return (T)groupMember.GroupHandler;
+
+                return (T)upgradeHandler;
+            }
+
+            return null;
+        }
+
+        internal T GetGroupHandler<T>(TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
+        {
+            if (!KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
+                return null;
+
+            if (upgradeHandler is IGroupedUpgradeHandler groupMember)
+            {
+                if (additionalIds.Length > 0)
+                {
+                    IGroupHandler groupHandler = groupMember.GroupHandler;
+                    foreach (TechType techType in additionalIds)
+                    {
+                        if (!groupHandler.IsManaging(techType))
+                            return null;
+                    }
+                    return (T)groupHandler;
+                }
+                else
+                {
+                    return (T)groupMember.GroupHandler;
+                }
+            }
+
+            return (T)upgradeHandler;
+        }
+
         internal UpgradeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;

@@ -5,12 +5,17 @@
     /// This is always created through <see cref="StackingGroupHandler.CreateStackingTier(TechType)"/>.
     /// </summary>
     /// <seealso cref="UpgradeHandler" />
-    public class StackingUpgradeHandler : UpgradeHandler
+    public class StackingUpgradeHandler : UpgradeHandler, IGroupedUpgradeHandler
     {
         /// <summary>
-        /// The parent collection. Create this first.
+        /// The parent <see cref="StackingGroupHandler"/> that manages the collection as a group.
         /// </summary>
         public readonly StackingGroupHandler ParentCollection;
+
+        /// <summary>
+        /// The parent <see cref="UpgradeHandler"/> that manages the collection as a group.
+        /// </summary>
+        public IGroupHandler GroupHandler => ParentCollection;
 
         internal StackingUpgradeHandler(TechType techType, StackingGroupHandler parentCollection)
             : base(techType, parentCollection.cyclops)

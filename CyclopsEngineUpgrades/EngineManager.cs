@@ -6,24 +6,9 @@
     using MoreCyclopsUpgrades.API;
     using UnityEngine;
 
-    internal class EngineManager
+    internal class EngineManager : IAuxCyclopsManager
     {
-        private static readonly IDictionary<SubRoot, EngineManager> Managers = new Dictionary<SubRoot, EngineManager>(3);
-
-        internal static EngineManager GetManager(SubRoot cyclops)
-        {
-            if (Managers.TryGetValue(cyclops, out EngineManager manager))
-            {
-                return manager;
-            }
-
-            var mgr = new EngineManager(cyclops);
-
-            Managers.Add(cyclops, mgr);
-
-            return mgr;
-        }
-
+        internal const string ManagerName = "CyPowMgr";
         private const float EnginePowerPenalty = 0.7f;
         internal const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
@@ -32,7 +17,7 @@
         /// "Practically zero" for all intents and purposes. Any energy value lower than this should be considered zero.
         /// </summary>
         public const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-
+        
         private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
         {
             0.25f, 0.15f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
@@ -88,14 +73,21 @@
         private SubControl subControl;
         private SubControl SubControl => subControl ?? (subControl = Cyclops.GetComponentInChildren<SubControl>());
 
+        public string Name { get; } = ManagerName;
+
         private EngineManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
+        }
 
+        public bool Initialize(SubRoot cyclops)
+        {
             // Store the original values before we start to change them
             this.OriginalSpeeds[0] = this.MotorMode.motorModeSpeeds[0];
             this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
             this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
+
+            return Cyclops == cyclops;
         }
 
         /// <summary>
@@ -173,5 +165,7 @@
                 ErrorMessage.AddMessage(CyclopsSpeedModule.SpeedRatingText(lastKnownSpeedBoosters, Mathf.RoundToInt(StandardMultiplier * 100)));
             }
         }
+
+        
     }
 }

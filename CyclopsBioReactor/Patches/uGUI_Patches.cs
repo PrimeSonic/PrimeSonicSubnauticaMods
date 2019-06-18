@@ -35,7 +35,7 @@
             if (label != CyBioReactor.StorageLabel)
                 return; // Not a Cyclops Bioreactor storage
 
-            List<CyBioReactorMono> reactors = MCUServices.Client.GetManager<BioManager>(Player.main.currentSub, BioManager.ManagerName).CyBioReactors;
+            List<CyBioReactorMono> reactors = MCUServices.Client.FindManager<BioAuxCyclopsManager>(Player.main.currentSub, BioAuxCyclopsManager.ManagerName)?.CyBioReactors;
 
             if (reactors is null || reactors.Count == 0)
                 return; // Cyclops has no bioreactors

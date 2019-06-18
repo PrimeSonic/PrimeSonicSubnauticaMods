@@ -15,7 +15,7 @@
     {
         /// <summary>
         /// Gets the name of the Auxiliary Cyclops Manager.<para/>
-        /// This acts an ID for the manager so it can be located when calling into <seealso cref="IMCUServices.GetManager{T}(SubRoot, string)"/>.
+        /// This acts an ID for the manager so it can be located when calling into <seealso cref="IMCUServices.FindManager{T}(SubRoot, string)"/>.
         /// </summary>
         /// <value>
         /// The name of this type of manager.

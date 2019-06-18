@@ -16,16 +16,7 @@
         public override TechType RequiredForUnlock { get; } = TechType.BaseBioReactor;
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
         public override string AssetsFolder { get; } = "CyclopsBioReactor/Assets";
-        public override string[] StepsToFabricatorTab
-        {
-            get
-            {
-                if (MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab)
-                    return MCUServices.Client.StepsToCyclopsModulesTab;
-
-                return base.StepsToFabricatorTab;
-            }
-        }
+        public override string[] StepsToFabricatorTab { get; } = MCUServices.Client.StepsToCyclopsModulesTabInCyclopsFabricator;        
 
         private BioReactorBooster(string[] tabs)
             : base("BioReactorBooster",
@@ -41,7 +32,6 @@
         {
             OnFinishedPatching += () =>
             {
-                BioManager.CyBioBoosterID = this.TechType;
                 LanguageHandler.SetLanguageLine(MaxBoostKey, "Maximum boost to cyclops bioreactors achieved");
                 LanguageHandler.SetLanguageLine(CannotRemoveKey, "Cannot remove BioReactor Booster while bioreactor is too full");
             };

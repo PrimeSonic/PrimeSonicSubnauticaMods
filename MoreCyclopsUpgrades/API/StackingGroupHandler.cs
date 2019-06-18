@@ -4,16 +4,35 @@
 
     /// <summary>
     /// Represents the complete collection of <see cref="StackingUpgradeHandler"/> instances.<para/>
-    /// The events for this collection will be invoked only as few times as needed.
+    /// The events for this collection will be invoked only as needed.
     /// </summary>
     /// <seealso cref="UpgradeHandler" />
-    public class StackingGroupHandler : UpgradeHandler
+    public class StackingGroupHandler : UpgradeHandler, IGroupHandler
     {
+        private bool cleared = false;
+        private bool finished = false;
         private readonly ICollection<StackingUpgradeHandler> collection = new List<StackingUpgradeHandler>(3);
         private readonly IDictionary<TechType, int> counted = new Dictionary<TechType, int>(3);
 
-        private bool cleared = false;
-        private bool finished = false;
+        /// <summary>
+        /// Gets a readonly list of the <see cref="TechType"/>s managed by this group handler.
+        /// </summary>
+        /// <value>
+        /// The upgrade tiers managed by this group handler.
+        /// </value>
+        public IEnumerable<TechType> ManagedTiers => counted.Keys;
+
+        /// <summary>
+        /// Determines whether the specified tech type is managed by this group handler.
+        /// </summary>
+        /// <param name="techType">The TechTech to check.</param>
+        /// <returns>
+        ///   <c>true</c> if this group handler manages the specified TechTech; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsManaging(TechType techType)
+        {
+            return counted.ContainsKey(techType);
+        }
 
         /// <summary>
         /// Gets the total count of all stacking tiers of upgrades.
@@ -65,6 +84,11 @@
             get => counted[tier];
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StackingGroupHandler"/> class, with all necessary default events created.<para/>
+        /// Use this for upgrades that stack similar effects while also allowing a mix of multiple tiers.
+        /// </summary>
+        /// <param name="cyclops">The cyclops.</param>
         public StackingGroupHandler(SubRoot cyclops)
             : base(TechType.None, cyclops)
         {

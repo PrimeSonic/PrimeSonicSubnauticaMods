@@ -18,8 +18,6 @@
                 nuclearModule.Patch();
                 depletedModule.Patch();
                 nuclearFabricator.Patch();
-
-
             }
             catch(Exception ex)
             {

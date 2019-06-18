@@ -17,27 +17,17 @@
             : base("CyclopsSolarCharger",
                    "Cyclops Solar Charger",
                    "Allows your cyclops to recharge plentiful power of the sun itself.\n" +
-                  $"Stacks with other solar chargers up to a maximum of {Solar.MaxSolarChargers} total solar chargers.")
+                  $"Stacks with other solar chargers up to a maximum of {SolarUpgrade.MaxSolarChargers} total solar chargers.")
         {
             OnFinishedPatching += () =>
             {
-                Solar.CyclopsSolarChargerID = this.TechType;
                 LanguageHandler.SetLanguageLine(MaxSolarReachedKey, "Max number of solar chargers reached.");
             };
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
         public override string AssetsFolder { get; } = "CyclopsSolarUpgrades/Assets";
-        public override string[] StepsToFabricatorTab
-        {
-            get
-            {
-                if (MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab)
-                    return MCUServices.Client.StepsToCyclopsModulesTab;
-
-                return base.StepsToFabricatorTab;
-            }
-        }
+        public override string[] StepsToFabricatorTab { get; } = MCUServices.Client.StepsToCyclopsModulesTabInCyclopsFabricator;
 
         protected override TechData GetBlueprintRecipe()
         {

@@ -10,15 +10,6 @@
 
     internal class CyBioReactor : Buildable
     {
-        private static readonly CyBioReactor main = new CyBioReactor();
-
-        public static void PatchCyBioReactor(bool enableBioreactor)
-        {
-            main.Patch(enableBioreactor);
-        }
-
-        public static TechType TechTypeID { get; private set; } = TechType.UnusedOld;
-
         private const string OnHoverFormatKey = "CyBioOnHover";
         public static string OnHoverFormatString(int charge, float capacity, string stillProducing)
         {
@@ -34,16 +25,39 @@
         private const string StorageLabelKey = "CyBioReactorLabel";
         public static string StorageLabel => Language.main.Get(StorageLabelKey);
 
-        public CyBioReactor()
+        private readonly BioReactorBooster bioBooster;
+
+        public CyBioReactor(BioReactorBooster booster)
             : base("CyBioReactor", "Cyclops Bioreactor", "Composts organic matter into electrical energy.")
         {
+            bioBooster = booster;
+
+            OnStartedPatching += () =>
+            {
+                if (!bioBooster.IsPatched)
+                    bioBooster.Patch();
+            };
+
             OnFinishedPatching += () => 
             {
-                BioManager.CyBioReactorID = this.TechType;
                 LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
                 LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
                 LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");
 
+                MCUServices.Client.RegisterAuxManagerCreators((SubRoot cyclops) =>
+                {
+                    return new BioAuxCyclopsManager(cyclops, bioBooster.TechType, this.TechType);
+                });
+
+                MCUServices.Client.RegisterChargerCreator((SubRoot cyclops) =>
+                {
+                    return new BioChargeHandler(bioBooster.TechType, cyclops);
+                });
+
+                MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
+                {
+                    return new BioBoosterUpgradeHandler(bioBooster.TechType, cyclops);
+                });
             };
             
         }
@@ -58,9 +72,9 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                BioManager mgr = MCUServices.Client.GetManager<BioManager>(cyclops, BioManager.ManagerName);
+                BioAuxCyclopsManager mgr = MCUServices.Client.FindManager<BioAuxCyclopsManager>(cyclops, BioAuxCyclopsManager.ManagerName);
 
-                if (mgr.CyBioReactors.Count >= BioManager.MaxBioReactors)
+                if (mgr.CyBioReactors.Count >= BioAuxCyclopsManager.MaxBioReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitString());
                     return null;
@@ -119,20 +133,6 @@
                     new Ingredient(TechType.Lubricant, 1),
                 }
             };
-        }
-
-        private void Patch(bool fullPatch)
-        {
-            if (fullPatch)
-            {
-                base.Patch();
-            }
-            else
-            {
-                this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, false);
-            }
-
-            TechTypeID = this.TechType;
         }
     }
 }

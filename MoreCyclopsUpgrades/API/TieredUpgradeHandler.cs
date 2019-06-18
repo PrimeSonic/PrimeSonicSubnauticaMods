@@ -8,8 +8,7 @@
     /// </summary>
     /// <typeparam name="T">The data type used to sort the tiers.</typeparam>
     /// <seealso cref="UpgradeHandler" />
-    public class TieredUpgradeHandler<T> : UpgradeHandler
-         where T : IComparable<T>
+    public class TieredUpgradeHandler<T> : UpgradeHandler, IGroupedUpgradeHandler where T : IComparable<T>
     {
         /// <summary>
         /// The value of this upgrade's tier. Higher values are always used before lower values.
@@ -17,9 +16,14 @@
         public readonly T TieredValue;
 
         /// <summary>
-        /// The parent collection. Create this first.
+        /// The parent <see cref="TieredGroupHandler{T}"/> that manages the collection as a group.
         /// </summary>
         public readonly TieredGroupHandler<T> ParentCollection;
+
+        /// <summary>
+        /// The parent <see cref="UpgradeHandler"/> that manages the collection as a group.
+        /// </summary>
+        public IGroupHandler GroupHandler => ParentCollection;
 
         internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredGroupHandler<T> parentCollection) : base(techType, parentCollection.cyclops)
         {

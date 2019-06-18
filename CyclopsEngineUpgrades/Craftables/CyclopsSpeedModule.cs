@@ -30,22 +30,13 @@
                 LanguageHandler.SetLanguageLine(MaxRatingKey, "Maximum speed rating reached");
                 LanguageHandler.SetLanguageLine(SpeedRatingKey, "Speed rating is now at +{0} ({1}%).");
 
-                MCUServices.Client.RegisterHandlerCreator(CreateSpeedUpgradeHandler);
+                MCUServices.Client.RegisterUpgradeCreator(CreateSpeedUpgradeHandler);
             };
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
         public override string AssetsFolder { get; } = "CyclopsEngineUpgrades/Assets";
-        public override string[] StepsToFabricatorTab
-        {
-            get
-            {
-                if (MCUServices.Client.CyclopsFabricatorHasCyclopsModulesTab)
-                    return MCUServices.Client.StepsToCyclopsModulesTab;
-
-                return base.StepsToFabricatorTab;
-            }
-        }
+        public override string[] StepsToFabricatorTab { get; } = MCUServices.Client.StepsToCyclopsModulesTabInCyclopsFabricator;
 
         protected override TechData GetBlueprintRecipe()
         {

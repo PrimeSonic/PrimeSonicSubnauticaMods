@@ -4,25 +4,22 @@
     using MoreCyclopsUpgrades.API;
     using UnityEngine;
 
-    internal partial class NuclearModule : UpgradeHandler
+    internal class NuclearUpgradeHandler : UpgradeHandler
     {
-        private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        private const float MaxNuclearChargeRate = 0.16f;
-        private const float MinNuclearChargeRate = MinimalPowerValue * 2;
-        private const float CooldownRate = MaxNuclearChargeRate * 6f;
-        private const float MaxHeat = 1500f;
+        internal delegate void DepleteModule(Equipment modules, string slotName);
 
+        private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private readonly IList<BatteryDetails> batteries = new List<BatteryDetails>();
-        private readonly DepletedNuclearModule depletedModule;
+        private readonly DepleteModule depletedModuleEvent;
 
         private float totalBatteryCharge = 0f;
         internal float TotalBatteryCharge { get; private set; }
 
-        public NuclearModule(TechType nuclearModule, DepletedNuclearModule module, SubRoot cyclops)
+        public NuclearUpgradeHandler(TechType nuclearModule, DepleteModule depleteEvent, SubRoot cyclops)
             : base(nuclearModule, cyclops)
         {
-            depletedModule = module;
-            sprite = SpriteManager.Get(nuclearModule);
+            depletedModuleEvent = depleteEvent;
+            
             this.MaxCount = 3;
 
             OnClearUpgrades += () =>
@@ -54,7 +51,7 @@
             };
         }
 
-        private float GetBatteryPower(float drainingRate, float requestedPower)
+        internal float GetBatteryPower(float drainingRate, float requestedPower)
         {
             if (requestedPower < MinimalPowerValue) // No power deficit left to charge
                 return 0f; // Exit
@@ -81,7 +78,7 @@
                 {
                     amtToDrain = battery._charge; // Take what's left
                     battery._charge = 0f; // Set battery to empty
-                    depletedModule.DepleteNuclearModule(details.ParentEquipment, details.SlotName);
+                    depletedModuleEvent.Invoke(details.ParentEquipment, details.SlotName);
                 }
 
                 totalBatteryCharge -= amtToDrain;

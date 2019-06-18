@@ -11,7 +11,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            CyclopsManager.GetManager<ChargeManager>(__instance, ChargeManager.ManagerName)?.RechargeCyclops();
+            CyclopsManager.GetManager(__instance)?.QuickChargeManager?.RechargeCyclops();
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
@@ -41,14 +41,7 @@
             if (cyclopsLife == null || !cyclopsLife.IsAlive())
                 return true; // safety check
 
-            UpgradeManager upgradeMgr = CyclopsManager.GetManager<UpgradeManager>(__instance, UpgradeManager.ManagerName);
-
-            if (upgradeMgr == null)
-            {
-                return true; // safety check
-            }
-
-            upgradeMgr.HandleUpgrades();
+            CyclopsManager.GetManager<UpgradeManager>(__instance, UpgradeManager.ManagerName)?.HandleUpgrades();
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution

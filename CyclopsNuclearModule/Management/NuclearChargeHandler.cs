@@ -4,14 +4,26 @@
     using MoreCyclopsUpgrades.API;
     using UnityEngine;
 
-    internal partial class NuclearModule : ICyclopsCharger
+    internal class NuclearChargeHandler : ICyclopsCharger
     {
         internal const string ChargerName = "CyNukeChgr";
+        private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
+        private const float MaxNuclearChargeRate = 0.16f;
+        private const float MinNuclearChargeRate = MinimalPowerValue * 2;
+        private const float CooldownRate = MaxNuclearChargeRate * 6f;
+        private const float MaxHeat = 1500f;
 
         private readonly Atlas.Sprite sprite;
+        private readonly NuclearUpgradeHandler upgradeHandler;
         private float heat = 0f;
         private float chargeRate = MinNuclearChargeRate;
         private NuclearState nuclearState = NuclearState.None;
+
+        public NuclearChargeHandler(SubRoot cyclops, TechType nuclearModule)
+        {
+            sprite = SpriteManager.Get(nuclearModule);
+            upgradeHandler = MCUServices.Client.FindUpgradeHandler<NuclearUpgradeHandler>(cyclops, nuclearModule);
+        }
 
         public bool IsRenewable { get; } = false;
         public string Name { get; } = ChargerName;
@@ -23,7 +35,7 @@
 
         public string GetIndicatorText()
         {
-            return FormatNumber(this.TotalBatteryCharge);
+            return FormatNumber(upgradeHandler.TotalBatteryCharge);
         }
 
         public Color GetIndicatorTextColor()
@@ -45,7 +57,7 @@
                 heat -= CooldownRate; // Cooldown
             }
 
-            if (this.TotalBatteryCharge <= MinimalPowerValue)
+            if (upgradeHandler.TotalBatteryCharge <= MinimalPowerValue)
             {
                 chargeRate = Mathf.Max(MinNuclearChargeRate, chargeRate - MinNuclearChargeRate);
                 nuclearState = NuclearState.None;
@@ -70,7 +82,7 @@
 
                 chargeRate = Mathf.Min(MaxNuclearChargeRate, chargeRate + MinNuclearChargeRate);
 
-                float generatedPower = GetBatteryPower(chargeRate, requestedPower);
+                float generatedPower = upgradeHandler.GetBatteryPower(chargeRate, requestedPower);
 
                 heat += generatedPower;
                 return generatedPower;
@@ -79,7 +91,7 @@
 
         public float TotalReservePower()
         {
-            return this.TotalBatteryCharge;
+            return upgradeHandler.TotalBatteryCharge;
         }
 
         internal static Color GetNumberColor(float value, float max, float min)
