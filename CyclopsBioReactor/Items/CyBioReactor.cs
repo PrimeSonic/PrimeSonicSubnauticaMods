@@ -44,17 +44,17 @@
                 LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
                 LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");
 
-                MCUServices.Client.RegisterAuxManagerCreators((SubRoot cyclops) =>
+                MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
                 {
                     return new BioAuxCyclopsManager(cyclops, bioBooster.TechType, this.TechType);
                 });
 
-                MCUServices.Client.RegisterChargerCreator((SubRoot cyclops) =>
+                MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
                 {
                     return new BioChargeHandler(bioBooster.TechType, cyclops);
                 });
 
-                MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
                 {
                     return new BioBoosterUpgradeHandler(bioBooster.TechType, cyclops);
                 });
@@ -72,7 +72,7 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                BioAuxCyclopsManager mgr = MCUServices.Client.FindManager<BioAuxCyclopsManager>(cyclops, BioAuxCyclopsManager.ManagerName);
+                BioAuxCyclopsManager mgr = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(cyclops, BioAuxCyclopsManager.ManagerName);
 
                 if (mgr.CyBioReactors.Count >= BioAuxCyclopsManager.MaxBioReactors)
                 {

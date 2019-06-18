@@ -31,11 +31,11 @@
             OnFinishedPatching += () =>
             {
                 LanguageHandler.SetLanguageLine(DepletedEventKey, "Nuclear Reactor Module depleted");
-                MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) => 
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) => 
                 {
                     return new NuclearUpgradeHandler(nuclearModule.TechType, DepleteNuclearModule, cyclops);
                 });
-                MCUServices.Client.RegisterChargerCreator((SubRoot cyclops) =>
+                MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
                 {
                     return new NuclearChargeHandler(cyclops, nuclearModule.TechType);
                 });

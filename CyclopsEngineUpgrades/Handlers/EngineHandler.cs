@@ -12,7 +12,7 @@
         public EngineHandler(PowerUpgradeModuleMk2 upgradeMk2, PowerUpgradeModuleMk3 upgradeMk3, SubRoot cyclops)
             : base(BaseValue, cyclops)
         {
-            powerManager = MCUServices.Client.FindManager<EngineManager>(cyclops, EngineManager.ManagerName);
+            powerManager = MCUServices.Find.AuxCyclopsManager<EngineManager>(cyclops, EngineManager.ManagerName);
             powerManager.EngineEfficientyUpgrades = this;          
 
             OnFinishedWithUpgrades = () =>

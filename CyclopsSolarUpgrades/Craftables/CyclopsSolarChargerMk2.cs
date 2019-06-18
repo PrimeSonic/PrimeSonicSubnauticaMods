@@ -25,12 +25,12 @@
 
             OnFinishedPatching += () =>
             {
-                MCUServices.Client.RegisterChargerCreator((SubRoot cyclops) =>
+                MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
                 {
                     return new SolarCharger(previousTier.TechType, this.TechType, cyclops);
                 });
 
-                MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
                 {
                     return new SolarUpgrade(previousTier.TechType, this.TechType, cyclops);
                 });

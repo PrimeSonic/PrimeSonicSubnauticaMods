@@ -8,7 +8,7 @@
     /// </summary>
     /// <param name="cyclops">The cyclops that the <see cref="ICyclopsCharger"/> is tasked with recharging.</param>
     /// <returns>A new <see cref="ICyclopsCharger"/> ready to produce power for the Cyclops.</returns>
-    public delegate ICyclopsCharger ChargerCreator(SubRoot cyclops);
+    public delegate ICyclopsCharger CyclopsChargerCreateEvent(SubRoot cyclops);
 
     /// <summary>
     /// <para>Defines all the behaviors for a cyclops charger that handles a particular type of energy recharging.</para>

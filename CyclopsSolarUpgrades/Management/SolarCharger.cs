@@ -31,7 +31,7 @@
             solar1Sprite = SpriteManager.Get(solarUpgradeMk1);
             solar2Sprite = SpriteManager.Get(solarUpgradeMk2);
             Cyclops = cyclops;
-            upgradeHandler = MCUServices.Client.FindGroupHandler<SolarUpgrade>(cyclops, solarUpgradeMk1, solarUpgradeMk2);
+            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<SolarUpgrade>(cyclops, solarUpgradeMk1, solarUpgradeMk2);
         }
 
         public bool IsRenewable { get; } = true;

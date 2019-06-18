@@ -38,12 +38,12 @@
         private static void RegisterWithMoreCyclopsUpgrades()
         {
             QuickLogger.Debug("Registering with MoreCyclopsUpgrades");
-            MCUServices.Client.RegisterChargerCreator((SubRoot cyclops) =>
+            MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
             {                
                 return CyNukeChargeManager.GetManager(cyclops);
             });
 
-            MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
                 return new CyNukeEnhancerHandler(cyclops);
             });

@@ -8,7 +8,7 @@
     /// Defines a method that creates a new <see cref="UpgradeHandler"/> when needed by the <seealso cref="UpgradeManager"/>.
     /// </summary>
     /// <returns>A newly instantiated <see cref="UpgradeHandler"/> ready to handle upgrade events.</returns>
-    public delegate UpgradeHandler HandlerCreator(SubRoot cyclops);
+    public delegate UpgradeHandler UpgradeHandlerCreateEvent(SubRoot cyclops);
 
     /// <summary>
     /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="UpgradeHandler.OnClearUpgrades"/> and <see cref="UpgradeHandler.OnFinishedWithUpgrades"/>.

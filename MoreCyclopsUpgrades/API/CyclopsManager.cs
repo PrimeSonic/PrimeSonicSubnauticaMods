@@ -8,9 +8,9 @@
     {
         #region Static Members
 
-        private static readonly ICollection<AuxManagerCreator> AuxManagerCreators = new List<AuxManagerCreator>();
+        private static readonly ICollection<AuxManagerCreateEvent> AuxManagerCreators = new List<AuxManagerCreateEvent>();
 
-        internal static void RegisterAuxManagerCreator(AuxManagerCreator createEvent, string assemblyName)
+        internal static void RegisterAuxManagerCreator(AuxManagerCreateEvent createEvent, string assemblyName)
         {
             if (AuxManagerCreators.Contains(createEvent))
             {
@@ -97,7 +97,7 @@
             Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
 
-            foreach (AuxManagerCreator creator in AuxManagerCreators)
+            foreach (AuxManagerCreateEvent creator in AuxManagerCreators)
             {
                 IAuxCyclopsManager auxMgr = creator.Invoke(cyclops);
                 if (auxMgr != null)

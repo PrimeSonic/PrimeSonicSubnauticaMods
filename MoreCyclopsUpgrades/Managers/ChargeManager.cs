@@ -17,13 +17,13 @@
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
-        private static readonly ICollection<ChargerCreator> CyclopsChargers = new List<ChargerCreator>();
+        private static readonly ICollection<CyclopsChargerCreateEvent> CyclopsChargers = new List<CyclopsChargerCreateEvent>();
 
         /// <summary>
-        /// Registers a <see cref="ChargerCreator"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
+        /// Registers a <see cref="CyclopsChargerCreateEvent"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
         /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="ChargerCreator"/>.</param>
-        internal static void RegisterChargerCreator(ChargerCreator createEvent, string assemblyName)
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CyclopsChargerCreateEvent"/>.</param>
+        internal static void RegisterChargerCreator(CyclopsChargerCreateEvent createEvent, string assemblyName)
         {
             if (CyclopsChargers.Contains(createEvent))
             {
@@ -41,7 +41,7 @@
         internal BatteryUpgradeHandler ThermalChargerMk2;
 
         private CyclopsHUDManager cyclopsHUDManager;
-        private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = MCUServices.Client.FindManager<CyclopsHUDManager>(Cyclops, CyclopsHUDManager.ManagerName));
+        private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = MCUServices.Find.AuxCyclopsManager<CyclopsHUDManager>(Cyclops, CyclopsHUDManager.ManagerName));
 
         private int rechargeSkip = 10;
 
@@ -76,7 +76,7 @@
         {
             QuickLogger.Debug("PowerManager InitializeChargingHandlers");
 
-            foreach (ChargerCreator method in CyclopsChargers)
+            foreach (CyclopsChargerCreateEvent method in CyclopsChargers)
             {
                 ICyclopsCharger charger = method.Invoke(Cyclops);
 
@@ -169,7 +169,7 @@
         {
             int maxChargingModules = ModConfig.Settings.MaxChargingModules();
 
-            MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: ThermalCharger Upgrade");
                 ThermalCharger = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule, cyclops)
@@ -183,7 +183,7 @@
                 return ThermalCharger;
             });
 
-            MCUServices.Client.RegisterUpgradeCreator((SubRoot cyclops) =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: ThermalChargerMk2 Upgrade");
                 ThermalChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true, cyclops)

@@ -403,14 +403,14 @@
 
             ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            Manager = manager ?? MCUServices.Client.FindManager<BioAuxCyclopsManager>(parentCyclops, BioAuxCyclopsManager.ManagerName);
+            Manager = manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(parentCyclops, BioAuxCyclopsManager.ManagerName);
 
             if (!Manager.CyBioReactors.Contains(this))
             {
                 Manager.CyBioReactors.Add(this);
             }
 
-            BioBoosterUpgradeHandler boosterHandler = MCUServices.Client.FindUpgradeHandler<BioBoosterUpgradeHandler>(parentCyclops, Manager.cyBioBooster);
+            BioBoosterUpgradeHandler boosterHandler = MCUServices.Find.CyclopsUpgradeHandler<BioBoosterUpgradeHandler>(parentCyclops, Manager.cyBioBooster);
             UpdateBoosterCount(boosterHandler.TotalBoosters);
             QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }

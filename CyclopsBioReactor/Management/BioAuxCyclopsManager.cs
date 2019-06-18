@@ -8,7 +8,7 @@
     {
         private static IEnumerable<BioAuxCyclopsManager> GetAllBioManagers()
         {
-            return MCUServices.Client.FindAllManagers<BioAuxCyclopsManager>(ManagerName);
+            return MCUServices.Find.FindAllAuxCyclopsManagers<BioAuxCyclopsManager>(ManagerName);
         }
 
         internal const string ManagerName = "CyBioMgr";

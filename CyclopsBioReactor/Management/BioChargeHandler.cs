@@ -11,7 +11,7 @@
         private const float BioReactorRateLimiter = 0.90f;
 
         private BioAuxCyclopsManager manager;
-        private BioAuxCyclopsManager Manager => manager ?? (manager = MCUServices.Client.FindManager<BioAuxCyclopsManager>(Cyclops, BioAuxCyclopsManager.ManagerName));
+        private BioAuxCyclopsManager Manager => manager ?? (manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops, BioAuxCyclopsManager.ManagerName));
 
         public bool IsRenewable { get; } = false;
 

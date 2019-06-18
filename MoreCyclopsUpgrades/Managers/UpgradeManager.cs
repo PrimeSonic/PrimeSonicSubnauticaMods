@@ -14,13 +14,13 @@
     {
         internal const string ManagerName = "McuUpgrdMgr";
 
-        private static readonly ICollection<HandlerCreator> HandlerCreators = new List<HandlerCreator>();
+        private static readonly ICollection<UpgradeHandlerCreateEvent> HandlerCreators = new List<UpgradeHandlerCreateEvent>();
 
         /// <summary>
-        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
+        /// Registers a <see cref="UpgradeHandlerCreateEvent"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        internal static void RegisterHandlerCreator(HandlerCreator createEvent, string assemblyName)
+        internal static void RegisterHandlerCreator(UpgradeHandlerCreateEvent createEvent, string assemblyName)
         {
             if (HandlerCreators.Contains(createEvent))
             {
@@ -129,7 +129,7 @@
             QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
 
             // Register upgrades from other mods
-            foreach (HandlerCreator upgradeHandlerCreator in HandlerCreators)
+            foreach (UpgradeHandlerCreateEvent upgradeHandlerCreator in HandlerCreators)
             {
                 UpgradeHandler upgrade = upgradeHandlerCreator.Invoke(Cyclops);
 

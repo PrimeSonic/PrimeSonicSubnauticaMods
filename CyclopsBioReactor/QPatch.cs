@@ -4,9 +4,7 @@
     using System.Reflection;
     using Common;
     using CyclopsBioReactor.Items;
-    using CyclopsBioReactor.Management;
     using Harmony;
-    using MoreCyclopsUpgrades.API;
 
     public static class QPatch
     {

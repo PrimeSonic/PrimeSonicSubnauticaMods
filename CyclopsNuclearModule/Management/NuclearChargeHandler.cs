@@ -22,7 +22,7 @@
         public NuclearChargeHandler(SubRoot cyclops, TechType nuclearModule)
         {
             sprite = SpriteManager.Get(nuclearModule);
-            upgradeHandler = MCUServices.Client.FindUpgradeHandler<NuclearUpgradeHandler>(cyclops, nuclearModule);
+            upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<NuclearUpgradeHandler>(cyclops, nuclearModule);
         }
 
         public bool IsRenewable { get; } = false;

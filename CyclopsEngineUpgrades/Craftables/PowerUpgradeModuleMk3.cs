@@ -24,7 +24,7 @@
 
             OnFinishedPatching += () =>
             {
-                MCUServices.Client.RegisterUpgradeCreator(CreateEngineHandler);
+                MCUServices.Register.CyclopsUpgradeHandler(CreateEngineHandler);
             };
         }
 
