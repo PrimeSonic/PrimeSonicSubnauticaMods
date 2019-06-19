@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Caching
 {
     internal class BatteryDetails
     {

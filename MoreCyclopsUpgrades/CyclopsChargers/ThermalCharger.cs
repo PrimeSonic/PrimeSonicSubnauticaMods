@@ -1,9 +1,10 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging
+﻿namespace MoreCyclopsUpgrades.CyclopsChargers
 {
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.Caching;
+    using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Managers;
-    using MoreCyclopsUpgrades.Modules;
     using UnityEngine;
 
     internal enum ThermalState
@@ -13,7 +14,7 @@
         BatteryAvailable
     }
 
-    internal class ThermalChargeHandler : ICyclopsCharger
+    internal class ThermalCharger : ICyclopsCharger
     {
         internal const string ChargerName = "McuHeatChgr";
         internal const float BatteryDrainRate = ChargeManager.BatteryDrainRate;
@@ -21,18 +22,16 @@
         internal const float Mk2ChargeRateModifier = ChargeManager.Mk2ChargeRateModifier;
         internal const float ThermalChargingFactor = 1.5f;
 
-        internal readonly ChargeManager ChargeManager;
-        internal ChargingUpgradeHandler ThermalChargers => ChargeManager.ThermalCharger;
-        internal BatteryUpgradeHandler ThermalChargerMk2 => ChargeManager.ThermalChargerMk2;
-
         public bool IsRenewable { get; } = true;
 
         public string Name { get; } = ChargerName;
 
-        public readonly SubRoot Cyclops;
+        private readonly ThermalUpgrade upgradeHandler;
+        private readonly SubRoot Cyclops;
 
-        private readonly Atlas.Sprite thermal1Sprite = SpriteManager.Get(TechType.CyclopsThermalReactorModule);
-        private readonly Atlas.Sprite thermal2Sprite = SpriteManager.Get(CyclopsModule.ThermalChargerMk2ID);
+        private readonly TechType thermalMk2;
+        private readonly Atlas.Sprite thermal1Sprite;
+        private readonly Atlas.Sprite thermal2Sprite;
 
         private const float MaxTemperature = 100f;
         private const float MinUsableTemperature = 25f;
@@ -40,10 +39,15 @@
         internal ThermalState ThermalState = ThermalState.None;
         private float temperature = 0f;
 
-        public ThermalChargeHandler(ChargeManager chargeManager)
+        public ThermalCharger(SubRoot cyclops, TechType thermalMk2Module)
         {
-            ChargeManager = chargeManager;
-            Cyclops = chargeManager.Cyclops;
+            Cyclops = cyclops;
+            thermalMk2 = thermalMk2Module;
+
+            thermal1Sprite = SpriteManager.Get(TechType.CyclopsThermalReactorModule);
+            thermal2Sprite = SpriteManager.Get(thermalMk2Module);
+
+            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<ThermalUpgrade>(cyclops, TechType.CyclopsThermalReactorModule, thermalMk2);
         }
 
         public Atlas.Sprite GetIndicatorSprite()
@@ -66,7 +70,7 @@
                 case ThermalState.HeatAvailable:
                     return NumberFormatter.FormatNumber(Mathf.CeilToInt(temperature), NumberFormat.Temperature);
                 case ThermalState.BatteryAvailable:
-                    return NumberFormatter.FormatNumber(Mathf.CeilToInt(this.ThermalChargerMk2.TotalBatteryCharge), NumberFormat.Amount);
+                    return NumberFormatter.FormatNumber(Mathf.CeilToInt(upgradeHandler.TotalBatteryCharge), NumberFormat.Amount);
                 default:
                     return string.Empty;
             }
@@ -79,7 +83,7 @@
                 case ThermalState.HeatAvailable:
                     return NumberFormatter.GetNumberColor(temperature, MaxTemperature, MinUsableTemperature);
                 case ThermalState.BatteryAvailable:
-                    return NumberFormatter.GetNumberColor(this.ThermalChargerMk2.TotalBatteryCharge, this.ThermalChargerMk2.TotalBatteryCapacity, 0f);
+                    return NumberFormatter.GetNumberColor(upgradeHandler.TotalBatteryCharge, upgradeHandler.TotalBatteryCapacity, 0f);
                 default:
                     return Color.white;
             }
@@ -92,7 +96,7 @@
 
         public float ProducePower(float requestedPower)
         {
-            if (this.ThermalChargers.Count == 0 && this.ThermalChargerMk2.Count == 0)
+            if (upgradeHandler.Count == 0 && upgradeHandler.Count == 0)
             {
                 ThermalState = ThermalState.None;
                 return 0f;
@@ -104,17 +108,17 @@
             if (availableThermalEnergy > MinimalPowerValue)
             {
                 ThermalState = ThermalState.HeatAvailable;
-                float mk1Power = this.ThermalChargers.Count * availableThermalEnergy;
-                float mk2Power = this.ThermalChargerMk2.Count * availableThermalEnergy * Mk2ChargeRateModifier;
+                float mk1Power = upgradeHandler.Count * availableThermalEnergy;
+                float mk2Power = upgradeHandler.Count * availableThermalEnergy * Mk2ChargeRateModifier;
 
-                this.ThermalChargerMk2.RechargeBatteries(mk1Power + mk2Power);
+                upgradeHandler.RechargeBatteries(mk1Power + mk2Power);
 
                 return mk1Power + mk2Power;
             }
-            else if (this.ThermalChargerMk2.BatteryHasCharge)
+            else if (upgradeHandler.TotalBatteryCharge > MinimalPowerValue)
             {
                 ThermalState = ThermalState.BatteryAvailable;
-                return this.ThermalChargerMk2.GetBatteryPower(BatteryDrainRate, requestedPower);
+                return upgradeHandler.GetBatteryPower(BatteryDrainRate, requestedPower);
             }
             else
             {

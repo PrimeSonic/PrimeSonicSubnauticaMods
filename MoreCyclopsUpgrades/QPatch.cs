@@ -5,9 +5,9 @@
     using Buildables;
     using Common;
     using Harmony;
-    using Modules;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
+    using MoreCyclopsUpgrades.Craftables;
     using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Managers;
     using SaveData;
@@ -22,13 +22,8 @@
         /// </summary>
         public static void Patch()
         {
-#if RELEASE
-            QuickLogger.DebugLogsEnabled = false;
-#endif
-
-#if DEBUG
+            // TODO - Make user configurable
             QuickLogger.DebugLogsEnabled = true;
-#endif
 
             try
             {
@@ -36,11 +31,7 @@
 
                 ModConfigSavaData.Initialize();
 
-                QuickLogger.Info($"Difficult set to {ModConfigSavaData.Settings.PowerLevel}");
-
                 RegisterOriginalUpgrades();
-
-                PatchUpgradeModules(ModConfigSavaData.Settings.EnableNewUpgradeModules);
 
                 PatchAuxUpgradeConsole(ModConfigSavaData.Settings.EnableAuxiliaryUpgradeConsoles);
 
@@ -56,14 +47,13 @@
             }
         }
 
-        private static void PatchUpgradeModules(bool enableNewUpgradeModules)
+        private static void PatchUpgradeModules()
         {
-            if (enableNewUpgradeModules)
-                QuickLogger.Info("Patching new upgrade modules");
-            else
-                QuickLogger.Info("New upgrade modules disabled by config settings");
+            var thermalMk2 = new CyclopsThermalChargerMk2();
+            thermalMk2.Patch();
 
-            CyclopsModule.PatchAllModules(enableNewUpgradeModules);
+            MCUServices.Register.CyclopsUpgradeHandler(thermalMk2);
+            MCUServices.Register.CyclopsCharger(thermalMk2);
         }
 
         private static void PatchAuxUpgradeConsole(bool enableAuxiliaryUpgradeConsoles)

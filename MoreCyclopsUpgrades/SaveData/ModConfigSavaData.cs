@@ -57,23 +57,6 @@
             }
         }
 
-        internal float RechargePenalty()
-        {
-            switch (EmPowerLevel.Value)
-            {
-                case CyclopsPowerLevels.Leviathan:
-                    return 1.0f;
-                case CyclopsPowerLevels.Ampeel:
-                    return 0.98f;
-                case CyclopsPowerLevels.Crabsnake:
-                    return 0.96f;
-                case CyclopsPowerLevels.Peeper:
-                    return 0.94f;
-                default:
-                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
-            }
-        }
-
         private readonly EmYesNo EmAuxEnabled;
         private readonly EmYesNo EmUpgradesEnabled;
         private readonly EmProperty<CyclopsPowerLevels> EmPowerLevel;

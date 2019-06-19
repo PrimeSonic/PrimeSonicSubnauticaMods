@@ -3,9 +3,6 @@
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API.Charging;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
-    using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
-    using MoreCyclopsUpgrades.Modules;
     using MoreCyclopsUpgrades.SaveData;
     using UnityEngine;
     using MoreCyclopsUpgrades.API;
@@ -38,13 +35,9 @@
         }
 
         internal readonly SubRoot Cyclops;
-        internal ThermalChargeHandler ThermalCharging;
-        internal ChargingUpgradeHandler ThermalCharger;
-        internal BatteryUpgradeHandler ThermalChargerMk2;
 
         private CyclopsHUDManager cyclopsHUDManager;
         private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = MCUServices.Find.AuxCyclopsManager<CyclopsHUDManager>(Cyclops, CyclopsHUDManager.ManagerName));
-        private readonly float rechargePenalty = ModConfigSavaData.Settings.RechargePenalty();
 
         internal int PowerChargersCount => RenewablePowerChargers.Count + NonRenewablePowerChargers.Count;
         internal IEnumerable<ICyclopsCharger> PowerChargers
@@ -150,47 +143,8 @@
             if (availablePower < MinimalPowerValue)
                 return; // No power available
 
-            availablePower *= rechargePenalty;
-
             Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
-        }
-
-        private void SetupChargingUpgrades(SubRoot cyclops1)
-        {
-            int maxChargingModules = ModConfigSavaData.Settings.MaxChargingModules();
-
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: ThermalCharger Upgrade");
-                ThermalCharger = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule, cyclops)
-                {
-                    MaxCount = maxChargingModules
-                };
-                ThermalCharger.OnFirstTimeMaxCountReached += () =>
-                {
-                    ErrorMessage.AddMessage(CyclopsModule.MaxThermalReached());
-                };
-                return ThermalCharger;
-            });
-
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: ThermalChargerMk2 Upgrade");
-                ThermalChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true, cyclops)
-                {
-                    MaxCount = maxChargingModules
-                };
-                ThermalChargerMk2.OnFirstTimeMaxCountReached += () =>
-                {
-                    ErrorMessage.AddMessage(CyclopsModule.MaxThermalReached());
-                };
-                ThermalCharger.SiblingUpgrade = ThermalChargerMk2;
-                ThermalChargerMk2.SiblingUpgrade = ThermalCharger;
-                return ThermalChargerMk2;
-            });
-
-
         }
     }
 }

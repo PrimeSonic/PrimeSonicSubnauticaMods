@@ -67,6 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
+    <Compile Include="CyclopsChargers\ThermalCharger.cs" />
+    <Compile Include="CyclopsUpgrades\ThermalUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />
     <Compile Include="API\General\IAuxCyclopsManager.cs" />
@@ -79,18 +81,16 @@
     <Compile Include="API\Upgrades\UpgradeHandlerCreator.cs" />
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
     <Compile Include="API\Charging\ICyclopsCharger.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
     <Compile Include="API\Upgrades\CyclopsUpgrade.cs" />
-    <Compile Include="Modules\DefaultEngineUpgrade.cs" />
-    <Compile Include="NumberFormat.cs" />
+    <Compile Include="Craftables\CyclopsThermalChargerMk2.cs" />
+    <Compile Include="CyclopsUpgrades\DefaultEngineUpgrade.cs" />
+    <Compile Include="Caching\NumberFormat.cs" />
     <Compile Include="Caching\NumberFormatter.cs" />
-    <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
-    <Compile Include="CyclopsUpgrades\BatteryUpgradeHandler.cs" />
+    <Compile Include="Caching\BatteryDetails.cs" />
     <Compile Include="CyclopsUpgrades\CrushDepthUpgradesHandler.cs" />
     <Compile Include="API\Upgrades\TieredUpgradeHandler.cs" />
     <Compile Include="API\Upgrades\UpgradeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\ChargingCyclopsUpgrade.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
     <Compile Include="Patchers\HUD_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
@@ -98,12 +98,10 @@
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="Managers\UpgradeManager.cs" />
-    <Compile Include="Modules\CyclopsModule.cs" />
     <Compile Include="SaveData\EmNuclearConfig.cs" />
     <Compile Include="SaveData\ModConfigOptions.cs" />
     <Compile Include="SaveData\ModConfigSavaData.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
-    <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
     <Compile Include="SaveData\AuxUpgradeConsoleSaveData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />

@@ -105,7 +105,7 @@
 
                 return mk1Power + mk2Power;
             }
-            else if (upgradeHandler.TotalBatteryCharge > 0f)
+            else if (upgradeHandler.TotalBatteryCharge > MinimalPowerValue)
             {
                 solarState = SolarState.BatteryAvailable;
                 return upgradeHandler.GetBatteryPower(BatteryDrainRate, requestedPower);

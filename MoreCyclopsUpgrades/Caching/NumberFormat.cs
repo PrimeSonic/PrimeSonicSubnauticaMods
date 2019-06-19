@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Caching
 {
     internal enum NumberFormat : byte
     {

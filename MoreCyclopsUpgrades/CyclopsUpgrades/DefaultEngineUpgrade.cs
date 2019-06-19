@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Modules
+﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
     using MoreCyclopsUpgrades.API.Upgrades;
 

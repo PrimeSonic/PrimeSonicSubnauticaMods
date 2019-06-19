@@ -5,7 +5,7 @@
     using Monobehaviors;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using MoreCyclopsUpgrades.Modules;
+    using MoreCyclopsUpgrades.CyclopsUpgrades;
     using UnityEngine;
 
     /// <summary>
