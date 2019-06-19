@@ -16,7 +16,7 @@
             if (e.Id != ChoiceID)
                 return;
 
-            ModConfig.Settings.PowerLevel = (CyclopsPowerLevels)e.Index;
+            ModConfigSavaData.Settings.PowerLevel = (CyclopsPowerLevels)e.Index;
         }
 
         public override void BuildModOptions()
@@ -28,7 +28,7 @@
                                     $"{CyclopsPowerLevels.Ampeel} (Modest)",
                                     $"{CyclopsPowerLevels.Crabsnake} (Moderate)",
                                     $"{CyclopsPowerLevels.Peeper} (Hard)",
-                                 }, (int)ModConfig.Settings.PowerLevel);
+                                 }, (int)ModConfigSavaData.Settings.PowerLevel);
         }
     }
 }

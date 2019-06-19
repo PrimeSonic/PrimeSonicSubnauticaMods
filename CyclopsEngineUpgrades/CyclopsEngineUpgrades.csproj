@@ -60,7 +60,11 @@
       <Name>MoreCyclopsUpgrades</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="mod.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\CyclopsSpeedModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

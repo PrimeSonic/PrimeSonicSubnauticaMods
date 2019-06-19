@@ -9,11 +9,11 @@
     using System.Reflection;
     using System.Text;
 
-    internal class ModConfig : EmPropertyCollection
+    internal class ModConfigSavaData : EmPropertyCollection
     {
         private static readonly ModConfigOptions Options = new ModConfigOptions();
 
-        internal static ModConfig Settings;
+        internal static ModConfigSavaData Settings;
 
         private readonly string SaveFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{ConfigKey}.txt");
 
@@ -57,57 +57,6 @@
             }
         }
 
-        internal int MaxSpeedModules()
-        {
-            switch (EmPowerLevel.Value)
-            {
-                case CyclopsPowerLevels.Leviathan:
-                    return 6;
-                case CyclopsPowerLevels.Ampeel:
-                    return 4;
-                case CyclopsPowerLevels.Crabsnake:
-                    return 2;
-                case CyclopsPowerLevels.Peeper:
-                    return 1;
-                default:
-                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
-            }
-        }
-
-        internal int MaxBioReactors()
-        {
-            switch (EmPowerLevel.Value)
-            {
-                case CyclopsPowerLevels.Leviathan:
-                    return 6;
-                case CyclopsPowerLevels.Ampeel:
-                    return 4;
-                case CyclopsPowerLevels.Crabsnake:
-                    return 2;
-                case CyclopsPowerLevels.Peeper:
-                    return 1;
-                default:
-                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
-            }
-        }
-
-        internal int RechargeSkipRate()
-        {
-            switch (EmPowerLevel.Value)
-            {
-                case CyclopsPowerLevels.Leviathan:
-                    return 0;
-                case CyclopsPowerLevels.Ampeel:
-                    return 1;
-                case CyclopsPowerLevels.Crabsnake:
-                    return 2;
-                case CyclopsPowerLevels.Peeper:
-                    return 3;
-                default:
-                    throw new ArgumentOutOfRangeException("Invalid difficulty selected");
-            }
-        }
-
         internal float RechargePenalty()
         {
             switch (EmPowerLevel.Value)
@@ -136,7 +85,7 @@
             new EmProperty<CyclopsPowerLevels>(EmPowerLevelKey, CyclopsPowerLevels.Leviathan),
         };
 
-        public ModConfig() : base(ConfigKey, definitions)
+        public ModConfigSavaData() : base(ConfigKey, definitions)
         {
             EmAuxEnabled = (EmYesNo)Properties[EmAuxEnabledKey];
             EmUpgradesEnabled = (EmYesNo)Properties[EmUpgradesEnabledKey];
@@ -150,7 +99,7 @@
             try
             {
                 OptionsPanelHandler.RegisterModOptions(Options);
-                Settings = new ModConfig();
+                Settings = new ModConfigSavaData();
                 Settings.LoadFromFile();
             }
             catch (Exception ex)
@@ -183,7 +132,7 @@
 
         internal override EmProperty Copy()
         {
-            return new ModConfig();
+            return new ModConfigSavaData();
         }
 
         private void WriteConfigFile()
