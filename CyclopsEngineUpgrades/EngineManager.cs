@@ -1,6 +1,5 @@
 ﻿namespace CyclopsEngineUpgrades
 {
-    using System.Collections.Generic;
     using CyclopsEngineUpgrades.Craftables;
     using CyclopsEngineUpgrades.Handlers;
     using MoreCyclopsUpgrades.API;

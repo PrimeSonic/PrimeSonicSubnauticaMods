@@ -1,8 +1,5 @@
 ﻿namespace CustomCraft2SML.Serialization.Lists
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Common.EasyMarkup;
     using CustomCraft2SML.Serialization.Entries;
 

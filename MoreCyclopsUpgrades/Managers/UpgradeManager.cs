@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using Common;
     using Monobehaviors;
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.Modules;

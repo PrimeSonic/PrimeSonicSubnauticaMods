@@ -3,11 +3,12 @@
     using CyclopsNuclearUpgrades.Management;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
+    using MoreCyclopsUpgrades.API.Charging;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal class DepletedNuclearModule : Spawnable, INuclearModuleDepleter
+    internal class DepletedNuclearModule : Spawnable, INuclearModuleDepleter, IUpgradeHandlerCreator, ICyclopsChargerCreator
     {
         private readonly CyclopsNuclearModule nuclearModule;
 
@@ -32,14 +33,8 @@
             OnFinishedPatching += () =>
             {
                 LanguageHandler.SetLanguageLine(DepletedEventKey, "Nuclear Reactor Module depleted");
-                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) => 
-                {
-                    return new NuclearUpgradeHandler(nuclearModule.TechType, this, cyclops);
-                });
-                MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
-                {
-                    return new NuclearChargeHandler(cyclops, nuclearModule.TechType);
-                });
+                MCUServices.Register.CyclopsUpgradeHandler(this);
+                MCUServices.Register.CyclopsCharger(this);
             };
         }
 
@@ -54,6 +49,16 @@
             GameObject.Destroy(inventoryItem.item.gameObject);
             modules.AddItem(slotName, CyclopsUpgrade.SpawnCyclopsModule(this.TechType), true);
             ErrorMessage.AddMessage(DepletedEventMsg);
+        }
+
+        public UpgradeHandler CreateUpgradeHandler(SubRoot cyclops)
+        {
+            return new NuclearUpgradeHandler(nuclearModule.TechType, this, cyclops);
+        }
+
+        public ICyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
+        {
+            return new NuclearChargeHandler(cyclops, nuclearModule.TechType);
         }
     }
 }

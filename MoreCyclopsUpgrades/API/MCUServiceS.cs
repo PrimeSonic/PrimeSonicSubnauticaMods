@@ -73,7 +73,7 @@
         /// <typeparam name="T">The class you created that implements <see cref="IAuxCyclopsManager"/>.</typeparam>
         /// <param name="auxManagerName">The <seealso cref="IAuxCyclopsManager.Name"/> you defined for the auxilary cyclops manager.</param>
         /// <returns>A type casted enumeration of all <see cref="IAuxCyclopsManager"/>s found across all Cyclops subs, identified by name.</returns>
-        IEnumerable<T> FindAllAuxCyclopsManagers<T>(string auxManagerName) where T : class, IAuxCyclopsManager;
+        IEnumerable<T> AllAuxCyclopsManagers<T>(string auxManagerName) where T : class, IAuxCyclopsManager;
 
         /// <summary>
         /// Gets the charge hangler at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
@@ -183,7 +183,7 @@
             return CyclopsManager.GetManager<T>(cyclops, auxManagerName);
         }
 
-        public IEnumerable<T> FindAllAuxCyclopsManagers<T>(string auxManagerName)
+        public IEnumerable<T> AllAuxCyclopsManagers<T>(string auxManagerName)
             where T : class, IAuxCyclopsManager
         {
             return CyclopsManager.GetAllManagers<T>(auxManagerName);
@@ -221,7 +221,5 @@
 
             return null;
         }
-
-
     }
 }

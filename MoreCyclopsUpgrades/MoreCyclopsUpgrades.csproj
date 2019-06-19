@@ -67,7 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
-    <Compile Include="API\CyclopsManager.cs" />
+    <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />
     <Compile Include="API\General\IAuxCyclopsManager.cs" />
     <Compile Include="API\Upgrades\IGroupHandler.cs" />

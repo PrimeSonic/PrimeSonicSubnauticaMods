@@ -1,10 +1,8 @@
 ﻿namespace CustomCraft2SML.Fabricators
 {
-    using Common;
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
     using System;
-    using System.Reflection;
     using UnityEngine;
 
     internal class CustomFabricatorBuildable : ModPrefab

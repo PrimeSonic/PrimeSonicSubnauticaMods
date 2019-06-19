@@ -1,7 +1,6 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Common;
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using System.Collections.Generic;
 

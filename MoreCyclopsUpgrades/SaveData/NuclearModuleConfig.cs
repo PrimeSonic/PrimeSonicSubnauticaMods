@@ -2,7 +2,6 @@
 {
     using Common;
     using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.Managers;
     using SMLHelper.V2.Options;
     using System;
     using System.IO;

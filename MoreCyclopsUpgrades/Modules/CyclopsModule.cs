@@ -1,8 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Modules
 {
     using Common;
-    using MoreCyclopsUpgrades.API;
-    using Recharging.Thermal;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;

@@ -2,7 +2,6 @@
 {
     using Harmony;
     using Managers;
-    using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(CyclopsHelmHUDManager))]
     [HarmonyPatch("Update")]

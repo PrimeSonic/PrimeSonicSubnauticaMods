@@ -1,9 +1,8 @@
-﻿namespace MoreCyclopsUpgrades.API
+﻿namespace MoreCyclopsUpgrades.Managers
 {
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API.General;
-    using MoreCyclopsUpgrades.Managers;
 
     internal class CyclopsManager
     {

@@ -1,7 +1,6 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
     using UnityEngine.UI;
 

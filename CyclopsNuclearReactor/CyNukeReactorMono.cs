@@ -3,7 +3,6 @@
     using Common;
     using CyclopsNuclearReactor.Helpers;
     using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.Managers;
     using ProtoBuf;
     using System;
     using System.Collections.Generic;

@@ -1,6 +1,4 @@
-﻿using SMLHelper.V2.Handlers;
-
-namespace CustomCraft2SML.SMLHelperItems
+﻿namespace CustomCraft2SML.SMLHelperItems
 {
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;

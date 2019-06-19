@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging
 {
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Managers;
