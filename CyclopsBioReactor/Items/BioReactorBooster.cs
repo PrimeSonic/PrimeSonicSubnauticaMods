@@ -1,6 +1,7 @@
 ﻿namespace CyclopsBioReactor.Items
 {
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
 

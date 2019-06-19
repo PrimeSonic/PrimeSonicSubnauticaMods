@@ -2,7 +2,13 @@
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using UnityEngine;
+
+    internal interface INuclearModuleDepleter
+    {
+        void DepleteNuclearModule(Equipment modules, string slotName);
+    }
 
     internal class NuclearUpgradeHandler : UpgradeHandler
     {
@@ -10,15 +16,15 @@
 
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private readonly IList<BatteryDetails> batteries = new List<BatteryDetails>();
-        private readonly DepleteModule depletedModuleEvent;
+        private readonly INuclearModuleDepleter moduleDepleter;
 
         private float totalBatteryCharge = 0f;
         internal float TotalBatteryCharge { get; private set; }
 
-        public NuclearUpgradeHandler(TechType nuclearModule, DepleteModule depleteEvent, SubRoot cyclops)
+        public NuclearUpgradeHandler(TechType nuclearModule, INuclearModuleDepleter depleter, SubRoot cyclops)
             : base(nuclearModule, cyclops)
         {
-            depletedModuleEvent = depleteEvent;
+            moduleDepleter = depleter;
             
             this.MaxCount = 3;
 
@@ -78,7 +84,7 @@
                 {
                     amtToDrain = battery._charge; // Take what's left
                     battery._charge = 0f; // Set battery to empty
-                    depletedModuleEvent.Invoke(details.ParentEquipment, details.SlotName);
+                    moduleDepleter.DepleteNuclearModule(details.ParentEquipment, details.SlotName);
                 }
 
                 totalBatteryCharge -= amtToDrain;

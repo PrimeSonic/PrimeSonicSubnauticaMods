@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using CyclopsSolarUpgrades.Craftables;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using UnityEngine;
 
     internal class SolarUpgrade : StackingGroupHandler

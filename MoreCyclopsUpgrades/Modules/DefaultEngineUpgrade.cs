@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Modules
 {
-    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
 
     internal class DefaultEngineUpgrade : UpgradeHandler
     {

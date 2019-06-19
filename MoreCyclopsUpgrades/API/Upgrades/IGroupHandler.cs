@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.API
+﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
     using System.Collections.Generic;
 

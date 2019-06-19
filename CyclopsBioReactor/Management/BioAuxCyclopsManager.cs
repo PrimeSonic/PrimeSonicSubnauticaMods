@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.General;
 
     internal class BioAuxCyclopsManager : IAuxCyclopsManager
     {

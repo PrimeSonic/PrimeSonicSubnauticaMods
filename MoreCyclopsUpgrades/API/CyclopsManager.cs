@@ -2,15 +2,16 @@
 {
     using System.Collections.Generic;
     using Common;
+    using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.Managers;
 
     internal class CyclopsManager
     {
         #region Static Members
 
-        private static readonly ICollection<AuxManagerCreateEvent> AuxManagerCreators = new List<AuxManagerCreateEvent>();
+        private static readonly ICollection<CreateAuxCyclopsManager> AuxManagerCreators = new List<CreateAuxCyclopsManager>();
 
-        internal static void RegisterAuxManagerCreator(AuxManagerCreateEvent createEvent, string assemblyName)
+        internal static void RegisterAuxManagerCreator(CreateAuxCyclopsManager createEvent, string assemblyName)
         {
             if (AuxManagerCreators.Contains(createEvent))
             {
@@ -97,7 +98,7 @@
             Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
 
-            foreach (AuxManagerCreateEvent creator in AuxManagerCreators)
+            foreach (CreateAuxCyclopsManager creator in AuxManagerCreators)
             {
                 IAuxCyclopsManager auxMgr = creator.Invoke(cyclops);
                 if (auxMgr != null)

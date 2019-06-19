@@ -1,43 +1,36 @@
-﻿namespace MoreCyclopsUpgrades.API
+﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
     using System;
     using System.Collections.Generic;
-    using MoreCyclopsUpgrades.Managers;
-
-    /// <summary>
-    /// Defines a method that creates a new <see cref="UpgradeHandler"/> when needed by the <seealso cref="UpgradeManager"/>.
-    /// </summary>
-    /// <returns>A newly instantiated <see cref="UpgradeHandler"/> ready to handle upgrade events.</returns>
-    public delegate UpgradeHandler UpgradeHandlerCreateEvent(SubRoot cyclops);
-
-    /// <summary>
-    /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="UpgradeHandler.OnClearUpgrades"/> and <see cref="UpgradeHandler.OnFinishedWithUpgrades"/>.
-    /// </summary>
-    /// <param name="cyclops">The cyclops where the event took place.</param>
-    public delegate void UpgradeEvent();
-
-    /// <summary>
-    /// Defines a method to invoke that takes all the needed references to identify a single upgrade module instance. Used for <seealso cref="UpgradeHandler.OnUpgradeCounted"/>.
-    /// </summary>
-    /// <param name="cyclops">The cyclops where the event took place.</param>
-    /// <param name="modules">The equipment module where the event took place.</param>
-    /// <param name="slot">The equipment slot where the event took place.</param>
-    public delegate void UpgradeEventSlotBound(Equipment modules, string slot);
-
-    /// <summary>
-    /// Defines a method to invoke that returns whether or not an item is allowed in or out. Used for <seealso cref="UpgradeHandler.IsAllowedToAdd"/> and <seealso cref="UpgradeHandler.IsAllowedToRemove"/>.
-    /// </summary>
-    /// <param name="cyclops">The cyclops where the event took place.</param>
-    /// <param name="item">The item being checked.</param>
-    /// <param name="verbose">if set to <c>true</c> verbose text display was requested; Otherwise <c>false</c>.</param>
-    /// <returns></returns>
-    public delegate bool UpgradeAllowedEvent(Pickupable item, bool verbose);
 
     /// <summary>
     /// Represents all the behaviors for a cyclops upgrade module at the time of the module being installed and counted.
     /// </summary>
     public class UpgradeHandler
     {
+        /// <summary>
+        /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="OnClearUpgrades"/> and <see cref="OnFinishedWithUpgrades"/>.
+        /// </summary>
+        /// <param name="cyclops">The cyclops where the event took place.</param>
+        public delegate void UpgradeEvent();
+
+        /// <summary>
+        /// Defines a method to invoke that takes all the needed references to identify a single upgrade module instance. Used for <seealso cref="OnUpgradeCounted"/>.
+        /// </summary>
+        /// <param name="cyclops">The cyclops where the event took place.</param>
+        /// <param name="modules">The equipment module where the event took place.</param>
+        /// <param name="slot">The equipment slot where the event took place.</param>
+        public delegate void UpgradeEventSlotBound(Equipment modules, string slot);
+
+        /// <summary>
+        /// Defines a method to invoke that returns whether or not an item is allowed in or out. Used for <seealso cref="IsAllowedToAdd"/> and <seealso cref="IsAllowedToRemove"/>.
+        /// </summary>
+        /// <param name="cyclops">The cyclops where the event took place.</param>
+        /// <param name="item">The item being checked.</param>
+        /// <param name="verbose">if set to <c>true</c> verbose text display was requested; Otherwise <c>false</c>.</param>
+        /// <returns></returns>
+        public delegate bool UpgradeAllowedEvent(Pickupable item, bool verbose);
+
         /// <summary>
         /// The cyclops sub where this upgrade handler is being used.
         /// </summary>

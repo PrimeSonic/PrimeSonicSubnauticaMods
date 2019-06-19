@@ -1,7 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
     using System.Collections.Generic;
-    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
 
     internal class CrushDepthUpgradesHandler : TieredGroupHandler<float>
     {

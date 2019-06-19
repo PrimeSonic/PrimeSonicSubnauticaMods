@@ -127,7 +127,6 @@
 
         private readonly EmYesNo EmAuxEnabled;
         private readonly EmYesNo EmUpgradesEnabled;
-        private readonly EmYesNo EmBioEnergyEnabled;
         private readonly EmProperty<CyclopsPowerLevels> EmPowerLevel;
 
         private static ICollection<EmProperty> definitions = new List<EmProperty>()
@@ -172,12 +171,6 @@
             if (!EmUpgradesEnabled.HasValue)
             {
                 QuickLogger.Warning($"Config value for {ConfigKey}>{EmUpgradesEnabled.Key} was out of range. Replaced config with default.");
-                ValidDataRead &= false;
-            }
-
-            if (!EmBioEnergyEnabled.HasValue)
-            {
-                QuickLogger.Warning($"Config value for {ConfigKey}>{EmBioEnergyEnabled.Key} was out of range. Replaced config with default.");
                 ValidDataRead &= false;
             }
 

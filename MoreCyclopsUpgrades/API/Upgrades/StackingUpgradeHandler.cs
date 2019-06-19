@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.API
+﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
     /// <summary>
     /// Represents a specialized type of upgrade module that is intended to stack its effect with other similar upgrades.<para/>

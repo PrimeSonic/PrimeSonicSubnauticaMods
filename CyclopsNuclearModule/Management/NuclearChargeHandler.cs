@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
     internal class NuclearChargeHandler : ICyclopsCharger

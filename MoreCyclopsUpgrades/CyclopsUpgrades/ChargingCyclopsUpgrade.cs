@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
 {
-    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
 
     internal class ChargingUpgradeHandler : UpgradeHandler
     {

@@ -6,6 +6,7 @@
     using Common;
     using Managers;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using ProtoBuf;
     using SaveData;
     using UnityEngine;

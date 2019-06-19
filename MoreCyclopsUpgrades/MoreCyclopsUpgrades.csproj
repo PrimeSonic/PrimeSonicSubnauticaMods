@@ -66,27 +66,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
     <Compile Include="API\CyclopsManager.cs" />
-    <Compile Include="API\IAuxCyclopsManager.cs" />
-    <Compile Include="API\IGroupHandler.cs" />
-    <Compile Include="API\ITieredUpgradeHandler.cs" />
+    <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />
+    <Compile Include="API\General\IAuxCyclopsManager.cs" />
+    <Compile Include="API\Upgrades\IGroupHandler.cs" />
+    <Compile Include="API\Upgrades\ITieredUpgradeHandler.cs" />
     <Compile Include="API\MCUServices.cs" />
-    <Compile Include="API\StackingGroupHandler.cs" />
-    <Compile Include="API\StackingUpgradeHandler.cs" />
-    <Compile Include="API\TieredGroupHandler.cs" />
+    <Compile Include="API\Upgrades\StackingGroupHandler.cs" />
+    <Compile Include="API\Upgrades\StackingUpgradeHandler.cs" />
+    <Compile Include="API\Upgrades\TieredGroupHandler.cs" />
+    <Compile Include="API\Upgrades\UpgradeHandlerCreator.cs" />
     <Compile Include="Buildables\CyUpgradeConsole.cs" />
-    <Compile Include="API\ICyclopsCharger.cs" />
+    <Compile Include="API\Charging\ICyclopsCharger.cs" />
     <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
-    <Compile Include="API\CyclopsUpgrade.cs" />
+    <Compile Include="API\Upgrades\CyclopsUpgrade.cs" />
     <Compile Include="Modules\DefaultEngineUpgrade.cs" />
     <Compile Include="NumberFormat.cs" />
     <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
     <Compile Include="CyclopsUpgrades\BatteryUpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\CrushDepthUpgradesHandler.cs" />
-    <Compile Include="API\TieredUpgradeHandler.cs" />
-    <Compile Include="API\UpgradeHandler.cs" />
+    <Compile Include="API\Upgrades\TieredUpgradeHandler.cs" />
+    <Compile Include="API\Upgrades\UpgradeHandler.cs" />
     <Compile Include="CyclopsUpgrades\ChargingCyclopsUpgrade.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
     <Compile Include="Patchers\HUD_Patcher.cs" />

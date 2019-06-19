@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.API
+﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
     public interface IGroupedUpgradeHandler
     {

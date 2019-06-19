@@ -2,11 +2,12 @@
 {
     using CyclopsNuclearUpgrades.Management;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal class DepletedNuclearModule : Spawnable
+    internal class DepletedNuclearModule : Spawnable, INuclearModuleDepleter
     {
         private readonly CyclopsNuclearModule nuclearModule;
 
@@ -33,7 +34,7 @@
                 LanguageHandler.SetLanguageLine(DepletedEventKey, "Nuclear Reactor Module depleted");
                 MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) => 
                 {
-                    return new NuclearUpgradeHandler(nuclearModule.TechType, DepleteNuclearModule, cyclops);
+                    return new NuclearUpgradeHandler(nuclearModule.TechType, this, cyclops);
                 });
                 MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
                 {
@@ -47,7 +48,7 @@
             return GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.DepletedReactorRod));
         }
 
-        internal void DepleteNuclearModule(Equipment modules, string slotName)
+        public void DepleteNuclearModule(Equipment modules, string slotName)
         {
             InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
             GameObject.Destroy(inventoryItem.item.gameObject);

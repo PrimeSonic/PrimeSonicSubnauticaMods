@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.API
+﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;

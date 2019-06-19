@@ -2,12 +2,14 @@
 {
     using System.Collections.Generic;
     using Common;
-    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
     using MoreCyclopsUpgrades.Modules;
     using MoreCyclopsUpgrades.SaveData;
     using UnityEngine;
+    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.General;
 
     internal class ChargeManager : IAuxCyclopsManager
     {
@@ -17,13 +19,13 @@
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
-        private static readonly ICollection<CyclopsChargerCreateEvent> CyclopsChargers = new List<CyclopsChargerCreateEvent>();
+        private static readonly ICollection<CreateCyclopsCharger> CyclopsChargers = new List<CreateCyclopsCharger>();
 
         /// <summary>
-        /// Registers a <see cref="CyclopsChargerCreateEvent"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
+        /// Registers a <see cref="CreateCyclopsCharger"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
         /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CyclopsChargerCreateEvent"/>.</param>
-        internal static void RegisterChargerCreator(CyclopsChargerCreateEvent createEvent, string assemblyName)
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger"/>.</param>
+        internal static void RegisterChargerCreator(CreateCyclopsCharger createEvent, string assemblyName)
         {
             if (CyclopsChargers.Contains(createEvent))
             {
@@ -76,7 +78,7 @@
         {
             QuickLogger.Debug("PowerManager InitializeChargingHandlers");
 
-            foreach (CyclopsChargerCreateEvent method in CyclopsChargers)
+            foreach (CreateCyclopsCharger method in CyclopsChargers)
             {
                 ICyclopsCharger charger = method.Invoke(Cyclops);
 

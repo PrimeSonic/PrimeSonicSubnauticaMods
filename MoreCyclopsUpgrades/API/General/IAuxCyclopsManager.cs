@@ -1,13 +1,5 @@
-﻿namespace MoreCyclopsUpgrades.API
+﻿namespace MoreCyclopsUpgrades.API.General
 {
-
-    /// <summary>
-    /// Defines a method that creates a new <see cref="IAuxCyclopsManager" /> instance whenever a new Cyclops sub is spawned.
-    /// </summary>
-    /// <param name="cyclops">The cyclops that the <see cref="IAuxCyclopsManager" /> is tasked with keeping track of.</param>
-    /// <returns>A newly created <see cref="IAuxCyclopsManager"/> ready to be initialized by <seealso cref="IAuxCyclopsManager.Initialize(SubRoot)"/>.</returns>
-    public delegate IAuxCyclopsManager AuxManagerCreateEvent(SubRoot cyclops);
-
     /// <summary>
     /// Defines the itnerface needed by MoreCyclopsUpgrades to hook your own managers into the extisting Cyclops Manager system.
     /// </summary>

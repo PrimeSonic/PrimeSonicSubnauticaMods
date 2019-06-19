@@ -2,6 +2,7 @@
 {
     using CyclopsSolarUpgrades.Management;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
     using UnityEngine;
 

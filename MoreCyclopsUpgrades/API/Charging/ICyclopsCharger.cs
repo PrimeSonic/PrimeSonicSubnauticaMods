@@ -1,14 +1,6 @@
-﻿namespace MoreCyclopsUpgrades.API
+﻿namespace MoreCyclopsUpgrades.API.Charging
 {
     using UnityEngine;
-
-    /// <summary>
-    /// <para>Defines a method that creates a new <see cref="ICyclopsCharger"/> when needed by the <seealso cref="PowerManager"/>.</para>
-    /// <para>DO NOT recharge the Cyclops PowerRelay yourself from the instantiated <see cref="ICyclopsCharger"/>!!! The MoreCyclopsUpgrades PowerManager will handle that.</para>
-    /// </summary>
-    /// <param name="cyclops">The cyclops that the <see cref="ICyclopsCharger"/> is tasked with recharging.</param>
-    /// <returns>A new <see cref="ICyclopsCharger"/> ready to produce power for the Cyclops.</returns>
-    public delegate ICyclopsCharger CyclopsChargerCreateEvent(SubRoot cyclops);
 
     /// <summary>
     /// <para>Defines all the behaviors for a cyclops charger that handles a particular type of energy recharging.</para>

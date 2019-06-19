@@ -2,6 +2,7 @@
 {
     using CyclopsEngineUpgrades.Craftables;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
 
     internal class SpeedHandler : UpgradeHandler
     {

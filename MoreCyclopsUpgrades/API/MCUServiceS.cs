@@ -3,31 +3,56 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using MoreCyclopsUpgrades.API.Charging;
+    using MoreCyclopsUpgrades.API.General;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.Managers;
 
     public interface IMCURegistration
     {
         /// <summary>
-        /// Registers a <see cref="AuxManagerCreateEvent"/> method that creates returns a new <see cref="IAuxCyclopsManager"/> on demand.<para/>
+        /// Registers a <see cref="CreateAuxCyclopsManager"/> method that creates returns a new <see cref="IAuxCyclopsManager"/> on demand.<para/>
         /// This method will be invoked only once for each Cyclops sub in the game world.<para/>
-        /// Auxilary managers are always created first.
+        /// Use this when you simply need to have a class that is attaches one instance per Cyclops.
         /// </summary>
         /// <param name="createEvent">The create event.</param>
-        void AuxCyclopsManager(AuxManagerCreateEvent createEvent);
+        void AuxCyclopsManager(CreateAuxCyclopsManager createEvent);
 
         /// <summary>
-        /// Registers a <see cref="CyclopsChargerCreateEvent"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand.<para/>
+        /// Registers a <see cref="IAuxCyclopsManagerCreator"/> class that can create a new <see cref="IAuxCyclopsManager"/> on demand.<para/>
+        /// This method will be invoked only once for each Cyclops sub in the game world.<para/>
+        /// Use this when you simply need to have a class that attaches one instance per Cyclops.
+        /// </summary>
+        /// <param name="createEvent">The create event.</param>
+        void AuxCyclopsManager(IAuxCyclopsManagerCreator managerCreator);
+
+        /// <summary>
+        /// Registers a <see cref="CreateCyclopsCharger"/> method that creates a new <see cref="ICyclopsCharger"/> on demand.<para/>
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CyclopsChargerCreateEvent"/>.</param>
-        void CyclopsCharger(CyclopsChargerCreateEvent createEvent);
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger"/>.</param>
+        void CyclopsCharger(CreateCyclopsCharger createEvent);
 
         /// <summary>
-        /// Registers a <see cref="UpgradeHandlerCreateEvent"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand.<para/>
+        /// Registers a <see cref="ICyclopsChargerCreator"/> class can create a new <see cref="ICyclopsCharger"/> on demand.<para/>
+        /// This method will be invoked only once for each Cyclops sub in the game world.
+        /// </summary>
+        /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)"/> method.</param>
+        void CyclopsCharger(ICyclopsChargerCreator chargerCreator);
+
+        /// <summary>
+        /// Registers a <see cref="CreateUpgradeHandler"/> method that creates a new <see cref="UpgradeHandler"/> on demand.<para/>
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        void CyclopsUpgradeHandler(UpgradeHandlerCreateEvent createEvent);
+        void CyclopsUpgradeHandler(CreateUpgradeHandler createEvent);
+
+        /// <summary>
+        /// Registers a <see cref="CreateUpgradeHandler"/> class can create a new <see cref="UpgradeHandler"/> on demand.<para/>
+        /// This method will be invoked only once for each Cyclops sub in the game world.
+        /// </summary>
+        /// <param name="createEvent">A class that implements this <see cref="IUpgradeHandlerCreator.CreateUpgradeHandler(SubRoot)"/> method.</param>
+        void CyclopsUpgradeHandler(IUpgradeHandlerCreator handlerCreator);
     }
 
     public interface IMCUSearch
@@ -39,7 +64,7 @@
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="auxManagerName">The <seealso cref="IAuxCyclopsManager.Name"/> you defined for the auxilary cyclops manager.</param>
         /// <returns>A type casted <see cref="IAuxCyclopsManager"/> if found by name; Otherwise returns null if not found.</returns>
-        /// <seealso cref="AuxManagerCreateEvent"/>
+        /// <seealso cref="CreateAuxCyclopsManager"/>
         T AuxCyclopsManager<T>(SubRoot cyclops, string auxManagerName) where T : class, IAuxCyclopsManager;
 
         /// <summary>
@@ -54,7 +79,7 @@
         /// Gets the charge hangler at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="ICyclopsCharger"/> for something else in your mod.
         /// </summary>
-        /// <typeparam name="T">The class created by the <seealso cref="CyclopsChargerCreateEvent"/> you passed into <seealso cref="RegisterChargerCreator(CyclopsChargerCreateEvent)"/>.</typeparam>
+        /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="RegisterChargerCreator(CreateCyclopsCharger)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="chargeHandlerName">The <seealso cref="ICyclopsCharger.Name"/> of the charge handler.</param>
         /// <returns>A type casted <see cref="ICyclopsCharger"/> if found by name; Otherwise returns null.</returns>
@@ -64,7 +89,7 @@
         /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="UpgradeHandler"/> for something else in your mod.
         /// </summary>
-        /// <typeparam name="T">The class created by the <seealso cref="UpgradeHandlerCreateEvent"/> you passed into <seealso cref="RegisterUpgradeCreator(UpgradeHandlerCreateEvent)"/>.</typeparam>
+        /// <typeparam name="T">The class created by the <seealso cref="CreateUpgradeHandler"/> you passed into <seealso cref="RegisterUpgradeCreator(CreateUpgradeHandler)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="upgradeId">The upgrade module techtype ID.</param>
         /// <returns>A type casted <see cref="UpgradeHandler"/> if found by techtype; Otherwise returns null.</returns>
@@ -74,7 +99,7 @@
         /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="StackingGroupHandler"/> or <seealso cref="TieredGroupHandler{T}"/> for something else in your mod.
         /// </summary>
-        /// <typeparam name="T">The class created by the <seealso cref="UpgradeHandlerCreateEvent"/> you passed into <seealso cref="RegisterUpgradeCreator(UpgradeHandlerCreateEvent)"/>.</typeparam>
+        /// <typeparam name="T">The class created by the <seealso cref="CreateUpgradeHandler"/> you passed into <seealso cref="RegisterUpgradeCreator(CreateUpgradeHandler)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="upgradeId">The upgrade module techtype ID.</param>
         /// <returns>A type casted <see cref="UpgradeHandler"/> if found by techtype; Otherwise returns null.</returns>
@@ -122,19 +147,34 @@
             // Hide constructor
         }
 
-        public void CyclopsCharger(CyclopsChargerCreateEvent createEvent)
+        public void CyclopsCharger(CreateCyclopsCharger createEvent)
         {
             ChargeManager.RegisterChargerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
         }
 
-        public void CyclopsUpgradeHandler(UpgradeHandlerCreateEvent createEvent)
+        public void CyclopsCharger(ICyclopsChargerCreator chargerCreator)
+        {
+            ChargeManager.RegisterChargerCreator(chargerCreator.CreateCyclopsCharger, Assembly.GetCallingAssembly().GetName().Name);
+        }
+
+        public void CyclopsUpgradeHandler(CreateUpgradeHandler createEvent)
         {
             UpgradeManager.RegisterHandlerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
         }
 
-        public void AuxCyclopsManager(AuxManagerCreateEvent createEvent)
+        public void CyclopsUpgradeHandler(IUpgradeHandlerCreator handlerCreator)
+        {
+            UpgradeManager.RegisterHandlerCreator(handlerCreator.CreateUpgradeHandler, Assembly.GetCallingAssembly().GetName().Name);
+        }
+
+        public void AuxCyclopsManager(CreateAuxCyclopsManager createEvent)
         {
             CyclopsManager.RegisterAuxManagerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
+        }
+
+        public void AuxCyclopsManager(IAuxCyclopsManagerCreator managerCreator)
+        {
+            CyclopsManager.RegisterAuxManagerCreator(managerCreator.CreateAuxCyclopsManager, Assembly.GetCallingAssembly().GetName().Name);
         }
 
         public T AuxCyclopsManager<T>(SubRoot cyclops, string auxManagerName)
@@ -181,5 +221,7 @@
 
             return null;
         }
+
+
     }
 }

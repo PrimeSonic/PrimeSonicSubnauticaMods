@@ -4,6 +4,7 @@
     using CyclopsEngineUpgrades.Craftables;
     using CyclopsEngineUpgrades.Handlers;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.General;
     using UnityEngine;
 
     internal class EngineManager : IAuxCyclopsManager

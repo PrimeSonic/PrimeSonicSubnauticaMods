@@ -1,6 +1,7 @@
 ﻿namespace CyclopsEngineUpgrades.Craftables
 {
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
 
     internal class PowerUpgradeModuleMk2 : CyclopsUpgrade

@@ -3,6 +3,7 @@
     using Common;
     using CyclopsBioReactor.Items;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using UnityEngine;
 
     internal class BioBoosterUpgradeHandler : UpgradeHandler

@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
     internal class CyNukeChargeManager : ICyclopsCharger

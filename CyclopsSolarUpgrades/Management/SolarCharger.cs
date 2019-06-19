@@ -1,6 +1,7 @@
 ﻿namespace CyclopsSolarUpgrades.Management
 {
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
     internal class SolarCharger : ICyclopsCharger
