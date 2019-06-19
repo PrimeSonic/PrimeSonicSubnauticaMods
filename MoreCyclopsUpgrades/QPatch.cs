@@ -34,15 +34,15 @@
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-                ModConfig.Initialize();
+                ModConfigSavaData.Initialize();
 
-                QuickLogger.Info($"Difficult set to {ModConfig.Settings.PowerLevel}");
+                QuickLogger.Info($"Difficult set to {ModConfigSavaData.Settings.PowerLevel}");
 
                 RegisterOriginalUpgrades();
 
-                PatchUpgradeModules(ModConfig.Settings.EnableNewUpgradeModules);
+                PatchUpgradeModules(ModConfigSavaData.Settings.EnableNewUpgradeModules);
 
-                PatchAuxUpgradeConsole(ModConfig.Settings.EnableAuxiliaryUpgradeConsoles);
+                PatchAuxUpgradeConsole(ModConfigSavaData.Settings.EnableAuxiliaryUpgradeConsoles);
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());

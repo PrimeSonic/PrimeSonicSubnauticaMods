@@ -40,7 +40,7 @@
             QuickLogger.Debug("Registering with MoreCyclopsUpgrades");
             MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
             {                
-                return CyNukeChargeManager.GetManager(cyclops);
+                return new CyNukeChargeManager(cyclops);
             });
 
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>

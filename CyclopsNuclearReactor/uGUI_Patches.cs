@@ -1,6 +1,7 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Harmony;
+    using MoreCyclopsUpgrades.API;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
@@ -40,7 +41,7 @@
             if (label != CyNukReactorBuildable.StorageLabel())
                 return; // Not a CyNukReactor
 
-            List<CyNukeReactorMono> reactors = CyNukeChargeManager.GetReactors(Player.main.currentSub);
+            List<CyNukeReactorMono> reactors = MCUServices.Find.AuxCyclopsManager<CyNukeChargeManager>(Player.main.currentSub, CyNukeChargeManager.ChargerName)?.CyNukeReactors;
 
             if (reactors == null || reactors.Count == 0)
                 return; // Cyclops has no reactors

@@ -1,6 +1,7 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Harmony;
+    using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("Awake")]
@@ -11,7 +12,7 @@
         {
             if (__instance.isCyclops)
             {
-                var mgr = CyNukeChargeManager.GetManager(__instance);
+                CyNukeChargeManager mgr = MCUServices.Find.AuxCyclopsManager<CyNukeChargeManager>(__instance, CyNukeChargeManager.ChargerName);
                 mgr.SyncReactorsExternally();
             }
         }

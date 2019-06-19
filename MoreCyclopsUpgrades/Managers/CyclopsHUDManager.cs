@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.Caching;
@@ -33,8 +34,6 @@
             }
         }
 
-        internal CyclopsManager Manager { get; private set; }
-
         internal const string ManagerName = "McuHudMgr";
 
         private Indicator[] HelmIndicatorsOdd;
@@ -44,7 +43,6 @@
         private Indicator[] HealthBarIndicatorsEven;
 
         internal readonly SubRoot Cyclops;
-        internal UpgradeManager UpgradeManager { get; private set; }
         internal ChargeManager ChargeManager { get; private set; }
 
         public string Name { get; } = ManagerName;
@@ -77,19 +75,10 @@
 
         public bool Initialize(SubRoot cyclops)
         {
-            throw new System.NotImplementedException();
-        }
-
-        internal bool Initialize(CyclopsManager manager)
-        {
-            if (this.Manager != null)
-                return false; // Already initialized
-
-            this.Manager = manager;
-
             powerIconTextVisibility = Player.main.currentSub == Cyclops;
+            this.ChargeManager = MCUServices.Find.AuxCyclopsManager<ChargeManager>(cyclops, ChargeManager.ManagerName);
 
-            return true;
+            return this.ChargeManager != null;
         }
 
         /// <summary>
@@ -98,15 +87,9 @@
         /// <param name="cyclopsHelmHUD">The instance.</param>
         internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
-            if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != this.Manager.Cyclops)
+            if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != Cyclops)
             {
                 return; // Same early exit
-            }
-
-            if (UpgradeManager == null)
-            {
-                ErrorMessage.AddMessage("UpdateHelmHUD: UpgradeManager is null");
-                return;
             }
 
             if (!powerIconsInitialized)

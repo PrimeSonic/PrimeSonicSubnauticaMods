@@ -44,11 +44,7 @@
 
         private CyclopsHUDManager cyclopsHUDManager;
         private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = MCUServices.Find.AuxCyclopsManager<CyclopsHUDManager>(Cyclops, CyclopsHUDManager.ManagerName));
-
-        private int rechargeSkip = 10;
-
-        private readonly int skips = ModConfig.Settings.RechargeSkipRate();
-        private readonly float rechargePenalty = ModConfig.Settings.RechargePenalty();
+        private readonly float rechargePenalty = ModConfigSavaData.Settings.RechargePenalty();
 
         internal int PowerChargersCount => RenewablePowerChargers.Count + NonRenewablePowerChargers.Count;
         internal IEnumerable<ICyclopsCharger> PowerChargers
@@ -120,14 +116,6 @@
             if (Time.timeScale == 0f) // Is the game paused?
                 return;
 
-            if (rechargeSkip < skips)
-            {
-                rechargeSkip++; // Slightly slows down recharging with more speed boosters and higher difficulty
-                return;
-            }
-
-            rechargeSkip = 0;
-
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
             float powerDeficit = GameModeUtils.RequiresPower()
@@ -169,7 +157,7 @@
 
         private void SetupChargingUpgrades(SubRoot cyclops1)
         {
-            int maxChargingModules = ModConfig.Settings.MaxChargingModules();
+            int maxChargingModules = ModConfigSavaData.Settings.MaxChargingModules();
 
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {

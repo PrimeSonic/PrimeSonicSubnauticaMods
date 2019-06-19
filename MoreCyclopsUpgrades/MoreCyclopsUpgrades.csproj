@@ -95,13 +95,13 @@
     <Compile Include="Patchers\HUD_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="SaveData\CyclopsPowerLevels.cs" />
-    <Compile Include="SaveData\ModConfig.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
     <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
     <Compile Include="Managers\UpgradeManager.cs" />
     <Compile Include="Modules\CyclopsModule.cs" />
     <Compile Include="SaveData\EmNuclearConfig.cs" />
     <Compile Include="SaveData\ModConfigOptions.cs" />
+    <Compile Include="SaveData\ModConfigSavaData.cs" />
     <Compile Include="SaveData\NuclearModuleConfig.cs" />
     <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
     <Compile Include="SaveData\AuxUpgradeConsoleSaveData.cs" />

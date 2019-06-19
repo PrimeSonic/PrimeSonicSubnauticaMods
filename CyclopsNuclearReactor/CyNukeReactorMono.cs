@@ -213,7 +213,7 @@
             ParentCyclops = cyclops;
             this.transform.SetParent(cyclops.transform);
 
-            Manager = manager ?? CyNukeChargeManager.GetManager(cyclops);
+            Manager = manager ?? MCUServices.Find.AuxCyclopsManager<CyNukeChargeManager>(cyclops, CyNukeChargeManager.ChargerName);
             Manager.AddReactor(this);
 
             UpdateUpgradeLevel(Manager.UpgradeLevel);
