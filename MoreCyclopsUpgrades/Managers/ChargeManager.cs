@@ -125,20 +125,21 @@
             this.HUDManager.UpdateTextVisibility();
 
             float producedPower = 0f;
+
+            // Produce power from renewable energy first
             foreach (ICyclopsCharger charger in RenewablePowerChargers)
                 producedPower += charger.ProducePower(powerDeficit);
 
-            // Charge with renewable energy first
-            ChargeCyclops(producedPower, ref powerDeficit);
-
-            if (producedPower <= MinimalPowerValue || (powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit))
+            if (NonRenewablePowerChargers.Count > 0 && // Do we have non-renewable energy sources?
+                powerDeficit - producedPower > MinimalPowerValue && // Did the renewable energy sources produce enough power to cover the deficit?
+                powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
             {
-                // If needed, produce and charge with non-renewable energy
+                // Start producing power from non-renewable energy
                 foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
                     producedPower += charger.ProducePower(powerDeficit);
-
-                ChargeCyclops(producedPower, ref powerDeficit);
             }
+
+            ChargeCyclops(producedPower, ref powerDeficit);
         }
 
         private void ChargeCyclops(float availablePower, ref float powerDeficit)
