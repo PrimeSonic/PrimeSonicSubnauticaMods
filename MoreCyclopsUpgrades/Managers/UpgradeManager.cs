@@ -13,8 +13,9 @@
     /// </summary>
     internal class UpgradeManager : IAuxCyclopsManager
     {
-        internal const string ManagerName = "McuUpgrdMgr";
+        internal static bool Initialized { get; private set; }
 
+        internal const string ManagerName = "McuUpgrdMgr";
         private static readonly ICollection<CreateUpgradeHandler> HandlerCreators = new List<CreateUpgradeHandler>();
 
         /// <summary>
@@ -122,7 +123,7 @@
 
             SyncUpgradeConsoles();
 
-            return true;
+            return Initialized = true;
         }
 
         private void RegisterUpgradeHandlers()

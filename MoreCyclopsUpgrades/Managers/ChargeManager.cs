@@ -10,8 +10,8 @@
 
     internal class ChargeManager : IAuxCyclopsManager
     {
+        internal static bool Initialized { get; private set; }
         internal const string ManagerName = "McuChargeMgr";
-
         internal const float BatteryDrainRate = 0.01f;
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
@@ -84,7 +84,7 @@
                 }
             }
 
-            return true;
+            return Initialized = true;
         }
 
         /// <summary>

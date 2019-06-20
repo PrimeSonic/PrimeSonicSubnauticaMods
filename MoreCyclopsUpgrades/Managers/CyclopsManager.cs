@@ -8,6 +8,8 @@
     {
         #region Static Members
 
+        internal static bool Initialized => Managers.Count > 0;
+
         private static readonly ICollection<CreateAuxCyclopsManager> AuxManagerCreators = new List<CreateAuxCyclopsManager>();
 
         internal static void RegisterAuxManagerCreator(CreateAuxCyclopsManager createEvent, string assemblyName)

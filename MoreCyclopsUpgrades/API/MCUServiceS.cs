@@ -1,8 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.API
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using Common;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -126,14 +128,25 @@
     public class MCUServices : IMCUCrossMod, IMCURegistration, IMCUSearch
     {
         private static readonly MCUServices singleton = new MCUServices();
-
         private static readonly string[] cyModulesTab = new[] { "CyclopsModules" };
-        private bool CyclopsFabricatorHasCyclopsModulesTab { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
+        private bool CyclopsFabricatorHasCyclopsModulesTab { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");  
 
         public string[] StepsToCyclopsModulesTabInCyclopsFabricator => this.CyclopsFabricatorHasCyclopsModulesTab ? cyModulesTab : null;
 
+        /// <summary>
+        /// Contains methods for asisting with cross-mod compatibility with other Cyclops mod.
+        /// </summary>
         public static IMCUCrossMod CrossMod => singleton;
+
+        /// <summary>
+        /// Register your upgrades, charger, and managers with MoreCyclopsUpgrades.<para/>
+        /// WARNING! These methods MUST be invoked during patch time.
+        /// </summary>
         public static IMCURegistration Register => singleton;
+
+        /// <summary>
+        /// Provides methods to find the upgrades, chargers, and managers you registered once the Cyclops sub is running.
+        /// </summary>
         public static IMCUSearch Find => singleton;
 
         /// <summary>
@@ -149,32 +162,50 @@
 
         public void CyclopsCharger(CreateCyclopsCharger createEvent)
         {
-            ChargeManager.RegisterChargerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
+            if (ChargeManager.Initialized)
+                QuickLogger.Error("CyclopsChargerCreator have already been invoked. This method should only be called during patch time.");
+            else
+                ChargeManager.RegisterChargerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
         }
 
         public void CyclopsCharger(ICyclopsChargerCreator chargerCreator)
         {
-            ChargeManager.RegisterChargerCreator(chargerCreator.CreateCyclopsCharger, Assembly.GetCallingAssembly().GetName().Name);
+            if (ChargeManager.Initialized)
+                QuickLogger.Error("CyclopsChargerCreator have already been invoked. This method should only be called during patch time.");
+            else
+                ChargeManager.RegisterChargerCreator(chargerCreator.CreateCyclopsCharger, Assembly.GetCallingAssembly().GetName().Name);
         }
 
         public void CyclopsUpgradeHandler(CreateUpgradeHandler createEvent)
         {
-            UpgradeManager.RegisterHandlerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
+            if (UpgradeManager.Initialized)
+                QuickLogger.Error("UpgradeHandlerCreators have already been invoked. This method should only be called during patch time.");
+            else
+                UpgradeManager.RegisterHandlerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
         }
 
         public void CyclopsUpgradeHandler(IUpgradeHandlerCreator handlerCreator)
         {
-            UpgradeManager.RegisterHandlerCreator(handlerCreator.CreateUpgradeHandler, Assembly.GetCallingAssembly().GetName().Name);
+            if (UpgradeManager.Initialized)
+                QuickLogger.Error("UpgradeHandlerCreators have already been invoked. This method should only be called during patch time.");
+            else
+                UpgradeManager.RegisterHandlerCreator(handlerCreator.CreateUpgradeHandler, Assembly.GetCallingAssembly().GetName().Name);
         }
 
         public void AuxCyclopsManager(CreateAuxCyclopsManager createEvent)
         {
-            CyclopsManager.RegisterAuxManagerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
+            if (CyclopsManager.Initialized)
+                QuickLogger.Error("AuxCyclopsManagerCreator have already been invoked. This method should only be called during patch time.");
+            else
+                CyclopsManager.RegisterAuxManagerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
         }
 
         public void AuxCyclopsManager(IAuxCyclopsManagerCreator managerCreator)
         {
-            CyclopsManager.RegisterAuxManagerCreator(managerCreator.CreateAuxCyclopsManager, Assembly.GetCallingAssembly().GetName().Name);
+            if (CyclopsManager.Initialized)
+                QuickLogger.Error("AuxCyclopsManagerCreator have already been invoked. This method should only be called during patch time.");
+            else
+                CyclopsManager.RegisterAuxManagerCreator(managerCreator.CreateAuxCyclopsManager, Assembly.GetCallingAssembly().GetName().Name);
         }
 
         public T AuxCyclopsManager<T>(SubRoot cyclops, string auxManagerName)
