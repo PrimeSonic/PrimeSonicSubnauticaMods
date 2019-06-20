@@ -2,11 +2,11 @@
 {
     using System.Collections.Generic;
     using Common;
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
+    using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.SaveData;
     using UnityEngine;
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.General;
 
     internal class ChargeManager : IAuxCyclopsManager
     {
@@ -57,6 +57,16 @@
         internal readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
+
+        internal T GetCharger<T>(string chargeHandlerName) where T : class, ICyclopsCharger
+        {
+            if (KnownChargers.TryGetValue(chargeHandlerName, out ICyclopsCharger cyclopsCharger))
+            {
+                return (T)cyclopsCharger;
+            }
+
+            return null;
+        }
 
         public ChargeManager(SubRoot cyclops)
         {

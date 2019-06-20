@@ -222,35 +222,17 @@
 
         public T CyclopsUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler
         {
-            UpgradeManager mgr = CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName);
-            if (mgr != null)
-            {
-                return mgr.GetUpgradeHandler<T>(upgradeId);
-            }
-
-            return null;
+            return CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName)?.GetUpgradeHandler<T>(upgradeId);
         }
 
         public T CyclopsGroupUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
-            UpgradeManager mgr = CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName);
-            if (mgr != null)
-            {
-                return mgr.GetGroupHandler<T>(upgradeId);
-            }
-
-            return null;
+            return CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName)?.GetGroupHandler<T>(upgradeId);
         }
 
         public T CyclopsCharger<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger
         {
-            ChargeManager mgr = CyclopsManager.GetManager<ChargeManager>(cyclops, ChargeManager.ManagerName);
-            if (mgr != null && mgr.KnownChargers.TryGetValue(chargeHandlerName, out ICyclopsCharger cyclopsCharger))
-            {
-                return (T)cyclopsCharger;
-            }
-
-            return null;
+            return CyclopsManager.GetManager<ChargeManager>(cyclops, ChargeManager.ManagerName)?.GetCharger<T>(chargeHandlerName);
         }
     }
 }
