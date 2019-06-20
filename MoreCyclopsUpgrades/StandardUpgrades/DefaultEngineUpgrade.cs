@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.StandardUpgrades
 {
     using MoreCyclopsUpgrades.API.Upgrades;
 

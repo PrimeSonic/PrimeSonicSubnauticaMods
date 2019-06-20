@@ -1,16 +1,14 @@
-﻿namespace MoreCyclopsUpgrades.Craftables
+﻿namespace MoreCyclopsUpgrades.Items.ThermalModule
 {
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using MoreCyclopsUpgrades.CyclopsChargers;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class CyclopsThermalChargerMk2 : CyclopsUpgrade, ICyclopsChargerCreator, IUpgradeHandlerCreator
     {
-        internal const float BatteryCapacity = 100f;
+        internal const float BatteryCapacity = 120f;
 
         private const string MaxThermalReachedKey = "MaxThermalMsg";
         internal static string MaxThermalReached()
@@ -55,7 +53,7 @@
                 Ingredients =
                 {
                     new Ingredient(TechType.CyclopsThermalReactorModule, 1),
-                    new Ingredient(TechType.PowerCell, 2),
+                    new Ingredient(TechType.PowerCell, 1),
                     new Ingredient(TechType.Benzene, 1),
                     new Ingredient(TechType.WiringKit, 1),
                     new Ingredient(TechType.CopperWire, 1),

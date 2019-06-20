@@ -2,10 +2,10 @@
 {
     using System.Collections.Generic;
     using Common;
-    using Monobehaviors;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
+    using MoreCyclopsUpgrades.Items.AuxConsole;
+    using MoreCyclopsUpgrades.StandardUpgrades;
     using UnityEngine;
 
     /// <summary>

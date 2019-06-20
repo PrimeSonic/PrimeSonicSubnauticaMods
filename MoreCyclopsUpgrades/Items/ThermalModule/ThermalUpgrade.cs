@@ -1,10 +1,9 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.Items.ThermalModule
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.Caching;
-    using MoreCyclopsUpgrades.Craftables;
     using UnityEngine;
 
     internal class ThermalUpgrade : StackingGroupHandler

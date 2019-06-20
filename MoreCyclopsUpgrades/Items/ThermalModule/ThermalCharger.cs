@@ -1,9 +1,8 @@
-﻿namespace MoreCyclopsUpgrades.CyclopsChargers
+﻿namespace MoreCyclopsUpgrades.Items.ThermalModule
 {
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.Caching;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
     using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
 

@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.SaveData
+﻿namespace MoreCyclopsUpgrades.Items.AuxConsole
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
@@ -44,6 +44,9 @@
             _remainingCharge = (EmProperty<float>)Properties[RemainingChargeKey];
         }
 
-        internal override EmProperty Copy() => new EmModuleSaveData(this.Key, CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new EmModuleSaveData(this.Key, this.CopyDefinitions);
+        }
     }
 }

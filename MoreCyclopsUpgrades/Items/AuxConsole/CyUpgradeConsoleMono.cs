@@ -1,13 +1,11 @@
-﻿namespace MoreCyclopsUpgrades.Monobehaviors
+﻿namespace MoreCyclopsUpgrades.Items.AuxConsole
 {
     using System;
     using System.Reflection;
-    using Buildables;
     using Common;
     using Managers;
     using MoreCyclopsUpgrades.API.Upgrades;
     using ProtoBuf;
-    using SaveData;
     using UnityEngine;
     using UnityEngine.UI;
 

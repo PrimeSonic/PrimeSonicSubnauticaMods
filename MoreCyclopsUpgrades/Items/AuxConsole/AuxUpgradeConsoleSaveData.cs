@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.SaveData
+﻿namespace MoreCyclopsUpgrades.Items.AuxConsole
 {
     using System.Collections.Generic;
     using System.IO;
@@ -31,13 +31,20 @@
         {
             switch (slot)
             {
-                case "Module1": return Module1;
-                case "Module2": return Module2;
-                case "Module3": return Module3;
-                case "Module4": return Module4;
-                case "Module5": return Module5;
-                case "Module6": return Module6;
-                default: return null;
+                case "Module1":
+                    return Module1;
+                case "Module2":
+                    return Module2;
+                case "Module3":
+                    return Module3;
+                case "Module4":
+                    return Module4;
+                case "Module5":
+                    return Module5;
+                case "Module6":
+                    return Module6;
+                default:
+                    return null;
             }
         }
 
@@ -60,11 +67,20 @@
         private string SaveDirectory => Path.Combine(SaveUtils.GetCurrentSaveDataDir(), "AuxUpgradeConsole");
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
-        public void Save() => this.Save(this.SaveDirectory, this.SaveFile);
+        public void Save()
+        {
+            this.Save(this.SaveDirectory, this.SaveFile);
+        }
 
-        public bool Load() => this.Load(this.SaveDirectory, this.SaveFile);
+        public bool Load()
+        {
+            return this.Load(this.SaveDirectory, this.SaveFile);
+        }
 
-        internal override EmProperty Copy() => new AuxUpgradeConsoleSaveData(ID, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new AuxUpgradeConsoleSaveData(ID, this.CopyDefinitions);
+        }
     }
 }
 

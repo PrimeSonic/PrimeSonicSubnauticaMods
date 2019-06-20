@@ -19,6 +19,7 @@
         public sealed override TechGroup GroupForPDA { get; } = TechGroup.Cyclops;
         public sealed override TechCategory CategoryForPDA { get; } = TechCategory.CyclopsUpgrades;
         protected virtual TechType PrefabTemplate { get; } = TechType.CyclopsThermalReactorModule;
+        public override TechType RequiredForUnlock { get; } = TechType.Cyclops; // Default can be overridden by child classes
 
         public override GameObject GetGameObject()
         {

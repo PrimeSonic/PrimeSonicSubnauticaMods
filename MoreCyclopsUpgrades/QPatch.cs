@@ -2,14 +2,13 @@
 {
     using System;
     using System.Reflection;
-    using Buildables;
     using Common;
     using Harmony;
     using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.Upgrades;
-    using MoreCyclopsUpgrades.Craftables;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
+    using MoreCyclopsUpgrades.Items.AuxConsole;
+    using MoreCyclopsUpgrades.Items.ThermalModule;
     using MoreCyclopsUpgrades.Managers;
+    using MoreCyclopsUpgrades.StandardUpgrades;
     using SaveData;
 
     /// <summary>
@@ -34,7 +33,7 @@
                 ModConfigSavaData.Initialize();
 
                 var originalUpgrades = new OriginalUpgrades();
-                originalUpgrades.RegisterOriginalUpgrades();                
+                originalUpgrades.RegisterOriginalUpgrades();
 
                 PatchAuxUpgradeConsole(ModConfigSavaData.Settings.EnableAuxiliaryUpgradeConsoles);
 
@@ -66,23 +65,27 @@
             else
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
 
-            CyUpgradeConsole.PatchAuxUpgradeConsole(enableAuxiliaryUpgradeConsoles);
+            var console = new CyUpgradeConsole();
+            console.Patch(enableAuxiliaryUpgradeConsoles);
         }
 
         internal static void RegisterCoreServices()
         {
-            MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) => 
+            MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
             {
+                QuickLogger.Debug("Core UpgradeManager registered");
                 return new UpgradeManager(cyclops);
             });
 
             MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
             {
+                QuickLogger.Debug("Core ChargeManager registered");
                 return new ChargeManager(cyclops);
             });
 
             MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
             {
+                QuickLogger.Debug("Core CyclopsHUDManager registered");
                 return new CyclopsHUDManager(cyclops);
             });
         }

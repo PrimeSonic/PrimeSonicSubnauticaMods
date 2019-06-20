@@ -1,7 +1,6 @@
-﻿namespace MoreCyclopsUpgrades.Buildables
+﻿namespace MoreCyclopsUpgrades.Items.AuxConsole
 {
     using System.Collections.Generic;
-    using Monobehaviors;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -9,13 +8,6 @@
 
     internal class CyUpgradeConsole : Buildable
     {
-        private static readonly CyUpgradeConsole main = new CyUpgradeConsole();
-
-        public static void PatchAuxUpgradeConsole(bool auxConsolesEnabled)
-        {
-            main.Patch(auxConsolesEnabled);
-        }
-
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
         public override string AssetsFolder { get; } = "MoreCyclopsUpgrades/Assets";
@@ -24,15 +16,15 @@
         private const string OnHoverKey = "CyUpgradeOnHover";
         public static string OnHoverText => Language.main.Get(OnHoverKey);
 
-        public CyUpgradeConsole() 
-            : base(classId: "AuxCyUpgradeConsole", 
-                   friendlyName: "Auxiliary Upgrade Console", 
+        public CyUpgradeConsole()
+            : base(classId: "AuxCyUpgradeConsole",
+                   friendlyName: "Auxiliary Upgrade Console",
                    description: "A secondary upgrade console to connect a greater number of upgrades to your Cyclops.")
         {
             OnFinishedPatching += SetLanguageLines;
         }
 
-        private void Patch(bool auxConsolesEnabled)
+        internal void Patch(bool auxConsolesEnabled)
         {
             if (!auxConsolesEnabled) // Even if the options have this be disabled,
             {
