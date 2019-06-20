@@ -128,11 +128,11 @@
             int normalMaxPowerInt = Mathf.CeilToInt(normalMaxPower);
 
             hudManager.energyCur.color = currentReservePower > 0 ? Color.cyan : Color.white;
-            hudManager.energyCur.text = NumberFormatter.FormatNumber(TotalPowerUnits, NumberFormat.Amount);
+            hudManager.energyCur.text = NumberFormatter.FormatValue(TotalPowerUnits);
 
             if (hudManager.lastMaxSubPowerDisplayed != normalMaxPowerInt)
             {
-                hudManager.energyMax.text = "/" + NumberFormatter.FormatNumber(normalMaxPowerInt, NumberFormat.Amount);
+                hudManager.energyMax.text = "/" + NumberFormatter.FormatValue(normalMaxPowerInt);
                 hudManager.lastMaxSubPowerDisplayed = normalMaxPowerInt;
             }
 

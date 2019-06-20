@@ -6,49 +6,32 @@
     internal static class NumberFormatter
     {
         private static readonly IDictionary<int, string> _formattedTemperatureCache = new Dictionary<int, string>();
-        private static readonly IDictionary<int, string> _formattedSunCache = new Dictionary<int, string>();
-        private static readonly IDictionary<int, string> _formattedPercentCache = new Dictionary<int, string>();
         private static readonly IDictionary<int, string> _formattedAmountCache = new Dictionary<int, string>();
-        
-        internal static string FormatNumber(int value, NumberFormat format)
+
+        internal static string FormatTemperature(float temperature)
         {
-            switch (format)
+            int value = Mathf.CeilToInt(temperature);
+            if (!_formattedTemperatureCache.TryGetValue(value, out string temperatureString))
             {
-                case NumberFormat.Temperature:
-                    string temperatureString;
-                    if (!_formattedTemperatureCache.TryGetValue(value, out temperatureString))                        
-                    {
-                        temperatureString = $"{value}°C";
-                        _formattedTemperatureCache.Add(value, temperatureString);
-                    }
-                    return temperatureString;
-                case NumberFormat.Sun:
-                    string sunString;
-                    if (!_formattedSunCache.TryGetValue(value, out sunString))
-                    {
-                        sunString = $"{value}%Θ";
-                        _formattedSunCache.Add(value, sunString);
-                    }
-                    return sunString;
-                case NumberFormat.Amount:
-                    string amountString;
-                    if (!_formattedAmountCache.TryGetValue(value, out amountString))
-                    {
-                        amountString = $"{HandleLargeNumbers(value)}";
-                        _formattedAmountCache.Add(value, amountString);
-                    }
-                    return amountString;
-                case NumberFormat.Percent:
-                    string percentString;
-                    if (!_formattedPercentCache.TryGetValue(value, out percentString))
-                    {
-                        percentString = $"{value}%";
-                        _formattedPercentCache.Add(value, percentString);
-                    }
-                    return percentString;
-                default:
-                    return Mathf.FloorToInt(value).ToString();
+                temperatureString = $"{value}°C";
+                _formattedTemperatureCache.Add(value, temperatureString);
             }
+            return temperatureString;
+        }
+
+        internal static string FormatValue(float value)
+        {
+            return FormatValue(Mathf.CeilToInt(value));
+        }
+
+        internal static string FormatValue(int value)
+        {
+            if (!_formattedAmountCache.TryGetValue(value, out string amountString))
+            {
+                amountString = $"{HandleLargeNumbers(value)}";
+                _formattedAmountCache.Add(value, amountString);
+            }
+            return amountString;
         }
 
         private static string HandleLargeNumbers(int possiblyLargeValue)

@@ -68,9 +68,9 @@
             switch (ThermalState)
             {
                 case ThermalState.HeatAvailable:
-                    return NumberFormatter.FormatNumber(Mathf.CeilToInt(temperature), NumberFormat.Temperature);
+                    return NumberFormatter.FormatTemperature(temperature);
                 case ThermalState.BatteryAvailable:
-                    return NumberFormatter.FormatNumber(Mathf.CeilToInt(upgradeHandler.TotalBatteryCharge), NumberFormat.Amount);
+                    return NumberFormatter.FormatValue(upgradeHandler.TotalBatteryCharge);
                 default:
                     return string.Empty;
             }

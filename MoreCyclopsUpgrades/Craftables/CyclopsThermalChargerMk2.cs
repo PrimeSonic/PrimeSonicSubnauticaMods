@@ -55,9 +55,8 @@
                 Ingredients =
                 {
                     new Ingredient(TechType.CyclopsThermalReactorModule, 1),
-                    new Ingredient(TechType.Battery, 2),
-                    new Ingredient(TechType.Sulphur, 1),
-                    new Ingredient(TechType.Kyanite, 1),
+                    new Ingredient(TechType.PowerCell, 2),
+                    new Ingredient(TechType.Benzene, 1),
                     new Ingredient(TechType.WiringKit, 1),
                     new Ingredient(TechType.CopperWire, 1),
                 }

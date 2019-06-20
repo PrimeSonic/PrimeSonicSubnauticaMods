@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
     <Compile Include="CyclopsChargers\ThermalCharger.cs" />
+    <Compile Include="CyclopsUpgrades\OriginalUpgrades.cs" />
     <Compile Include="CyclopsUpgrades\ThermalUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />
@@ -85,7 +86,6 @@
     <Compile Include="API\Upgrades\CyclopsUpgrade.cs" />
     <Compile Include="Craftables\CyclopsThermalChargerMk2.cs" />
     <Compile Include="CyclopsUpgrades\DefaultEngineUpgrade.cs" />
-    <Compile Include="Caching\NumberFormat.cs" />
     <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="Caching\BatteryDetails.cs" />
     <Compile Include="CyclopsUpgrades\CrushDepthUpgradesHandler.cs" />
