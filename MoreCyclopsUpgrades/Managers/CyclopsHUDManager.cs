@@ -6,7 +6,7 @@
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.Caching;
-    using SaveData;
+    using MoreCyclopsUpgrades.Config;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -136,7 +136,7 @@
                 hudManager.lastMaxSubPowerDisplayed = normalMaxPowerInt;
             }
 
-            NuclearModuleConfig.SetCyclopsMaxPower(normalMaxPower);
+            ModConfig.Main.UpdateCyclopsMaxPower(normalMaxPower);
 
             UpdatePowerIcons();
         }

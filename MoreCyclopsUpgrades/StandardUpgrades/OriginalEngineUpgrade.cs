@@ -1,12 +1,12 @@
-﻿namespace MoreCyclopsUpgrades.StandardUpgrades
+﻿namespace MoreCyclopsUpgrades.OriginalUpgrades
 {
     using MoreCyclopsUpgrades.API.Upgrades;
 
-    internal class DefaultEngineUpgrade : UpgradeHandler
+    internal class OriginalEngineUpgrade : UpgradeHandler
     {
         private float lastKnownRating = -1f;
 
-        public DefaultEngineUpgrade(SubRoot cyclops) : base(TechType.PowerUpgradeModule, cyclops)
+        public OriginalEngineUpgrade(SubRoot cyclops) : base(TechType.PowerUpgradeModule, cyclops)
         {
             OnClearUpgrades = () =>
             {

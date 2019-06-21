@@ -5,7 +5,7 @@
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
-    using MoreCyclopsUpgrades.SaveData;
+    using MoreCyclopsUpgrades.Config;
     using UnityEngine;
 
     internal class ChargeManager : IAuxCyclopsManager
@@ -135,7 +135,7 @@
 
             if (NonRenewablePowerChargers.Count > 0 && // Do we have non-renewable energy sources?
                 powerDeficit - producedPower > MinimalPowerValue && // Did the renewable energy sources produce enough power to cover the deficit?
-                powerDeficit > NuclearModuleConfig.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
+                powerDeficit > ModConfig.Main.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
             {
                 // Start producing power from non-renewable energy
                 foreach (ICyclopsCharger charger in NonRenewablePowerChargers)

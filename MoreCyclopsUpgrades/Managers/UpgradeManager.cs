@@ -5,7 +5,7 @@
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.Items.AuxConsole;
-    using MoreCyclopsUpgrades.StandardUpgrades;
+    using MoreCyclopsUpgrades.OriginalUpgrades;
     using UnityEngine;
 
     /// <summary>
@@ -144,7 +144,7 @@
             if (!KnownsUpgradeModules.ContainsKey(TechType.PowerUpgradeModule))
             {
                 QuickLogger.Debug("No UpgradeHandler for the original Engine Efficiency module detected. Adding it internally.");
-                KnownsUpgradeModules.Add(TechType.PowerUpgradeModule, new DefaultEngineUpgrade(Cyclops));
+                KnownsUpgradeModules.Add(TechType.PowerUpgradeModule, new OriginalEngineUpgrade(Cyclops));
             }
         }
 

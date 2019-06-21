@@ -5,11 +5,10 @@
     using Common;
     using Harmony;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Items.AuxConsole;
     using MoreCyclopsUpgrades.Items.ThermalModule;
     using MoreCyclopsUpgrades.Managers;
-    using MoreCyclopsUpgrades.StandardUpgrades;
-    using SaveData;
 
     /// <summary>
     /// Entry point class for patching. For use by QModManager only.
@@ -28,14 +27,13 @@
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
+                ModConfig.Main.Initialize();
+
                 RegisterCoreServices();
 
-                ModConfigSavaData.Initialize();
+                RegisterOriginalUpgrades();
 
-                var originalUpgrades = new OriginalUpgrades();
-                originalUpgrades.RegisterOriginalUpgrades();
-
-                PatchAuxUpgradeConsole(ModConfigSavaData.Settings.EnableAuxiliaryUpgradeConsoles);
+                PatchAuxUpgradeConsole();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -49,6 +47,12 @@
             }
         }
 
+        private static void RegisterOriginalUpgrades()
+        {
+            var originalUpgrades = new OriginalUpgrades.OriginalUpgrades();
+            originalUpgrades.RegisterOriginalUpgrades();
+        }
+
         private static void PatchUpgradeModules()
         {
             var thermalMk2 = new CyclopsThermalChargerMk2();
@@ -58,15 +62,15 @@
             MCUServices.Register.CyclopsCharger(thermalMk2);
         }
 
-        private static void PatchAuxUpgradeConsole(bool enableAuxiliaryUpgradeConsoles)
+        private static void PatchAuxUpgradeConsole()
         {
-            if (enableAuxiliaryUpgradeConsoles)
+            if (ModConfig.Main.AuxConsoleEnabled)
                 QuickLogger.Info("Patching Auxiliary Upgrade Console");
             else
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
 
             var console = new CyUpgradeConsole();
-            console.Patch(enableAuxiliaryUpgradeConsoles);
+            console.Patch(ModConfig.Main.AuxConsoleEnabled);
         }
 
         internal static void RegisterCoreServices()

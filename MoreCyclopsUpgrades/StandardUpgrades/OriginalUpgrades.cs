@@ -1,6 +1,5 @@
-﻿namespace MoreCyclopsUpgrades.StandardUpgrades
+﻿namespace MoreCyclopsUpgrades.OriginalUpgrades
 {
-    using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -9,80 +8,71 @@
     {
         internal void RegisterOriginalUpgrades()
         {
-            foreach (CreateUpgradeHandler creator in this.UpgradeCreators)
-                MCUServices.Register.CyclopsUpgradeHandler(creator);
-        }
-
-        private IEnumerable<CreateUpgradeHandler> UpgradeCreators
-        {
-            get
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                yield return (SubRoot cyclops) =>
-                {
-                    QuickLogger.Debug("UpgradeHandler Registered: Depth Upgrades Collection");
-                    return new CrushDepthUpgradesHandler(cyclops);
-                };
+                QuickLogger.Debug("UpgradeHandler Registered: Depth Upgrades Collection");
+                return new OriginalDepthUpgrades(cyclops);
+            });
 
-                yield return (SubRoot cyclops) =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: CyclopsShieldModule");
+                return new UpgradeHandler(TechType.CyclopsShieldModule, cyclops)
                 {
-                    QuickLogger.Debug("UpgradeHandler Registered: CyclopsShieldModule");
-                    return new UpgradeHandler(TechType.CyclopsShieldModule, cyclops)
-                    {
-                        OnClearUpgrades = () => { cyclops.shieldUpgrade = false; },
-                        OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
-                    };
+                    OnClearUpgrades = () => { cyclops.shieldUpgrade = false; },
+                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
                 };
+            });
 
-                yield return (SubRoot cyclops) =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: CyclopsSonarModule");
+                return new UpgradeHandler(TechType.CyclopsSonarModule, cyclops)
                 {
-                    QuickLogger.Debug("UpgradeHandler Registered: CyclopsSonarModule");
-                    return new UpgradeHandler(TechType.CyclopsSonarModule, cyclops)
-                    {
-                        OnClearUpgrades = () => { cyclops.sonarUpgrade = false; },
-                        OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
-                    };
+                    OnClearUpgrades = () => { cyclops.sonarUpgrade = false; },
+                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
                 };
+            });
 
-                yield return (SubRoot cyclops) =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: CyclopsSeamothRepairModule");
+                return new UpgradeHandler(TechType.CyclopsSeamothRepairModule, cyclops)
                 {
-                    QuickLogger.Debug("UpgradeHandler Registered: CyclopsSeamothRepairModule");
-                    return new UpgradeHandler(TechType.CyclopsSeamothRepairModule, cyclops)
-                    {
-                        OnClearUpgrades = () => { cyclops.vehicleRepairUpgrade = false; },
-                        OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
-                    };
+                    OnClearUpgrades = () => { cyclops.vehicleRepairUpgrade = false; },
+                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
                 };
+            });
 
-                yield return (SubRoot cyclops) =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: CyclopsDecoyModule");
+                return new UpgradeHandler(TechType.CyclopsDecoyModule, cyclops)
                 {
-                    QuickLogger.Debug("UpgradeHandler Registered: CyclopsDecoyModule");
-                    return new UpgradeHandler(TechType.CyclopsDecoyModule, cyclops)
-                    {
-                        OnClearUpgrades = () => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                        OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
-                    };
+                    OnClearUpgrades = () => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
+                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
                 };
+            });
 
-                yield return (SubRoot cyclops) =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+            {
+                QuickLogger.Debug("UpgradeHandler Registered: CyclopsFireSuppressionModule");
+                return new UpgradeHandler(TechType.CyclopsFireSuppressionModule, cyclops)
                 {
-                    QuickLogger.Debug("UpgradeHandler Registered: CyclopsFireSuppressionModule");
-                    return new UpgradeHandler(TechType.CyclopsFireSuppressionModule, cyclops)
+                    OnClearUpgrades = () =>
                     {
-                        OnClearUpgrades = () =>
-                        {
-                            CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                            if (fss != null)
-                                fss.fireSuppressionSystem.SetActive(false);
-                        },
-                        OnUpgradeCounted = (Equipment modules, string slot) =>
-                        {
-                            CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                            if (fss != null)
-                                fss.fireSuppressionSystem.SetActive(true);
-                        },
-                    };
+                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
+                        if (fss != null)
+                            fss.fireSuppressionSystem.SetActive(false);
+                    },
+                    OnUpgradeCounted = (Equipment modules, string slot) =>
+                    {
+                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
+                        if (fss != null)
+                            fss.fireSuppressionSystem.SetActive(true);
+                    },
                 };
-            }
+            });
         }
     }
 }

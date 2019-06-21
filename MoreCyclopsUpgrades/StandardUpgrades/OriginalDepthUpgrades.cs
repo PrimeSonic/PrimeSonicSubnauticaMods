@@ -1,13 +1,13 @@
-﻿namespace MoreCyclopsUpgrades.StandardUpgrades
+﻿namespace MoreCyclopsUpgrades.OriginalUpgrades
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API.Upgrades;
 
-    internal class CrushDepthUpgradesHandler : TieredGroupHandler<float>
+    internal class OriginalDepthUpgrades : TieredGroupHandler<float>
     {
         private const float NoBonusCrushDepth = 0f;
 
-        public CrushDepthUpgradesHandler(SubRoot cyclops) : base(NoBonusCrushDepth, cyclops)
+        public OriginalDepthUpgrades(SubRoot cyclops) : base(NoBonusCrushDepth, cyclops)
         {
             OnFinishedWithUpgrades += () =>
             {
