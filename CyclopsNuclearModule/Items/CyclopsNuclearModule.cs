@@ -49,11 +49,10 @@
                 craftAmount = 1,
                 Ingredients =
                 {
-                    new Ingredient(TechType.ReactorRod, 1), // This is to validate that the player has access to nuclear power already
-                    new Ingredient(TechType.Benzene, 2), // And this is the validate that they've gone a little further down
-                    new Ingredient(TechType.Lead, 2), // Extra insulation
-                    new Ingredient(TechType.AdvancedWiringKit, 1), // All the smarts
-                    new Ingredient(TechType.PlasteelIngot, 1) // Housing
+                    new Ingredient(TechType.UraniniteCrystal, 1),
+                    new Ingredient(TechType.Lead, 1),
+                    new Ingredient(TechType.Titanium, 1),
+                    new Ingredient(TechType.ComputerChip, 1),
                 }
             };
         }

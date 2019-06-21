@@ -66,12 +66,20 @@
         public int MaxCount { get; set; } = 99;
 
         /// <summary>
-        /// Gets a value indicating whether the maximum number of copies of this upgrade modules has been reached.
+        /// Gets a value indicating whether the maximum number of copies of this upgrade module has been reached.
         /// </summary>
         /// <value>
         ///   <c>true</c> if <see cref="Count"/> now equals or would have exceeded <see cref="MaxCount"/>; otherwise, <c>false</c>.
         /// </value>
         public bool MaxLimitReached => count == this.MaxCount;
+
+        /// <summary>
+        /// Gets a value indicating whether the maximum number of copies of this upgrade module has been exceeded.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the real count of modules is greater than <see cref="MaxCount"/>; otherwise, <c>false</c>.
+        /// </value>
+        public bool ExceededMaxLimit => count > this.MaxCount;
 
         /// <summary>
         /// Gets a value indicating whether there is at least one copy of this upgrade module in the cyclops.

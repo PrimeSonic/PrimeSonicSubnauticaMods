@@ -152,7 +152,7 @@
 
         public float TotalReservePower()
         {
-            throw new System.NotImplementedException();
+            return upgradeHandler.TotalBatteryCharge;
         }
     }
 }

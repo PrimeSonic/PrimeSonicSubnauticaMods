@@ -68,13 +68,15 @@
   <ItemGroup>
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
     <Compile Include="Config\ChallengeLevel.cs" />
+    <Compile Include="Config\IModConfig.cs" />
     <Compile Include="Config\ModConfig.cs" />
     <Compile Include="Config\ModConfigMenuOptions.cs" />
     <Compile Include="Config\ModConfigSaveData.cs" />
+    <Compile Include="Config\ShowChargerIcons.cs" />
     <Compile Include="Items\ThermalModule\ThermalCharger.cs" />
-    <Compile Include="StandardUpgrades\OriginalDepthUpgrades.cs" />
-    <Compile Include="StandardUpgrades\OriginalEngineUpgrade.cs" />
-    <Compile Include="StandardUpgrades\OriginalUpgrades.cs" />
+    <Compile Include="OriginalUpgrades\OriginalDepthUpgrades.cs" />
+    <Compile Include="OriginalUpgrades\OriginalEngineUpgrade.cs" />
+    <Compile Include="OriginalUpgrades\OriginalUpgrades.cs" />
     <Compile Include="Items\ThermalModule\ThermalUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />

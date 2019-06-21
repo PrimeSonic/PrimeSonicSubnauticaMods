@@ -1,11 +1,11 @@
 ﻿namespace MoreCyclopsUpgrades.Config
 {
     using System;
+    using System.Threading;
     using Common;
-    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal class ModConfig
+    internal class ModConfig : IModConfig
     {
         internal static ModConfig Main { get; } = new ModConfig();
 
@@ -16,6 +16,7 @@
         internal const bool AuxConsoleDefaultEnabled = true;
         internal const ChallengeLevel DefaultChallenge = ChallengeLevel.Easy;
         internal const float DefaultThreshold = 95f;
+        internal const ShowChargerIcons DefaultChargerIcons = ShowChargerIcons.Both;
 
         private readonly ModConfigSaveData saveData = new ModConfigSaveData();
         private readonly ModConfigMenuOptions menuOptions = new ModConfigMenuOptions();
@@ -38,11 +39,54 @@
             set => saveData.DeficitThreshold.Value = value;
         }
 
+        public ShowChargerIcons ChargerIcons
+        {
+            get => saveData.ChargerIcons.Value;
+            set
+            {
+                saveData.ChargerIcons.Value = value;
+                this.ShowIconsWhilePiloting = (value & ShowChargerIcons.WhenPiloting) == ShowChargerIcons.WhenPiloting;
+                this.ShowIconsAtHelm = (value & ShowChargerIcons.HelmDisplay) == ShowChargerIcons.HelmDisplay;
+            }
+        }
+
+        public bool DebugLogsEnabled
+        {
+            get => saveData.AuxConsoleEnabled.Value;
+            set
+            {
+                saveData.AuxConsoleEnabled.Value = value;
+                QuickLogger.DebugLogsEnabled = value;
+            }
+        }
+
+        public bool ShowIconsWhilePiloting { get; private set; } = true;
+
+        public bool ShowIconsAtHelm { get; private set; } = true;
+
+        public float RechargePenalty
+        {
+            get
+            {
+                switch (this.ChallengeMode)
+                {
+                    case ChallengeLevel.Hard:
+                        return 0.70f;
+                    case ChallengeLevel.Normal:
+                        return 0.85f;                    
+                    default:
+                        return 1f;
+                }
+            }
+        }
+
         internal void Initialize()
         {
             try
             {
-                saveData.LoadFromFile();                
+                saveData.LoadFromFile();
+                this.ShowIconsWhilePiloting = (this.ChargerIcons & ShowChargerIcons.WhenPiloting) == ShowChargerIcons.WhenPiloting;
+                this.ShowIconsAtHelm = (this.ChargerIcons & ShowChargerIcons.HelmDisplay) == ShowChargerIcons.HelmDisplay;
             }
             catch (Exception ex)
             {
@@ -51,23 +95,37 @@
                 QuickLogger.Info($"Default config save data file created");
             }
 
-            OptionsPanelHandler.RegisterModOptions(menuOptions);
-
-            menuOptions.AuxConsoleToggled += (bool value) =>
+            menuOptions.AuxConsoleToggled = (bool value) =>
             {
                 this.AuxConsoleEnabled = value;
-                saveData.SaveToFile();
+                SaveData();
             };
-            menuOptions.ChallengeModeChanged += (ChallengeLevel value) =>
+            menuOptions.ChallengeModeChanged = (ChallengeLevel value) =>
             {
                 this.ChallengeMode = value;
-                saveData.SaveToFile();
+                SaveData();
             };
-            menuOptions.DeficitThresholdChanged += (float value) =>
+            menuOptions.DeficitThresholdChanged = (float value) =>
             {
                 this.DeficitThreshold = value;
-                saveData.SaveToFile();
+                SaveData();
             };
+            menuOptions.ShowChargerIconsChanged = (ShowChargerIcons value) =>
+            {
+                this.ChargerIcons = value;
+                SaveData();
+            };
+            menuOptions.DebugLogsToggled = (bool value) =>
+            {
+                this.DebugLogsEnabled = value;
+                SaveData();
+            };
+        }
+
+        private void SaveData()
+        {
+            var bgWork = new Thread(new ParameterizedThreadStart((object data) => { (data as ModConfigSaveData).SaveToFile(); }));
+            bgWork.Start(saveData);
         }
 
         private float CyclopsMaxPower = 1f;

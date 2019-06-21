@@ -274,14 +274,13 @@
                 Indicator hpIcon = healthBarRow[index++];
 
                 hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.GetIndicatorSprite();
-                hpIcon.Enabled = helmIcon.Enabled = true;
-
                 hpIcon.Text.enabled = powerIconTextVisibility;
                 hpIcon.Text.text = helmIcon.Text.text = charger.GetIndicatorText();
                 hpIcon.Text.color = helmIcon.Text.color = charger.GetIndicatorTextColor();
+
+                hpIcon.Enabled = ModConfig.Main.ShowIconsWhilePiloting;
+                helmIcon.Enabled = ModConfig.Main.ShowIconsAtHelm;
             }
         }
-
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades
 {
     using System;
+    using System.IO;
     using System.Reflection;
     using Common;
     using Harmony;
@@ -20,14 +21,13 @@
         /// </summary>
         public static void Patch()
         {
-            // TODO - Make user configurable
-            QuickLogger.DebugLogsEnabled = true;
-
             try
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
                 ModConfig.Main.Initialize();
+
+                RemoveOldConfigs();
 
                 RegisterCoreServices();
 
@@ -45,6 +45,19 @@
             {
                 QuickLogger.Error(ex);
             }
+        }
+
+        private static void RemoveOldConfigs()
+        {
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string oldConfig1 = Path.Combine(executingLocation, $"CyclopsNuclearChargerConfig.txt");
+            string oldConfig2 = Path.Combine(executingLocation, $"MoreCyclopsUpgradesConfig.txt");
+
+            if (File.Exists(oldConfig1))
+                File.Delete(oldConfig1);
+
+            if (File.Exists(oldConfig2))
+                File.Delete(oldConfig2);
         }
 
         private static void RegisterOriginalUpgrades()

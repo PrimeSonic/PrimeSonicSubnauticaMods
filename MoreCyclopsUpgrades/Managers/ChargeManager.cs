@@ -14,7 +14,7 @@
         internal const string ManagerName = "McuChargeMgr";
         internal const float BatteryDrainRate = 0.01f;
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        internal const float Mk2ChargeRateModifier = 1.15f; // The MK2 charging modules get a 15% bonus to their charge rate.
+        internal const float Mk2ChargeRateModifier = 1.10f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
         private static readonly ICollection<CreateCyclopsCharger> CyclopsChargers = new List<CreateCyclopsCharger>();
 
@@ -54,9 +54,10 @@
 
         public string Name { get; } = ManagerName;
 
-        internal readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
+        private readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
+        private readonly float rechargePenalty;
 
         internal T GetCharger<T>(string chargeHandlerName) where T : class, ICyclopsCharger
         {
@@ -71,6 +72,7 @@
         public ChargeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
+            rechargePenalty = ModConfig.Main.RechargePenalty;
         }
 
         public bool Initialize(SubRoot cyclops)
@@ -152,6 +154,8 @@
 
             if (availablePower < MinimalPowerValue)
                 return; // No power available
+
+            availablePower *= rechargePenalty;
 
             Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
             powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);

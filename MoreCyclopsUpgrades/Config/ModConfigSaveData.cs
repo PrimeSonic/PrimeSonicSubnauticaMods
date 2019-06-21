@@ -9,13 +9,13 @@
 
     internal class ModConfigSaveData : EmPropertyCollection
     {
-        #region Constants
         private const string ConfigKey = "ModConfig";
         private const string AuxConsoleEnabledKey = "AuxConsoleEnabled";
         private const string ChallengeModeKey = "ChallengeMode";
         private const string DeficitThresholdKey = "DeficitThreshold";
+        private const string ChargerIconsKey = "ShowChargerIcons";
+        private const string DebugLogsEnabledKey = "DebugLogsEnabled";
         private readonly string versionLine = $"# VERSION {QuickLogger.GetAssemblyVersion()} #";
-        #endregion
 
         private static List<EmProperty> CreateDefinitions()
         {
@@ -23,7 +23,9 @@
             {
                 new EmYesNo(AuxConsoleEnabledKey, defaultValue: true),
                 new EmProperty<ChallengeLevel>(ChallengeModeKey, ModConfig.DefaultChallenge),
-                new EmProperty<float>(DeficitThresholdKey, ModConfig.DefaultThreshold)
+                new EmProperty<float>(DeficitThresholdKey, ModConfig.DefaultThreshold),
+                new EmProperty<ShowChargerIcons>(ChargerIconsKey, ModConfig.DefaultChargerIcons),
+                new EmYesNo(DebugLogsEnabledKey, defaultValue: false),
             };
         }
 
@@ -36,12 +38,16 @@
             this.AuxConsoleEnabled = (EmYesNo)Properties[AuxConsoleEnabledKey];
             this.ChallengeMode = (EmProperty<ChallengeLevel>)Properties[ChallengeModeKey];
             this.DeficitThreshold = (EmProperty<float>)Properties[DeficitThresholdKey];
+            this.ChargerIcons = (EmProperty<ShowChargerIcons>)Properties[ChargerIconsKey];
+            this.DebugLogsEnabled = (EmYesNo)Properties[DebugLogsEnabledKey];
 
             OnValueExtractedEvent += () =>
             {
                 hasValidData = this.AuxConsoleEnabled.HasData() &
                                this.ChallengeMode.HasData() &
-                               this.DeficitThreshold.HasDataInRange(ModConfig.MinThreshold, ModConfig.MaxThreshold);
+                               this.DeficitThreshold.HasDataInRange(ModConfig.MinThreshold, ModConfig.MaxThreshold) &
+                               this.ChargerIcons.HasData() &
+                               this.DebugLogsEnabled.HasData();
             };
         }
 
@@ -50,6 +56,8 @@
         internal EmYesNo AuxConsoleEnabled { get; }
         internal EmProperty<ChallengeLevel> ChallengeMode { get; }
         internal EmProperty<float> DeficitThreshold { get; }
+        internal EmProperty<ShowChargerIcons> ChargerIcons { get; }
+        internal EmYesNo DebugLogsEnabled { get; }
 
         internal override EmProperty Copy()
         {
