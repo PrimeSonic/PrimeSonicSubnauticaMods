@@ -84,6 +84,7 @@
     <Compile Include="Items\ThermalModule\ThermalCharger.cs" />
     <Compile Include="OriginalUpgrades\OriginalDepthUpgrades.cs" />
     <Compile Include="OriginalUpgrades\OriginalEngineUpgrade.cs" />
+    <Compile Include="OriginalUpgrades\OriginalFireSuppressionUpgrade.cs" />
     <Compile Include="OriginalUpgrades\OriginalUpgrades.cs" />
     <Compile Include="Items\ThermalModule\ThermalUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />

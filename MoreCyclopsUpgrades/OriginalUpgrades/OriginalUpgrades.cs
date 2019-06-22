@@ -57,21 +57,7 @@
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("UpgradeHandler Registered: CyclopsFireSuppressionModule");
-                return new UpgradeHandler(TechType.CyclopsFireSuppressionModule, cyclops)
-                {
-                    OnClearUpgrades = () =>
-                    {
-                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                        if (fss != null)
-                            fss.fireSuppressionSystem.SetActive(false);
-                    },
-                    OnUpgradeCounted = (Equipment modules, string slot) =>
-                    {
-                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                        if (fss != null)
-                            fss.fireSuppressionSystem.SetActive(true);
-                    },
-                };
+                return new OriginalFireSuppressionUpgrade(cyclops);
             });
         }
     }

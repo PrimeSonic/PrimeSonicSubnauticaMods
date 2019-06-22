@@ -10,13 +10,15 @@
         {
             OnClearUpgrades = () =>
             {
-                lastKnownRating = this.cyclops.currPowerRating;
-                this.cyclops.currPowerRating = 1f;
+                lastKnownRating = cyclops.currPowerRating;
+                cyclops.currPowerRating = 1f;
             };
+
             OnUpgradeCounted = (Equipment modules, string slot) =>
             {
-                this.cyclops.currPowerRating = 3f;
+                cyclops.currPowerRating = 3f;
             };
+
             OnFinishedWithUpgrades = () => Announcement();
             OnFinishedWithoutUpgrades = () => Announcement();
         }
