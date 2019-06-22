@@ -55,7 +55,6 @@
     <Compile Include="Craftables\CyclopsSolarChargerMk2.cs" />
     <Compile Include="Management\SolarCharger.cs" />
     <Compile Include="Management\SolarUpgrades.cs" />
-    <Compile Include="Management\BatteryDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
     <Compile Include="Management\SolarState.cs" />

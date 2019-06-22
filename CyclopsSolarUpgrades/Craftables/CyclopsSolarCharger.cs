@@ -1,6 +1,5 @@
 ﻿namespace CyclopsSolarUpgrades.Craftables
 {
-    using CyclopsSolarUpgrades.Management;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -17,8 +16,8 @@
         public CyclopsSolarCharger()
             : base("CyclopsSolarCharger",
                    "Cyclops Solar Charger",
-                   "Allows your cyclops to recharge plentiful power of the sun itself.\n" +
-                  $"Stacks with other solar chargers up to a maximum of {SolarUpgrade.MaxSolarChargers} total solar chargers.")
+                   "Recharges the Cyclops power cells while in sunlight.\n" +
+                  $"Stacks with other solar chargers up to a maximum of {AmbientEnergyUpgradeHandler.MaxChargers} total solar chargers.")
         {
             OnFinishedPatching += () =>
             {
@@ -38,8 +37,9 @@
                 Ingredients =
                 {
                     new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.Quartz, 3),
-                    new Ingredient(TechType.Titanium, 1)
+                    new Ingredient(TechType.EnameledGlass, 1),
+                    new Ingredient(TechType.Titanium, 1),
+                    new Ingredient(TechType.Copper, 1),
                 }
             };
         }

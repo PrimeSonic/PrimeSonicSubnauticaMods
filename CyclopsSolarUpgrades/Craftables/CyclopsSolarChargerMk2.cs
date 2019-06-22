@@ -9,14 +9,14 @@
 
     internal class CyclopsSolarChargerMk2 : CyclopsUpgrade, IUpgradeHandlerCreator, ICyclopsChargerCreator
     {
-        internal const float BatteryCapacity = 120f;
+        internal const float BatteryCapacity = 100f;
 
         private readonly CyclopsSolarCharger previousTier;
         public CyclopsSolarChargerMk2(CyclopsSolarCharger cyclopsSolarCharger)
             : base("CyclopsSolarChargerMk2",
                    "Cyclops Solar Charger Mk2",
-                   "Improved solar charging and with integrated power storage for when you can't see the sun.\n" +
-                  $"Stacks with other solar chargers up to a maximum of {SolarUpgrade.MaxSolarChargers} total solar chargers.")
+                   "Improved solar charging for the Cyclops with additional backup power.\n" +
+                  $"Stacks with other solar chargers up to a maximum of {AmbientEnergyUpgradeHandler.MaxChargers} total solar chargers.")
         {
             previousTier = cyclopsSolarCharger;
             OnStartedPatching += () =>
@@ -44,10 +44,9 @@
                 Ingredients =
                 {
                     new Ingredient(previousTier.TechType, 1),
-                    new Ingredient(TechType.PowerCell, 1),
-                    new Ingredient(TechType.Benzene, 1),
-                    new Ingredient(TechType.WiringKit, 1),
-                    new Ingredient(TechType.CopperWire, 1),
+                    new Ingredient(TechType.PrecursorIonCrystal, 1),
+                    new Ingredient(TechType.Diamond, 1),
+                    new Ingredient(TechType.Lithium, 1),
                 }
             };
         }
@@ -57,7 +56,7 @@
             GameObject obj = base.GetGameObject();
 
             Battery pCell = obj.AddComponent<Battery>();
-            pCell.name = "SolarBackupBattery";
+            pCell.name = "SolarBackupBattery2";
             pCell._capacity = BatteryCapacity;
 
             return obj;

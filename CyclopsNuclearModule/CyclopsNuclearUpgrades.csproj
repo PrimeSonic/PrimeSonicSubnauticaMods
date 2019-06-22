@@ -57,7 +57,6 @@
     <Compile Include="Items\CyclopsNuclearModule.cs" />
     <Compile Include="Items\DepletedNuclearModule.cs" />
     <Compile Include="Items\NuclearFabricator.cs" />
-    <Compile Include="Management\BatteryDetails.cs" />
     <Compile Include="Management\NuclearChargeHandler.cs" />
     <Compile Include="Management\NuclearState.cs" />
     <Compile Include="Management\NuclearUpgradeHandler.cs" />

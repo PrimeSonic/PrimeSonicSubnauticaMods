@@ -70,6 +70,8 @@
     <Compile Include="API\IMCUCrossMod.cs" />
     <Compile Include="API\IMCURegistration.cs" />
     <Compile Include="API\IMCUSearch.cs" />
+    <Compile Include="API\Upgrades\AmbientEnergyUpgradeHandler.cs" />
+    <Compile Include="API\Upgrades\BatteryDetails.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeLevel.cs" />
     <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />
     <Compile Include="Config\IModConfig.cs" />
@@ -104,7 +106,6 @@
     <Compile Include="API\Upgrades\CyclopsUpgrade.cs" />
     <Compile Include="Items\ThermalModule\CyclopsThermalChargerMk2.cs" />
     <Compile Include="Caching\NumberFormatter.cs" />
-    <Compile Include="Caching\BatteryDetails.cs" />
     <Compile Include="API\Upgrades\TieredUpgradeHandler.cs" />
     <Compile Include="API\Upgrades\UpgradeHandler.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />

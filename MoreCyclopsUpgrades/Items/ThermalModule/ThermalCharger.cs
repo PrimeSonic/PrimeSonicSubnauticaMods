@@ -95,24 +95,25 @@
 
         public float ProducePower(float requestedPower)
         {
-            if (upgradeHandler.Count == 0 && upgradeHandler.Count == 0)
+            if (upgradeHandler.Count == 0)
             {
                 ThermalState = ThermalState.None;
                 return 0f;
             }
 
             temperature = GetThermalStatus(Cyclops);
-            float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * Cyclops.thermalReactorCharge.Evaluate(temperature);
 
-            if (availableThermalEnergy > MinimalPowerValue)
+            if (temperature > MinUsableTemperature)
             {
+                float availableThermalEnergy = ThermalChargingFactor * Time.deltaTime * Cyclops.thermalReactorCharge.Evaluate(temperature);
+
                 ThermalState = ThermalState.HeatAvailable;
-                float mk1Power = upgradeHandler.Count * availableThermalEnergy;
-                float mk2Power = upgradeHandler.Count * availableThermalEnergy * Mk2ChargeRateModifier;
+                float thermalEnergy = upgradeHandler.Count * upgradeHandler.ChargeMultiplier;
 
-                upgradeHandler.RechargeBatteries(mk1Power + mk2Power);
+                if (requestedPower < thermalEnergy)
+                    upgradeHandler.RechargeBatteries(thermalEnergy - requestedPower);
 
-                return mk1Power + mk2Power;
+                return thermalEnergy;
             }
             else if (upgradeHandler.TotalBatteryCharge > MinimalPowerValue)
             {

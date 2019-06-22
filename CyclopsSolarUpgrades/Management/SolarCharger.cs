@@ -7,11 +7,11 @@
     internal class SolarCharger : ICyclopsCharger
     {
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        private const float Mk2ChargeRateModifier = 1.10f;
         private const float BatteryDrainRate = 0.01f;
         private const float MaxSolarDepth = 200f;
         private const float SolarChargingFactor = 0.03f;
         private const float MaxSolarPercentage = 90f;
+        private const float DiminishingReturnRatio = 0.6f;
 
         private readonly Atlas.Sprite solar1Sprite;
         private readonly Atlas.Sprite solar2Sprite;
@@ -93,17 +93,18 @@
 
             float solarStatus = GetSolarStatus(Cyclops);
             float availableSolarEnergy = SolarChargingFactor * solarStatus;
-            solarPercentage = solarStatus * 100;
 
             if (availableSolarEnergy > MinimalPowerValue)
             {
                 solarState = SolarState.SunAvailable;
-                float mk1Power = upgradeHandler[solarTier1] * availableSolarEnergy;
-                float mk2Power = upgradeHandler[solarTier2] * availableSolarEnergy * Mk2ChargeRateModifier;
+                solarPercentage = solarStatus * 100;
 
-                upgradeHandler.RechargeBatteries(mk1Power + mk2Power);
+                float solarEnergy = upgradeHandler.ChargeMultiplier * availableSolarEnergy;
 
-                return mk1Power + mk2Power;
+                if (requestedPower < solarEnergy)
+                    upgradeHandler.RechargeBatteries(solarEnergy - requestedPower);
+
+                return solarEnergy;
             }
             else if (upgradeHandler.TotalBatteryCharge > MinimalPowerValue)
             {
@@ -149,7 +150,5 @@
             return DayNightCycle.main.GetLocalLightScalar() *
                    Mathf.Clamp01((MaxSolarDepth + cyclops.transform.position.y) / MaxSolarDepth);
         }
-
-        
     }
 }
