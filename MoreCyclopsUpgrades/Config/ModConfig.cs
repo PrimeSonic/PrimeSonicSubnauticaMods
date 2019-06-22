@@ -7,9 +7,21 @@
     using MoreCyclopsUpgrades.Config.Options;
     using UnityEngine;
 
-    internal class ModConfig
+    internal class ModConfig : IModConfig
     {
-        internal static ModConfig Main { get; } = new ModConfig();
+        private static readonly ModConfig main = new ModConfig();
+        internal static IModConfig Main
+        {
+            get
+            {
+                if (!main.initialized)
+                    main.Initialize();
+
+                return main;
+            }
+        }
+
+        private bool initialized = false;
 
         private const string AuxConsoleEnabledKey = "AuxConsoleEnabled";
         private const string ChallengeModeKey = "ChallengeMode";
@@ -17,45 +29,37 @@
         private const string ChargerIconsKey = "ShowChargerIcons";
         private const string DebugLogsEnabledKey = "EnableDebugLogs";
 
-        private const float MinThreshold = 10f;
-        private const float MaxThreshold = 99f;
-        private const bool AuxConsoleDefaultEnabled = true;
-        private const ChallengeLevel DefaultChallenge = ChallengeLevel.Easy;
-        private const float DefaultThreshold = 95f;
-        private const ShowChargerIcons DefaultChargerIcons = ShowChargerIcons.Everywhere;
-        private const bool DebugLogsDefaultDisabled = false;
-
         private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable Aux Upgrade Console (Requires restart)")
         {
-            State = AuxConsoleDefaultEnabled
+            State = true
         };
         private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge Mode (Requires restart)")
         {
             Choices = new string[3] { $"{ChallengeLevel.Easy}", $"{ChallengeLevel.Normal}", $"{ChallengeLevel.Hard}" },
-            Index = (int)DefaultChallenge
+            Index = (int)ChallengeLevel.Easy
         };
         private readonly SliderOption deficitThreshHold = new SliderOption(DeficitThresholdKey, "Use non-renewable energy below %")
         {
-            MinValue = MinThreshold,
-            MaxValue = MaxThreshold
+            MinValue = 10f,
+            MaxValue = 99f,
+            Value = 95f
         };
         private readonly ChoiceOption showIcons = new ChoiceOption(ChargerIconsKey, "Charging Status Icons")
         {
             Choices = new string[4] { $"{ShowChargerIcons.Never}", $"{ShowChargerIcons.WhenPiloting}", $"{ShowChargerIcons.OnHoloDisplay}", $"{ShowChargerIcons.Everywhere}", },
-            Index = (int)DefaultChargerIcons
+            Index = (int)ShowChargerIcons.Everywhere
         };
         private readonly ToggleOption debugLogs = new ToggleOption(DebugLogsEnabledKey, "Enable Debug Logs(Requires restart)")
         {
-            State = DebugLogsDefaultDisabled
+            State = false
         };
 
-        private readonly List<ConfigOption> configOptions;
         private readonly ModConfigSaveData saveData;
         private readonly ModConfigMenuOptions menuOptions;
 
         private ModConfig()
         {
-            configOptions = new List<ConfigOption>(5)
+            var configOptions = new List<ConfigOption>(5)
             {
                 auxConsoleEnabled, challengeMode, deficitThreshHold, showIcons, debugLogs
             };
@@ -91,8 +95,9 @@
             get => deficitThreshHold.SaveData.Value;
             set
             {
-                deficitThreshHold.SaveData.Value = value;
-                deficitThreshHold.Value = value;
+                float roundedValue = Mathf.Round(value);
+                deficitThreshHold.SaveData.Value = roundedValue;
+                deficitThreshHold.Value = roundedValue;
                 SaveData();
             }
         }
@@ -167,6 +172,8 @@
 
             debugLogs.SaveData = saveData.GetBoolProperty(debugLogs.Id);
             debugLogs.OptionToggled = (bool value) => { this.DebugLogsEnabled = value; };
+
+            initialized = true;
         }
 
         private void SaveData()
@@ -177,9 +184,9 @@
 
         private float CyclopsMaxPower = 1f;
 
-        internal float MinimumEnergyDeficit { get; private set; } = 1140f;
+        public float MinimumEnergyDeficit { get; private set; } = 1140f;
 
-        internal void UpdateCyclopsMaxPower(float maxPower)
+        public void UpdateCyclopsMaxPower(float maxPower)
         {
             if (CyclopsMaxPower == maxPower)
                 return;

@@ -71,6 +71,7 @@
     <Compile Include="API\IMCURegistration.cs" />
     <Compile Include="API\IMCUSearch.cs" />
     <Compile Include="Config\ChallengeLevel.cs" />
+    <Compile Include="Config\IModConfig.cs" />
     <Compile Include="Config\ModConfig.cs" />
     <Compile Include="Config\ModConfigMenuOptions.cs" />
     <Compile Include="Config\ModConfigSaveData.cs" />
