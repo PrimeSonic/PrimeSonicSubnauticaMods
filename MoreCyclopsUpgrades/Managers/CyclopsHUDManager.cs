@@ -7,6 +7,7 @@
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Config;
+    using MoreCyclopsUpgrades.Config.ChoiceEnums;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -50,13 +51,16 @@
         private bool powerIconsInitialized = false;
 
         private CyclopsHolographicHUD holographicHUD;
+        private readonly IModConfig settings;
 
         private bool lastKnownTextVisibility = false;
         private bool powerIconTextVisibility = false;
+        private int lastKnownHudPowerText = -1;
 
-        internal CyclopsHUDManager(SubRoot cyclops)
+        internal CyclopsHUDManager(SubRoot cyclops, IModConfig modConfig)
         {
             Cyclops = cyclops;
+            settings = modConfig;
         }
 
         internal void UpdateTextVisibility()
@@ -85,7 +89,7 @@
         /// Updates the Cyclops helm HUD  using data from all equipment modules across all upgrade consoles.
         /// </summary>
         /// <param name="cyclopsHelmHUD">The instance.</param>
-        internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD)
+        internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, int lastPowerInt)
         {
             if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != Cyclops)
             {
@@ -97,9 +101,32 @@
                 AddPowerIcons(cyclopsHelmHUD, this.ChargeManager.PowerChargersCount);
             }
 
-            // Change the color of the Cyclops energy percentage on the HUD
-            int currentReservePower = this.ChargeManager.GetTotalReservePower();
-            cyclopsHelmHUD.powerText.color = currentReservePower > 0f ? Color.cyan : Color.white;
+            if (lastKnownHudPowerText == lastPowerInt)
+                return;
+
+            cyclopsHelmHUD.lastPowerPctUsedForString = lastKnownHudPowerText = lastPowerInt;
+
+            PowerRelay powerRelay = Cyclops.powerRelay;
+
+            switch (settings.EnergyDisplay)
+            {
+                case HelmEnergyDisplay.PowerCellAmount:
+                    cyclopsHelmHUD.powerText.text = NumberFormatter.FormatValue(powerRelay.GetPower());
+                    break;
+                case HelmEnergyDisplay.PercentageOverPowerCells:
+                    float percentOver = (powerRelay.GetPower() + this.ChargeManager.GetTotalReservePower()) / powerRelay.GetMaxPower();
+                    int percentOverInt = Mathf.Max(Mathf.CeilToInt(percentOver * 100f), 999); // Max out at 999 because only 4 characters fit on the display
+                    cyclopsHelmHUD.powerText.text = $"{percentOverInt}%";
+                    break;
+                case HelmEnergyDisplay.CombinedAmount:
+                    cyclopsHelmHUD.powerText.text = NumberFormatter.FormatValue(powerRelay.GetPower() + this.ChargeManager.GetTotalReservePower());
+                    break;
+                default: // HelmEnergyDisplay.PowerCellPercentage:
+                    float percent = powerRelay.GetPower() / powerRelay.GetMaxPower();
+                    int percentInt = Mathf.CeilToInt(percent * 100f);
+                    cyclopsHelmHUD.powerText.text = $"{percentInt}%";
+                    break;
+            }
         }
 
         /// <summary>
@@ -123,11 +150,12 @@
 
             int currentReservePower = this.ChargeManager.GetTotalReservePower();
             float currentBatteryPower = Cyclops.powerRelay.GetPower();
+
             int TotalPowerUnits = Mathf.CeilToInt(currentBatteryPower + currentReservePower);
             float normalMaxPower = Cyclops.powerRelay.GetMaxPower();
             int normalMaxPowerInt = Mathf.CeilToInt(normalMaxPower);
 
-            hudManager.energyCur.color = currentReservePower > 0 ? Color.cyan : Color.white;
+            hudManager.energyCur.color = NumberFormatter.GetNumberColor(currentBatteryPower, normalMaxPower, 0f);
             hudManager.energyCur.text = NumberFormatter.FormatValue(TotalPowerUnits);
 
             if (hudManager.lastMaxSubPowerDisplayed != normalMaxPowerInt)
@@ -136,7 +164,7 @@
                 hudManager.lastMaxSubPowerDisplayed = normalMaxPowerInt;
             }
 
-            ModConfig.Main.UpdateCyclopsMaxPower(normalMaxPower);
+            settings.UpdateCyclopsMaxPower(normalMaxPower);
 
             UpdatePowerIcons();
         }
@@ -253,7 +281,6 @@
             foreach (Indicator indicator in HealthBarIndicatorsEven)
                 indicator.Enabled = false;
 
-
             bool isEven = true;
             foreach (ICyclopsCharger charger in cyclopsChargers)
             {
@@ -282,5 +309,7 @@
                 helmIcon.Enabled = ModConfig.Main.ShowIconsOnHoloDisplay;
             }
         }
+
+
     }
 }

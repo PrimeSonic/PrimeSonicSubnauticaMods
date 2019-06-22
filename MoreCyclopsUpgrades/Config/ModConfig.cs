@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Threading;
     using Common;
+    using MoreCyclopsUpgrades.Config.ChoiceEnums;
     using MoreCyclopsUpgrades.Config.Options;
     using UnityEngine;
 
@@ -28,6 +29,7 @@
         private const string DeficitThresholdKey = "DeficitThreshold";
         private const string ChargerIconsKey = "ShowChargerIcons";
         private const string DebugLogsEnabledKey = "EnableDebugLogs";
+        private const string HelmEnergyDisplayKey = "HelmEnergyDisplay";
 
         private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable Aux Upgrade Console (Requires restart)")
         {
@@ -35,7 +37,12 @@
         };
         private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge Mode (Requires restart)")
         {
-            Choices = new string[3] { $"{ChallengeLevel.Easy}", $"{ChallengeLevel.Normal}", $"{ChallengeLevel.Hard}" },
+            Choices = new string[3]
+            {
+                $"{ChallengeLevel.Easy}",
+                $"{ChallengeLevel.Normal}",
+                $"{ChallengeLevel.Hard}"
+            },
             Index = (int)ChallengeLevel.Easy
         };
         private readonly SliderOption deficitThreshHold = new SliderOption(DeficitThresholdKey, "Use non-renewable energy below %")
@@ -46,22 +53,40 @@
         };
         private readonly ChoiceOption showIcons = new ChoiceOption(ChargerIconsKey, "Charging Status Icons")
         {
-            Choices = new string[4] { $"{ShowChargerIcons.Never}", $"{ShowChargerIcons.WhenPiloting}", $"{ShowChargerIcons.OnHoloDisplay}", $"{ShowChargerIcons.Everywhere}", },
+            Choices = new string[4]
+            {
+                $"{ShowChargerIcons.Never}",
+                $"{ShowChargerIcons.WhenPiloting}",
+                $"{ShowChargerIcons.OnHoloDisplay}",
+                $"{ShowChargerIcons.Everywhere}",
+            },
             Index = (int)ShowChargerIcons.Everywhere
         };
         private readonly ToggleOption debugLogs = new ToggleOption(DebugLogsEnabledKey, "Enable Debug Logs(Requires restart)")
         {
             State = false
         };
+        private readonly ChoiceOption energyDisplay = new ChoiceOption(HelmEnergyDisplayKey, "Helm HUD Energy Display")
+        {
+            Choices = new string[4]
+            {
+                $"{HelmEnergyDisplay.PowerCellPercentage}",
+                $"{HelmEnergyDisplay.PowerCellAmount}",
+                $"{HelmEnergyDisplay.PercentageOverPowerCells}",
+                $"{HelmEnergyDisplay.CombinedAmount}"
+            },
+            Index = (int)HelmEnergyDisplay.PowerCellPercentage
+        };
+
 
         private readonly ModConfigSaveData saveData;
         private readonly ModConfigMenuOptions menuOptions;
 
         private ModConfig()
         {
-            var configOptions = new List<ConfigOption>(5)
+            var configOptions = new List<ConfigOption>(6)
             {
-                auxConsoleEnabled, challengeMode, deficitThreshHold, showIcons, debugLogs
+                auxConsoleEnabled, challengeMode, deficitThreshHold, showIcons, debugLogs, energyDisplay
             };
 
             saveData = new ModConfigSaveData(configOptions);
@@ -125,6 +150,17 @@
             }
         }
 
+        public HelmEnergyDisplay EnergyDisplay
+        {
+            get => (HelmEnergyDisplay)energyDisplay.SaveData.Value;
+            set
+            {
+                energyDisplay.SaveData.Value = (int)value;
+                energyDisplay.Index = (int)value;
+                SaveData();
+            }
+        }
+
         public bool ShowIconsWhilePiloting => this.ChargerIcons == ShowChargerIcons.Everywhere || this.ChargerIcons == ShowChargerIcons.WhenPiloting;
 
         public bool ShowIconsOnHoloDisplay => this.ChargerIcons == ShowChargerIcons.Everywhere || this.ChargerIcons == ShowChargerIcons.OnHoloDisplay;
@@ -162,16 +198,19 @@
             auxConsoleEnabled.OptionToggled = (bool value) => { this.AuxConsoleEnabled = value; };
 
             challengeMode.SaveData = saveData.GetIntProperty(challengeMode.Id);
-            challengeMode.ChoiceChanged = (int value) => { this.ChallengeMode = (ChallengeLevel)value; };
+            challengeMode.ChoiceChanged = (int index) => { this.ChallengeMode = (ChallengeLevel)index; };
 
             deficitThreshHold.SaveData = saveData.GetFloatProperty(deficitThreshHold.Id);
             deficitThreshHold.ValueChanged = (float value) => { this.DeficitThreshold = value; };
 
             showIcons.SaveData = saveData.GetIntProperty(showIcons.Id);
-            showIcons.ChoiceChanged = (int value) => { this.ChargerIcons = (ShowChargerIcons)value; };
+            showIcons.ChoiceChanged = (int index) => { this.ChargerIcons = (ShowChargerIcons)index; };
 
             debugLogs.SaveData = saveData.GetBoolProperty(debugLogs.Id);
             debugLogs.OptionToggled = (bool value) => { this.DebugLogsEnabled = value; };
+
+            energyDisplay.SaveData = saveData.GetIntProperty(energyDisplay.Id);
+            energyDisplay.ChoiceChanged = (int index) => { this.EnergyDisplay = (HelmEnergyDisplay)index; };
 
             initialized = true;
         }

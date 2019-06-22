@@ -118,7 +118,7 @@
             MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
             {
                 QuickLogger.Debug("Core CyclopsHUDManager registered");
-                return new CyclopsHUDManager(cyclops);
+                return new CyclopsHUDManager(cyclops, ModConfig.Main);
             });
         }
     }

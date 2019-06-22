@@ -70,7 +70,8 @@
     <Compile Include="API\IMCUCrossMod.cs" />
     <Compile Include="API\IMCURegistration.cs" />
     <Compile Include="API\IMCUSearch.cs" />
-    <Compile Include="Config\ChallengeLevel.cs" />
+    <Compile Include="Config\ChoiceEnums\ChallengeLevel.cs" />
+    <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />
     <Compile Include="Config\IModConfig.cs" />
     <Compile Include="Config\ModConfig.cs" />
     <Compile Include="Config\ModConfigMenuOptions.cs" />
@@ -80,7 +81,7 @@
     <Compile Include="Config\Options\OptionTypes.cs" />
     <Compile Include="Config\Options\SliderOption.cs" />
     <Compile Include="Config\Options\ToggleOption.cs" />
-    <Compile Include="Config\ShowChargerIcons.cs" />
+    <Compile Include="Config\ChoiceEnums\ShowChargerIcons.cs" />
     <Compile Include="Items\ThermalModule\ThermalCharger.cs" />
     <Compile Include="OriginalUpgrades\OriginalDepthUpgrades.cs" />
     <Compile Include="OriginalUpgrades\OriginalEngineUpgrade.cs" />

@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Config
+﻿namespace MoreCyclopsUpgrades.Config.ChoiceEnums
 {
     internal enum ChallengeLevel
     {

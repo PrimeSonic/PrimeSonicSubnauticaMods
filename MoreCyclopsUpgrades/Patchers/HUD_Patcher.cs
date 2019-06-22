@@ -2,15 +2,28 @@
 {
     using Harmony;
     using Managers;
+    using UnityEngine;
 
     [HarmonyPatch(typeof(CyclopsHelmHUDManager))]
     [HarmonyPatch("Update")]
     internal class CyclopsHelmHUDManager_Update_Patcher
     {
-        [HarmonyPostfix]
-        public static void Postfix(ref CyclopsHelmHUDManager __instance)
+        [HarmonyPrefix]
+        public static void Prefix(ref CyclopsHelmHUDManager __instance, ref int __state)
         {
-            CyclopsManager.GetManager<CyclopsHUDManager>(__instance.subRoot, CyclopsHUDManager.ManagerName)?.UpdateHelmHUD(__instance);
+            if (__instance.subLiveMixin.IsAlive())
+            {
+                // Should prevent the powerText from getting updated normally
+                __state = __instance.lastPowerPctUsedForString;
+                float ratioNum = __instance.subRoot.powerRelay.GetPower() / __instance.subRoot.powerRelay.GetMaxPower();
+                __instance.lastPowerPctUsedForString = Mathf.CeilToInt(ratioNum * 100f);
+            }
+        }
+
+        [HarmonyPostfix]
+        public static void Postfix(ref CyclopsHelmHUDManager __instance, ref int __state)
+        {
+            CyclopsManager.GetManager<CyclopsHUDManager>(__instance.subRoot, CyclopsHUDManager.ManagerName)?.UpdateHelmHUD(__instance, __state);
         }
     }
 
