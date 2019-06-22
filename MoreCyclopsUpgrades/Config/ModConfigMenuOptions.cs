@@ -1,69 +1,72 @@
 ﻿namespace MoreCyclopsUpgrades.Config
 {
+    using System.Collections.Generic;
+    using MoreCyclopsUpgrades.Config.Options;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Options;
-    using UnityEngine;
 
     internal class ModConfigMenuOptions : ModOptions
     {
-        private const string AuxConsoleId = "MCUConsole";
-        private const string ChallengeModeId = "MCUChallenge";
-        private const string DeficitThresholdId = "MCUThreshold";
-        private const string ShowChargerIconseId = "MCUChargerIcons";
-        private const string DebugLogsId = "MCUDebugLogs";
+        private readonly IEnumerable<ConfigOption> configOptions;
 
-        public delegate void AuxConsoleToggledEvent(bool value);
-        public delegate void ChallengeModeChangedEvent(ChallengeLevel value);
-        public delegate void DeficitThresholdChangedEvent(float value);
-        public delegate void ShowChargerIconsChangedEvent(ShowChargerIcons value);
-        public delegate void DebugLogsToggledEvent(bool value);
-
-        internal AuxConsoleToggledEvent AuxConsoleToggled;
-        internal ChallengeModeChangedEvent ChallengeModeChanged;
-        internal DeficitThresholdChangedEvent DeficitThresholdChanged;
-        internal ShowChargerIconsChangedEvent ShowChargerIconsChanged;
-        internal DebugLogsToggledEvent DebugLogsToggled;
-
-        private IModConfig initialValues;
-
-        public ModConfigMenuOptions() : base("MoreCyclopsUpgrades Options")
+        public ModConfigMenuOptions(IEnumerable<ConfigOption> options) : base("MoreCyclopsUpgrades Config Options")
         {
-            base.ToggleChanged += (object sender, ToggleChangedEventArgs e) =>
-            {
-                if (e.Id == AuxConsoleId)
-                    AuxConsoleToggled?.Invoke(e.Value);
-            };
-            base.ChoiceChanged += (object sender, ChoiceChangedEventArgs e) =>
-            {
-                if (e.Id == ChallengeModeId)
-                    ChallengeModeChanged?.Invoke((ChallengeLevel)e.Index);
-            };
-            base.SliderChanged += (object sender, SliderChangedEventArgs e) =>
-            {
-                if (e.Id == DeficitThresholdId)
-                    DeficitThresholdChanged?.Invoke(Mathf.Round(e.Value));
-            };
-            base.ChoiceChanged += (object sender, ChoiceChangedEventArgs e) =>
-            {
-                if (e.Id == ShowChargerIconseId)
-                    ShowChargerIconsChanged?.Invoke((ShowChargerIcons)e.Index);
-            };
+            configOptions = options;
         }
 
-        internal void Register(IModConfig startingValues)
+        internal void SetUpEvents()
         {
-            initialValues = startingValues;
+            foreach (ConfigOption item in configOptions)
+            {
+                switch (item.OptionType)
+                {
+                    case OptionTypes.Slider when item is SliderOption slider:
+                        base.SliderChanged += (object sender, SliderChangedEventArgs e) =>
+                        {
+                            if (e.Id == slider.Id)
+                                slider?.ValueChanged(e.Value);
+                        };
+                        break;
+                    case OptionTypes.Choice when item is ChoiceOption choice:
+                        base.ChoiceChanged += (object sender, ChoiceChangedEventArgs e) =>
+                        {
+                            if (e.Id == choice.Id)
+                                choice?.ChoiceChanged(e.Index);
+                        };
+                        break;
+                    case OptionTypes.Toggle when item is ToggleOption toggle:
+                        base.ToggleChanged += (object sender, ToggleChangedEventArgs e) =>
+                        {
+                            if (e.Id == toggle.Id)
+                                toggle?.OptionToggled(e.Value);
+                        };
+                        break;
+                }
+            }
+        }
 
+        internal void Register()
+        {
             OptionsPanelHandler.RegisterModOptions(this);
         }
 
         public override void BuildModOptions()
         {
-            base.AddToggleOption(AuxConsoleId, "Enable Aux Upgrade Console (Requires restart)", initialValues.AuxConsoleEnabled);
-            base.AddChoiceOption<ChallengeLevel>(ChallengeModeId, "Challenge Mode (Requires restart)", initialValues.ChallengeMode);
-            base.AddSliderOption(DeficitThresholdId, "Use non-renewable chargers below %", ModConfig.MinThreshold, ModConfig.MaxThreshold, initialValues.DeficitThreshold);
-            base.AddChoiceOption<ShowChargerIcons>(ShowChargerIconseId, "Charging Icons", initialValues.ChargerIcons);
-            base.AddToggleOption(AuxConsoleId, "Enable Debug Logs (Requires restart)", initialValues.DebugLogsEnabled);
+            foreach (ConfigOption item in configOptions)
+            {
+                switch (item.OptionType)
+                {
+                    case OptionTypes.Slider when item is SliderOption slider:
+                        base.AddSliderOption(slider.Id, slider.Label, slider.MinValue, slider.MaxValue, slider.Value);
+                        break;
+                    case OptionTypes.Choice when item is ChoiceOption choice:
+                        base.AddChoiceOption(choice.Id, choice.Label, choice.Choices, choice.Index);
+                        break;
+                    case OptionTypes.Toggle when item is ToggleOption toggle:
+                        base.AddToggleOption(toggle.Id, toggle.Label, toggle.State);
+                        break;
+                }
+            }
         }
     }
 }

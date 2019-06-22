@@ -26,6 +26,7 @@
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
                 ModConfig.Main.Initialize();
+                QuickLogger.DebugLogsEnabled = ModConfig.Main.DebugLogsEnabled;
 
                 RemoveOldConfigs();
 

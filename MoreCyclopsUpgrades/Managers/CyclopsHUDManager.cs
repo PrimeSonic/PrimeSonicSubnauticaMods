@@ -279,7 +279,7 @@
                 hpIcon.Text.color = helmIcon.Text.color = charger.GetIndicatorTextColor();
 
                 hpIcon.Enabled = ModConfig.Main.ShowIconsWhilePiloting;
-                helmIcon.Enabled = ModConfig.Main.ShowIconsAtHelm;
+                helmIcon.Enabled = ModConfig.Main.ShowIconsOnHoloDisplay;
             }
         }
     }
