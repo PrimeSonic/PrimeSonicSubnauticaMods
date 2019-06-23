@@ -4,7 +4,9 @@
     using System.Reflection;
     using Common;
     using CyclopsBioReactor.Items;
+    using CyclopsBioReactor.Management;
     using Harmony;
+    using MoreCyclopsUpgrades.API;
 
     public static class QPatch
     {
@@ -22,6 +24,21 @@
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+                MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
+                {
+                    return new BioAuxCyclopsManager(cyclops, booster.TechType, reactor.TechType);
+                });
+
+                MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
+                {
+                    return new BioChargeHandler(booster.TechType, cyclops);
+                });
+
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+                {
+                    return new BioBoosterUpgradeHandler(booster.TechType, cyclops);
+                });
 
                 QuickLogger.Info("Finished Patching");
             }

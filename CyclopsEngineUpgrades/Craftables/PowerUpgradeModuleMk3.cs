@@ -1,7 +1,6 @@
 ﻿namespace CyclopsEngineUpgrades.Craftables
 {
     using CyclopsEngineUpgrades.Handlers;
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
 
@@ -22,11 +21,6 @@
                 if (!previousTier.IsPatched)
                     previousTier.Patch();
             };
-
-            OnFinishedPatching += () =>
-            {
-                MCUServices.Register.CyclopsUpgradeHandler(CreateEngineHandler);
-            };
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
@@ -41,13 +35,13 @@
                 Ingredients =
                 {
                     new Ingredient(previousTier.TechType, 1),
-                    new Ingredient(TechType.Kyanite, 1), // More uses for Kyanite!
-                    new Ingredient(TechType.Diamond, 1),
+                    new Ingredient(TechType.PrecursorIonCrystal, 1),
+                    new Ingredient(TechType.Nickel, 1),
                 }
             };
         }
 
-        private EngineHandler CreateEngineHandler(SubRoot cyclops)
+        internal EngineHandler CreateEngineHandler(SubRoot cyclops)
         {
             return new EngineHandler(previousTier, this, cyclops);
         }

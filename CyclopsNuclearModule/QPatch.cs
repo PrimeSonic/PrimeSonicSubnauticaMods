@@ -2,6 +2,7 @@
 {
     using System;
     using Common;
+    using MoreCyclopsUpgrades.API;
 
     public static class QPatch
     {
@@ -17,6 +18,9 @@
                 nuclearModule.Patch();
                 depletedModule.Patch();
                 nuclearFabricator.Patch();
+
+                MCUServices.Register.CyclopsUpgradeHandler(depletedModule);
+                MCUServices.Register.CyclopsCharger(depletedModule);
             }
             catch(Exception ex)
             {

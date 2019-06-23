@@ -43,21 +43,6 @@
                 LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
                 LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
                 LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");
-
-                MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
-                {
-                    return new BioAuxCyclopsManager(cyclops, bioBooster.TechType, this.TechType);
-                });
-
-                MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
-                {
-                    return new BioChargeHandler(bioBooster.TechType, cyclops);
-                });
-
-                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-                {
-                    return new BioBoosterUpgradeHandler(bioBooster.TechType, cyclops);
-                });
             };
             
         }

@@ -53,10 +53,9 @@
                 Ingredients =
                 {
                     new Ingredient(TechType.CyclopsThermalReactorModule, 1),
-                    new Ingredient(TechType.PowerCell, 1),
+                    new Ingredient(TechType.PrecursorIonCrystal, 1),
                     new Ingredient(TechType.Benzene, 1),
-                    new Ingredient(TechType.WiringKit, 1),
-                    new Ingredient(TechType.CopperWire, 1),
+                    new Ingredient(TechType.Magnetite, 1),
                 }
             };
         }

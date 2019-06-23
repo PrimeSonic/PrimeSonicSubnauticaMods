@@ -26,8 +26,8 @@
                 Ingredients =
                 {
                     new Ingredient(TechType.PowerUpgradeModule, 1),
-                    new Ingredient(TechType.Aerogel, 1),
-                    new Ingredient(TechType.Sulphur, 2) // Did you make it to the Lost River yet?
+                    new Ingredient(TechType.Kyanite, 1),
+                    new Ingredient(TechType.Magnetite, 2)
                 }
             };
         }

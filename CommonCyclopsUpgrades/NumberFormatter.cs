@@ -34,7 +34,7 @@
                 return $"{possiblyLargeValue / 1000f:F1}K";
             }
 
-            return $"{Mathf.CeilToInt(possiblyLargeValue)}";
+            return $"{possiblyLargeValue}";
         }
 
         internal static Color GetNumberColor(float value, float max, float min)

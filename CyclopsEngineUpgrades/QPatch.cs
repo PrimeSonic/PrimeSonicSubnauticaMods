@@ -2,6 +2,7 @@
 {
     using Common;
     using CyclopsEngineUpgrades.Craftables;
+    using MoreCyclopsUpgrades.API;
 
     public static class QPatch
     {
@@ -16,6 +17,8 @@
             speedUpgrade.Patch();
             engineMk2Upgrade.Patch();
             engineMk3Upgrade.Patch();
+
+            MCUServices.Register.CyclopsUpgradeHandler(engineMk3Upgrade.CreateEngineHandler);
 
             QuickLogger.Info($"Finished patching.");
         }

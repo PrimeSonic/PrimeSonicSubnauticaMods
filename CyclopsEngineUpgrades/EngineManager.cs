@@ -17,7 +17,7 @@
         /// "Practically zero" for all intents and purposes. Any energy value lower than this should be considered zero.
         /// </summary>
         public const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        
+
         private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters]
         {
             0.25f, 0.15f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules
@@ -60,7 +60,8 @@
         private int lastKnownSpeedBoosters = -1;
         private int lastKnownPowerIndex = -1;
 
-        private float[] OriginalSpeeds { get; } = new float[3];
+        private readonly float[] originalSpeeds = new float[3];
+        private readonly float[] originalNoise = new float[3];
 
         internal SpeedHandler SpeedBoosters;
         internal EngineHandler EngineEfficientyUpgrades;
@@ -83,9 +84,13 @@
         public bool Initialize(SubRoot cyclops)
         {
             // Store the original values before we start to change them
-            this.OriginalSpeeds[0] = this.MotorMode.motorModeSpeeds[0];
-            this.OriginalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
-            this.OriginalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
+            originalSpeeds[0] = this.MotorMode.motorModeSpeeds[0];
+            originalSpeeds[1] = this.MotorMode.motorModeSpeeds[1];
+            originalSpeeds[2] = this.MotorMode.motorModeSpeeds[2];
+
+            originalNoise[0] = this.MotorMode.motorModeNoiseValues[0];
+            originalNoise[1] = this.MotorMode.motorModeNoiseValues[1];
+            originalNoise[2] = this.MotorMode.motorModeNoiseValues[2];
 
             return Cyclops == cyclops;
         }
@@ -141,31 +146,35 @@
             {
                 lastKnownSpeedBoosters = speedBoosters;
 
-                float SlowMultiplier = 1f;
-                float StandardMultiplier = 1f;
-                float FlankMultiplier = 1f;
+                float slowMultiplier = 1f;
+                float standardMultiplier = 1f;
+                float slankMultiplier = 1f;
+                float noiseMultiplier = 1f;
 
                 // Calculate the speed multiplier with diminishing returns
                 while (--speedBoosters > -1)
                 {
-                    SlowMultiplier += SlowSpeedBonuses[speedBoosters];
-                    StandardMultiplier += StandardSpeedBonuses[speedBoosters];
-                    FlankMultiplier += FlankSpeedBonuses[speedBoosters];
+                    slowMultiplier += SlowSpeedBonuses[speedBoosters];
+                    standardMultiplier += StandardSpeedBonuses[speedBoosters];
+                    slankMultiplier += FlankSpeedBonuses[speedBoosters];
+                    noiseMultiplier += 0.1f;
                 }
 
                 // These will apply when changing speed modes
-                this.MotorMode.motorModeSpeeds[0] = this.OriginalSpeeds[0] * SlowMultiplier;
-                this.MotorMode.motorModeSpeeds[1] = this.OriginalSpeeds[1] * StandardMultiplier;
-                this.MotorMode.motorModeSpeeds[2] = this.OriginalSpeeds[2] * FlankMultiplier;
+                this.MotorMode.motorModeSpeeds[0] = originalSpeeds[0] * slowMultiplier;
+                this.MotorMode.motorModeSpeeds[1] = originalSpeeds[1] * standardMultiplier;
+                this.MotorMode.motorModeSpeeds[2] = originalSpeeds[2] * slankMultiplier;
+
+                this.MotorMode.motorModeNoiseValues[0] = originalNoise[0] * noiseMultiplier;
+                this.MotorMode.motorModeNoiseValues[1] = originalNoise[1] * noiseMultiplier;
+                this.MotorMode.motorModeNoiseValues[2] = originalNoise[2] * noiseMultiplier;
 
                 // These will apply immediately
                 CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
                 this.SubControl.BaseForwardAccel = this.MotorMode.motorModeSpeeds[(int)currentMode];
 
-                ErrorMessage.AddMessage(CyclopsSpeedModule.SpeedRatingText(lastKnownSpeedBoosters, Mathf.RoundToInt(StandardMultiplier * 100)));
+                ErrorMessage.AddMessage(CyclopsSpeedModule.SpeedRatingText(lastKnownSpeedBoosters, Mathf.RoundToInt(standardMultiplier * 100)));
             }
         }
-
-        
     }
 }

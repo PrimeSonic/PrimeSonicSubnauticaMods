@@ -1,9 +1,8 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
     using CyclopsNuclearUpgrades.Management;
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.API.Charging;
+    using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -33,8 +32,6 @@
             OnFinishedPatching += () =>
             {
                 LanguageHandler.SetLanguageLine(DepletedEventKey, "Nuclear Reactor Module depleted");
-                MCUServices.Register.CyclopsUpgradeHandler(this);
-                MCUServices.Register.CyclopsCharger(this);
             };
         }
 

@@ -3,6 +3,7 @@
     using System;
     using Common;
     using CyclopsSolarUpgrades.Craftables;
+    using MoreCyclopsUpgrades.API;
 
     public static class QPatch
     {
@@ -17,6 +18,9 @@
 
                 solar1.Patch();
                 solar2.Patch();
+
+                MCUServices.Register.CyclopsCharger(solar2);
+                MCUServices.Register.CyclopsUpgradeHandler(solar2);
 
                 QuickLogger.Info($"Finished patching.");
             }

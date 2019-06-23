@@ -2,7 +2,6 @@
 {
     using CommonCyclopsUpgrades;
     using CyclopsSolarUpgrades.Management;
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -10,7 +9,7 @@
 
     internal class CyclopsSolarChargerMk2 : CyclopsUpgrade, IUpgradeHandlerCreator, ICyclopsChargerCreator
     {
-        internal const float BatteryCapacity = 100f;
+        internal const float BatteryCapacity = 120f;
 
         private readonly CyclopsSolarCharger previousTier;
         public CyclopsSolarChargerMk2(CyclopsSolarCharger cyclopsSolarCharger)
@@ -24,12 +23,6 @@
             {
                 if (!previousTier.IsPatched)
                     previousTier.Patch();
-            };
-
-            OnFinishedPatching += () =>
-            {
-                MCUServices.Register.CyclopsCharger(this);
-                MCUServices.Register.CyclopsUpgradeHandler(this);
             };
         }
 
