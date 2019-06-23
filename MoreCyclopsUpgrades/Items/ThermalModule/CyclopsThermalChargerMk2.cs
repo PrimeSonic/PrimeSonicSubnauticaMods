@@ -63,7 +63,7 @@
 
         public ICyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
         {
-            return new ThermalCharger(cyclops, this.TechType);
+            return new ThermalCharger(this.TechType, cyclops);
         }
 
         public UpgradeHandler CreateUpgradeHandler(SubRoot cyclops)

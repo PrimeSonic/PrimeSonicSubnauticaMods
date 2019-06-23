@@ -4,41 +4,8 @@
     using UnityEngine;
 
     internal class NumberFormatter
-    {
-        private static readonly IDictionary<int, string> _formattedSunCache = new Dictionary<int, string>();
-        private static readonly IDictionary<int, string> _formattedTemperatureCache = new Dictionary<int, string>();
-        private static readonly IDictionary<int, string> _formattedAmountCache = new Dictionary<int, string>();
-
-        internal static string FormatTemperature(float temperature)
-        {
-            return FormatTemperature(Mathf.CeilToInt(temperature));
-        }
-
-        internal static string FormatTemperature(int temperature)
-        {            
-            if (!_formattedTemperatureCache.TryGetValue(temperature, out string temperatureString))
-            {
-                temperatureString = $"{temperature}°C";
-                _formattedTemperatureCache.Add(temperature, temperatureString);
-            }
-            return temperatureString;
-        }
-
-        internal static string FormatSolarPercentage(float solarPercent)
-        {
-            return FormatSolarPercentage(Mathf.CeilToInt(solarPercent));
-        }
-
-        internal static string FormatSolarPercentage(int solarPercent)
-        {            
-            if (!_formattedSunCache.TryGetValue(solarPercent, out string sunString))
-            {
-                sunString = $"{solarPercent}%Θ";
-                _formattedSunCache.Add(solarPercent, sunString);
-            }
-
-            return sunString;
-        }
+    {        
+        private static readonly IDictionary<int, string> _formattedValueCache = new Dictionary<int, string>();
 
         internal static string FormatValue(float value)
         {
@@ -47,10 +14,10 @@
 
         internal static string FormatValue(int value)
         {
-            if (!_formattedAmountCache.TryGetValue(value, out string amountString))
+            if (!_formattedValueCache.TryGetValue(value, out string amountString))
             {
                 amountString = $"{HandleLargeNumbers(value)}";
-                _formattedAmountCache.Add(value, amountString);
+                _formattedValueCache.Add(value, amountString);
             }
             return amountString;
         }

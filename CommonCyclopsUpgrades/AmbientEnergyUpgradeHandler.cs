@@ -53,10 +53,13 @@
             {
                 this.TotalBatteryCapacity = totalBatteryCapacity;
                 this.TotalBatteryCharge = totalBatteryCharge;
-                float diminishingReturnFactor = 0.3f + (0.05f * tier2.Count);
+
+                // Heavy diminishing returns for tier 1
+                // Better diminishing returns for tier 2
+                float diminishingReturnFactor = 0.3f + (0.1f * tier2.Count);
                 // The diminishing returns follow a geometric sequence with a factor always less than 1
                 // https://www.purplemath.com/modules/series5.htm
-                this.ChargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) / diminishingReturnFactor;
+                this.ChargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) / (1 - diminishingReturnFactor);
             };
 
             OnFirstTimeMaxCountReached += () =>

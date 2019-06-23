@@ -9,6 +9,7 @@
     <Import_RootNamespace>CommonCyclopsUpgrades</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AmbientEnergyCharger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AmbientEnergyUpgradeHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BatteryDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NumberFormatter.cs" />

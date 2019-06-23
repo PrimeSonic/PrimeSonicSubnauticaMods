@@ -63,7 +63,7 @@
         /// <value>
         /// The maximum count.
         /// </value>
-        public int MaxCount { get; set; } = 99;
+        public int MaxCount { get; set; } = 12;
 
         /// <summary>
         /// Gets a value indicating whether the maximum number of copies of this upgrade module has been reached.
