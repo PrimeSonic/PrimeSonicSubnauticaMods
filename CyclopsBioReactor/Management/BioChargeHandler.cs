@@ -1,5 +1,6 @@
 ﻿namespace CyclopsBioReactor.Management
 {
+    using CommonCyclopsUpgrades;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
@@ -41,7 +42,7 @@
 
         public string GetIndicatorText()
         {
-            return NumberFormatter.FormatNumber(Mathf.RoundToInt(totalBioCharge));
+            return NumberFormatter.FormatValue(totalBioCharge);
         }
 
         public Color GetIndicatorTextColor()

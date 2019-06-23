@@ -1,6 +1,6 @@
-﻿namespace MoreCyclopsUpgrades.API.Upgrades
+﻿namespace CommonCyclopsUpgrades
 {
-    public class BatteryDetails
+    internal class BatteryDetails
     {
         public readonly Equipment ParentEquipment;
         public readonly string SlotName;

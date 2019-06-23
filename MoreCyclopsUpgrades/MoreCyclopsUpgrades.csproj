@@ -70,8 +70,6 @@
     <Compile Include="API\IMCUCrossMod.cs" />
     <Compile Include="API\IMCURegistration.cs" />
     <Compile Include="API\IMCUSearch.cs" />
-    <Compile Include="API\Upgrades\AmbientEnergyUpgradeHandler.cs" />
-    <Compile Include="API\Upgrades\BatteryDetails.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeLevel.cs" />
     <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />
     <Compile Include="Config\IModConfig.cs" />
@@ -85,11 +83,11 @@
     <Compile Include="Config\Options\ToggleOption.cs" />
     <Compile Include="Config\ChoiceEnums\ShowChargerIcons.cs" />
     <Compile Include="Items\ThermalModule\ThermalCharger.cs" />
+    <Compile Include="Items\ThermalModule\ThermalUpgradeHandler.cs" />
     <Compile Include="OriginalUpgrades\OriginalDepthUpgrades.cs" />
     <Compile Include="OriginalUpgrades\OriginalEngineUpgrade.cs" />
     <Compile Include="OriginalUpgrades\OriginalFireSuppressionUpgrade.cs" />
     <Compile Include="OriginalUpgrades\OriginalUpgrades.cs" />
-    <Compile Include="Items\ThermalModule\ThermalUpgrade.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />
     <Compile Include="API\General\IAuxCyclopsManager.cs" />
@@ -105,7 +103,6 @@
     <Compile Include="Managers\ChargeManager.cs" />
     <Compile Include="API\Upgrades\CyclopsUpgrade.cs" />
     <Compile Include="Items\ThermalModule\CyclopsThermalChargerMk2.cs" />
-    <Compile Include="Caching\NumberFormatter.cs" />
     <Compile Include="API\Upgrades\TieredUpgradeHandler.cs" />
     <Compile Include="API\Upgrades\UpgradeHandler.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
@@ -133,8 +130,11 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Caching\" />
+  </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="..\CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

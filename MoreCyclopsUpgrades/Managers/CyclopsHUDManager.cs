@@ -2,10 +2,10 @@
 {
     using System.Collections.Generic;
     using Common;
+    using CommonCyclopsUpgrades;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
-    using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;
     using UnityEngine;

@@ -1,22 +1,43 @@
-﻿namespace MoreCyclopsUpgrades.Caching
+﻿namespace CommonCyclopsUpgrades
 {
     using System.Collections.Generic;
     using UnityEngine;
 
-    internal static class NumberFormatter
+    internal class NumberFormatter
     {
+        private static readonly IDictionary<int, string> _formattedSunCache = new Dictionary<int, string>();
         private static readonly IDictionary<int, string> _formattedTemperatureCache = new Dictionary<int, string>();
         private static readonly IDictionary<int, string> _formattedAmountCache = new Dictionary<int, string>();
 
         internal static string FormatTemperature(float temperature)
         {
-            int value = Mathf.CeilToInt(temperature);
-            if (!_formattedTemperatureCache.TryGetValue(value, out string temperatureString))
+            return FormatTemperature(Mathf.CeilToInt(temperature));
+        }
+
+        internal static string FormatTemperature(int temperature)
+        {            
+            if (!_formattedTemperatureCache.TryGetValue(temperature, out string temperatureString))
             {
-                temperatureString = $"{value}°C";
-                _formattedTemperatureCache.Add(value, temperatureString);
+                temperatureString = $"{temperature}°C";
+                _formattedTemperatureCache.Add(temperature, temperatureString);
             }
             return temperatureString;
+        }
+
+        internal static string FormatSolarPercentage(float solarPercent)
+        {
+            return FormatSolarPercentage(Mathf.CeilToInt(solarPercent));
+        }
+
+        internal static string FormatSolarPercentage(int solarPercent)
+        {            
+            if (!_formattedSunCache.TryGetValue(solarPercent, out string sunString))
+            {
+                sunString = $"{solarPercent}%Θ";
+                _formattedSunCache.Add(solarPercent, sunString);
+            }
+
+            return sunString;
         }
 
         internal static string FormatValue(float value)

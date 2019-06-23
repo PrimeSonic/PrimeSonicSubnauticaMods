@@ -1,5 +1,6 @@
 ﻿namespace CyclopsSolarUpgrades.Management
 {
+    using CommonCyclopsUpgrades;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
@@ -9,17 +10,17 @@
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private const float BatteryDrainRate = 0.01f;
         private const float MaxSolarDepth = 200f;
-        private const float SolarChargingFactor = 0.03f;
+        private const float SolarChargingFactor = 1.25f;
         private const float MaxSolarPercentage = 90f;
         private const float DiminishingReturnRatio = 0.6f;
-
+        private const double MinUsableSunScalar = 0.01;
         private readonly Atlas.Sprite solar1Sprite;
         private readonly Atlas.Sprite solar2Sprite;
 
         private readonly TechType solarTier1;
         private readonly TechType solarTier2;
 
-        private readonly SolarUpgrade upgradeHandler;
+        private readonly SolarUpgradeHandler upgradeHandler;
         private readonly SubRoot Cyclops;
 
         private SolarState solarState = SolarState.None;
@@ -32,7 +33,7 @@
             solar1Sprite = SpriteManager.Get(solarUpgradeMk1);
             solar2Sprite = SpriteManager.Get(solarUpgradeMk2);
             Cyclops = cyclops;
-            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<SolarUpgrade>(cyclops, solarUpgradeMk1, solarUpgradeMk2);
+            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<SolarUpgradeHandler>(cyclops, solarUpgradeMk1, solarUpgradeMk2);
         }
 
         public bool IsRenewable { get; } = true;
@@ -56,9 +57,9 @@
             switch (solarState)
             {
                 case SolarState.SunAvailable:
-                    return TextFormatter.FormatSolarPercentage(solarPercentage);
+                    return NumberFormatter.FormatSolarPercentage(solarPercentage);
                 case SolarState.BatteryAvailable:
-                    return TextFormatter.FormatBatteryCharge(upgradeHandler.TotalBatteryCharge);
+                    return NumberFormatter.FormatValue(upgradeHandler.TotalBatteryCharge);
                 default:
                     return string.Empty;
             }
@@ -70,9 +71,9 @@
             switch (solarState)
             {
                 case SolarState.SunAvailable:
-                    return TextFormatter.GetNumberColor(solarPercentage, MaxSolarPercentage, 0f);
+                    return NumberFormatter.GetNumberColor(solarPercentage, MaxSolarPercentage, 0f);
                 case SolarState.BatteryAvailable:
-                    return TextFormatter.GetNumberColor(upgradeHandler.TotalBatteryCharge, upgradeHandler.TotalBatteryCapacity, 0f);
+                    return NumberFormatter.GetNumberColor(upgradeHandler.TotalBatteryCharge, upgradeHandler.TotalBatteryCapacity, 0f);
                 default:
                     return Color.white;
             }
@@ -91,11 +92,11 @@
                 return 0f;
             }
 
-            float solarStatus = GetSolarStatus(Cyclops);
-            float availableSolarEnergy = SolarChargingFactor * solarStatus;
+            float solarStatus = GetSolarChargeScalar();
 
-            if (availableSolarEnergy > MinimalPowerValue)
+            if (solarStatus > MinUsableSunScalar)
             {
+                float availableSolarEnergy = DayNightCycle.main.deltaTime * SolarChargingFactor;
                 solarState = SolarState.SunAvailable;
                 solarPercentage = solarStatus * 100;
 
@@ -127,28 +128,14 @@
         /// Gets the amount of available energy provided by the currently available sunlight.
         /// </summary>
         /// <returns>The currently available solar energy.</returns>
-        private static float GetSolarChargeAmount(SubRoot cyclops)
-        {
-            // The code here mostly replicates what the UpdateSolarRecharge() method does from the SeaMoth class.
-            // Consessions were made for the differences between the Seamoth and Cyclops upgrade modules.
-
-            if (DayNightCycle.main == null)
-                return 0f; // Safety check
-
-            // This is 1-to-1 the same way the Seamoth calculates its solar charging rate.
-
-            return SolarChargingFactor *
-                   DayNightCycle.main.GetLocalLightScalar() *
-                   Mathf.Clamp01((MaxSolarDepth + cyclops.transform.position.y) / MaxSolarDepth); // Distance to surfuce
-        }
-
-        private static float GetSolarStatus(SubRoot cyclops)
+        private float GetSolarChargeScalar()
         {
             if (DayNightCycle.main == null)
                 return 0f; // Safety check
 
-            return DayNightCycle.main.GetLocalLightScalar() *
-                   Mathf.Clamp01((MaxSolarDepth + cyclops.transform.position.y) / MaxSolarDepth);
+            // This based on the how the Solar Panel generates power.
+            return DayNightCycle.main.GetLocalLightScalar() * // Sun Scalar
+                   Mathf.Clamp01((MaxSolarDepth - Cyclops.transform.position.y) / MaxSolarDepth); // Depth Scalar                 
         }
     }
 }

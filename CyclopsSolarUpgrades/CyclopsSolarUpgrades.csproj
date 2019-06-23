@@ -54,11 +54,10 @@
     <Compile Include="Craftables\CyclopsSolarCharger.cs" />
     <Compile Include="Craftables\CyclopsSolarChargerMk2.cs" />
     <Compile Include="Management\SolarCharger.cs" />
-    <Compile Include="Management\SolarUpgrades.cs" />
+    <Compile Include="Management\SolarUpgradeHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
     <Compile Include="Management\SolarState.cs" />
-    <Compile Include="TextFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
@@ -80,5 +79,6 @@
     </Content>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="..\CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

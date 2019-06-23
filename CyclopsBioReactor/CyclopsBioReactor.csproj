@@ -64,7 +64,6 @@
     <Compile Include="CyBioReactorMono.cs" />
     <Compile Include="SaveData\CyBioReactorSaveData.cs" />
     <Compile Include="SaveData\EmModuleSaveData.cs" />
-    <Compile Include="NumberFormatter.cs" />
     <Compile Include="Patches\uGUI_Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
@@ -92,5 +91,6 @@
     </None>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="..\CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,11 +1,11 @@
-﻿namespace MoreCyclopsUpgrades.API.Upgrades
+﻿namespace CommonCyclopsUpgrades
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using UnityEngine;
 
-    public class AmbientEnergyUpgradeHandler : StackingGroupHandler
+    internal class AmbientEnergyUpgradeHandler : StackingGroupHandler
     {
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         public const int MaxChargers = 6;

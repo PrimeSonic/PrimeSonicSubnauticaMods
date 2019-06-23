@@ -1,5 +1,6 @@
 ﻿namespace CyclopsSolarUpgrades.Craftables
 {
+    using CommonCyclopsUpgrades;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;

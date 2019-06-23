@@ -1,8 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.Items.ThermalModule
 {
+    using CommonCyclopsUpgrades;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
-    using MoreCyclopsUpgrades.Caching;
     using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
 
@@ -25,7 +25,7 @@
 
         public string Name { get; } = ChargerName;
 
-        private readonly ThermalUpgrade upgradeHandler;
+        private readonly ThermalUpgradeHandler upgradeHandler;
         private readonly SubRoot Cyclops;
 
         private readonly TechType thermalMk2;
@@ -46,7 +46,7 @@
             thermal1Sprite = SpriteManager.Get(TechType.CyclopsThermalReactorModule);
             thermal2Sprite = SpriteManager.Get(thermalMk2Module);
 
-            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<ThermalUpgrade>(cyclops, TechType.CyclopsThermalReactorModule, thermalMk2);
+            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<ThermalUpgradeHandler>(cyclops, TechType.CyclopsThermalReactorModule, thermalMk2);
         }
 
         public Atlas.Sprite GetIndicatorSprite()

@@ -1,5 +1,6 @@
 ﻿namespace CyclopsSolarUpgrades.Craftables
 {
+    using CommonCyclopsUpgrades;
     using CyclopsSolarUpgrades.Management;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
@@ -62,9 +63,9 @@
             return obj;
         }
 
-        private SolarUpgrade CreateSolarUpgrade(SubRoot cyclops)
+        private SolarUpgradeHandler CreateSolarUpgrade(SubRoot cyclops)
         {
-            return new SolarUpgrade(previousTier.TechType, this.TechType, cyclops);
+            return new SolarUpgradeHandler(previousTier.TechType, this.TechType, cyclops);
         }
 
         public UpgradeHandler CreateUpgradeHandler(SubRoot cyclops)

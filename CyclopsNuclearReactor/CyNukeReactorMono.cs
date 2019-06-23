@@ -1,6 +1,7 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Common;
+    using CommonCyclopsUpgrades;
     using CyclopsNuclearReactor.Helpers;
     using MoreCyclopsUpgrades.API;
     using ProtoBuf;
@@ -67,7 +68,7 @@
             if (reactorRodData.Count == 0)
                 return CyNukReactorBuildable.NoPoweMessage();
 
-            return NumberFormatter.FormatNumber(Mathf.CeilToInt(GetTotalAvailablePower()));
+            return NumberFormatter.FormatValue(GetTotalAvailablePower());
         }
 
         internal float GetTotalAvailablePower()
@@ -373,7 +374,7 @@
             int currentPower = Mathf.CeilToInt(GetTotalAvailablePower());
 
             string text = currentPower > 0
-                ? CyNukReactorBuildable.OnHoverPoweredText(NumberFormatter.FormatNumber(currentPower), this.ActiveRodCount, this.MaxActiveSlots)
+                ? CyNukReactorBuildable.OnHoverPoweredText(NumberFormatter.FormatValue(currentPower), this.ActiveRodCount, this.MaxActiveSlots)
                 : CyNukReactorBuildable.OnHoverNoPowerText();
 
             main.SetInteractText(text);
@@ -464,7 +465,7 @@
                 {
                     if (i < this.MaxActiveSlots)
                     {
-                        item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.CeilToInt(item.Charge));
+                        item.InfoDisplay.text = NumberFormatter.FormatValue(item.Charge);
                         item.InfoDisplay.color = Color.white;
                     }
                     else

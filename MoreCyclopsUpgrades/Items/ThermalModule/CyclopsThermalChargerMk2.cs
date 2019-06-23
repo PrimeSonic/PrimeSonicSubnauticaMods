@@ -68,7 +68,7 @@
 
         public UpgradeHandler CreateUpgradeHandler(SubRoot cyclops)
         {
-            return new ThermalUpgrade(TechType.CyclopsThermalReactorModule, this.TechType, cyclops);
+            return new ThermalUpgradeHandler(TechType.CyclopsThermalReactorModule, this.TechType, cyclops);
         }
     }
 }
