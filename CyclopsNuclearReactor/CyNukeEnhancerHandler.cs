@@ -28,7 +28,7 @@
             tier2 = CreateTier(CyNukeEnhancerMk2.TechTypeID, Mk2UpgradeValue);
             tier2.MaxCount = 1;
 
-            OnUpgradeCountedDetailed = (Equipment modules, string slot) =>
+            OnUpgradeCounted= () =>
             {
                 manager.UpgradeHandler = this; // Link this to the upgrade manager
                 OnUpgradeCountedDetailed = null; // This method only needs to be called once

@@ -1,10 +1,7 @@
 ﻿namespace CyclopsBioReactor.Patches
 {
     using System.Collections.Generic;
-    using CyclopsBioReactor.Items;
-    using CyclopsBioReactor.Management;
     using Harmony;
-    using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
     [HarmonyPatch("OnOpenPDA")]
@@ -19,35 +16,16 @@
             if (__instance is null)
                 return; // Safety check
 
-            if (!Player.main.IsInSub() || !Player.main.currentSub.isCyclops)
-                return; // If not in Cyclops then all is irrelevant
-
-            if (__instance.storage is null)
-                return; // Safety check
+            if (!CyBioReactorMono.PdaIsOpen)
+                return;
 
             ItemsContainer containerObj = __instance.storage.container;
 
-            if (containerObj is null)
-                return; // If this isn't a non-null ItemsContainer, then it's not what we want.
-
-            string label = containerObj._label;
-
-            if (label != CyBioReactor.StorageLabel)
-                return; // Not a Cyclops Bioreactor storage
-
-            List<CyBioReactorMono> reactors = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Player.main.currentSub, BioAuxCyclopsManager.ManagerName)?.CyBioReactors;
-
-            if (reactors is null || reactors.Count == 0)
-                return; // Cyclops has no bioreactors
-
             // Look for the reactor that matches the container we just opened.
-            CyBioReactorMono reactor = reactors.Find(r => r.Container == containerObj);
-
-            if (reactor is null)
-                return; // Didn't find the reactor we were looking for. Could it be on another cyclops?
+            CyBioReactorMono reactor = CyBioReactorMono.OpenInPda;
 
             Dictionary<InventoryItem, uGUI_ItemIcon> lookup = __instance.storage.items;
-            reactor.ConnectToInventory(lookup); // Found!
+            reactor.ConnectToInventory(lookup);
         }
     }
 }

@@ -14,36 +14,15 @@
             // This event happens whenever the player opens their PDA.
             // We will make a series of checks to see if what they have opened is the Base BioReactor item container.
 
-            if (__instance is null)
+            if (__instance == null)
                 return; // Safety check
 
-            if (!Player.main.IsInSub() || !Player.main.currentSub.isBase)
-                return; // If not in Base then all is irrelevant
-
-            if (__instance.storage is null)
-                return; // Safety check
+            if (!CyBioReactorMini.PdaIsOpen)
+                return;
 
             ItemsContainer currentContainer = __instance.storage.container;
-
-            if (currentContainer is null)
-                return; // If this isn't a non-null ItemsContainer, then it's not what we want.
-
-            if (currentContainer._label != "BaseBioReactorStorageLabel")
-                return; // Not a BaseBioReactor storage
-
-            BaseBioReactor[] reactors = Player.main.currentSub.GetAllComponentsInChildren<BaseBioReactor>();
-
-            if (reactors is null || reactors.Length == 0)
-                return; // Base has no bioreactors
-
-            // Look for the reactor that matches the container we just opened.
-            foreach (BaseBioReactor reactor in reactors)
-            {
-                if (reactor.container != currentContainer)
-                    continue;
-
-                CyBioReactorMini.GetMiniReactor(reactor).ConnectToInventory(__instance.storage.items);
-            }
+            CyBioReactorMini reactor = CyBioReactorMini.OpenInPda;
+            reactor.ConnectToInventory(__instance.storage.items);
         }
     }
 }

@@ -12,6 +12,9 @@
     [ProtoContract]
     internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
+        internal static bool PdaIsOpen = false;
+        internal static CyBioReactorMono OpenInPda = null;
+
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
 
         private const float baselineChargeRate = 0.80f;
@@ -34,7 +37,7 @@
         public ChildObjectIdentifier storageRoot;
 
         private float textDelay = TextDelayInterval;
-        private bool pdaIsOpen = false;
+        
         private bool isLoadingSaveData = false;
         private CyBioReactorSaveData SaveData;
 
@@ -168,7 +171,7 @@
                 }
             }
 
-            if (pdaIsOpen)
+            if (PdaIsOpen)
                 UpdateDisplayText();
         }
 
@@ -186,11 +189,12 @@
 
         public void OnHandClick(GUIHand guiHand)
         {
+            PdaIsOpen = true;
+            OpenInPda = this;
+
             PDA pda = Player.main.GetPDA();
             Inventory.main.SetUsedStorage(Container);
             pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
-
-            pdaIsOpen = true;
         }
 
         internal void CyOnPdaClose(PDA pda)
@@ -202,7 +206,8 @@
                 item.DisplayText = null;
             }
 
-            pdaIsOpen = false;
+            PdaIsOpen = false;
+            OpenInPda = null;
 
             (Container as IItemsContainer).onAddItem -= OnAddItemLate;
         }
