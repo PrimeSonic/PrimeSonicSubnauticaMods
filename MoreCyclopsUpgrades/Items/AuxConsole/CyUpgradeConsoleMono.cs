@@ -87,6 +87,7 @@
             onUnequipInfo.AddEventHandler(this.Modules, onUnequipDelegate);
 
             UnlockDefaultModuleSlots();
+            AddModuleSpriteHandlers();
         }
 
         private void AddModuleSpriteHandlers()
@@ -217,8 +218,6 @@
             this.ParentCyclops.subModulesDirty = true;
         }
 
-        private static readonly Vector2 SpritePivot = new Vector2(0.5f, 0.5f);
-
         private void UpdateVisuals()
         {
             if (Module1 is null)
@@ -236,7 +235,7 @@
 
         private void SetModuleVisibility(string slot, GameObject module)
         {
-            if (module is null)
+            if (module == null)
             {
                 QuickLogger.Debug($"SetModuleVisibility in slot {slot} module was null", true);
                 return;
@@ -252,7 +251,7 @@
             {
                 Atlas.Sprite atlasSprite = SpriteManager.Get(techType);
 
-                if (atlasSprite is null)
+                if (atlasSprite == null)
                     QuickLogger.Debug($"sprite for {module.name} was null when it should not have been", true);
 
                 icon.sprite = atlasSprite;

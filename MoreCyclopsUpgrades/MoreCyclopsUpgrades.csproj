@@ -112,6 +112,7 @@
     <Compile Include="Items\AuxConsole\CyUpgradeConsoleMono.cs" />
     <Compile Include="Managers\UpgradeManager.cs" />
     <Compile Include="Items\AuxConsole\AuxUpgradeConsoleSaveData.cs" />
+    <Compile Include="Patchers\UpgradeConsole_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
     <Compile Include="SlotHelper.cs" />
