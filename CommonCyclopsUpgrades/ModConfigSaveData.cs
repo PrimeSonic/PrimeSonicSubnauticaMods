@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Config
+﻿namespace CommonCyclopsUpgrades
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
     using System.Text;
     using Common;
     using Common.EasyMarkup;
-    using MoreCyclopsUpgrades.Config.Options;
+    using CommonCyclopsUpgrades.Options;
 
     internal class ModConfigSaveData : EmPropertyCollection
     {

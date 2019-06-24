@@ -163,10 +163,12 @@
             if (!Buildable.constructed)
                 return;
 
+            PdaOverlayManager.StartConnectingToPda(this.Modules);
+
             Player main = Player.main;
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(this.Modules, false);
-            pda.Open(PDATab.Inventory, null, null, -1f);
+            pda.Open(PDATab.Inventory, null, new PDA.OnClose((PDA closingPda) => PdaOverlayManager.DisconnectFromPda()), -1f);            
         }
 
         private void OnEquip(string slot, InventoryItem item)

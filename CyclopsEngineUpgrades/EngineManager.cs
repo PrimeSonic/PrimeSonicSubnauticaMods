@@ -132,8 +132,7 @@
             if (lastKnownPowerRating != powerRating)
             {
                 lastKnownPowerRating = powerRating;
-
-                Cyclops.currPowerRating = powerRating;
+                MCUServices.CrossMod.ChangePowerRatingWithPenalty(Cyclops, powerRating);
 
                 // Inform the new power rating just like the original method would.
                 ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));

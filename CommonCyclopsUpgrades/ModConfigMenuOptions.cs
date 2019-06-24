@@ -1,7 +1,7 @@
-﻿namespace MoreCyclopsUpgrades.Config
+﻿namespace CommonCyclopsUpgrades
 {
     using System.Collections.Generic;
-    using MoreCyclopsUpgrades.Config.Options;
+    using CommonCyclopsUpgrades.Options;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Options;
 

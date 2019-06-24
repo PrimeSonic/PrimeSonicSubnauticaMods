@@ -1,5 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.API.Charging
 {
+    /// <summary>
+    /// Defines an interface for a class that is capable of creating a new <see cref="ICyclopsCharger"/> on demand.
+    /// </summary>
     public interface ICyclopsChargerCreator
     {
         /// <summary>

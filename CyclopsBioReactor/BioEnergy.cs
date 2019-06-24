@@ -43,10 +43,9 @@
 
             var textGO = new GameObject("EnergyLabel");
 
-            textGO.transform.parent = icon.transform;
-            textGO.AddComponent<Text>();
+            textGO.transform.SetParent(icon.transform, false);            
 
-            Text text = textGO.GetComponent<Text>();
+            Text text = textGO.AddComponent<Text>();
             text.font = arial;
             text.material = arial.material;
             text.text = string.Empty;

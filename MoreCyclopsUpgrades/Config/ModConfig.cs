@@ -5,8 +5,9 @@
     using System.Threading;
     using Common;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;
-    using MoreCyclopsUpgrades.Config.Options;
+    using CommonCyclopsUpgrades.Options;
     using UnityEngine;
+    using CommonCyclopsUpgrades;
 
     internal class ModConfig : IModConfig
     {
@@ -35,7 +36,7 @@
         {
             State = true
         };
-        private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge Mode (Requires restart)")
+        private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge Level (Requires restart)")
         {
             Choices = new string[3]
             {
@@ -172,9 +173,9 @@
                 switch (this.ChallengeMode)
                 {
                     case ChallengeLevel.Hard:
-                        return 0.70f;
+                        return 0.50f;
                     case ChallengeLevel.Normal:
-                        return 0.85f;
+                        return 0.75f;
                     default: // ChallengeLevel.Easy
                         return 1.0f;
                 }

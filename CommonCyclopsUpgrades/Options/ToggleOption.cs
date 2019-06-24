@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Config.Options
+﻿namespace CommonCyclopsUpgrades.Options
 {
     using Common.EasyMarkup;
 

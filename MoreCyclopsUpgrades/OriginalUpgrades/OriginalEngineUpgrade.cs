@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.OriginalUpgrades
 {
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
 
     internal class OriginalEngineUpgrade : UpgradeHandler
@@ -11,12 +12,12 @@
             OnClearUpgrades = () =>
             {
                 lastKnownRating = cyclops.currPowerRating;
-                cyclops.currPowerRating = 1f;
+                MCUServices.CrossMod.ChangePowerRatingWithPenalty(cyclops, 1f);
             };
 
             OnUpgradeCountedDetailed = (Equipment modules, string slot, InventoryItem inventoryItem) =>
             {
-                cyclops.currPowerRating = 3f;
+                MCUServices.CrossMod.ChangePowerRatingWithPenalty(cyclops, 3f);
             };
 
             OnFinishedWithUpgrades = () => Announcement();

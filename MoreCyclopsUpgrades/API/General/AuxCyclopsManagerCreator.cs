@@ -1,5 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.API.General
 {
+    /// <summary>
+    /// Defines an interface for a class capable of creating a new <see cref="IAuxCyclopsManager"/> on demand.
+    /// </summary>
     public interface IAuxCyclopsManagerCreator
     {
         /// <summary>

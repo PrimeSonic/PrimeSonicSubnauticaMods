@@ -436,7 +436,7 @@
 
                 BioEnergy bioEnergy = this.MaterialsProcessing.Find(item.item);
 
-                if (bioEnergy is null)
+                if (bioEnergy == null)
                 {
                     QuickLogger.Debug("Matching pickable in bioreactor not found", true);
                     continue;

@@ -1,5 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
+    /// <summary>
+    /// Defines an interface for a class capable of creating a new <see cref="UpgradeHandler"/> on demand.
+    /// </summary>
     public interface IUpgradeHandlerCreator
     {
         /// <summary>

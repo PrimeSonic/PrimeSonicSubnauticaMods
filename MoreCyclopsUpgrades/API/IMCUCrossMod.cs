@@ -10,6 +10,14 @@
         /// <value>
         /// The steps to the Cyclops Fabricator's "CyclopsModules" crafting tab if it exists.
         /// </value>
-        string[] StepsToCyclopsModulesTabInCyclopsFabricator { get; }        
+        string[] StepsToCyclopsModulesTabInCyclopsFabricator { get; }
+
+        /// <summary>
+        /// Updates the Cyclops Power Rating while including the penalty set by the user for the current Challenge Mode.
+        /// </summary>
+        /// <param name="cyclops">The cyclops to update.</param>
+        /// <param name="powRating">The power rating.</param>
+        /// <returns>The adjusted power rating value.</returns>
+        float ChangePowerRatingWithPenalty(SubRoot cyclops, float powRating);
     }
 }

@@ -7,6 +7,7 @@
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
+    using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Managers;
 
     /// <summary>
@@ -17,9 +18,7 @@
     {
         private static readonly MCUServices singleton = new MCUServices();
         private static readonly string[] cyModulesTab = new[] { "CyclopsModules" };
-        private bool CyclopsFabricatorHasCyclopsModulesTab { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");  
-
-        public string[] StepsToCyclopsModulesTabInCyclopsFabricator => this.CyclopsFabricatorHasCyclopsModulesTab ? cyModulesTab : null;
+        private bool CyclopsFabricatorHasCyclopsModulesTab { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
 
         /// <summary>
         /// Contains methods for asisting with cross-mod compatibility with other Cyclops mod.
@@ -46,6 +45,13 @@
         private MCUServices()
         {
             // Hide constructor
+        }
+
+        public string[] StepsToCyclopsModulesTabInCyclopsFabricator => this.CyclopsFabricatorHasCyclopsModulesTab ? cyModulesTab : null;
+
+        public float ChangePowerRatingWithPenalty(SubRoot cyclops, float powRating)
+        {
+            return cyclops.currPowerRating = ModConfig.Main.RechargePenalty * powRating;
         }
 
         public void CyclopsCharger(CreateCyclopsCharger createEvent)
@@ -122,5 +128,7 @@
         {
             return CyclopsManager.GetManager<ChargeManager>(cyclops, ChargeManager.ManagerName)?.GetCharger<T>(chargeHandlerName);
         }
+
+
     }
 }

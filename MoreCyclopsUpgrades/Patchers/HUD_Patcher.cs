@@ -45,6 +45,8 @@
         [HarmonyPrefix]
         public static bool Prefix(ref CyclopsUpgradeConsoleHUDManager __instance)
         {
+            PdaOverlayManager.UpdateIconOverlays();
+
             CyclopsHUDManager hudMgr = CyclopsManager.GetManager<CyclopsHUDManager>(__instance.subRoot, CyclopsHUDManager.ManagerName);
 
             if (hudMgr == null)

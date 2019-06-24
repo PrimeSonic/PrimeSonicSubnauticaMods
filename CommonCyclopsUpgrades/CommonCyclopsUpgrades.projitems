@@ -12,6 +12,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)AmbientEnergyCharger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AmbientEnergyUpgradeHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BatteryDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ModConfigMenuOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ModConfigSaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NumberFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\ChoiceOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\ConfigOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\OptionTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\SliderOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\ToggleOption.cs" />
   </ItemGroup>
 </Project>
