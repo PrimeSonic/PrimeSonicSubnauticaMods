@@ -20,7 +20,7 @@
                 return new UpgradeHandler(TechType.CyclopsShieldModule, cyclops)
                 {
                     OnClearUpgrades = () => { cyclops.shieldUpgrade = false; },
-                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
+                    OnUpgradeCounted = () => { cyclops.shieldUpgrade = true; },
                 };
             });
 
@@ -30,7 +30,7 @@
                 return new UpgradeHandler(TechType.CyclopsSonarModule, cyclops)
                 {
                     OnClearUpgrades = () => { cyclops.sonarUpgrade = false; },
-                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
+                    OnUpgradeCounted = () => { cyclops.sonarUpgrade = true; },
                 };
             });
 
@@ -40,7 +40,7 @@
                 return new UpgradeHandler(TechType.CyclopsSeamothRepairModule, cyclops)
                 {
                     OnClearUpgrades = () => { cyclops.vehicleRepairUpgrade = false; },
-                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
+                    OnUpgradeCounted = () => { cyclops.vehicleRepairUpgrade = true; },
                 };
             });
 
@@ -50,7 +50,7 @@
                 return new UpgradeHandler(TechType.CyclopsDecoyModule, cyclops)
                 {
                     OnClearUpgrades = () => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                    OnUpgradeCounted = (Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
+                    OnUpgradeCounted = () => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
                 };
             });
 

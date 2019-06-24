@@ -40,7 +40,7 @@
             tier1.IsAllowedToAdd += CheckCombinedTotal;
             tier2.IsAllowedToAdd += CheckCombinedTotal;
 
-            tier2.OnUpgradeCounted += AddBatteryDetails;
+            tier2.OnUpgradeCountedDetailed += AddBatteryDetails;
 
             OnFinishedWithoutUpgrades += () =>
             {
@@ -74,9 +74,9 @@
             return this.TotalCount < MaxChargers;
         }
 
-        private void AddBatteryDetails(Equipment modules, string slot)
+        private void AddBatteryDetails(Equipment modules, string slot, InventoryItem inventoryItem)
         {
-            var details = new BatteryDetails(modules, slot, modules.GetItemInSlot(slot).item.GetComponent<Battery>());
+            var details = new BatteryDetails(modules, slot, inventoryItem.item.GetComponent<Battery>());
             batteries.Add(details);
             totalBatteryCharge += details.BatteryRef._charge;
             totalBatteryCapacity += details.BatteryRef._capacity;

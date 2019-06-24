@@ -15,12 +15,12 @@
         public delegate void UpgradeEvent();
 
         /// <summary>
-        /// Defines a method to invoke that takes all the needed references to identify a single upgrade module instance. Used for <seealso cref="OnUpgradeCounted"/>.
+        /// Defines a method to invoke that takes all the needed references to identify a single upgrade module instance. Used for <seealso cref="OnUpgradeCountedDetailed"/>.
         /// </summary>
         /// <param name="cyclops">The cyclops where the event took place.</param>
         /// <param name="modules">The equipment module where the event took place.</param>
         /// <param name="slot">The equipment slot where the event took place.</param>
-        public delegate void UpgradeEventSlotBound(Equipment modules, string slot);
+        public delegate void UpgradeEventSlotBound(Equipment modules, string slot, InventoryItem inventoryItem);
 
         /// <summary>
         /// Defines a method to invoke that returns whether or not an item is allowed in or out. Used for <seealso cref="IsAllowedToAdd"/> and <seealso cref="IsAllowedToRemove"/>.
@@ -97,9 +97,17 @@
 
         /// <summary>
         /// This event is invoked when a copy of this module's <see cref="techType"/> is found and counted.<para/>
-        /// This will happen for each copy found in the cyclops.
+        /// This will happen for each copy found in the cyclops.<para/>
+        /// Unlike <see cref="OnUpgradeCounted"/>, this event will contain parameter references to the upgrade module and its location.
         /// </summary>
-        public UpgradeEventSlotBound OnUpgradeCounted;
+        public UpgradeEventSlotBound OnUpgradeCountedDetailed;
+
+        /// <summary>
+        /// This event is invoked when a copy of this module's <see cref="techType"/> is found and counted.<para/>
+        /// This will happen for each copy found in the cyclops.<para/>
+        /// Unlike <see cref="OnUpgradeCountedDetailed"/>, this event will send no extra parameters.
+        /// </summary>
+        public UpgradeEvent OnUpgradeCounted;
 
         /// <summary>
         /// This event is invoked after all upgrade modules have been found.<para/>
@@ -150,7 +158,8 @@
         internal virtual void UpgradeCounted(Equipment modules, string slot)
         {
             count++;
-            OnUpgradeCounted?.Invoke(modules, slot);
+            OnUpgradeCounted?.Invoke();
+            OnUpgradeCountedDetailed?.Invoke(modules, slot, modules.equipment[slot]);
         }
 
         internal virtual void UpgradesFinished()

@@ -14,7 +14,7 @@
             {
                 cyclopsHoloHUD?.fireSuppressionSystem.SetActive(false);
             };
-            OnUpgradeCounted = (Equipment modules, string slot) =>
+            OnUpgradeCounted = () =>
             {
                 cyclopsHoloHUD?.fireSuppressionSystem.SetActive(true);
             };

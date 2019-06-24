@@ -35,9 +35,9 @@
                 batteries.Clear();
             };
 
-            OnUpgradeCounted += (Equipment modules, string slot) =>
+            OnUpgradeCountedDetailed += (Equipment modules, string slot, InventoryItem inventoryItem) =>
             {
-                var details = new BatteryDetails(modules, slot, modules.GetItemInSlot(slot).item.GetComponent<Battery>());
+                var details = new BatteryDetails(modules, slot, inventoryItem.item.GetComponent<Battery>());
                 batteries.Add(details);
                 totalBatteryCharge += details.BatteryRef._charge;
             };

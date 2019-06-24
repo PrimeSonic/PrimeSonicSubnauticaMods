@@ -122,12 +122,13 @@
             OnClearUpgrades?.Invoke();
         }
 
-        internal void TierCounted(TechType countedTier, Equipment modules, string slot)
+        internal void TierCounted(TechType countedTier, Equipment modules, string slot, InventoryItem inventoryItem)
         {
             counted[countedTier]++;
             this.Count++;
 
-            OnUpgradeCounted?.Invoke(modules, slot);
+            OnUpgradeCounted?.Invoke();
+            OnUpgradeCountedDetailed?.Invoke(modules, slot, inventoryItem);
         }
 
         internal override void UpgradesFinished()

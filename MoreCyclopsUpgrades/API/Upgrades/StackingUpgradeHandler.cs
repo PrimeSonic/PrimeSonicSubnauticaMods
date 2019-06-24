@@ -30,7 +30,7 @@
 
         internal override void UpgradeCounted(Equipment modules, string slot)
         {
-            ParentCollection.TierCounted(techType, modules, slot);
+            ParentCollection.TierCounted(techType, modules, slot, modules.equipment[slot]);
         }
 
         internal override void UpgradesFinished()

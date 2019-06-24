@@ -14,7 +14,7 @@
                 cyclops.currPowerRating = 1f;
             };
 
-            OnUpgradeCounted = (Equipment modules, string slot) =>
+            OnUpgradeCountedDetailed = (Equipment modules, string slot, InventoryItem inventoryItem) =>
             {
                 cyclops.currPowerRating = 3f;
             };

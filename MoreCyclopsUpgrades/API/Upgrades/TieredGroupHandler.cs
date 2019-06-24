@@ -92,14 +92,15 @@
             OnClearUpgrades?.Invoke();
         }
 
-        internal void TierCounted(T countedValue, Equipment modules, string slot)
+        internal void TierCounted(T countedValue, Equipment modules, string slot, InventoryItem inventoryItem)
         {
             int comparison = countedValue.CompareTo(this.HighestValue);
 
             if (comparison > 0)
                 this.HighestValue = countedValue;
 
-            OnUpgradeCounted?.Invoke(modules, slot);
+            OnUpgradeCounted?.Invoke();
+            OnUpgradeCountedDetailed?.Invoke(modules, slot, inventoryItem);
         }
 
         internal override void UpgradesFinished()
