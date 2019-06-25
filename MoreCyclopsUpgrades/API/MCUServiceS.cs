@@ -6,6 +6,7 @@
     using Common;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
+    using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Managers;
@@ -16,43 +17,42 @@
     /// <seealso cref="IMCUCrossMod" />
     public class MCUServices : IMCUCrossMod, IMCURegistration, IMCUSearch
     {
-        private static readonly MCUServices singleton = new MCUServices();
-        private static readonly string[] cyModulesTab = new[] { "CyclopsModules" };
-        private bool CyclopsFabricatorHasCyclopsModulesTab { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
-
-        /// <summary>
-        /// Contains methods for asisting with cross-mod compatibility with other Cyclops mod.
-        /// </summary>
-        public static IMCUCrossMod CrossMod => singleton;
-
-        /// <summary>
-        /// Register your upgrades, charger, and managers with MoreCyclopsUpgrades.<para/>
-        /// WARNING! These methods MUST be invoked during patch time.
-        /// </summary>
-        public static IMCURegistration Register => singleton;
-
-        /// <summary>
-        /// Provides methods to find the upgrades, chargers, and managers you registered once the Cyclops sub is running.
-        /// </summary>
-        public static IMCUSearch Find => singleton;
-
         /// <summary>
         /// "Practically zero" for all intents and purposes.<para/>
         /// Any energy value lower than this should be considered zero.
         /// </summary>
         public const float MinimalPowerValue = 0.001f;
 
+        private static readonly MCUServices singleton = new MCUServices();
+
         private MCUServices()
         {
             // Hide constructor
         }
 
-        public string[] StepsToCyclopsModulesTabInCyclopsFabricator => this.CyclopsFabricatorHasCyclopsModulesTab ? cyModulesTab : null;
+        #region IMCUCrossMod
+
+        /// <summary>
+        /// Contains methods for asisting with cross-mod compatibility with other Cyclops mod.
+        /// </summary>
+        public static IMCUCrossMod CrossMod => singleton;
+
+        public string[] StepsToCyclopsModulesTabInCyclopsFabricator { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops") ? new[] { "CyclopsModules" } : null;
 
         public float ChangePowerRatingWithPenalty(SubRoot cyclops, float powRating)
         {
             return cyclops.currPowerRating = ModConfig.Main.RechargePenalty * powRating;
         }
+
+        #endregion
+
+        #region IMCURegistration
+
+        /// <summary>
+        /// Register your upgrades, charger, and managers with MoreCyclopsUpgrades.<para/>
+        /// WARNING! These methods MUST be invoked during patch time.
+        /// </summary>
+        public static IMCURegistration Register => singleton;
 
         public void CyclopsCharger(CreateCyclopsCharger createEvent)
         {
@@ -102,6 +102,25 @@
                 CyclopsManager.RegisterAuxManagerCreator(managerCreator.CreateAuxCyclopsManager, Assembly.GetCallingAssembly().GetName().Name);
         }
 
+        public void PdaIconOverlay(TechType techType, IIconOverlayCreator overlayCreator)
+        {
+            PdaOverlayManager.RegisterHandlerCreator(techType, overlayCreator.CreateIconOverlay, Assembly.GetCallingAssembly().GetName().Name);
+        }
+
+        public void PdaIconOverlay(TechType techType, CreateIconOverlay createEvent)
+        {
+            PdaOverlayManager.RegisterHandlerCreator(techType, createEvent, Assembly.GetCallingAssembly().GetName().Name);
+        }
+
+        #endregion
+
+        #region IMCUSearch
+
+        /// <summary>
+        /// Provides methods to find the upgrades, chargers, and managers you registered once the Cyclops sub is running.
+        /// </summary>
+        public static IMCUSearch Find => singleton;
+
         public T AuxCyclopsManager<T>(SubRoot cyclops, string auxManagerName)
             where T : class, IAuxCyclopsManager
         {
@@ -129,6 +148,6 @@
             return CyclopsManager.GetManager<ChargeManager>(cyclops, ChargeManager.ManagerName)?.GetCharger<T>(chargeHandlerName);
         }
 
-
+        #endregion
     }
 }

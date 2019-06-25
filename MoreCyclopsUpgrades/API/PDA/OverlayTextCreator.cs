@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API.PDA
 {
-    public interface IOverlayCreator
+    public interface IIconOverlayCreator
     {
         /// <summary>
         /// Creates a new child of <see cref="IconOverlay" /> when the Cyclops is initialized.
@@ -10,7 +10,7 @@
         /// <returns>
         /// A newly instantiated class that inherits from <see cref="IconOverlay" />.
         /// </returns>
-        IconOverlay CreateOverlayText(uGUI_ItemIcon icon, InventoryItem upgradeModule);
+        IconOverlay CreateIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule);
     }
 
     /// <summary>
@@ -21,5 +21,5 @@
     /// <returns>
     /// A newly instantiated class that inherits from <see cref="IconOverlay" />.
     /// </returns>
-    public delegate IconOverlay CreateOverlayText(uGUI_ItemIcon icon, InventoryItem upgradeModule);
+    public delegate IconOverlay CreateIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule);
 }

@@ -79,6 +79,7 @@
     <Compile Include="Config\ModConfig.cs" />
     <Compile Include="Config\ChoiceEnums\ShowChargerIcons.cs" />
     <Compile Include="Items\ThermalModule\ThermalCharger.cs" />
+    <Compile Include="Items\ThermalModule\ThermalIconOverlay.cs" />
     <Compile Include="Items\ThermalModule\ThermalUpgradeHandler.cs" />
     <Compile Include="Managers\PdaOverlayManager.cs" />
     <Compile Include="OriginalUpgrades\OriginalDepthUpgrades.cs" />

@@ -8,13 +8,14 @@
         private const float MaxSolarDepth = 200f;
         private const float PercentageMaker = 100f;
         private const float SolarChargingFactor = 1.25f / PercentageMaker;
+        internal const string ChargerName = "McuSolChgr";
 
         public SolarCharger(TechType tier1TechType, TechType tier2TechType, SubRoot cyclops) 
             : base(tier1TechType, tier2TechType, cyclops)
         {
         }
 
-        public override string Name { get; } = "McuSolChgr";
+        public override string Name { get; } = ChargerName;
         protected override string PercentNotation => "%Θ";
         protected override float MaximumEnergyStatus => 90f;
         protected override float MinimumEnergyStatus => 1f;

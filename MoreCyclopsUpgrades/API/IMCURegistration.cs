@@ -2,6 +2,7 @@
 {
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
+    using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
 
     public interface IMCURegistration
@@ -30,7 +31,7 @@
         void CyclopsCharger(CreateCyclopsCharger createEvent);
 
         /// <summary>
-        /// Registers a <see cref="ICyclopsChargerCreator"/> class can create a new <see cref="ICyclopsCharger"/> on demand.<para/>
+        /// Registers a <see cref="ICyclopsChargerCreator"/> class that can create a new <see cref="ICyclopsCharger"/> on demand.<para/>
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
         /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)"/> method.</param>
@@ -49,5 +50,21 @@
         /// </summary>
         /// <param name="createEvent">A class that implements this <see cref="IUpgradeHandlerCreator.CreateUpgradeHandler(SubRoot)"/> method.</param>
         void CyclopsUpgradeHandler(IUpgradeHandlerCreator handlerCreator);
+
+        /// <summary>
+        /// Registers a <see cref="IIconOverlayCreator" /> class that can create a new <see cref="IconOverlay" /> on demand.<para />
+        /// This method will be invoked every time the PDA screen opens up on a Cyclops Upgrade Console that contains a module of the specified <see cref="TechType"/>.
+        /// </summary>
+        /// <param name="techType">The upgrade module's techtype.</param>
+        /// <param name="createEvent">A method that takes in a <see cref="uGUI_ItemIcon"/> and <see cref="InventoryItem"/> and returns a new <see cref="IconOverlay"/>.</param>
+        void PdaIconOverlay(TechType techType, IIconOverlayCreator overlayCreator);
+
+        /// <summary>
+        /// Registers a <see cref="CreateIconOverlay" /> method that creates a new <see cref="IconOverlay" /> on demand.<para />
+        /// This method will be invoked every time the PDA screen opens up on a Cyclops Upgrade Console that contains a module of the specified <see cref="TechType"/>.
+        /// </summary>
+        /// <param name="techType">The upgrade module's techtype.</param>
+        /// <param name="createEvent">A method that takes in a <see cref="uGUI_ItemIcon"/> and <see cref="InventoryItem"/> and returns a new <see cref="IconOverlay"/>.</param>
+        void PdaIconOverlay(TechType techType, CreateIconOverlay createEvent);
     }
 }

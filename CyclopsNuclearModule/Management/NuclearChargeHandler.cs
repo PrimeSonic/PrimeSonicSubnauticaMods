@@ -1,6 +1,5 @@
 ﻿namespace CyclopsNuclearUpgrades.Management
 {
-    using System.Collections.Generic;
     using CommonCyclopsUpgrades;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
@@ -8,18 +7,28 @@
 
     internal class NuclearChargeHandler : ICyclopsCharger
     {
+        internal enum NuclearState
+        {
+            None,
+            ConservingNuclearEnergy,
+            NuclearPowerEngaged,
+            Overheated
+        }
+
         internal const string ChargerName = "CyNukeChgr";
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private const float MaxNuclearChargeRate = 0.15f;
         private const float MinNuclearChargeRate = MinimalPowerValue * 2;
         private const float CooldownRate = MaxNuclearChargeRate * 6f;
-        private const float MaxHeat = 1500f;
+        internal const float MaxHeat = 1500f;
 
         private readonly Atlas.Sprite sprite;
         private readonly NuclearUpgradeHandler upgradeHandler;
-        private float heat = 0f;
         private float chargeRate = MinNuclearChargeRate;
         private NuclearState nuclearState = NuclearState.None;
+
+        internal float HeatLevel { get; private set; } = 0f;
+        internal bool IsOverheated => nuclearState == NuclearState.Overheated;
 
         public NuclearChargeHandler(SubRoot cyclops, TechType nuclearModule)
         {
@@ -43,7 +52,7 @@
         public Color GetIndicatorTextColor()
         {
             // Use color to inform heat levels
-            return NumberFormatter.GetNumberColor(MaxHeat - heat, MaxHeat, 0f);
+            return NumberFormatter.GetNumberColor(MaxHeat - this.HeatLevel, MaxHeat, 0f);
         }
 
         public bool HasPowerIndicatorInfo()
@@ -53,10 +62,10 @@
 
         public float ProducePower(float requestedPower)
         {
-            if (nuclearState != NuclearState.NuclearPowerEngaged && heat > 0f)
+            if (nuclearState != NuclearState.NuclearPowerEngaged && this.HeatLevel > 0f)
             {
                 chargeRate = MinNuclearChargeRate;
-                heat -= CooldownRate; // Cooldown
+                this.HeatLevel -= CooldownRate; // Cooldown
             }
 
             if (upgradeHandler.TotalBatteryCharge <= MinimalPowerValue)
@@ -65,17 +74,20 @@
                 nuclearState = NuclearState.None;
                 return 0f;
             }
-            else if (heat >= MaxHeat)
+            else if (this.HeatLevel >= MaxHeat)
             {
                 chargeRate = Mathf.Max(MinNuclearChargeRate, chargeRate - MinNuclearChargeRate);
                 nuclearState = NuclearState.Overheated;
+                upgradeHandler.TooHotToHandle = true;
                 return 0f;
             }
             else if (nuclearState == NuclearState.Overheated)
             {
-                if (heat <= 0) // Do not allow nuclear power to charge again until heat has returned to zero
+                if (this.HeatLevel <= 0) // Do not allow nuclear power to charge again until heat has returned to zero
+                {
                     nuclearState = NuclearState.None;
-
+                    upgradeHandler.TooHotToHandle = false;
+                }
                 return 0f;
             }
             else
@@ -86,7 +98,7 @@
 
                 float generatedPower = upgradeHandler.GetBatteryPower(chargeRate, requestedPower);
 
-                heat += generatedPower;
+                this.HeatLevel += generatedPower;
                 return generatedPower;
             }
         }

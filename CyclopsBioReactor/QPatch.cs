@@ -40,6 +40,11 @@
                     return new BioBoosterUpgradeHandler(booster.TechType, cyclops);
                 });
 
+                MCUServices.Register.PdaIconOverlay(booster.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+                {
+                    return new BoosterOverlay(icon, upgradeModule);
+                });
+
                 QuickLogger.Info("Finished Patching");
             }
             catch (Exception ex)

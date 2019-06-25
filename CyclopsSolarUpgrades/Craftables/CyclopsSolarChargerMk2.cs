@@ -3,11 +3,12 @@
     using CommonCyclopsUpgrades;
     using CyclopsSolarUpgrades.Management;
     using MoreCyclopsUpgrades.API.Charging;
+    using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
     using UnityEngine;
 
-    internal class CyclopsSolarChargerMk2 : CyclopsUpgrade, IUpgradeHandlerCreator, ICyclopsChargerCreator
+    internal class CyclopsSolarChargerMk2 : CyclopsUpgrade, IUpgradeHandlerCreator, ICyclopsChargerCreator, IIconOverlayCreator
     {
         internal const float BatteryCapacity = 120f;
 
@@ -66,14 +67,14 @@
             return CreateSolarUpgrade(cyclops);
         }
 
-        private SolarCharger CreateSolarCharger(SubRoot cyclops)
+        public ICyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
         {
             return new SolarCharger(previousTier.TechType, this.TechType, cyclops);
         }
 
-        public ICyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
+        public IconOverlay CreateIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
         {
-            return CreateSolarCharger(cyclops);
+            return new SolarIconOverlay(icon, upgradeModule);
         }
     }
 }

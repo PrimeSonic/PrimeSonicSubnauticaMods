@@ -11,13 +11,15 @@
         public readonly uGUI_ItemIcon uGuiIcon;
         public readonly TechType techType;
         public readonly InventoryItem module;
+        public readonly SubRoot cyclops;
 
         protected IconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
         {
             module = upgradeModule;
             techType = upgradeModule.item.GetTechType();
             uGuiIcon = icon;
-            
+            cyclops = Player.main.currentSub;
+
             upperText = new IconOverlayText(icon, TextAnchor.UpperCenter);
             middleText = new IconOverlayText(icon, TextAnchor.MiddleCenter);
             lowerText = new IconOverlayText(icon, TextAnchor.LowerCenter);

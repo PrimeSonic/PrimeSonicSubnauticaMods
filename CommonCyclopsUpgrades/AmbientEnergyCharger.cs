@@ -68,12 +68,17 @@
             switch (this.CurrentState)
             {
                 case EnergyState.AmbientEnergyAvailable:
-                    return NumberFormatter.FormatValue(energyStatus) + this.PercentNotation;
+                    return EnergyStatusPercent();
                 case EnergyState.RunningOnBatteries:
                     return NumberFormatter.FormatValue(ambientEnergyUpgrade.TotalBatteryCharge);
                 default:
                     return string.Empty;
             }
+        }
+
+        internal string EnergyStatusPercent()
+        {
+            return NumberFormatter.FormatValue(energyStatus) + this.PercentNotation;
         }
 
         public Color GetIndicatorTextColor()

@@ -80,11 +80,10 @@
             var thermalMk2 = new CyclopsThermalChargerMk2();
             thermalMk2.Patch();
 
-            QuickLogger.Debug("Registering thermal reactor upgrades handler");
             MCUServices.Register.CyclopsUpgradeHandler(thermalMk2);
-
-            QuickLogger.Debug("Registering thermal reactor charger");
             MCUServices.Register.CyclopsCharger(thermalMk2);
+            MCUServices.Register.PdaIconOverlay(TechType.CyclopsThermalReactorModule, thermalMk2);
+            MCUServices.Register.PdaIconOverlay(thermalMk2.TechType, thermalMk2);
         }
 
         private static void PatchAuxUpgradeConsole()

@@ -3,17 +3,16 @@
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API.PDA;
-    using MoreCyclopsUpgrades.Items.AuxConsole;
 
     internal static class PdaOverlayManager
     {
         private static readonly List<IconOverlay> iconOverlays = new List<IconOverlay>(6);
-        private static readonly IDictionary<TechType, CreateOverlayText> OverlayCreators = new Dictionary<TechType, CreateOverlayText>();
+        private static readonly IDictionary<TechType, CreateIconOverlay> OverlayCreators = new Dictionary<TechType, CreateIconOverlay>();
 
         internal static bool HasUpgradeConsoleInPda => upgradeModules != null;
         private static Equipment upgradeModules = null;        
 
-        internal static void RegisterHandlerCreator(TechType techType, CreateOverlayText createEvent, string assemblyName)
+        internal static void RegisterHandlerCreator(TechType techType, CreateIconOverlay createEvent, string assemblyName)
         {
             if (OverlayCreators.ContainsKey(techType))
             {
@@ -58,7 +57,7 @@
             {
                 InventoryItem item = pair.Key;
 
-                if (OverlayCreators.TryGetValue(item.item.GetTechType(), out CreateOverlayText creator))
+                if (OverlayCreators.TryGetValue(item.item.GetTechType(), out CreateIconOverlay creator))
                 {
                     iconOverlays.Add(creator.Invoke(pair.Value.icon, item));
                 }

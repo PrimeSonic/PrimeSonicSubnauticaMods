@@ -21,12 +21,13 @@
 
         private float totalBatteryCharge = 0f;
         internal float TotalBatteryCharge { get; private set; }
+        internal bool TooHotToHandle { get; set; } = false;
 
         public NuclearUpgradeHandler(TechType nuclearModule, INuclearModuleDepleter depleter, SubRoot cyclops)
             : base(nuclearModule, cyclops)
         {
             moduleDepleter = depleter;
-            
+
             this.MaxCount = 3;
 
             OnClearUpgrades += () =>
@@ -55,6 +56,11 @@
             OnFirstTimeMaxCountReached += () =>
             {
                 ErrorMessage.AddMessage(CyclopsNuclearModule.MaxNuclearReachedMsg);
+            };
+
+            IsAllowedToRemove += (Pickupable item, bool verbose) =>
+            {
+                return !this.TooHotToHandle;
             };
         }
 

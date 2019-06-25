@@ -1,12 +1,13 @@
 ﻿namespace MoreCyclopsUpgrades.Items.ThermalModule
 {
     using MoreCyclopsUpgrades.API.Charging;
+    using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal class CyclopsThermalChargerMk2 : CyclopsUpgrade, ICyclopsChargerCreator, IUpgradeHandlerCreator
+    internal class CyclopsThermalChargerMk2 : CyclopsUpgrade, ICyclopsChargerCreator, IUpgradeHandlerCreator, IIconOverlayCreator
     {
         internal const float BatteryCapacity = 120f;
 
@@ -68,6 +69,11 @@
         public UpgradeHandler CreateUpgradeHandler(SubRoot cyclops)
         {
             return new ThermalUpgradeHandler(TechType.CyclopsThermalReactorModule, this.TechType, cyclops);
+        }
+
+        public IconOverlay CreateIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        {
+            return new ThermalIconOverlay(icon, upgradeModule);
         }
     }
 }

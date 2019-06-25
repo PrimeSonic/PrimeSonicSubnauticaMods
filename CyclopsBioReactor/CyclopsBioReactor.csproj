@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Management\BoosterOverlay.cs" />
     <Compile Include="Management\BioAuxCyclopsManager.cs" />
     <Compile Include="Management\BioBoosterUpgradeHandler.cs" />
     <Compile Include="Management\BioChargeHandler.cs" />
