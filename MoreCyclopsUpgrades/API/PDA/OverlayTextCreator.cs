@@ -1,5 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.API.PDA
 {
+    /// <summary>
+    /// Defines an interface for a class that can create a new <see cref="IconOverlay"/> when needed.
+    /// </summary>
     public interface IIconOverlayCreator
     {
         /// <summary>

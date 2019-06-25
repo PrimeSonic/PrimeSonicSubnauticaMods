@@ -7,20 +7,54 @@
     /// <summary>
     /// Extends the <see cref="Craftable"/> class with handling and defaults specific for Cyclops upgrade modules.
     /// </summary>
-    /// <seealso cref="SMLHelper.V2.Assets.Craftable" />
+    /// <seealso cref="Craftable" />
     public abstract class CyclopsUpgrade : Craftable
     {
+        /// <summary>
+        /// Initializes a new instance of the <seealso cref="Craftable"/> <see cref="CyclopsUpgrade"/> class.<para/>
+        /// Any item created with this class with automatically be equipable in the Cyclops.
+        /// </summary>
+        /// <param name="classId">The main internal identifier for this item. Your item's <see cref="T:TechType" /> will be created using this name.</param>
+        /// <param name="friendlyName">The name displayed in-game for this item whether in the open world or in the inventory.</param>
+        /// <param name="description">The description for this item; Typically seen in the PDA, inventory, or crafting screens.</param>
         protected CyclopsUpgrade(string classId, string friendlyName, string description)
             : base(classId, friendlyName, description)
         {
             base.OnFinishedPatching += MakeEquipable;
         }
 
+        /// <summary>
+        /// Overriden to ensure this item appearas within the <see cref="TechGroup.Cyclops"/> group in the PDA blurprints menu.
+        /// </summary>
         public sealed override TechGroup GroupForPDA { get; } = TechGroup.Cyclops;
+
+        /// <summary>
+        /// Overrides to ensure this item appears within the <see cref="TechCategory.CyclopsUpgrades"/> category in the PDA blueprints menu.
+        /// </summary>
         public sealed override TechCategory CategoryForPDA { get; } = TechCategory.CyclopsUpgrades;
+
+        /// <summary>
+        /// Gets the prefab template used to clone new instances of this upgrade module.<para/>
+        /// Defaults to <see cref="TechType.CyclopsThermalReactorModule"/> which is enough for most any Cyclops upgrade module.
+        /// </summary>
+        /// <value>
+        /// The prefab template.
+        /// </value>
         protected virtual TechType PrefabTemplate { get; } = TechType.CyclopsThermalReactorModule;
+
+        /// <summary>
+        /// Overriden to set to have the <see cref="TechType.Cyclops" /> be required before this upgrade module can be unlocked.
+        /// If not overriden, it this item will be unlocked from the start of the game.
+        /// </summary>
         public override TechType RequiredForUnlock { get; } = TechType.Cyclops; // Default can be overridden by child classes
 
+        /// <summary>
+        /// Gets the prefab game object. Set up your prefab components here.<para/>
+        /// A default implementation is already provided which creates the new item by modifying a clone of the item defined in <see cref="PrefabTemplate"/>.
+        /// </summary>
+        /// <returns>
+        /// The game object to be instantiated into a new in-game entity.
+        /// </returns>
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabTemplate);
@@ -35,6 +69,11 @@
             CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
         }
 
+        /// <summary>
+        /// A utility method that spawns a cyclops upgrade module by TechType ID.
+        /// </summary>
+        /// <param name="techTypeID">The tech type ID.</param>
+        /// <returns>A new <see cref="InventoryItem"/> that wraps up a <see cref="Pickupable"/> game object.</returns>
         public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
         {
             var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));

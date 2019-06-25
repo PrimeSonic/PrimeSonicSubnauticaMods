@@ -6,7 +6,7 @@
     /// <summary>
     /// A class the helps applies a shader to a material and adds settings to the material specified
     /// </summary>
-    public class MaterialHelpers : MonoBehaviour
+    internal class MaterialHelpers : MonoBehaviour
     {
         /// <summary>
         /// Finds a <see cref="Texture2D"/> in the asset bundle with the specified name.
@@ -64,6 +64,7 @@
         /// <param name="gameObject">The game object to process.</param>
         /// <param name="assetBundle">The assetBundle to search in.</param>
         /// <param name="emissionColor">The color to use on the emission material.</param>
+        /// <param name="emissionMuli">The emission muli.</param>
         public static void ApplyEmissionShader(string materialName, string textureName, GameObject gameObject, AssetBundle assetBundle, Color emissionColor, float emissionMuli = 1.0f)
         {
             //Use this to do the Emission

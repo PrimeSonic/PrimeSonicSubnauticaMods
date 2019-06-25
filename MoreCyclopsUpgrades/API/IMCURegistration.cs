@@ -5,6 +5,9 @@
     using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
 
+    /// <summary>
+    /// Defines a set of patch-time APIs to be used to register your own class factories that will integrate into MoreCyclopsUpgrades.
+    /// </summary>
     public interface IMCURegistration
     {
         /// <summary>
@@ -16,11 +19,11 @@
         void AuxCyclopsManager(CreateAuxCyclopsManager createEvent);
 
         /// <summary>
-        /// Registers a <see cref="IAuxCyclopsManagerCreator"/> class that can create a new <see cref="IAuxCyclopsManager"/> on demand.<para/>
-        /// This method will be invoked only once for each Cyclops sub in the game world.<para/>
+        /// Registers a <see cref="IAuxCyclopsManagerCreator" /> class that can create a new <see cref="IAuxCyclopsManager" /> on demand.<para />
+        /// This method will be invoked only once for each Cyclops sub in the game world.<para />
         /// Use this when you simply need to have a class that attaches one instance per Cyclops.
         /// </summary>
-        /// <param name="createEvent">The create event.</param>
+        /// <param name="managerCreator">The manager creator class instance.</param>
         void AuxCyclopsManager(IAuxCyclopsManagerCreator managerCreator);
 
         /// <summary>
@@ -48,7 +51,7 @@
         /// Registers a <see cref="CreateUpgradeHandler"/> class can create a new <see cref="UpgradeHandler"/> on demand.<para/>
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
-        /// <param name="createEvent">A class that implements this <see cref="IUpgradeHandlerCreator.CreateUpgradeHandler(SubRoot)"/> method.</param>
+        /// <param name="handlerCreator">A class that implements this <see cref="IUpgradeHandlerCreator.CreateUpgradeHandler(SubRoot)"/> method.</param>
         void CyclopsUpgradeHandler(IUpgradeHandlerCreator handlerCreator);
 
         /// <summary>
@@ -56,7 +59,7 @@
         /// This method will be invoked every time the PDA screen opens up on a Cyclops Upgrade Console that contains a module of the specified <see cref="TechType"/>.
         /// </summary>
         /// <param name="techType">The upgrade module's techtype.</param>
-        /// <param name="createEvent">A method that takes in a <see cref="uGUI_ItemIcon"/> and <see cref="InventoryItem"/> and returns a new <see cref="IconOverlay"/>.</param>
+        /// <param name="overlayCreator">A class that implements a method the <see cref="IIconOverlayCreator.CreateIconOverlay(uGUI_ItemIcon, InventoryItem)"/> method.</param>
         void PdaIconOverlay(TechType techType, IIconOverlayCreator overlayCreator);
 
         /// <summary>

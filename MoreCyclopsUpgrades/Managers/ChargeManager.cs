@@ -18,10 +18,6 @@
 
         private static readonly ICollection<CreateCyclopsCharger> CyclopsChargers = new List<CreateCyclopsCharger>();
 
-        /// <summary>
-        /// Registers a <see cref="CreateCyclopsCharger"/> method that creates returns a new <see cref="ICyclopsCharger"/> on demand and is only used once.
-        /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger"/>.</param>
         internal static void RegisterChargerCreator(CreateCyclopsCharger createEvent, string assemblyName)
         {
             if (CyclopsChargers.Contains(createEvent))

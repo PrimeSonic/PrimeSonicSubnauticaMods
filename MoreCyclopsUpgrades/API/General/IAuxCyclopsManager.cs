@@ -1,13 +1,13 @@
 ﻿namespace MoreCyclopsUpgrades.API.General
 {
     /// <summary>
-    /// Defines the itnerface needed by MoreCyclopsUpgrades to hook your own managers into the extisting Cyclops Manager system.
+    /// Defines the interface needed by MoreCyclopsUpgrades to hook your own managers into the extisting Cyclops Manager system.
     /// </summary>
     public interface IAuxCyclopsManager
     {
         /// <summary>
         /// Gets the name of the Auxiliary Cyclops Manager.<para/>
-        /// This acts an ID for the manager so it can be located when calling into <seealso cref="IMCUCrossMod.FindManager{T}(SubRoot, string)"/>.
+        /// This acts an ID for the manager so it can be located when calling into <seealso cref="IMCUSearch.AuxCyclopsManager{T}(SubRoot, string)"/>.
         /// </summary>
         /// <value>
         /// The name of this type of manager.

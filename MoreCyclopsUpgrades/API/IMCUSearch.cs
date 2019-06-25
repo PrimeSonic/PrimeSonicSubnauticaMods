@@ -5,6 +5,9 @@
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
 
+    /// <summary>
+    /// Defines a set of game-time APIs to search for the various instances created by the creator methods and classes registered on <see cref="IMCURegistration"/>.
+    /// </summary>
     public interface IMCUSearch
     {
         /// <summary>
@@ -29,7 +32,7 @@
         /// Gets the charge hangler at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="ICyclopsCharger"/> for something else in your mod.
         /// </summary>
-        /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="RegisterChargerCreator(CreateCyclopsCharger)"/>.</typeparam>
+        /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="chargeHandlerName">The <seealso cref="ICyclopsCharger.Name"/> of the charge handler.</param>
         /// <returns>A type casted <see cref="ICyclopsCharger"/> if found by name; Otherwise returns null.</returns>
@@ -39,20 +42,23 @@
         /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="UpgradeHandler"/> for something else in your mod.
         /// </summary>
-        /// <typeparam name="T">The class created by the <seealso cref="CreateUpgradeHandler"/> you passed into <seealso cref="RegisterUpgradeCreator(CreateUpgradeHandler)"/>.</typeparam>
+        /// <typeparam name="T">The class created by the <seealso cref="CreateUpgradeHandler"/> you passed into <seealso cref="IMCURegistration.CyclopsUpgradeHandler(CreateUpgradeHandler)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="upgradeId">The upgrade module techtype ID.</param>
         /// <returns>A type casted <see cref="UpgradeHandler"/> if found by techtype; Otherwise returns null.</returns>
         T CyclopsUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler;
 
         /// <summary>
-        /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
-        /// Use this if you need to obtain a reference to your <seealso cref="StackingGroupHandler"/> or <seealso cref="TieredGroupHandler{T}"/> for something else in your mod.
+        /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType" />.<para />
+        /// Use this if you need to obtain a reference to your <seealso cref="StackingGroupHandler" /> or <seealso cref="TieredGroupHandler{T}" /> for something else in your mod.
         /// </summary>
-        /// <typeparam name="T">The class created by the <seealso cref="CreateUpgradeHandler"/> you passed into <seealso cref="RegisterUpgradeCreator(CreateUpgradeHandler)"/>.</typeparam>
+        /// <typeparam name="T">The class created by the <seealso cref="CreateUpgradeHandler" /> you passed into <seealso cref="IMCURegistration.CyclopsUpgradeHandler(CreateUpgradeHandler)" />.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
         /// <param name="upgradeId">The upgrade module techtype ID.</param>
-        /// <returns>A type casted <see cref="UpgradeHandler"/> if found by techtype; Otherwise returns null.</returns>
+        /// <param name="additionalIds">Additional techtype IDs for a more precise search.</param>
+        /// <returns>
+        /// A type casted <see cref="UpgradeHandler" /> if found by techtype; Otherwise returns null.
+        /// </returns>
         T CyclopsGroupUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler;
     }
 }

@@ -85,10 +85,6 @@
             return this.ChargeManager != null;
         }
 
-        /// <summary>
-        /// Updates the Cyclops helm HUD  using data from all equipment modules across all upgrade consoles.
-        /// </summary>
-        /// <param name="cyclopsHelmHUD">The instance.</param>
         internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, int lastPowerInt)
         {
             if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != Cyclops)

@@ -18,10 +18,6 @@
         internal const string ManagerName = "McuUpgrdMgr";
         private static readonly ICollection<CreateUpgradeHandler> HandlerCreators = new List<CreateUpgradeHandler>();
 
-        /// <summary>
-        /// Registers a <see cref="CreateUpgradeHandler"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
-        /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
         internal static void RegisterHandlerCreator(CreateUpgradeHandler createEvent, string assemblyName)
         {
             if (HandlerCreators.Contains(createEvent))

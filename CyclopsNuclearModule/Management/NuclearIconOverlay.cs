@@ -35,7 +35,6 @@
             {
                 base.lowerText.TextString = string.Empty;
             }
-
         }
     }
 }

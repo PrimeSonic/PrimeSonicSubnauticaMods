@@ -5,7 +5,7 @@
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
     [HarmonyPatch("OnOpenPDA")]
-    public class UGUI_InventoryTab_OnOpenPDA_Patcher
+    internal class UGUI_InventoryTab_OnOpenPDA_Patcher
     {
         [HarmonyPostfix]
         public static void Postfix(uGUI_InventoryTab __instance)

@@ -2,6 +2,10 @@
 {
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Defines a common interface for upgade handler classes that manage multiple different upgrades as once.<para/>
+    /// You will see this on <see cref="StackingGroupHandler"/> and <see cref="TieredGroupHandler{T}"/>.
+    /// </summary>
     public interface IGroupHandler
     {
         /// <summary>

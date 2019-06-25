@@ -11,21 +11,19 @@
         /// <summary>
         /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="OnClearUpgrades"/> and <see cref="OnFinishedWithUpgrades"/>.
         /// </summary>
-        /// <param name="cyclops">The cyclops where the event took place.</param>
         public delegate void UpgradeEvent();
 
         /// <summary>
-        /// Defines a method to invoke that takes all the needed references to identify a single upgrade module instance. Used for <seealso cref="OnUpgradeCountedDetailed"/>.
+        /// Defines a method to invoke that takes all the needed references to identify a single upgrade module instance. Used for <seealso cref="OnUpgradeCountedDetailed" />.
         /// </summary>
-        /// <param name="cyclops">The cyclops where the event took place.</param>
         /// <param name="modules">The equipment module where the event took place.</param>
         /// <param name="slot">The equipment slot where the event took place.</param>
+        /// <param name="inventoryItem">The inventory item.</param>
         public delegate void UpgradeEventSlotBound(Equipment modules, string slot, InventoryItem inventoryItem);
 
         /// <summary>
         /// Defines a method to invoke that returns whether or not an item is allowed in or out. Used for <seealso cref="IsAllowedToAdd"/> and <seealso cref="IsAllowedToRemove"/>.
         /// </summary>
-        /// <param name="cyclops">The cyclops where the event took place.</param>
         /// <param name="item">The item being checked.</param>
         /// <param name="verbose">if set to <c>true</c> verbose text display was requested; Otherwise <c>false</c>.</param>
         /// <returns></returns>
@@ -140,9 +138,10 @@
         public UpgradeAllowedEvent IsAllowedToRemove;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UpgradeHandler"/> class.
+        /// Initializes a new instance of the <see cref="UpgradeHandler" /> class.
         /// </summary>
         /// <param name="techType">The TechType of the upgrade module.</param>
+        /// <param name="cyclops">The cyclops where the handler is being registered.</param>
         public UpgradeHandler(TechType techType, SubRoot cyclops)
         {
             this.techType = techType;

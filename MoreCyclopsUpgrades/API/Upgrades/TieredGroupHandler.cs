@@ -56,9 +56,10 @@
         public readonly T DefaultValue;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TieredGroupHandler{T}"/> class with the default tier value.
+        /// Initializes a new instance of the <see cref="TieredGroupHandler{T}" /> class with the default tier value.
         /// </summary>
         /// <param name="defaultValue">The default value to use when upgrades are cleared.</param>
+        /// <param name="cyclops">The cyclops where the handler is being registered.</param>
         public TieredGroupHandler(T defaultValue, SubRoot cyclops) : base(TechType.None, cyclops)
         {
             DefaultValue = defaultValue;

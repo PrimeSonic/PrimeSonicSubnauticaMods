@@ -1,5 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.API
 {
+    /// <summary>
+    /// Defines a set of utility APIs used for better cross-mod compatibility. 
+    /// </summary>
     public interface IMCUCrossMod
     {
         /// <summary>
