@@ -73,11 +73,14 @@
     <Compile Include="API\PDA\IconOverlay.cs" />
     <Compile Include="API\PDA\IconOverlayText.cs" />
     <Compile Include="API\PDA\OverlayTextCreator.cs" />
-    <Compile Include="Config\ChoiceEnums\ChallengeLevel.cs" />
+    <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
     <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />
     <Compile Include="Config\IModConfig.cs" />
     <Compile Include="Config\ModConfig.cs" />
     <Compile Include="Config\ChoiceEnums\ShowChargerIcons.cs" />
+    <Compile Include="Items\AuxConsole\AuxCyUpgradeConsole.cs" />
+    <Compile Include="Items\AuxConsole\AuxCyUpgradeConsoleMono.cs" />
+    <Compile Include="Items\AuxConsole\AuxCyUpgradeConsoleSaveData.cs" />
     <Compile Include="Items\ThermalModule\ThermalCharger.cs" />
     <Compile Include="Items\ThermalModule\ThermalIconOverlay.cs" />
     <Compile Include="Items\ThermalModule\ThermalUpgradeHandler.cs" />
@@ -96,7 +99,6 @@
     <Compile Include="API\Upgrades\StackingUpgradeHandler.cs" />
     <Compile Include="API\Upgrades\TieredGroupHandler.cs" />
     <Compile Include="API\Upgrades\UpgradeHandlerCreator.cs" />
-    <Compile Include="Items\AuxConsole\CyUpgradeConsole.cs" />
     <Compile Include="API\Charging\ICyclopsCharger.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
     <Compile Include="API\Upgrades\CyclopsUpgrade.cs" />
@@ -107,9 +109,7 @@
     <Compile Include="Patchers\HUD_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
     <Compile Include="Items\AuxConsole\EmModuleSaveData.cs" />
-    <Compile Include="Items\AuxConsole\CyUpgradeConsoleMono.cs" />
     <Compile Include="Managers\UpgradeManager.cs" />
-    <Compile Include="Items\AuxConsole\AuxUpgradeConsoleSaveData.cs" />
     <Compile Include="Patchers\uGUI_Patches.cs" />
     <Compile Include="Patchers\UpgradeConsole_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

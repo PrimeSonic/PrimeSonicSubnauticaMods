@@ -10,7 +10,7 @@
     using UnityEngine.UI;
 
     [ProtoContract]
-    internal class CyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
+    internal class AuxCyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
     {
         // This will be set externally
         public SubRoot ParentCyclops { get; private set; }
@@ -33,7 +33,7 @@
             if (SaveData == null)
             {
                 string id = GetComponentInParent<PrefabIdentifier>().Id;
-                SaveData = new AuxUpgradeConsoleSaveData(id);
+                SaveData = new AuxCyUpgradeConsoleSaveData(id);
             }
 
             if (this.Modules == null)
@@ -76,7 +76,7 @@
             EventInfo onEquipInfo = equipmentType.GetEvent("onEquip", BindingFlags.Public | BindingFlags.Instance);
             EventInfo onUnequipInfo = equipmentType.GetEvent("onUnequip", BindingFlags.Public | BindingFlags.Instance);
 
-            Type cyConsoleType = typeof(CyUpgradeConsoleMono);
+            Type cyConsoleType = typeof(AuxCyUpgradeConsoleMono);
             MethodInfo myOnEquipMethod = cyConsoleType.GetMethod("OnEquip", BindingFlags.Instance | BindingFlags.NonPublic);
             MethodInfo myOnUnequipMethod = cyConsoleType.GetMethod("OnUnequip", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -154,7 +154,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText(CyUpgradeConsole.OnHoverText);
+            main.SetInteractText(AuxCyUpgradeConsole.OnHoverText);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -365,7 +365,7 @@
 
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
-        public AuxUpgradeConsoleSaveData SaveData;
+        public AuxCyUpgradeConsoleSaveData SaveData;
 #if DEBUG
         // Also shamelessly copied from RandyKnapp
         // https://github.com/RandyKnapp/SubnauticaModSystem/blob/master/SubnauticaModSystem/HabitatControlPanel/HabitatControlPanel.cs#L711

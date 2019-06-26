@@ -17,11 +17,9 @@
             return Language.main.Get(MaxThermalReachedKey);
         }
 
-        public const TechType RequiredAnalysisItem = TechType.CyclopsThermalReactorModule;
-
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
         public override string AssetsFolder { get; } = "MoreCyclopsUpgrades/Assets";
-        public override TechType RequiredForUnlock { get; } = TechType.Workbench;
+        public override TechType RequiredForUnlock { get; } = TechType.CyclopsThermalReactorModule;
         public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
 
         public CyclopsThermalChargerMk2()

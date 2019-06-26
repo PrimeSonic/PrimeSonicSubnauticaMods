@@ -42,7 +42,7 @@
             }
         }
 
-        private readonly List<CyUpgradeConsoleMono> TempCache = new List<CyUpgradeConsoleMono>();
+        private readonly List<AuxCyUpgradeConsoleMono> TempCache = new List<AuxCyUpgradeConsoleMono>();
 
         private IEnumerable<UpgradeSlot> UpgradeSlots
         {
@@ -52,7 +52,7 @@
                     foreach (string slot in SlotHelper.SlotNames)
                         yield return new UpgradeSlot(Cyclops.upgradeConsole.modules, slot);
 
-                foreach (CyUpgradeConsoleMono aux in this.AuxUpgradeConsoles)
+                foreach (AuxCyUpgradeConsoleMono aux in this.AuxUpgradeConsoles)
                     foreach (string slot in SlotHelper.SlotNames)
                         yield return new UpgradeSlot(aux.Modules, slot);
             }
@@ -60,7 +60,7 @@
 
         internal readonly SubRoot Cyclops;
 
-        internal List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
+        internal List<AuxCyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<AuxCyUpgradeConsoleMono>();
 
         public string Name { get; } = ManagerName;
 
@@ -148,9 +148,9 @@
         {
             TempCache.Clear();
 
-            CyUpgradeConsoleMono[] auxUpgradeConsoles = Cyclops.GetAllComponentsInChildren<CyUpgradeConsoleMono>();
+            AuxCyUpgradeConsoleMono[] auxUpgradeConsoles = Cyclops.GetAllComponentsInChildren<AuxCyUpgradeConsoleMono>();
 
-            foreach (CyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
+            foreach (AuxCyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
             {
                 if (TempCache.Contains(auxConsole))
                     continue; // This is a workaround because of the object references being returned twice in this array.

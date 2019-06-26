@@ -93,7 +93,7 @@
             else
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
 
-            var console = new CyUpgradeConsole();
+            var console = new AuxCyUpgradeConsole();
             console.Patch(ModConfig.Main.AuxConsoleEnabled);
         }
 

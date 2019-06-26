@@ -40,11 +40,11 @@
         {
             Choices = new string[3]
             {
-                $"{ChallengeLevel.Easy}",
-                $"{ChallengeLevel.Medium}",
-                $"{ChallengeLevel.Hard}"
+                $"{ChallengeMode.Easy}",
+                $"{ChallengeMode.Medium}",
+                $"{ChallengeMode.Hard}"
             },
-            Index = (int)ChallengeLevel.Easy
+            Index = (int)ChallengeMode.Easy
         };
         private readonly SliderOption deficitThreshHold = new SliderOption(DeficitThresholdKey, "Use non-renewable energy below %")
         {
@@ -105,9 +105,9 @@
             }
         }
 
-        public ChallengeLevel ChallengeMode
+        public ChallengeMode ChallengeMode
         {
-            get => (ChallengeLevel)challengeMode.SaveData.Value;
+            get => (ChallengeMode)challengeMode.SaveData.Value;
             set
             {
                 challengeMode.SaveData.Value = (int)value;
@@ -172,9 +172,9 @@
             {
                 switch (this.ChallengeMode)
                 {
-                    case ChallengeLevel.Hard:
+                    case ChallengeMode.Hard:
                         return 0.70f; // -30%
-                    case ChallengeLevel.Medium:
+                    case ChallengeMode.Medium:
                         return 0.85f; // -15%
                     default: // ChallengeLevel.Easy
                         return 1.0f;
@@ -199,7 +199,7 @@
             auxConsoleEnabled.OptionToggled = (bool value) => { this.AuxConsoleEnabled = value; };
 
             challengeMode.SaveData = saveData.GetIntProperty(challengeMode.Id);
-            challengeMode.ChoiceChanged = (int index) => { this.ChallengeMode = (ChallengeLevel)index; };
+            challengeMode.ChoiceChanged = (int index) => { this.ChallengeMode = (ChallengeMode)index; };
 
             deficitThreshHold.SaveData = saveData.GetFloatProperty(deficitThreshHold.Id);
             deficitThreshHold.ValueChanged = (float value) => { this.DeficitThreshold = value; };

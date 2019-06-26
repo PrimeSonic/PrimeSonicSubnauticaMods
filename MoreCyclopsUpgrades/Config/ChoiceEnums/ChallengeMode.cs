@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Config.ChoiceEnums
 {
-    internal enum ChallengeLevel
+    internal enum ChallengeMode
     {
         Easy = 0,
         Medium = 1,

@@ -30,6 +30,7 @@
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
         public override string AssetsFolder { get; } = "CyclopsSolarUpgrades/Assets";
         public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
+        public override TechType RequiredForUnlock => previousTier.TechType;
 
         protected override TechData GetBlueprintRecipe()
         {

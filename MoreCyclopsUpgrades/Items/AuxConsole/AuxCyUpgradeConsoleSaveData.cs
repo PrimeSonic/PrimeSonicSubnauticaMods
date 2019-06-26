@@ -6,7 +6,7 @@
     using Common.EasyMarkup;
     using SMLHelper.V2.Utility;
 
-    internal class AuxUpgradeConsoleSaveData : EmPropertyCollection
+    internal class AuxCyUpgradeConsoleSaveData : EmPropertyCollection
     {
         private readonly string ID;
 
@@ -48,7 +48,7 @@
             }
         }
 
-        public AuxUpgradeConsoleSaveData(string preFabID) : base("AuxUpgradeConsoleSaveData", AucUpConsoleDefs)
+        public AuxCyUpgradeConsoleSaveData(string preFabID) : base("AuxUpgradeConsoleSaveData", AucUpConsoleDefs)
         {
             ID = preFabID;
 
@@ -60,7 +60,7 @@
             Module6 = (EmModuleSaveData)base.Properties["M6"];
         }
 
-        public AuxUpgradeConsoleSaveData(string key, ICollection<EmProperty> definitions) : base(key, definitions)
+        public AuxCyUpgradeConsoleSaveData(string key, ICollection<EmProperty> definitions) : base(key, definitions)
         {
         }
 
@@ -79,7 +79,7 @@
 
         internal override EmProperty Copy()
         {
-            return new AuxUpgradeConsoleSaveData(ID, this.CopyDefinitions);
+            return new AuxCyUpgradeConsoleSaveData(ID, this.CopyDefinitions);
         }
     }
 }

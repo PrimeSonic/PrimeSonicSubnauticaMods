@@ -6,7 +6,7 @@
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    internal class CyUpgradeConsole : Buildable
+    internal class AuxCyUpgradeConsole : Buildable
     {
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
@@ -16,12 +16,15 @@
         private const string OnHoverKey = "CyUpgradeOnHover";
         public static string OnHoverText => Language.main.Get(OnHoverKey);
 
-        public CyUpgradeConsole()
+        public AuxCyUpgradeConsole()
             : base(classId: "AuxCyUpgradeConsole",
                    friendlyName: "Auxiliary Upgrade Console",
                    description: "A secondary upgrade console to connect a greater number of upgrades to your Cyclops.")
         {
-            OnFinishedPatching += SetLanguageLines;
+            OnFinishedPatching += ()=>
+            {
+                LanguageHandler.SetLanguageLine(OnHoverKey, "Use Auxiliary Cyclop Upgrade Console");
+            };
         }
 
         internal void Patch(bool auxConsolesEnabled)
@@ -32,7 +35,7 @@
                 return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
             }
 
-            Patch();
+            base.Patch();
         }
 
         protected override TechData GetBlueprintRecipe()
@@ -42,7 +45,8 @@
                 Ingredients = new List<Ingredient>
                 {
                     new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.Titanium, 2),
+                    new Ingredient(TechType.Titanium, 5),
+                    new Ingredient(TechType.Lithium, 1),
                     new Ingredient(TechType.Lead, 1),
                 }
             };
@@ -63,7 +67,7 @@
             GameObject.DestroyImmediate(prefab.GetComponent<StorageContainer>()); // Don't need this
 
             // Add the custom component
-            CyUpgradeConsoleMono auxConsole = prefab.AddComponent<CyUpgradeConsoleMono>();
+            AuxCyUpgradeConsoleMono auxConsole = prefab.AddComponent<AuxCyUpgradeConsoleMono>();
 
             // This is to tie the model to the prefab
             consoleModel.transform.SetParent(prefab.transform);
@@ -93,11 +97,6 @@
             constructible.model = consoleModel;
 
             return prefab;
-        }
-
-        private void SetLanguageLines()
-        {
-            LanguageHandler.SetLanguageLine(OnHoverKey, "Use Auxiliary Cyclop Upgrade Console");
         }
     }
 }

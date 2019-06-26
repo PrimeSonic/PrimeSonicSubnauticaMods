@@ -50,9 +50,10 @@
                 Ingredients =
                 {
                     new Ingredient(TechType.UraniniteCrystal, 1),
-                    new Ingredient(TechType.Lead, 2),
-                    new Ingredient(TechType.Titanium, 1),
+                    new Ingredient(TechType.Lead, 1),
+                    new Ingredient(TechType.Titanium, 3),
                     new Ingredient(TechType.ComputerChip, 1),
+                    new Ingredient(TechType.Aerogel, 1),
                 }
             };
         }

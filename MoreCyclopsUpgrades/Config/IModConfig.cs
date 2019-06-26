@@ -5,7 +5,7 @@
     internal interface IModConfig
     {
         bool AuxConsoleEnabled { get; }
-        ChallengeLevel ChallengeMode { get; }
+        ChallengeMode ChallengeMode { get; }
         ShowChargerIcons ChargerIcons { get; }
         bool DebugLogsEnabled { get; }
         HelmEnergyDisplay EnergyDisplay { get; }
