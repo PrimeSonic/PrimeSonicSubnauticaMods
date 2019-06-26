@@ -41,7 +41,7 @@
             Choices = new string[3]
             {
                 $"{ChallengeLevel.Easy}",
-                $"{ChallengeLevel.Normal}",
+                $"{ChallengeLevel.Medium}",
                 $"{ChallengeLevel.Hard}"
             },
             Index = (int)ChallengeLevel.Easy
@@ -173,9 +173,9 @@
                 switch (this.ChallengeMode)
                 {
                     case ChallengeLevel.Hard:
-                        return 0.50f;
-                    case ChallengeLevel.Normal:
-                        return 0.75f;
+                        return 0.70f; // -30%
+                    case ChallengeLevel.Medium:
+                        return 0.85f; // -15%
                     default: // ChallengeLevel.Easy
                         return 1.0f;
                 }

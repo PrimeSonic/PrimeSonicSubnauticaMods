@@ -130,9 +130,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Caching\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
