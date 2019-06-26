@@ -36,7 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSolarUpgrades", "Cyc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsBioReactor", "CyclopsBioReactor\CyclopsBioReactor.csproj", "{63ED29ED-9C34-47B8-BA79-C3392AC44EDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsNuclearUpgrades", "CyclopsNuclearModule\CyclopsNuclearUpgrades.csproj", "{58C9178B-E77D-4F01-B911-131A7043C188}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsNuclearUpgrades", "CyclopsNuclearUpgrades\CyclopsNuclearUpgrades.csproj", "{58C9178B-E77D-4F01-B911-131A7043C188}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CommonCyclopsUpgrades", "CommonCyclopsUpgrades\CommonCyclopsUpgrades.shproj", "{DA01F903-5E97-47FC-A7E5-D67967D89646}"
 EndProject

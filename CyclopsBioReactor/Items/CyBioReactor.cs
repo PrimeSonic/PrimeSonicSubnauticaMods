@@ -49,7 +49,7 @@
 
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
-        public override string AssetsFolder { get; } = "MoreCyclopsUpgrades/Assets";
+        public override string AssetsFolder { get; } = "CyclopsBioReactor/Assets";
         public override TechType RequiredForUnlock { get; } = TechType.BaseBioReactor;
 
         public override GameObject GetGameObject()
