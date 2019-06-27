@@ -53,7 +53,8 @@
         private readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
-        private readonly float rechargePenalty;
+
+        internal float rechargePenalty = ModConfig.Main.RechargePenalty;
 
         internal T GetCharger<T>(string chargeHandlerName) where T : class, ICyclopsCharger
         {
@@ -68,7 +69,6 @@
         public ChargeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
-            rechargePenalty = ModConfig.Main.RechargePenalty;
         }
 
         public bool Initialize(SubRoot cyclops)

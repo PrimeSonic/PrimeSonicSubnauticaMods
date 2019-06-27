@@ -4,10 +4,12 @@
     using System.Collections.Generic;
     using System.Threading;
     using Common;
-    using MoreCyclopsUpgrades.Config.ChoiceEnums;
-    using CommonCyclopsUpgrades.Options;
-    using UnityEngine;
     using CommonCyclopsUpgrades;
+    using CommonCyclopsUpgrades.Options;
+    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.Config.ChoiceEnums;
+    using MoreCyclopsUpgrades.Managers;
+    using UnityEngine;
 
     internal class ModConfig : IModConfig
     {
@@ -32,11 +34,11 @@
         private const string DebugLogsEnabledKey = "EnableDebugLogs";
         private const string HelmEnergyDisplayKey = "HelmEnergyDisplay";
 
-        private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable Aux Upgrade Console (Requires restart)")
+        private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable AuxUpgradeConsole (Requires restart)")
         {
             State = true
         };
-        private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge Level (Requires restart)")
+        private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge Mode")
         {
             Choices = new string[3]
             {
@@ -63,7 +65,7 @@
             },
             Index = (int)ShowChargerIcons.Everywhere
         };
-        private readonly ToggleOption debugLogs = new ToggleOption(DebugLogsEnabledKey, "Enable Debug Logs(Requires restart)")
+        private readonly ToggleOption debugLogs = new ToggleOption(DebugLogsEnabledKey, "Enable Debug Logs")
         {
             State = false
         };
@@ -113,6 +115,8 @@
                 challengeMode.SaveData.Value = (int)value;
                 challengeMode.Index = (int)value;
                 SaveData();
+                foreach (ChargeManager mgr in MCUServices.Find.AllAuxCyclopsManagers<ChargeManager>(ChargeManager.ManagerName))
+                    mgr.rechargePenalty = this.RechargePenalty;
             }
         }
 
@@ -213,6 +217,7 @@
             energyDisplay.SaveData = saveData.GetIntProperty(energyDisplay.Id);
             energyDisplay.ChoiceChanged = (int index) => { this.EnergyDisplay = (HelmEnergyDisplay)index; };
 
+            menuOptions.Register();
             initialized = true;
         }
 
