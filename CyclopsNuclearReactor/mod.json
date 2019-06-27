@@ -8,6 +8,7 @@
   "AssemblyName": "CyclopsNuclearReactor.dll",
   "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
   "VersionDependencies": { "MoreCyclopsUpgrades": "4.0" },
+  "LoadBefore": [ "MoreCyclopsUpgrades" ],
   "AssemblyName": "CyclopsNuclearReactor.dll",
   "EntryMethod": "CyclopsNuclearReactor.QPatch.Patch"
 }

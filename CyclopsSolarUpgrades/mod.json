@@ -8,6 +8,7 @@
   "AssemblyName": "CyclopsSolarUpgrades.dll",
   "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
   "VersionDependencies": { "MoreCyclopsUpgrades": "4.0" },
+  "LoadBefore": [ "MoreCyclopsUpgrades" ],
   "AssemblyName": "CyclopsSolarUpgrades.dll",
   "EntryMethod": "CyclopsSolarUpgrades.QPatch.Patch"
 }
