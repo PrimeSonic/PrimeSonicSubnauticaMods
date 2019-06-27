@@ -100,7 +100,7 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                CyNukeChargeManager mgr = MCUServices.Find.AuxCyclopsManager<CyNukeChargeManager>(cyclops, CyNukeChargeManager.ChargerName);
+                CyNukeChargeManager mgr = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(cyclops, CyNukeChargeManager.ChargerName);
 
                 if (mgr != null && mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
                 {

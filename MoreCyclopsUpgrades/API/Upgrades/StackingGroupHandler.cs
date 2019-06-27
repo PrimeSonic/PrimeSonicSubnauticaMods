@@ -116,7 +116,8 @@
             cleared = true;
             finished = false;
 
-            foreach (TechType tier in counted.Keys)
+            var keys = new List<TechType>(counted.Keys);
+            foreach (TechType tier in keys)
                 counted[tier] = 0;
 
             OnClearUpgrades?.Invoke();

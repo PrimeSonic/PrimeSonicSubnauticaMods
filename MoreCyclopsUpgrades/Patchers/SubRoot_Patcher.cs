@@ -63,7 +63,6 @@
     internal class SubRoot_OnPlayerEntered_BeQuiet
     {
         private static bool firstEventDone = false;
-        private static VoiceNotificationManager reference;
 
         [HarmonyPrefix]
         public static void Prefix(ref SubRoot __instance)
@@ -71,20 +70,16 @@
             if (firstEventDone)
                 return;
 
-            if (reference != null || __instance.voiceNotificationManager == null)
-                return;
-
-            reference = __instance.voiceNotificationManager;
-            __instance.voiceNotificationManager = null;
+            __instance.voiceNotificationManager.enabled = false;
         }
 
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
-            if (reference != null && __instance.voiceNotificationManager == null)
-            {
-                __instance.voiceNotificationManager = reference;
-            }
+            if (firstEventDone)
+                return;
+
+            __instance.voiceNotificationManager.enabled = true;
 
             firstEventDone = true;
         }

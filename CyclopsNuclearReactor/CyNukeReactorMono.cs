@@ -184,28 +184,17 @@
 
         private void Start()
         {
-            if (Manager != null)
+            SubRoot cyclops = GetComponentInParent<SubRoot>();
+
+            if (cyclops == null)
             {
-                ConnectToCyclops(Manager.Cyclops, Manager);
-            }
-            else if (ParentCyclops != null)
-            {
-                ConnectToCyclops(ParentCyclops);
+                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
+                CyNukeChargeManager.SyncReactors();
             }
             else
             {
-                SubRoot cyclops = GetComponentInParent<SubRoot>();
-
-                if (cyclops == null)
-                {
-                    QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
-                    CyNukeChargeManager.SyncReactors();
-                }
-                else
-                {
-                    QuickLogger.Debug("Parent cyclops found directly!");
-                    ConnectToCyclops(cyclops);
-                }
+                QuickLogger.Debug("Parent cyclops found directly!");
+                ConnectToCyclops(cyclops);
             }
         }
 
@@ -214,7 +203,7 @@
             ParentCyclops = cyclops;
             this.transform.SetParent(cyclops.transform);
 
-            Manager = manager ?? MCUServices.Find.AuxCyclopsManager<CyNukeChargeManager>(cyclops, CyNukeChargeManager.ChargerName);
+            Manager = manager ?? MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(cyclops, CyNukeChargeManager.ChargerName);
             Manager.AddReactor(this);
 
             UpdateUpgradeLevel(Manager.UpgradeLevel);

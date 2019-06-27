@@ -12,8 +12,7 @@
         {
             if (__instance.isCyclops)
             {
-                CyNukeChargeManager mgr = MCUServices.Find.AuxCyclopsManager<CyNukeChargeManager>(__instance, CyNukeChargeManager.ChargerName);
-                mgr.SyncReactorsExternally();
+                MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(__instance, CyNukeChargeManager.ChargerName)?.SyncReactorsExternally();
             }
         }
     }

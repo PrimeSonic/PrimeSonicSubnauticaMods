@@ -30,11 +30,11 @@
 
                 RemoveOldConfigs();
 
-                RegisterCoreServices();
+                PatchAuxUpgradeConsole();
 
                 RegisterOriginalUpgrades();
 
-                PatchAuxUpgradeConsole();
+                RegisterCoreServices();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -102,21 +102,21 @@
             QuickLogger.Debug("Registering core UpgradeManager");
             MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
             {
-                QuickLogger.Debug("Core UpgradeManager registered");
+                QuickLogger.Debug("Core UpgradeManager created");
                 return new UpgradeManager(cyclops);
             });
 
             QuickLogger.Debug("Registering core ChargeManager");
             MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
             {
-                QuickLogger.Debug("Core ChargeManager registered");
+                QuickLogger.Debug("Core ChargeManager created");
                 return new ChargeManager(cyclops);
             });
 
             QuickLogger.Debug("Registering core CyclopsHUDManager");
             MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
             {
-                QuickLogger.Debug("Core CyclopsHUDManager registered");
+                QuickLogger.Debug("Core CyclopsHUDManager created");
                 return new CyclopsHUDManager(cyclops, ModConfig.Main);
             });
         }

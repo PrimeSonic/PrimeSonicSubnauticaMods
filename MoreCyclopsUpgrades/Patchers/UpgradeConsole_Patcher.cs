@@ -97,6 +97,9 @@
 
             uGUI_Icon icon = module.GetComponentInChildren<uGUI_Icon>();
 
+            if (icon == null)
+                return;
+
             if (hasItem)
             {
                 Atlas.Sprite atlasSprite = SpriteManager.Get(techType);

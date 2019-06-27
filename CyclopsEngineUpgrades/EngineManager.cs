@@ -76,7 +76,7 @@
 
         public string Name { get; } = ManagerName;
 
-        private EngineManager(SubRoot cyclops)
+        internal EngineManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
         }

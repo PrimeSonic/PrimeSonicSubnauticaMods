@@ -15,7 +15,7 @@
             Overheated
         }
 
-        internal const string ChargerName = "CyNukeChgr";
+        internal const string ChargerName = "CyNukeMChgr";
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private const float MaxNuclearChargeRate = 0.15f;
         private const float MinNuclearChargeRate = MinimalPowerValue * 2;

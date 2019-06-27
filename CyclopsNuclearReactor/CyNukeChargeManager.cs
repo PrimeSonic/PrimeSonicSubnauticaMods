@@ -4,19 +4,20 @@
     using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
-    using MoreCyclopsUpgrades.API.General;
     using UnityEngine;
 
-    internal class CyNukeChargeManager : ICyclopsCharger, IAuxCyclopsManager
+    internal class CyNukeChargeManager : ICyclopsCharger
     {
         public const int MaxReactors = 2;
-        internal const string ChargerName = "CyNukeChgr";
+        internal const string ChargerName = "CyNukeRChgr";
 
         public readonly SubRoot Cyclops;
 
-        public readonly int InstanceID;
-        internal CyNukeEnhancerHandler UpgradeHandler;
-        internal int UpgradeLevel => UpgradeHandler == null ? 0 : UpgradeHandler.HighestValue;
+        private CyNukeEnhancerHandler upgradeHandler;
+        private CyNukeEnhancerHandler CyNukeEnhancer => upgradeHandler ?? 
+            (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(Cyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
+
+        internal int UpgradeLevel => this.CyNukeEnhancer == null ? 0 : this.CyNukeEnhancer.HighestValue;
 
         public bool IsRenewable { get; } = false;
         public string Name { get; } = ChargerName;
@@ -36,16 +37,6 @@
         public CyNukeChargeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
-            InstanceID = cyclops.GetInstanceID();
-
-            QuickLogger.Debug($"Created new CyNukeChargeManager for Cyclops {InstanceID}");
-        }
-
-        public bool Initialize(SubRoot cyclops)
-        {
-            SyncReactorsExternally();
-
-            return Cyclops == cyclops;
         }
 
         internal void SyncReactorsExternally()
@@ -72,16 +63,15 @@
 
         internal static void SyncReactors()
         {
-            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllAuxCyclopsManagers<CyNukeChargeManager>(ChargerName))
+            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllCyclopsChargers<CyNukeChargeManager>(ChargerName))
                 mgr.SyncReactorsExternally();
         }
 
         public static void RemoveReactor(CyNukeReactorMono reactor)
         {
-            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllAuxCyclopsManagers<CyNukeChargeManager>(ChargerName))
+            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllCyclopsChargers<CyNukeChargeManager>(ChargerName))
             {
-                if (!mgr.CyNukeReactors.Contains(reactor))
-                    mgr.CyNukeReactors.Remove(reactor);
+                mgr.CyNukeReactors.Remove(reactor);
             }
         }
 

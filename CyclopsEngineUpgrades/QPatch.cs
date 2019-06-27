@@ -18,7 +18,13 @@
             engineMk2Upgrade.Patch();
             engineMk3Upgrade.Patch();
 
+
+            MCUServices.Register.CyclopsUpgradeHandler(speedUpgrade.CreateSpeedUpgradeHandler);
             MCUServices.Register.CyclopsUpgradeHandler(engineMk3Upgrade.CreateEngineHandler);
+            MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
+            {
+                return new EngineManager(cyclops);
+            });
 
             QuickLogger.Info($"Finished patching.");
         }

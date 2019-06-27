@@ -11,7 +11,8 @@
         [HarmonyPrefix]
         public static void Prefix(ref CyclopsHelmHUDManager __instance, ref int __state)
         {
-            if (__instance.subLiveMixin.IsAlive())
+            __state = -1;
+            if (__instance.subLiveMixin.IsAlive() && __instance.subRoot != null)
             {
                 // Should prevent the powerText from getting updated normally
                 __state = __instance.lastPowerPctUsedForString;

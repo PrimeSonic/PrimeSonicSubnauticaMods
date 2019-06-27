@@ -29,9 +29,7 @@
             {
                 TechTypeID = this.TechType;
                 LanguageHandler.SetLanguageLine(MaxRatingKey, "Maximum speed rating reached");
-                LanguageHandler.SetLanguageLine(SpeedRatingKey, "Speed rating is now at +{0} ({1}%).");
-
-                MCUServices.Register.CyclopsUpgradeHandler(CreateSpeedUpgradeHandler);
+                LanguageHandler.SetLanguageLine(SpeedRatingKey, "Speed rating is now at +{0} ({1}%).");                
             };
         }
 
@@ -53,7 +51,7 @@
             };
         }
 
-        private SpeedHandler CreateSpeedUpgradeHandler(SubRoot cyclops)
+        internal SpeedHandler CreateSpeedUpgradeHandler(SubRoot cyclops)
         {
             return new SpeedHandler(this, cyclops);
         }

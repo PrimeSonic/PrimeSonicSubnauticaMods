@@ -49,6 +49,7 @@
                 return (T)auxManager;
             }
 
+            QuickLogger.Warning($"Did not find IAuxCyclopsManager '{auxManagerName}'");
             return null;
         }
 
@@ -59,24 +60,18 @@
 
             CyclopsManager mgr = Managers.Find(m => m.Cyclops == cyclops && m.InstanceID == cyclops.GetInstanceID());
 
-            return mgr ?? CreateNewManager(cyclops);
-        }
-
-        private static CyclopsManager CreateNewManager(SubRoot cyclops)
-        {
-            var mgr = new CyclopsManager(cyclops);
-
-            foreach (IAuxCyclopsManager auxMgr in mgr.AuxiliaryManagers.Values)
+            if (mgr == null)
             {
-                bool success = auxMgr.Initialize(cyclops);
+                mgr = new CyclopsManager(cyclops);
+                Managers.Add(mgr);
 
-                if (!success)
+                if (mgr.InitializeAuxiliaryManagers())
+                    return mgr;
+                else
                 {
-                    QuickLogger.Error($"Failed to initialize IAuxCyclopsManager {auxMgr.Name}", true);
+                    Managers.Remove(mgr);
                     return null;
                 }
-
-                QuickLogger.Debug($"Initialized IAuxCyclopsManager {auxMgr.Name}");
             }
 
             return mgr;
@@ -93,9 +88,11 @@
 
         // Because this is going to be called on every Update cycle, it's getting elevated privilege within the mod.
         internal ChargeManager QuickChargeManager;
+        internal UpgradeManager QuickUpgradeManager;
 
         private CyclopsManager(SubRoot cyclops)
         {
+            QuickLogger.Debug($"Creating main CyclopsManager");
             Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
 
@@ -115,6 +112,8 @@
 
                         if (QuickChargeManager == null && auxMgr is ChargeManager chargeManager)
                             QuickChargeManager = chargeManager;
+                        else if (QuickUpgradeManager == null && auxMgr is UpgradeManager upgradeManager)
+                            QuickUpgradeManager = upgradeManager;
                     }
                 }
                 else
@@ -122,6 +121,26 @@
                     QuickLogger.Error($"Failed in creating IAuxCyclopsManager from '{creator.GetType().Assembly.GetName().Name}'");
                 }
             }
+        }
+
+        internal bool InitializeAuxiliaryManagers()
+        {
+            foreach (IAuxCyclopsManager auxMgr in AuxiliaryManagers.Values)
+            {
+                QuickLogger.Debug($"Initializing IAuxCyclopsManager {auxMgr.Name}");
+
+                bool success = auxMgr.Initialize(Cyclops);
+
+                if (!success)
+                {
+                    QuickLogger.Error($"Failed to initialize IAuxCyclopsManager {auxMgr.Name}", true);
+                    return false;
+                }
+
+                QuickLogger.Debug($"Successfully initialized IAuxCyclopsManager {auxMgr.Name}");
+            }
+
+            return true;
         }
 
         #endregion

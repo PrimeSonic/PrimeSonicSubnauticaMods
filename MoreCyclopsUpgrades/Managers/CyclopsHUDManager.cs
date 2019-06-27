@@ -44,7 +44,9 @@
         private Indicator[] HealthBarIndicatorsEven;
 
         internal readonly SubRoot Cyclops;
-        internal ChargeManager ChargeManager { get; private set; }
+
+        private ChargeManager chargeManager;
+        internal ChargeManager ChargeManager => chargeManager ?? (chargeManager = MCUServices.Find.AuxCyclopsManager<ChargeManager>(Cyclops, ChargeManager.ManagerName));
 
         public string Name { get; } = ManagerName;
 
@@ -80,9 +82,8 @@
         public bool Initialize(SubRoot cyclops)
         {
             powerIconTextVisibility = Player.main.currentSub == Cyclops;
-            this.ChargeManager = MCUServices.Find.AuxCyclopsManager<ChargeManager>(cyclops, ChargeManager.ManagerName);
 
-            return this.ChargeManager != null;
+            return Cyclops == cyclops;
         }
 
         internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, int lastPowerInt)

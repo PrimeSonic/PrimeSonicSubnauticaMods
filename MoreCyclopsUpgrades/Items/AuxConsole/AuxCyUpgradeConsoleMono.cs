@@ -44,12 +44,13 @@
 
         private void Start()
         {
-            SubRoot cyclops = GetComponentInParent<SubRoot>();
+            SubRoot cyclops = base.GetComponentInParent<SubRoot>();
 
-            if (cyclops is null)
+            if (cyclops == null)
             {
                 QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Attempting external syncronize.");
-                this.UpgradeManager.SyncUpgradeConsoles();
+                foreach (UpgradeManager manager in CyclopsManager.GetAllManagers<UpgradeManager>(UpgradeManager.ManagerName))
+                    manager.SyncUpgradeConsoles();
             }
             else
             {
@@ -168,7 +169,7 @@
             Player main = Player.main;
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(this.Modules, false);
-            pda.Open(PDATab.Inventory, null, new PDA.OnClose((PDA closingPda) => PdaOverlayManager.DisconnectFromPda()), -1f);            
+            pda.Open(PDATab.Inventory, null, new PDA.OnClose((PDA closingPda) => PdaOverlayManager.DisconnectFromPda()), -1f);
         }
 
         private void OnEquip(string slot, InventoryItem item)
@@ -366,63 +367,63 @@
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         public AuxCyUpgradeConsoleSaveData SaveData;
-#if DEBUG
-        // Also shamelessly copied from RandyKnapp
-        // https://github.com/RandyKnapp/SubnauticaModSystem/blob/master/SubnauticaModSystem/HabitatControlPanel/HabitatControlPanel.cs#L711
-        public void PositionStuff(GameObject thing)
-        {
-            Transform t = thing.transform;
-            float amount = 0.005f;
+//#if DEBUG
+//        // Also shamelessly copied from RandyKnapp
+//        // https://github.com/RandyKnapp/SubnauticaModSystem/blob/master/SubnauticaModSystem/HabitatControlPanel/HabitatControlPanel.cs#L711
+//        public void PositionStuff(GameObject thing)
+//        {
+//            Transform t = thing.transform;
+//            float amount = 0.005f;
 
-            if (Input.GetKeyDown(KeyCode.Keypad8))
-            {
-                t.localPosition += new Vector3(0, amount, 0);
-                PrintStuff(thing);
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad5))
-            {
-                t.localPosition += new Vector3(0, -amount, 0);
-                PrintStuff(thing);
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad6))
-            {
-                t.localPosition += new Vector3(amount, 0, 0);
-                PrintStuff(thing);
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad4))
-            {
-                t.localPosition += new Vector3(-amount, 0, 0);
-                PrintStuff(thing);
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                t.localPosition += new Vector3(0, 0, amount);
-                PrintStuff(thing);
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad7))
-            {
-                t.localPosition += new Vector3(0, 0, -amount);
-                PrintStuff(thing);
-            }
+//            if (Input.GetKeyDown(KeyCode.Keypad8))
+//            {
+//                t.localPosition += new Vector3(0, amount, 0);
+//                PrintStuff(thing);
+//            }
+//            else if (Input.GetKeyDown(KeyCode.Keypad5))
+//            {
+//                t.localPosition += new Vector3(0, -amount, 0);
+//                PrintStuff(thing);
+//            }
+//            else if (Input.GetKeyDown(KeyCode.Keypad6))
+//            {
+//                t.localPosition += new Vector3(amount, 0, 0);
+//                PrintStuff(thing);
+//            }
+//            else if (Input.GetKeyDown(KeyCode.Keypad4))
+//            {
+//                t.localPosition += new Vector3(-amount, 0, 0);
+//                PrintStuff(thing);
+//            }
+//            else if (Input.GetKeyDown(KeyCode.Keypad1))
+//            {
+//                t.localPosition += new Vector3(0, 0, amount);
+//                PrintStuff(thing);
+//            }
+//            else if (Input.GetKeyDown(KeyCode.Keypad7))
+//            {
+//                t.localPosition += new Vector3(0, 0, -amount);
+//                PrintStuff(thing);
+//            }
 
-            if (Input.GetKeyDown(KeyCode.KeypadPlus))
-            {
-                t.localScale += new Vector3(amount, amount, amount);
-                PrintStuff(thing);
-            }
-            else if (Input.GetKeyDown(KeyCode.KeypadMinus))
-            {
-                t.localScale -= new Vector3(amount, amount, amount);
-                PrintStuff(thing);
-            }
-        }
+//            if (Input.GetKeyDown(KeyCode.KeypadPlus))
+//            {
+//                t.localScale += new Vector3(amount, amount, amount);
+//                PrintStuff(thing);
+//            }
+//            else if (Input.GetKeyDown(KeyCode.KeypadMinus))
+//            {
+//                t.localScale -= new Vector3(amount, amount, amount);
+//                PrintStuff(thing);
+//            }
+//        }
 
-        private void PrintStuff(GameObject thing)
-        {
-            Transform t = thing.transform;
-            QuickLogger.Debug(thing.name + " p=" + t.localPosition.ToString("G5") + "s=" + t.localScale.ToString("G5"), true);
-        }
-#endif
+//        private void PrintStuff(GameObject thing)
+//        {
+//            Transform t = thing.transform;
+//            QuickLogger.Debug(thing.name + " p=" + t.localPosition.ToString("G5") + "s=" + t.localScale.ToString("G5"), true);
+//        }
+//#endif
     }
 }
 

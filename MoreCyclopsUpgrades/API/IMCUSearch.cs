@@ -29,7 +29,7 @@
         IEnumerable<T> AllAuxCyclopsManagers<T>(string auxManagerName) where T : class, IAuxCyclopsManager;
 
         /// <summary>
-        /// Gets the charge hangler at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
+        /// Gets the typed <see cref="ICyclopsCharger"/> at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="ICyclopsCharger"/> for something else in your mod.
         /// </summary>
         /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
@@ -38,6 +38,14 @@
         /// <returns>A type casted <see cref="ICyclopsCharger"/> if found by name; Otherwise returns null.</returns>
         T CyclopsCharger<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger;
 
+        /// <summary>
+        /// Gets all typed <see cref="ICyclopsCharger"/>s across all Cyclops subd for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
+        /// </summary>
+        /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
+        /// <param name="chargeHandlerName">The <seealso cref="ICyclopsCharger.Name"/> of the charge handler.</param>
+        /// <returns>A type casted <see cref="ICyclopsCharger"/> if found by name; Otherwise returns null.</returns>
+        IEnumerable<T> AllCyclopsChargers<T>(string chargeHandlerName) where T : class, ICyclopsCharger;
+        
         /// <summary>
         /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="UpgradeHandler"/> for something else in your mod.

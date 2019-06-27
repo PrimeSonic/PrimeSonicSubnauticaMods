@@ -133,6 +133,22 @@
             return CyclopsManager.GetAllManagers<T>(auxManagerName);
         }
 
+        public T CyclopsCharger<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger
+        {
+            return CyclopsManager.GetManager<ChargeManager>(cyclops, ChargeManager.ManagerName)?.GetCharger<T>(chargeHandlerName);
+        }
+
+        public IEnumerable<T> AllCyclopsChargers<T>(string chargeHandlerName) where T : class, ICyclopsCharger
+        {
+            foreach (ChargeManager item in CyclopsManager.GetAllManagers<ChargeManager>(ChargeManager.ManagerName))
+            {
+                T chg = item.GetCharger<T>(chargeHandlerName);
+
+                if (chg != null)
+                    yield return chg;
+            }
+        }
+
         public T CyclopsUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler
         {
             return CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName)?.GetUpgradeHandler<T>(upgradeId);
@@ -141,11 +157,6 @@
         public T CyclopsGroupUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
             return CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName)?.GetGroupHandler<T>(upgradeId);
-        }
-
-        public T CyclopsCharger<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger
-        {
-            return CyclopsManager.GetManager<ChargeManager>(cyclops, ChargeManager.ManagerName)?.GetCharger<T>(chargeHandlerName);
         }
 
         #endregion
