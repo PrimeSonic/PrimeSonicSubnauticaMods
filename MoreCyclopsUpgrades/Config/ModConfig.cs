@@ -67,7 +67,11 @@
         };
         private readonly ToggleOption debugLogs = new ToggleOption(DebugLogsEnabledKey, "Enable Debug Logs")
         {
-            State = false
+#if DEBUG
+            State = true // Default debug logs to true for Debug builds
+#else
+            State = false // Default debug logs to false for Release builds
+#endif
         };
         private readonly ChoiceOption energyDisplay = new ChoiceOption(HelmEnergyDisplayKey, "Helm HUD Energy Display")
         {

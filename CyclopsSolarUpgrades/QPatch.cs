@@ -22,7 +22,7 @@
                 MCUServices.Register.CyclopsCharger(solar2);
                 MCUServices.Register.CyclopsUpgradeHandler(solar2);
                 MCUServices.Register.PdaIconOverlay(solar1.TechType, solar2);
-                MCUServices.Register.PdaIconOverlay(solar1.TechType, solar2);
+                MCUServices.Register.PdaIconOverlay(solar2.TechType, solar2);
 
                 QuickLogger.Info($"Finished patching.");
             }

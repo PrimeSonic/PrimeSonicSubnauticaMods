@@ -88,7 +88,7 @@
 
         private static void SetModuleVisibility(Equipment modules, string slot, GameObject module)
         {
-            if (module == null)
+            if (modules == null || module == null)
                 return;
 
             TechType techType = modules.GetTechTypeInSlot(slot);

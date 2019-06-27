@@ -110,7 +110,7 @@
             Cyclops = cyclops;
         }
 
-        internal bool Initialize(CyclopsManager manager)
+        public bool Initialize(SubRoot cyclops)
         {
             RegisterUpgradeHandlers();
 
@@ -119,7 +119,7 @@
 
             SyncUpgradeConsoles();
 
-            return Initialized = true;
+            return Initialized = Cyclops == cyclops;
         }
 
         private void RegisterUpgradeHandlers()
@@ -240,11 +240,6 @@
             }
 
             return true;
-        }
-
-        public bool Initialize(SubRoot cyclops)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
