@@ -9,7 +9,7 @@
     internal class EngineManager : IAuxCyclopsManager
     {
         internal const string ManagerName = "CyPowMgr";
-        private const float EnginePowerPenalty = 0.7f;
+        private const float EnginePowerPenalty = 0.75f;
         internal const int MaxSpeedBoosters = 6;
         private const int PowerIndexCount = 4;
 
@@ -38,22 +38,22 @@
 
         private static readonly float[] EnginePowerRatings = new float[PowerIndexCount]
         {
-            1f, 3f, 5f, 6f
+            1f, 3f, 4f, 5f
         };
 
         private static readonly float[] SilentRunningPowerCosts = new float[PowerIndexCount]
         {
-            5f, 5f, 4f, 3f // Lower costs here don't show up until the Mk2
+            5f, 5f, 4.5f, 4f // Lower costs here don't show up until the Mk2
         };
 
         private static readonly float[] SonarPowerCosts = new float[PowerIndexCount]
         {
-            10f, 10f, 8f, 7f // Lower costs here don't show up until the Mk2
+            10f, 10f, 9f, 8f // Lower costs here don't show up until the Mk2
         };
 
         private static readonly float[] ShieldPowerCosts = new float[PowerIndexCount]
         {
-            50f, 50f, 45f, 35f // Lower costs here don't show up until the Mk2
+            50f, 50f, 45f, 40f // Lower costs here don't show up until the Mk2
         };
 
         private float lastKnownPowerRating = -1f;
