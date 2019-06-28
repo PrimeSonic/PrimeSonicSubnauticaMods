@@ -14,7 +14,13 @@
             configOptions = options;
         }
 
-        internal void SetUpEvents()
+        internal void Register()
+        {
+            SetUpEvents();
+            OptionsPanelHandler.RegisterModOptions(this);
+        }
+
+        private void SetUpEvents()
         {
             foreach (ConfigOption item in configOptions)
             {
@@ -43,11 +49,6 @@
                         break;
                 }
             }
-        }
-
-        internal void Register()
-        {
-            OptionsPanelHandler.RegisterModOptions(this);
         }
 
         public override void BuildModOptions()

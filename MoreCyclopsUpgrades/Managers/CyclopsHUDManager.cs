@@ -58,6 +58,7 @@
         private bool lastKnownTextVisibility = false;
         private bool powerIconTextVisibility = false;
         private int lastKnownHudPowerText = -1;
+        private HelmEnergyDisplay lastDisplay = HelmEnergyDisplay.PowerCellPercentage;
 
         internal CyclopsHUDManager(SubRoot cyclops, IModConfig modConfig)
         {
@@ -98,22 +99,22 @@
                 AddPowerIcons(cyclopsHelmHUD, this.ChargeManager.PowerChargersCount);
             }
 
-            if (lastKnownHudPowerText == lastPowerInt)
+            if (lastKnownHudPowerText == lastPowerInt && lastDisplay == settings.EnergyDisplay)
                 return;
 
             cyclopsHelmHUD.lastPowerPctUsedForString = lastKnownHudPowerText = lastPowerInt;
 
             PowerRelay powerRelay = Cyclops.powerRelay;
 
-            switch (settings.EnergyDisplay)
+            switch (lastDisplay = settings.EnergyDisplay)
             {
                 case HelmEnergyDisplay.PowerCellAmount:
                     cyclopsHelmHUD.powerText.text = NumberFormatter.FormatValue(powerRelay.GetPower());
                     break;
                 case HelmEnergyDisplay.PercentageOverPowerCells:
+                    // Max out at 999 because only 4 characters fit on the display
                     float percentOver = (powerRelay.GetPower() + this.ChargeManager.GetTotalReservePower()) / powerRelay.GetMaxPower();
-                    int percentOverInt = Mathf.Max(Mathf.CeilToInt(percentOver * 100f), 999); // Max out at 999 because only 4 characters fit on the display
-                    cyclopsHelmHUD.powerText.text = $"{percentOverInt}%";
+                    cyclopsHelmHUD.powerText.text = $"{NumberFormatter.FormatValue(Mathf.Min(percentOver * 100f, 999f))}%";
                     break;
                 case HelmEnergyDisplay.CombinedAmount:
                     cyclopsHelmHUD.powerText.text = NumberFormatter.FormatValue(powerRelay.GetPower() + this.ChargeManager.GetTotalReservePower());
