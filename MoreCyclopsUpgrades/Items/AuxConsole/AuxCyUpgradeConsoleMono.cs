@@ -221,6 +221,7 @@
                 return;
 
             this.ParentCyclops.subModulesDirty = true;
+            PdaOverlayManager.RemapItems(this.Modules);
         }
 
         private void UpdateVisuals()

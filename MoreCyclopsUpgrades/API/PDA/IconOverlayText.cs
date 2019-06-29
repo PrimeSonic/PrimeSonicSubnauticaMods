@@ -45,7 +45,7 @@
 
         /// <summary>
         /// Gets or sets the size of the text font used for this <see cref="Text"/> element.<para/>
-        /// Defaults to 16.
+        /// Defaults to 18.
         /// </summary>
         /// <value>
         /// The size of the text font.
@@ -104,7 +104,7 @@
             text.font = ArialFont;
             text.material = ArialFont.material;
             text.text = string.Empty;
-            text.fontSize = 16;
+            text.fontSize = 18;
             text.fontStyle = FontStyle.Normal;
             text.alignment = anchor;
             text.color = Color.white;
@@ -115,6 +115,13 @@
             RectTransform rectTransform = text.GetComponent<RectTransform>();
             rectTransform.localScale = Vector3.one;
             rectTransform.anchoredPosition3D = Vector3.zero;
+        }
+
+        internal void Clear()
+        {
+            GameObject.Destroy(textGO);
+            GameObject.Destroy(text);
+            GameObject.Destroy(outline);
         }
     }
 }

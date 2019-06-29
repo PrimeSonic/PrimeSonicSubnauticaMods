@@ -232,8 +232,7 @@
 
         private void SaveData()
         {
-            var bgWork = new Thread(new ParameterizedThreadStart((object data) => { (data as ModConfigSaveData).SaveToFile(); }));
-            bgWork.Start(saveData);
+            saveData.SaveToFile();
         }
 
         private float CyclopsMaxPower = 1f;

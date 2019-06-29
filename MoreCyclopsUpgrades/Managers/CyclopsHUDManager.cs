@@ -90,7 +90,7 @@
                 AddPowerIcons(cyclopsHelmHUD, this.ChargeManager.PowerChargersCount);
             }
 
-            if (lastKnownHudPowerText == lastPowerInt && lastDisplay == settings.EnergyDisplay)
+            if (lastPowerInt < 0f)
                 return;
 
             cyclopsHelmHUD.lastPowerPctUsedForString = lastKnownHudPowerText = lastPowerInt;

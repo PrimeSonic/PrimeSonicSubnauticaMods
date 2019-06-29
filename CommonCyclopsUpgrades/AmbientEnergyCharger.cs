@@ -28,7 +28,8 @@
         protected abstract float MaximumEnergyStatus { get; }
         protected abstract float MinimumEnergyStatus { get; }
 
-        protected readonly T ambientEnergyUpgrade;
+        private T energyUpgrade;
+        protected T AmbientEnergyUpgrade => energyUpgrade ?? (energyUpgrade = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(Cyclops, tier1Id, tier2Id2));
 
         private readonly Atlas.Sprite tier1Sprite;
         private readonly Atlas.Sprite tier2Sprite;
@@ -47,7 +48,6 @@
             Cyclops = cyclops;
             tier1Sprite = SpriteManager.Get(tier1TechType);
             tier2Sprite = SpriteManager.Get(tier2TechType);
-            ambientEnergyUpgrade = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(cyclops, tier1TechType, tier2TechType);
         }
 
         public Atlas.Sprite GetIndicatorSprite()
@@ -70,7 +70,7 @@
                 case EnergyState.AmbientEnergyAvailable:
                     return EnergyStatusPercent();
                 case EnergyState.RunningOnBatteries:
-                    return NumberFormatter.FormatValue(ambientEnergyUpgrade.TotalBatteryCharge);
+                    return NumberFormatter.FormatValue(this.AmbientEnergyUpgrade.TotalBatteryCharge);
                 default:
                     return string.Empty;
             }
@@ -88,7 +88,7 @@
                 case EnergyState.AmbientEnergyAvailable:
                     return NumberFormatter.GetNumberColor(energyStatus, this.MaximumEnergyStatus, this.MinimumEnergyStatus);
                 case EnergyState.RunningOnBatteries:
-                    return NumberFormatter.GetNumberColor(ambientEnergyUpgrade.TotalBatteryCharge, ambientEnergyUpgrade.TotalBatteryCapacity, 0f);
+                    return NumberFormatter.GetNumberColor(this.AmbientEnergyUpgrade.TotalBatteryCharge, this.AmbientEnergyUpgrade.TotalBatteryCapacity, 0f);
                 default:
                     return Color.white;
             }
@@ -101,7 +101,7 @@
 
         public float ProducePower(float requestedPower)
         {
-            if (ambientEnergyUpgrade.TotalCount == 0)
+            if (this.AmbientEnergyUpgrade == null || this.AmbientEnergyUpgrade.TotalCount == 0)
             {
                 this.CurrentState = EnergyState.NoPower;
                 return 0f;
@@ -115,17 +115,17 @@
 
                 float availableEnergy = ConvertToAvailableEnergy(energyStatus);
 
-                float multipliedEnergy = ambientEnergyUpgrade.ChargeMultiplier * availableEnergy;
+                float multipliedEnergy = this.AmbientEnergyUpgrade.ChargeMultiplier * availableEnergy;
 
                 if (requestedPower < multipliedEnergy)
-                    ambientEnergyUpgrade.RechargeBatteries(multipliedEnergy - requestedPower);
+                    this.AmbientEnergyUpgrade.RechargeBatteries(multipliedEnergy - requestedPower);
 
                 return multipliedEnergy;
             }
-            else if (ambientEnergyUpgrade.TotalBatteryCharge > MinimalPowerValue)
+            else if (this.AmbientEnergyUpgrade.TotalBatteryCharge > MinimalPowerValue)
             {
                 this.CurrentState = EnergyState.RunningOnBatteries;
-                return ambientEnergyUpgrade.GetBatteryPower(BatteryDrainRate, requestedPower);
+                return this.AmbientEnergyUpgrade.GetBatteryPower(BatteryDrainRate, requestedPower);
             }
             else
             {
@@ -136,7 +136,7 @@
 
         public float TotalReservePower()
         {
-            return ambientEnergyUpgrade.TotalBatteryCharge;
+            return this.AmbientEnergyUpgrade.TotalBatteryCharge;
         }
 
         protected abstract float GetEnergyStatus();

@@ -6,11 +6,12 @@
 
     internal static class PdaOverlayManager
     {
-        private static readonly List<IconOverlay> iconOverlays = new List<IconOverlay>(6);
         private static readonly IDictionary<TechType, CreateIconOverlay> OverlayCreators = new Dictionary<TechType, CreateIconOverlay>();
+        private static readonly IconOverlayCollection ActiveOverlays = new IconOverlayCollection();
 
         internal static bool HasUpgradeConsoleInPda => upgradeModules != null;
-        private static Equipment upgradeModules = null;        
+        private static Equipment upgradeModules = null;
+        private static uGUI_Equipment equipmentUI = null;
 
         internal static void RegisterHandlerCreator(TechType techType, CreateIconOverlay createEvent, string assemblyName)
         {
@@ -28,18 +29,19 @@
         {
             upgradeModules = modules;
         }
-        internal static void FinishingConnectingToPda(uGUI_Equipment items)
+        internal static void FinishingConnectingToPda(uGUI_Equipment equipmentUI)
         {
-            if (upgradeModules == items.equipment)
-                ConnectToInventory(items.items);            
+            if (upgradeModules == equipmentUI.equipment)
+                ConnectToInventory(equipmentUI);
             else
                 DisconnectFromPda();
         }
 
         internal static void DisconnectFromPda()
         {
-            iconOverlays.Clear();
+            ActiveOverlays.Deactivate();
             upgradeModules = null;
+            equipmentUI = null;
         }
 
         internal static void UpdateIconOverlays()
@@ -47,19 +49,28 @@
             if (!HasUpgradeConsoleInPda)
                 return;
 
-            foreach (IconOverlay overlay in iconOverlays)
-                overlay.UpdateText();
+            ActiveOverlays.UpdateText();
         }
 
-        private static void ConnectToInventory(Dictionary<InventoryItem, uGUI_EquipmentSlot> items)
-        {            
-            foreach (KeyValuePair<InventoryItem, uGUI_EquipmentSlot> pair in items)
+        internal static void RemapItems(Equipment modules)
+        {
+            if (equipmentUI.equipment == modules)
+            {
+                ActiveOverlays.Deactivate();
+                ConnectToInventory(equipmentUI);
+            }
+        }
+
+        private static void ConnectToInventory(uGUI_Equipment equipmentUI)
+        {
+            foreach (KeyValuePair<InventoryItem, uGUI_EquipmentSlot> pair in equipmentUI.items)
             {
                 InventoryItem item = pair.Key;
 
                 if (OverlayCreators.TryGetValue(item.item.GetTechType(), out CreateIconOverlay creator))
                 {
-                    iconOverlays.Add(creator.Invoke(pair.Value.icon, item));
+                    uGUI_ItemIcon icon = pair.Value.icon;
+                    ActiveOverlays.Add(creator.Invoke(icon, item));
                 }
             }
         }

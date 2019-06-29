@@ -63,5 +63,12 @@
         /// Update the values in <see cref="upperText"/>, <see cref="middleText"/>, and <see cref="lowerText"/> in this method.
         /// </summary>
         public abstract void UpdateText();
+
+        internal void Clear()
+        {
+            upperText.Clear();
+            middleText.Clear();
+            lowerText.Clear();
+        }
     }
 }
