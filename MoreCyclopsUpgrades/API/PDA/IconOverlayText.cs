@@ -100,6 +100,9 @@
             textGO = new GameObject("PdaIconOverlay");
             textGO.transform.SetParent(icon.transform, false);
 
+            CanvasGroup group = textGO.AddComponent<CanvasGroup>();
+            group.blocksRaycasts = false;
+
             text = textGO.AddComponent<Text>();
             text.font = ArialFont;
             text.material = ArialFont.material;

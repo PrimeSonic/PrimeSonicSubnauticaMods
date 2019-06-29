@@ -19,12 +19,20 @@
 
         public override void UpdateText()
         {
-            if (upgradeHandler.TotalCount > 0)
+            if (upgradeHandler.TotalCount > 1)
                 base.upperText.TextString = $"+{Mathf.RoundToInt((upgradeHandler.ChargeMultiplier - 1f) * 100f)}%";
             else
                 base.upperText.TextString = string.Empty;
 
-            base.middleText.TextString = $"{charger.EnergyStatusPercent()}";
+            if (upgradeHandler.TierCount(upgradeHandler.Tier2ID) > 0)
+            {
+                base.middleText.TextString = $"{charger.EnergyStatusText()}\n{charger.ReservePowerText()}";
+            }
+            else if (upgradeHandler.TierCount(upgradeHandler.Tier1ID) > 0)
+            {
+                base.middleText.TextString = $"{charger.EnergyStatusText()}";
+            }
+            
             base.middleText.TextColor = charger.GetIndicatorTextColor();
 
             base.lowerText.TextString = $"{upgradeHandler.TotalCount}/{upgradeHandler.MaxCount}";

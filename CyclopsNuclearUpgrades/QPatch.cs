@@ -2,6 +2,7 @@
 {
     using System;
     using Common;
+    using CyclopsNuclearUpgrades.Management;
     using MoreCyclopsUpgrades.API;
 
     public static class QPatch
@@ -21,6 +22,10 @@
 
                 MCUServices.Register.CyclopsUpgradeHandler(depletedModule);
                 MCUServices.Register.CyclopsCharger(depletedModule);
+                MCUServices.Register.PdaIconOverlay(nuclearModule.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+                {
+                    return new NuclearIconOverlay(icon, upgradeModule);
+                });
             }
             catch(Exception ex)
             {

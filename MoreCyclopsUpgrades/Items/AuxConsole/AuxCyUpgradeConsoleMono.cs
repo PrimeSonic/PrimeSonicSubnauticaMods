@@ -221,15 +221,12 @@
                 return;
 
             this.ParentCyclops.subModulesDirty = true;
-            PdaOverlayManager.RemapItems(this.Modules);
         }
 
         private void UpdateVisuals()
         {
-            if (Module1 is null)
-            {
-                AddModuleSpriteHandlers();
-            }
+            if (Module1 == null)            
+                AddModuleSpriteHandlers();            
 
             SetModuleVisibility("Module1", Module1);
             SetModuleVisibility("Module2", Module2);
@@ -239,26 +236,25 @@
             SetModuleVisibility("Module6", Module6);
         }
 
-        private void SetModuleVisibility(string slot, GameObject module)
+        private void SetModuleVisibility(string slot, GameObject canvasObject)
         {
-            if (module == null)
-            {
-                QuickLogger.Debug($"SetModuleVisibility in slot {slot} module was null", true);
+            if (canvasObject == null)
                 return;
-            }
+
+            uGUI_Icon icon = canvasObject.GetComponent<uGUI_Icon>();
+
+            if (icon == null)
+                return;
 
             TechType techType = this.Modules.GetTechTypeInSlot(slot);
-
             bool hasItem = techType != TechType.None;
-
-            uGUI_Icon icon = module.GetComponent<uGUI_Icon>();
 
             if (hasItem)
             {
                 Atlas.Sprite atlasSprite = SpriteManager.Get(techType);
 
                 if (atlasSprite == null)
-                    QuickLogger.Debug($"sprite for {module.name} was null when it should not have been", true);
+                    QuickLogger.Debug($"sprite for {canvasObject.name} was null when it should not have been", true);
 
                 icon.sprite = atlasSprite;
             }
@@ -267,7 +263,7 @@
                 icon.sprite = null; // Clear the sprite when empty                
             }
 
-            module.SetActive(hasItem);
+            canvasObject.SetActive(hasItem);
             icon.enabled = hasItem;
         }
 

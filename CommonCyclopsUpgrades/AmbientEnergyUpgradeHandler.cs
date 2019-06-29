@@ -18,6 +18,9 @@
         public float TotalBatteryCharge { get; private set; }
         public float ChargeMultiplier { get; private set; }
 
+        public readonly TechType Tier1ID;
+        public readonly TechType Tier2ID;
+
         private readonly StackingUpgradeHandler tier1;
         private readonly StackingUpgradeHandler tier2;
         private readonly string maxCountReachedMsg;
@@ -25,17 +28,25 @@
         public AmbientEnergyUpgradeHandler(TechType tier1Id, TechType tier2Id, string maxedOutMsg, SubRoot cyclops)
             : base(cyclops)
         {
+            Tier1ID = tier1Id;
+            Tier2ID = tier2Id;
+
+            this.MaxCount = MaxChargers;
             maxCountReachedMsg = maxedOutMsg;
 
             OnClearUpgrades += () =>
             {
                 totalBatteryCharge = 0f;
                 totalBatteryCapacity = 0f;
+                this.ChargeMultiplier = 0f;
                 batteries.Clear();
             };
 
-            tier1 = CreateStackingTier(tier1Id);
+            tier1 = CreateStackingTier(tier1Id);            
             tier2 = CreateStackingTier(tier2Id);
+
+            tier1.MaxCount = MaxChargers;
+            tier2.MaxCount = MaxChargers;
 
             tier1.IsAllowedToAdd += CheckCombinedTotal;
             tier2.IsAllowedToAdd += CheckCombinedTotal;
@@ -54,14 +65,20 @@
                 {
                     this.TotalBatteryCapacity = totalBatteryCapacity;
                     this.TotalBatteryCharge = totalBatteryCharge;
+                    if (this.TotalCount > 1)
+                    {
+                        // Stacking multiple solar/thermal chargers has diminishing returns on how much extra energy you can get after the first.
+                        // The diminishing returns are themselves also variable.
+                        // Heavy diminishing returns for tier 1 modules.
+                        // Better returns and multiplier for tier 2 modules.
 
-                    // Heavy diminishing returns for tier 1
-                    // Better returns and multiplier for tier 2
-                    float diminishingReturnFactor = 0.4f + (0.025f * tier2.Count);
-                    // The diminishing returns follow a geometric sequence with a factor always less than 1
-                    // https://www.purplemath.com/modules/series5.htm
-                    this.ChargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) / (1 - diminishingReturnFactor);
-                    this.ChargeMultiplier += (0.05f * tier2.Count);
+                        // The diminishing returns follow a geometric sequence with a factor always less than 1.
+                        // You can check the math on this over here https://www.purplemath.com/modules/series5.htm
+
+                        float diminishingReturnFactor = 0.4f + (0.025f * tier2.Count);
+                        this.ChargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) / (1 - diminishingReturnFactor);
+                        this.ChargeMultiplier += (0.05f * tier2.Count);
+                    }
                 }                
             };
 

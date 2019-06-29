@@ -128,7 +128,6 @@
             {
                 CreateUpgradeHandler upgradeHandlerCreator = pair.Key;
                 string assemblyName = pair.Value;
-                QuickLogger.Debug($"Creating UpgradeHandler from {assemblyName}");
                 UpgradeHandler upgrade = upgradeHandlerCreator.Invoke(Cyclops);
 
                 if (upgrade == null)
@@ -219,8 +218,6 @@
 
                 foundUpgrades.Add(techTypeInSlot);
 
-                QuickLogger.Debug($"UpgradeManager found cyclops upgrade: {techTypeInSlot.AsString()}");
-
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
                     QuickLogger.Debug($"UpgradeManager counting cyclops upgrade: {techTypeInSlot}");
@@ -239,6 +236,8 @@
 
                 foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
                     upgradeType.UpgradesFinished(); // UpgradeHandler event
+
+                PdaOverlayManager.RemapItems();
             }
 
             Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);

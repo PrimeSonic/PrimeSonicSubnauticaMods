@@ -2,24 +2,23 @@
 {
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.PDA;
-    using UnityEngine;
 
     internal class BoosterOverlay : IconOverlay
     {
         private readonly BioBoosterUpgradeHandler upgradeHandler;
+        private readonly BioChargeHandler chargeHandler;
 
         public BoosterOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
         {
-            upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<BioBoosterUpgradeHandler>(cyclops, this.techType);
+            chargeHandler = MCUServices.Find.CyclopsCharger<BioChargeHandler>(base.cyclops, BioChargeHandler.ChargerName);
+            upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<BioBoosterUpgradeHandler>(base.cyclops, base.techType);
         }
 
         public override void UpdateText()
         {
-            int currentCount = upgradeHandler.Count;
-            int maxCount = upgradeHandler.MaxCount;
-            lowerText.TextString = $"{currentCount}/{maxCount}";
-            lowerText.TextColor = Color.green;
+            middleText.TextString = chargeHandler.GetIndicatorText();
+            lowerText.TextString = $"{upgradeHandler.Count}/{upgradeHandler.MaxCount}";
         }
     }
 }
