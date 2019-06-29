@@ -9,8 +9,6 @@
 
     internal class CyclopsSpeedModule : CyclopsUpgrade
     {
-        internal static TechType TechTypeID { get; private set; }
-
         private const string MaxRatingKey = "CySpeedMaxed";
         public static string MaxRatingAchived => Language.main.Get(MaxRatingKey);
 
@@ -28,7 +26,6 @@
         {
             OnFinishedPatching += () =>
             {
-                TechTypeID = this.TechType;
                 LanguageHandler.SetLanguageLine(MaxRatingKey, "Maximum speed rating reached");
                 LanguageHandler.SetLanguageLine(SpeedRatingKey, "Speed rating is now at +{0} ({1}%).");                
             };
