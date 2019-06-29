@@ -20,7 +20,7 @@
 
         private static readonly float[] StandardSpeedModifiers = new float[MaxSpeedBoosters + 1]
         {
-            1.00f, 1.40f, 1.70f, 1.90f, 2.05f, 2.15f, 2.20f
+            1.00f, 1.40f, 1.70f, 1.90f, 2.00f, 2.10f, 2.20f
         };
 
         private static readonly float[] FlankSpeedModifiers = new float[MaxSpeedBoosters + 1]
