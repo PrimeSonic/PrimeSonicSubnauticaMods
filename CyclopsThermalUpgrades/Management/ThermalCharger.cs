@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Items.ThermalModule
+﻿namespace CyclopsThermalUpgrades.Management
 {
     using CommonCyclopsUpgrades;
     using UnityEngine;

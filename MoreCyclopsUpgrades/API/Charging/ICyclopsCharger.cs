@@ -24,7 +24,7 @@
         /// Gets a value indicating if this type of cyclops energy source is renewable.<para/>
         /// Use <c>true</c> for rechargable batteries and energy drawn from the environment.<para/>
         /// Use <c>false</c> for depletable sources like nuclear reactor rods.<para/>
-        /// This is not expected to change over time.
+        /// WARNING: This value is only evaluated once to categorize the charger.
         /// </summary>
         bool IsRenewable { get; }
 

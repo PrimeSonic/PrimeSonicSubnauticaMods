@@ -3,8 +3,7 @@
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using MoreCyclopsUpgrades.Items.AuxConsole;
-    using MoreCyclopsUpgrades.OriginalUpgrades;
+    using MoreCyclopsUpgrades.AuxConsole;
     using UnityEngine;
 
     /// <summary>
@@ -107,19 +106,12 @@
         internal UpgradeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
-        }
-
-        public bool InitializeUpgradeHandlers()
-        {
-            RegisterUpgradeHandlers();
 
             Equipment cyclopsConsole = Cyclops.upgradeConsole.modules;
             AttachEquipmentEvents(ref cyclopsConsole);
-
-            return Initialized = true;
         }
 
-        private void RegisterUpgradeHandlers()
+        public bool InitializeUpgradeHandlers()
         {
             QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
 
@@ -147,7 +139,7 @@
 
             // Next, if no external mod has provided an UpgradeHandler for the vanilla upgrades, they will be added here.
             // This is to allow other mods to provide new functionality to the original upgrades.
-            var originalUpgrades = new OriginalUpgrades();
+            IVanillaUpgrades originalUpgrades = VanillaUpgrades.Main;
             foreach (TechType upgradeID in originalUpgrades.OriginalUpgradeIDs)
             {
                 if (!KnownsUpgradeModules.ContainsKey(upgradeID))
@@ -156,6 +148,8 @@
                     KnownsUpgradeModules.Add(upgradeID, originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops));
                 }
             }
+
+            return Initialized = true;
         }
 
         internal void SyncUpgradeConsoles()

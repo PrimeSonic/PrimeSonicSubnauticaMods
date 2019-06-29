@@ -5,10 +5,8 @@
     using System.Reflection;
     using Common;
     using Harmony;
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.Config;
-    using MoreCyclopsUpgrades.Items.AuxConsole;
-    using MoreCyclopsUpgrades.Items.ThermalModule;
+    using MoreCyclopsUpgrades.AuxConsole;
 
     /// <summary>
     /// Entry point class for patching. For use by QModManager only.
@@ -30,8 +28,6 @@
                 RemoveOldConfigs();
 
                 PatchAuxUpgradeConsole();
-
-                PatchUpgradeModules();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -62,18 +58,6 @@
                 QuickLogger.Info("Deleted old config file 'MoreCyclopsUpgradesConfig.txt'");
                 File.Delete(oldConfig2);
             }
-        }
-
-        private static void PatchUpgradeModules()
-        {
-            QuickLogger.Debug("Patching thermal reactor upgrades");
-            var thermalMk2 = new CyclopsThermalChargerMk2();
-            thermalMk2.Patch();
-
-            MCUServices.Register.CyclopsUpgradeHandler(thermalMk2);
-            MCUServices.Register.CyclopsCharger(thermalMk2);
-            MCUServices.Register.PdaIconOverlay(TechType.CyclopsThermalReactorModule, thermalMk2);
-            MCUServices.Register.PdaIconOverlay(thermalMk2.TechType, thermalMk2);
         }
 
         private static void PatchAuxUpgradeConsole()

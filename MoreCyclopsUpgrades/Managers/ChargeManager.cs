@@ -9,6 +9,8 @@
 
     internal class ChargeManager
     {
+        #region Static
+
         internal static bool Initialized { get; private set; }
         internal const string ManagerName = "McuChargeMgr";
         internal const float BatteryDrainRate = 0.01f;
@@ -29,7 +31,14 @@
             CyclopsChargers.Add(createEvent, assemblyName);
         }
 
-        internal readonly SubRoot Cyclops;
+        #endregion
+
+        private readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
+        private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
+        private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
+
+        private readonly SubRoot Cyclops;
+        private float rechargePenalty = ModConfig.Main.RechargePenalty;
 
         private CyclopsHUDManager cyclopsHUDManager;
         private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = CyclopsManager.GetManager(Cyclops)?.HUD);
@@ -48,12 +57,12 @@
         }
 
         public string Name { get; } = ManagerName;
+        public bool IsUsingVanillaThermalReactor { get; private set; }
 
-        private readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
-        private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
-        private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
-
-        private float rechargePenalty = ModConfig.Main.RechargePenalty;
+        public ChargeManager(SubRoot cyclops)
+        {
+            Cyclops = cyclops;
+        }
 
         internal T GetCharger<T>(string chargeHandlerName) where T : class, ICyclopsCharger
         {
@@ -65,15 +74,11 @@
             return null;
         }
 
-        public ChargeManager(SubRoot cyclops)
-        {
-            Cyclops = cyclops;
-        }
-
         public void InitializeChargers()
         {
             QuickLogger.Debug("ChargeManager InitializeChargingHandlers");
 
+            // First, register chargers from other mods.
             foreach (KeyValuePair<CreateCyclopsCharger, string> pair in CyclopsChargers)
             {
                 string assemblyName = pair.Value;
@@ -100,6 +105,11 @@
                 }
             }
 
+            // Next, check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
+            // If not, then the original thermal charging code will be allowed to run.
+            // This is to allow players to choose whether or not they want the newer form of charging.
+            this.IsUsingVanillaThermalReactor = VanillaUpgrades.Main.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
+
             Initialized = true;
         }
 
@@ -125,10 +135,11 @@
         /// <summary>
         /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
         /// </summary>
-        internal void RechargeCyclops()
+        /// <returns>The value of <see cref="IsUsingVanillaThermalReactor"/>.</returns>
+        internal bool RechargeCyclops()
         {
             if (Time.timeScale == 0f) // Is the game paused?
-                return;
+                return false;
 
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
@@ -154,6 +165,8 @@
             }
 
             ChargeCyclops(producedPower, ref powerDeficit);
+
+            return this.IsUsingVanillaThermalReactor;
         }
 
         private void ChargeCyclops(float availablePower, ref float powerDeficit)

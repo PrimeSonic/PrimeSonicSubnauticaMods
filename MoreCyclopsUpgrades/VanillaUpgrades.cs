@@ -1,17 +1,37 @@
-﻿namespace MoreCyclopsUpgrades.OriginalUpgrades
+﻿namespace MoreCyclopsUpgrades
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
 
-    internal class OriginalUpgrades
+    internal interface IVanillaUpgrades
     {
-        internal IEnumerable<TechType> OriginalUpgradeIDs => originalUpgrades.Keys;
+        IEnumerable<TechType> OriginalUpgradeIDs { get; }
 
-        internal UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops)
+        UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops);
+        bool IsUsingVanillaUpgrade(TechType upgradeID);
+    }
+
+    internal class VanillaUpgrades : IVanillaUpgrades
+    {
+        public static readonly IVanillaUpgrades Main = new VanillaUpgrades();
+
+        private VanillaUpgrades() { }
+
+        public IEnumerable<TechType> OriginalUpgradeIDs => originalUpgrades.Keys;
+
+        public UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops)
         {
+            originalUpgradesInUse.Add(upgradeID);
             return originalUpgrades[upgradeID].Invoke(cyclops);
         }
+
+        public bool IsUsingVanillaUpgrade(TechType upgradeID)
+        {
+            return originalUpgradesInUse.Contains(upgradeID);
+        }
+
+        private readonly List<TechType> originalUpgradesInUse = new List<TechType>();
 
         private readonly Dictionary<TechType, CreateUpgradeHandler> originalUpgrades = new Dictionary<TechType, CreateUpgradeHandler>()
         {
@@ -111,6 +131,17 @@
                         cyclops.GetComponentInChildren<CyclopsHolographicHUD>()?.fireSuppressionSystem.SetActive(fsm.HasUpgrade);
                     };
                     return fsm;
+                }
+            },
+            {
+                TechType.CyclopsThermalReactorModule,  (SubRoot cyclops) =>
+                {
+                    var ctrm = new UpgradeHandler(TechType.CyclopsThermalReactorModule, cyclops);
+                    ctrm.OnFinishedUpgrades = () =>
+                    {
+                        cyclops.thermalReactorUpgrade = ctrm.HasUpgrade;
+                    };
+                    return ctrm;
                 }
             }
         };

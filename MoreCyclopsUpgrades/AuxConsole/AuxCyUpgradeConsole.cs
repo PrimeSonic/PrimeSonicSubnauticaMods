@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades.Items.AuxConsole
+﻿namespace MoreCyclopsUpgrades.AuxConsole
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Assets;

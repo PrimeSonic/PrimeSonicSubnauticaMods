@@ -92,9 +92,8 @@
 
         internal readonly IDictionary<string, IAuxCyclopsManager> AuxiliaryManagers = new Dictionary<string, IAuxCyclopsManager>();
 
-        // Because this is going to be called on every Update cycle, it's getting elevated privilege within the mod.
-        internal readonly ChargeManager Charge;
         internal readonly UpgradeManager Upgrade;
+        internal readonly ChargeManager Charge;
         internal readonly CyclopsHUDManager HUD;
         internal readonly PowerRatingManager Engine;
 
@@ -103,8 +102,9 @@
             QuickLogger.Debug($"Creating main CyclopsManager");
             Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
-            Charge = new ChargeManager(cyclops);
+            
             Upgrade = new UpgradeManager(cyclops);
+            Charge = new ChargeManager(cyclops);
             HUD = new CyclopsHUDManager(cyclops, ModConfig.Main);
             Engine = new PowerRatingManager(cyclops);
 
@@ -132,8 +132,8 @@
 
         internal bool InitializeAuxiliaryManagers()
         {
-            Charge.InitializeChargers();
             Upgrade.InitializeUpgradeHandlers();
+            Charge.InitializeChargers();            
 
             foreach (IAuxCyclopsManager auxMgr in AuxiliaryManagers.Values)
             {

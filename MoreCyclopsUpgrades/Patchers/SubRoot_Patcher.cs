@@ -10,10 +10,11 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            CyclopsManager.GetManager(__instance)?.Charge.RechargeCyclops();
+            bool usingVanillaThermalCharging = CyclopsManager.GetManager(__instance).Charge.RechargeCyclops();
 
-            // No need to execute original method anymore
-            return false; // Completely override the method and do not continue with original execution
+            // If there is no mod taking over how thermal charging is done on the Cyclops,
+            // then we will allow the original method to run so it provides the vanilla thermal charging.            
+            return usingVanillaThermalCharging;
         }
     }
 
@@ -24,7 +25,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            CyclopsManager.GetManager(__instance)?.Engine.UpdatePowerRating();
+            CyclopsManager.GetManager(__instance).Engine.UpdatePowerRating();
 
             return false; // Completely override the method and do not continue with original execution
         }
@@ -42,7 +43,7 @@
             if (cyclopsLife == null || !cyclopsLife.IsAlive())
                 return true; // safety check
 
-            CyclopsManager.GetManager(__instance)?.Upgrade.HandleUpgrades();
+            CyclopsManager.GetManager(__instance).Upgrade.HandleUpgrades();
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution

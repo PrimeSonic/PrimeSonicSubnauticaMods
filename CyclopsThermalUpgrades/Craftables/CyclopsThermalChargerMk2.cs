@@ -1,5 +1,6 @@
-﻿namespace MoreCyclopsUpgrades.Items.ThermalModule
+﻿namespace CyclopsThermalUpgrades.Craftables
 {
+    using CyclopsThermalUpgrades.Management;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -18,7 +19,7 @@
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
-        public override string AssetsFolder { get; } = "MoreCyclopsUpgrades/Assets";
+        public override string AssetsFolder { get; } = "CyclopsThermalUpgrades/Assets";
         public override TechType RequiredForUnlock { get; } = TechType.CyclopsThermalReactorModule;
         public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
 
