@@ -31,7 +31,7 @@
 
                 PatchAuxUpgradeConsole();
 
-                RegisterOriginalUpgrades();
+                PatchUpgradeModules();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -62,13 +62,6 @@
                 QuickLogger.Info("Deleted old config file 'MoreCyclopsUpgradesConfig.txt'");
                 File.Delete(oldConfig2);
             }
-        }
-
-        private static void RegisterOriginalUpgrades()
-        {
-            QuickLogger.Debug("Registering original cyclops upgrades via MCUServices");
-            var originalUpgrades = new OriginalUpgrades.OriginalUpgrades();
-            originalUpgrades.RegisterOriginalUpgrades();
         }
 
         private static void PatchUpgradeModules()

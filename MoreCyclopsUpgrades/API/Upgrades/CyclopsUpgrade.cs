@@ -26,12 +26,12 @@
         /// <summary>
         /// Overriden to ensure this item appearas within the <see cref="TechGroup.Cyclops"/> group in the PDA blurprints menu.
         /// </summary>
-        public sealed override TechGroup GroupForPDA { get; } = TechGroup.Cyclops;
+        public sealed override TechGroup GroupForPDA => TechGroup.Cyclops;
 
         /// <summary>
         /// Overrides to ensure this item appears within the <see cref="TechCategory.CyclopsUpgrades"/> category in the PDA blueprints menu.
         /// </summary>
-        public sealed override TechCategory CategoryForPDA { get; } = TechCategory.CyclopsUpgrades;
+        public sealed override TechCategory CategoryForPDA => TechCategory.CyclopsUpgrades;
 
         /// <summary>
         /// Gets the prefab template used to clone new instances of this upgrade module.<para/>
@@ -46,7 +46,7 @@
         /// Overriden to set to have the <see cref="TechType.Cyclops" /> be required before this upgrade module can be unlocked.
         /// If not overriden, it this item will be unlocked from the start of the game.
         /// </summary>
-        public override TechType RequiredForUnlock { get; } = TechType.Cyclops; // Default can be overridden by child classes
+        public override TechType RequiredForUnlock => TechType.Cyclops; // Default can be overridden by child classes
 
         /// <summary>
         /// Gets the prefab game object. Set up your prefab components here.<para/>

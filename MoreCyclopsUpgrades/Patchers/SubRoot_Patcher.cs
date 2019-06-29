@@ -72,7 +72,7 @@
             if (firstEventDone)
                 return;
 
-            __instance.voiceNotificationManager.enabled = false;
+            __instance.voiceNotificationManager.ready = false;
         }
 
         [HarmonyPostfix]
@@ -81,7 +81,7 @@
             if (firstEventDone)
                 return;
 
-            __instance.voiceNotificationManager.enabled = true;
+            __instance.voiceNotificationManager.ready = true;
 
             firstEventDone = true;
         }

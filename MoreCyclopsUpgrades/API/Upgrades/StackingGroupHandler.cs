@@ -60,7 +60,7 @@
         /// <returns>The total number of upgrades when the <see cref="TechType"/> is managed by this collection; Otherwise returns -1.</returns>
         public int TierCount(TechType tier)
         {
-            if (counted.TryGetValue(techType, out int count))
+            if (counted.TryGetValue(TechType, out int count))
             {
                 return count;
             }

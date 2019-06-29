@@ -1,64 +1,118 @@
 ﻿namespace MoreCyclopsUpgrades.OriginalUpgrades
 {
-    using Common;
+    using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
 
     internal class OriginalUpgrades
     {
-        internal void RegisterOriginalUpgrades()
+        internal IEnumerable<TechType> OriginalUpgradeIDs => originalUpgrades.Keys;
+
+        internal UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops)
         {
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: Depth Upgrades Collection");
-                return new OriginalDepthUpgrades(cyclops);
-            });
-
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsShieldModule");
-                return new UpgradeHandler(TechType.CyclopsShieldModule, cyclops)
-                {
-                    OnClearUpgrades = () => { cyclops.shieldUpgrade = false; },
-                    OnUpgradeCounted = () => { cyclops.shieldUpgrade = true; },
-                };
-            });
-
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsSonarModule");
-                return new UpgradeHandler(TechType.CyclopsSonarModule, cyclops)
-                {
-                    OnClearUpgrades = () => { cyclops.sonarUpgrade = false; },
-                    OnUpgradeCounted = () => { cyclops.sonarUpgrade = true; },
-                };
-            });
-
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsSeamothRepairModule");
-                return new UpgradeHandler(TechType.CyclopsSeamothRepairModule, cyclops)
-                {
-                    OnClearUpgrades = () => { cyclops.vehicleRepairUpgrade = false; },
-                    OnUpgradeCounted = () => { cyclops.vehicleRepairUpgrade = true; },
-                };
-            });
-
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsDecoyModule");
-                return new UpgradeHandler(TechType.CyclopsDecoyModule, cyclops)
-                {
-                    OnClearUpgrades = () => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                    OnUpgradeCounted = () => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
-                };
-            });
-
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsFireSuppressionModule");
-                return new OriginalFireSuppressionUpgrade(cyclops);
-            });
+            return originalUpgrades[upgradeID].Invoke(cyclops);
         }
+
+        private readonly Dictionary<TechType, CreateUpgradeHandler> originalUpgrades = new Dictionary<TechType, CreateUpgradeHandler>()
+        {
+            {
+                TechType.CyclopsHullModule1, (SubRoot cyclops) =>
+                {
+                    var chm = new TieredGroupHandler<float>(0f, cyclops);
+                    chm.OnFinishedUpgrades = () =>
+                    {
+                        cyclops.gameObject.GetComponent<CrushDamage>().SetExtraCrushDepth(chm.HighestValue);
+                    };
+                    chm.CreateTier(TechType.CyclopsHullModule1, 400f);
+                    chm.CreateTier(TechType.CyclopsHullModule2, 800f);
+                    chm.CreateTier(TechType.CyclopsHullModule3, 1200f);
+
+                    return chm;
+                }
+            },
+            {
+                TechType.PowerUpgradeModule, (SubRoot cyclops) =>
+                {
+                    float lastKnownRating = -1f;
+                    var pum = new UpgradeHandler(TechType.PowerUpgradeModule, cyclops)
+                    {
+                        OnClearUpgrades = () =>
+                        {
+                            lastKnownRating = cyclops.currPowerRating;
+                            MCUServices.CrossMod.ApplyPowerRatingModifier(cyclops, TechType.PowerUpgradeModule, 1f);
+                        },
+                        OnUpgradeCountedDetailed = (Equipment modules, string slot, InventoryItem inventoryItem) =>
+                        {
+                            MCUServices.CrossMod.ApplyPowerRatingModifier(cyclops, TechType.PowerUpgradeModule, 3f);
+                        },
+                        OnFinishedUpgrades = () =>
+                        {
+                            if (lastKnownRating != cyclops.currPowerRating)
+                            {
+                                // Inform the new power rating just like the original method would.
+                                ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", cyclops.currPowerRating));
+                            }
+                        }
+                    };
+
+                    return pum;
+                }
+            },
+            {
+                TechType.CyclopsShieldModule, (SubRoot cyclops) =>
+                {
+                    var csm = new UpgradeHandler(TechType.CyclopsShieldModule, cyclops);
+                    csm.OnFinishedUpgrades = () => 
+                    {
+                        cyclops.shieldUpgrade = csm.HasUpgrade;
+                    };
+                    return csm;
+                }
+            },
+            {
+                TechType.CyclopsSonarModule, (SubRoot cyclops) =>
+                {
+                    var csm = new UpgradeHandler(TechType.CyclopsSonarModule, cyclops);
+                    csm.OnFinishedUpgrades = () =>
+                    {
+                        cyclops.sonarUpgrade = csm.HasUpgrade;
+                    };
+                    return csm;
+                }
+            },
+            {
+                TechType.CyclopsSeamothRepairModule, (SubRoot cyclops) =>
+                {
+                    var csrm = new UpgradeHandler(TechType.CyclopsSeamothRepairModule, cyclops);
+                    csrm.OnFinishedUpgrades = () =>
+                    {
+                        cyclops.vehicleRepairUpgrade = csrm.HasUpgrade;
+                    };
+                    return csrm;
+                }
+            },
+            {
+                TechType.CyclopsDecoyModule, (SubRoot cyclops) =>
+                {
+                    var cdm = new UpgradeHandler(TechType.CyclopsDecoyModule, cyclops);
+                    cdm.OnFinishedUpgrades = () =>
+                    {
+                        cyclops.decoyTubeSizeIncreaseUpgrade = cdm.HasUpgrade;
+                    };
+                    return cdm;
+                }
+            },
+            {
+                TechType.CyclopsFireSuppressionModule, (SubRoot cyclops) =>
+                {
+                    var fsm = new UpgradeHandler(TechType.CyclopsFireSuppressionModule, cyclops);
+                    fsm.OnFinishedUpgrades = () =>
+                    {
+                        cyclops.GetComponentInChildren<CyclopsHolographicHUD>()?.fireSuppressionSystem.SetActive(fsm.HasUpgrade);
+                    };
+                    return fsm;
+                }
+            }
+        };
     }
 }

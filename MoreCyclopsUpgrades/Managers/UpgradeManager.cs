@@ -123,7 +123,7 @@
         {
             QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
 
-            // Register upgrades from other mods
+            // First, register upgrades from other mods.
             foreach (KeyValuePair<CreateUpgradeHandler, string> pair in HandlerCreators)
             {
                 CreateUpgradeHandler upgradeHandlerCreator = pair.Key;
@@ -134,21 +134,27 @@
                 {
                     QuickLogger.Warning($"UpgradeHandler from '{assemblyName}' was null");
                 }
-                else if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
+                else if (!KnownsUpgradeModules.ContainsKey(upgrade.TechType))
                 {
                     upgrade.RegisterSelf(KnownsUpgradeModules);
-                    QuickLogger.Debug($"Added UpgradeHandler for {upgrade.techType} from '{assemblyName}'");
+                    QuickLogger.Debug($"Added UpgradeHandler for {upgrade.TechType} from '{assemblyName}'");
                 }
                 else
                 {
-                    QuickLogger.Warning($"Duplicate UpgradeHandler for '{upgrade.techType}' from '{assemblyName}' was blocked");
+                    QuickLogger.Warning($"Duplicate UpgradeHandler for '{upgrade.TechType}' from '{assemblyName}' was blocked");
                 }
             }
 
-            if (!KnownsUpgradeModules.ContainsKey(TechType.PowerUpgradeModule))
+            // Next, if no external mod has provided an UpgradeHandler for the vanilla upgrades, they will be added here.
+            // This is to allow other mods to provide new functionality to the original upgrades.
+            var originalUpgrades = new OriginalUpgrades();
+            foreach (TechType upgradeID in originalUpgrades.OriginalUpgradeIDs)
             {
-                QuickLogger.Debug("No UpgradeHandler for the original Engine Efficiency module detected. Adding it internally.");
-                KnownsUpgradeModules.Add(TechType.PowerUpgradeModule, new OriginalEngineUpgrade(Cyclops));
+                if (!KnownsUpgradeModules.ContainsKey(upgradeID))
+                {
+                    QuickLogger.Debug($"Adding default UpgradeHandler for {upgradeID}");
+                    KnownsUpgradeModules.Add(upgradeID, originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops));
+                }
             }
         }
 
@@ -198,7 +204,7 @@
             // Turn off all upgrades and clear all values
             foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
             {
-                QuickLogger.Debug($"UpgradeManager clearing {upgradeType.techType}");
+                QuickLogger.Debug($"UpgradeManager clearing {upgradeType.TechType.AsString()}");
                 upgradeType.UpgradesCleared(); // UpgradeHandler event
             }
 

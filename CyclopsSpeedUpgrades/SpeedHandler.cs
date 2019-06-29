@@ -29,13 +29,13 @@
         };
 
         private CyclopsMotorMode motorMode;
-        private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = base.cyclops.GetComponentInChildren<CyclopsMotorMode>());
+        private CyclopsMotorMode MotorMode => motorMode ?? (motorMode = base.Cyclops.GetComponentInChildren<CyclopsMotorMode>());
 
         private SubControl subControl;
-        private SubControl SubControl => subControl ?? (subControl = base.cyclops.GetComponentInChildren<SubControl>());
+        private SubControl SubControl => subControl ?? (subControl = base.Cyclops.GetComponentInChildren<SubControl>());
 
         private IPowerRatingManager ratingManager;
-        private IPowerRatingManager RatingManager => ratingManager ?? (ratingManager = MCUServices.CrossMod.GetPowerRatingManager(cyclops));
+        private IPowerRatingManager RatingManager => ratingManager ?? (ratingManager = MCUServices.CrossMod.GetPowerRatingManager(Cyclops));
 
         private readonly float[] originalSpeeds = new float[3];
         private readonly float[] originalNoise = new float[3];
@@ -65,7 +65,7 @@
             {
                 float efficiencyPenalty = Mathf.Pow(EnginePowerPenalty, this.Count);
 
-                this.RatingManager.ApplyPowerRatingModifier(techType, efficiencyPenalty);
+                this.RatingManager.ApplyPowerRatingModifier(TechType, efficiencyPenalty);
 
                 int speedIndex = this.Count;
                 if (lastKnownSpeedIndex == speedIndex)

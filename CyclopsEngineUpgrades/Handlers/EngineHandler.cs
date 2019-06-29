@@ -34,7 +34,7 @@
         private int lastKnownPowerIndex = -1;
 
         private IPowerRatingManager ratingManager;
-        private IPowerRatingManager RatingManager => ratingManager ?? (ratingManager = MCUServices.CrossMod.GetPowerRatingManager(base.cyclops));
+        private IPowerRatingManager RatingManager => ratingManager ?? (ratingManager = MCUServices.CrossMod.GetPowerRatingManager(base.Cyclops));
 
         public EngineHandler(PowerUpgradeModuleMk2 upgradeMk2, PowerUpgradeModuleMk3 upgradeMk3, SubRoot cyclops)
             : base(BaseValue, cyclops)
@@ -56,9 +56,9 @@
                 {
                     lastKnownPowerIndex = powerIndex;
 
-                    this.cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
-                    this.cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
-                    this.cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
+                    this.Cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+                    this.Cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
+                    this.Cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
                     this.RatingManager.ApplyPowerRatingModifier(TechType.PowerUpgradeModule, EnginePowerRatings[powerIndex]);
                 }
             };

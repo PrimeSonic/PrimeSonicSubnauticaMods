@@ -18,7 +18,7 @@
         public IGroupHandler GroupHandler => ParentCollection;
 
         internal StackingUpgradeHandler(TechType techType, StackingGroupHandler parentCollection)
-            : base(techType, parentCollection.cyclops)
+            : base(techType, parentCollection.Cyclops)
         {
             ParentCollection = parentCollection;
         }
@@ -30,7 +30,7 @@
 
         internal override void UpgradeCounted(Equipment modules, string slot)
         {
-            ParentCollection.TierCounted(techType, modules, slot, modules.equipment[slot]);
+            ParentCollection.TierCounted(TechType, modules, slot, modules.equipment[slot]);
         }
 
         internal override void UpgradesFinished()

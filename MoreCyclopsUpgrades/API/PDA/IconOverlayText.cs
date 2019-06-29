@@ -2,11 +2,8 @@
 {
     using UnityEngine;
     using UnityEngine.UI;
-
-    /// <summary>
-    /// A class that exposes additional UI elements that MoreCyclopsUpgrades will overlay on top of an equipment icon in the PDA screen.
-    /// </summary>
-    public class IconOverlayText
+    
+    internal class IconOverlayText : IIconOverlayText
     {
         private static readonly Font ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
@@ -14,13 +11,6 @@
         private readonly Text text;
         private readonly Outline outline;
 
-        /// <summary>
-        /// Gets or sets the font used for this <see cref="Text"/> element.<para/>
-        /// Defaults to Arial.
-        /// </summary>
-        /// <value>
-        /// The font.
-        /// </value>
         public Font Font
         {
             get => text.font;
@@ -31,64 +21,30 @@
             }
         }
 
-        /// <summary>
-        /// Gets or sets the text string used for this <see cref="Text"/> element.
-        /// </summary>
-        /// <value>
-        /// The text string.
-        /// </value>
         public string TextString
         {
             get => text.text;
             set => text.text = value;
         }
 
-        /// <summary>
-        /// Gets or sets the size of the text font used for this <see cref="Text"/> element.<para/>
-        /// Defaults to 18.
-        /// </summary>
-        /// <value>
-        /// The size of the text font.
-        /// </value>
         public int FontSize
         {
             get => text.fontSize;
             set => text.fontSize = value;
         }
 
-        /// <summary>
-        /// Gets or sets the font style used for this <see cref="Text"/> element.<para/>
-        /// Defaults to <see cref="FontStyle.Normal"/>.
-        /// </summary>
-        /// <value>
-        /// The font style.
-        /// </value>
         public FontStyle FontStyle
         {
             get => text.fontStyle;
             set => text.fontStyle = value;
         }
 
-        /// <summary>
-        /// Gets or sets the color of the text used for this <see cref="Text"/> element.<para/>
-        /// Defaults to <see cref="Color.white"/>.
-        /// </summary>
-        /// <value>
-        /// The color of the text.
-        /// </value>
         public Color TextColor
         {
             get => text.color;
             set => text.color = value;
         }
 
-        /// <summary>
-        /// Gets or sets the text outline used for this <see cref="Text"/> element.<para/>
-        /// Defaults to <see cref="Color.black"/>.
-        /// </summary>
-        /// <value>
-        /// The text outline.
-        /// </value>
         public Color TextOutline
         {
             get => outline.effectColor;

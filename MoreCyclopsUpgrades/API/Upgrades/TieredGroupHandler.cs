@@ -26,7 +26,7 @@
             get
             {
                 foreach (TieredUpgradeHandler<T> tier in collection)
-                    yield return tier.techType;
+                    yield return tier.TechType;
             }
         }
 
@@ -39,7 +39,7 @@
         /// </returns>
         public bool IsManaging(TechType techType)
         {
-            return collection.Exists(t => t.techType == techType);
+            return collection.Exists(t => t.TechType == techType);
         }
 
         /// <summary>
@@ -74,7 +74,11 @@
         /// <returns>The newly created <see cref="TieredUpgradeHandler{T}"/> instance.</returns>
         public TieredUpgradeHandler<T> CreateTier(TechType techType, T tieredValue)
         {
-            var tieredUpgrade = new TieredUpgradeHandler<T>(techType, tieredValue, this);
+            var tieredUpgrade = new TieredUpgradeHandler<T>(techType, tieredValue, this)
+            {
+                MaxCount = this.MaxCount
+            };
+
             collection.Add(tieredUpgrade);
 
             return tieredUpgrade;

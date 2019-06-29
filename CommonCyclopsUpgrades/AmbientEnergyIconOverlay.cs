@@ -13,29 +13,29 @@
         public AmbientEnergyIconOverlay(string chargerName, uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
         {
-            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(base.cyclops, base.techType);
-            charger = MCUServices.Find.CyclopsCharger<AmbientEnergyCharger<T>>(base.cyclops, chargerName);
+            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(base.Cyclops, base.TechType);
+            charger = MCUServices.Find.CyclopsCharger<AmbientEnergyCharger<T>>(base.Cyclops, chargerName);
         }
 
         public override void UpdateText()
         {
             if (upgradeHandler.TotalCount > 1)
-                base.upperText.TextString = $"+{Mathf.RoundToInt((upgradeHandler.ChargeMultiplier - 1f) * 100f)}%";
+                base.UpperText.TextString = $"+{Mathf.RoundToInt((upgradeHandler.ChargeMultiplier - 1f) * 100f)}%";
             else
-                base.upperText.TextString = string.Empty;
+                base.UpperText.TextString = string.Empty;
 
             if (upgradeHandler.TierCount(upgradeHandler.Tier2ID) > 0)
             {
-                base.middleText.TextString = $"{charger.EnergyStatusText()}\n{charger.ReservePowerText()}";
+                base.MiddleText.TextString = $"{charger.EnergyStatusText()}\n{charger.ReservePowerText()}";
             }
             else if (upgradeHandler.TierCount(upgradeHandler.Tier1ID) > 0)
             {
-                base.middleText.TextString = $"{charger.EnergyStatusText()}";
+                base.MiddleText.TextString = $"{charger.EnergyStatusText()}";
             }
             
-            base.middleText.TextColor = charger.GetIndicatorTextColor();
+            base.MiddleText.TextColor = charger.GetIndicatorTextColor();
 
-            base.lowerText.TextString = $"{upgradeHandler.TotalCount}/{upgradeHandler.MaxCount}";
+            base.LowerText.TextString = $"{upgradeHandler.TotalCount}/{upgradeHandler.MaxCount}";
         }
     }
 }

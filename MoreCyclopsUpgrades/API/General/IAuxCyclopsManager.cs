@@ -15,7 +15,8 @@
         string Name { get; }
 
         /// <summary>
-        /// Initializes the auxiliary manager with the specified cyclops.
+        /// Initializes the auxiliary manager with the specified cyclops.<para/>
+        /// This method is invoked only after all <see cref="IAuxCyclopsManager"/> instances have been created.
         /// </summary>
         /// <param name="cyclops">The cyclops this manager will handle.</param>
         /// <returns><c>True</c> if the initialization process succeeded; Otherwise returns <c>False</c>.</returns>

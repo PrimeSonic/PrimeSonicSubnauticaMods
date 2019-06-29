@@ -25,7 +25,7 @@
         /// </summary>
         public IGroupHandler GroupHandler => ParentCollection;
 
-        internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredGroupHandler<T> parentCollection) : base(techType, parentCollection.cyclops)
+        internal TieredUpgradeHandler(TechType techType, T tieredValue, TieredGroupHandler<T> parentCollection) : base(techType, parentCollection.Cyclops)
         {
             TieredValue = tieredValue;
             ParentCollection = parentCollection;

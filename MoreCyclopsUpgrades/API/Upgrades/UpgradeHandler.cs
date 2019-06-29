@@ -32,12 +32,12 @@
         /// <summary>
         /// The cyclops sub where this upgrade handler is being used.
         /// </summary>
-        public readonly SubRoot cyclops;
+        public readonly SubRoot Cyclops;
 
         /// <summary>
         /// The TechType that identifies this type of upgrade module.
         /// </summary>
-        public readonly TechType techType;
+        public readonly TechType TechType;
 
         private int count = 0;
         private bool maxedOut = false;
@@ -47,7 +47,7 @@
         /// This value will not exceed <see cref="Count"/>.
         /// </summary>
         /// <value>
-        /// The total number of upgrade modules of this <see cref="techType"/> found.
+        /// The total number of upgrade modules of this <see cref="TechType"/> found.
         /// </value>
         public int Count
         {
@@ -94,14 +94,14 @@
         public UpgradeEvent OnClearUpgrades;
 
         /// <summary>
-        /// This event is invoked when a copy of this module's <see cref="techType"/> is found and counted.<para/>
+        /// This event is invoked when a copy of this module's <see cref="TechType"/> is found and counted.<para/>
         /// This will happen for each copy found in the cyclops.<para/>
         /// Unlike <see cref="OnUpgradeCounted"/>, this event will contain parameter references to the upgrade module and its location.
         /// </summary>
         public UpgradeEventSlotBound OnUpgradeCountedDetailed;
 
         /// <summary>
-        /// This event is invoked when a copy of this module's <see cref="techType"/> is found and counted.<para/>
+        /// This event is invoked when a copy of this module's <see cref="TechType"/> is found and counted.<para/>
         /// This will happen for each copy found in the cyclops.<para/>
         /// Unlike <see cref="OnUpgradeCountedDetailed"/>, this event will send no extra parameters.
         /// </summary>
@@ -136,8 +136,8 @@
         /// <param name="cyclops">The cyclops where the handler is being registered.</param>
         public UpgradeHandler(TechType techType, SubRoot cyclops)
         {
-            this.techType = techType;
-            this.cyclops = cyclops;
+            this.TechType = techType;
+            this.Cyclops = cyclops;
         }
 
         internal virtual void UpgradesCleared()
@@ -172,7 +172,7 @@
 
         internal virtual void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)
         {
-            dictionary.Add(techType, this);
+            dictionary.Add(TechType, this);
         }
 
         internal virtual bool CanUpgradeBeAdded(Pickupable item, bool verbose)

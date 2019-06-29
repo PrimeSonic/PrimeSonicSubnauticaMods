@@ -73,6 +73,7 @@
     <Compile Include="API\PDA\IconOverlay.cs" />
     <Compile Include="API\PDA\IconOverlayCollection.cs" />
     <Compile Include="API\PDA\IconOverlayText.cs" />
+    <Compile Include="API\PDA\IIconOverlayText.cs" />
     <Compile Include="API\PDA\OverlayTextCreator.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
     <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />
@@ -88,9 +89,6 @@
     <Compile Include="API\General\IPowerRatingManager.cs" />
     <Compile Include="Managers\PdaOverlayManager.cs" />
     <Compile Include="Managers\PowerRatingManager.cs" />
-    <Compile Include="OriginalUpgrades\OriginalDepthUpgrades.cs" />
-    <Compile Include="OriginalUpgrades\OriginalEngineUpgrade.cs" />
-    <Compile Include="OriginalUpgrades\OriginalFireSuppressionUpgrade.cs" />
     <Compile Include="OriginalUpgrades\OriginalUpgrades.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />
