@@ -35,7 +35,7 @@
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
-        public override string AssetsFolder { get; } = "CyclopsEngineUpgrades/Assets";
+        public override string AssetsFolder { get; } = "CyclopsSpeedUpgrades/Assets";
         public override string[] StepsToFabricatorTab { get; } = MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
 
         protected override TechData GetBlueprintRecipe()
