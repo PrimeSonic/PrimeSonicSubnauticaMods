@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using Common;
     using CommonCyclopsUpgrades;
     using CommonCyclopsUpgrades.Options;

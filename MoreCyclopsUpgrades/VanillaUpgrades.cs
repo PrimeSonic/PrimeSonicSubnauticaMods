@@ -22,7 +22,9 @@
 
         public UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops)
         {
-            originalUpgradesInUse.Add(upgradeID);
+            if (!originalUpgradesInUse.Contains(upgradeID))
+                originalUpgradesInUse.Add(upgradeID);
+
             return originalUpgrades[upgradeID].Invoke(cyclops);
         }
 
@@ -36,6 +38,7 @@
         private readonly Dictionary<TechType, CreateUpgradeHandler> originalUpgrades = new Dictionary<TechType, CreateUpgradeHandler>()
         {
             {
+                // Providing this custom handler is necessary as SetExtraDepth wouldn't work with the AuxUpgradeConsole
                 TechType.CyclopsHullModule1, (SubRoot cyclops) =>
                 {
                     var chm = new TieredGroupHandler<float>(0f, cyclops);
@@ -51,6 +54,7 @@
                 }
             },
             {
+                // Providing this custom handler is necessary as UpdatePowerRating wouldn't work with the AuxUpgradeConsole
                 TechType.PowerUpgradeModule, (SubRoot cyclops) =>
                 {
                     float lastKnownRating = -1f;
@@ -82,7 +86,7 @@
                 TechType.CyclopsShieldModule, (SubRoot cyclops) =>
                 {
                     var csm = new UpgradeHandler(TechType.CyclopsShieldModule, cyclops);
-                    csm.OnFinishedUpgrades = () => 
+                    csm.OnFinishedUpgrades = () =>
                     {
                         cyclops.shieldUpgrade = csm.HasUpgrade;
                     };

@@ -10,11 +10,11 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            bool usingVanillaThermalCharging = CyclopsManager.GetManager(__instance).Charge.RechargeCyclops();
+            bool requiresVanillaCharging = CyclopsManager.GetManager(__instance).Charge.RechargeCyclops();
 
             // If there is no mod taking over how thermal charging is done on the Cyclops,
             // then we will allow the original method to run so it provides the vanilla thermal charging.            
-            return usingVanillaThermalCharging;
+            return requiresVanillaCharging;
         }
     }
 
@@ -25,6 +25,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
+            // Performing this custom handling was necessary as UpdatePowerRating wouldn't work with the AuxUpgradeConsole
             CyclopsManager.GetManager(__instance).Engine.UpdatePowerRating();
 
             return false; // Completely override the method and do not continue with original execution
@@ -57,6 +58,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
+            // Providing this custom handler is necessary as SetExtraDepth wouldn't work with the AuxUpgradeConsole
             return false; // Now handled by UpgradeManager HandleUpgrades
         }
     }
@@ -83,7 +85,6 @@
                 return;
 
             __instance.voiceNotificationManager.ready = true;
-
             firstEventDone = true;
         }
     }

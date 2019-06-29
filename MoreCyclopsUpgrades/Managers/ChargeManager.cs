@@ -39,6 +39,7 @@
 
         private readonly SubRoot Cyclops;
         private float rechargePenalty = ModConfig.Main.RechargePenalty;
+        private bool requiresVanillaCharging = false;
 
         private CyclopsHUDManager cyclopsHUDManager;
         private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = CyclopsManager.GetManager(Cyclops)?.HUD);
@@ -57,7 +58,6 @@
         }
 
         public string Name { get; } = ManagerName;
-        public bool IsUsingVanillaThermalReactor { get; private set; }
 
         public ChargeManager(SubRoot cyclops)
         {
@@ -108,7 +108,7 @@
             // Next, check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
             // If not, then the original thermal charging code will be allowed to run.
             // This is to allow players to choose whether or not they want the newer form of charging.
-            this.IsUsingVanillaThermalReactor = VanillaUpgrades.Main.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
+            requiresVanillaCharging = VanillaUpgrades.Main.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
 
             Initialized = true;
         }
@@ -135,7 +135,7 @@
         /// <summary>
         /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
         /// </summary>
-        /// <returns>The value of <see cref="IsUsingVanillaThermalReactor"/>.</returns>
+        /// <returns><c>True</c> if the original code for the vanilla Cyclops Thermal Reactor Module is required; Otherwise <c>false</c>.</returns>
         internal bool RechargeCyclops()
         {
             if (Time.timeScale == 0f) // Is the game paused?
@@ -166,7 +166,7 @@
 
             ChargeCyclops(producedPower, ref powerDeficit);
 
-            return this.IsUsingVanillaThermalReactor;
+            return requiresVanillaCharging;
         }
 
         private void ChargeCyclops(float availablePower, ref float powerDeficit)
