@@ -135,14 +135,14 @@
 
         public T CyclopsCharger<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger
         {
-            return CyclopsManager.GetManager<ChargeManager>(cyclops, ChargeManager.ManagerName)?.GetCharger<T>(chargeHandlerName);
+            return CyclopsManager.GetManager(cyclops)?.QuickChargeManager.GetCharger<T>(chargeHandlerName);
         }
 
         public IEnumerable<T> AllCyclopsChargers<T>(string chargeHandlerName) where T : class, ICyclopsCharger
         {
-            foreach (ChargeManager item in CyclopsManager.GetAllManagers<ChargeManager>(ChargeManager.ManagerName))
+            foreach (CyclopsManager item in CyclopsManager.GetAllManagers())
             {
-                T chg = item.GetCharger<T>(chargeHandlerName);
+                T chg = item.QuickChargeManager?.GetCharger<T>(chargeHandlerName);
 
                 if (chg != null)
                     yield return chg;
@@ -151,12 +151,12 @@
 
         public T CyclopsUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler
         {
-            return CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName)?.GetUpgradeHandler<T>(upgradeId);
+            return CyclopsManager.GetManager(cyclops).QuickUpgradeManager?.GetUpgradeHandler<T>(upgradeId);
         }
 
         public T CyclopsGroupUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
-            return CyclopsManager.GetManager<UpgradeManager>(cyclops, UpgradeManager.ManagerName)?.GetGroupHandler<T>(upgradeId);
+            return CyclopsManager.GetManager(cyclops).QuickUpgradeManager?.GetGroupHandler<T>(upgradeId);
         }
 
         #endregion

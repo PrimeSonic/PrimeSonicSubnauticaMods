@@ -53,6 +53,11 @@
             return null;
         }
 
+        internal static IEnumerable<CyclopsManager> GetAllManagers()
+        {
+            return Managers;
+        }
+
         internal static CyclopsManager GetManager(SubRoot cyclops)
         {
             if (cyclops.isBase || !cyclops.isCyclops)

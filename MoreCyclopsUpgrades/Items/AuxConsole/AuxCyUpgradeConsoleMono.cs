@@ -140,7 +140,7 @@
             scaler.dynamicPixelsPerUnit = 20;
 
             uGUI_Icon icon = canvas.gameObject.AddComponent<uGUI_Icon>();
-
+            icon.enabled = false;
             return canvas.gameObject;
         }
 
