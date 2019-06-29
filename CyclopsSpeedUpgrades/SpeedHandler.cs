@@ -13,19 +13,19 @@
 
         private readonly CyclopsSpeedModule speedModule;
 
-        private static readonly float[] SlowSpeedBonuses = new float[MaxSpeedBoosters] // Max +70%
+        private static readonly float[] SlowSpeedModifiers = new float[MaxSpeedBoosters + 1]
         {
-            0.25f, 0.15f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules            
+            1.00f, 1.25f, 1.40f, 1.50f, 1.60f, 1.65f, 1.70f
         };
 
-        private static readonly float[] StandardSpeedBonuses = new float[MaxSpeedBoosters] // Max +120%
+        private static readonly float[] StandardSpeedModifiers = new float[MaxSpeedBoosters + 1]
         {
-            0.40f, 0.30f, 0.20f, 0.15f, 0.10f, 0.05f // Diminishing returns on speed modules            
+            1.00f, 1.40f, 1.70f, 1.90f, 2.05f, 2.15f, 2.20f
         };
 
-        private static readonly float[] FlankSpeedBonuses = new float[MaxSpeedBoosters] // Max +95%
+        private static readonly float[] FlankSpeedModifiers = new float[MaxSpeedBoosters + 1]
         {
-            0.45f, 0.20f, 0.10f, 0.10f, 0.05f, 0.05f // Diminishing returns on speed modules            
+            1.00f, 1.50f, 1.70f, 1.80f, 1.90f, 1.95f, 2.00f
         };
 
         private CyclopsMotorMode motorMode;
@@ -40,7 +40,7 @@
         private readonly float[] originalSpeeds = new float[3];
         private readonly float[] originalNoise = new float[3];
 
-        private int lastKnownSpeedBoosters = -1;
+        private int lastKnownSpeedIndex = -1;
 
         public SpeedHandler(CyclopsSpeedModule cyclopsSpeedModule, SubRoot cyclops) : base(cyclopsSpeedModule.TechType, cyclops)
         {
@@ -61,39 +61,27 @@
                 ErrorMessage.AddMessage(CyclopsSpeedModule.MaxRatingAchived);
             };
 
-            OnFinishedUpgrades = UpdatePowerSpeedRating;
-        }
-
-        internal void UpdatePowerSpeedRating()
-        {
-            // Speed modules can affect power rating too
-            float efficiencyPenalty = Mathf.Pow(EnginePowerPenalty, this.Count);
-
-            this.RatingManager.ApplyPowerRatingModifier(techType, efficiencyPenalty);
-
-            int speedBoosters = this.Count;
-            if (lastKnownSpeedBoosters != speedBoosters)
+            OnFinishedUpgrades = () =>
             {
-                lastKnownSpeedBoosters = speedBoosters;
+                float efficiencyPenalty = Mathf.Pow(EnginePowerPenalty, this.Count);
 
-                float slowMultiplier = 1f;
-                float standardMultiplier = 1f;
-                float slankMultiplier = 1f;
-                float noiseMultiplier = 1f;
+                this.RatingManager.ApplyPowerRatingModifier(techType, efficiencyPenalty);
 
-                // Calculate the speed multiplier with diminishing returns
-                while (--speedBoosters > -1)
-                {
-                    slowMultiplier += SlowSpeedBonuses[speedBoosters];
-                    standardMultiplier += StandardSpeedBonuses[speedBoosters];
-                    slankMultiplier += FlankSpeedBonuses[speedBoosters];
-                    noiseMultiplier += 0.1f;
-                }
+                int speedIndex = this.Count;
+                if (lastKnownSpeedIndex == speedIndex)
+                    return;
+
+                lastKnownSpeedIndex = speedIndex;
+
+                float slowMultiplier = SlowSpeedModifiers[speedIndex];
+                float standardMultiplier = StandardSpeedModifiers[speedIndex];
+                float flankMultiplier = FlankSpeedModifiers[speedIndex];
+                float noiseMultiplier = 1f + 0.1f * speedIndex;
 
                 // These will apply when changing speed modes
                 this.MotorMode.motorModeSpeeds[0] = originalSpeeds[0] * slowMultiplier;
                 this.MotorMode.motorModeSpeeds[1] = originalSpeeds[1] * standardMultiplier;
-                this.MotorMode.motorModeSpeeds[2] = originalSpeeds[2] * slankMultiplier;
+                this.MotorMode.motorModeSpeeds[2] = originalSpeeds[2] * flankMultiplier;
 
                 this.MotorMode.motorModeNoiseValues[0] = originalNoise[0] * noiseMultiplier;
                 this.MotorMode.motorModeNoiseValues[1] = originalNoise[1] * noiseMultiplier;
@@ -103,8 +91,8 @@
                 CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
                 this.SubControl.BaseForwardAccel = this.MotorMode.motorModeSpeeds[(int)currentMode];
 
-                ErrorMessage.AddMessage(CyclopsSpeedModule.SpeedRatingText(lastKnownSpeedBoosters, Mathf.RoundToInt(standardMultiplier * 100)));
-            }
+                ErrorMessage.AddMessage(CyclopsSpeedModule.SpeedRatingText(lastKnownSpeedIndex, standardMultiplier));
+            };
         }
     }
 }

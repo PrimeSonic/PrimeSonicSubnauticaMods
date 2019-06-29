@@ -5,6 +5,7 @@
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+    using UnityEngine;
 
     internal class CyclopsSpeedModule : CyclopsUpgrade
     {
@@ -14,9 +15,9 @@
         public static string MaxRatingAchived => Language.main.Get(MaxRatingKey);
 
         private const string SpeedRatingKey = "CySpeedCurrent";
-        public static string SpeedRatingText(int boosterCount, int multiplier)
+        public static string SpeedRatingText(int boosterCount, float multiplier)
         {
-            return Language.main.GetFormat(SpeedRatingKey, boosterCount, multiplier);
+            return Language.main.GetFormat(SpeedRatingKey, boosterCount, Mathf.RoundToInt(multiplier * 100));
         }
 
         public CyclopsSpeedModule()

@@ -1,11 +1,9 @@
 ﻿namespace CyclopsEngineUpgrades.Handlers
 {
     using CyclopsEngineUpgrades.Craftables;
-    using MoreCyclopsUpgrades.API.Upgrades;
-    using CyclopsEngineUpgrades.Handlers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.General;
-    using UnityEngine;
+    using MoreCyclopsUpgrades.API.Upgrades;
 
     internal class EngineHandler : TieredGroupHandler<int>
     {
@@ -41,6 +39,15 @@
         public EngineHandler(PowerUpgradeModuleMk2 upgradeMk2, PowerUpgradeModuleMk3 upgradeMk3, SubRoot cyclops)
             : base(BaseValue, cyclops)
         {
+            TieredUpgradeHandler<int> tier1 = CreateTier(TechType.PowerUpgradeModule, 1);
+            tier1.MaxCount = MaxAllowedPerTier;
+
+            TieredUpgradeHandler<int> tier2 = CreateTier(upgradeMk2.TechType, 2);
+            tier2.MaxCount = MaxAllowedPerTier;
+
+            TieredUpgradeHandler<int> tier3 = CreateTier(upgradeMk3.TechType, 3);
+            tier3.MaxCount = MaxAllowedPerTier;
+
             OnFinishedUpgrades = () =>
             {
                 int powerIndex = this.HighestValue;
@@ -55,15 +62,6 @@
                     this.RatingManager.ApplyPowerRatingModifier(TechType.PowerUpgradeModule, EnginePowerRatings[powerIndex]);
                 }
             };
-
-            TieredUpgradeHandler<int> tier1 = CreateTier(TechType.PowerUpgradeModule, 1);
-            tier1.MaxCount = MaxAllowedPerTier;
-
-            TieredUpgradeHandler<int> tier2 = CreateTier(upgradeMk2.TechType, 2);
-            tier2.MaxCount = MaxAllowedPerTier;
-
-            TieredUpgradeHandler<int> tier3 = CreateTier(upgradeMk3.TechType, 3);
-            tier3.MaxCount = MaxAllowedPerTier;
         }
     }
 }
