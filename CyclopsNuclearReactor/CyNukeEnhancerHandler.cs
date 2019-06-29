@@ -34,9 +34,7 @@
 
                 OnUpgradeCounted = null; // This method only needs to be called once
             };
-
-            OnFinishedWithoutUpgrades = EnhanceCyNukeReactors;
-            OnFinishedWithUpgrades = EnhanceCyNukeReactors;
+            OnFinishedUpgrades = EnhanceCyNukeReactors;
         }
 
         private void EnhanceCyNukeReactors()

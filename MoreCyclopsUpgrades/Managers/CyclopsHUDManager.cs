@@ -3,15 +3,13 @@
     using System.Collections.Generic;
     using Common;
     using CommonCyclopsUpgrades;
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
-    using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;
     using UnityEngine;
     using UnityEngine.UI;
 
-    internal class CyclopsHUDManager : IAuxCyclopsManager
+    internal class CyclopsHUDManager
     {
         private class Indicator
         {
@@ -46,7 +44,7 @@
         internal readonly SubRoot Cyclops;
 
         private ChargeManager chargeManager;
-        internal ChargeManager ChargeManager => chargeManager ?? (chargeManager = MCUServices.Find.AuxCyclopsManager<ChargeManager>(Cyclops, ChargeManager.ManagerName));
+        internal ChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(Cyclops)?.Charge);
 
         public string Name { get; } = ManagerName;
 
@@ -78,13 +76,6 @@
                 UpdatePowerIcons();
                 lastKnownTextVisibility = powerIconTextVisibility;
             }
-        }
-
-        public bool Initialize(SubRoot cyclops)
-        {
-            powerIconTextVisibility = Player.main.currentSub == Cyclops;
-
-            return Cyclops == cyclops;
         }
 
         internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, int lastPowerInt)

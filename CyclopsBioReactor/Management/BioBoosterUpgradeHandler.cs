@@ -20,7 +20,7 @@
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
 
-            OnFinishedWithUpgrades += () =>
+            OnFinishedUpgrades += () =>
             {
                 QuickLogger.Debug($"Handling BioBooster at {this.Count}");
                 foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)

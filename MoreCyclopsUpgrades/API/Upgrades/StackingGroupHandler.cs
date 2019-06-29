@@ -140,7 +140,7 @@
             finished = true;
             cleared = false;
 
-            OnFinishedWithUpgrades?.Invoke();
+            OnFinishedUpgrades?.Invoke();
         }
 
         internal override void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)

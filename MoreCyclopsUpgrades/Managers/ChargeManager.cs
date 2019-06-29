@@ -4,11 +4,10 @@
     using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
-    using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.Config;
     using UnityEngine;
 
-    internal class ChargeManager : IAuxCyclopsManager
+    internal class ChargeManager
     {
         internal static bool Initialized { get; private set; }
         internal const string ManagerName = "McuChargeMgr";
@@ -33,7 +32,7 @@
         internal readonly SubRoot Cyclops;
 
         private CyclopsHUDManager cyclopsHUDManager;
-        private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = MCUServices.Find.AuxCyclopsManager<CyclopsHUDManager>(Cyclops, CyclopsHUDManager.ManagerName));
+        private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = CyclopsManager.GetManager(Cyclops)?.HUD);
 
         internal int PowerChargersCount => RenewablePowerChargers.Count + NonRenewablePowerChargers.Count;
         internal IEnumerable<ICyclopsCharger> PowerChargers
@@ -54,7 +53,7 @@
         private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
         private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
 
-        internal float rechargePenalty = ModConfig.Main.RechargePenalty;
+        private float rechargePenalty = ModConfig.Main.RechargePenalty;
 
         internal T GetCharger<T>(string chargeHandlerName) where T : class, ICyclopsCharger
         {
@@ -71,7 +70,7 @@
             Cyclops = cyclops;
         }
 
-        public bool Initialize(SubRoot cyclops)
+        public void InitializeChargers()
         {
             QuickLogger.Debug("ChargeManager InitializeChargingHandlers");
 
@@ -101,7 +100,12 @@
                 }
             }
 
-            return Initialized = true;
+            Initialized = true;
+        }
+
+        internal void UpdateRechargePenalty(float penalty)
+        {
+            rechargePenalty = penalty;
         }
 
         /// <summary>

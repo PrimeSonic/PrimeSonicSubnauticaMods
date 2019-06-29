@@ -9,7 +9,7 @@
     public class UpgradeHandler
     {
         /// <summary>
-        /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="OnClearUpgrades"/> and <see cref="OnFinishedWithUpgrades"/>.
+        /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="OnClearUpgrades"/> and <see cref="OnFinishedUpgrades"/>.
         /// </summary>
         public delegate void UpgradeEvent();
 
@@ -109,17 +109,9 @@
 
         /// <summary>
         /// This event is invoked after all upgrade modules have been found.<para/>
-        /// This instance's event will only be called if there is at least 1 copy of this upgrade module's <see cref="techType"/>.<para/>
         /// This happens every time upgrades are changed.
         /// </summary>
-        public UpgradeEvent OnFinishedWithUpgrades;
-
-        /// <summary>
-        /// This event is invoked after all upgrade modules have been found.<para/>
-        /// This instance's event will only be called if no copies of this upgrade module's <see cref="techType"/> were found.<para/>
-        /// This happens every time upgrades are changed.
-        /// </summary>
-        public UpgradeEvent OnFinishedWithoutUpgrades;
+        public UpgradeEvent OnFinishedUpgrades;
 
         /// <summary>
         /// This event is invoked after all upgrade modules have been found and counted,<para/>
@@ -163,25 +155,18 @@
 
         internal virtual void UpgradesFinished()
         {
-            if (count > this.MaxCount)
+            OnFinishedUpgrades?.Invoke();
+
+            if (!maxedOut) // If we haven't maxed out before, check this block
             {
-                OnFinishedWithoutUpgrades?.Invoke();
+                maxedOut = count == this.MaxCount; // Are we maxed out now?
+
+                if (maxedOut) // If we are, invoke the event
+                    OnFirstTimeMaxCountReached?.Invoke();
             }
-            else
+            else // If we are in this block, that means we maxed out in a previous cycle
             {
-                OnFinishedWithUpgrades?.Invoke();
-
-                if (!maxedOut) // If we haven't maxed out before, check this block
-                {
-                    maxedOut = count == this.MaxCount; // Are we maxed out now?
-
-                    if (maxedOut) // If we are, invoke the event
-                        OnFirstTimeMaxCountReached?.Invoke();
-                }
-                else // If we are in this block, that means we maxed out in a previous cycle
-                {
-                    maxedOut = count == this.MaxCount; // Evaluate this again in case an upgrade was removed
-                }
+                maxedOut = count == this.MaxCount; // Evaluate this again in case an upgrade was removed
             }
         }
 

@@ -10,7 +10,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            CyclopsManager.GetManager(__instance)?.QuickChargeManager?.RechargeCyclops();
+            CyclopsManager.GetManager(__instance)?.Charge.RechargeCyclops();
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
@@ -24,7 +24,9 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            return false; // Now handled by UpgradeManager HandleUpgrades
+            CyclopsManager.GetManager(__instance)?.Engine.UpdatePowerRating();
+
+            return false; // Completely override the method and do not continue with original execution
         }
     }
 
@@ -40,7 +42,7 @@
             if (cyclopsLife == null || !cyclopsLife.IsAlive())
                 return true; // safety check
 
-            CyclopsManager.GetManager<UpgradeManager>(__instance, UpgradeManager.ManagerName)?.HandleUpgrades();
+            CyclopsManager.GetManager(__instance)?.Upgrade.HandleUpgrades();
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution

@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API.General;
+    using MoreCyclopsUpgrades.Config;
 
     internal class CyclopsManager
     {
@@ -92,14 +93,20 @@
         internal readonly IDictionary<string, IAuxCyclopsManager> AuxiliaryManagers = new Dictionary<string, IAuxCyclopsManager>();
 
         // Because this is going to be called on every Update cycle, it's getting elevated privilege within the mod.
-        internal ChargeManager QuickChargeManager;
-        internal UpgradeManager QuickUpgradeManager;
+        internal readonly ChargeManager Charge;
+        internal readonly UpgradeManager Upgrade;
+        internal readonly CyclopsHUDManager HUD;
+        internal readonly PowerRatingManager Engine;
 
         private CyclopsManager(SubRoot cyclops)
         {
             QuickLogger.Debug($"Creating main CyclopsManager");
             Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
+            Charge = new ChargeManager(cyclops);
+            Upgrade = new UpgradeManager(cyclops);
+            HUD = new CyclopsHUDManager(cyclops, ModConfig.Main);
+            Engine = new PowerRatingManager(cyclops);
 
             foreach (CreateAuxCyclopsManager creator in AuxManagerCreators)
             {
@@ -114,11 +121,6 @@
                     {
                         QuickLogger.Debug($"Created new IAuxCyclopsManager {auxMgr.Name}");
                         AuxiliaryManagers.Add(auxMgr.Name, auxMgr);
-
-                        if (QuickChargeManager == null && auxMgr is ChargeManager chargeManager)
-                            QuickChargeManager = chargeManager;
-                        else if (QuickUpgradeManager == null && auxMgr is UpgradeManager upgradeManager)
-                            QuickUpgradeManager = upgradeManager;
                     }
                 }
                 else
@@ -130,6 +132,9 @@
 
         internal bool InitializeAuxiliaryManagers()
         {
+            Charge.InitializeChargers();
+            Upgrade.InitializeUpgradeHandlers();
+
             foreach (IAuxCyclopsManager auxMgr in AuxiliaryManagers.Values)
             {
                 QuickLogger.Debug($"Initializing IAuxCyclopsManager {auxMgr.Name}");

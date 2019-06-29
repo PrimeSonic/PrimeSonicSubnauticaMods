@@ -8,7 +8,6 @@
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Managers;
 
     /// <summary>
@@ -39,9 +38,14 @@
 
         public string[] StepsToCyclopsModulesTabInCyclopsFabricator { get; } = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops") ? new[] { "CyclopsModules" } : null;
 
-        public float ChangePowerRatingWithPenalty(SubRoot cyclops, float powRating)
+        public IPowerRatingManager GetPowerRatingManager(SubRoot cyclops)
         {
-            return cyclops.currPowerRating = ModConfig.Main.RechargePenalty * powRating;
+            return CyclopsManager.GetManager(cyclops)?.Engine;
+        }
+
+        public void ApplyPowerRatingModifier(SubRoot cyclops, TechType techType, float modifier)
+        {
+            CyclopsManager.GetManager(cyclops)?.Engine.ApplyPowerRatingModifier(techType, modifier);
         }
 
         #endregion
@@ -135,14 +139,14 @@
 
         public T CyclopsCharger<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger
         {
-            return CyclopsManager.GetManager(cyclops)?.QuickChargeManager.GetCharger<T>(chargeHandlerName);
+            return CyclopsManager.GetManager(cyclops)?.Charge.GetCharger<T>(chargeHandlerName);
         }
 
         public IEnumerable<T> AllCyclopsChargers<T>(string chargeHandlerName) where T : class, ICyclopsCharger
         {
             foreach (CyclopsManager item in CyclopsManager.GetAllManagers())
             {
-                T chg = item.QuickChargeManager?.GetCharger<T>(chargeHandlerName);
+                T chg = item.Charge?.GetCharger<T>(chargeHandlerName);
 
                 if (chg != null)
                     yield return chg;
@@ -151,12 +155,12 @@
 
         public T CyclopsUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler
         {
-            return CyclopsManager.GetManager(cyclops).QuickUpgradeManager?.GetUpgradeHandler<T>(upgradeId);
+            return CyclopsManager.GetManager(cyclops).Upgrade?.GetUpgradeHandler<T>(upgradeId);
         }
 
         public T CyclopsGroupUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
-            return CyclopsManager.GetManager(cyclops).QuickUpgradeManager?.GetGroupHandler<T>(upgradeId);
+            return CyclopsManager.GetManager(cyclops).Upgrade?.GetGroupHandler<T>(upgradeId);
         }
 
         #endregion

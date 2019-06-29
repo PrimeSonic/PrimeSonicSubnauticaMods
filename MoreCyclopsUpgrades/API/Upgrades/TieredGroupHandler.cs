@@ -112,10 +112,7 @@
             finished = true;
             cleared = false;
 
-            if (this.HighestValue.Equals(DefaultValue))
-                OnFinishedWithoutUpgrades?.Invoke();
-            else
-                OnFinishedWithUpgrades?.Invoke();
+            OnFinishedUpgrades?.Invoke();
         }
 
         internal override void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)

@@ -19,7 +19,7 @@
             const float middColX = 0f;//0f;
             const float rightColX = -0.15f;//-0.152f;
 
-            const float topRowZ = 0.11f;// 1.146f;
+            const float topRowZ = 0.12f;// 1.146f;
             const float botRowZ = 0.270f;//1.06f;
 
             var rotation = Quaternion.Euler(60f, 180, 0);

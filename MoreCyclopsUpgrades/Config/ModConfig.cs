@@ -6,7 +6,6 @@
     using Common;
     using CommonCyclopsUpgrades;
     using CommonCyclopsUpgrades.Options;
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;
     using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
@@ -119,8 +118,14 @@
                 challengeMode.SaveData.Value = (int)value;
                 challengeMode.Index = (int)value;
                 SaveData();
-                foreach (ChargeManager mgr in MCUServices.Find.AllAuxCyclopsManagers<ChargeManager>(ChargeManager.ManagerName))
-                    mgr.rechargePenalty = this.RechargePenalty;
+
+                float rechargePenalty = this.RechargePenalty;
+                IEnumerable<CyclopsManager> cyManagers = CyclopsManager.GetAllManagers();
+                foreach (CyclopsManager mgr in cyManagers)
+                {                    
+                    mgr.Charge.UpdateRechargePenalty(rechargePenalty);
+                    mgr.Cyclops.UpdatePowerRating();
+                }
             }
         }
 

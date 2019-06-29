@@ -43,12 +43,7 @@
                 totalBatteryCharge += details.BatteryRef._charge;
             };
 
-            OnFinishedWithoutUpgrades += () =>
-            {
-                this.TotalBatteryCharge = 0f;
-            };
-
-            OnFinishedWithUpgrades += () =>
+            OnFinishedUpgrades += () =>
             {
                 this.TotalBatteryCharge = totalBatteryCharge;
             };

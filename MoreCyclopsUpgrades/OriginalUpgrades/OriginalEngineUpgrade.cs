@@ -12,16 +12,15 @@
             OnClearUpgrades = () =>
             {
                 lastKnownRating = cyclops.currPowerRating;
-                MCUServices.CrossMod.ChangePowerRatingWithPenalty(cyclops, 1f);
+                MCUServices.CrossMod.ApplyPowerRatingModifier(cyclops, TechType.PowerUpgradeModule, 1f);
             };
 
             OnUpgradeCountedDetailed = (Equipment modules, string slot, InventoryItem inventoryItem) =>
             {
-                MCUServices.CrossMod.ChangePowerRatingWithPenalty(cyclops, 3f);
+                MCUServices.CrossMod.ApplyPowerRatingModifier(cyclops, TechType.PowerUpgradeModule, 3f);
             };
 
-            OnFinishedWithUpgrades = () => Announcement();
-            OnFinishedWithoutUpgrades = () => Announcement();
+            OnFinishedUpgrades = () => Announcement();
         }
 
         private void Announcement()

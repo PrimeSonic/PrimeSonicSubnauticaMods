@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using Common;
-    using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.Items.AuxConsole;
     using MoreCyclopsUpgrades.OriginalUpgrades;
@@ -11,7 +10,7 @@
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
     /// </summary>
-    internal class UpgradeManager : IAuxCyclopsManager
+    internal class UpgradeManager
     {
         internal static bool Initialized { get; private set; }
 
@@ -110,14 +109,14 @@
             Cyclops = cyclops;
         }
 
-        public bool Initialize(SubRoot cyclops)
+        public bool InitializeUpgradeHandlers()
         {
             RegisterUpgradeHandlers();
 
             Equipment cyclopsConsole = Cyclops.upgradeConsole.modules;
             AttachEquipmentEvents(ref cyclopsConsole);
 
-            return Initialized = Cyclops == cyclops;
+            return Initialized = true;
         }
 
         private void RegisterUpgradeHandlers()

@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Items.AuxConsole
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using Common;
     using Managers;
@@ -49,8 +50,9 @@
             if (cyclops == null)
             {
                 QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Attempting external syncronize.");
-                foreach (UpgradeManager manager in CyclopsManager.GetAllManagers<UpgradeManager>(UpgradeManager.ManagerName))
-                    manager.SyncUpgradeConsoles();
+                IEnumerable<CyclopsManager> cyManagers = CyclopsManager.GetAllManagers();
+                foreach (CyclopsManager manager in cyManagers)
+                    manager.Upgrade.SyncUpgradeConsoles();
             }
             else
             {
@@ -100,7 +102,7 @@
             const float middColX = 0f;//0f;
             const float rightColX = -0.15f;//-0.152f;
 
-            const float topRowZ = 0.11f;// 1.146f;
+            const float topRowZ = 0.12f;// 1.146f;
             const float botRowZ = 0.270f;//1.06f;
 
             var rotation = Quaternion.Euler(60f, 180, 0);
@@ -199,7 +201,7 @@
         {
             this.ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            this.UpgradeManager = manager ?? CyclopsManager.GetManager<UpgradeManager>(parentCyclops, UpgradeManager.ManagerName);
+            this.UpgradeManager = manager ?? CyclopsManager.GetManager(parentCyclops).Upgrade;
 
             UpgradeManager upgradeManager = this.UpgradeManager;
 
@@ -367,63 +369,63 @@
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         public AuxCyUpgradeConsoleSaveData SaveData;
-//#if DEBUG
-//        // Also shamelessly copied from RandyKnapp
-//        // https://github.com/RandyKnapp/SubnauticaModSystem/blob/master/SubnauticaModSystem/HabitatControlPanel/HabitatControlPanel.cs#L711
-//        public void PositionStuff(GameObject thing)
-//        {
-//            Transform t = thing.transform;
-//            float amount = 0.005f;
+        //#if DEBUG
+        //        // Also shamelessly copied from RandyKnapp
+        //        // https://github.com/RandyKnapp/SubnauticaModSystem/blob/master/SubnauticaModSystem/HabitatControlPanel/HabitatControlPanel.cs#L711
+        //        public void PositionStuff(GameObject thing)
+        //        {
+        //            Transform t = thing.transform;
+        //            float amount = 0.005f;
 
-//            if (Input.GetKeyDown(KeyCode.Keypad8))
-//            {
-//                t.localPosition += new Vector3(0, amount, 0);
-//                PrintStuff(thing);
-//            }
-//            else if (Input.GetKeyDown(KeyCode.Keypad5))
-//            {
-//                t.localPosition += new Vector3(0, -amount, 0);
-//                PrintStuff(thing);
-//            }
-//            else if (Input.GetKeyDown(KeyCode.Keypad6))
-//            {
-//                t.localPosition += new Vector3(amount, 0, 0);
-//                PrintStuff(thing);
-//            }
-//            else if (Input.GetKeyDown(KeyCode.Keypad4))
-//            {
-//                t.localPosition += new Vector3(-amount, 0, 0);
-//                PrintStuff(thing);
-//            }
-//            else if (Input.GetKeyDown(KeyCode.Keypad1))
-//            {
-//                t.localPosition += new Vector3(0, 0, amount);
-//                PrintStuff(thing);
-//            }
-//            else if (Input.GetKeyDown(KeyCode.Keypad7))
-//            {
-//                t.localPosition += new Vector3(0, 0, -amount);
-//                PrintStuff(thing);
-//            }
+        //            if (Input.GetKeyDown(KeyCode.Keypad8))
+        //            {
+        //                t.localPosition += new Vector3(0, amount, 0);
+        //                PrintStuff(thing);
+        //            }
+        //            else if (Input.GetKeyDown(KeyCode.Keypad5))
+        //            {
+        //                t.localPosition += new Vector3(0, -amount, 0);
+        //                PrintStuff(thing);
+        //            }
+        //            else if (Input.GetKeyDown(KeyCode.Keypad6))
+        //            {
+        //                t.localPosition += new Vector3(amount, 0, 0);
+        //                PrintStuff(thing);
+        //            }
+        //            else if (Input.GetKeyDown(KeyCode.Keypad4))
+        //            {
+        //                t.localPosition += new Vector3(-amount, 0, 0);
+        //                PrintStuff(thing);
+        //            }
+        //            else if (Input.GetKeyDown(KeyCode.Keypad1))
+        //            {
+        //                t.localPosition += new Vector3(0, 0, amount);
+        //                PrintStuff(thing);
+        //            }
+        //            else if (Input.GetKeyDown(KeyCode.Keypad7))
+        //            {
+        //                t.localPosition += new Vector3(0, 0, -amount);
+        //                PrintStuff(thing);
+        //            }
 
-//            if (Input.GetKeyDown(KeyCode.KeypadPlus))
-//            {
-//                t.localScale += new Vector3(amount, amount, amount);
-//                PrintStuff(thing);
-//            }
-//            else if (Input.GetKeyDown(KeyCode.KeypadMinus))
-//            {
-//                t.localScale -= new Vector3(amount, amount, amount);
-//                PrintStuff(thing);
-//            }
-//        }
+        //            if (Input.GetKeyDown(KeyCode.KeypadPlus))
+        //            {
+        //                t.localScale += new Vector3(amount, amount, amount);
+        //                PrintStuff(thing);
+        //            }
+        //            else if (Input.GetKeyDown(KeyCode.KeypadMinus))
+        //            {
+        //                t.localScale -= new Vector3(amount, amount, amount);
+        //                PrintStuff(thing);
+        //            }
+        //        }
 
-//        private void PrintStuff(GameObject thing)
-//        {
-//            Transform t = thing.transform;
-//            QuickLogger.Debug(thing.name + " p=" + t.localPosition.ToString("G5") + "s=" + t.localScale.ToString("G5"), true);
-//        }
-//#endif
+        //        private void PrintStuff(GameObject thing)
+        //        {
+        //            Transform t = thing.transform;
+        //            QuickLogger.Debug(thing.name + " p=" + t.localPosition.ToString("G5") + "s=" + t.localScale.ToString("G5"), true);
+        //        }
+        //#endif
     }
 }
 

@@ -1,6 +1,6 @@
-﻿namespace CyclopsEngineUpgrades.Craftables
+﻿namespace CyclopsSpeedUpgrades.Craftables
 {
-    using CyclopsEngineUpgrades.Handlers;
+    using CyclopsSpeedUpgrades.Handlers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -23,7 +23,7 @@
             : base("CyclopsSpeedModule",
                    "Cyclops Speed Boost Module",
                    "Increases the drive power of the cyclops engines, adding greater speeds at the cost of higher energy consumption.\n" +
-                   $"Can stack up to {EngineManager.MaxSpeedBoosters} boosters for maximum effect at highest cost.")
+                   $"Can stack up to {SpeedHandler.MaxSpeedBoosters} boosters for maximum effect at highest cost.")
         {
             OnFinishedPatching += () =>
             {

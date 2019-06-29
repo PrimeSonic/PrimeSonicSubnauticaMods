@@ -9,7 +9,6 @@
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Items.AuxConsole;
     using MoreCyclopsUpgrades.Items.ThermalModule;
-    using MoreCyclopsUpgrades.Managers;
 
     /// <summary>
     /// Entry point class for patching. For use by QModManager only.
@@ -33,8 +32,6 @@
                 PatchAuxUpgradeConsole();
 
                 RegisterOriginalUpgrades();
-
-                RegisterCoreServices();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -95,30 +92,6 @@
 
             var console = new AuxCyUpgradeConsole();
             console.Patch(ModConfig.Main.AuxConsoleEnabled);
-        }
-
-        internal static void RegisterCoreServices()
-        {
-            QuickLogger.Debug("Registering core UpgradeManager");
-            MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("Core UpgradeManager created");
-                return new UpgradeManager(cyclops);
-            });
-
-            QuickLogger.Debug("Registering core ChargeManager");
-            MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("Core ChargeManager created");
-                return new ChargeManager(cyclops);
-            });
-
-            QuickLogger.Debug("Registering core CyclopsHUDManager");
-            MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("Core CyclopsHUDManager created");
-                return new CyclopsHUDManager(cyclops, ModConfig.Main);
-            });
         }
     }
 }

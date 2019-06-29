@@ -11,7 +11,7 @@
         {
             crushDmg = cyclops.gameObject.GetComponent<CrushDamage>();
 
-            OnFinishedWithUpgrades += () =>
+            OnFinishedUpgrades += () =>
             {
                 crushDmg.SetExtraCrushDepth(this.HighestValue);
             };

@@ -1,24 +1,59 @@
 ﻿namespace CyclopsEngineUpgrades.Handlers
 {
     using CyclopsEngineUpgrades.Craftables;
-    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
+    using CyclopsEngineUpgrades.Handlers;
+    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.General;
+    using UnityEngine;
 
     internal class EngineHandler : TieredGroupHandler<int>
     {
         private const int MaxAllowedPerTier = 1;
         private const int BaseValue = 0;
-        private readonly EngineManager powerManager;
+        private const int PowerIndexCount = 4;
+
+        private static readonly float[] EnginePowerRatings = new float[PowerIndexCount]
+        {
+            1f, 3f, 4f, 5f
+        };
+
+        private static readonly float[] SilentRunningPowerCosts = new float[PowerIndexCount]
+        {
+            5f, 5f, 4.5f, 4f // Lower costs here don't show up until the Mk2
+        };
+
+        private static readonly float[] SonarPowerCosts = new float[PowerIndexCount]
+        {
+            10f, 10f, 9f, 8f // Lower costs here don't show up until the Mk2
+        };
+
+        private static readonly float[] ShieldPowerCosts = new float[PowerIndexCount]
+        {
+            50f, 50f, 45f, 40f // Lower costs here don't show up until the Mk2
+        };
+
+        private int lastKnownPowerIndex = -1;
+
+        private IPowerRatingManager ratingManager;
+        private IPowerRatingManager RatingManager => ratingManager ?? (ratingManager = MCUServices.CrossMod.GetPowerRatingManager(base.cyclops));
 
         public EngineHandler(PowerUpgradeModuleMk2 upgradeMk2, PowerUpgradeModuleMk3 upgradeMk3, SubRoot cyclops)
             : base(BaseValue, cyclops)
         {
-            powerManager = MCUServices.Find.AuxCyclopsManager<EngineManager>(cyclops, EngineManager.ManagerName);
-            powerManager.EngineEfficientyUpgrades = this;          
-
-            OnFinishedWithUpgrades = () =>
+            OnFinishedUpgrades = () =>
             {
-                powerManager.UpdatePowerSpeedRating();
+                int powerIndex = this.HighestValue;
+
+                if (lastKnownPowerIndex != powerIndex)
+                {
+                    lastKnownPowerIndex = powerIndex;
+
+                    this.cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+                    this.cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
+                    this.cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
+                    this.RatingManager.ApplyPowerRatingModifier(TechType.PowerUpgradeModule, EnginePowerRatings[powerIndex]);
+                }
             };
 
             TieredUpgradeHandler<int> tier1 = CreateTier(TechType.PowerUpgradeModule, 1);
