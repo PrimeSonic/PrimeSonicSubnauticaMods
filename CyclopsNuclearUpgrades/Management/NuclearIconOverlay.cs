@@ -27,12 +27,11 @@
                 base.UpperText.TextColor = Color.red;
             }
 
-            const float adjustedMaxTemp = NuclearChargeHandler.MaxHeat / 500f;
             float temperature = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
-            float displayTemperature = Mathf.Max(chargeHandler.HeatLevel / 500f, temperature);
+            float displayTemperature = Mathf.Max(chargeHandler.HeatLevel, temperature);
 
             base.MiddleText.TextString = NumberFormatter.FormatValue(displayTemperature) + "°C";
-            base.MiddleText.TextColor = NumberFormatter.GetNumberColor(displayTemperature, adjustedMaxTemp, temperature - 1f);
+            base.MiddleText.TextColor = NumberFormatter.GetNumberColor(displayTemperature, NuclearChargeHandler.MaxHeat, temperature - 1f);
 
             if (battery != null)
             {

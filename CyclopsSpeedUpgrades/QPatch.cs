@@ -1,7 +1,6 @@
 ﻿namespace CyclopsSpeedUpgrades
 {
     using Common;
-    using CyclopsSpeedUpgrades.Craftables;
     using MoreCyclopsUpgrades.API;
 
     public static class QPatch

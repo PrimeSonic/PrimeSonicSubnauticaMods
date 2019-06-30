@@ -15,9 +15,8 @@
         internal static bool PdaIsOpen = false;
         internal static CyBioReactorMono OpenInPda = null;
 
-        internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-
-        private const float baselineChargeRate = 0.80f;
+        private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
+        private const float baselineChargeRate = 0.75f;
         public const int MaxBoosters = 3;
 
         internal int StorageWidth { get; private set; } = 2;
@@ -116,23 +115,10 @@
 
         private void InitializeBattery()
         {
-            if (Battery is null)
-            {
-                Battery = GetComponent<Battery>();
+            Battery = Battery ?? base.GetComponent<Battery>() ?? new Battery();
 
-                if (Battery is null)
-                {
-                    QuickLogger.Debug("Initialized Battery component", true);
-                    Battery = new Battery(); // Failsafe
-                }
-                else
-                {
-                    QuickLogger.Debug("Battery component ready", true);
-                }
-
-                Battery._capacity = MaxPowerBaseline;
-                Battery._charge = 0; // Starts empty
-            }
+            Battery._capacity = MaxPowerBaseline;
+            Battery._charge = 0; // Starts with a little power
         }
 
         private void InitializeStorageRoot()

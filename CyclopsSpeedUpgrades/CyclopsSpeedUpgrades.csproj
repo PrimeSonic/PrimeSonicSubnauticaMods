@@ -56,7 +56,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Craftables\CyclopsSpeedModule.cs" />
+    <Compile Include="CyclopsSpeedModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
     <Compile Include="SpeedHandler.cs" />

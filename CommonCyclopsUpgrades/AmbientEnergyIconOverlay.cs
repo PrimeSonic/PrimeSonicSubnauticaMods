@@ -24,18 +24,14 @@
             else
                 base.UpperText.TextString = string.Empty;
 
-            if (upgradeHandler.TierCount(upgradeHandler.Tier2ID) > 0)
-            {
+            if (charger.TotalReservePower() > 0f)
                 base.MiddleText.TextString = $"{charger.EnergyStatusText()}\n{charger.ReservePowerText()}";
-            }
-            else if (upgradeHandler.TierCount(upgradeHandler.Tier1ID) > 0)
-            {
+            else
                 base.MiddleText.TextString = $"{charger.EnergyStatusText()}";
-            }
-            
+
             base.MiddleText.TextColor = charger.GetIndicatorTextColor();
 
-            base.LowerText.TextString = $"{upgradeHandler.TotalCount}/{upgradeHandler.MaxCount}";
+            base.LowerText.TextString = $"Chargers[{upgradeHandler.TotalCount}/{upgradeHandler.MaxCount}]";
         }
     }
 }

@@ -1,6 +1,5 @@
-﻿namespace CyclopsSpeedUpgrades.Handlers
+﻿namespace CyclopsSpeedUpgrades
 {
-    using CyclopsSpeedUpgrades.Craftables;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -35,7 +34,7 @@
         private SubControl SubControl => subControl ?? (subControl = base.Cyclops.GetComponentInChildren<SubControl>());
 
         private IPowerRatingManager ratingManager;
-        private IPowerRatingManager RatingManager => ratingManager ?? (ratingManager = MCUServices.CrossMod.GetPowerRatingManager(Cyclops));
+        private IPowerRatingManager RatingManager => ratingManager ?? (ratingManager = MCUServices.CrossMod.GetPowerRatingManager(base.Cyclops));
 
         private readonly float[] originalSpeeds = new float[3];
         private readonly float[] originalNoise = new float[3];

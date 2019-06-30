@@ -9,8 +9,8 @@
     {
         internal const string ChargerName = "BioChrHldr";
 
-        internal const float BatteryDrainRate = 0.01f;
-        private const float BioReactorRateLimiter = 0.90f;
+        private const float BioReactorRateLimiter = 0.85f;
+        private const float BatteryDrainRate = 0.01f * BioReactorRateLimiter;
 
         private BioAuxCyclopsManager manager;
         private BioAuxCyclopsManager Manager => manager ?? (manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops, BioAuxCyclopsManager.ManagerName));
@@ -77,7 +77,7 @@
                 {
                     poweredReactors++;
 
-                    charge += reactor.GetBatteryPower(BatteryDrainRate * BioReactorRateLimiter, requestedPower);
+                    charge += reactor.GetBatteryPower(BatteryDrainRate, requestedPower);
 
                     tempBioCharge += reactor.Battery._charge;
                     tempBioCapacity = reactor.Battery._capacity;

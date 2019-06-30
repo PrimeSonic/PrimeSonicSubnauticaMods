@@ -1,6 +1,5 @@
-﻿namespace CyclopsSpeedUpgrades.Craftables
+﻿namespace CyclopsSpeedUpgrades
 {
-    using CyclopsSpeedUpgrades.Handlers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -15,7 +14,7 @@
         private const string SpeedRatingKey = "CySpeedCurrent";
         public static string SpeedRatingText(int boosterCount, float multiplier)
         {
-            return Language.main.GetFormat(SpeedRatingKey, boosterCount, Mathf.RoundToInt(multiplier * 100));
+            return Language.main.GetFormat(SpeedRatingKey, boosterCount, Mathf.RoundToInt(multiplier * 100f));
         }
 
         public CyclopsSpeedModule()

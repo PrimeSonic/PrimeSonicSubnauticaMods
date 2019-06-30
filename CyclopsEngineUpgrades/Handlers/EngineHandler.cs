@@ -56,9 +56,9 @@
                 {
                     lastKnownPowerIndex = powerIndex;
 
-                    this.Cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
-                    this.Cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
-                    this.Cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
+                    base.Cyclops.silentRunningPowerCost = SilentRunningPowerCosts[powerIndex];
+                    base.Cyclops.sonarPowerCost = SonarPowerCosts[powerIndex];
+                    base.Cyclops.shieldPowerCost = ShieldPowerCosts[powerIndex];
                     this.RatingManager.ApplyPowerRatingModifier(TechType.PowerUpgradeModule, EnginePowerRatings[powerIndex]);
                 }
             };
