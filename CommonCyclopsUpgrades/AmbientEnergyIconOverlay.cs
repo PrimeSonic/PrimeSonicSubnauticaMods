@@ -9,12 +9,14 @@
     {
         private readonly T upgradeHandler;
         private readonly AmbientEnergyCharger<T> charger;
+        private readonly Battery battery;
 
         public AmbientEnergyIconOverlay(string chargerName, uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
         {
             upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(base.Cyclops, base.TechType);
             charger = MCUServices.Find.CyclopsCharger<AmbientEnergyCharger<T>>(base.Cyclops, chargerName);
+            battery = base.Item.item.GetComponent<Battery>();
         }
 
         public override void UpdateText()
@@ -24,14 +26,14 @@
             else
                 base.UpperText.TextString = string.Empty;
 
-            if (charger.TotalReservePower() > 0f)
-                base.MiddleText.TextString = $"{charger.EnergyStatusText()}\n{charger.ReservePowerText()}";
-            else
-                base.MiddleText.TextString = $"{charger.EnergyStatusText()}";
-
+            base.MiddleText.TextString = $"{charger.EnergyStatusText()}";
             base.MiddleText.TextColor = charger.GetIndicatorTextColor();
 
-            base.LowerText.TextString = $"Chargers[{upgradeHandler.TotalCount}/{upgradeHandler.MaxCount}]";
+            if (battery != null)
+            {
+                base.LowerText.TextString = NumberFormatter.FormatValue(battery._charge);
+                base.LowerText.TextColor = NumberFormatter.GetNumberColor(battery._charge, battery._capacity, 0f);
+            }
         }
     }
 }
