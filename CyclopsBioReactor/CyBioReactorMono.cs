@@ -1,12 +1,12 @@
 ﻿namespace CyclopsBioReactor
 {
+    using System.Collections.Generic;
     using Common;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
     using CyclopsBioReactor.SaveData;
     using MoreCyclopsUpgrades.API;
     using ProtoBuf;
-    using System.Collections.Generic;
     using UnityEngine;
 
     [ProtoContract]
@@ -22,6 +22,8 @@
         internal int StorageWidth { get; private set; } = 2;
         internal int StorageHeight { get; private set; } = 2;
         internal int TotalContainerSpaces => this.StorageHeight * this.StorageWidth;
+        internal float Charge { get; private set; }
+        internal float Capacity { get; private set; } = MaxPowerBaseline;
 
         // Because now each item produces charge in parallel, the charge rate will be variable.
         // At half-full, we get close to original charging rates.
@@ -36,7 +38,7 @@
         public ChildObjectIdentifier storageRoot;
 
         private float textDelay = TextDelayInterval;
-        
+
         private bool isLoadingSaveData = false;
         private CyBioReactorSaveData SaveData;
 
@@ -44,7 +46,6 @@
         internal BioAuxCyclopsManager Manager;
         public Constructable Buildable;
         public ItemsContainer Container;
-        public Battery Battery;
         public string PrefabID;
 
         public bool IsContructed => (Buildable != null) && Buildable.constructed;
@@ -57,7 +58,7 @@
         public Dictionary<InventoryItem, uGUI_ItemIcon> InventoryMapping { get; private set; }
 
         public bool ProducingPower => this.IsContructed && this.MaterialsProcessing.Count > 0;
-        public bool HasPower => this.IsContructed && Battery._charge > 0f;
+        public bool HasPower => this.IsContructed && this.Charge > 0f;
 
         #region Initialization
 
@@ -87,7 +88,6 @@
             InitializeSaveData();
             InitializeStorageRoot();
             InitializeContainer();
-            InitializeBattery();
         }
 
         private void InitializeContainer()
@@ -111,14 +111,6 @@
                 PrefabID = GetComponentInParent<PrefabIdentifier>().Id;
                 SaveData = new CyBioReactorSaveData(PrefabID);
             }
-        }
-
-        private void InitializeBattery()
-        {
-            Battery = Battery ?? base.GetComponent<Battery>() ?? new Battery();
-
-            Battery._capacity = MaxPowerBaseline;
-            Battery._charge = 0; // Starts with a little power
         }
 
         private void InitializeStorageRoot()
@@ -145,15 +137,15 @@
         {
             if (this.ProducingPower)
             {
-                float powerDeficit = Battery._capacity - Battery._charge;
+                float powerDeficit = this.Capacity - this.Charge;
 
-                if (powerDeficit > 0.001f)
+                if (powerDeficit > MinimalPowerValue)
                 {
                     float chargeOverTime = ChargePerSecondPerItem * DayNightCycle.main.deltaTime;
 
                     float powerProduced = ProducePower(Mathf.Min(powerDeficit, chargeOverTime));
 
-                    Battery._charge += powerProduced;
+                    this.Charge = Mathf.Min(this.Charge + powerProduced, this.Capacity);
                 }
             }
 
@@ -169,7 +161,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(Battery._charge), Battery._capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
+            main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(this.Charge), this.Capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -307,14 +299,14 @@
             // Mathf.Min is to prevent accidentally taking too much power from the battery
             float chargeAmt = Mathf.Min(requestedAmount, drainingRate);
 
-            if (Battery._charge > chargeAmt)
+            if (this.Charge > chargeAmt)
             {
-                Battery._charge -= chargeAmt;
+                this.Charge -= chargeAmt;
             }
             else // Battery about to be fully drained
             {
-                chargeAmt = Battery._charge; // Take what's left
-                Battery._charge = 0f; // Set battery to empty
+                chargeAmt = this.Charge; // Take what's left
+                this.Charge = 0f; // Set battery to empty
             }
 
             return chargeAmt;
@@ -335,7 +327,7 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            SaveData.ReactorBatterCharge = Battery._charge;
+            SaveData.ReactorBatterCharge = this.Charge;
             SaveData.SaveMaterialsProcessing(this.MaterialsProcessing);
             SaveData.BoosterCount = lastKnownBioBooster;
 
@@ -346,7 +338,6 @@
         {
             isLoadingSaveData = true;
 
-            InitializeBattery();
             InitializeStorageRoot();
 
             Container.Clear(false);
@@ -370,7 +361,7 @@
 
                 UpdateBoosterCount(SaveData.BoosterCount);
 
-                Battery._charge = Mathf.Min(Battery._capacity, SaveData.ReactorBatterCharge);
+                this.Charge = Mathf.Min(this.Capacity, SaveData.ReactorBatterCharge);
 
                 List<BioEnergy> savedMaterials = SaveData.GetMaterialsInProcessing();
                 QuickLogger.Debug($"Found {savedMaterials.Count} materials in save data");
@@ -449,11 +440,11 @@
 
             var nextStats = ReactorStats.GetStatsForBoosterCount(boosterCount);
 
-            Battery._capacity = nextStats.Capacity;
+            this.Capacity = nextStats.Capacity;
 
             if (!isLoadingSaveData)
             {
-                Battery._charge = Mathf.Min(Battery._charge, Battery._capacity);
+                this.Charge = Mathf.Min(this.Charge, this.Capacity);
 
                 if (lastKnownBioBooster > boosterCount) // Getting smaller
                 {

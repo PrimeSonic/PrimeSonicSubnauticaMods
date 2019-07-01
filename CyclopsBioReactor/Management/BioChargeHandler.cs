@@ -79,8 +79,8 @@
 
                     charge += reactor.GetBatteryPower(BatteryDrainRate, requestedPower);
 
-                    tempBioCharge += reactor.Battery._charge;
-                    tempBioCapacity = reactor.Battery._capacity;
+                    tempBioCharge += reactor.Charge;
+                    tempBioCapacity = reactor.Capacity;
                 }
             }
 
@@ -96,7 +96,7 @@
         {
             float totalPower = 0f;
             foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
-                totalPower += reactor.Battery.charge;
+                totalPower += reactor.Charge;
 
             return totalPower;
         }
