@@ -55,7 +55,6 @@
 
         private bool lastKnownTextVisibility = false;
         private bool powerIconTextVisibility = false;
-        private int lastKnownHudPowerText = -1;
         private HelmEnergyDisplay lastDisplay = HelmEnergyDisplay.PowerCellPercentage;
 
         internal CyclopsHUDManager(SubRoot cyclops, IModConfig modConfig)
@@ -92,8 +91,6 @@
 
             if (lastPowerInt < 0f)
                 return;
-
-            cyclopsHelmHUD.lastPowerPctUsedForString = lastKnownHudPowerText = lastPowerInt;
 
             PowerRelay powerRelay = Cyclops.powerRelay;
 

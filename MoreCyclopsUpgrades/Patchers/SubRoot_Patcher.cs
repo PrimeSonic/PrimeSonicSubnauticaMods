@@ -88,4 +88,16 @@
             firstEventDone = true;
         }
     }
+
+    [HarmonyPatch(typeof(SubRoot))]
+    [HarmonyPatch("PowerDownCyclops")]
+    internal class SubRoot_PowerDownCyclops_TurnOffSilentRunning
+    {
+        [HarmonyPostfix]
+        public static void PostFix(ref SubRoot __instance)
+        {
+            // Turns this off for people who forget to turn off Silent Running when they power down the Cyclops
+            __instance.silentRunning = false;
+        }
+    }
 }
