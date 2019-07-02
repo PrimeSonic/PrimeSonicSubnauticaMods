@@ -13,6 +13,7 @@
             speedUpgrade.Patch();
 
             MCUServices.Register.CyclopsUpgradeHandler(speedUpgrade.CreateSpeedUpgradeHandler);
+            MCUServices.Register.PdaIconOverlay(speedUpgrade.TechType, speedUpgrade.CreateSpeedIconOverlay);
 
             QuickLogger.Info($"Finished patching.");
         }

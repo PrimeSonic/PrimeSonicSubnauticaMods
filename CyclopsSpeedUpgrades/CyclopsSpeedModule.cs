@@ -52,5 +52,10 @@
         {
             return new SpeedHandler(this, cyclops);
         }
+
+        internal SpeedOverlay CreateSpeedIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        {
+            return new SpeedOverlay(icon, upgradeModule, this);
+        }
     }
 }

@@ -41,6 +41,8 @@
 
         private int lastKnownSpeedIndex = -1;
 
+        public float CurrentModifier { get; private set; } = 1f;
+
         public SpeedHandler(CyclopsSpeedModule cyclopsSpeedModule, SubRoot cyclops) : base(cyclopsSpeedModule.TechType, cyclops)
         {
             speedModule = cyclopsSpeedModule;
@@ -85,6 +87,8 @@
                 this.MotorMode.motorModeNoiseValues[0] = originalNoise[0] * noiseMultiplier;
                 this.MotorMode.motorModeNoiseValues[1] = originalNoise[1] * noiseMultiplier;
                 this.MotorMode.motorModeNoiseValues[2] = originalNoise[2] * noiseMultiplier;
+
+                this.CurrentModifier = standardMultiplier;
 
                 // These will apply immediately
                 CyclopsMotorMode.CyclopsMotorModes currentMode = this.MotorMode.cyclopsMotorMode;
