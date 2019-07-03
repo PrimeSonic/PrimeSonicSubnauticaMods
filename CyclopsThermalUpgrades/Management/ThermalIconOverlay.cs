@@ -4,8 +4,7 @@
 
     internal class ThermalIconOverlay : AmbientEnergyIconOverlay<ThermalUpgradeHandler>
     {
-        public ThermalIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
-            : base(ThermalCharger.ChargerName, icon, upgradeModule)
+        public ThermalIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
         {
         }
     }

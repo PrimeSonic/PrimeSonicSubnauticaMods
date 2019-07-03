@@ -17,7 +17,7 @@
                 thermalMk2.Patch();
 
                 MCUServices.Register.CyclopsUpgradeHandler(thermalMk2);
-                MCUServices.Register.CyclopsCharger(thermalMk2);
+                MCUServices.Register.CyclopsCharger(thermalMk2, isRenewable: true);
                 MCUServices.Register.PdaIconOverlay(TechType.CyclopsThermalReactorModule, thermalMk2);
                 MCUServices.Register.PdaIconOverlay(thermalMk2.TechType, thermalMk2);
 

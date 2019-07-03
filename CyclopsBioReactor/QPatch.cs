@@ -33,7 +33,7 @@
                 MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
                 {
                     return new BioChargeHandler(booster.TechType, cyclops);
-                });
+                }, isRenewable: false);
 
                 MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
                 {

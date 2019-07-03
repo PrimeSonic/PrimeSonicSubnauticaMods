@@ -57,7 +57,7 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                BioAuxCyclopsManager mgr = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(cyclops, BioAuxCyclopsManager.ManagerName);
+                BioAuxCyclopsManager mgr = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(cyclops);
 
                 if (mgr.CyBioReactors.Count >= BioAuxCyclopsManager.MaxBioReactors)
                 {

@@ -9,16 +9,13 @@
     {
         private static IEnumerable<BioAuxCyclopsManager> GetAllBioManagers()
         {
-            return MCUServices.Find.AllAuxCyclopsManagers<BioAuxCyclopsManager>(ManagerName);
+            return MCUServices.Find.AllAuxCyclopsManagers<BioAuxCyclopsManager>();
         }
 
-        internal const string ManagerName = "CyBioMgr";
         internal const int MaxBioReactors = BioChargeHandler.MaxBioReactors;
 
         internal readonly TechType cyBioBooster;
         internal readonly TechType cyBioReactor;
-
-        public string Name { get; } = ManagerName;
 
         internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
         private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();

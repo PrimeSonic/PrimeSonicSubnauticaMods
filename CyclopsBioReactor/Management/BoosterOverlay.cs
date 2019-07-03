@@ -13,9 +13,9 @@
         public BoosterOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
         {
-            chargeHandler = MCUServices.Find.CyclopsCharger<BioChargeHandler>(base.Cyclops, BioChargeHandler.ChargerName);
+            chargeHandler = MCUServices.Find.CyclopsCharger<BioChargeHandler>(base.Cyclops);
             upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<BioBoosterUpgradeHandler>(base.Cyclops, base.TechType);
-            cyclopsManager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(base.Cyclops, BioAuxCyclopsManager.ManagerName);
+            cyclopsManager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(base.Cyclops);
         }
 
         public override void UpdateText()

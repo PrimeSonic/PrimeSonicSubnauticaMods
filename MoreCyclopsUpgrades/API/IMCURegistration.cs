@@ -27,18 +27,28 @@
         void AuxCyclopsManager(IAuxCyclopsManagerCreator managerCreator);
 
         /// <summary>
-        /// Registers a <see cref="CreateCyclopsCharger"/> method that creates a new <see cref="ICyclopsCharger"/> on demand.<para/>
+        /// Registers a <see cref="CreateCyclopsCharger" /> method that creates a new <see cref="ICyclopsCharger" /> on demand.<para />
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger"/>.</param>
-        void CyclopsCharger(CreateCyclopsCharger createEvent);
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger" />.</param>
+        /// <param name="isRenewable">
+        /// Indicates if this type of cyclops energy source is renewable.<para/>
+        /// Use <c>true</c> for rechargable batteries and energy drawn from the environment.<para/>
+        /// Use <c>false</c> for depletable sources like nuclear reactor rods.<para/>
+        /// </param>
+        void CyclopsCharger(CreateCyclopsCharger createEvent, bool isRenewable);
 
         /// <summary>
         /// Registers a <see cref="ICyclopsChargerCreator"/> class that can create a new <see cref="ICyclopsCharger"/> on demand.<para/>
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
         /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)"/> method.</param>
-        void CyclopsCharger(ICyclopsChargerCreator chargerCreator);
+        /// <param name="isRenewable">
+        /// Indicates if this type of cyclops energy source is renewable.<para/>
+        /// Use <c>true</c> for rechargable batteries and energy drawn from the environment.<para/>
+        /// Use <c>false</c> for depletable sources like nuclear reactor rods.<para/>
+        /// </param>
+        void CyclopsCharger(ICyclopsChargerCreator chargerCreator, bool isRenewable);
 
         /// <summary>
         /// Registers a <see cref="CreateUpgradeHandler"/> method that creates a new <see cref="UpgradeHandler"/> on demand.<para/>

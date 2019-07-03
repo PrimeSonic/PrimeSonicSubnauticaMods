@@ -6,14 +6,11 @@
     internal class ThermalCharger : AmbientEnergyCharger<ThermalUpgradeHandler>
     {
         private const float ThermalChargingFactor = 1.5f;
-        internal const string ChargerName = "McuHeatChgr";
 
         public ThermalCharger(TechType tier2Id2, SubRoot cyclops)
             : base(TechType.CyclopsThermalReactorModule, tier2Id2, cyclops)
         {
         }
-
-        public override string Name { get; } = ChargerName;
 
         protected override string PercentNotation => "°C";
         protected override float MaximumEnergyStatus => 100f;

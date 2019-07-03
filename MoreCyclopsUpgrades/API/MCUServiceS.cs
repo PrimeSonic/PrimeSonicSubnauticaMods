@@ -58,20 +58,20 @@
         /// </summary>
         public static IMCURegistration Register => singleton;
 
-        public void CyclopsCharger(CreateCyclopsCharger createEvent)
+        public void CyclopsCharger(CreateCyclopsCharger createEvent, bool isRenewable)
         {
             if (ChargeManager.Initialized)
                 QuickLogger.Error("CyclopsChargerCreator have already been invoked. This method should only be called during patch time.");
             else
-                ChargeManager.RegisterChargerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
+                ChargeManager.RegisterChargerCreator(createEvent, Assembly.GetCallingAssembly(), isRenewable);
         }
 
-        public void CyclopsCharger(ICyclopsChargerCreator chargerCreator)
+        public void CyclopsCharger(ICyclopsChargerCreator chargerCreator, bool isRenewable)
         {
             if (ChargeManager.Initialized)
                 QuickLogger.Error("CyclopsChargerCreator have already been invoked. This method should only be called during patch time.");
             else
-                ChargeManager.RegisterChargerCreator(chargerCreator.CreateCyclopsCharger, Assembly.GetCallingAssembly().GetName().Name);
+                ChargeManager.RegisterChargerCreator(chargerCreator.CreateCyclopsCharger, Assembly.GetCallingAssembly(), isRenewable);
         }
 
         public void CyclopsUpgradeHandler(CreateUpgradeHandler createEvent)
@@ -125,28 +125,28 @@
         /// </summary>
         public static IMCUSearch Find => singleton;
 
-        public T AuxCyclopsManager<T>(SubRoot cyclops, string auxManagerName)
+        public T AuxCyclopsManager<T>(SubRoot cyclops)
             where T : class, IAuxCyclopsManager
         {
-            return CyclopsManager.GetManager<T>(cyclops, auxManagerName);
+            return CyclopsManager.GetManager<T>(cyclops, typeof(T).Name);
         }
 
-        public IEnumerable<T> AllAuxCyclopsManagers<T>(string auxManagerName)
+        public IEnumerable<T> AllAuxCyclopsManagers<T>()
             where T : class, IAuxCyclopsManager
         {
-            return CyclopsManager.GetAllManagers<T>(auxManagerName);
+            return CyclopsManager.GetAllManagers<T>(typeof(T).Name);
         }
 
-        public T CyclopsCharger<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger
+        public T CyclopsCharger<T>(SubRoot cyclops) where T : class, ICyclopsCharger
         {
-            return CyclopsManager.GetManager(cyclops)?.Charge.GetCharger<T>(chargeHandlerName);
+            return CyclopsManager.GetManager(cyclops)?.Charge.GetCharger<T>(typeof(T).Name);
         }
 
-        public IEnumerable<T> AllCyclopsChargers<T>(string chargeHandlerName) where T : class, ICyclopsCharger
+        public IEnumerable<T> AllCyclopsChargers<T>() where T : class, ICyclopsCharger
         {
             foreach (CyclopsManager item in CyclopsManager.GetAllManagers())
             {
-                T chg = item.Charge?.GetCharger<T>(chargeHandlerName);
+                T chg = item.Charge?.GetCharger<T>(typeof(T).Name);
 
                 if (chg != null)
                     yield return chg;

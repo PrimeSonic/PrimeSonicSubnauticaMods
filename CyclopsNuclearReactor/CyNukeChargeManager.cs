@@ -9,7 +9,6 @@
     internal class CyNukeChargeManager : ICyclopsCharger
     {
         public const int MaxReactors = 2;
-        internal const string ChargerName = "CyNukeRChgr";
 
         public readonly SubRoot Cyclops;
 
@@ -18,9 +17,6 @@
             (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(Cyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
 
         internal int UpgradeLevel => this.CyNukeEnhancer == null ? 0 : this.CyNukeEnhancer.HighestValue;
-
-        public bool IsRenewable { get; } = false;
-        public string Name { get; } = ChargerName;
 
         private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, CyNukReactorBuildable.PowerIndicatorIconID);
 
@@ -63,13 +59,13 @@
 
         internal static void SyncReactors()
         {
-            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllCyclopsChargers<CyNukeChargeManager>(ChargerName))
+            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllCyclopsChargers<CyNukeChargeManager>())
                 mgr.SyncReactorsExternally();
         }
 
         public static void RemoveReactor(CyNukeReactorMono reactor)
         {
-            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllCyclopsChargers<CyNukeChargeManager>(ChargerName))
+            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllCyclopsChargers<CyNukeChargeManager>())
             {
                 mgr.CyNukeReactors.Remove(reactor);
             }

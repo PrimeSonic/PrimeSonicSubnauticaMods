@@ -11,18 +11,18 @@
 
         internal static bool Initialized => Managers.Count > 0;
 
-        private static readonly ICollection<CreateAuxCyclopsManager> AuxManagerCreators = new List<CreateAuxCyclopsManager>();
+        private static readonly IDictionary<CreateAuxCyclopsManager, string> AuxManagerCreators = new Dictionary<CreateAuxCyclopsManager, string>();
 
-        internal static void RegisterAuxManagerCreator(CreateAuxCyclopsManager createEvent, string assemblyName)
+        internal static void RegisterAuxManagerCreator(CreateAuxCyclopsManager createEvent, string typeName)
         {
-            if (AuxManagerCreators.Contains(createEvent))
+            if (AuxManagerCreators.ContainsKey(createEvent))
             {
-                QuickLogger.Warning($"Duplicate AuxManagerCreator blocked from {assemblyName}");
+                QuickLogger.Warning($"Block duplicate AuxManagerCreator '{typeName}'");
                 return;
             }
 
-            QuickLogger.Info($"Received AuxManagerCreator from {assemblyName}");
-            AuxManagerCreators.Add(createEvent);
+            QuickLogger.Info($"Received AuxManagerCreator '{typeName}'");
+            AuxManagerCreators.Add(createEvent, typeName);
         }
 
         // List was chosen because of the very small number of entries it will have.
@@ -102,26 +102,22 @@
             QuickLogger.Debug($"Creating main CyclopsManager");
             Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
-            
+
             Upgrade = new UpgradeManager(cyclops);
             Charge = new ChargeManager(cyclops);
             HUD = new CyclopsHUDManager(cyclops, ModConfig.Main);
             Engine = new PowerRatingManager(cyclops);
 
-            foreach (CreateAuxCyclopsManager creator in AuxManagerCreators)
+            foreach (KeyValuePair<CreateAuxCyclopsManager, string> creatorPair in AuxManagerCreators)
             {
+                CreateAuxCyclopsManager creator = creatorPair.Key;
+                string name = creatorPair.Value;
                 IAuxCyclopsManager auxMgr = creator.Invoke(cyclops);
                 if (auxMgr != null)
                 {
-                    if (string.IsNullOrEmpty(auxMgr.Name))
-                    {
-                        QuickLogger.Error($"Failed IAuxCyclopsManager with no name value from '{creator.GetType().Assembly.GetName().Name}'");
-                    }
-                    else
-                    {
-                        QuickLogger.Debug($"Created new IAuxCyclopsManager {auxMgr.Name}");
-                        AuxiliaryManagers.Add(auxMgr.Name, auxMgr);
-                    }
+
+                    QuickLogger.Debug($"Created new IAuxCyclopsManager {name}");
+                    AuxiliaryManagers.Add(name, auxMgr);
                 }
                 else
                 {
@@ -133,21 +129,23 @@
         internal bool InitializeAuxiliaryManagers()
         {
             Upgrade.InitializeUpgradeHandlers();
-            Charge.InitializeChargers();            
+            Charge.InitializeChargers();
 
-            foreach (IAuxCyclopsManager auxMgr in AuxiliaryManagers.Values)
+            foreach (KeyValuePair<string, IAuxCyclopsManager> auxMgrPair in AuxiliaryManagers)
             {
-                QuickLogger.Debug($"Initializing IAuxCyclopsManager {auxMgr.Name}");
+                string name = auxMgrPair.Key;
+                IAuxCyclopsManager auxMgr = auxMgrPair.Value;
+                QuickLogger.Debug($"Initializing IAuxCyclopsManager {name}");
 
                 bool success = auxMgr.Initialize(Cyclops);
 
                 if (!success)
                 {
-                    QuickLogger.Error($"Failed to initialize IAuxCyclopsManager {auxMgr.Name}", true);
+                    QuickLogger.Error($"Failed to initialize IAuxCyclopsManager {name}", true);
                     return false;
                 }
 
-                QuickLogger.Debug($"Successfully initialized IAuxCyclopsManager {auxMgr.Name}");
+                QuickLogger.Debug($"Successfully initialized IAuxCyclopsManager {name}");
             }
 
             return true;

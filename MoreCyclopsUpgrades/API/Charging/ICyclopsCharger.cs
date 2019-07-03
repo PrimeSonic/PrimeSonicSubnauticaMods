@@ -21,19 +21,6 @@
         float ProducePower(float requestedPower);
 
         /// <summary>
-        /// Gets a value indicating if this type of cyclops energy source is renewable.<para/>
-        /// Use <c>true</c> for rechargable batteries and energy drawn from the environment.<para/>
-        /// Use <c>false</c> for depletable sources like nuclear reactor rods.<para/>
-        /// WARNING: This value is only evaluated once to categorize the charger.
-        /// </summary>
-        bool IsRenewable { get; }
-
-        /// <summary>
-        /// Gets the name that identifies this <see cref="ICyclopsCharger"/> among all others in the Cyclops sub.
-        /// </summary>
-        string Name { get; }
-
-        /// <summary>
         /// Determines whether this charger should display any power indicator info.<para/>
         /// This method is called roughly every 3 seconds when the Cyclops HUD info is updated.<para/>
         /// </summary>

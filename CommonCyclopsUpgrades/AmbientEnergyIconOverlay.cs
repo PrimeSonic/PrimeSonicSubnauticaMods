@@ -11,11 +11,11 @@
         private readonly AmbientEnergyCharger<T> charger;
         private readonly Battery battery;
 
-        public AmbientEnergyIconOverlay(string chargerName, uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        public AmbientEnergyIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
         {
             upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(base.Cyclops, base.TechType);
-            charger = MCUServices.Find.CyclopsCharger<AmbientEnergyCharger<T>>(base.Cyclops, chargerName);
+            charger = MCUServices.Find.CyclopsCharger<AmbientEnergyCharger<T>>(base.Cyclops);
             battery = base.Item.item.GetComponent<Battery>();
         }
 

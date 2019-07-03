@@ -7,17 +7,11 @@
 
     internal class BioChargeHandler : ICyclopsCharger
     {
-        internal const string ChargerName = "BioChrHldr";
-
         private const float BioReactorRateLimiter = 0.85f;
         private const float BatteryDrainRate = 0.01f * BioReactorRateLimiter;
 
         private BioAuxCyclopsManager manager;
-        private BioAuxCyclopsManager Manager => manager ?? (manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops, BioAuxCyclopsManager.ManagerName));
-
-        public bool IsRenewable { get; } = false;
-
-        public string Name { get; } = ChargerName;
+        private BioAuxCyclopsManager Manager => manager ?? (manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops));
 
         internal const int MaxBioReactors = 6;
         internal bool ProducingPower = false;

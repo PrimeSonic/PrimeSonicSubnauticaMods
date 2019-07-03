@@ -13,7 +13,7 @@
         internal int TotalBoosters => this.Count;
 
         private BioAuxCyclopsManager manager;
-        private BioAuxCyclopsManager Manager => manager ?? (manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops, BioAuxCyclopsManager.ManagerName));
+        private BioAuxCyclopsManager Manager => manager ?? (manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(base.Cyclops));
 
         public BioBoosterUpgradeHandler(TechType cyBioBooster, SubRoot cyclops)
             : base(cyBioBooster, cyclops)

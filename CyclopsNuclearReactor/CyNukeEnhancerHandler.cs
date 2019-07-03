@@ -15,7 +15,7 @@
 
         private CyNukeChargeManager manager;
         private CyNukeChargeManager ChargeManager => manager ?? 
-            (manager = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(Cyclops, CyNukeChargeManager.ChargerName));
+            (manager = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(Cyclops));
 
         public CyNukeEnhancerHandler(SubRoot cyclops) : base(NoUpgradesValue, cyclops)
         {
@@ -25,7 +25,7 @@
             OnUpgradeCounted = () => // Doing the final sync during HandleUpgrades may be unorthodox, but it somehow doesn't want to work any other way.
             {
                 if (manager == null)
-                    manager = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(cyclops, CyNukeChargeManager.ChargerName);
+                    manager = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(cyclops);
 
                 OnUpgradeCounted = null; // This method only needs to be called once
             };

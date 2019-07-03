@@ -6,17 +6,9 @@
     public interface IAuxCyclopsManager
     {
         /// <summary>
-        /// Gets the name of the Auxiliary Cyclops Manager.<para/>
-        /// This acts an ID for the manager so it can be located when calling into <seealso cref="IMCUSearch.AuxCyclopsManager{T}(SubRoot, string)"/>.
-        /// </summary>
-        /// <value>
-        /// The name of this type of manager.
-        /// </value>
-        string Name { get; }
-
-        /// <summary>
         /// Initializes the auxiliary manager with the specified cyclops.<para/>
-        /// This method is invoked only after all <see cref="IAuxCyclopsManager"/> instances have been created.
+        /// This method is invoked only after all <see cref="IAuxCyclopsManager"/> instances have been created.<para/>
+        /// Use this if you need to run any additional code after the constructor.
         /// </summary>
         /// <param name="cyclops">The cyclops this manager will handle.</param>
         /// <returns><c>True</c> if the initialization process succeeded; Otherwise returns <c>False</c>.</returns>

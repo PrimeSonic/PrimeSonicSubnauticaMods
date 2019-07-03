@@ -17,10 +17,6 @@
             RunningOnBatteries = 2
         }
 
-        public bool IsRenewable { get; } = true;
-
-        public abstract string Name { get; }
-
         protected EnergyState CurrentState { get; private set; } = EnergyState.NoPower;
 
         protected abstract string PercentNotation { get; }

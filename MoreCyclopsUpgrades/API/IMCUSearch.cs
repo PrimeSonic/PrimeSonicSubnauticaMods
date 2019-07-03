@@ -15,18 +15,16 @@
         /// </summary>
         /// <typeparam name="T">The class you created that implements <see cref="IAuxCyclopsManager"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
-        /// <param name="auxManagerName">The <seealso cref="IAuxCyclopsManager.Name"/> you defined for the auxilary cyclops manager.</param>
-        /// <returns>A type casted <see cref="IAuxCyclopsManager"/> if found by name; Otherwise returns null if not found.</returns>
+        /// <returns>A type casted <see cref="IAuxCyclopsManager"/> if found; Otherwise returns null if not found.</returns>
         /// <seealso cref="CreateAuxCyclopsManager"/>
-        T AuxCyclopsManager<T>(SubRoot cyclops, string auxManagerName) where T : class, IAuxCyclopsManager;
+        T AuxCyclopsManager<T>(SubRoot cyclops) where T : class, IAuxCyclopsManager;
 
         /// <summary>
         /// Gets all typed <see cref="IAuxCyclopsManager"/>s across all Cyclops subs with the given <seealso cref="IAuxCyclopsManager.Name"/>.
         /// </summary>
         /// <typeparam name="T">The class you created that implements <see cref="IAuxCyclopsManager"/>.</typeparam>
-        /// <param name="auxManagerName">The <seealso cref="IAuxCyclopsManager.Name"/> you defined for the auxilary cyclops manager.</param>
         /// <returns>A type casted enumeration of all <see cref="IAuxCyclopsManager"/>s found across all Cyclops subs, identified by name.</returns>
-        IEnumerable<T> AllAuxCyclopsManagers<T>(string auxManagerName) where T : class, IAuxCyclopsManager;
+        IEnumerable<T> AllAuxCyclopsManagers<T>() where T : class, IAuxCyclopsManager;
 
         /// <summary>
         /// Gets the typed <see cref="ICyclopsCharger"/> at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
@@ -34,17 +32,15 @@
         /// </summary>
         /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
-        /// <param name="chargeHandlerName">The <seealso cref="ICyclopsCharger.Name"/> of the charge handler.</param>
-        /// <returns>A type casted <see cref="ICyclopsCharger"/> if found by name; Otherwise returns null.</returns>
-        T CyclopsCharger<T>(SubRoot cyclops, string chargeHandlerName) where T : class, ICyclopsCharger;
+        /// <returns>A type casted <see cref="ICyclopsCharger"/> if found; Otherwise returns null.</returns>
+        T CyclopsCharger<T>(SubRoot cyclops) where T : class, ICyclopsCharger;
 
         /// <summary>
         /// Gets all typed <see cref="ICyclopsCharger"/>s across all Cyclops subd for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
         /// </summary>
         /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
-        /// <param name="chargeHandlerName">The <seealso cref="ICyclopsCharger.Name"/> of the charge handler.</param>
-        /// <returns>A type casted <see cref="ICyclopsCharger"/> if found by name; Otherwise returns null.</returns>
-        IEnumerable<T> AllCyclopsChargers<T>(string chargeHandlerName) where T : class, ICyclopsCharger;
+        /// <returns>A type casted <see cref="ICyclopsCharger"/> if found; Otherwise returns null.</returns>
+        IEnumerable<T> AllCyclopsChargers<T>() where T : class, ICyclopsCharger;
         
         /// <summary>
         /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>

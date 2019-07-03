@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using System.Collections.Generic;
+    using System.Reflection;
     using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
@@ -9,6 +10,24 @@
 
     internal class ChargeManager
     {
+        private class CyclopsCharger
+        {
+            public readonly CreateCyclopsCharger Creator;
+            public readonly Assembly OriginAssembly;
+            public readonly bool IsRenewable;
+            public readonly string ChargerName;
+            public readonly string AssemblyName;
+
+            public CyclopsCharger(CreateCyclopsCharger creator, Assembly originAssembly, bool isRenewable)
+            {
+                Creator = creator;
+                OriginAssembly = originAssembly;
+                IsRenewable = isRenewable;
+                ChargerName = creator.Method.ReturnType.Name;
+                AssemblyName = originAssembly.GetName().Name;
+            }
+        }
+
         #region Static
 
         internal static bool Initialized { get; private set; }
@@ -17,18 +36,18 @@
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         internal const float Mk2ChargeRateModifier = 1.10f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
-        private static readonly IDictionary<CreateCyclopsCharger, string> CyclopsChargers = new Dictionary<CreateCyclopsCharger, string>();
+        private static readonly List<CyclopsCharger> CyclopsChargers = new List<CyclopsCharger>();
 
-        internal static void RegisterChargerCreator(CreateCyclopsCharger createEvent, string assemblyName)
+        internal static void RegisterChargerCreator(CreateCyclopsCharger createEvent, Assembly assembly, bool isRenewable)
         {
-            if (CyclopsChargers.ContainsKey(createEvent))
+            if (CyclopsChargers.Find(c => c.Creator == createEvent) != null)
             {
-                QuickLogger.Warning($"Duplicate ChargerCreator blocked from {assemblyName}");
+                QuickLogger.Warning($"Duplicate ChargerCreator blocked from {assembly.GetName().Name}");
                 return;
             }
 
-            QuickLogger.Info($"Received ChargerCreator from {assemblyName}");
-            CyclopsChargers.Add(createEvent, assemblyName);
+            QuickLogger.Info($"Received ChargerCreator from {assembly.GetName().Name}");
+            CyclopsChargers.Add(new CyclopsCharger(createEvent, assembly, isRenewable));
         }
 
         #endregion
@@ -79,29 +98,26 @@
             QuickLogger.Debug("ChargeManager InitializeChargingHandlers");
 
             // First, register chargers from other mods.
-            foreach (KeyValuePair<CreateCyclopsCharger, string> pair in CyclopsChargers)
+            foreach (CyclopsCharger chargerTemplate in CyclopsChargers)
             {
-                string assemblyName = pair.Value;
-                CreateCyclopsCharger creator = pair.Key;
+                QuickLogger.Debug($"ChargeManager creating charger from {chargerTemplate.AssemblyName}");
+                ICyclopsCharger charger = chargerTemplate.Creator.Invoke(Cyclops);
 
-                QuickLogger.Debug($"ChargeManager creating charger from {assemblyName}");
-                ICyclopsCharger charger = creator.Invoke(Cyclops);
-
-                ICollection<ICyclopsCharger> powerChargers = charger.IsRenewable ? RenewablePowerChargers : NonRenewablePowerChargers;
+                ICollection<ICyclopsCharger> powerChargers = chargerTemplate.IsRenewable ? RenewablePowerChargers : NonRenewablePowerChargers;
 
                 if (charger == null)
                 {
-                    QuickLogger.Warning($"CyclopsCharger from '{assemblyName}' was null");
+                    QuickLogger.Warning($"CyclopsCharger from '{chargerTemplate.AssemblyName}' was null");
                 }
-                else if (!KnownChargers.ContainsKey(charger.Name))
+                else if (!KnownChargers.ContainsKey(chargerTemplate.ChargerName))
                 {
                     powerChargers.Add(charger);
-                    KnownChargers.Add(charger.Name, charger);
-                    QuickLogger.Debug($"Created CyclopsCharger '{charger.Name}' from {assemblyName}");
+                    KnownChargers.Add(chargerTemplate.ChargerName, charger);
+                    QuickLogger.Debug($"Created CyclopsCharger '{chargerTemplate.ChargerName}' from {chargerTemplate.AssemblyName}");
                 }
                 else
                 {
-                    QuickLogger.Warning($"Duplicate CyclopsCharger '{charger.Name}' from '{assemblyName}' was blocked");
+                    QuickLogger.Warning($"Duplicate CyclopsCharger '{chargerTemplate.ChargerName}' from '{chargerTemplate.AssemblyName}' was blocked");
                 }
             }
 

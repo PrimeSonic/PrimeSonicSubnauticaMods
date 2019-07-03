@@ -41,7 +41,7 @@
             MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
             {                
                 return new CyNukeChargeManager(cyclops);
-            });
+            }, isRenewable: false);
 
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {

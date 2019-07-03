@@ -385,7 +385,7 @@
 
             ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            Manager = manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(parentCyclops, BioAuxCyclopsManager.ManagerName);
+            Manager = manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(parentCyclops);
 
             if (!Manager.CyBioReactors.Contains(this))
             {

@@ -15,7 +15,7 @@
             : base(icon, upgradeModule)
         {
             upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<NuclearUpgradeHandler>(base.Cyclops, base.TechType);
-            chargeHandler = MCUServices.Find.CyclopsCharger<NuclearChargeHandler>(base.Cyclops, NuclearChargeHandler.ChargerName);
+            chargeHandler = MCUServices.Find.CyclopsCharger<NuclearChargeHandler>(base.Cyclops);
             battery = base.Item.item.GetComponent<Battery>();
         }
 
