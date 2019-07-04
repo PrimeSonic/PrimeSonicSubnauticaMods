@@ -11,8 +11,6 @@
         private readonly BioAuxCyclopsManager cyclopsManager;
         private readonly int reactorCount;
         private readonly bool maxedReactors;
-        private int BoosterCount => upgradeHandler.Count;
-        private bool MaxedBoosters => upgradeHandler.MaxLimitReached;
 
         public BoosterOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
@@ -27,23 +25,24 @@
 
         public override void UpdateText()
         {
-            UpperText.TextString = $"{(maxedReactors ? "Max" : reactorCount.ToString())} Bioreactor{(reactorCount != 1 ? "s" : string.Empty)}";
-            UpperText.FontSize = 14;
+            base.UpperText.TextString = $"{(maxedReactors ? "Max" : reactorCount.ToString())} Bioreactor{(reactorCount != 1 ? "s" : string.Empty)}";
+            base.UpperText.FontSize = 14;
+
+            int boosters = upgradeHandler.Count;
+            base.MiddleText.TextString = $"{(upgradeHandler.MaxLimitReached ? "Max" : boosters.ToString())} Booster{(boosters != 1 ? "s" : string.Empty)}";
+            base.MiddleText.FontSize = 14;
 
             if (reactorCount > 0)
             {
-                UpperText.TextColor = Color.white;
-                MiddleText.TextString = chargeHandler.GetIndicatorText();
-                MiddleText.TextColor = chargeHandler.GetIndicatorTextColor();
+                base.UpperText.TextColor = Color.white;
+                base.LowerText.TextString = chargeHandler.GetIndicatorText();
+                base.LowerText.TextColor = chargeHandler.GetIndicatorTextColor();
             }
             else
             {
-                UpperText.TextColor = Color.red;
-                MiddleText.TextString = string.Empty;
+                base.UpperText.TextColor = Color.red;
+                base.LowerText.TextString = string.Empty;
             }
-
-            LowerText.TextString = $"{(this.MaxedBoosters ? "Max" : this.BoosterCount.ToString())} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
-            LowerText.FontSize = 14;
         }
     }
 }

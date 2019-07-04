@@ -11,8 +11,7 @@
     {
         private bool cleared = false;
         private bool finished = false;
-        private readonly ICollection<StackingUpgradeHandler> collection = new List<StackingUpgradeHandler>(3);
-        private readonly IDictionary<TechType, int> counted = new Dictionary<TechType, int>(3);
+        private readonly IDictionary<TechType, StackingUpgradeHandler> collection = new Dictionary<TechType, StackingUpgradeHandler>();
 
         /// <summary>
         /// Gets a readonly list of the <see cref="TechType"/>s managed by this group handler.
@@ -20,7 +19,7 @@
         /// <value>
         /// The upgrade tiers managed by this group handler.
         /// </value>
-        public IEnumerable<TechType> ManagedTiers => counted.Keys;
+        public IEnumerable<TechType> ManagedTiers => collection.Keys;
 
         /// <summary>
         /// Determines whether the specified tech type is managed by this group handler.
@@ -31,26 +30,7 @@
         /// </returns>
         public bool IsManaging(TechType techType)
         {
-            return counted.ContainsKey(techType);
-        }
-
-        /// <summary>
-        /// Gets the total count of all stacking tiers of upgrades.
-        /// </summary>
-        /// <value>
-        /// The total count of all upgrades managed by this collection.
-        /// </value>
-        public int TotalCount
-        {
-            get
-            {
-                int total = 0;
-
-                foreach (int count in counted.Values)
-                    total += count;
-
-                return total;
-            }
+            return collection.ContainsKey(techType);
         }
 
         /// <summary>
@@ -60,9 +40,9 @@
         /// <returns>The total number of upgrades when the <see cref="TechType"/> is managed by this collection; Otherwise returns -1.</returns>
         public int TierCount(TechType tier)
         {
-            if (counted.TryGetValue(TechType, out int count))
+            if (collection.TryGetValue(tier, out StackingUpgradeHandler handler))
             {
-                return count;
+                return handler.Count;
             }
 
             return -1;
@@ -81,7 +61,7 @@
         /// <exception cref="KeyNotFoundException"/>
         public int this[TechType tier]
         {
-            get => counted[tier];
+            get => collection[tier].Count;
         }
 
         /// <summary>
@@ -102,8 +82,7 @@
         public StackingUpgradeHandler CreateStackingTier(TechType techType)
         {
             var stackingUpgrade = new StackingUpgradeHandler(techType, this);
-            collection.Add(stackingUpgrade);
-            counted.Add(techType, 0);
+            collection.Add(techType, stackingUpgrade);
 
             return stackingUpgrade;
         }
@@ -113,19 +92,15 @@
             if (cleared) // Because this might be called multiple times by the various members of the tier,
                 return; // exit if we've already made this call.
 
+            this.Count = 0;
             cleared = true;
             finished = false;
-
-            var keys = new List<TechType>(counted.Keys);
-            foreach (TechType tier in keys)
-                counted[tier] = 0;
 
             OnClearUpgrades?.Invoke();
         }
 
         internal void TierCounted(TechType countedTier, Equipment modules, string slot, InventoryItem inventoryItem)
         {
-            counted[countedTier]++;
             this.Count++;
 
             OnUpgradeCounted?.Invoke();
@@ -145,7 +120,7 @@
 
         internal override void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)
         {
-            foreach (UpgradeHandler upgrade in collection)
+            foreach (UpgradeHandler upgrade in collection.Values)
                 upgrade.RegisterSelf(dictionary);
         }
     }

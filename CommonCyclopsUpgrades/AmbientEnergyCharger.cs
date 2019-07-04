@@ -102,7 +102,7 @@
 
         public float ProducePower(float requestedPower)
         {
-            if (this.AmbientEnergyUpgrade == null || this.AmbientEnergyUpgrade.TotalCount == 0)
+            if (this.AmbientEnergyUpgrade == null || this.AmbientEnergyUpgrade.Count == 0)
             {
                 this.CurrentState = EnergyState.NoPower;
                 return 0f;

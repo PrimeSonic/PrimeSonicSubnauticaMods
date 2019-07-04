@@ -34,7 +34,7 @@
             this.MaxCount = MaxChargers;
             maxCountReachedMsg = maxedOutMsg;
 
-            OnClearUpgrades += () =>
+            OnClearUpgrades = () =>
             {
                 totalBatteryCharge = 0f;
                 totalBatteryCapacity = 0f;
@@ -42,7 +42,7 @@
                 batteries.Clear();
             };
 
-            tier1 = CreateStackingTier(tier1Id);            
+            tier1 = CreateStackingTier(tier1Id);
             tier2 = CreateStackingTier(tier2Id);
 
             tier1.MaxCount = MaxChargers;
@@ -53,9 +53,9 @@
 
             tier2.OnUpgradeCountedDetailed += AddBatteryDetails;
 
-            OnFinishedUpgrades += () =>
+            OnFinishedUpgrades = () =>
             {
-                if (this.TotalCount == 0)
+                if (this.Count == 0)
                 {
                     this.TotalBatteryCapacity = 0f;
                     this.TotalBatteryCharge = 0f;
@@ -65,7 +65,7 @@
                 {
                     this.TotalBatteryCapacity = totalBatteryCapacity;
                     this.TotalBatteryCharge = totalBatteryCharge;
-                    if (this.TotalCount > 1)
+                    if (this.Count > 1)
                     {
                         // Stacking multiple solar/thermal chargers has diminishing returns on how much extra energy you can get after the first.
                         // The diminishing returns are themselves also variable.
@@ -75,14 +75,19 @@
                         // The diminishing returns follow a geometric sequence with a factor always less than 1.
                         // You can check the math on this over here https://www.purplemath.com/modules/series5.htm
 
-                        float diminishingReturnFactor = 0.4f + (0.025f * tier2.Count);
-                        this.ChargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) / (1 - diminishingReturnFactor);
-                        this.ChargeMultiplier += (0.05f * tier2.Count);
+                        float diminishingReturnFactor = 0.4f + (0.045f * tier2.Count);
+                        this.ChargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) /
+                                                            (1 - diminishingReturnFactor);
+                        this.ChargeMultiplier += (0.015f * tier2.Count);
                     }
-                }                
+                    else
+                    {
+                        this.ChargeMultiplier = 1f;
+                    }
+                }
             };
 
-            OnFirstTimeMaxCountReached += () =>
+            OnFirstTimeMaxCountReached = () =>
             {
                 ErrorMessage.AddMessage(maxCountReachedMsg);
             };
@@ -90,7 +95,7 @@
 
         private bool CheckCombinedTotal(Pickupable item, bool verbose)
         {
-            return this.TotalCount < MaxChargers;
+            return this.Count < MaxChargers;
         }
 
         private void AddBatteryDetails(Equipment modules, string slot, InventoryItem inventoryItem)

@@ -17,14 +17,14 @@
 
         public override void UpdateText()
         {
-            base.UpperText.TextString = $"Speed +{Mathf.CeilToInt((speedHandler.SpeedMultiplier - 1f) * 100f)}";
+            base.UpperText.TextString = $"{(this.MaxedBoosters ? "Max" : this.BoosterCount.ToString())} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
+            base.UpperText.FontSize = 14;
 
-            base.MiddleText.TextString = $"Engine -{Mathf.FloorToInt((speedHandler.EfficiencyPenalty - 1f) * 100f)}\n" +
-                                         $"Noise +{Mathf.FloorToInt((speedHandler.NoisePenalty - 1f) * 100f)}";
-            base.MiddleText.FontSize = 16;
+            base.MiddleText.TextString = $"Speed +{Mathf.CeilToInt((speedHandler.SpeedMultiplier - 1f) * 100f)}";
 
-            base.LowerText.TextString = $"{(this.MaxedBoosters ? "Max" : this.BoosterCount.ToString())} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
-            base.LowerText.FontSize = 14;
+            base.LowerText.TextString = $"Engine -{Mathf.FloorToInt((speedHandler.EfficiencyPenalty - 1f) * 100f)}\n" +
+                                        $"Noise +{Mathf.FloorToInt((speedHandler.NoisePenalty - 1f) * 100f)}";
+            base.LowerText.FontSize = 16;            
         }
     }
 }

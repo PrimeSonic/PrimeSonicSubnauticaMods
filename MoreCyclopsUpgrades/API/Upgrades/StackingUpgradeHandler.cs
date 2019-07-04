@@ -25,11 +25,13 @@
 
         internal override void UpgradesCleared()
         {
+            this.Count = 0;
             ParentCollection.UpgradesCleared();
         }
 
         internal override void UpgradeCounted(Equipment modules, string slot)
         {
+            this.Count++;
             ParentCollection.TierCounted(TechType, modules, slot, modules.equipment[slot]);
         }
 
