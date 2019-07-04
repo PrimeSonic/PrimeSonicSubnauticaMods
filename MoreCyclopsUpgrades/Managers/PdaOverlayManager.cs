@@ -16,11 +16,11 @@
         {
             if (OverlayCreators.ContainsKey(techType))
             {
-                QuickLogger.Warning($"PdaOverlayManager blocked duplicate OverlayCreator from {assemblyName}");
+                QuickLogger.Warning($"PdaOverlayManager blocked duplicate IconOverlayCreator from {assemblyName}");
                 return;
             }
 
-            QuickLogger.Info($"PdaOverlayManager received OverlayCreator from {assemblyName}");
+            QuickLogger.Info($"PdaOverlayManager received IconOverlayCreator from {assemblyName}");
             OverlayCreators.Add(techType, createEvent);
         }
 

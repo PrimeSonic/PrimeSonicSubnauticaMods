@@ -12,7 +12,7 @@
         private readonly HandlerType upgradeHandler;
         private readonly ChargerType charger;
         private readonly Battery battery;
-        private int ChargerCount => upgradeHandler.Count;
+        private int ChargerCount => upgradeHandler.TotalCount;
         private bool MaxedChargers => upgradeHandler.MaxLimitReached;
 
         public AmbientEnergyIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
@@ -28,7 +28,7 @@
             UpperText.TextString = $"{(this.MaxedChargers ? "Max" : this.ChargerCount.ToString())} Charger{(this.ChargerCount != 1 ? "s" : string.Empty)}";
             UpperText.FontSize = 16;
 
-            if (upgradeHandler.TotalCount > 1)
+            if (this.ChargerCount > 1)
                 base.MiddleText.TextString = $"{charger.EnergyStatusText()}\n+{Mathf.CeilToInt((upgradeHandler.ChargeMultiplier - 1f) * 100f)}%";
             else
                 base.MiddleText.TextString = $"{charger.EnergyStatusText()}";

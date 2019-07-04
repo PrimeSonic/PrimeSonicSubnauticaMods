@@ -37,11 +37,11 @@
         {
             if (CyclopsChargers.Find(c => c.Creator == createEvent) != null)
             {
-                QuickLogger.Warning($"Duplicate ChargerCreator '{name}' was blocked");
+                QuickLogger.Warning($"Duplicate CyclopsChargerCreator '{name}' was blocked");
                 return;
             }
 
-            QuickLogger.Info($"Received ChargerCreator '{name}");
+            QuickLogger.Info($"Received CyclopsChargerCreator '{name}'");
             CyclopsChargers.Add(new CyclopsCharger(createEvent, name, isRenewable));
         }
 

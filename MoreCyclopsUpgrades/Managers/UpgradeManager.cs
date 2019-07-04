@@ -13,18 +13,17 @@
     {
         internal static bool Initialized { get; private set; }
 
-        internal const string ManagerName = "McuUpgrdMgr";
         private static readonly IDictionary<CreateUpgradeHandler, string> HandlerCreators = new Dictionary<CreateUpgradeHandler, string>();
 
         internal static void RegisterHandlerCreator(CreateUpgradeHandler createEvent, string assemblyName)
         {
             if (HandlerCreators.ContainsKey(createEvent))
             {
-                QuickLogger.Warning($"Duplicate HandlerCreator blocked from {assemblyName}");
+                QuickLogger.Warning($"Duplicate UpgradeHandlerCreator blocked from {assemblyName}");
                 return;
             }
 
-            QuickLogger.Info($"Received HandlerCreator from {assemblyName}");
+            QuickLogger.Info($"Received UpgradeHandlerCreator from {assemblyName}");
             HandlerCreators.Add(createEvent, assemblyName);
         }
 
@@ -59,8 +58,6 @@
         internal readonly SubRoot Cyclops;
 
         internal List<AuxCyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<AuxCyUpgradeConsoleMono>();
-
-        public string Name { get; } = ManagerName;
 
         internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
 
@@ -113,8 +110,7 @@
 
         public bool InitializeUpgradeHandlers()
         {
-            QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
-
+            QuickLogger.Debug($"UpgradeManager adding new UpgradeHandlers from external mods");
             // First, register upgrades from other mods.
             foreach (KeyValuePair<CreateUpgradeHandler, string> pair in HandlerCreators)
             {
@@ -128,7 +124,7 @@
                 }
                 else if (!KnownsUpgradeModules.ContainsKey(upgrade.TechType))
                 {
-                    upgrade.RegisterSelf(KnownsUpgradeModules);                    
+                    upgrade.RegisterSelf(KnownsUpgradeModules);
                 }
                 else
                 {
@@ -139,13 +135,13 @@
             // Next, if no external mod has provided an UpgradeHandler for the vanilla upgrades, they will be added here.
             // This is to allow other mods to provide new functionality to the original upgrades.
             IVanillaUpgrades originalUpgrades = VanillaUpgrades.Main;
+            QuickLogger.Debug($"UpgradeManager adding default UpgradeHandlers for unmanaged vanilla upgrades");
             foreach (TechType upgradeID in originalUpgrades.OriginalUpgradeIDs)
             {
                 if (!KnownsUpgradeModules.ContainsKey(upgradeID))
                 {
-                    QuickLogger.Debug($"Adding default UpgradeHandler for '{upgradeID.AsString()}'");
-                    UpgradeHandler vanillaUpgradeHandler = originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops);
-                    vanillaUpgradeHandler.RegisterSelf(KnownsUpgradeModules);
+                    UpgradeHandler vanillaUpgrade = originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops);
+                    vanillaUpgrade.RegisterSelf(KnownsUpgradeModules);
                 }
             }
 
@@ -198,7 +194,9 @@
             // Turn off all upgrades and clear all values
             foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
             {
-                QuickLogger.Debug($"UpgradeManager clearing {upgradeType.TechType.AsString()}");
+                if (upgradeType.HasUpgrade)
+                    QuickLogger.Debug($"UpgradeManager clearing {upgradeType.TechType.AsString()}");
+
                 upgradeType.UpgradesCleared(); // UpgradeHandler event
             }
 
@@ -220,12 +218,12 @@
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
-                    QuickLogger.Debug($"UpgradeManager counting cyclops upgrade: '{techTypeInSlot.AsString()}'");
+                    QuickLogger.Debug($"UpgradeManager counting cyclops upgrade '{techTypeInSlot.AsString()}'");
                     handler.UpgradeCounted(modules, slot); // UpgradeHandler event
                 }
                 else
                 {
-                    QuickLogger.Warning($"UpgradeManager encountered unmanaged cyclops upgrade: '{techTypeInSlot.AsString()}'");
+                    QuickLogger.Warning($"UpgradeManager encountered unmanaged cyclops upgrade '{techTypeInSlot.AsString()}'");
                 }
             }
 

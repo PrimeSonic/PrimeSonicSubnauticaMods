@@ -33,8 +33,6 @@
             }
         }
 
-        internal const string ManagerName = "McuHudMgr";
-
         private Indicator[] HelmIndicatorsOdd;
         private Indicator[] HelmIndicatorsEven;
 
@@ -45,8 +43,6 @@
 
         private ChargeManager chargeManager;
         internal ChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(Cyclops)?.Charge);
-
-        public string Name { get; } = ManagerName;
 
         private bool powerIconsInitialized = false;
 
