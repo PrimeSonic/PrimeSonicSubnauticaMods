@@ -11,44 +11,58 @@
     public interface IMCURegistration
     {
         /// <summary>
-        /// Registers a <see cref="CreateAuxCyclopsManager"/> method that creates returns a new <see cref="IAuxCyclopsManager"/> on demand.<para/>
-        /// This method will be invoked only once for each Cyclops sub in the game world.<para/>
+        /// Registers a <see cref="CreateAuxCyclopsManager" /> method that creates returns a new <see cref="IAuxCyclopsManager" /> on demand.<para />
+        /// This method will be invoked only once for each Cyclops sub in the game world.<para />
         /// Use this when you simply need to have a class that is attaches one instance per Cyclops.
         /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="IAuxCyclopsManager" />.</typeparam>
         /// <param name="createEvent">The create event.</param>
-        void AuxCyclopsManager(CreateAuxCyclopsManager createEvent);
+        void AuxCyclopsManager<T>(CreateAuxCyclopsManager createEvent) where T : IAuxCyclopsManager;
 
         /// <summary>
         /// Registers a <see cref="IAuxCyclopsManagerCreator" /> class that can create a new <see cref="IAuxCyclopsManager" /> on demand.<para />
         /// This method will be invoked only once for each Cyclops sub in the game world.<para />
         /// Use this when you simply need to have a class that attaches one instance per Cyclops.
         /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="IAuxCyclopsManager" />.</typeparam>
         /// <param name="managerCreator">The manager creator class instance.</param>
-        void AuxCyclopsManager(IAuxCyclopsManagerCreator managerCreator);
+        void AuxCyclopsManager<T>(IAuxCyclopsManagerCreator managerCreator) where T : IAuxCyclopsManager;
 
         /// <summary>
         /// Registers a <see cref="CreateCyclopsCharger" /> method that creates a new <see cref="ICyclopsCharger" /> on demand.<para />
-        /// This method will be invoked only once for each Cyclops sub in the game world.
+        /// This method will be invoked only once for each Cyclops sub in the game world.<para />
+        /// Use this for rechargable batteries and energy drawn from the environment.
         /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="ICyclopsCharger" />.</typeparam>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger" />.</param>
-        /// <param name="isRenewable">
-        /// Indicates if this type of cyclops energy source is renewable.<para/>
-        /// Use <c>true</c> for rechargable batteries and energy drawn from the environment.<para/>
-        /// Use <c>false</c> for depletable sources like nuclear reactor rods.<para/>
-        /// </param>
-        void CyclopsCharger(CreateCyclopsCharger createEvent, bool isRenewable);
+        void RenewableCyclopsCharger<T>(CreateCyclopsCharger createEvent) where T : ICyclopsCharger;
 
         /// <summary>
-        /// Registers a <see cref="ICyclopsChargerCreator"/> class that can create a new <see cref="ICyclopsCharger"/> on demand.<para/>
-        /// This method will be invoked only once for each Cyclops sub in the game world.
+        /// Registers a <see cref="ICyclopsChargerCreator" /> class that can create a new <see cref="ICyclopsCharger" /> on demand.<para />
+        /// This method will be invoked only once for each Cyclops sub in the game world.<para />
+        /// Use this for rechargable batteries and energy drawn from the environment.
         /// </summary>
-        /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)"/> method.</param>
-        /// <param name="isRenewable">
-        /// Indicates if this type of cyclops energy source is renewable.<para/>
-        /// Use <c>true</c> for rechargable batteries and energy drawn from the environment.<para/>
-        /// Use <c>false</c> for depletable sources like nuclear reactor rods.<para/>
-        /// </param>
-        void CyclopsCharger(ICyclopsChargerCreator chargerCreator, bool isRenewable);
+        /// <typeparam name="T">Your class that implements <see cref="ICyclopsCharger" />.</typeparam>
+        /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)" /> method.</param>
+        void RenewableCyclopsCharger<T>(ICyclopsChargerCreator chargerCreator) where T : ICyclopsCharger;
+
+        /// <summary>
+        /// Registers a <see cref="CreateCyclopsCharger" /> method that creates a new <see cref="ICyclopsCharger" /> on demand.<para />
+        /// This method will be invoked only once for each Cyclops sub in the game world.<para />
+        /// Use for depletable sources of power like nuclear reactor rods.
+        /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="ICyclopsCharger" />.</typeparam>
+        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger" />.</param>
+        void NonrenewableCyclopsCharger<T>(CreateCyclopsCharger createEvent) where T : ICyclopsCharger;
+
+        /// <summary>
+        /// Registers a <see cref="ICyclopsChargerCreator" /> class that can create a new <see cref="ICyclopsCharger" /> on demand.<para />
+        /// This method will be invoked only once for each Cyclops sub in the game world.<para />
+        /// Use for depletable sources of power like nuclear reactor rods.
+        /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="ICyclopsCharger" />.</typeparam>
+        /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)" /> method.</param>
+        void NonrenewableCyclopsCharger<T>(ICyclopsChargerCreator chargerCreator) where T : ICyclopsCharger;
 
         /// <summary>
         /// Registers a <see cref="CreateUpgradeHandler"/> method that creates a new <see cref="UpgradeHandler"/> on demand.<para/>

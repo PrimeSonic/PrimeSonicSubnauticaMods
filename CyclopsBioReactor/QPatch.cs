@@ -25,15 +25,15 @@
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-                MCUServices.Register.AuxCyclopsManager((SubRoot cyclops) =>
+                MCUServices.Register.AuxCyclopsManager<BioAuxCyclopsManager>((SubRoot cyclops) =>
                 {
                     return new BioAuxCyclopsManager(cyclops, booster.TechType, reactor.TechType);
                 });
 
-                MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
+                MCUServices.Register.NonrenewableCyclopsCharger<BioChargeHandler>((SubRoot cyclops) =>
                 {
                     return new BioChargeHandler(booster.TechType, cyclops);
-                }, isRenewable: false);
+                });
 
                 MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
                 {

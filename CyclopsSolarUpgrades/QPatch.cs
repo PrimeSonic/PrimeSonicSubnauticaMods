@@ -3,6 +3,7 @@
     using System;
     using Common;
     using CyclopsSolarUpgrades.Craftables;
+    using CyclopsSolarUpgrades.Management;
     using MoreCyclopsUpgrades.API;
 
     public static class QPatch
@@ -19,7 +20,7 @@
                 solar1.Patch();
                 solar2.Patch();
 
-                MCUServices.Register.CyclopsCharger(solar2, isRenewable: true);
+                MCUServices.Register.RenewableCyclopsCharger<SolarCharger>(solar2);
                 MCUServices.Register.CyclopsUpgradeHandler(solar2);
                 MCUServices.Register.PdaIconOverlay(solar1.TechType, solar2);
                 MCUServices.Register.PdaIconOverlay(solar2.TechType, solar2);

@@ -7,6 +7,8 @@
     internal class SpeedOverlay : IconOverlay
     {
         private readonly SpeedHandler speedHandler;
+        private int BoosterCount => speedHandler.Count;
+        private bool MaxedBoosters => speedHandler.MaxLimitReached;
 
         public SpeedOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule, CyclopsSpeedModule speedBooster) : base(icon, upgradeModule)
         {
@@ -15,9 +17,14 @@
 
         public override void UpdateText()
         {
-            base.UpperText.TextString = $"{Mathf.RoundToInt(speedHandler.CurrentModifier * 100f)}";
+            base.UpperText.TextString = $"Speed +{Mathf.CeilToInt((speedHandler.SpeedMultiplier - 1f) * 100f)}";
 
-            base.LowerText.TextString = $"{speedHandler.Count}/{speedHandler.MaxCount}";
+            base.MiddleText.TextString = $"Engine -{Mathf.FloorToInt((speedHandler.EfficiencyPenalty - 1f) * 100f)}\n" +
+                                         $"Noise +{Mathf.FloorToInt((speedHandler.NoisePenalty - 1f) * 100f)}";
+            base.MiddleText.FontSize = 16;
+
+            base.LowerText.TextString = $"{(this.MaxedBoosters ? this.BoosterCount.ToString() : "Max")} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
+            base.LowerText.FontSize = 14;
         }
     }
 }

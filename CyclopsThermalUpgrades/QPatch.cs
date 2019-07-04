@@ -3,6 +3,7 @@
     using System;
     using Common;
     using CyclopsThermalUpgrades.Craftables;
+    using CyclopsThermalUpgrades.Management;
     using MoreCyclopsUpgrades.API;
 
     public static class QPatch
@@ -17,7 +18,7 @@
                 thermalMk2.Patch();
 
                 MCUServices.Register.CyclopsUpgradeHandler(thermalMk2);
-                MCUServices.Register.CyclopsCharger(thermalMk2, isRenewable: true);
+                MCUServices.Register.RenewableCyclopsCharger<ThermalCharger>(thermalMk2);
                 MCUServices.Register.PdaIconOverlay(TechType.CyclopsThermalReactorModule, thermalMk2);
                 MCUServices.Register.PdaIconOverlay(thermalMk2.TechType, thermalMk2);
 

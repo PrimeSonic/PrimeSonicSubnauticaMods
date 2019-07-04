@@ -116,7 +116,7 @@
                 if (auxMgr != null)
                 {
 
-                    QuickLogger.Debug($"Created new IAuxCyclopsManager {name}");
+                    QuickLogger.Debug($"Created new IAuxCyclopsManager '{name}'");
                     AuxiliaryManagers.Add(name, auxMgr);
                 }
                 else

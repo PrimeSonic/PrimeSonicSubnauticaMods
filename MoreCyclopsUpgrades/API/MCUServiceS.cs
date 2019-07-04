@@ -58,20 +58,37 @@
         /// </summary>
         public static IMCURegistration Register => singleton;
 
-        public void CyclopsCharger(CreateCyclopsCharger createEvent, bool isRenewable)
+        public void RenewableCyclopsCharger<T>(CreateCyclopsCharger createEvent)
+             where T : ICyclopsCharger
         {
-            if (ChargeManager.Initialized)
-                QuickLogger.Error("CyclopsChargerCreator have already been invoked. This method should only be called during patch time.");
-            else
-                ChargeManager.RegisterChargerCreator(createEvent, Assembly.GetCallingAssembly(), isRenewable);
+            CyclopsCharger<T>(createEvent, true);
         }
 
-        public void CyclopsCharger(ICyclopsChargerCreator chargerCreator, bool isRenewable)
+        public void RenewableCyclopsCharger<T>(ICyclopsChargerCreator chargerCreator) 
+            where T : ICyclopsCharger
+        {
+            CyclopsCharger<T>(chargerCreator.CreateCyclopsCharger, true);
+        }
+
+        public void NonrenewableCyclopsCharger<T>(CreateCyclopsCharger createEvent)
+            where T : ICyclopsCharger
+        {
+            CyclopsCharger<T>(createEvent, false);
+        }
+
+        public void NonrenewableCyclopsCharger<T>(ICyclopsChargerCreator chargerCreator)
+            where T : ICyclopsCharger
+        {
+            CyclopsCharger<T>(chargerCreator.CreateCyclopsCharger, false);
+        }
+
+        internal void CyclopsCharger<T>(CreateCyclopsCharger createEvent, bool isRenewable)
+             where T : ICyclopsCharger
         {
             if (ChargeManager.Initialized)
                 QuickLogger.Error("CyclopsChargerCreator have already been invoked. This method should only be called during patch time.");
             else
-                ChargeManager.RegisterChargerCreator(chargerCreator.CreateCyclopsCharger, Assembly.GetCallingAssembly(), isRenewable);
+                ChargeManager.RegisterChargerCreator(createEvent, typeof(T).Name, isRenewable);
         }
 
         public void CyclopsUpgradeHandler(CreateUpgradeHandler createEvent)
@@ -90,20 +107,22 @@
                 UpgradeManager.RegisterHandlerCreator(handlerCreator.CreateUpgradeHandler, Assembly.GetCallingAssembly().GetName().Name);
         }
 
-        public void AuxCyclopsManager(CreateAuxCyclopsManager createEvent)
+        public void AuxCyclopsManager<T>(CreateAuxCyclopsManager createEvent)
+            where T : IAuxCyclopsManager
         {
             if (CyclopsManager.Initialized)
                 QuickLogger.Error("AuxCyclopsManagerCreator have already been invoked. This method should only be called during patch time.");
             else
-                CyclopsManager.RegisterAuxManagerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
+                CyclopsManager.RegisterAuxManagerCreator(createEvent, typeof(T).Name);
         }
 
-        public void AuxCyclopsManager(IAuxCyclopsManagerCreator managerCreator)
+        public void AuxCyclopsManager<T>(IAuxCyclopsManagerCreator managerCreator)
+            where T : IAuxCyclopsManager
         {
             if (CyclopsManager.Initialized)
                 QuickLogger.Error("AuxCyclopsManagerCreator have already been invoked. This method should only be called during patch time.");
             else
-                CyclopsManager.RegisterAuxManagerCreator(managerCreator.CreateAuxCyclopsManager, Assembly.GetCallingAssembly().GetName().Name);
+                CyclopsManager.RegisterAuxManagerCreator(managerCreator.CreateAuxCyclopsManager, typeof(T).Name);
         }
 
         public void PdaIconOverlay(TechType techType, IIconOverlayCreator overlayCreator)

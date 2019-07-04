@@ -21,23 +21,25 @@
 
         public override void UpdateText()
         {
+            float cyclopsHeat = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
+            float displayTemperature = Mathf.Max(chargeHandler.HeatLevel, cyclopsHeat);
+
             if (chargeHandler.IsOverheated)
             {
                 base.UpperText.TextString = "SHUTDOWN";
-                base.UpperText.TextColor = Color.red;
+            }
+            else
+            {
+                base.UpperText.TextString = NumberFormatter.FormatValue(displayTemperature) + "°C";
             }
 
-            float temperature = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
-            float displayTemperature = Mathf.Max(chargeHandler.HeatLevel, temperature);
-
-            base.MiddleText.TextString = NumberFormatter.FormatValue(displayTemperature) + "°C";
-            base.MiddleText.TextColor = NumberFormatter.GetNumberColor(displayTemperature, NuclearChargeHandler.MaxHeat, temperature - 1f);
+            base.UpperText.TextColor = NumberFormatter.GetNumberColor(displayTemperature, NuclearChargeHandler.MaxHeat, cyclopsHeat - 1f);
 
             if (battery != null)
             {
                 base.LowerText.TextString = NumberFormatter.FormatValue(battery._charge);
                 base.MiddleText.TextColor = NumberFormatter.GetNumberColor(battery._charge, CyclopsNuclearModule.NuclearEnergyPotential, 0f);
-            }            
+            }
         }
     }
 }

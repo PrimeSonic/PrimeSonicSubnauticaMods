@@ -38,10 +38,10 @@
         private static void RegisterWithMoreCyclopsUpgrades()
         {
             QuickLogger.Debug("Registering with MoreCyclopsUpgrades");
-            MCUServices.Register.CyclopsCharger((SubRoot cyclops) =>
+            MCUServices.Register.NonrenewableCyclopsCharger<CyNukeChargeManager>((SubRoot cyclops) =>
             {                
                 return new CyNukeChargeManager(cyclops);
-            }, isRenewable: false);
+            });
 
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {

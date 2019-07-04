@@ -20,7 +20,9 @@
         public CyNukeEnhancerHandler(SubRoot cyclops) : base(NoUpgradesValue, cyclops)
         {
             tier1 = CreateTier(CyNukeEnhancerMk1.TechTypeID, Mk1UpgradeValue);
+            tier1.MaxCount = 1;
             tier2 = CreateTier(CyNukeEnhancerMk2.TechTypeID, Mk2UpgradeValue);
+            tier2.MaxCount = 1;
 
             OnUpgradeCounted = () => // Doing the final sync during HandleUpgrades may be unorthodox, but it somehow doesn't want to work any other way.
             {

@@ -129,7 +129,7 @@
                 else if (!KnownsUpgradeModules.ContainsKey(upgrade.TechType))
                 {
                     upgrade.RegisterSelf(KnownsUpgradeModules);
-                    QuickLogger.Debug($"Added UpgradeHandler for {upgrade.TechType} from '{assemblyName}'");
+                    QuickLogger.Debug($"Added UpgradeHandler for '{upgrade.TechType}' from '{assemblyName}'");
                 }
                 else
                 {
@@ -144,8 +144,9 @@
             {
                 if (!KnownsUpgradeModules.ContainsKey(upgradeID))
                 {
-                    QuickLogger.Debug($"Adding default UpgradeHandler for {upgradeID}");
-                    KnownsUpgradeModules.Add(upgradeID, originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops));
+                    QuickLogger.Debug($"Adding default UpgradeHandler for '{upgradeID.AsString()}'");
+                    UpgradeHandler vanillaUpgradeHandler = originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops);
+                    vanillaUpgradeHandler.RegisterSelf(KnownsUpgradeModules);
                 }
             }
 
@@ -220,12 +221,12 @@
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
-                    QuickLogger.Debug($"UpgradeManager counting cyclops upgrade: {techTypeInSlot}");
+                    QuickLogger.Debug($"UpgradeManager counting cyclops upgrade: '{techTypeInSlot.AsString()}'");
                     handler.UpgradeCounted(modules, slot); // UpgradeHandler event
                 }
                 else
                 {
-                    QuickLogger.Warning($"UpgradeManager encountered unmanaged cyclops upgrade: {techTypeInSlot}");
+                    QuickLogger.Warning($"UpgradeManager encountered unmanaged cyclops upgrade: '{techTypeInSlot.AsString()}'");
                 }
             }
 

@@ -18,17 +18,17 @@
 
         private static readonly float[] SilentRunningPowerCosts = new float[PowerIndexCount]
         {
-            5f, 5f, 4.5f, 4f // Lower costs here don't show up until the Mk2
+            5f, 4.5f, 4f, 3.5f
         };
 
         private static readonly float[] SonarPowerCosts = new float[PowerIndexCount]
         {
-            10f, 10f, 9f, 8f // Lower costs here don't show up until the Mk2
+            10f, 9.5f, 9f, 8.5f
         };
 
         private static readonly float[] ShieldPowerCosts = new float[PowerIndexCount]
         {
-            50f, 50f, 45f, 40f // Lower costs here don't show up until the Mk2
+            50f, 45f, 40f, 35f
         };
 
         private int lastKnownPowerIndex = -1;

@@ -1,33 +1,44 @@
 ﻿namespace CommonCyclopsUpgrades
 {
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;
 
-    internal class AmbientEnergyIconOverlay<T> : IconOverlay
-        where T : AmbientEnergyUpgradeHandler
+    internal class AmbientEnergyIconOverlay<HandlerType, ChargerType> : IconOverlay
+        where HandlerType : AmbientEnergyUpgradeHandler
+        where ChargerType : AmbientEnergyCharger<HandlerType>, ICyclopsCharger
     {
-        private readonly T upgradeHandler;
-        private readonly AmbientEnergyCharger<T> charger;
+        private readonly HandlerType upgradeHandler;
+        private readonly ChargerType charger;
         private readonly Battery battery;
+        private int ChargerCount => upgradeHandler.Count;
+        private bool MaxedChargers => upgradeHandler.MaxLimitReached;
 
         public AmbientEnergyIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
         {
-            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(base.Cyclops, base.TechType);
-            charger = MCUServices.Find.CyclopsCharger<AmbientEnergyCharger<T>>(base.Cyclops);
+            upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<HandlerType>(base.Cyclops, base.TechType);
+            charger = MCUServices.Find.CyclopsCharger<ChargerType>(base.Cyclops);
             battery = base.Item.item.GetComponent<Battery>();
         }
 
         public override void UpdateText()
         {
-            if (upgradeHandler.TotalCount > 1)
-                base.UpperText.TextString = $"+{Mathf.RoundToInt((upgradeHandler.ChargeMultiplier - 1f) * 100f)}%";
-            else
-                base.UpperText.TextString = string.Empty;
+            UpperText.TextString = $"{(this.MaxedChargers ? this.ChargerCount.ToString() : "Max")} Charger{(this.ChargerCount != 1 ? "s" : string.Empty)}";
+            UpperText.FontSize = 16;
 
-            base.MiddleText.TextString = $"{charger.EnergyStatusText()}";
-            base.MiddleText.TextColor = charger.GetIndicatorTextColor();
+            if (upgradeHandler.TotalCount > 1)
+                base.MiddleText.TextString = $"{charger.EnergyStatusText()}\n+{Mathf.CeilToInt((upgradeHandler.ChargeMultiplier - 1f) * 100f)}%";
+            else
+                base.MiddleText.TextString = $"{charger.EnergyStatusText()}";
+
+            if (charger.HasPowerIndicatorInfo())
+                base.MiddleText.TextColor = charger.GetIndicatorTextColor();
+            else
+                base.MiddleText.TextColor = Color.red;
+
+            base.MiddleText.FontSize = 16;
 
             if (battery != null)
             {
