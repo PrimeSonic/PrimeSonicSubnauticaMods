@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Common;
 
     /// <summary>
     /// Represents all the behaviors for a cyclops upgrade module at the time of the module being installed and counted.
@@ -173,6 +174,7 @@
         internal virtual void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)
         {
             dictionary.Add(TechType, this);
+            QuickLogger.Debug($"Added UpgradeHandler for '{TechType.AsString()}'");
         }
 
         internal virtual bool CanUpgradeBeAdded(Pickupable item, bool verbose)

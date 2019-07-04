@@ -128,12 +128,11 @@
                 }
                 else if (!KnownsUpgradeModules.ContainsKey(upgrade.TechType))
                 {
-                    upgrade.RegisterSelf(KnownsUpgradeModules);
-                    QuickLogger.Debug($"Added UpgradeHandler for '{upgrade.TechType}' from '{assemblyName}'");
+                    upgrade.RegisterSelf(KnownsUpgradeModules);                    
                 }
                 else
                 {
-                    QuickLogger.Warning($"Duplicate UpgradeHandler for '{upgrade.TechType}' from '{assemblyName}' was blocked");
+                    QuickLogger.Warning($"Duplicate UpgradeHandler for '{upgrade.TechType.AsString()}' from '{assemblyName}' was blocked");
                 }
             }
 

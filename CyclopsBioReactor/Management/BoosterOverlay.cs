@@ -27,7 +27,7 @@
 
         public override void UpdateText()
         {
-            UpperText.TextString = $"{(maxedReactors ? reactorCount.ToString() : "Max")} Bioreactor{(reactorCount != 1 ? "s" : string.Empty)}";
+            UpperText.TextString = $"{(maxedReactors ? "Max" : reactorCount.ToString())} Bioreactor{(reactorCount != 1 ? "s" : string.Empty)}";
             UpperText.FontSize = 14;
 
             if (reactorCount > 0)
@@ -42,7 +42,7 @@
                 MiddleText.TextString = string.Empty;
             }
 
-            LowerText.TextString = $"{(this.MaxedBoosters ? this.BoosterCount.ToString() : "Max")} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
+            LowerText.TextString = $"{(this.MaxedBoosters ? "Max" : this.BoosterCount.ToString())} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
             LowerText.FontSize = 14;
         }
     }

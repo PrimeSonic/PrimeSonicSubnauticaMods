@@ -23,7 +23,7 @@
                                          $"Noise +{Mathf.FloorToInt((speedHandler.NoisePenalty - 1f) * 100f)}";
             base.MiddleText.FontSize = 16;
 
-            base.LowerText.TextString = $"{(this.MaxedBoosters ? this.BoosterCount.ToString() : "Max")} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
+            base.LowerText.TextString = $"{(this.MaxedBoosters ? "Max" : this.BoosterCount.ToString())} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
             base.LowerText.FontSize = 14;
         }
     }

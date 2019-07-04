@@ -25,7 +25,7 @@
 
         public override void UpdateText()
         {
-            UpperText.TextString = $"{(this.MaxedChargers ? this.ChargerCount.ToString() : "Max")} Charger{(this.ChargerCount != 1 ? "s" : string.Empty)}";
+            UpperText.TextString = $"{(this.MaxedChargers ? "Max" : this.ChargerCount.ToString())} Charger{(this.ChargerCount != 1 ? "s" : string.Empty)}";
             UpperText.FontSize = 16;
 
             if (upgradeHandler.TotalCount > 1)
