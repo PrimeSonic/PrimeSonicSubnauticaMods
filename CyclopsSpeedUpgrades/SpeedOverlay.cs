@@ -20,11 +20,12 @@
             base.UpperText.TextString = $"{(this.MaxedBoosters ? "Max" : this.BoosterCount.ToString())} Booster{(this.BoosterCount != 1 ? "s" : string.Empty)}";
             base.UpperText.FontSize = 14;
 
-            base.MiddleText.TextString = $"Speed +{Mathf.CeilToInt((speedHandler.SpeedMultiplier - 1f) * 100f)}";
+            base.MiddleText.TextString = $"Speed {Mathf.CeilToInt(speedHandler.SpeedMultiplier * 100f)}%";
+            base.MiddleText.FontSize = 16;
 
-            base.LowerText.TextString = $"Engine -{Mathf.FloorToInt((speedHandler.EfficiencyPenalty - 1f) * 100f)}\n" +
-                                        $"Noise +{Mathf.FloorToInt((speedHandler.NoisePenalty - 1f) * 100f)}";
-            base.LowerText.FontSize = 16;            
+            base.LowerText.TextString = $"Engine -{Mathf.FloorToInt((1f - speedHandler.EfficiencyPenalty) * 100f)}%\n" +
+                                        $"Noise +{Mathf.FloorToInt((speedHandler.NoisePenalty - 1f) * 100f)}%";
+            base.LowerText.FontSize = 14;
         }
     }
 }

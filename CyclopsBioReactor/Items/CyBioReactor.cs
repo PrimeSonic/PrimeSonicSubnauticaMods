@@ -96,7 +96,7 @@
             constructible.model = model;
 
             // Set the custom texture
-            Texture2D customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/CyBioReactorT.png");
+            Texture2D customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/CyclopsBioReactor/Assets/CyBioReactorT.png");
             SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.material.mainTexture = customTexture;
 

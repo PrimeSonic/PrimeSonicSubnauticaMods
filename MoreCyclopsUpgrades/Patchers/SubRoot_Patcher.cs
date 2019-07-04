@@ -4,6 +4,18 @@
     using Managers;
 
     [HarmonyPatch(typeof(SubRoot))]
+    [HarmonyPatch("Awake")]
+    internal class SubRoot_Awake_Patcher
+    {
+        [HarmonyPostfix]
+        public static void Postfix(ref SubRoot __instance)
+        {
+            // Set up a CyclopsManager early if possible
+            CyclopsManager.GetManager(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
@@ -68,6 +80,7 @@
     internal class SubRoot_OnPlayerEntered_BeQuiet
     {
         private static bool firstEventDone = false;
+        private static VoiceNotificationManager voiceMgr = null;
 
         [HarmonyPrefix]
         public static void Prefix(ref SubRoot __instance)
@@ -75,7 +88,8 @@
             if (firstEventDone)
                 return;
 
-            __instance.voiceNotificationManager.ready = false;
+            voiceMgr = __instance.voiceNotificationManager;
+            __instance.voiceNotificationManager = null;
         }
 
         [HarmonyPostfix]
@@ -84,20 +98,8 @@
             if (firstEventDone)
                 return;
 
-            __instance.voiceNotificationManager.ready = true;
+            __instance.voiceNotificationManager = voiceMgr;
             firstEventDone = true;
-        }
-    }
-
-    [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("PowerDownCyclops")]
-    internal class SubRoot_PowerDownCyclops_TurnOffSilentRunning
-    {
-        [HarmonyPostfix]
-        public static void PostFix(ref SubRoot __instance)
-        {
-            // Turns this off for people who forget to turn off Silent Running when they power down the Cyclops
-            __instance.silentRunning = false;
         }
     }
 }
