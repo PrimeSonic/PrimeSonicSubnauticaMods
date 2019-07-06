@@ -26,7 +26,7 @@
         public CyclopsThermalChargerMk2()
             : base("CyclopsThermalChargerMk2",
                    "Cyclops Thermal Reactor Mk2",
-                   "Improved thermal charging and with integrated batteries to store a little extra power for when it get cold.")
+                   "Improved thermal charging with additional backup power.")
         {
             OnFinishedPatching += () =>
             {

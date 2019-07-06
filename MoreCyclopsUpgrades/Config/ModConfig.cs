@@ -147,6 +147,8 @@
             {
                 showIcons.SaveData.Value = (int)value;
                 showIcons.Index = (int)value;
+                this.ShowIconsOnHoloDisplay = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnHoloDisplay;
+                this.ShowIconsWhilePiloting = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.WhenPiloting;
                 SaveData();
             }
         }
@@ -174,9 +176,9 @@
             }
         }
 
-        public bool ShowIconsWhilePiloting => this.ChargerIcons == ShowChargerIcons.Everywhere || this.ChargerIcons == ShowChargerIcons.WhenPiloting;
+        public bool ShowIconsWhilePiloting { get; private set; }
 
-        public bool ShowIconsOnHoloDisplay => this.ChargerIcons == ShowChargerIcons.Everywhere || this.ChargerIcons == ShowChargerIcons.OnHoloDisplay;
+        public bool ShowIconsOnHoloDisplay { get; private set; }
 
         public float RechargePenalty
         {

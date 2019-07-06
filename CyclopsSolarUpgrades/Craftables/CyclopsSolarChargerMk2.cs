@@ -1,6 +1,5 @@
 ﻿namespace CyclopsSolarUpgrades.Craftables
 {
-    using CommonCyclopsUpgrades;
     using CyclopsSolarUpgrades.Management;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.PDA;
@@ -16,8 +15,7 @@
         public CyclopsSolarChargerMk2(CyclopsSolarCharger cyclopsSolarCharger)
             : base("CyclopsSolarChargerMk2",
                    "Cyclops Solar Charger Mk2",
-                   "Improved solar charging for the Cyclops with additional backup power.\n" +
-                  $"Stacks with other solar chargers up to a maximum of {AmbientEnergyUpgradeHandler.MaxChargers} total solar chargers.")
+                   "Improved solar charging for the Cyclops with additional backup power.\nStacks with other solar chargers.")
         {
             previousTier = cyclopsSolarCharger;
             OnStartedPatching += () =>

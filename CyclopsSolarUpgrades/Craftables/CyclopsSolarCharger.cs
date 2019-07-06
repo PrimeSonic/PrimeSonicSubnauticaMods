@@ -1,6 +1,5 @@
 ﻿namespace CyclopsSolarUpgrades.Craftables
 {
-    using CommonCyclopsUpgrades;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -17,8 +16,7 @@
         public CyclopsSolarCharger()
             : base("CyclopsSolarCharger",
                    "Cyclops Solar Charger",
-                   "Recharges the Cyclops power cells while in sunlight.\n" +
-                  $"Stacks with other solar chargers up to a maximum of {AmbientEnergyUpgradeHandler.MaxChargers} total solar chargers.")
+                   "Recharges the Cyclops power cells while in sunlight.\nStacks with other solar chargers.")
         {
             OnFinishedPatching += () =>
             {
