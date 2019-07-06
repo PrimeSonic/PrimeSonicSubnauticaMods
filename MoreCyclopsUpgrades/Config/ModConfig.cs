@@ -32,21 +32,21 @@
         private const string DebugLogsEnabledKey = "EnableDebugLogs";
         private const string HelmEnergyDisplayKey = "HelmEnergyDisplay";
 
-        private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable AuxUpgradeConsole (Requires restart)")
+        private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable AuxUpgradeConsole                        (Restart game)")
         {
             State = true
         };
-        private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge Mode")
+        private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge (Engine Penalty)")
         {
             Choices = new string[3]
             {
-                $"{ChallengeMode.Easy}",
-                $"{ChallengeMode.Medium}",
-                $"{ChallengeMode.Hard}"
+                $"{ChallengeMode.Easy.AsDisplay()}",
+                $"{ChallengeMode.Medium.AsDisplay()}",
+                $"{ChallengeMode.Hard.AsDisplay()}"
             },
             Index = (int)ChallengeMode.Easy
         };
-        private readonly SliderOption deficitThreshHold = new SliderOption(DeficitThresholdKey, "Use non-renewable energy below %")
+        private readonly SliderOption deficitThreshHold = new SliderOption(DeficitThresholdKey, "Conserve chargers when over %")
         {
             MinValue = 10f,
             MaxValue = 99f,
@@ -56,10 +56,10 @@
         {
             Choices = new string[4]
             {
-                $"{ShowChargerIcons.Never}",
-                $"{ShowChargerIcons.WhenPiloting}",
-                $"{ShowChargerIcons.OnHoloDisplay}",
-                $"{ShowChargerIcons.Everywhere}",
+                $"{ShowChargerIcons.Never.AsDisplay()}",
+                $"{ShowChargerIcons.OnPilotingHUD.AsDisplay()}",
+                $"{ShowChargerIcons.OnHoloDisplay.AsDisplay()}",
+                $"{ShowChargerIcons.Everywhere.AsDisplay()}",
             },
             Index = (int)ShowChargerIcons.Everywhere
         };
@@ -75,14 +75,13 @@
         {
             Choices = new string[4]
             {
-                $"{HelmEnergyDisplay.PowerCellPercentage}",
-                $"{HelmEnergyDisplay.PowerCellAmount}",
-                $"{HelmEnergyDisplay.PercentageOverPowerCells}",
-                $"{HelmEnergyDisplay.CombinedAmount}"
+                $"{HelmEnergyDisplay.PowerCellPercentage.AsDisplay()}",
+                $"{HelmEnergyDisplay.PowerCellAmount.AsDisplay()}",
+                $"{HelmEnergyDisplay.PercentageOverPowerCells.AsDisplay()}",
+                $"{HelmEnergyDisplay.CombinedAmount.AsDisplay()}"
             },
             Index = (int)HelmEnergyDisplay.PowerCellPercentage
         };
-
 
         private readonly ModConfigSaveData saveData;
         private readonly ModConfigMenuOptions menuOptions;
@@ -118,10 +117,12 @@
                 challengeMode.Index = (int)value;
                 SaveData();
 
-                float rechargePenalty = this.RechargePenalty;
+                float rechargePenalty = 1f - value.ChallengePenalty();
+                this.RechargePenalty = rechargePenalty;
+
                 IEnumerable<CyclopsManager> cyManagers = CyclopsManager.GetAllManagers();
                 foreach (CyclopsManager mgr in cyManagers)
-                {                    
+                {
                     mgr.Charge.UpdateRechargePenalty(rechargePenalty);
                     mgr.Cyclops.UpdatePowerRating();
                 }
@@ -148,7 +149,7 @@
                 showIcons.SaveData.Value = (int)value;
                 showIcons.Index = (int)value;
                 this.ShowIconsOnHoloDisplay = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnHoloDisplay;
-                this.ShowIconsWhilePiloting = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.WhenPiloting;
+                this.ShowIconsWhilePiloting = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnPilotingHUD;
                 SaveData();
             }
         }
@@ -180,21 +181,7 @@
 
         public bool ShowIconsOnHoloDisplay { get; private set; }
 
-        public float RechargePenalty
-        {
-            get
-            {
-                switch (this.ChallengeMode)
-                {
-                    case ChallengeMode.Hard:
-                        return 0.70f; // -30%
-                    case ChallengeMode.Medium:
-                        return 0.85f; // -15%
-                    default: // ChallengeLevel.Easy
-                        return 1.0f;
-                }
-            }
-        }
+        public float RechargePenalty { get; private set; }
 
         internal void Initialize()
         {
