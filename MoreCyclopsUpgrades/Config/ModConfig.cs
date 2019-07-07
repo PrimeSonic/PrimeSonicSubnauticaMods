@@ -181,7 +181,7 @@
 
         public bool ShowIconsOnHoloDisplay { get; private set; }
 
-        public float RechargePenalty { get; private set; }
+        public float RechargePenalty { get; private set; } = 1f;
 
         internal void Initialize()
         {

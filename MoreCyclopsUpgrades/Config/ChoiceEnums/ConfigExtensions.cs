@@ -11,7 +11,7 @@
 
         internal static string AsDisplay(this ChallengeMode value)
         {
-            return $"{value} ({Mathf.RoundToInt(ChallengePenalty(value) * 100f)}%)";
+            return $"{value} (-{Mathf.RoundToInt(ChallengePenalty(value) * 100f)}%)";
         }
 
         internal static string AsDisplay(this ShowChargerIcons value)
