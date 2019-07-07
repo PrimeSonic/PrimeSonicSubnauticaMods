@@ -74,6 +74,19 @@
             return null;
         }
 
+        internal UpgradeHandler GetUpgradeHandler(TechType upgradeId)
+        {
+            if (KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
+            {
+                if (upgradeHandler is IGroupedUpgradeHandler groupMember)
+                    return (UpgradeHandler)groupMember.GroupHandler;
+
+                return upgradeHandler;
+            }
+
+            return null;
+        }
+
         internal T GetGroupHandler<T>(TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
             if (!KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))

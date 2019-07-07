@@ -41,7 +41,16 @@
         /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
         /// <returns>A type casted <see cref="ICyclopsCharger"/> if found; Otherwise returns null.</returns>
         IEnumerable<T> AllCyclopsChargers<T>() where T : class, ICyclopsCharger;
-        
+
+        /// <summary>
+        /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
+        /// Use this if you need to obtain a reference to your <seealso cref="UpgradeHandler"/> for something else in your mod.
+        /// </summary>        
+        /// <param name="cyclops">The cyclops to search in.</param>
+        /// <param name="upgradeId">The upgrade module techtype ID.</param>
+        /// <returns>An <see cref="UpgradeHandler"/> if found by techtype; Otherwise returns null.</returns>
+        UpgradeHandler CyclopsUpgradeHandler(SubRoot cyclops, TechType upgradeId);
+
         /// <summary>
         /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="UpgradeHandler"/> for something else in your mod.

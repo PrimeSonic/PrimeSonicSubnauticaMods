@@ -172,6 +172,11 @@
             }
         }
 
+        public UpgradeHandler CyclopsUpgradeHandler(SubRoot cyclops, TechType upgradeId)
+        {
+            return CyclopsManager.GetManager(cyclops).Upgrade?.GetUpgradeHandler<UpgradeHandler>(upgradeId);
+        }
+
         public T CyclopsUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler
         {
             return CyclopsManager.GetManager(cyclops).Upgrade?.GetUpgradeHandler<T>(upgradeId);

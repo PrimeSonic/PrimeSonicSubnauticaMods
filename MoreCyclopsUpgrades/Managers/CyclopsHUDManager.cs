@@ -241,7 +241,10 @@
             rectTransform.anchoredPosition3D = Vector3.zero;
             rectTransform.anchoredPosition += new Vector2(0, -15f);
 
-            return new Indicator(icon, text);
+            return new Indicator(icon, text)
+            {
+                Enabled = false
+            };
         }
 
         private void UpdatePowerIcons()

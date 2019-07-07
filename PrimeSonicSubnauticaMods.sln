@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsThermalUpgrades", "C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CyclopsMods", "CyclopsMods", "{8CE53864-B6EA-4EEA-A251-F8940719FA18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsAutoZapper", "CyclopsAutoZapper\CyclopsAutoZapper.csproj", "{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
@@ -63,6 +65,7 @@ Global
 		Utilities\Utilities.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 4
 		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{7505fe7e-0ed8-48d6-adcb-710dcd727cf2}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{7505fe7e-0ed8-48d6-adcb-710dcd727cf2}*SharedItemsImports = 4
+		Utilities\Utilities.projitems*{7a11a1db-09f4-44a5-bcd7-2ceac6b1febd}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{8d209f6f-74bc-4c5f-bd7d-32f786b1e1d0}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
 		Utilities\Utilities.projitems*{a14a9bd2-6817-4beb-9664-8b24279a3dab}*SharedItemsImports = 4
@@ -141,6 +144,10 @@ Global
 		{7505FE7E-0ED8-48D6-ADCB-710DCD727CF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7505FE7E-0ED8-48D6-ADCB-710DCD727CF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7505FE7E-0ED8-48D6-ADCB-710DCD727CF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -156,6 +163,7 @@ Global
 		{DA01F903-5E97-47FC-A7E5-D67967D89646} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{8D209F6F-74BC-4C5F-BD7D-32F786B1E1D0} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{7505FE7E-0ED8-48D6-ADCB-710DCD727CF2} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
+		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE0C8D9E-28B2-4836-8250-A175A58A5566}

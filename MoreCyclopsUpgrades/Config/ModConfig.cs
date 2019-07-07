@@ -177,9 +177,9 @@
             }
         }
 
-        public bool ShowIconsWhilePiloting { get; private set; }
+        public bool ShowIconsWhilePiloting { get; private set; } = true;
 
-        public bool ShowIconsOnHoloDisplay { get; private set; }
+        public bool ShowIconsOnHoloDisplay { get; private set; } = true;
 
         public float RechargePenalty { get; private set; } = 1f;
 
@@ -196,25 +196,32 @@
                 QuickLogger.Info($"Default config save data file created");
             }
 
+            // Load values from Save Data
             auxConsoleEnabled.SaveData = saveData.GetBoolProperty(auxConsoleEnabled.Id);
-            auxConsoleEnabled.OptionToggled = (bool value) => { this.AuxConsoleEnabled = value; };
-
             challengeMode.SaveData = saveData.GetIntProperty(challengeMode.Id);
-            challengeMode.ChoiceChanged = (int index) => { this.ChallengeMode = (ChallengeMode)index; };
-
             deficitThreshHold.SaveData = saveData.GetFloatProperty(deficitThreshHold.Id);
-            deficitThreshHold.ValueChanged = (float value) => { this.DeficitThreshold = value; };
-
             showIcons.SaveData = saveData.GetIntProperty(showIcons.Id);
-            showIcons.ChoiceChanged = (int index) => { this.ChargerIcons = (ShowChargerIcons)index; };
-
             debugLogs.SaveData = saveData.GetBoolProperty(debugLogs.Id);
-            debugLogs.OptionToggled = (bool value) => { this.DebugLogsEnabled = value; };
-
             energyDisplay.SaveData = saveData.GetIntProperty(energyDisplay.Id);
+
+            // Update current settings to match save data
+            this.AuxConsoleEnabled = auxConsoleEnabled.SaveData.Value;
+            this.ChallengeMode = (ChallengeMode)challengeMode.SaveData.Value;
+            this.DeficitThreshold = deficitThreshHold.SaveData.Value;
+            this.ChargerIcons = (ShowChargerIcons)showIcons.SaveData.Value;
+            this.DebugLogsEnabled = debugLogs.SaveData.Value;
+            this.EnergyDisplay = (HelmEnergyDisplay)energyDisplay.SaveData.Value;
+
+            // Link event handlers to accept changes from in-game menu
+            auxConsoleEnabled.OptionToggled = (bool value) => { this.AuxConsoleEnabled = value; };
+            challengeMode.ChoiceChanged = (int index) => { this.ChallengeMode = (ChallengeMode)index; };
+            deficitThreshHold.ValueChanged = (float value) => { this.DeficitThreshold = value; };
+            showIcons.ChoiceChanged = (int index) => { this.ChargerIcons = (ShowChargerIcons)index; };
+            debugLogs.OptionToggled = (bool value) => { this.DebugLogsEnabled = value; };
             energyDisplay.ChoiceChanged = (int index) => { this.EnergyDisplay = (HelmEnergyDisplay)index; };
 
             menuOptions.Register();
+
             initialized = true;
         }
 
