@@ -25,11 +25,11 @@
             }
         }
 
-        private const float TimeBetweenZaps = 6f;
+        private const float TimeBetweenZaps = 6.5f;
         private const float EnergyCostPerRadiusZap = 36f;
         private const float DirectZapMultiplier = 0.5f;
         private const float EnergyCostPerDirectZap = EnergyCostPerRadiusZap * DirectZapMultiplier;
-        private const float ZapPower = 9f;
+        private const float ZapPower = 6f;
         private const float DamageMultiplier = 30f;
         private const float BaseCharge = 2f;
         private const float BaseRadius = 1f;

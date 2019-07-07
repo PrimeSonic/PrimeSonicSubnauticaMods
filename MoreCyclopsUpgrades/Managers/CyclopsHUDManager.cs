@@ -294,7 +294,5 @@
                 helmIcon.Enabled = ModConfig.Main.ShowIconsWhilePiloting;
             }
         }
-
-
     }
 }

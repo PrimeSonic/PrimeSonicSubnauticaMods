@@ -19,7 +19,7 @@
             {
                 return new UpgradeHandler(zapper.TechType, cyclops)
                 {
-                    MaxCount = 1,                    
+                    MaxCount = 2,                    
                 };
             });
 
