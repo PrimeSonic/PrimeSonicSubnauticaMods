@@ -116,6 +116,8 @@
             cleared = false;
 
             OnFinishedUpgrades?.Invoke();
+
+            CheckIfMaxedOut();
         }
 
         internal override void RegisterSelf(IDictionary<TechType, UpgradeHandler> dictionary)

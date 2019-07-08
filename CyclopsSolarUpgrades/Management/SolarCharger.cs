@@ -16,7 +16,7 @@
 
         protected override string PercentNotation => "%Θ";
         protected override float MaximumEnergyStatus => 90f;
-        protected override float MinimumEnergyStatus => 1f;
+        protected override float MinimumEnergyStatus => 10f;
 
         protected override float GetEnergyStatus()
         {

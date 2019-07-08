@@ -21,19 +21,20 @@
 
         public override void UpdateText()
         {
-            float cyclopsHeat = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
-            float displayTemperature = Mathf.Max(chargeHandler.HeatLevel, cyclopsHeat);
+            float displayTemperature = Mathf.Max(chargeHandler.DisplayedHeatLevel, 25f);
 
             if (chargeHandler.IsOverheated)
             {
                 base.UpperText.TextString = "SHUTDOWN";
+                base.UpperText.FontSize = 14;
             }
             else
             {
                 base.UpperText.TextString = NumberFormatter.FormatValue(displayTemperature) + "°C";
+                base.UpperText.FontSize = 20;
             }
 
-            base.UpperText.TextColor = NumberFormatter.GetNumberColor(displayTemperature, NuclearChargeHandler.MaxHeat, cyclopsHeat - 1f);
+            base.UpperText.TextColor = chargeHandler.GetIndicatorTextColor();
 
             if (battery != null)
             {

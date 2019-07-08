@@ -20,7 +20,7 @@ Mods built using the `MoreCyclopsUpgrades` APIs in part or in whole.
 **CyclopsNuclearUpgrades** | A tiny nuclear reactor that fits in the upgrade console itself.<br/>Includes the Nuclear Fabricator to build all your nuclear crafts in one place. | TBD 
 **CyclopsSolarUpgrades** | Provides two tiers of solar charging upgrade modules. | TBD
 **CyclopsSpeedUpgrades** | Provides a speed boosting upgarde module for the Cyclops. | TBD 
-**CyclopsThermalUpgrades** | Improves the original Cyclops Thermal Reactor Module that can also be modified into a better version. | TBD 
+**CyclopsThermalUpgrades** | Improves the original Cyclops Thermal Reactor Module and lets you upgrade it into a better version. | [271](https://www.nexusmods.com/subnautica/mods/271) 
 
 ## Other Mods
 

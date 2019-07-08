@@ -14,7 +14,7 @@
 
         protected override string PercentNotation => "°C";
         protected override float MaximumEnergyStatus => 100f;
-        protected override float MinimumEnergyStatus => 25f;
+        protected override float MinimumEnergyStatus => 35f;
 
         protected override float GetEnergyStatus()
         {

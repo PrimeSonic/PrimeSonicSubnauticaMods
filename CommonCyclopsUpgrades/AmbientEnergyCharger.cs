@@ -8,7 +8,7 @@
         where T : AmbientEnergyUpgradeHandler
     {
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        private const float BatteryDrainRate = 0.01f;
+        private const float BatteryDrainRate = 2.0f;
 
         protected enum EnergyState
         {
@@ -97,7 +97,7 @@
 
         public bool HasPowerIndicatorInfo()
         {
-            return this.CurrentState > EnergyState.NoPower;
+            return this.CurrentState != EnergyState.NoPower;
         }
 
         public float ProducePower(float requestedPower)
@@ -124,7 +124,7 @@
                 return multipliedEnergy;
             }
             else if (this.AmbientEnergyUpgrade.TotalBatteryCharge > MinimalPowerValue)
-            {
+            {                
                 this.CurrentState = EnergyState.RunningOnBatteries;
                 return this.AmbientEnergyUpgrade.GetBatteryPower(BatteryDrainRate, requestedPower);
             }

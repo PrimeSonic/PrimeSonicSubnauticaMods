@@ -164,14 +164,16 @@
             foreach (ICyclopsCharger charger in RenewablePowerChargers)
                 producedPower += charger.ProducePower(powerDeficit);
 
-            if (NonRenewablePowerChargers.Count > 0 && // Do we have non-renewable energy sources?
-                powerDeficit - producedPower > MinimalPowerValue && // Did the renewable energy sources produce enough power to cover the deficit?
-                powerDeficit > ModConfig.Main.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
+            float alternatePowerDeficit = 0f;
+            if (producedPower < MinimalPowerValue && // Did the renewable energy sources not produce any power?
+                powerDeficit < ModConfig.Main.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
             {
                 // Start producing power from non-renewable energy
-                foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
-                    producedPower += charger.ProducePower(powerDeficit);
+                alternatePowerDeficit = powerDeficit;
             }
+
+            foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
+                producedPower += charger.ProducePower(powerDeficit);
 
             ChargeCyclops(producedPower, ref powerDeficit);
 

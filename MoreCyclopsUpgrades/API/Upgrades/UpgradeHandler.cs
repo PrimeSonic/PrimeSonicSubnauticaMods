@@ -158,6 +158,11 @@
         {
             OnFinishedUpgrades?.Invoke();
 
+            CheckIfMaxedOut();
+        }
+
+        internal void CheckIfMaxedOut()
+        {
             if (!maxedOut) // If we haven't maxed out before, check this block
             {
                 maxedOut = count == this.MaxCount; // Are we maxed out now?

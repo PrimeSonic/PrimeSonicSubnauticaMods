@@ -13,10 +13,39 @@
         private readonly IList<BatteryDetails> batteries = new List<BatteryDetails>();
         private float totalBatteryCharge = 0f;
         private float totalBatteryCapacity = 0f;
+        private bool updating = false;
 
-        public float TotalBatteryCapacity { get; private set; }
-        public float TotalBatteryCharge { get; private set; }
-        public float ChargeMultiplier { get; private set; }
+        public float TotalBatteryCapacity
+        {
+            get
+            {
+                if (!updating)
+                {
+                    totalBatteryCapacity = 0f;
+                    foreach (BatteryDetails battery in batteries)
+                        totalBatteryCapacity += battery.BatteryRef._capacity;
+                }
+
+                return totalBatteryCapacity;
+            }
+        }
+
+        public float TotalBatteryCharge
+        {
+            get
+            {
+                if (!updating)
+                {
+                    totalBatteryCharge = 0f;
+                    foreach (BatteryDetails battery in batteries)
+                        totalBatteryCharge += battery.BatteryRef._charge;
+                }
+
+                return totalBatteryCharge;
+            }
+        }
+
+        public float ChargeMultiplier { get; private set; } = 1f;
 
         public readonly TechType Tier1ID;
         public readonly TechType Tier2ID;
@@ -36,9 +65,7 @@
 
             OnClearUpgrades = () =>
             {
-                totalBatteryCharge = 0f;
-                totalBatteryCapacity = 0f;
-                this.ChargeMultiplier = 0f;
+                updating = true;
                 batteries.Clear();
             };
 
@@ -51,39 +78,28 @@
             tier1.IsAllowedToAdd += CheckCombinedTotal;
             tier2.IsAllowedToAdd += CheckCombinedTotal;
 
-            tier2.OnUpgradeCountedDetailed += AddBatteryDetails;
+            OnUpgradeCountedDetailed += AddBatteryDetails;
 
             OnFinishedUpgrades = () =>
             {
-                if (this.Count == 0)
-                {
-                    this.TotalBatteryCapacity = 0f;
-                    this.TotalBatteryCharge = 0f;
-                    this.ChargeMultiplier = 0f;
-                }
-                else
-                {
-                    this.TotalBatteryCapacity = totalBatteryCapacity;
-                    this.TotalBatteryCharge = totalBatteryCharge;
-                    if (this.Count > 1)
-                    {
-                        // Stacking multiple solar/thermal chargers has diminishing returns on how much extra energy you can get after the first.
-                        // The diminishing returns are themselves also variable.
-                        // Heavy diminishing returns for tier 1 modules.
-                        // Better returns and multiplier for tier 2 modules.
+                updating = false;
 
-                        // The diminishing returns follow a geometric sequence with a factor always less than 1.
-                        // You can check the math on this over here https://www.purplemath.com/modules/series5.htm
+                if (this.Count > 1)
+                {
+                    // Stacking multiple solar/thermal chargers has diminishing returns on how much extra energy you can get after the first.
+                    // The diminishing returns are themselves also variable.
+                    // Heavy diminishing returns for tier 1 modules.
+                    // Better returns and multiplier for tier 2 modules.
 
-                        float diminishingReturnFactor = 0.4f + (0.045f * tier2.Count);
-                        this.ChargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) /
-                                                            (1 - diminishingReturnFactor);
-                        this.ChargeMultiplier += (0.015f * tier2.Count);
-                    }
-                    else
-                    {
-                        this.ChargeMultiplier = 1f;
-                    }
+                    // The diminishing returns follow a geometric sequence with a factor always less than 1.
+                    // You can check the math on this over here https://www.purplemath.com/modules/series5.htm
+
+                    float diminishingReturnFactor = 0.4f + (0.045f * tier2.Count);
+                    float chargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) /
+                                                (1 - diminishingReturnFactor);
+                    chargeMultiplier += 0.015f * tier2.Count;
+
+                    this.ChargeMultiplier = Mathf.Max(1f, chargeMultiplier);
                 }
             };
 
@@ -102,20 +118,15 @@
         {
             var details = new BatteryDetails(modules, slot, inventoryItem.item.GetComponent<Battery>());
             batteries.Add(details);
-            totalBatteryCharge += details.BatteryRef._charge;
-            totalBatteryCapacity += details.BatteryRef._capacity;
         }
 
         public float GetBatteryPower(float drainingRate, float requestedPower)
         {
-            if (requestedPower < MinimalPowerValue) // No power deficit left to charge
-                return 0f; // Exit
-
             float totalDrainedAmt = 0f;
             foreach (BatteryDetails details in batteries)
             {
-                if (requestedPower <= 0f)
-                    continue; // No more power requested
+                if (requestedPower < MinimalPowerValue) // No power deficit left to charge
+                    break; // Exit
 
                 Battery battery = details.BatteryRef;
 
@@ -123,7 +134,7 @@
                     continue; // Skip this battery
 
                 // Mathf.Min is to prevent accidentally taking too much power from the battery
-                float amtToDrain = Mathf.Min(requestedPower, drainingRate);
+                float amtToDrain = Mathf.Min(requestedPower, drainingRate * Time.deltaTime);
 
                 if (battery._charge > amtToDrain)
                 {

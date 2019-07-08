@@ -18,9 +18,22 @@
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private readonly IList<BatteryDetails> batteries = new List<BatteryDetails>();
         private readonly INuclearModuleDepleter moduleDepleter;
-
+        private bool updating = false;
         private float totalBatteryCharge = 0f;
-        internal float TotalBatteryCharge { get; private set; }
+        internal float TotalBatteryCharge
+        {
+            get
+            {
+                if (!updating)
+                {
+                    totalBatteryCharge = 0f;
+                    foreach (BatteryDetails battery in batteries)
+                        totalBatteryCharge += battery.BatteryRef._charge;
+                }
+
+                return totalBatteryCharge;
+            }
+        }
         internal bool TooHotToHandle { get; set; } = false;
 
         public NuclearUpgradeHandler(TechType nuclearModule, INuclearModuleDepleter depleter, SubRoot cyclops)
@@ -32,7 +45,8 @@
 
             OnClearUpgrades += () =>
             {
-                totalBatteryCharge = 0f;
+                totalBatteryCharge = this.TotalBatteryCharge;
+                updating = true;
                 batteries.Clear();
             };
 
@@ -40,12 +54,11 @@
             {
                 var details = new BatteryDetails(modules, slot, inventoryItem.item.GetComponent<Battery>());
                 batteries.Add(details);
-                totalBatteryCharge += details.BatteryRef._charge;
             };
 
-            OnFinishedUpgrades += () =>
+            OnFinishedUpgrades = () =>
             {
-                this.TotalBatteryCharge = totalBatteryCharge;
+                updating = false;
             };
 
             OnFirstTimeMaxCountReached += () =>
@@ -76,7 +89,7 @@
                     continue; // Skip this battery
 
                 // Mathf.Min is to prevent accidentally taking too much power from the battery
-                float amtToDrain = Mathf.Min(requestedPower, drainingRate);
+                float amtToDrain = Mathf.Min(requestedPower, drainingRate * Time.deltaTime);
 
                 if (battery._charge > amtToDrain)
                 {
