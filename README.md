@@ -14,12 +14,13 @@ Mods built using the `MoreCyclopsUpgrades` APIs in part or in whole.
 
 **Mod** | **Description** | **Nexus** 
 -|-|- 
-**CyclopsBioReactor** | Build a miniature bioreactor in your Cyclops and then upgrade it with the BioBooster. | TBD 
-**CyclopsEngineUpgrades** | Adds another 2 tiers of Cyclops Engine Efficiency upgrades. | TBD 
+**CyclopsAutoZapper** | Use the Seamoth Electrical Defense System as automated protection against hostile predators. | [276](https://www.nexusmods.com/subnautica/mods/276) 
+**CyclopsBioReactor** | Build a miniature, upgradeable bioreactor for your Cyclops. | [277](https://www.nexusmods.com/subnautica/mods/277)
+**CyclopsEngineUpgrades** | Adds another 2 tiers of Cyclops Engine Efficiency upgrades. | [275](https://www.nexusmods.com/subnautica/mods/275) 
 **CyclopsNuclearReactor** | The nuclear reactor the Cyclops always deserved!<br/>Created in collaboration with [ccgould](https://github.com/ccgould) / [FCStudios](https://www.nexusmods.com/subnautica/users/66012691) | [241](https://www.nexusmods.com/subnautica/mods/241) 
-**CyclopsNuclearUpgrades** | A tiny nuclear reactor that fits in the upgrade console itself.<br/>Includes the Nuclear Fabricator to build all your nuclear crafts in one place. | TBD 
-**CyclopsSolarUpgrades** | Provides two tiers of solar charging upgrade modules. | TBD
-**CyclopsSpeedUpgrades** | Provides a speed boosting upgarde module for the Cyclops. | TBD 
+**CyclopsNuclearUpgrades** | A tiny nuclear reactor that fits in the upgrade console itself.<br/>Includes the Nuclear Fabricator to build all your nuclear crafts in one place. | [274](https://www.nexusmods.com/subnautica/mods/274) 
+**CyclopsSolarUpgrades** | Provides two tiers of solar charging upgrade modules. | [273](https://www.nexusmods.com/subnautica/mods/273) 
+**CyclopsSpeedUpgrades** | Provides a speed boosting upgarde module for the Cyclops. | [272](https://www.nexusmods.com/subnautica/mods/272) 
 **CyclopsThermalUpgrades** | Improves the original Cyclops Thermal Reactor Module and lets you upgrade it into a better version. | [271](https://www.nexusmods.com/subnautica/mods/271) 
 
 ## Other Mods
