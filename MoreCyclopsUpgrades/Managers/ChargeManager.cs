@@ -154,9 +154,7 @@
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
             float powerDeficit = GameModeUtils.RequiresPower()
                                  ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
-                                 : 0f;
-
-            this.HUDManager.UpdateTextVisibility();
+                                 : 0f;            
 
             float producedPower = 0f;
 
@@ -176,6 +174,8 @@
                 producedPower += charger.ProducePower(powerDeficit);
 
             ChargeCyclops(producedPower, ref powerDeficit);
+
+            this.HUDManager.UpdateTextVisibility();
 
             return requiresVanillaCharging;
         }

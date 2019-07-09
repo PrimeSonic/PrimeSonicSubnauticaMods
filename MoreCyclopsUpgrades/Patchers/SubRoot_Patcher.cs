@@ -88,6 +88,9 @@
             if (firstEventDone)
                 return;
 
+            if (voiceMgr != null || __instance.voiceNotificationManager == null)
+                return;
+
             voiceMgr = __instance.voiceNotificationManager;
             __instance.voiceNotificationManager = null;
         }
@@ -98,7 +101,11 @@
             if (firstEventDone)
                 return;
 
-            __instance.voiceNotificationManager = voiceMgr;
+            if (voiceMgr != null && __instance.voiceNotificationManager == null)
+            {
+                __instance.voiceNotificationManager = voiceMgr;
+            }
+            
             firstEventDone = true;
         }
     }

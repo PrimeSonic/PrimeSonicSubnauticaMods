@@ -21,7 +21,7 @@
 
         public override void UpdateText()
         {
-            float displayTemperature = Mathf.Max(chargeHandler.DisplayedHeatLevel, 25f);
+            float displayTemperature = Mathf.Max(chargeHandler.HeatLevel, 24f);
 
             if (chargeHandler.IsOverheated)
             {

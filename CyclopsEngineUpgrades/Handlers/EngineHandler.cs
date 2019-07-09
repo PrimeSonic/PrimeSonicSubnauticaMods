@@ -36,6 +36,14 @@
         private IPowerRatingManager ratingManager;
         private IPowerRatingManager RatingManager => ratingManager ?? (ratingManager = MCUServices.CrossMod.GetPowerRatingManager(base.Cyclops));
 
+        public float CurrentRatingBonus => EnginePowerRatings[this.HighestValue] * 100f;
+
+        public float EngineRating(TechType tier)
+        {
+            int index = base.TierValue(tier);
+            return EnginePowerRatings[index];
+        }
+
         public EngineHandler(PowerUpgradeModuleMk2 upgradeMk2, PowerUpgradeModuleMk3 upgradeMk3, SubRoot cyclops)
             : base(BaseValue, cyclops)
         {

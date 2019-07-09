@@ -56,6 +56,22 @@
         public readonly T DefaultValue;
 
         /// <summary>
+        /// Get the value assigned to the specified tier techtype.
+        /// </summary>
+        /// <param name="techType">The TechTech to check.</param>
+        /// <returns>The <see cref="{T}"/> value associated to the tier if found; Otherwise returns <see cref="DefaultValue"/>.</returns>
+        public T TierValue(TechType tierId)
+        {
+            TieredUpgradeHandler<T> tier = collection.Find(t => t.TechType == tierId);
+            if (tier != null)
+            {
+                return tier.TieredValue;
+            }
+
+            return DefaultValue;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TieredGroupHandler{T}" /> class with the default tier value.
         /// </summary>
         /// <param name="defaultValue">The default value to use when upgrades are cleared.</param>

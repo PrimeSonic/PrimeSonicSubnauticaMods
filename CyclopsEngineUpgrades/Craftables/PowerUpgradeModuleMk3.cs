@@ -45,5 +45,10 @@
         {
             return new EngineHandler(previousTier, this, cyclops);
         }
+
+        internal EngineOverlay CreateEngineOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        {
+            return new EngineOverlay(icon, upgradeModule);
+        }
     }
 }

@@ -25,7 +25,7 @@
             }
         }
 
-        private const float TimeBetweenZaps = 6.5f;
+        private const float TimeBetweenZaps = 7.0f;
         private const float EnergyCostPerRadiusZap = 36f;
         private const float DirectZapMultiplier = 0.5f;
         private const float EnergyCostPerDirectZap = EnergyCostPerRadiusZap * DirectZapMultiplier;
@@ -36,6 +36,8 @@
 
         private const float DirectZapDamage = (BaseRadius + ZapPower * BaseCharge) * DamageMultiplier * DirectZapMultiplier;
         // Calculations and initial values base off ElectricalDefense component
+
+        internal const float EnergyRequiredToZap = EnergyCostPerRadiusZap + EnergyCostPerDirectZap;
 
         private readonly SubRoot Cyclops;
         private readonly TechType UpgradeTechType;
@@ -92,6 +94,9 @@
                 return;
 
             if (this.IsOnCooldown)
+                return;
+
+            if (Cyclops.powerRelay.GetPower() < EnergyRequiredToZap)
                 return;
 
             ZapRadius();

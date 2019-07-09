@@ -47,6 +47,8 @@
 
         public float ChargeMultiplier { get; private set; } = 1f;
 
+        public bool HasBatteriesToCharge => tier2.Count > 0;
+
         public readonly TechType Tier1ID;
         public readonly TechType Tier2ID;
 
@@ -116,8 +118,11 @@
 
         private void AddBatteryDetails(Equipment modules, string slot, InventoryItem inventoryItem)
         {
-            var details = new BatteryDetails(modules, slot, inventoryItem.item.GetComponent<Battery>());
-            batteries.Add(details);
+            if (inventoryItem.item.GetTechType() == tier2.TechType)
+            {
+                var details = new BatteryDetails(modules, slot, inventoryItem.item.GetComponent<Battery>());
+                batteries.Add(details);
+            }
         }
 
         public float GetBatteryPower(float drainingRate, float requestedPower)

@@ -17,6 +17,9 @@
             engineMk3Upgrade.Patch();
 
             MCUServices.Register.CyclopsUpgradeHandler(engineMk3Upgrade.CreateEngineHandler);
+            MCUServices.Register.PdaIconOverlay(TechType.PowerUpgradeModule, engineMk3Upgrade.CreateEngineOverlay);
+            MCUServices.Register.PdaIconOverlay(engineMk2Upgrade.TechType, engineMk3Upgrade.CreateEngineOverlay);
+            MCUServices.Register.PdaIconOverlay(engineMk3Upgrade.TechType, engineMk3Upgrade.CreateEngineOverlay);
 
             QuickLogger.Info($"Finished patching.");
         }

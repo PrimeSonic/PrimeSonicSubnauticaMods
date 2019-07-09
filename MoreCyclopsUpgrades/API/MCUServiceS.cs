@@ -48,6 +48,36 @@
             CyclopsManager.GetManager(cyclops)?.Engine.ApplyPowerRatingModifier(techType, modifier);
         }
 
+        public bool HasUpgradeInstalled(SubRoot cyclops, TechType techType)
+        {
+            var mgr = CyclopsManager.GetManager(cyclops);
+
+            if (mgr == null)
+                return false;
+
+            if (mgr.Upgrade.KnownsUpgradeModules.TryGetValue(techType, out UpgradeHandler handler))
+            {
+                return handler.HasUpgrade;
+            }
+
+            return false;
+        }
+
+        public int GetUpgradeCount(SubRoot cyclops, TechType techType)
+        {
+            var mgr = CyclopsManager.GetManager(cyclops);
+
+            if (mgr == null)
+                return 0;
+
+            if (mgr.Upgrade.KnownsUpgradeModules.TryGetValue(techType, out UpgradeHandler handler))
+            {
+                return handler.Count;
+            }
+
+            return 0;
+        }
+
         #endregion
 
         #region IMCURegistration
@@ -64,7 +94,7 @@
             CyclopsCharger<T>(createEvent, true);
         }
 
-        public void RenewableCyclopsCharger<T>(ICyclopsChargerCreator chargerCreator) 
+        public void RenewableCyclopsCharger<T>(ICyclopsChargerCreator chargerCreator)
             where T : ICyclopsCharger
         {
             CyclopsCharger<T>(chargerCreator.CreateCyclopsCharger, true);

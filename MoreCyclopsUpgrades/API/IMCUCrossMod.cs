@@ -35,5 +35,23 @@
         /// Values greater than <c>1f</c> improve engine efficienty rating.
         /// </param>
         void ApplyPowerRatingModifier(SubRoot cyclops, TechType techType, float modifier);
+
+        /// <summary>
+        /// Checks whether the Cyclops has the specified upgrade module installed anywhere across all upgrade consoles.
+        /// </summary>
+        /// <param name="cyclops">The cyclops to search.</param>
+        /// <param name="techType">The upgrade module's techtype ID.</param>
+        /// <returns>
+        ///   <c>true</c> if the upgrade is found installed on the Cyclops; otherwise, <c>false</c>.
+        /// </returns>
+        bool HasUpgradeInstalled(SubRoot cyclops, TechType techType);
+
+        /// <summary>
+        /// Gets the total number of the specified upgrade module currently installed in the Cyclops.
+        /// </summary>
+        /// <param name="cyclops">The cyclops to search.</param>
+        /// <param name="techType">The upgrade module's techtype ID.</param>
+        /// <returns>The number of upgrade modules of this techtype ID currently in the Cyclops.</returns>
+        int GetUpgradeCount(SubRoot cyclops, TechType techType);
     }
 }
