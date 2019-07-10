@@ -1,12 +1,12 @@
 ﻿namespace CyclopsBioReactor
 {
+    using System.Collections.Generic;
     using Common;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
     using CyclopsBioReactor.SaveData;
     using MoreCyclopsUpgrades.API;
     using ProtoBuf;
-    using System.Collections.Generic;
     using UnityEngine;
 
     [ProtoContract]
@@ -34,7 +34,7 @@
 
         private const float TextDelayInterval = 2f;
 
-        private bool _isOperating => ProducingPower && HasPower;
+        private bool _isOperating => this.ProducingPower && this.HasPower;
 
         [AssertNotNull]
         public ChildObjectIdentifier storageRoot;
@@ -101,34 +101,34 @@
             InitializeStorageRoot();
             InitializeContainer();
 
-            ScreenStateHash = UnityEngine.Animator.StringToHash("ScreenState");
-            DoorStateHash = UnityEngine.Animator.StringToHash("DoorState");
-            MixingStateHash = UnityEngine.Animator.StringToHash("MixingState");
+            this.ScreenStateHash = UnityEngine.Animator.StringToHash("ScreenState");
+            this.DoorStateHash = UnityEngine.Animator.StringToHash("DoorState");
+            this.MixingStateHash = UnityEngine.Animator.StringToHash("MixingState");
 
-            AnimationHandler = new CyBioReactorAnimationHandler();
-            AnimationHandler.Setup(this);
+            this.AnimationHandler = new CyBioReactorAnimationHandler();
+            this.AnimationHandler.Setup(this);
 
             _displayHandler = new CyBioReactorDisplayHandler();
             _displayHandler.Setup(this);
 
-            var trigger = gameObject.FindChild("Trigger").AddComponent<CyBioreactorTrigger>();
+            CyBioreactorTrigger trigger = this.gameObject.FindChild("Trigger").AddComponent<CyBioreactorTrigger>();
             trigger.OnPlayerEnter += OnPlayerEnter;
             trigger.OnPlayerExit += OnPlayerExit;
 
-            _audioHandler = new CyBioReactorAudioHandler(transform);
+            _audioHandler = new CyBioReactorAudioHandler(this.transform);
 
             _audioHandler.SetSoundActive(true);
         }
 
         private void OnPlayerExit()
         {
-            AnimationHandler?.SetIntHash(DoorStateHash, 2);
+            this.AnimationHandler?.SetIntHash(this.DoorStateHash, 2);
             _audioHandler.PlayDoorSoundClip(true);
         }
 
         private void OnPlayerEnter()
         {
-            AnimationHandler?.SetIntHash(DoorStateHash, 1);
+            this.AnimationHandler?.SetIntHash(this.DoorStateHash, 1);
             _audioHandler.PlayDoorSoundClip(true);
 
         }
@@ -200,11 +200,18 @@
 
         private void UpdateReactorSystems()
         {
-            if (AnimationHandler == null || _displayHandler == null) return;
-            _displayHandler.UpdateScreen(_isOperating);
+            if (this.AnimationHandler == null || _displayHandler == null)
+                return;
 
-            if (AnimationHandler.GetBoolHash(MixingStateHash) == _isOperating) return;
-            AnimationHandler.SetBoolHash(MixingStateHash, _isOperating);
+            if (this._isOperating)
+                _displayHandler.SetActive(Mathf.FloorToInt(this.Charge), Mathf.CeilToInt(this.Capacity), this.MaterialsProcessing.Count > 0);
+            else
+                _displayHandler.SetInactive();
+
+            if (this.AnimationHandler.GetBoolHash(this.MixingStateHash) == this._isOperating)
+                return;
+
+            this.AnimationHandler.SetBoolHash(this.MixingStateHash, this._isOperating);
         }
 
         #region Player interaction
@@ -215,7 +222,8 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText(CyBioReactor.OnHoverFormatString(Mathf.FloorToInt(this.Charge), this.Capacity, (this.MaterialsProcessing.Count > 0 ? "+" : "")));
+
+            main.SetInteractText($"{Language.main.GetFormat("UseBaseBioReactor", Mathf.RoundToInt(this.Charge), Mathf.RoundToInt(this.Capacity))}{(this.MaterialsProcessing.Count > 0 ? "+" : "")}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -570,7 +578,7 @@
 
         public bool CanDeconstruct(out string reason)
         {
-            var flag = Buildable.CanDeconstruct(out var result);
+            bool flag = Buildable.CanDeconstruct(out string result);
             reason = result;
             return flag;
         }

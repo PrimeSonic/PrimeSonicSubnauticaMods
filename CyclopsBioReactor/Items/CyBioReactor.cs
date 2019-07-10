@@ -12,12 +12,6 @@ namespace CyclopsBioReactor.Items
 
     internal class CyBioReactor : Buildable
     {
-        private const string OnHoverFormatKey = "CyBioOnHover";
-        public static string OnHoverFormatString(int charge, float capacity, string stillProducing)
-        {
-            return Language.main.GetFormat(OnHoverFormatKey, charge, capacity, stillProducing);
-        }
-
         private const string OverLimitKey = "CyBioOverLimit";
         public static string OverLimitString()
         {
@@ -53,7 +47,6 @@ namespace CyclopsBioReactor.Items
             OnFinishedPatching += () =>
             {
                 LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
-                LanguageHandler.SetLanguageLine(OnHoverFormatKey, "Use Cyclops Bioreactor {0}/{1}{2} ");
                 LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");
             };
 
@@ -91,7 +84,7 @@ namespace CyclopsBioReactor.Items
                 QuickLogger.Error("Prefab is null", true);
             }
 
-            var model = prefab.FindChild("model");
+            GameObject model = prefab.FindChild("model");
 
             // Update sky applier
             SkyApplier skyApplier = prefab.AddComponent<SkyApplier>();

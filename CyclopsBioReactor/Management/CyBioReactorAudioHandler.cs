@@ -1,8 +1,8 @@
-﻿using Common;
-using UnityEngine;
-
-namespace CyclopsBioReactor.Management
+﻿namespace CyclopsBioReactor.Management
 {
+    using Common;
+    using UnityEngine;
+
     internal class CyBioReactorAudioHandler : MonoBehaviour
     {
         #region Private Members
@@ -34,12 +34,12 @@ namespace CyclopsBioReactor.Management
                 {
                     case "bioreactor_hatch_close":
                         QuickLogger.Debug("bioreactor_hatch_close found!", true);
-                        this._doorClose = fmod;
+                        _doorClose = fmod;
                         break;
 
                     case "bioreactor_hatch_open":
                         QuickLogger.Debug("bioreactor_hatch_open found!", true);
-                        this._doorOpen = fmod;
+                        _doorOpen = fmod;
                         break;
                 }
             }
@@ -76,9 +76,9 @@ namespace CyclopsBioReactor.Management
         /// <param name="doorState"></param>
         internal void PlayDoorSoundClip(bool doorState)
         {
-            if (!this._allowedToPlaySounds)
+            if (!_allowedToPlaySounds)
                 return;
-            FMODAsset asset = !doorState ? this._doorOpen : this._doorClose;
+            FMODAsset asset = !doorState ? _doorOpen : _doorClose;
             if (!(asset != null))
                 return;
             FMODUWE.PlayOneShot(asset, _transform.position, 1f);

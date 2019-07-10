@@ -1,24 +1,24 @@
-﻿using Common;
-using UnityEngine;
-
-namespace CyclopsBioReactor.Management
+﻿namespace CyclopsBioReactor.Management
 {
+    using Common;
+    using UnityEngine;
+
     internal class CyBioReactorAnimationHandler
     {
         internal void Setup(CyBioReactorMono mono)
         {
             _mono = mono;
-            this._animator = mono.transform.GetComponent<Animator>();
+            _animator = mono.transform.GetComponent<Animator>();
 
-            if (this._animator == null)
+            if (_animator == null)
             {
                 QuickLogger.Error("Animator component not found on the GameObject.");
             }
 
-            if (this._animator != null && this._animator.enabled == false)
+            if (_animator != null && _animator.enabled == false)
             {
                 QuickLogger.Debug("Animator was disabled and now has been enabled");
-                this._animator.enabled = true;
+                _animator.enabled = true;
             }
         }
 
@@ -39,10 +39,10 @@ namespace CyclopsBioReactor.Management
         {
             if (_animator == null)
             {
-                this._animator = _mono.transform.GetComponent<Animator>();
+                _animator = _mono.transform.GetComponent<Animator>();
             }
 
-            this._animator.SetBool(stateHash, value);
+            _animator.SetBool(stateHash, value);
         }
 
         /// <summary>
@@ -54,36 +54,39 @@ namespace CyclopsBioReactor.Management
         {
             if (_animator == null)
             {
-                this._animator = _mono.transform.GetComponent<Animator>();
+                _animator = _mono.transform.GetComponent<Animator>();
             }
 
-            if (_animator == null) return;
+            if (_animator == null)
+                return;
 
-            this._animator.SetInteger(stateHash, value);
+            _animator.SetInteger(stateHash, value);
         }
 
         internal int GetIntHash(int hash)
         {
             if (_animator == null)
             {
-                this._animator = _mono.transform.GetComponent<Animator>();
+                _animator = _mono.transform.GetComponent<Animator>();
             }
 
-            if (_animator == null) return 0;
+            if (_animator == null)
+                return 0;
 
-            return this._animator.GetInteger(hash);
+            return _animator.GetInteger(hash);
         }
 
         internal bool GetBoolHash(int hash)
         {
             if (_animator == null)
             {
-                this._animator = _mono.transform.GetComponent<Animator>();
+                _animator = _mono.transform.GetComponent<Animator>();
             }
 
-            if (_animator == null) return false;
+            if (_animator == null)
+                return false;
 
-            return this._animator.GetBool(hash);
+            return _animator.GetBool(hash);
         }
         #endregion
 

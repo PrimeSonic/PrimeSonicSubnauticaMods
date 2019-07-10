@@ -1,9 +1,9 @@
-﻿using Common;
-using UnityEngine;
-using UnityEngine.UI;
-
-namespace CyclopsBioReactor.Management
+﻿namespace CyclopsBioReactor.Management
 {
+    using Common;
+    using UnityEngine;
+    using UnityEngine.UI;
+
     internal class CyBioReactorDisplayHandler
     {
         private CyBioReactorMono _mono;
@@ -30,7 +30,7 @@ namespace CyclopsBioReactor.Management
                 return false;
             }
 
-            var canvas = _gameobject.GetComponentInChildren<Canvas>()?.gameObject;
+            GameObject canvas = _gameobject.GetComponentInChildren<Canvas>()?.gameObject;
 
             if (canvas == null)
             {
@@ -48,9 +48,16 @@ namespace CyclopsBioReactor.Management
             return true;
         }
 
-        public void UpdateScreen(bool isOperating)
+        public void SetInactive()
         {
-            _status.text = isOperating ? $"<color=#00ff00>{Language.main.Get("BaseBioReactorActive")}</color>" : $"<color=#ff0000>{Language.main.Get("BaseBioReactorInactive")}</color>"; ;
+            _status.text = Language.main.Get("BaseBioReactorInactive");
+            _status.color = Color.red;
+        }
+
+        public void SetActive(int charge, int capacity, bool stillProcessing)
+        {
+            _status.text = $"{Language.main.Get("BaseBioReactorActive")}\n{charge}/{capacity}{(stillProcessing ? "+" : "")}";
+            _status.color = Color.green;
         }
     }
 }
