@@ -45,11 +45,11 @@
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesUnity5\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+      <HintPath>G:\C# Applications\SubNauticaMods\DLL\Assembly-CSharp-firstpass_publicized.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesUnity5\Assembly-CSharp_publicized.dll</HintPath>
+      <HintPath>G:\C# Applications\SubNauticaMods\DLL\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
