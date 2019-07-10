@@ -21,6 +21,9 @@
     /// </summary>
     public abstract class CyclopsCharger : ICyclopsCharger
     {
+        private bool showStatus;
+        private bool lastKnownStatus;
+
         public readonly SubRoot Cyclops;
 
         protected CyclopsCharger(SubRoot cyclops)
@@ -28,8 +31,7 @@
             Cyclops = cyclops;
         }
 
-        private bool showStatus;
-        bool ICyclopsCharger.ShowStatusIcon => showStatus;
+        bool ICyclopsCharger.ShowStatusIcon => lastKnownStatus;
 
         float ICyclopsCharger.Generate(float requestedPower)
         {
@@ -41,7 +43,7 @@
         float ICyclopsCharger.Drain(float requestedPower)
         {
             float energy = DrainReserveEnergy(requestedPower);
-            showStatus |= energy > 0f;
+            lastKnownStatus = showStatus |= energy > 0f;
             return energy;
         }
 
@@ -64,6 +66,7 @@
 
         /// <summary>
         /// Produces power for the Cyclops during the RechargeCyclops update cycle.<para/>
+        /// This method is only invoked if no chargers returned any energy from <see cref="GenerateNewEnergy(float)"/>.<para />
         /// Use this for method energy from batteries, reactor rods, biomass, or anything that can otherwise run out.<para />
         /// This method should return <c>0f</c> if there is no power avaiable from this charging handler.<para/>
         /// You may limit the amount of power produced to only what the cyclops needs or you may return more.<para/>

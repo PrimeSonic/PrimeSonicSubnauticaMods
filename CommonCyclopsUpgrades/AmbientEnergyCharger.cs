@@ -10,14 +10,7 @@
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private const float BatteryDrainRate = 2.0f;
 
-        protected enum EnergyState
-        {
-            NoPower = 0,
-            AmbientEnergyAvailable = 1,
-            RunningOnBatteries = 2
-        }
-
-        protected EnergyState CurrentState { get; private set; } = EnergyState.NoPower;
+        private bool ambientEnergyAvailable = false;
 
         protected abstract string PercentNotation { get; }
 
@@ -47,28 +40,12 @@
 
         public override Atlas.Sprite StatusSprite()
         {
-            switch (this.CurrentState)
-            {
-                case EnergyState.AmbientEnergyAvailable:
-                    return tier1Sprite;
-                case EnergyState.RunningOnBatteries:
-                    return tier2Sprite;
-                default:
-                    return null;
-            }
+            return ambientEnergyAvailable ? tier1Sprite : tier2Sprite;
         }
 
         public override string StatusText()
         {
-            switch (this.CurrentState)
-            {
-                case EnergyState.AmbientEnergyAvailable:
-                    return EnergyStatusText();
-                case EnergyState.RunningOnBatteries:
-                    return ReservePowerText();
-                default:
-                    return string.Empty;
-            }
+            return ambientEnergyAvailable ? EnergyStatusText() : ReservePowerText();
         }
 
         internal string EnergyStatusText()
@@ -83,65 +60,24 @@
 
         public override Color StatusTextColor()
         {
-            switch (this.CurrentState)
-            {
-                case EnergyState.AmbientEnergyAvailable:
-                    return NumberFormatter.GetNumberColor(energyStatus, this.MaximumEnergyStatus, this.MinimumEnergyStatus);
-                case EnergyState.RunningOnBatteries:
-                    return NumberFormatter.GetNumberColor(this.AmbientEnergyUpgrade.TotalBatteryCharge, this.AmbientEnergyUpgrade.TotalBatteryCapacity, 0f);
-                default:
-                    return Color.white;
-            }
-        }
-
-        public float ProducePower(float requestedPower)
-        {
-            if (this.AmbientEnergyUpgrade.Count == 0)
-            {
-                this.CurrentState = EnergyState.NoPower;
-                return 0f;
-            }
-
-            energyStatus = GetEnergyStatus();
-
-            if (energyStatus > this.MinimumEnergyStatus)
-            {
-                this.CurrentState = EnergyState.AmbientEnergyAvailable;
-
-                float availableEnergy = ConvertToAvailableEnergy(energyStatus);
-
-                float multipliedEnergy = this.AmbientEnergyUpgrade.ChargeMultiplier * availableEnergy;
-
-                if (requestedPower < multipliedEnergy)
-                    this.AmbientEnergyUpgrade.RechargeBatteries(multipliedEnergy - requestedPower);
-
-                return multipliedEnergy;
-            }
-            else if (this.AmbientEnergyUpgrade.TotalBatteryCharge > MinimalPowerValue)
-            {
-                this.CurrentState = EnergyState.RunningOnBatteries;
-                return this.AmbientEnergyUpgrade.GetBatteryPower(BatteryDrainRate, requestedPower);
-            }
-            else
-            {
-                this.CurrentState = EnergyState.NoPower;
-                return 0f;
-            }
+            return ambientEnergyAvailable
+                ? NumberFormatter.GetNumberColor(energyStatus, this.MaximumEnergyStatus, this.MinimumEnergyStatus)
+                : NumberFormatter.GetNumberColor(this.AmbientEnergyUpgrade.TotalBatteryCharge, this.AmbientEnergyUpgrade.TotalBatteryCapacity, 0f);
         }
 
         protected override float GenerateNewEnergy(float requestedPower)
         {
             if (this.AmbientEnergyUpgrade.Count == 0)
             {
-                this.CurrentState = EnergyState.NoPower;
                 return 0f;
             }
 
             energyStatus = GetEnergyStatus();
 
-            if (energyStatus > this.MinimumEnergyStatus)
+            ambientEnergyAvailable = energyStatus > this.MinimumEnergyStatus;
+
+            if (ambientEnergyAvailable)
             {
-                this.CurrentState = EnergyState.AmbientEnergyAvailable;
 
                 float availableEnergy = ConvertToAvailableEnergy(energyStatus);
 
@@ -158,16 +94,12 @@
 
         protected override float DrainReserveEnergy(float requestedPower)
         {
-            if (this.AmbientEnergyUpgrade.TotalBatteryCharge > MinimalPowerValue)
+            if (!ambientEnergyAvailable && this.AmbientEnergyUpgrade.TotalBatteryCharge > MinimalPowerValue)
             {
-                this.CurrentState = EnergyState.RunningOnBatteries;
                 return this.AmbientEnergyUpgrade.GetBatteryPower(BatteryDrainRate, requestedPower);
             }
-            else
-            {
-                this.CurrentState = EnergyState.NoPower;
-                return 0f;
-            }
+
+            return 0f;
         }
 
         protected abstract float GetEnergyStatus();

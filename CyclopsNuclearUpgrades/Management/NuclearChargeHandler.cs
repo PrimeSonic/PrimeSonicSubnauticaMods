@@ -62,7 +62,7 @@
             if (nuclearState != NuclearState.NuclearPowerEngaged && this.HeatLevel > 0f)
             {
                 chargeRate = MinNuclearChargeRate;
-                this.HeatLevel -= CooldownRate * Time.deltaTime; // Cooldown
+                this.HeatLevel -= CooldownRate * DayNightCycle.main.deltaTime; // Cooldown
             }
 
             return 0f;
@@ -96,7 +96,7 @@
             {
                 nuclearState = NuclearState.NuclearPowerEngaged;
 
-                chargeRate = Mathf.Min(MaxNuclearChargeRate, chargeRate + MinNuclearChargeRate * Time.deltaTime);
+                chargeRate = Mathf.Min(MaxNuclearChargeRate, chargeRate + MinNuclearChargeRate * DayNightCycle.main.deltaTime);
 
                 float generatedPower = this.NuclearHandler.GetBatteryPower(chargeRate, requestedPower);
 

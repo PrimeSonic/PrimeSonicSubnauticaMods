@@ -297,7 +297,7 @@
                 return 0f;
 
             // Mathf.Min is to prevent accidentally taking too much power from the battery
-            float chargeAmt = Mathf.Min(requestedAmount, drainingRate * Time.deltaTime);
+            float chargeAmt = Mathf.Min(requestedAmount, drainingRate * DayNightCycle.main.deltaTime);
 
             if (this.Charge > chargeAmt)
             {

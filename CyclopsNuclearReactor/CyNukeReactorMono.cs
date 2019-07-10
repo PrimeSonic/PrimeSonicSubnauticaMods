@@ -108,7 +108,7 @@
             return false;
         }
 
-        public float ProducePower(ref float powerDeficit)
+        public float GetPower(ref float powerDeficit)
         {
             if (powerDeficit <= MCUServices.MinimalPowerValue)
                 return 0f;

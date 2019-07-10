@@ -89,7 +89,7 @@
                     continue; // Skip this battery
 
                 // Mathf.Min is to prevent accidentally taking too much power from the battery
-                float amtToDrain = Mathf.Min(requestedPower, drainingRate * Time.deltaTime);
+                float amtToDrain = Mathf.Min(requestedPower, drainingRate * DayNightCycle.main.deltaTime);
 
                 if (battery._charge > amtToDrain)
                 {

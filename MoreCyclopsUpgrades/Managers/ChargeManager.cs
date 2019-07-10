@@ -7,7 +7,7 @@
     using MoreCyclopsUpgrades.Config;
     using UnityEngine;
 
-    internal class ChargeManager
+    internal class ChargeManager : IChargeManager
     {
         private class ChargerCreator
         {
@@ -24,26 +24,21 @@
         #region Static
 
         internal static bool Initialized { get; private set; }
-        internal const float BatteryDrainRate = 0.01f;
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        internal const float Mk2ChargeRateModifier = 1.10f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
-        private static readonly List<ChargerCreator> CyclopsChargers = new List<ChargerCreator>();
+        private static readonly List<ChargerCreator> CyclopsChargerCreators = new List<ChargerCreator>();
 
         internal static void RegisterChargerCreator(CreateCyclopsCharger createEvent, string name)
         {
-            if (CyclopsChargers.Find(c => c.Creator == createEvent) != null)
+            if (CyclopsChargerCreators.Find(c => c.Creator == createEvent || c.ChargerName == name) != null)
             {
                 QuickLogger.Warning($"Duplicate CyclopsChargerCreator '{name}' was blocked");
                 return;
             }
 
             QuickLogger.Info($"Received CyclopsChargerCreator '{name}'");
-            CyclopsChargers.Add(new ChargerCreator(createEvent, name));
+            CyclopsChargerCreators.Add(new ChargerCreator(createEvent, name));
         }
-
-        private const float DelayBetweenHUDUpdates = 2.0f;
-        private static float LastHUDUpdate = 0f;
 
         #endregion
 
@@ -56,10 +51,7 @@
         private float producedPower = 0f;
         float powerDeficit = 0f;
 
-        private CyclopsHUDManager cyclopsHUDManager;
-        private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = CyclopsManager.GetManager(Cyclops)?.HUD);
-
-        internal int PowerChargersCount => KnownChargers.Count;
+        public ICollection<CyclopsCharger> Chargers => KnownChargers.Values;
 
         public ChargeManager(SubRoot cyclops)
         {
@@ -73,7 +65,7 @@
                 return (T)cyclopsCharger;
             }
 
-            return default;
+            return null;
         }
 
         public void InitializeChargers()
@@ -81,7 +73,7 @@
             QuickLogger.Debug("ChargeManager InitializeChargingHandlers");
 
             // First, register chargers from other mods.
-            foreach (ChargerCreator chargerTemplate in CyclopsChargers)
+            foreach (ChargerCreator chargerTemplate in CyclopsChargerCreators)
             {
                 QuickLogger.Debug($"ChargeManager creating charger '{chargerTemplate.ChargerName}'");
                 CyclopsCharger charger = chargerTemplate.Creator.Invoke(Cyclops);
@@ -118,7 +110,7 @@
         /// Gets the total available reserve power across all equipment upgrade modules.
         /// </summary>
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
-        internal int GetTotalReservePower()
+        public int GetTotalReservePower()
         {
             float availableReservePower = 0f;
 
@@ -162,12 +154,6 @@
                     if (producedPower > powerDeficit)
                         break;
                 }
-            }
-
-            if (Time.time > LastHUDUpdate)
-            {
-                LastHUDUpdate = Time.time + DelayBetweenHUDUpdates;
-                this.HUDManager.UpdatePowerIcons(KnownChargers.Values);
             }
 
             if (producedPower > MinimalPowerValue)

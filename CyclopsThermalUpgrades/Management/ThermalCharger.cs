@@ -1,7 +1,6 @@
 ﻿namespace CyclopsThermalUpgrades.Management
 {
     using CommonCyclopsUpgrades;
-    using UnityEngine;
 
     internal class ThermalCharger : AmbientEnergyCharger<ThermalUpgradeHandler>
     {
@@ -28,7 +27,7 @@
         {
             // This is based on the original Cyclops thermal charging code
             return ThermalChargingFactor *
-                   Time.deltaTime *
+                   DayNightCycle.main.deltaTime *
                    base.Cyclops.thermalReactorCharge.Evaluate(energyStatus); // Temperature
         }
     }

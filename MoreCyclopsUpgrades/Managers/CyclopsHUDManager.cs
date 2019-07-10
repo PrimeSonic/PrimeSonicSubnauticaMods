@@ -41,8 +41,8 @@
 
         internal readonly SubRoot Cyclops;
 
-        private ChargeManager chargeManager;
-        internal ChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(Cyclops)?.Charge);
+        private IChargeManager chargeManager;
+        private IChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(Cyclops).Charge);
 
         private bool powerIconsInitialized = false;
 
@@ -65,7 +65,7 @@
 
             if (!powerIconsInitialized)
             {
-                AddPowerIcons(cyclopsHelmHUD, this.ChargeManager.PowerChargersCount);
+                AddPowerIcons(cyclopsHelmHUD, this.ChargeManager.Chargers.Count);
             }
 
             if (lastPowerInt < 0f)
@@ -92,6 +92,8 @@
                     cyclopsHelmHUD.powerText.text = $"{percentInt}%";
                     break;
             }
+
+            UpdatePowerIcons(this.ChargeManager.Chargers);
         }
 
         /// <summary>
@@ -228,7 +230,7 @@
             };
         }
 
-        internal void UpdatePowerIcons<C>(IEnumerable<C> cyclopsChargers) where C : ICyclopsCharger
+        private void UpdatePowerIcons<C>(IEnumerable<C> cyclopsChargers) where C : ICyclopsCharger
         {
             if (!powerIconsInitialized)
                 return;

@@ -86,6 +86,7 @@
     <Compile Include="AuxConsole\AuxCyUpgradeConsoleMono.cs" />
     <Compile Include="AuxConsole\AuxCyUpgradeConsoleSaveData.cs" />
     <Compile Include="API\General\IPowerRatingManager.cs" />
+    <Compile Include="Managers\IChargeManager.cs" />
     <Compile Include="Managers\PdaOverlayManager.cs" />
     <Compile Include="Managers\PowerRatingManager.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />

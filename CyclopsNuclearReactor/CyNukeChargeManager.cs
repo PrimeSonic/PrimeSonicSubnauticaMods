@@ -150,7 +150,7 @@
                 if (!reactor.HasPower())
                     continue;
 
-                producedPower += reactor.ProducePower(ref powerDeficit);
+                producedPower += reactor.GetPower(ref powerDeficit);
             }
 
             return producedPower;

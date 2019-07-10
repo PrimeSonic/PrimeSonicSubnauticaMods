@@ -96,7 +96,7 @@
                     // The diminishing returns follow a geometric sequence with a factor always less than 1.
                     // You can check the math on this over here https://www.purplemath.com/modules/series5.htm
 
-                    float diminishingReturnFactor = 0.4f + (0.045f * tier2.Count);
+                    float diminishingReturnFactor = 0.45f + (0.045f * tier2.Count);
                     float chargeMultiplier = (1 - Mathf.Pow(diminishingReturnFactor, this.Count)) /
                                                 (1 - diminishingReturnFactor);
                     chargeMultiplier += 0.015f * tier2.Count;
@@ -139,7 +139,7 @@
                     continue; // Skip this battery
 
                 // Mathf.Min is to prevent accidentally taking too much power from the battery
-                float amtToDrain = Mathf.Min(requestedPower, drainingRate * Time.deltaTime);
+                float amtToDrain = Mathf.Min(requestedPower, drainingRate * DayNightCycle.main.deltaTime);
 
                 if (battery._charge > amtToDrain)
                 {

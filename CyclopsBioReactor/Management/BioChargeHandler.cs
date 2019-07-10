@@ -61,7 +61,7 @@
 
         protected override float DrainReserveEnergy(float requestedPower)
         {
-            if (requestedPower < MinimalPowerValue || this.Manager.CyBioReactors.Count == 0)
+            if (this.Manager.CyBioReactors.Count == 0)
             {
                 providingPower = false;
                 return 0f;
