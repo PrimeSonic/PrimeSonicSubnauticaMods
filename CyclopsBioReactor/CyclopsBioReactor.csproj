@@ -39,10 +39,10 @@
       <HintPath>..\DependenciesUnity5\0Harmony-1.2.0.1.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass_publicized">
-      <HintPath>G:\C# Applications\SubNauticaMods\DLL\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp-firstpass_publicized.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp_publicized">
-      <HintPath>G:\C# Applications\SubNauticaMods\DLL\Assembly-CSharp_publicized.dll</HintPath>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper">
       <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
@@ -57,10 +57,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CyBioreactorTrigger.cs" />
-    <Compile Include="Management\CyBioReactorAudioHandler.cs" />
-    <Compile Include="Management\CyBioReactorAnimationHandler.cs" />
-    <Compile Include="Management\CyBioReactorDisplayHandler.cs" />
     <Compile Include="Management\BoosterOverlay.cs" />
     <Compile Include="Management\BioAuxCyclopsManager.cs" />
     <Compile Include="Management\BioBoosterUpgradeHandler.cs" />
@@ -77,6 +73,12 @@
     <Compile Include="QPatch.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
+      <Project>{fc87af94-413d-482e-ab0d-501e120e6e2d}</Project>
+      <Name>MoreCyclopsUpgrades</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Assets\BioReactorBooster.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -91,12 +93,6 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
-      <Project>{fc87af94-413d-482e-ab0d-501e120e6e2d}</Project>
-      <Name>MoreCyclopsUpgrades</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems" Label="Shared" />
