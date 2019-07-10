@@ -57,6 +57,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CyBioreactorTrigger.cs" />
+    <Compile Include="Management\CyBioReactorAudioHandler.cs" />
+    <Compile Include="Management\CyBioReactorAnimationHandler.cs" />
+    <Compile Include="Management\CyBioReactorDisplayHandler.cs" />
     <Compile Include="Management\BoosterOverlay.cs" />
     <Compile Include="Management\BioAuxCyclopsManager.cs" />
     <Compile Include="Management\BioBoosterUpgradeHandler.cs" />
