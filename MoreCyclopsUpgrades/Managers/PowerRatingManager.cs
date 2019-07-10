@@ -9,6 +9,7 @@
     {
         private readonly SubRoot cyclops;
         private readonly IDictionary<TechType, float> modifiers = new Dictionary<TechType, float>();
+        private readonly IModConfig settings = ModConfig.Main;
 
         public PowerRatingManager(SubRoot cyclops)
         {
@@ -25,7 +26,7 @@
 
         internal void UpdatePowerRating()
         {
-            float rating = ModConfig.Main.RechargePenalty;
+            float rating = settings.RechargePenalty;
 
             foreach (float modifier in modifiers.Values)
                 rating *= modifier;

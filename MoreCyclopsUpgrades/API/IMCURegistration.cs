@@ -29,40 +29,22 @@
         void AuxCyclopsManager<T>(IAuxCyclopsManagerCreator managerCreator) where T : IAuxCyclopsManager;
 
         /// <summary>
-        /// Registers a <see cref="CreateCyclopsCharger" /> method that creates a new <see cref="ICyclopsCharger" /> on demand.<para />
+        /// Registers a <see cref="CreateCyclopsCharger" /> method that creates a new <see cref="CyclopsCharger" /> on demand.<para />
         /// This method will be invoked only once for each Cyclops sub in the game world.<para />
         /// Use this for rechargable batteries and energy drawn from the environment.
         /// </summary>
-        /// <typeparam name="T">Your class that implements <see cref="ICyclopsCharger" />.</typeparam>
+        /// <typeparam name="T">Your class that implements <see cref="CyclopsCharger" />.</typeparam>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger" />.</param>
-        void RenewableCyclopsCharger<T>(CreateCyclopsCharger createEvent) where T : ICyclopsCharger;
+        void CyclopsCharger<T>(CreateCyclopsCharger createEvent) where T : CyclopsCharger;
 
         /// <summary>
-        /// Registers a <see cref="ICyclopsChargerCreator" /> class that can create a new <see cref="ICyclopsCharger" /> on demand.<para />
+        /// Registers a <see cref="ICyclopsChargerCreator" /> class that can create a new <see cref="CyclopsCharger" /> on demand.<para />
         /// This method will be invoked only once for each Cyclops sub in the game world.<para />
         /// Use this for rechargable batteries and energy drawn from the environment.
         /// </summary>
-        /// <typeparam name="T">Your class that implements <see cref="ICyclopsCharger" />.</typeparam>
+        /// <typeparam name="T">Your class that implements <see cref="CyclopsCharger" />.</typeparam>
         /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)" /> method.</param>
-        void RenewableCyclopsCharger<T>(ICyclopsChargerCreator chargerCreator) where T : ICyclopsCharger;
-
-        /// <summary>
-        /// Registers a <see cref="CreateCyclopsCharger" /> method that creates a new <see cref="ICyclopsCharger" /> on demand.<para />
-        /// This method will be invoked only once for each Cyclops sub in the game world.<para />
-        /// Use for depletable sources of power like nuclear reactor rods.
-        /// </summary>
-        /// <typeparam name="T">Your class that implements <see cref="ICyclopsCharger" />.</typeparam>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger" />.</param>
-        void NonrenewableCyclopsCharger<T>(CreateCyclopsCharger createEvent) where T : ICyclopsCharger;
-
-        /// <summary>
-        /// Registers a <see cref="ICyclopsChargerCreator" /> class that can create a new <see cref="ICyclopsCharger" /> on demand.<para />
-        /// This method will be invoked only once for each Cyclops sub in the game world.<para />
-        /// Use for depletable sources of power like nuclear reactor rods.
-        /// </summary>
-        /// <typeparam name="T">Your class that implements <see cref="ICyclopsCharger" />.</typeparam>
-        /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)" /> method.</param>
-        void NonrenewableCyclopsCharger<T>(ICyclopsChargerCreator chargerCreator) where T : ICyclopsCharger;
+        void CyclopsCharger<T>(ICyclopsChargerCreator chargerCreator) where T : CyclopsCharger;
 
         /// <summary>
         /// Registers a <see cref="CreateUpgradeHandler"/> method that creates a new <see cref="UpgradeHandler"/> on demand.<para/>

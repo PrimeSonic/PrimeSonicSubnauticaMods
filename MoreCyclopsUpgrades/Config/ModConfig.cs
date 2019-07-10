@@ -150,6 +150,7 @@
                 showIcons.Index = (int)value;
                 this.ShowIconsOnHoloDisplay = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnHoloDisplay;
                 this.ShowIconsWhilePiloting = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnPilotingHUD;
+                this.ShowPowerIcons = value != ShowChargerIcons.Never;
                 SaveData();
             }
         }
@@ -177,6 +178,8 @@
             }
         }
 
+        public bool ShowPowerIcons { get; private set; } = true;
+
         public bool ShowIconsWhilePiloting { get; private set; } = true;
 
         public bool ShowIconsOnHoloDisplay { get; private set; } = true;
@@ -185,6 +188,7 @@
 
         internal void Initialize()
         {
+            QuickLogger.Info("Initializing mod config");
             try
             {
                 saveData.LoadFromFile();

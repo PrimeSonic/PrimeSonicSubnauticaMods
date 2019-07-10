@@ -60,7 +60,7 @@
             };
         }
 
-        public ICyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
+        public CyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
         {
             return new ThermalCharger(this.TechType, cyclops);
         }

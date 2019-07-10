@@ -66,7 +66,7 @@
             return CreateSolarUpgrade(cyclops);
         }
 
-        public ICyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
+        public CyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
         {
             return new SolarCharger(previousTier.TechType, this.TechType, cyclops);
         }

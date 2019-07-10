@@ -27,20 +27,20 @@
         IEnumerable<T> AllAuxCyclopsManagers<T>() where T : class, IAuxCyclopsManager;
 
         /// <summary>
-        /// Gets the typed <see cref="ICyclopsCharger"/> at the specified Cyclops sub for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
-        /// Use this if you need to obtain a reference to your <seealso cref="ICyclopsCharger"/> for something else in your mod.
+        /// Gets the typed <see cref="CyclopsCharger"/> at the specified Cyclops sub for the provided <seealso cref="CyclopsCharger.Name"/> string.<para/>
+        /// Use this if you need to obtain a reference to your <seealso cref="CyclopsCharger"/> for something else in your mod.
         /// </summary>
         /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
-        /// <returns>A type casted <see cref="ICyclopsCharger"/> if found; Otherwise returns null.</returns>
-        T CyclopsCharger<T>(SubRoot cyclops) where T : class, ICyclopsCharger;
+        /// <returns>A type casted <see cref="CyclopsCharger"/> if found; Otherwise returns null.</returns>
+        T CyclopsCharger<T>(SubRoot cyclops) where T : CyclopsCharger;
 
         /// <summary>
-        /// Gets all typed <see cref="ICyclopsCharger"/>s across all Cyclops subd for the provided <seealso cref="ICyclopsCharger.Name"/> string.<para/>
+        /// Gets all typed <see cref="CyclopsCharger"/>s across all Cyclops subd for the provided <seealso cref="CyclopsCharger.Name"/> string.<para/>
         /// </summary>
         /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
-        /// <returns>A type casted <see cref="ICyclopsCharger"/> if found; Otherwise returns null.</returns>
-        IEnumerable<T> AllCyclopsChargers<T>() where T : class, ICyclopsCharger;
+        /// <returns>A type casted <see cref="CyclopsCharger"/> if found; Otherwise returns null.</returns>
+        IEnumerable<T> AllCyclopsChargers<T>() where T : CyclopsCharger;
 
         /// <summary>
         /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>

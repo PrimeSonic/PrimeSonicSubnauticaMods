@@ -11,6 +11,7 @@
         HelmEnergyDisplay EnergyDisplay { get; }
         float DeficitThreshold { get; }
         float RechargePenalty { get; }
+        bool ShowPowerIcons { get; }
         bool ShowIconsOnHoloDisplay { get; }
         bool ShowIconsWhilePiloting { get; }
         float MinimumEnergyDeficit { get; }

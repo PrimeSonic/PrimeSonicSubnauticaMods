@@ -13,6 +13,7 @@
     /// </summary>
     public class QPatch
     {
+        private static readonly IModConfig settings = ModConfig.Main;
         /// <summary>
         /// Main patching method. For use by QModManager only.
         /// </summary>
@@ -22,7 +23,7 @@
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-                QuickLogger.DebugLogsEnabled = ModConfig.Main.DebugLogsEnabled;
+                QuickLogger.DebugLogsEnabled = settings.DebugLogsEnabled;
                 QuickLogger.Info($"Debug logging is {(QuickLogger.DebugLogsEnabled ? "en" : "dis")}abled");
 
                 RemoveOldConfigs();
@@ -68,7 +69,7 @@
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
 
             var console = new AuxCyUpgradeConsole();
-            console.Patch(ModConfig.Main.AuxConsoleEnabled);
+            console.Patch(settings.AuxConsoleEnabled);
         }
     }
 }

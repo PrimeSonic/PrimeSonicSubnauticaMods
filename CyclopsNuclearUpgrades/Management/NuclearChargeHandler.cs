@@ -5,7 +5,7 @@
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
-    internal class NuclearChargeHandler : ICyclopsCharger
+    internal class NuclearChargeHandler : CyclopsCharger
     {
         internal enum NuclearState
         {
@@ -24,45 +24,40 @@
 
         private readonly TechType nuclearModuleID;
         private readonly Atlas.Sprite sprite;
-        private readonly SubRoot cyclopsSub;
         private float chargeRate = MinNuclearChargeRate;
         private NuclearState nuclearState = NuclearState.None;
 
         private NuclearUpgradeHandler upgradeHandler;
-        private NuclearUpgradeHandler NuclearHandler => upgradeHandler ?? (upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<NuclearUpgradeHandler>(cyclopsSub, nuclearModuleID));
+        private NuclearUpgradeHandler NuclearHandler => upgradeHandler ?? (upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<NuclearUpgradeHandler>(base.Cyclops, nuclearModuleID));
 
         internal bool IsOverheated => nuclearState == NuclearState.Overheated;
         internal float HeatLevel { get; private set; } = 0f;
 
-        public NuclearChargeHandler(SubRoot cyclops, TechType nuclearModule)
+        public override float TotalReserveEnergy => this.NuclearHandler.TotalBatteryCharge;
+
+        public NuclearChargeHandler(SubRoot cyclops, TechType nuclearModule) : base(cyclops)
         {
             sprite = SpriteManager.Get(nuclearModule);
-            cyclopsSub = cyclops;
             nuclearModuleID = nuclearModule;
         }
 
-        public Atlas.Sprite GetIndicatorSprite()
+        public override Atlas.Sprite StatusSprite()
         {
             return sprite;
         }
 
-        public string GetIndicatorText()
+        public override string StatusText()
         {
             return NumberFormatter.FormatValue(this.NuclearHandler.TotalBatteryCharge);
         }
 
-        public Color GetIndicatorTextColor()
+        public override Color StatusTextColor()
         {
             // Use color to inform heat levels
             return NumberFormatter.GetNumberColor(MaxHeatLoad - this.HeatLevel, MaxHeatLoad, 0f);
         }
 
-        public bool HasPowerIndicatorInfo()
-        {
-            return nuclearState == NuclearState.NuclearPowerEngaged;
-        }
-
-        public float ProducePower(float requestedPower)
+        protected override float GenerateNewEnergy(float requestedPower)
         {
             if (nuclearState != NuclearState.NuclearPowerEngaged && this.HeatLevel > 0f)
             {
@@ -70,7 +65,12 @@
                 this.HeatLevel -= CooldownRate * Time.deltaTime; // Cooldown
             }
 
-            if (requestedPower < MinimalPowerValue || this.NuclearHandler == null || this.NuclearHandler.TotalBatteryCharge <= MinimalPowerValue)
+            return 0f;
+        }
+
+        protected override float DrainReserveEnergy(float requestedPower)
+        {
+            if (requestedPower < MinimalPowerValue || this.NuclearHandler.TotalBatteryCharge <= MinimalPowerValue)
             {
                 chargeRate = Mathf.Max(MinNuclearChargeRate, chargeRate - MinNuclearChargeRate);
                 nuclearState = NuclearState.None;
@@ -104,11 +104,6 @@
 
                 return generatedPower;
             }
-        }
-
-        public float TotalReservePower()
-        {
-            return this.NuclearHandler.TotalBatteryCharge;
         }
     }
 }

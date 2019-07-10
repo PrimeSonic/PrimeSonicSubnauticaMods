@@ -1,13 +1,12 @@
 ﻿namespace CommonCyclopsUpgrades
 {
     using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;
 
     internal class AmbientEnergyIconOverlay<HandlerType, ChargerType> : IconOverlay
         where HandlerType : AmbientEnergyUpgradeHandler
-        where ChargerType : AmbientEnergyCharger<HandlerType>, ICyclopsCharger
+        where ChargerType : AmbientEnergyCharger<HandlerType>
     {
         private readonly HandlerType upgradeHandler;
         private readonly ChargerType charger;

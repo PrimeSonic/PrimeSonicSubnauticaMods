@@ -47,30 +47,13 @@
         private bool powerIconsInitialized = false;
 
         private CyclopsHolographicHUD holographicHUD;
-        private readonly IModConfig settings;
+        private readonly IModConfig settings = ModConfig.Main;
 
-        private bool lastKnownTextVisibility = false;
-        private bool powerIconTextVisibility = false;
         private HelmEnergyDisplay lastDisplay = HelmEnergyDisplay.PowerCellPercentage;
 
-        internal CyclopsHUDManager(SubRoot cyclops, IModConfig modConfig)
+        internal CyclopsHUDManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
-            settings = modConfig;
-        }
-
-        internal void UpdateTextVisibility()
-        {
-            powerIconTextVisibility =
-                Player.main.currentSub == Cyclops &&
-                holographicHUD != null &&
-                Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
-
-            if (lastKnownTextVisibility != powerIconTextVisibility)
-            {
-                UpdatePowerIcons();
-                lastKnownTextVisibility = powerIconTextVisibility;
-            }
         }
 
         internal void UpdateHelmHUD(CyclopsHelmHUDManager cyclopsHelmHUD, int lastPowerInt)
@@ -147,8 +130,6 @@
             }
 
             settings.UpdateCyclopsMaxPower(normalMaxPower);
-
-            UpdatePowerIcons();
         }
 
         private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD, int totalIcons)
@@ -247,12 +228,15 @@
             };
         }
 
-        private void UpdatePowerIcons()
+        internal void UpdatePowerIcons<C>(IEnumerable<C> cyclopsChargers) where C : ICyclopsCharger
         {
             if (!powerIconsInitialized)
                 return;
 
-            IEnumerable<ICyclopsCharger> cyclopsChargers = this.ChargeManager.PowerChargers;
+            bool powerIconTextVisibility =
+                    Player.main.currentSub == Cyclops &&
+                    holographicHUD != null &&
+                    Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
 
             foreach (Indicator indicator in HelmIndicatorsOdd)
                 indicator.Enabled = false;
@@ -266,10 +250,13 @@
             foreach (Indicator indicator in HealthBarIndicatorsEven)
                 indicator.Enabled = false;
 
+            if (!powerIconTextVisibility || !settings.ShowPowerIcons)
+                return;
+
             bool isEven = true;
             foreach (ICyclopsCharger charger in cyclopsChargers)
             {
-                if (charger.HasPowerIndicatorInfo())
+                if (charger.ShowStatusIcon)
                     isEven = !isEven;
             }
 
@@ -279,19 +266,18 @@
 
             foreach (ICyclopsCharger charger in cyclopsChargers)
             {
-                if (!charger.HasPowerIndicatorInfo())
+                if (!charger.ShowStatusIcon)
                     continue;
 
                 Indicator helmIcon = helmRow[index];
                 Indicator hpIcon = healthBarRow[index++];
 
-                hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.GetIndicatorSprite();
-                hpIcon.Text.enabled = powerIconTextVisibility;
-                hpIcon.Text.text = helmIcon.Text.text = charger.GetIndicatorText();
-                hpIcon.Text.color = helmIcon.Text.color = charger.GetIndicatorTextColor();
+                hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.StatusSprite();
+                hpIcon.Text.text = helmIcon.Text.text = charger.StatusText();
+                hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
 
-                hpIcon.Enabled = ModConfig.Main.ShowIconsOnHoloDisplay;
-                helmIcon.Enabled = ModConfig.Main.ShowIconsWhilePiloting;
+                hpIcon.Enabled = settings.ShowIconsOnHoloDisplay;
+                helmIcon.Enabled = settings.ShowIconsWhilePiloting;
             }
         }
     }

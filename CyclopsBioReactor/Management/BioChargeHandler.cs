@@ -5,7 +5,7 @@
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
-    internal class BioChargeHandler : ICyclopsCharger
+    internal class BioChargeHandler : CyclopsCharger
     {
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private const float BatteryDrainRate = 1.90f;
@@ -22,35 +22,44 @@
 
         private readonly Atlas.Sprite sprite;
 
-        public readonly SubRoot Cyclops;
-
-        public BioChargeHandler(TechType cyBioBooster, SubRoot cyclops)
+        public override float TotalReserveEnergy
         {
-            sprite = SpriteManager.Get(cyBioBooster);
-            Cyclops = cyclops;
+            get
+            {
+                float totalPower = 0f;
+                foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
+                    totalPower += reactor.Charge;
+
+                return totalPower;
+            }
         }
 
-        public Atlas.Sprite GetIndicatorSprite()
+        public BioChargeHandler(TechType cyBioBooster, SubRoot cyclops) : base(cyclops)
+        {
+            sprite = SpriteManager.Get(cyBioBooster);
+        }
+
+        public override Atlas.Sprite StatusSprite()
         {
             return sprite;
         }
 
-        public string GetIndicatorText()
+        public override string StatusText()
         {
             return NumberFormatter.FormatValue(totalBioCharge) + (producingPower ? "+" : string.Empty);
         }
 
-        public Color GetIndicatorTextColor()
+        public override Color StatusTextColor()
         {
             return NumberFormatter.GetNumberColor(totalBioCharge, totalBioCapacity, 0f);
         }
 
-        public bool HasPowerIndicatorInfo()
+        protected override float GenerateNewEnergy(float requestedPower)
         {
-            return providingPower;
+            return 0f;
         }
 
-        public float ProducePower(float requestedPower)
+        protected override float DrainReserveEnergy(float requestedPower)
         {
             if (requestedPower < MinimalPowerValue || this.Manager.CyBioReactors.Count == 0)
             {
@@ -87,15 +96,6 @@
             totalBioCapacity = tempBioCapacity;
 
             return charge;
-        }
-
-        public float TotalReservePower()
-        {
-            float totalPower = 0f;
-            foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
-                totalPower += reactor.Charge;
-
-            return totalPower;
         }
     }
 }

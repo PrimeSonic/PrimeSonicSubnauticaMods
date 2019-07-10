@@ -21,7 +21,7 @@
                 nuclearFabricator.Patch();
 
                 MCUServices.Register.CyclopsUpgradeHandler(depletedModule);
-                MCUServices.Register.NonrenewableCyclopsCharger<NuclearChargeHandler>(depletedModule);
+                MCUServices.Register.CyclopsCharger<NuclearChargeHandler>(depletedModule);
                 MCUServices.Register.PdaIconOverlay(nuclearModule.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
                 {
                     return new NuclearIconOverlay(icon, upgradeModule);

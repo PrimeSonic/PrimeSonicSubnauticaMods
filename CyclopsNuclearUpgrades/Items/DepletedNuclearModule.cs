@@ -53,7 +53,7 @@
             return new NuclearUpgradeHandler(nuclearModule.TechType, this, cyclops);
         }
 
-        public ICyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
+        public CyclopsCharger CreateCyclopsCharger(SubRoot cyclops)
         {
             return new NuclearChargeHandler(cyclops, nuclearModule.TechType);
         }

@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\Charging\CyclopsCharger.cs" />
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
     <Compile Include="API\IMCUCrossMod.cs" />
     <Compile Include="API\IMCURegistration.cs" />
@@ -97,7 +98,6 @@
     <Compile Include="API\Upgrades\StackingUpgradeHandler.cs" />
     <Compile Include="API\Upgrades\TieredGroupHandler.cs" />
     <Compile Include="API\Upgrades\UpgradeHandlerCreator.cs" />
-    <Compile Include="API\Charging\ICyclopsCharger.cs" />
     <Compile Include="Managers\ChargeManager.cs" />
     <Compile Include="API\Upgrades\CyclopsUpgrade.cs" />
     <Compile Include="API\Upgrades\TieredUpgradeHandler.cs" />

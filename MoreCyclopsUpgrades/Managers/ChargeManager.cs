@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using System.Collections.Generic;
-    using System.Reflection;
     using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
@@ -10,16 +9,14 @@
 
     internal class ChargeManager
     {
-        private class CyclopsCharger
+        private class ChargerCreator
         {
             public readonly CreateCyclopsCharger Creator;
-            public readonly bool IsRenewable;
             public readonly string ChargerName;
 
-            public CyclopsCharger(CreateCyclopsCharger creator, string chargerName, bool isRenewable)
+            public ChargerCreator(CreateCyclopsCharger creator, string chargerName)
             {
                 Creator = creator;
-                IsRenewable = isRenewable;
                 ChargerName = chargerName;
             }
         }
@@ -31,9 +28,9 @@
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         internal const float Mk2ChargeRateModifier = 1.10f; // The MK2 charging modules get a 15% bonus to their charge rate.
 
-        private static readonly List<CyclopsCharger> CyclopsChargers = new List<CyclopsCharger>();
+        private static readonly List<ChargerCreator> CyclopsChargers = new List<ChargerCreator>();
 
-        internal static void RegisterChargerCreator(CreateCyclopsCharger createEvent, string name, bool isRenewable)
+        internal static void RegisterChargerCreator(CreateCyclopsCharger createEvent, string name)
         {
             if (CyclopsChargers.Find(c => c.Creator == createEvent) != null)
             {
@@ -42,48 +39,41 @@
             }
 
             QuickLogger.Info($"Received CyclopsChargerCreator '{name}'");
-            CyclopsChargers.Add(new CyclopsCharger(createEvent, name, isRenewable));
+            CyclopsChargers.Add(new ChargerCreator(createEvent, name));
         }
+
+        private const float DelayBetweenHUDUpdates = 2.0f;
+        private static float LastHUDUpdate = 0f;
 
         #endregion
 
-        private readonly IDictionary<string, ICyclopsCharger> KnownChargers = new Dictionary<string, ICyclopsCharger>();
-        private readonly ICollection<ICyclopsCharger> RenewablePowerChargers = new List<ICyclopsCharger>();
-        private readonly ICollection<ICyclopsCharger> NonRenewablePowerChargers = new List<ICyclopsCharger>();
+        private readonly IDictionary<string, CyclopsCharger> KnownChargers = new Dictionary<string, CyclopsCharger>();
 
         private readonly SubRoot Cyclops;
         private float rechargePenalty = ModConfig.Main.RechargePenalty;
+        private readonly IModConfig config = ModConfig.Main;
         private bool requiresVanillaCharging = false;
+        private float producedPower = 0f;
+        float powerDeficit = 0f;
 
         private CyclopsHUDManager cyclopsHUDManager;
         private CyclopsHUDManager HUDManager => cyclopsHUDManager ?? (cyclopsHUDManager = CyclopsManager.GetManager(Cyclops)?.HUD);
 
-        internal int PowerChargersCount => RenewablePowerChargers.Count + NonRenewablePowerChargers.Count;
-        internal IEnumerable<ICyclopsCharger> PowerChargers
-        {
-            get
-            {
-                foreach (ICyclopsCharger charger in RenewablePowerChargers)
-                    yield return charger;
-
-                foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
-                    yield return charger;
-            }
-        }
+        internal int PowerChargersCount => KnownChargers.Count;
 
         public ChargeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
         }
 
-        internal T GetCharger<T>(string chargeHandlerName) where T : class, ICyclopsCharger
+        internal T GetCharger<T>(string chargeHandlerName) where T : CyclopsCharger
         {
-            if (KnownChargers.TryGetValue(chargeHandlerName, out ICyclopsCharger cyclopsCharger))
+            if (KnownChargers.TryGetValue(chargeHandlerName, out CyclopsCharger cyclopsCharger))
             {
                 return (T)cyclopsCharger;
             }
 
-            return null;
+            return default;
         }
 
         public void InitializeChargers()
@@ -91,12 +81,10 @@
             QuickLogger.Debug("ChargeManager InitializeChargingHandlers");
 
             // First, register chargers from other mods.
-            foreach (CyclopsCharger chargerTemplate in CyclopsChargers)
+            foreach (ChargerCreator chargerTemplate in CyclopsChargers)
             {
                 QuickLogger.Debug($"ChargeManager creating charger '{chargerTemplate.ChargerName}'");
-                ICyclopsCharger charger = chargerTemplate.Creator.Invoke(Cyclops);
-
-                ICollection<ICyclopsCharger> powerChargers = chargerTemplate.IsRenewable ? RenewablePowerChargers : NonRenewablePowerChargers;
+                CyclopsCharger charger = chargerTemplate.Creator.Invoke(Cyclops);
 
                 if (charger == null)
                 {
@@ -104,7 +92,6 @@
                 }
                 else if (!KnownChargers.ContainsKey(chargerTemplate.ChargerName))
                 {
-                    powerChargers.Add(charger);
                     KnownChargers.Add(chargerTemplate.ChargerName, charger);
                     QuickLogger.Debug($"Created CyclopsCharger '{chargerTemplate.ChargerName}'");
                 }
@@ -135,8 +122,8 @@
         {
             float availableReservePower = 0f;
 
-            foreach (ICyclopsCharger charger in KnownChargers.Values)
-                availableReservePower += charger.TotalReservePower();
+            foreach (CyclopsCharger charger in KnownChargers.Values)
+                availableReservePower += charger.TotalReserveEnergy;
 
             return Mathf.FloorToInt(availableReservePower);
         }
@@ -152,46 +139,46 @@
 
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
-            float powerDeficit = GameModeUtils.RequiresPower()
-                                 ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
-                                 : 0f;            
+            powerDeficit = GameModeUtils.RequiresPower()
+                            ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
+                            : 0f;
 
-            float producedPower = 0f;
+            producedPower = 0f;
 
-            // Produce power from renewable energy first
-            foreach (ICyclopsCharger charger in RenewablePowerChargers)
-                producedPower += charger.ProducePower(powerDeficit);
-
-            float alternatePowerDeficit = 0f;
-            if (producedPower < MinimalPowerValue && // Did the renewable energy sources not produce any power?
-                powerDeficit < ModConfig.Main.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
+            foreach (ICyclopsCharger charger in KnownChargers.Values)
             {
-                // Start producing power from non-renewable energy
-                alternatePowerDeficit = powerDeficit;
+                // Get renewable energy first
+                producedPower += charger.Generate(powerDeficit);
             }
 
-            foreach (ICyclopsCharger charger in NonRenewablePowerChargers)
-                producedPower += charger.ProducePower(powerDeficit);
+            if (producedPower < MinimalPowerValue && // Did the renewable energy sources not produce any power?
+                powerDeficit < config.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
+            {
+                // Get non-renewable energy if no renewable energy was available
+                foreach (ICyclopsCharger charger in KnownChargers.Values)
+                {
+                    producedPower += charger.Drain(powerDeficit);
 
-            ChargeCyclops(producedPower, ref powerDeficit);
+                    if (producedPower > powerDeficit)
+                        break;
+                }
+            }
 
-            this.HUDManager.UpdateTextVisibility();
+            if (Time.time > LastHUDUpdate)
+            {
+                LastHUDUpdate = Time.time + DelayBetweenHUDUpdates;
+                this.HUDManager.UpdatePowerIcons(KnownChargers.Values);
+            }
+
+            if (producedPower > MinimalPowerValue)
+            {
+                producedPower *= rechargePenalty;
+
+                Cyclops.powerRelay.ModifyPower(producedPower, out float amountStored);
+                powerDeficit = Mathf.Max(0f, powerDeficit - producedPower);
+            }
 
             return requiresVanillaCharging;
-        }
-
-        private void ChargeCyclops(float availablePower, ref float powerDeficit)
-        {
-            if (powerDeficit < MinimalPowerValue)
-                return; // No need to charge
-
-            if (availablePower < MinimalPowerValue)
-                return; // No power available
-
-            availablePower *= rechargePenalty;
-
-            Cyclops.powerRelay.AddEnergy(availablePower, out float amtStored);
-            powerDeficit = Mathf.Max(0f, powerDeficit - availablePower);
         }
     }
 }

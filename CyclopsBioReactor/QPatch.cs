@@ -30,7 +30,7 @@
                     return new BioAuxCyclopsManager(cyclops, booster.TechType, reactor.TechType);
                 });
 
-                MCUServices.Register.NonrenewableCyclopsCharger<BioChargeHandler>((SubRoot cyclops) =>
+                MCUServices.Register.CyclopsCharger<BioChargeHandler>((SubRoot cyclops) =>
                 {
                     return new BioChargeHandler(booster.TechType, cyclops);
                 });

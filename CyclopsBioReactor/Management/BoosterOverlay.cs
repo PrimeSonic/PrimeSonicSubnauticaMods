@@ -35,8 +35,8 @@
             if (reactorCount > 0)
             {
                 base.UpperText.TextColor = Color.white;
-                base.LowerText.TextString = chargeHandler.GetIndicatorText();
-                base.LowerText.TextColor = chargeHandler.GetIndicatorTextColor();
+                base.LowerText.TextString = chargeHandler.StatusText();
+                base.LowerText.TextColor = chargeHandler.StatusTextColor();
             }
             else
             {

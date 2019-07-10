@@ -105,7 +105,7 @@
 
             Upgrade = new UpgradeManager(cyclops);
             Charge = new ChargeManager(cyclops);
-            HUD = new CyclopsHUDManager(cyclops, ModConfig.Main);
+            HUD = new CyclopsHUDManager(cyclops);
             Engine = new PowerRatingManager(cyclops);
 
             foreach (KeyValuePair<CreateAuxCyclopsManager, string> creatorPair in AuxManagerCreators)

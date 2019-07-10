@@ -34,7 +34,7 @@
                 base.UpperText.FontSize = 20;
             }
 
-            base.UpperText.TextColor = chargeHandler.GetIndicatorTextColor();
+            base.UpperText.TextColor = chargeHandler.StatusTextColor();
 
             if (battery != null)
             {

@@ -4,7 +4,7 @@
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
-    internal abstract class AmbientEnergyCharger<T> : ICyclopsCharger
+    internal abstract class AmbientEnergyCharger<T> : CyclopsCharger
         where T : AmbientEnergyUpgradeHandler
     {
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
@@ -24,6 +24,8 @@
         protected abstract float MaximumEnergyStatus { get; }
         protected abstract float MinimumEnergyStatus { get; }
 
+        public override float TotalReserveEnergy => this.AmbientEnergyUpgrade.TotalBatteryCharge;
+
         private T energyUpgrade;
         protected T AmbientEnergyUpgrade => energyUpgrade ?? (energyUpgrade = MCUServices.Find.CyclopsGroupUpgradeHandler<T>(Cyclops, tier1Id, tier2Id2));
 
@@ -33,20 +35,17 @@
         private readonly TechType tier1Id;
         private readonly TechType tier2Id2;
 
-        protected readonly SubRoot Cyclops;
-
         private float energyStatus = 0f;
 
-        protected AmbientEnergyCharger(TechType tier1TechType, TechType tier2TechType, SubRoot cyclops)
+        protected AmbientEnergyCharger(TechType tier1TechType, TechType tier2TechType, SubRoot cyclops) : base(cyclops)
         {
             tier1Id = tier1TechType;
             tier2Id2 = tier2TechType;
-            Cyclops = cyclops;
             tier1Sprite = SpriteManager.Get(tier1TechType);
             tier2Sprite = SpriteManager.Get(tier2TechType);
         }
 
-        public Atlas.Sprite GetIndicatorSprite()
+        public override Atlas.Sprite StatusSprite()
         {
             switch (this.CurrentState)
             {
@@ -59,7 +58,7 @@
             }
         }
 
-        public string GetIndicatorText()
+        public override string StatusText()
         {
             switch (this.CurrentState)
             {
@@ -82,7 +81,7 @@
             return NumberFormatter.FormatValue(this.AmbientEnergyUpgrade.TotalBatteryCharge);
         }
 
-        public Color GetIndicatorTextColor()
+        public override Color StatusTextColor()
         {
             switch (this.CurrentState)
             {
@@ -95,14 +94,9 @@
             }
         }
 
-        public bool HasPowerIndicatorInfo()
-        {
-            return this.CurrentState != EnergyState.NoPower;
-        }
-
         public float ProducePower(float requestedPower)
         {
-            if (this.AmbientEnergyUpgrade == null || this.AmbientEnergyUpgrade.Count == 0)
+            if (this.AmbientEnergyUpgrade.Count == 0)
             {
                 this.CurrentState = EnergyState.NoPower;
                 return 0f;
@@ -124,7 +118,7 @@
                 return multipliedEnergy;
             }
             else if (this.AmbientEnergyUpgrade.TotalBatteryCharge > MinimalPowerValue)
-            {                
+            {
                 this.CurrentState = EnergyState.RunningOnBatteries;
                 return this.AmbientEnergyUpgrade.GetBatteryPower(BatteryDrainRate, requestedPower);
             }
@@ -135,9 +129,45 @@
             }
         }
 
-        public float TotalReservePower()
+        protected override float GenerateNewEnergy(float requestedPower)
         {
-            return this.AmbientEnergyUpgrade.TotalBatteryCharge;
+            if (this.AmbientEnergyUpgrade.Count == 0)
+            {
+                this.CurrentState = EnergyState.NoPower;
+                return 0f;
+            }
+
+            energyStatus = GetEnergyStatus();
+
+            if (energyStatus > this.MinimumEnergyStatus)
+            {
+                this.CurrentState = EnergyState.AmbientEnergyAvailable;
+
+                float availableEnergy = ConvertToAvailableEnergy(energyStatus);
+
+                float multipliedEnergy = this.AmbientEnergyUpgrade.ChargeMultiplier * availableEnergy;
+
+                if (requestedPower < multipliedEnergy)
+                    this.AmbientEnergyUpgrade.RechargeBatteries(multipliedEnergy - requestedPower);
+
+                return multipliedEnergy;
+            }
+
+            return 0f;
+        }
+
+        protected override float DrainReserveEnergy(float requestedPower)
+        {
+            if (this.AmbientEnergyUpgrade.TotalBatteryCharge > MinimalPowerValue)
+            {
+                this.CurrentState = EnergyState.RunningOnBatteries;
+                return this.AmbientEnergyUpgrade.GetBatteryPower(BatteryDrainRate, requestedPower);
+            }
+            else
+            {
+                this.CurrentState = EnergyState.NoPower;
+                return 0f;
+            }
         }
 
         protected abstract float GetEnergyStatus();

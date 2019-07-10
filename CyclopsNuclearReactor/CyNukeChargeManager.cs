@@ -6,14 +6,12 @@
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
-    internal class CyNukeChargeManager : ICyclopsCharger
+    internal class CyNukeChargeManager : CyclopsCharger
     {
         public const int MaxReactors = 2;
 
-        public readonly SubRoot Cyclops;
-
         private CyNukeEnhancerHandler upgradeHandler;
-        private CyNukeEnhancerHandler CyNukeEnhancer => upgradeHandler ?? 
+        private CyNukeEnhancerHandler CyNukeEnhancer => upgradeHandler ??
             (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(Cyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
 
         internal int UpgradeLevel => this.CyNukeEnhancer == null ? 0 : this.CyNukeEnhancer.HighestValue;
@@ -21,6 +19,19 @@
         private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, CyNukReactorBuildable.PowerIndicatorIconID);
 
         public readonly List<CyNukeReactorMono> CyNukeReactors = new List<CyNukeReactorMono>();
+
+        public override float TotalReserveEnergy
+        {
+            get
+            {
+                float total = 0f;
+                foreach (CyNukeReactorMono reactor in CyNukeReactors)
+                {
+                    total += reactor.GetTotalAvailablePower();
+                }
+                return total;
+            }
+        }
 
         public void AddReactor(CyNukeReactorMono reactor)
         {
@@ -30,9 +41,8 @@
             }
         }
 
-        public CyNukeChargeManager(SubRoot cyclops)
+        public CyNukeChargeManager(SubRoot cyclops) : base(cyclops)
         {
-            Cyclops = cyclops;
         }
 
         internal void SyncReactorsExternally()
@@ -73,45 +83,12 @@
 
         #region ICyclopsCharger Methods
 
-        public float ProducePower(float requestedPower)
-        {
-            if (CyNukeReactors.Count == 0)
-                return 0f;
-
-            float powerDeficit = requestedPower;
-            float producedPower = 0f;
-
-            foreach (CyNukeReactorMono reactor in CyNukeReactors)
-            {
-                if (!reactor.HasPower())
-                    continue;
-
-                producedPower += reactor.ProducePower(ref powerDeficit);
-            }
-
-            return producedPower;
-        }
-
-        public bool HasPowerIndicatorInfo()
-        {
-            if (CyNukeReactors.Count == 0)
-                return false;
-
-            foreach (CyNukeReactorMono reactor in CyNukeReactors)
-            {
-                if (reactor.HasPower())
-                    return true;
-            }
-
-            return false;
-        }
-
-        public Atlas.Sprite GetIndicatorSprite()
+        public override Atlas.Sprite StatusSprite()
         {
             return indicatorSprite;
         }
 
-        public string GetIndicatorText()
+        public override string StatusText()
         {
             if (CyNukeReactors.Count == 0)
                 return string.Empty;
@@ -129,7 +106,7 @@
             return value;
         }
 
-        public Color GetIndicatorTextColor()
+        public override Color StatusTextColor()
         {
             if (CyNukeReactors.Count == 0)
                 return Color.white;
@@ -155,14 +132,28 @@
             return Color.yellow;
         }
 
-        public float TotalReservePower()
+        protected override float GenerateNewEnergy(float requestedPower)
         {
-            float total = 0f;
+            return 0f;
+        }
+
+        protected override float DrainReserveEnergy(float requestedPower)
+        {
+            if (CyNukeReactors.Count == 0)
+                return 0f;
+
+            float powerDeficit = requestedPower;
+            float producedPower = 0f;
+
             foreach (CyNukeReactorMono reactor in CyNukeReactors)
             {
-                total += reactor.GetTotalAvailablePower();
+                if (!reactor.HasPower())
+                    continue;
+
+                producedPower += reactor.ProducePower(ref powerDeficit);
             }
-            return total;
+
+            return producedPower;
         }
 
         #endregion
