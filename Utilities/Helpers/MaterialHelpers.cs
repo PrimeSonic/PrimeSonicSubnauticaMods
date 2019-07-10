@@ -154,7 +154,7 @@
         /// <param name="specInt">The amount of specular to apply in <see cref="float"/>.</param>
         /// <param name="shininess">The amount of shine to apply to the specular in <see cref="float"/>.</param>
         /// <param name="assetBundle">The assetBundle to search in.</param>
-        public static void ApplySpecShader(string materialName, string textureName, GameObject gameObject, Color specColor, float specInt, float shininess, AssetBundle assetBundle)
+        public static void ApplySpecShader(string materialName, string textureName, GameObject gameObject, float specInt, float shininess, AssetBundle assetBundle)
         {
             var shader = Shader.Find("MarmosetUBER");
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
@@ -168,15 +168,18 @@
 
                         material.EnableKeyword("MARMO_SPECMAP");
 
-                        material.SetColor("_SpecColor", specColor);
+                        material.SetColor("_SpecColor", new Color(0.796875f, 0.796875f, 0.796875f, 0.796875f));
                         material.SetFloat("_SpecInt", specInt);
                         material.SetFloat("_Shininess", shininess);
                         material.SetTexture("_SpecTex", FindTexture2D(textureName, assetBundle));
+                        material.SetFloat("_Fresnel", 0f);
+
                         material.SetVector("_SpecTex_ST", new Vector4(1.0f, 1.0f, 0.0f, 0.0f));
                     }
                 }
             }
         }
+
 
         /// <summary>
         /// Applies the properties for the MarmosetUBER shader to make a material that has a transparency layer become transparent.
