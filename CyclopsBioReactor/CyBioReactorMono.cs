@@ -1,16 +1,16 @@
 ﻿namespace CyclopsBioReactor
 {
-    using System.Collections.Generic;
     using Common;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
     using CyclopsBioReactor.SaveData;
     using MoreCyclopsUpgrades.API;
     using ProtoBuf;
+    using System.Collections.Generic;
     using UnityEngine;
 
     [ProtoContract]
-    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
+    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, IConstructable
     {
         internal static bool PdaIsOpen = false;
         internal static CyBioReactorMono OpenInPda = null;
@@ -34,6 +34,8 @@
 
         private const float TextDelayInterval = 2f;
 
+        private bool _isOperating => ProducingPower && HasPower;
+
         [AssertNotNull]
         public ChildObjectIdentifier storageRoot;
 
@@ -51,6 +53,8 @@
         public bool IsContructed => (Buildable != null) && Buildable.constructed;
 
         private int lastKnownBioBooster = 0;
+        private CyBioReactorDisplayHandler _displayHandler;
+        private CyBioReactorAudioHandler _audioHandler;
 
         private BioEnergyCollection MaterialsProcessing { get; } = new BioEnergyCollection();
 
@@ -80,6 +84,14 @@
             }
         }
 
+        internal int MixingStateHash { get; private set; }
+
+        internal int DoorStateHash { get; private set; }
+
+        internal int ScreenStateHash { get; private set; }
+
+        internal CyBioReactorAnimationHandler AnimationHandler { get; private set; }
+
         public override void Awake()
         {
             base.Awake();
@@ -88,6 +100,37 @@
             InitializeSaveData();
             InitializeStorageRoot();
             InitializeContainer();
+
+            ScreenStateHash = UnityEngine.Animator.StringToHash("ScreenState");
+            DoorStateHash = UnityEngine.Animator.StringToHash("DoorState");
+            MixingStateHash = UnityEngine.Animator.StringToHash("MixingState");
+
+            AnimationHandler = new CyBioReactorAnimationHandler();
+            AnimationHandler.Setup(this);
+
+            _displayHandler = new CyBioReactorDisplayHandler();
+            _displayHandler.Setup(this);
+
+            var trigger = gameObject.FindChild("Trigger").AddComponent<CyBioreactorTrigger>();
+            trigger.OnPlayerEnter += OnPlayerEnter;
+            trigger.OnPlayerExit += OnPlayerExit;
+
+            _audioHandler = new CyBioReactorAudioHandler(transform);
+
+            _audioHandler.SetSoundActive(true);
+        }
+
+        private void OnPlayerExit()
+        {
+            AnimationHandler?.SetIntHash(DoorStateHash, 2);
+            _audioHandler.PlayDoorSoundClip(true);
+        }
+
+        private void OnPlayerEnter()
+        {
+            AnimationHandler?.SetIntHash(DoorStateHash, 1);
+            _audioHandler.PlayDoorSoundClip(true);
+
         }
 
         private void InitializeContainer()
@@ -151,6 +194,17 @@
 
             if (PdaIsOpen)
                 UpdateDisplayText();
+
+            UpdateReactorSystems();
+        }
+
+        private void UpdateReactorSystems()
+        {
+            if (AnimationHandler == null || _displayHandler == null) return;
+            _displayHandler.UpdateScreen(_isOperating);
+
+            if (AnimationHandler.GetBoolHash(MixingStateHash) == _isOperating) return;
+            AnimationHandler.SetBoolHash(MixingStateHash, _isOperating);
         }
 
         #region Player interaction
@@ -511,6 +565,21 @@
                     case 3: // MaxBoosters
                         return new ReactorStats(6, 2, MaxPowerBaseline + 150f); // 12 slots
                 }
+            }
+        }
+
+        public bool CanDeconstruct(out string reason)
+        {
+            var flag = Buildable.CanDeconstruct(out var result);
+            reason = result;
+            return flag;
+        }
+
+        public void OnConstructedChanged(bool constructed)
+        {
+            if (constructed)
+            {
+                _displayHandler.TurnOnDisplay();
             }
         }
     }
