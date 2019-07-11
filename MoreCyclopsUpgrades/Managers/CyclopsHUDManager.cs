@@ -156,7 +156,6 @@
             const float helmscale = 1.40f;
 
             const float healthbarxoffset = 100;
-            const float healthbarspacing = helmspacing / 2;
             const float healthbarzoffset = 0.05f;
             const float healthbaryoffset = -300;
             const float healthbarscale = 0.70f;
@@ -166,7 +165,7 @@
 
             int index = 0;
             float spacing = helmspacing;
-            float spacingSmall = healthbarspacing;
+            float spacingSmall = helmspacing / 2;
             do
             {
                 HelmIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(canvas, spacing, helmyoffset, helmzoffset, helmscale);
@@ -182,8 +181,8 @@
                 HealthBarIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(canvas2, healthbarxoffset + spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
 
                 index += 2;
-                spacing += helmspacing * index;
-                spacingSmall += healthbarspacing * index;
+                spacing += helmspacing;
+                spacingSmall += spacingSmall;
 
             } while (totalIcons > index);
 
