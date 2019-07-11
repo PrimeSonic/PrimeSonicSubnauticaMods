@@ -175,9 +175,9 @@
 
         public IEnumerable<T> AllCyclopsChargers<T>() where T : CyclopsCharger
         {
-            foreach (CyclopsManager item in CyclopsManager.GetAllManagers())
+            for (int m = 0; m < CyclopsManager.Managers.Count; m++)
             {
-                T chg = item.Charge?.GetCharger<T>(typeof(T).Name);
+                T chg = CyclopsManager.Managers[m].Charge?.GetCharger<T>(typeof(T).Name);
 
                 if (chg != null)
                     yield return chg;

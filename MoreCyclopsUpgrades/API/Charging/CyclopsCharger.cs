@@ -2,25 +2,13 @@
 {
     using UnityEngine;
 
-    internal interface ICyclopsCharger
-    {
-        bool ShowStatusIcon { get; }
-        float TotalReserveEnergy { get; }
-        float Generate(float requestedPower);
-        float Drain(float requestedPower);
-        Atlas.Sprite StatusSprite();
-        string StatusText();
-        Color StatusTextColor();
-        void UpdateStatus();
-    }
-
     /// <summary>
     /// Defines all the behaviors for a cyclops charger that handles a particular type of energy recharging.<para/>
     /// Recharging may be part of an update module or it might be a new buidable.<para/>
     /// Whatever the case, it is up to you to ensure you have all your references set and ready.<para/>
     /// DO NOT recharge the Cyclops PowerRelay yourself from this class!!! The MoreCyclopsUpgrades PowerManager will handle that.<para/>
     /// </summary>
-    public abstract class CyclopsCharger : ICyclopsCharger
+    public abstract class CyclopsCharger
     {
         private bool showStatus;
 
@@ -33,21 +21,21 @@
 
         public bool ShowStatusIcon { get; private set; }
 
-        float ICyclopsCharger.Generate(float requestedPower)
+        internal float Generate(float requestedPower)
         {
             float energy = GenerateNewEnergy(requestedPower);
             showStatus = energy > 0f;
             return energy;
         }
 
-        float ICyclopsCharger.Drain(float requestedPower)
+        internal float Drain(float requestedPower)
         {
             float energy = DrainReserveEnergy(requestedPower);
             showStatus |= energy > 0f;
             return energy;
         }
 
-        void ICyclopsCharger.UpdateStatus()
+        internal void UpdateStatus()
         {
             this.ShowStatusIcon = showStatus;
         }

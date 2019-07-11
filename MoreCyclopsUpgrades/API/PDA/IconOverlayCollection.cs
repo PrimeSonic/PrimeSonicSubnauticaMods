@@ -8,16 +8,16 @@
 
         public void Deactivate()
         {
-            foreach (IconOverlay overlay in overlays)
-                overlay.Clear();
+            for (int i = 0; i < overlays.Count; i++)
+                overlays[i].Clear();
 
             overlays.Clear();
         }
 
         public void UpdateText()
         {
-            foreach (IconOverlay overlay in overlays)
-                overlay.UpdateText();
+            for (int i = 0; i < overlays.Count; i++)
+                overlays[i].UpdateText();
         }
 
         public void Add(IconOverlay iconOverlay)

@@ -120,9 +120,9 @@
                 float rechargePenalty = 1f - value.ChallengePenalty();
                 this.RechargePenalty = rechargePenalty;
 
-                IEnumerable<CyclopsManager> cyManagers = CyclopsManager.GetAllManagers();
-                foreach (CyclopsManager mgr in cyManagers)
+                for (int m = 0; m < CyclopsManager.Managers.Count; m++)
                 {
+                    CyclopsManager mgr = CyclopsManager.Managers[m];
                     mgr.Charge.UpdateRechargePenalty(rechargePenalty);
                     mgr.Cyclops.UpdatePowerRating();
                 }

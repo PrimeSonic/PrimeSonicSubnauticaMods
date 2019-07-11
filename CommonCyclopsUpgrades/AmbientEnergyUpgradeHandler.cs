@@ -22,8 +22,11 @@
                 if (!updating)
                 {
                     totalBatteryCapacity = 0f;
-                    foreach (BatteryDetails battery in batteries)
+                    for (int i = 0; i < batteries.Count; i++)
+                    {
+                        var battery = batteries[i];
                         totalBatteryCapacity += battery.BatteryRef._capacity;
+                    }
                 }
 
                 return totalBatteryCapacity;
@@ -37,8 +40,11 @@
                 if (!updating)
                 {
                     totalBatteryCharge = 0f;
-                    foreach (BatteryDetails battery in batteries)
+                    for (int i = 0; i < batteries.Count; i++)
+                    {
+                        var battery = batteries[i];
                         totalBatteryCharge += battery.BatteryRef._charge;
+                    }
                 }
 
                 return totalBatteryCharge;
@@ -128,8 +134,9 @@
         public float GetBatteryPower(float drainingRate, float requestedPower)
         {
             float totalDrainedAmt = 0f;
-            foreach (BatteryDetails details in batteries)
+            for (int i = 0; i < batteries.Count; i++)
             {
+                var details = batteries[i];
                 if (requestedPower < MinimalPowerValue) // No power deficit left to charge
                     break; // Exit
 
@@ -163,8 +170,9 @@
         public void RechargeBatteries(float surplusPower)
         {
             bool batteryCharged = false;
-            foreach (BatteryDetails details in batteries)
+            for (int i = 0; i < batteries.Count; i++)
             {
+                var details = batteries[i];
                 if (batteryCharged)
                     continue;
 

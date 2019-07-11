@@ -46,12 +46,18 @@
             get
             {
                 if (Cyclops.upgradeConsole != null)
-                    foreach (string slot in SlotHelper.SlotNames)
-                        yield return new UpgradeSlot(Cyclops.upgradeConsole.modules, slot);
+                {
+                    for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
+                        yield return new UpgradeSlot(Cyclops.upgradeConsole.modules, SlotHelper.SlotNames[s]);
+                }
 
-                foreach (AuxCyUpgradeConsoleMono aux in this.AuxUpgradeConsoles)
-                    foreach (string slot in SlotHelper.SlotNames)
-                        yield return new UpgradeSlot(aux.Modules, slot);
+                for (int a = 0; a < this.AuxUpgradeConsoles.Count; a++)
+                {
+                    AuxCyUpgradeConsoleMono aux = this.AuxUpgradeConsoles[a];
+
+                    for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
+                        yield return new UpgradeSlot(aux.Modules, SlotHelper.SlotNames[s]);
+                }
             }
         }
 
@@ -60,6 +66,8 @@
         internal List<AuxCyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<AuxCyUpgradeConsoleMono>();
 
         internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
+
+        private UpgradeHandler[] upgradeHandlers;
 
         internal T GetUpgradeHandler<T>(TechType upgradeId) where T : UpgradeHandler
         {
@@ -97,9 +105,9 @@
                 if (additionalIds.Length > 0)
                 {
                     IGroupHandler groupHandler = groupMember.GroupHandler;
-                    foreach (TechType techType in additionalIds)
+                    for (int i = 0; i < additionalIds.Length; i++)
                     {
-                        if (!groupHandler.IsManaging(techType))
+                        if (!groupHandler.IsManaging(additionalIds[i]))
                             return null;
                     }
                     return (T)groupHandler;
@@ -147,16 +155,25 @@
 
             // Next, if no external mod has provided an UpgradeHandler for the vanilla upgrades, they will be added here.
             // This is to allow other mods to provide new functionality to the original upgrades.
+
             IVanillaUpgrades originalUpgrades = VanillaUpgrades.Main;
             QuickLogger.Debug($"UpgradeManager adding default UpgradeHandlers for unmanaged vanilla upgrades");
-            foreach (TechType upgradeID in originalUpgrades.OriginalUpgradeIDs)
+
+            for (int i = 0; i < originalUpgrades.OriginalUpgradeIDs.Count; i++)
             {
+                TechType upgradeID = originalUpgrades.OriginalUpgradeIDs[i];
                 if (!KnownsUpgradeModules.ContainsKey(upgradeID))
                 {
                     UpgradeHandler vanillaUpgrade = originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops);
                     vanillaUpgrade.RegisterSelf(KnownsUpgradeModules);
                 }
             }
+
+            upgradeHandlers = new UpgradeHandler[KnownsUpgradeModules.Count];
+
+            int u = 0;
+            foreach (UpgradeHandler upgrade in KnownsUpgradeModules.Values)
+                upgradeHandlers[u++] = upgrade;
 
             return Initialized = true;
         }
@@ -167,8 +184,10 @@
 
             AuxCyUpgradeConsoleMono[] auxUpgradeConsoles = Cyclops.GetAllComponentsInChildren<AuxCyUpgradeConsoleMono>();
 
-            foreach (AuxCyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
+            for (int i = 0; i < auxUpgradeConsoles.Length; i++)
             {
+                AuxCyUpgradeConsoleMono auxConsole = auxUpgradeConsoles[i];
+
                 if (TempCache.Contains(auxConsole))
                     continue; // This is a workaround because of the object references being returned twice in this array.
 
@@ -202,11 +221,16 @@
 
         internal void HandleUpgrades()
         {
+            if (!Initialized)
+                return;
+
             QuickLogger.Debug($"UpgradeManager clearing cyclops upgrades");
 
             // Turn off all upgrades and clear all values
-            foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
+            for (int i = 0; i < upgradeHandlers.Length; i++)
             {
+                UpgradeHandler upgradeType = upgradeHandlers[i];
+
                 if (upgradeType.HasUpgrade)
                     QuickLogger.Debug($"UpgradeManager clearing {upgradeType.TechType.AsString()}");
 
@@ -245,8 +269,11 @@
             {
                 Cyclops.slotModSFX?.Play();
 
-                foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
+                for (int i = 0; i < upgradeHandlers.Length; i++)
+                {
+                    UpgradeHandler upgradeType = upgradeHandlers[i];
                     upgradeType.UpgradesFinished(); // UpgradeHandler event
+                }
 
                 PdaOverlayManager.RemapItems();
             }

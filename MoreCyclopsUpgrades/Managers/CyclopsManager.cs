@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API.General;
-    using MoreCyclopsUpgrades.Config;
 
     internal class CyclopsManager
     {
@@ -26,13 +25,14 @@
         }
 
         // List was chosen because of the very small number of entries it will have.
-        private static readonly List<CyclopsManager> Managers = new List<CyclopsManager>();
+        internal static List<CyclopsManager> Managers { get; } = new List<CyclopsManager>();
 
         internal static IEnumerable<T> GetAllManagers<T>(string auxManagerName)
             where T : class, IAuxCyclopsManager
         {
-            foreach (CyclopsManager mgr in Managers)
+            for (int i = 0; i < Managers.Count; i++)
             {
+                CyclopsManager mgr = Managers[i];
                 if (mgr != null && mgr.AuxiliaryManagers.TryGetValue(auxManagerName, out IAuxCyclopsManager auxManager))
                 {
                     yield return (T)auxManager;
@@ -52,11 +52,6 @@
 
             QuickLogger.Warning($"Did not find IAuxCyclopsManager '{auxManagerName}'");
             return null;
-        }
-
-        internal static IEnumerable<CyclopsManager> GetAllManagers()
-        {
-            return Managers;
         }
 
         internal static CyclopsManager GetManager(SubRoot cyclops)

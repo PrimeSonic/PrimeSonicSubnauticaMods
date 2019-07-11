@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.AuxConsole
 {
     using System;
-    using System.Collections.Generic;
     using System.Reflection;
     using Common;
     using Managers;
@@ -50,9 +49,8 @@
             if (cyclops == null)
             {
                 QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Attempting external syncronize.");
-                IEnumerable<CyclopsManager> cyManagers = CyclopsManager.GetAllManagers();
-                foreach (CyclopsManager manager in cyManagers)
-                    manager.Upgrade.SyncUpgradeConsoles();
+                for (int i = 0; i < CyclopsManager.Managers.Count; i++)
+                    CyclopsManager.Managers[i].Upgrade.SyncUpgradeConsoles();
             }
             else
             {
@@ -190,8 +188,8 @@
 
             bool allEmpty = true;
 
-            foreach (string slotName in SlotHelper.SlotNames)
-                allEmpty &= this.Modules.GetTechTypeInSlot(slotName) == TechType.None;
+            for (int s = 0; s < SlotHelper.SlotNames.Length; s++)            
+                allEmpty &= this.Modules.GetTechTypeInSlot(SlotHelper.SlotNames[s]) == TechType.None;            
 
             // Deconstruction only allowed if all slots are empty
             Buildable.deconstructionAllowed = allEmpty;
@@ -225,8 +223,8 @@
 
         private void UpdateVisuals()
         {
-            if (Module1 == null)            
-                AddModuleSpriteHandlers();            
+            if (Module1 == null)
+                AddModuleSpriteHandlers();
 
             SetModuleVisibility("Module1", Module1);
             SetModuleVisibility("Module2", Module2);
@@ -269,8 +267,9 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            foreach (string slot in SlotHelper.SlotNames)
+            for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
             {
+                string slot = SlotHelper.SlotNames[s];
                 EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
                 InventoryItem item = this.Modules.GetItemInSlot(slot);
 
@@ -321,8 +320,9 @@
 
                 QuickLogger.Debug("Loading save data");
                 // The following is a recreation of the essential parts of the Equipment.ResponseEquipment method.
-                foreach (string slot in SlotHelper.SlotNames)
+                for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
                 {
+                    string slot = SlotHelper.SlotNames[s];
                     // These slots need to be added before we can add items to them
                     this.Modules.AddSlot(slot);
 
@@ -331,11 +331,13 @@
                     if (savedModule.ItemID == 0) // (int)TechType.None
                         continue; // Nothing here
 
-                    InventoryItem spanwedItem = CyclopsUpgrade.SpawnCyclopsModule((TechType)savedModule.ItemID);
-                    QuickLogger.Debug($"Spawned in {savedModule.ItemID} from save data");
+                    var techtype = (TechType)savedModule.ItemID;
+                    InventoryItem spanwedItem = CyclopsUpgrade.SpawnCyclopsModule(techtype);
 
                     if (spanwedItem is null)
                         continue;
+
+                    QuickLogger.Debug($"Spawned in {techtype.AsString()} from save data");
 
                     if (savedModule.RemainingCharge > 0f) // Modules without batteries are stored with a -1 value for charge
                         spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;

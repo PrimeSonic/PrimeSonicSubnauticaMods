@@ -1,15 +1,15 @@
 ﻿namespace MoreCyclopsUpgrades.API.Charging
 {
     /// <summary>
-    /// Defines an interface for a class that is capable of creating a new <see cref="ICyclopsCharger"/> on demand.
+    /// Defines an interface for a class that is capable of creating a new <see cref="CyclopsCharger"/> on demand.
     /// </summary>
     public interface ICyclopsChargerCreator
     {
         /// <summary>
         /// Creates a new <see cref="CyclopsCharger"/> when the Cyclops is initialized.
         /// </summary>
-        /// <param name="cyclops">The cyclops that the <see cref="ICyclopsCharger"/> is tasked with recharging.</param>
-        /// <returns>A new <see cref="ICyclopsCharger"/> ready to produce power for the Cyclops.</returns>
+        /// <param name="cyclops">The cyclops that the <see cref="CyclopsCharger"/> is tasked with recharging.</param>
+        /// <returns>A new <see cref="CyclopsCharger"/> ready to produce power for the Cyclops.</returns>
         CyclopsCharger CreateCyclopsCharger(SubRoot cyclops);
     }
 

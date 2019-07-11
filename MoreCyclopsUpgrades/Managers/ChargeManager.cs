@@ -7,7 +7,7 @@
     using MoreCyclopsUpgrades.Config;
     using UnityEngine;
 
-    internal class ChargeManager : IChargeManager
+    internal class ChargeManager
     {
         private class ChargerCreator
         {
@@ -43,15 +43,15 @@
         #endregion
 
         private readonly IDictionary<string, CyclopsCharger> KnownChargers = new Dictionary<string, CyclopsCharger>();
-
         private readonly SubRoot Cyclops;
+
         private float rechargePenalty = ModConfig.Main.RechargePenalty;
         private readonly IModConfig config = ModConfig.Main;
         private bool requiresVanillaCharging = false;
         private float producedPower = 0f;
         private float powerDeficit = 0f;
 
-        public ICollection<CyclopsCharger> Chargers => KnownChargers.Values;
+        public CyclopsCharger[] Chargers { get; private set; }
 
         public ChargeManager(SubRoot cyclops)
         {
@@ -73,8 +73,9 @@
             QuickLogger.Debug("ChargeManager InitializeChargingHandlers");
 
             // First, register chargers from other mods.
-            foreach (ChargerCreator chargerTemplate in CyclopsChargerCreators)
+            for (int i = 0; i < CyclopsChargerCreators.Count; i++)
             {
+                ChargerCreator chargerTemplate = CyclopsChargerCreators[i];
                 QuickLogger.Debug($"ChargeManager creating charger '{chargerTemplate.ChargerName}'");
                 CyclopsCharger charger = chargerTemplate.Creator.Invoke(Cyclops);
 
@@ -92,6 +93,12 @@
                     QuickLogger.Warning($"Duplicate CyclopsCharger '{chargerTemplate.ChargerName}' was blocked");
                 }
             }
+
+            this.Chargers = new CyclopsCharger[KnownChargers.Count];
+
+            int c = 0;
+            foreach (CyclopsCharger charger in KnownChargers.Values)
+                this.Chargers[c++] = charger;
 
             // Next, check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
             // If not, then the original thermal charging code will be allowed to run.
@@ -114,8 +121,8 @@
         {
             float availableReservePower = 0f;
 
-            foreach (CyclopsCharger charger in KnownChargers.Values)
-                availableReservePower += charger.TotalReserveEnergy;
+            for (int i = 0; i < this.Chargers.Length; i++)
+                availableReservePower += this.Chargers[i].TotalReserveEnergy;
 
             return Mathf.FloorToInt(availableReservePower);
         }
@@ -129,6 +136,12 @@
             if (Time.timeScale == 0f) // Is the game paused?
                 return false;
 
+            if (!Initialized)
+                return false;
+
+            if (this.Chargers == null)
+                return false;
+
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
             powerDeficit = GameModeUtils.RequiresPower()
@@ -138,25 +151,34 @@
             producedPower = 0f;
 
             // First, get renewable energy first
-            foreach (ICyclopsCharger charger in KnownChargers.Values)
+            for (int i = 0; i < this.Chargers.Length; i++)
+            {
+                CyclopsCharger charger = this.Chargers[i];
                 producedPower += charger.Generate(powerDeficit);
+            }
 
             // Second, get non-renewable energy if no renewable energy was available
             if (producedPower < MinimalPowerValue && // Did the renewable energy sources not produce any power?
                 powerDeficit > config.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
             {
-                foreach (ICyclopsCharger charger in KnownChargers.Values)
+                for (int i = 0; i < this.Chargers.Length; i++)
+                {
+                    CyclopsCharger charger = this.Chargers[i];
                     producedPower += charger.Drain(powerDeficit);
+                }
             }
 
             if (producedPower > 0f)
             {
-                Cyclops.powerRelay.AddEnergy(producedPower * rechargePenalty, out float amountStored);
+                Cyclops.powerRelay.ModifyPower(producedPower * rechargePenalty, out float amountStored);
             }
 
             // Last, inform the chargers to update their display status
-            foreach (ICyclopsCharger charger in KnownChargers.Values)
+            for (int i = 0; i < this.Chargers.Length; i++)
+            {
+                CyclopsCharger charger = this.Chargers[i];
                 charger.UpdateStatus();
+            }
 
             return requiresVanillaCharging;
         }

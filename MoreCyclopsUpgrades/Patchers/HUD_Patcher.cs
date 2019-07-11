@@ -24,7 +24,7 @@
         [HarmonyPostfix]
         public static void Postfix(ref CyclopsHelmHUDManager __instance, ref int __state)
         {
-            CyclopsManager.GetManager(__instance.subRoot)?.HUD.UpdateHelmHUD(__instance, __state);
+            CyclopsManager.GetManager(__instance.subRoot)?.HUD.FastUpdate(__instance, __state);
         }
     }
 
@@ -53,7 +53,7 @@
             if (hudMgr == null)
                 return true;
 
-            hudMgr.UpdateConsoleHUD(__instance);
+            hudMgr.SlowUpdate(__instance);
 
             return false;
         }
