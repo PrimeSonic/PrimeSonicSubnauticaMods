@@ -100,7 +100,7 @@
             constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time
 
             // Set the custom texture
-            Texture2D customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/MoreCyclopsUpgrades/Assets/NuclearFabricatorT.png");
+            Texture2D customTexture = ImageUtils.LoadTextureFromFile(@"./QMods/CyclopsNuclearUpgrades/Assets/NuclearFabricatorT.png");
             SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.material.mainTexture = customTexture;
 
