@@ -3,7 +3,7 @@
     using System;
     using System.IO;
 
-    public static class DirectoryHelper
+    internal static class DirectoryHelper
     {
         public static string GrabFromAssetsDirectory(string modName, string file)
         {

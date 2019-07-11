@@ -1,220 +1,164 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Common;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
-    using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
-    using MoreCyclopsUpgrades.Modules;
-    using MoreCyclopsUpgrades.Monobehaviors;
-    using MoreCyclopsUpgrades.SaveData;
-    using System;
     using System.Collections.Generic;
+    using Common;
+    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Charging;
+    using MoreCyclopsUpgrades.Config;
     using UnityEngine;
 
-    internal class ChargeManager
+    internal class ChargeManager : IChargeManager
     {
-        internal readonly SubRoot Cyclops;
-        internal CyclopsManager Manager;
+        private class ChargerCreator
+        {
+            public readonly CreateCyclopsCharger Creator;
+            public readonly string ChargerName;
 
-        internal SolarChargeHandler SolarCharging;
-        internal ThermalChargeHandler ThermalCharging;
-        internal BioChargeHandler BioCharging;
-        internal NuclearChargeHandler NuclearCharging;
+            public ChargerCreator(CreateCyclopsCharger creator, string chargerName)
+            {
+                Creator = creator;
+                ChargerName = chargerName;
+            }
+        }
 
-        internal ChargingUpgradeHandler SolarCharger;
-        internal ChargingUpgradeHandler ThermalCharger;
-        internal BatteryUpgradeHandler SolarChargerMk2;
-        internal BatteryUpgradeHandler ThermalChargerMk2;
-        internal BatteryUpgradeHandler NuclearCharger;
-        internal BioBoosterUpgradeHandler BioBoosters;
+        #region Static
 
-        internal int MaxBioReactors => BioCharging.MaxBioReactors;
+        internal static bool Initialized { get; private set; }
+        internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
 
-        internal readonly List<CyBioReactorMono> CyBioReactors = new List<CyBioReactorMono>();
-        private readonly List<CyBioReactorMono> TempCache = new List<CyBioReactorMono>();
+        private static readonly List<ChargerCreator> CyclopsChargerCreators = new List<ChargerCreator>();
+
+        internal static void RegisterChargerCreator(CreateCyclopsCharger createEvent, string name)
+        {
+            if (CyclopsChargerCreators.Find(c => c.Creator == createEvent || c.ChargerName == name) != null)
+            {
+                QuickLogger.Warning($"Duplicate CyclopsChargerCreator '{name}' was blocked");
+                return;
+            }
+
+            QuickLogger.Info($"Received CyclopsChargerCreator '{name}'");
+            CyclopsChargerCreators.Add(new ChargerCreator(createEvent, name));
+        }
+
+        #endregion
+
+        private readonly IDictionary<string, CyclopsCharger> KnownChargers = new Dictionary<string, CyclopsCharger>();
+
+        private readonly SubRoot Cyclops;
+        private float rechargePenalty = ModConfig.Main.RechargePenalty;
+        private readonly IModConfig config = ModConfig.Main;
+        private bool requiresVanillaCharging = false;
+        private float producedPower = 0f;
+        private float powerDeficit = 0f;
+
+        public ICollection<CyclopsCharger> Chargers => KnownChargers.Values;
 
         public ChargeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
-            UpgradeManager.UpgradeManagerInitializing += SetupChargingUpgrades;
-            PowerManager.CyclopsChargersInitializing += RegisterPowerChargers;
         }
 
-        internal bool Initialize(CyclopsManager manager)
+        internal T GetCharger<T>(string chargeHandlerName) where T : CyclopsCharger
         {
-            Manager = manager;
-            return true;
+            if (KnownChargers.TryGetValue(chargeHandlerName, out CyclopsCharger cyclopsCharger))
+            {
+                return (T)cyclopsCharger;
+            }
+
+            return null;
+        }
+
+        public void InitializeChargers()
+        {
+            QuickLogger.Debug("ChargeManager InitializeChargingHandlers");
+
+            // First, register chargers from other mods.
+            foreach (ChargerCreator chargerTemplate in CyclopsChargerCreators)
+            {
+                QuickLogger.Debug($"ChargeManager creating charger '{chargerTemplate.ChargerName}'");
+                CyclopsCharger charger = chargerTemplate.Creator.Invoke(Cyclops);
+
+                if (charger == null)
+                {
+                    QuickLogger.Warning($"CyclopsCharger '{chargerTemplate.ChargerName}' was null");
+                }
+                else if (!KnownChargers.ContainsKey(chargerTemplate.ChargerName))
+                {
+                    KnownChargers.Add(chargerTemplate.ChargerName, charger);
+                    QuickLogger.Debug($"Created CyclopsCharger '{chargerTemplate.ChargerName}'");
+                }
+                else
+                {
+                    QuickLogger.Warning($"Duplicate CyclopsCharger '{chargerTemplate.ChargerName}' was blocked");
+                }
+            }
+
+            // Next, check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
+            // If not, then the original thermal charging code will be allowed to run.
+            // This is to allow players to choose whether or not they want the newer form of charging.
+            requiresVanillaCharging = VanillaUpgrades.Main.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
+
+            Initialized = true;
+        }
+
+        internal void UpdateRechargePenalty(float penalty)
+        {
+            rechargePenalty = penalty;
         }
 
         /// <summary>
         /// Gets the total available reserve power across all equipment upgrade modules.
         /// </summary>
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
-        internal int GetTotalReservePower()
+        public int GetTotalReservePower()
         {
             float availableReservePower = 0f;
-            availableReservePower += SolarChargerMk2.TotalBatteryCharge;
-            availableReservePower += ThermalChargerMk2.TotalBatteryCharge;
-            availableReservePower += NuclearCharger.TotalBatteryCharge;
 
-            foreach (CyBioReactorMono reactor in CyBioReactors)
-                availableReservePower += reactor.Battery._charge;
+            foreach (CyclopsCharger charger in KnownChargers.Values)
+                availableReservePower += charger.TotalReserveEnergy;
 
             return Mathf.FloorToInt(availableReservePower);
         }
 
-        private void RegisterPowerChargers()
+        /// <summary>
+        /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
+        /// </summary>
+        /// <returns><c>True</c> if the original code for the vanilla Cyclops Thermal Reactor Module is required; Otherwise <c>false</c>.</returns>
+        internal bool RechargeCyclops()
         {
-            PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
+            if (Time.timeScale == 0f) // Is the game paused?
+                return false;
+
+            // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
+            // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
+            powerDeficit = GameModeUtils.RequiresPower()
+                            ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
+                            : 0f;
+
+            producedPower = 0f;
+
+            // First, get renewable energy first
+            foreach (ICyclopsCharger charger in KnownChargers.Values)
+                producedPower += charger.Generate(powerDeficit);
+
+            // Second, get non-renewable energy if no renewable energy was available
+            if (producedPower < MinimalPowerValue && // Did the renewable energy sources not produce any power?
+                powerDeficit > config.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
             {
-                QuickLogger.Debug("CyclopsCharger Registered: Solar charging ready");
-                var solarChargeHandler = new SolarChargeHandler(this);
-                SolarCharging = solarChargeHandler;
-                return solarChargeHandler;
-            });
-
-            PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
-            {
-                QuickLogger.Debug("CyclopsCharger Registered: Thermal charging ready");
-                var thermalChargeHandler = new ThermalChargeHandler(this);
-                ThermalCharging = thermalChargeHandler;
-                return thermalChargeHandler;
-            });
-
-            PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
-            {
-                QuickLogger.Debug("CyclopsCharger Registered: Bio charging ready");
-                var bioChargeHandler = new BioChargeHandler(this);
-                BioCharging = bioChargeHandler;
-                return bioChargeHandler;
-            });
-
-            PowerManager.RegisterOneTimeUseChargerCreator((SubRoot cyclopsRef) =>
-            {
-                QuickLogger.Debug("CyclopsCharger Registered: Nuclear charging ready");
-                var nuclearChargeHandler = new NuclearChargeHandler(this);
-                NuclearCharging = nuclearChargeHandler;
-                return nuclearChargeHandler;
-            });
-
-            PowerManager.CyclopsChargersInitializing -= RegisterPowerChargers;
-        }
-
-        private void SetupChargingUpgrades()
-        {
-            int maxChargingModules = ModConfig.Settings.MaxChargingModules();
-
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: SolarCharger Upgrade");
-                SolarCharger = new ChargingUpgradeHandler(CyclopsModule.SolarChargerID)
-                {
-                    MaxCount = maxChargingModules
-                };
-                SolarCharger.OnFirstTimeMaxCountReached += () =>
-                {
-                    ErrorMessage.AddMessage(CyclopsModule.MaxSolarReached());
-                };
-                return SolarCharger;
-            });
-
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: SolarChargerMk2 Upgrade");
-                SolarChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.SolarChargerMk2ID, canRecharge: true)
-                {
-                    MaxCount = maxChargingModules
-                };
-                SolarChargerMk2.OnFirstTimeMaxCountReached += () =>
-                {
-                    ErrorMessage.AddMessage(CyclopsModule.MaxSolarReached());
-                };
-
-                SolarCharger.SiblingUpgrade = SolarChargerMk2;
-                SolarChargerMk2.SiblingUpgrade = SolarCharger;
-                return SolarChargerMk2;
-            });
-
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: ThermalCharger Upgrade");
-                ThermalCharger = new ChargingUpgradeHandler(TechType.CyclopsThermalReactorModule)
-                {
-                    MaxCount = maxChargingModules
-                };
-                ThermalCharger.OnFirstTimeMaxCountReached += () =>
-                {
-                    ErrorMessage.AddMessage(CyclopsModule.MaxThermalReached());
-                };
-                return ThermalCharger;
-            });
-
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: ThermalChargerMk2 Upgrade");
-                ThermalChargerMk2 = new BatteryUpgradeHandler(CyclopsModule.ThermalChargerMk2ID, canRecharge: true)
-                {
-                    MaxCount = maxChargingModules
-                };
-                ThermalChargerMk2.OnFirstTimeMaxCountReached += () =>
-                {
-                    ErrorMessage.AddMessage(CyclopsModule.MaxThermalReached());
-                };
-                ThermalCharger.SiblingUpgrade = ThermalChargerMk2;
-                ThermalChargerMk2.SiblingUpgrade = ThermalCharger;
-                return ThermalChargerMk2;
-            });
-
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: NuclearReactor Upgrade");
-                NuclearCharger = new NuclearUpgradeHandler()
-                {
-                    MaxCount = Math.Min(maxChargingModules, 3) // No more than 3 no matter what the difficulty
-                };
-                return NuclearCharger;
-            });
-
-            UpgradeManager.RegisterOneTimeUseHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: BioBooster Upgrade");
-                BioBoosters = new BioBoosterUpgradeHandler();
-                return BioBoosters;
-            });
-
-            UpgradeManager.UpgradeManagerInitializing -= SetupChargingUpgrades;
-        }
-
-        internal void SyncBioReactors()
-        {
-            if (Manager == null)
-                return;
-
-            TempCache.Clear();
-
-            SubRoot cyclops = Cyclops;
-
-            CyBioReactorMono[] cyBioReactors = cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
-
-            foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
-            {
-                if (TempCache.Contains(cyBioReactor))
-                    continue; // This is a workaround because of the object references being returned twice in this array.
-
-                TempCache.Add(cyBioReactor);
-
-                if (cyBioReactor.ParentCyclops == null)
-                {
-                    QuickLogger.Debug("CyBioReactorMono synced externally");
-                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    cyBioReactor.ConnectToCyclops(cyclops, this);
-                }
+                foreach (ICyclopsCharger charger in KnownChargers.Values)
+                    producedPower += charger.Drain(powerDeficit);
             }
 
-            if (TempCache.Count != CyBioReactors.Count)
+            if (producedPower > 0f)
             {
-                CyBioReactors.Clear();
-                CyBioReactors.AddRange(TempCache);
+                Cyclops.powerRelay.AddEnergy(producedPower * rechargePenalty, out float amountStored);
             }
+
+            // Last, inform the chargers to update their display status
+            foreach (ICyclopsCharger charger in KnownChargers.Values)
+                charger.UpdateStatus();
+
+            return requiresVanillaCharging;
         }
     }
 }

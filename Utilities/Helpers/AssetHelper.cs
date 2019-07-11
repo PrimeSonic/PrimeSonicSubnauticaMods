@@ -7,7 +7,7 @@
     /// <summary>
     /// A  helper class that deals with the AssetBudle
     /// </summary>
-    public static class AssetHelper
+    internal static class AssetHelper
     {
         /// <summary>
         /// The AssetBundle for the mod

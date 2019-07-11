@@ -1,64 +1,37 @@
 ﻿namespace CyclopsNuclearReactor
 {
-    using Common;
-    using MoreCyclopsUpgrades.CyclopsUpgrades.CyclopsCharging;
     using System.Collections.Generic;
+    using Common;
+    using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
-    internal class CyNukeChargeManager : ICyclopsCharger
+    internal class CyNukeChargeManager : CyclopsCharger
     {
-        #region Static Methods
-
-        // This system was modeled after the CyclopsManager of MoreCyclopsUpgrades given its proven reliability
-
-        internal static readonly List<CyNukeChargeManager> Managers = new List<CyNukeChargeManager>();
-
-        internal static CyNukeChargeManager GetManager(SubRoot cyclops)
-        {
-            if (cyclops.isBase || !cyclops.isCyclops)
-                return null;
-
-            CyNukeChargeManager mgr = Managers.Find(m => m.Cyclops == cyclops && m.InstanceID == cyclops.GetInstanceID());
-
-            return mgr ?? CreateNewManager(cyclops);
-        }
-
-        private static CyNukeChargeManager CreateNewManager(SubRoot cyclops)
-        {
-            var mgr = new CyNukeChargeManager(cyclops);
-            Managers.Add(mgr);
-            mgr.SyncReactorsExternally();
-            return mgr;
-        }
-
-        internal static List<CyNukeReactorMono> GetReactors(SubRoot cyclops)
-        {
-            CyNukeChargeManager mgr = GetManager(cyclops);
-
-            return mgr.CyNukeReactors;
-        }
-
-        internal static void RemoveReactor(CyNukeReactorMono reactor)
-        {
-            foreach (CyNukeChargeManager mgr in Managers)
-            {
-                mgr.CyNukeReactors.Remove(reactor);
-            }
-        }
-
-        #endregion
-
         public const int MaxReactors = 2;
 
-        public readonly SubRoot Cyclops;
+        private CyNukeEnhancerHandler upgradeHandler;
+        private CyNukeEnhancerHandler CyNukeEnhancer => upgradeHandler ??
+            (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(Cyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
 
-        public readonly int InstanceID;
-        internal CyNukeEnhancerHandler UpgradeHandler;
-        internal int UpgradeLevel => UpgradeHandler == null ? 0 : UpgradeHandler.HighestValue;
+        internal int UpgradeLevel => this.CyNukeEnhancer == null ? 0 : this.CyNukeEnhancer.HighestValue;
 
         private readonly Atlas.Sprite indicatorSprite = SpriteManager.Get(SpriteManager.Group.Category, CyNukReactorBuildable.PowerIndicatorIconID);
 
         public readonly List<CyNukeReactorMono> CyNukeReactors = new List<CyNukeReactorMono>();
+
+        public override float TotalReserveEnergy
+        {
+            get
+            {
+                float total = 0f;
+                foreach (CyNukeReactorMono reactor in CyNukeReactors)
+                {
+                    total += reactor.GetTotalAvailablePower();
+                }
+                return total;
+            }
+        }
 
         public void AddReactor(CyNukeReactorMono reactor)
         {
@@ -68,12 +41,8 @@
             }
         }
 
-        public CyNukeChargeManager(SubRoot cyclops)
+        public CyNukeChargeManager(SubRoot cyclops) : base(cyclops)
         {
-            Cyclops = cyclops;
-            InstanceID = cyclops.GetInstanceID();
-
-            QuickLogger.Debug($"Created new CyNukeChargeManager for Cyclops {InstanceID}");
         }
 
         internal void SyncReactorsExternally()
@@ -100,51 +69,26 @@
 
         internal static void SyncReactors()
         {
-            foreach (CyNukeChargeManager mgr in Managers)
+            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllCyclopsChargers<CyNukeChargeManager>())
                 mgr.SyncReactorsExternally();
+        }
+
+        public static void RemoveReactor(CyNukeReactorMono reactor)
+        {
+            foreach (CyNukeChargeManager mgr in MCUServices.Find.AllCyclopsChargers<CyNukeChargeManager>())
+            {
+                mgr.CyNukeReactors.Remove(reactor);
+            }
         }
 
         #region ICyclopsCharger Methods
 
-        public float ProducePower(float requestedPower)
-        {
-            if (CyNukeReactors.Count == 0)
-                return 0f;
-
-            float powerDeficit = requestedPower;
-            float producedPower = 0f;
-
-            foreach (CyNukeReactorMono reactor in CyNukeReactors)
-            {
-                if (!reactor.HasPower())
-                    continue;
-
-                producedPower += reactor.ProducePower(ref powerDeficit);
-            }
-
-            return producedPower;
-        }
-
-        public bool HasPowerIndicatorInfo()
-        {
-            if (CyNukeReactors.Count == 0)
-                return false;
-
-            foreach (CyNukeReactorMono reactor in CyNukeReactors)
-            {
-                if (reactor.HasPower())
-                    return true;
-            }
-
-            return false;
-        }
-
-        public Atlas.Sprite GetIndicatorSprite()
+        public override Atlas.Sprite StatusSprite()
         {
             return indicatorSprite;
         }
 
-        public string GetIndicatorText()
+        public override string StatusText()
         {
             if (CyNukeReactors.Count == 0)
                 return string.Empty;
@@ -162,7 +106,7 @@
             return value;
         }
 
-        public Color GetIndicatorTextColor()
+        public override Color StatusTextColor()
         {
             if (CyNukeReactors.Count == 0)
                 return Color.white;
@@ -186,6 +130,30 @@
 
             // Some slots depleted
             return Color.yellow;
+        }
+
+        protected override float GenerateNewEnergy(float requestedPower)
+        {
+            return 0f;
+        }
+
+        protected override float DrainReserveEnergy(float requestedPower)
+        {
+            if (CyNukeReactors.Count == 0)
+                return 0f;
+
+            float powerDeficit = requestedPower;
+            float producedPower = 0f;
+
+            foreach (CyNukeReactorMono reactor in CyNukeReactors)
+            {
+                if (!reactor.HasPower())
+                    continue;
+
+                producedPower += reactor.GetPower(ref powerDeficit);
+            }
+
+            return producedPower;
         }
 
         #endregion

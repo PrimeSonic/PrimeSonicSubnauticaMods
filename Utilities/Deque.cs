@@ -5,8 +5,7 @@
     using System.Collections.Generic;
     using System.Threading;
 
-    /// <inheritdoc cref="ICollection{T}" />
-    /// <inheritdoc cref="IReadOnlyCollection{T}" />
+    /// <inheritdoc cref="ICollection{T}" />    
     /// <summary>Represents a double-ended queue collection of objects.</summary>
     /// <typeparam name="T">Specifies the type of elements in the deque.</typeparam>
     /// <remarks>https://en.wikipedia.org/wiki/Double-ended_queue</remarks>
@@ -70,7 +69,7 @@
             _array = new T[capacity];
             _head = 0;
             _tail = 0;
-            Count = 0;
+            this.Count = 0;
         }
 
         /// <inheritdoc />
@@ -105,7 +104,7 @@
         {
             get
             {
-                if (index < 0 || index >= Count)
+                if (index < 0 || index >= this.Count)
                 {
                     throw new ArgumentOutOfRangeException(nameof(index), "Requested index falls outside the array");
                 }
@@ -115,7 +114,7 @@
             }
             set
             {
-                if (index < 0 || index >= Count)
+                if (index < 0 || index >= this.Count)
                 {
                     throw new ArgumentOutOfRangeException(nameof(index), "Requested index falls outside the array");
                 }
@@ -136,12 +135,12 @@
         /// <summary>
         /// Gets the total number of elements from the start of the head index.
         /// </summary>
-        private int CountBeforeWrap => IsWrapped ? _array.Length - _head : Count;
+        private int CountBeforeWrap => this.IsWrapped ? _array.Length - _head : this.Count;
 
         /// <summary>
         /// Gets the total number of elements from the start of the internal array.
         /// </summary>
-        private int CountAfterWrap => IsWrapped ? _tail + 1 : Count;
+        private int CountAfterWrap => this.IsWrapped ? _tail + 1 : this.Count;
 
         /// <summary>
         /// If the head index is greater than the tail index, it means we have wrapped around the end of the internal array.
@@ -154,7 +153,10 @@
         /// </summary>
         /// <param name="currentIndex">The starting index.</param>
         /// <returns>The next index in the array that is 1 increment ahead.</returns>
-        private int NextIndexForwards(int currentIndex) => (currentIndex + 1) % _array.Length;
+        private int NextIndexForwards(int currentIndex)
+        {
+            return (currentIndex + 1) % _array.Length;
+        }
 
         /// <summary>
         /// Returns the next index, moving backwards, of the circular array.
@@ -162,14 +164,20 @@
         /// </summary>
         /// <param name="currentIndex">The starting index.</param>
         /// <returns>The next index in the array that is 1 decrement behind.</returns>
-        private int NextIndexBackwards(int currentIndex) => (currentIndex + _array.Length - 1) % _array.Length;
+        private int NextIndexBackwards(int currentIndex)
+        {
+            return (currentIndex + _array.Length - 1) % _array.Length;
+        }
 
         /// <summary>
         /// Returns an index that maps the start of the collection to zero.
         /// </summary>
         /// <param name="zeroBasedIndex">A zero based index, where zero refers to the first element of the collection.</param>
         /// <returns>The actual index of the internal array that maps to the zero based index.</returns>
-        private int RelativeZeroBasedIndex(int zeroBasedIndex) => (_head + zeroBasedIndex) % _array.Length;
+        private int RelativeZeroBasedIndex(int zeroBasedIndex)
+        {
+            return (_head + zeroBasedIndex) % _array.Length;
+        }
 
         /// <inheritdoc cref="IEnumerable{T}" />
         /// <summary>Gets the number of elements contained in the <see cref="Deque{T}" />.</summary>
@@ -213,13 +221,19 @@
         /// The number of elements in the source <see cref="Deque{T}" /> is greater than the
         /// available space from <paramref name="index" /> to the end of the destination <paramref name="array" />.
         /// </exception>
-        public void CopyTo(Array array, int index) => ArrayCopy(array, index);
+        public void CopyTo(Array array, int index)
+        {
+            ArrayCopy(array, index);
+        }
 
         /// <inheritdoc />
         /// <summary>
         /// Enumeration is always done in order from head to tail.
         /// </summary>
-        public IEnumerator<T> GetEnumerator() => new Enumerator(this);
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
 
         /// <summary>
         /// Copies the <see cref="Deque{T}" /> elements to an existing one-dimensional <see cref="Array" />, starting at
@@ -241,26 +255,29 @@
         /// The number of elements in the source <see cref="Deque{T}" /> is greater than the
         /// available space from <paramref name="index" /> to the end of the destination <paramref name="array" />.
         /// </exception>
-        public void CopyTo(T[] array, int index) => ArrayCopy(array, index);
+        public void CopyTo(T[] array, int index)
+        {
+            ArrayCopy(array, index);
+        }
 
         /// <summary>
         /// Removes all objects from the <see cref="Deque{T}" />.
         /// </summary>
         public void Clear()
         {
-            if (IsWrapped)
+            if (this.IsWrapped)
             {
-                Array.Clear(_array, _head, CountBeforeWrap);
+                Array.Clear(_array, _head, this.CountBeforeWrap);
                 Array.Clear(_array, 0, _tail);
             }
             else
             {
-                Array.Clear(_array, _head, Count);
+                Array.Clear(_array, _head, this.Count);
             }
 
             _head = 0;
             _tail = 0;
-            Count = 0;
+            this.Count = 0;
             ++_version;
         }
 
@@ -274,14 +291,14 @@
 
             _head = NextIndexBackwards(_head);
 
-            if (Count == 0)
+            if (this.Count == 0)
             {
                 _tail = _head; // Tail and Head have the same index when there is only 1 element.
             }
 
             _array[_head] = item;
 
-            ++Count;
+            ++this.Count;
             ++_version;
         }
 
@@ -293,14 +310,14 @@
 
             _tail = NextIndexForwards(_tail);
 
-            if (Count == 0)
+            if (this.Count == 0)
             {
                 _head = _tail; // Head and Tail have the same index when there is only 1 element.
             }
 
             _array[_tail] = item;
 
-            ++Count;
+            ++this.Count;
             ++_version;
         }
 
@@ -313,7 +330,7 @@
         /// <exception cref="InvalidOperationException">The <see cref="Deque{T}" /> is empty.</exception>
         public T PopHead()
         {
-            if (Count == 0)
+            if (this.Count == 0)
             {
                 throw new InvalidOperationException("The DeQueue is empty");
             }
@@ -323,7 +340,7 @@
 
             _head = NextIndexForwards(_head);
 
-            --Count;
+            --this.Count;
             ++_version;
             return obj;
         }
@@ -337,7 +354,7 @@
         /// <exception cref="InvalidOperationException">The <see cref="Deque{T}" /> is empty.</exception>
         public T PopTail()
         {
-            if (Count == 0)
+            if (this.Count == 0)
             {
                 throw new InvalidOperationException("The DeQueue is empty");
             }
@@ -347,7 +364,7 @@
 
             _tail = NextIndexBackwards(_tail);
 
-            --Count;
+            --this.Count;
             ++_version;
             return obj;
         }
@@ -361,7 +378,7 @@
         /// <exception cref="InvalidOperationException">The <see cref="Deque{T}" /> is empty.</exception>
         public T PeekHead()
         {
-            if (Count == 0)
+            if (this.Count == 0)
             {
                 throw new InvalidOperationException("The DeQueue is empty");
             }
@@ -378,7 +395,7 @@
         /// <exception cref="InvalidOperationException">The <see cref="Deque{T}" /> is empty.</exception>
         public T PeekTail()
         {
-            if (Count == 0)
+            if (this.Count == 0)
             {
                 throw new InvalidOperationException("The DeQueue is empty");
             }
@@ -392,7 +409,7 @@
         public bool Contains(T item)
         {
             int index = _head;
-            int size = Count;
+            int size = this.Count;
             while (size-- > 0)
             {
                 if (item == null)
@@ -417,20 +434,20 @@
         /// <returns>A new array containing elements copied from the <see cref="Deque{T}" />.</returns>
         public T[] ToArray()
         {
-            var objArray = new T[Count];
-            if (Count == 0)
+            var objArray = new T[this.Count];
+            if (this.Count == 0)
             {
                 return objArray;
             }
 
-            if (IsWrapped)
+            if (this.IsWrapped)
             {
-                Array.Copy(_array, _head, objArray, 0, CountBeforeWrap);
-                Array.Copy(_array, 0, objArray, CountBeforeWrap, CountAfterWrap);
+                Array.Copy(_array, _head, objArray, 0, this.CountBeforeWrap);
+                Array.Copy(_array, 0, objArray, this.CountBeforeWrap, this.CountAfterWrap);
             }
             else
             {
-                Array.Copy(_array, _head, objArray, 0, Count);
+                Array.Copy(_array, _head, objArray, 0, this.Count);
             }
 
             return objArray;
@@ -442,12 +459,12 @@
         /// </summary>
         public void TrimExcess()
         {
-            if (Count >= (int)(_array.Length * 0.9))
+            if (this.Count >= (int)(_array.Length * 0.9))
             {
                 return;
             }
 
-            SetCapacity(Count);
+            SetCapacity(this.Count);
         }
 
         /// <summary>
@@ -478,7 +495,7 @@
 
             int availableSpaceInTarget = targetArrayLength - targetArrayStartingIndex;
 
-            if (availableSpaceInTarget < Count)
+            if (availableSpaceInTarget < this.Count)
             {
                 throw new ArgumentException(
                                             "The number of elements in the source deque is greater than the available space " +
@@ -487,11 +504,11 @@
 
             try
             {
-                Array.Copy(_array, _head, array, targetArrayStartingIndex, CountBeforeWrap);
+                Array.Copy(_array, _head, array, targetArrayStartingIndex, this.CountBeforeWrap);
 
-                if (IsWrapped)
+                if (this.IsWrapped)
                 {
-                    Array.Copy(_array, 0, array, targetArrayStartingIndex + CountBeforeWrap, CountAfterWrap);
+                    Array.Copy(_array, 0, array, targetArrayStartingIndex + this.CountBeforeWrap, this.CountAfterWrap);
                 }
             }
             catch (ArrayTypeMismatchException ex)
@@ -505,12 +522,12 @@
         /// </summary>
         private void HandleArrayCapacity()
         {
-            if (Count < Capacity)
+            if (this.Count < this.Capacity)
             {
                 return;
             }
 
-            var capacity = (int)(_array.Length * GrowFactor / 100L);
+            int capacity = (int)(_array.Length * GrowFactor / 100L);
             if (capacity < _array.Length + MinimumGrow)
             {
                 capacity = _array.Length + MinimumGrow;
@@ -528,22 +545,22 @@
         {
             var objArray = new T[capacity];
 
-            if (Count > 0)
+            if (this.Count > 0)
             {
-                if (IsWrapped)
+                if (this.IsWrapped)
                 {
-                    Array.Copy(_array, _head, objArray, 0, CountBeforeWrap);
-                    Array.Copy(_array, 0, objArray, CountBeforeWrap, CountAfterWrap);
+                    Array.Copy(_array, _head, objArray, 0, this.CountBeforeWrap);
+                    Array.Copy(_array, 0, objArray, this.CountBeforeWrap, this.CountAfterWrap);
                 }
                 else
                 {
-                    Array.Copy(_array, _head, objArray, 0, Count);
+                    Array.Copy(_array, _head, objArray, 0, this.Count);
                 }
             }
 
             _array = objArray;
             _head = 0;
-            _tail = Count - 1;
+            _tail = this.Count - 1;
             ++_version;
         }
 
@@ -551,7 +568,10 @@
         /// <summary>
         /// Enumeration is always done in order from head to tail.
         /// </summary>
-        IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
 
         /// <inheritdoc cref="IEnumerator{T}" />
         /// <summary>Enumerates the elements of a <see cref="Deque{T}" /> in order from head to tail.</summary>
@@ -636,7 +656,7 @@
                 }
             }
 
-            object IEnumerator.Current => Current;
+            object IEnumerator.Current => this.Current;
 
             public void Reset()
             {

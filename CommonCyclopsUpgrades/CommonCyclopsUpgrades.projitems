@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>da01f903-5e97-47fc-a7e5-d67967d89646</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>CommonCyclopsUpgrades</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AmbientEnergyCharger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AmbientEnergyIconOverlay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AmbientEnergyUpgradeHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BatteryDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ModConfigMenuOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ModConfigSaveData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NumberFormatter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\ChoiceOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\ConfigOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\OptionTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\SliderOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\ToggleOption.cs" />
+  </ItemGroup>
+</Project>

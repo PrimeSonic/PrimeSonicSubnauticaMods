@@ -1,45 +1,30 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Common;
-    using CyclopsUpgrades;
-    using Monobehaviors;
-    using System;
     using System.Collections.Generic;
-    using System.Reflection;
+    using Common;
+    using MoreCyclopsUpgrades.API.Upgrades;
+    using MoreCyclopsUpgrades.AuxConsole;
     using UnityEngine;
 
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
     /// </summary>
-    public class UpgradeManager
+    internal class UpgradeManager
     {
-        private static readonly ICollection<HandlerCreator> ReusableUpgradeHandlers = new List<HandlerCreator>();
-        private static readonly ICollection<HandlerCreator> OneTimeUseUpgradeHandlers = new List<HandlerCreator>();
+        internal static bool Initialized { get; private set; }
 
-        /// <summary>
-        /// <para>This event happens whenever a new UpgradeManager is initialized, before <see cref="HandlerCreator"/>s are registered.</para>
-        /// <para>Use this if you need a way to know when you should call <see cref="RegisterOneTimeUseHandlerCreator"/> for <see cref="HandlerCreator"/>s that cannot be created from a static context.</para>
-        /// </summary>
-        public static Action UpgradeManagerInitializing;
+        private static readonly IDictionary<CreateUpgradeHandler, string> HandlerCreators = new Dictionary<CreateUpgradeHandler, string>();
 
-        /// <summary>
-        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand and is only used once.
-        /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        public static void RegisterOneTimeUseHandlerCreator(HandlerCreator createEvent)
+        internal static void RegisterHandlerCreator(CreateUpgradeHandler createEvent, string assemblyName)
         {
-            QuickLogger.Info($"Received OneTimeUse HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
-            OneTimeUseUpgradeHandlers.Add(createEvent);
-        }
+            if (HandlerCreators.ContainsKey(createEvent))
+            {
+                QuickLogger.Warning($"Duplicate UpgradeHandlerCreator blocked from {assemblyName}");
+                return;
+            }
 
-        /// <summary>
-        /// Registers a <see cref="HandlerCreator"/> method that creates returns a new <see cref="UpgradeHandler"/> on demand that can be reused for each new Cyclops.
-        /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler"/>.</param>
-        public static void RegisterReusableHandlerCreator(HandlerCreator createEvent)
-        {
-            QuickLogger.Info($"Received Reusable HandlerCreator from {Assembly.GetCallingAssembly().GetName().Name}");
-            ReusableUpgradeHandlers.Add(createEvent);
+            QuickLogger.Info($"Received UpgradeHandlerCreator from {assemblyName}");
+            HandlerCreators.Add(createEvent, assemblyName);
         }
 
         private class UpgradeSlot
@@ -54,7 +39,7 @@
             }
         }
 
-        private readonly List<CyUpgradeConsoleMono> TempCache = new List<CyUpgradeConsoleMono>();
+        private readonly List<AuxCyUpgradeConsoleMono> TempCache = new List<AuxCyUpgradeConsoleMono>();
 
         private IEnumerable<UpgradeSlot> UpgradeSlots
         {
@@ -64,79 +49,125 @@
                     foreach (string slot in SlotHelper.SlotNames)
                         yield return new UpgradeSlot(Cyclops.upgradeConsole.modules, slot);
 
-                foreach (CyUpgradeConsoleMono aux in this.AuxUpgradeConsoles)
+                foreach (AuxCyUpgradeConsoleMono aux in this.AuxUpgradeConsoles)
                     foreach (string slot in SlotHelper.SlotNames)
                         yield return new UpgradeSlot(aux.Modules, slot);
             }
         }
 
-        internal CyclopsManager Manager { get; private set; }
-
         internal readonly SubRoot Cyclops;
 
-        internal List<CyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<CyUpgradeConsoleMono>();
+        internal List<AuxCyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<AuxCyUpgradeConsoleMono>();
 
-        private readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
+        internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
+
+        internal T GetUpgradeHandler<T>(TechType upgradeId) where T : UpgradeHandler
+        {
+            if (KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
+            {
+                if (upgradeHandler is IGroupedUpgradeHandler groupMember)
+                    return (T)groupMember.GroupHandler;
+
+                return (T)upgradeHandler;
+            }
+
+            return null;
+        }
+
+        internal UpgradeHandler GetUpgradeHandler(TechType upgradeId)
+        {
+            if (KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
+            {
+                if (upgradeHandler is IGroupedUpgradeHandler groupMember)
+                    return (UpgradeHandler)groupMember.GroupHandler;
+
+                return upgradeHandler;
+            }
+
+            return null;
+        }
+
+        internal T GetGroupHandler<T>(TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
+        {
+            if (!KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
+                return null;
+
+            if (upgradeHandler is IGroupedUpgradeHandler groupMember)
+            {
+                if (additionalIds.Length > 0)
+                {
+                    IGroupHandler groupHandler = groupMember.GroupHandler;
+                    foreach (TechType techType in additionalIds)
+                    {
+                        if (!groupHandler.IsManaging(techType))
+                            return null;
+                    }
+                    return (T)groupHandler;
+                }
+                else
+                {
+                    return (T)groupMember.GroupHandler;
+                }
+            }
+
+            return (T)upgradeHandler;
+        }
 
         internal UpgradeManager(SubRoot cyclops)
         {
             Cyclops = cyclops;
-        }
-
-        internal bool Initialize(CyclopsManager manager)
-        {
-            if (this.Manager != null)
-                return false; // Already initialized
-
-            this.Manager = manager;
-
-            RegisterUpgradeHandlers();
 
             Equipment cyclopsConsole = Cyclops.upgradeConsole.modules;
             AttachEquipmentEvents(ref cyclopsConsole);
-
-            SyncUpgradeConsoles();
-
-            return true;
         }
 
-        private void RegisterUpgradeHandlers()
+        public bool InitializeUpgradeHandlers()
         {
-            QuickLogger.Debug("UpgradeManager RegisterUpgradeHandlers");
-            UpgradeManagerInitializing?.Invoke();
-            QuickLogger.Debug("External UpgradeManagerInitializing methods invoked");
-
-            // Register upgrades from other mods
-            foreach (HandlerCreator upgradeHandlerCreator in ReusableUpgradeHandlers)
+            QuickLogger.Debug($"UpgradeManager adding new UpgradeHandlers from external mods");
+            // First, register upgrades from other mods.
+            foreach (KeyValuePair<CreateUpgradeHandler, string> pair in HandlerCreators)
             {
-                UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
+                CreateUpgradeHandler upgradeHandlerCreator = pair.Key;
+                string assemblyName = pair.Value;
+                UpgradeHandler upgrade = upgradeHandlerCreator.Invoke(Cyclops);
 
-                if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
+                if (upgrade == null)
+                {
+                    QuickLogger.Warning($"UpgradeHandler from '{assemblyName}' was null");
+                }
+                else if (!KnownsUpgradeModules.ContainsKey(upgrade.TechType))
+                {
                     upgrade.RegisterSelf(KnownsUpgradeModules);
+                }
                 else
-                    QuickLogger.Warning($"Duplicate Reusable UpgradeHandler for '{upgrade.techType}' was blocked");
+                {
+                    QuickLogger.Warning($"Duplicate UpgradeHandler for '{upgrade.TechType.AsString()}' from '{assemblyName}' was blocked");
+                }
             }
 
-            foreach (HandlerCreator upgradeHandlerCreator in OneTimeUseUpgradeHandlers)
+            // Next, if no external mod has provided an UpgradeHandler for the vanilla upgrades, they will be added here.
+            // This is to allow other mods to provide new functionality to the original upgrades.
+            IVanillaUpgrades originalUpgrades = VanillaUpgrades.Main;
+            QuickLogger.Debug($"UpgradeManager adding default UpgradeHandlers for unmanaged vanilla upgrades");
+            foreach (TechType upgradeID in originalUpgrades.OriginalUpgradeIDs)
             {
-                UpgradeHandler upgrade = upgradeHandlerCreator.Invoke();
-
-                if (!KnownsUpgradeModules.ContainsKey(upgrade.techType))
-                    upgrade.RegisterSelf(KnownsUpgradeModules);
-                else
-                    QuickLogger.Warning($"Duplicate OneTimeUse UpgradeHandler for '{upgrade.techType}' was blocked");
+                if (!KnownsUpgradeModules.ContainsKey(upgradeID))
+                {
+                    UpgradeHandler vanillaUpgrade = originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops);
+                    vanillaUpgrade.RegisterSelf(KnownsUpgradeModules);
+                }
             }
 
-            OneTimeUseUpgradeHandlers.Clear();
+            return Initialized = true;
         }
 
         internal void SyncUpgradeConsoles()
         {
             TempCache.Clear();
 
-            CyUpgradeConsoleMono[] auxUpgradeConsoles = Cyclops.GetAllComponentsInChildren<CyUpgradeConsoleMono>();
+            AuxCyUpgradeConsoleMono[] auxUpgradeConsoles = Cyclops.GetAllComponentsInChildren<AuxCyUpgradeConsoleMono>();
 
-            foreach (CyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
+            foreach (AuxCyUpgradeConsoleMono auxConsole in auxUpgradeConsoles)
             {
                 if (TempCache.Contains(auxConsole))
                     continue; // This is a workaround because of the object references being returned twice in this array.
@@ -147,7 +178,7 @@
                 {
                     QuickLogger.Debug("CyUpgradeConsoleMono synced externally");
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    auxConsole.ConnectToCyclops(Cyclops, this.Manager);
+                    auxConsole.ConnectToCyclops(Cyclops, this);
                 }
             }
 
@@ -171,13 +202,21 @@
 
         internal void HandleUpgrades()
         {
+            QuickLogger.Debug($"UpgradeManager clearing cyclops upgrades");
+
             // Turn off all upgrades and clear all values
             foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
-                upgradeType.UpgradesCleared(Cyclops); // UpgradeHandler event
+            {
+                if (upgradeType.HasUpgrade)
+                    QuickLogger.Debug($"UpgradeManager clearing {upgradeType.TechType.AsString()}");
+
+                upgradeType.UpgradesCleared(); // UpgradeHandler event
+            }
 
             var foundUpgrades = new List<TechType>();
 
             // Go through all slots and check what upgrades are available
+            QuickLogger.Debug($"UpgradeManager checking upgrade slots");
             foreach (UpgradeSlot upgradeSlot in this.UpgradeSlots)
             {
                 Equipment modules = upgradeSlot.Modules;
@@ -192,7 +231,12 @@
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
-                    handler.UpgradeCounted(Cyclops, modules, slot); // UpgradeHandler event
+                    QuickLogger.Debug($"UpgradeManager counting cyclops upgrade '{techTypeInSlot.AsString()}'");
+                    handler.UpgradeCounted(modules, slot); // UpgradeHandler event
+                }
+                else
+                {
+                    QuickLogger.Warning($"UpgradeManager encountered unmanaged cyclops upgrade '{techTypeInSlot.AsString()}'");
                 }
             }
 
@@ -202,7 +246,9 @@
                 Cyclops.slotModSFX?.Play();
 
                 foreach (UpgradeHandler upgradeType in KnownsUpgradeModules.Values)
-                    upgradeType.UpgradesFinished(Cyclops); // UpgradeHandler event
+                    upgradeType.UpgradesFinished(); // UpgradeHandler event
+
+                PdaOverlayManager.RemapItems();
             }
 
             Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
@@ -212,7 +258,7 @@
         {
             if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
             {
-                return handler.CanUpgradeBeAdded(Cyclops, pickupable, verbose);
+                return handler.CanUpgradeBeAdded(pickupable, verbose);
             }
 
             return true;
@@ -222,7 +268,7 @@
         {
             if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
             {
-                return handler.CanUpgradeBeRemoved(Cyclops, pickupable, verbose);
+                return handler.CanUpgradeBeRemoved(pickupable, verbose);
             }
 
             return true;

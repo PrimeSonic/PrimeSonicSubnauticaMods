@@ -1,7 +1,5 @@
 ﻿namespace CustomCraft2SML.Interfaces
 {
-    using CustomCraft2SML.Serialization.Entries;
-
     internal interface ICustomFood : IAliasRecipe
     {
         FoodModel FoodType { get; }

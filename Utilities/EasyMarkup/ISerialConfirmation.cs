@@ -1,6 +1,6 @@
 ﻿namespace Common.EasyMarkup
 {
-    public interface IValueConfirmation
+    internal interface IValueConfirmation
     {
         bool HasValue { get; }
     }

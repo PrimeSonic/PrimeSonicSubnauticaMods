@@ -1,8 +1,9 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Common;
+    using CommonCyclopsUpgrades;
     using CyclopsNuclearReactor.Helpers;
-    using MoreCyclopsUpgrades.Managers;
+    using MoreCyclopsUpgrades.API;
     using ProtoBuf;
     using System;
     using System.Collections.Generic;
@@ -67,7 +68,7 @@
             if (reactorRodData.Count == 0)
                 return CyNukReactorBuildable.NoPoweMessage();
 
-            return NumberFormatter.FormatNumber(Mathf.CeilToInt(GetTotalAvailablePower()));
+            return NumberFormatter.FormatValue(GetTotalAvailablePower());
         }
 
         internal float GetTotalAvailablePower()
@@ -107,9 +108,9 @@
             return false;
         }
 
-        public float ProducePower(ref float powerDeficit)
+        public float GetPower(ref float powerDeficit)
         {
-            if (powerDeficit <= PowerManager.MinimalPowerValue)
+            if (powerDeficit <= MCUServices.MinimalPowerValue)
                 return 0f;
 
             if (reactorRodData.Count == 0)
@@ -121,7 +122,7 @@
             int max = Math.Min(this.MaxActiveSlots, this.TotalItemCount);
             for (int i = 0; i < max; i++)
             {
-                if (powerDeficit <= PowerManager.MinimalPowerValue)
+                if (powerDeficit <= MCUServices.MinimalPowerValue)
                     break;
 
                 SlotData slotData = reactorRodData[i];
@@ -136,7 +137,7 @@
                 totalPowerProduced += powerProduced;
                 powerDeficit -= powerProduced;
 
-                if (slotData.Charge <= PowerManager.MinimalPowerValue)
+                if (slotData.Charge <= MCUServices.MinimalPowerValue)
                     depletedRod = slotData;
 
                 UpdateGraphicalRod(slotData);
@@ -183,28 +184,17 @@
 
         private void Start()
         {
-            if (Manager != null)
+            SubRoot cyclops = GetComponentInParent<SubRoot>();
+
+            if (cyclops == null)
             {
-                ConnectToCyclops(Manager.Cyclops, Manager);
-            }
-            else if (ParentCyclops != null)
-            {
-                ConnectToCyclops(ParentCyclops);
+                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
+                CyNukeChargeManager.SyncReactors();
             }
             else
             {
-                SubRoot cyclops = GetComponentInParent<SubRoot>();
-
-                if (cyclops == null)
-                {
-                    QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
-                    CyNukeChargeManager.SyncReactors();
-                }
-                else
-                {
-                    QuickLogger.Debug("Parent cyclops found directly!");
-                    ConnectToCyclops(cyclops);
-                }
+                QuickLogger.Debug("Parent cyclops found directly!");
+                ConnectToCyclops(cyclops);
             }
         }
 
@@ -213,7 +203,7 @@
             ParentCyclops = cyclops;
             this.transform.SetParent(cyclops.transform);
 
-            Manager = manager ?? CyNukeChargeManager.GetManager(cyclops);
+            Manager = manager ?? MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(cyclops);
             Manager.AddReactor(this);
 
             UpdateUpgradeLevel(Manager.UpgradeLevel);
@@ -373,7 +363,7 @@
             int currentPower = Mathf.CeilToInt(GetTotalAvailablePower());
 
             string text = currentPower > 0
-                ? CyNukReactorBuildable.OnHoverPoweredText(NumberFormatter.FormatNumber(currentPower), this.ActiveRodCount, this.MaxActiveSlots)
+                ? CyNukReactorBuildable.OnHoverPoweredText(NumberFormatter.FormatValue(currentPower), this.ActiveRodCount, this.MaxActiveSlots)
                 : CyNukReactorBuildable.OnHoverNoPowerText();
 
             main.SetInteractText(text);
@@ -464,7 +454,7 @@
                 {
                     if (i < this.MaxActiveSlots)
                     {
-                        item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.CeilToInt(item.Charge));
+                        item.InfoDisplay.text = NumberFormatter.FormatValue(item.Charge);
                         item.InfoDisplay.color = Color.white;
                     }
                     else

@@ -4,23 +4,29 @@
     using Managers;
 
     [HarmonyPatch(typeof(SubRoot))]
+    [HarmonyPatch("Awake")]
+    internal class SubRoot_Awake_Patcher
+    {
+        [HarmonyPostfix]
+        public static void Postfix(ref SubRoot __instance)
+        {
+            // Set up a CyclopsManager early if possible
+            CyclopsManager.GetManager(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(SubRoot))]
     [HarmonyPatch("UpdateThermalReactorCharge")]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            PowerManager powerMgr = CyclopsManager.GetPowerManager(__instance);
+            bool requiresVanillaCharging = CyclopsManager.GetManager(__instance).Charge.RechargeCyclops();
 
-            if (powerMgr == null)
-            {
-                return true; // safety check
-            }
-
-            powerMgr.RechargeCyclops();
-
-            // No need to execute original method anymore
-            return false; // Completely override the method and do not continue with original execution
+            // If there is no mod taking over how thermal charging is done on the Cyclops,
+            // then we will allow the original method to run so it provides the vanilla thermal charging.            
+            return requiresVanillaCharging;
         }
     }
 
@@ -31,16 +37,9 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            PowerManager powerMgr = CyclopsManager.GetPowerManager(__instance);
+            // Performing this custom handling was necessary as UpdatePowerRating wouldn't work with the AuxUpgradeConsole
+            CyclopsManager.GetManager(__instance).Engine.UpdatePowerRating();
 
-            if (powerMgr == null)
-            {
-                return true; // safety check
-            }
-
-            powerMgr.UpdatePowerSpeedRating();
-
-            // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
         }
     }
@@ -57,14 +56,7 @@
             if (cyclopsLife == null || !cyclopsLife.IsAlive())
                 return true; // safety check
 
-            UpgradeManager upgradeMgr = CyclopsManager.GetUpgradeManager(__instance);
-
-            if (upgradeMgr == null)
-            {
-                return true; // safety check
-            }
-
-            upgradeMgr.HandleUpgrades();
+            CyclopsManager.GetManager(__instance).Upgrade.HandleUpgrades();
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
@@ -78,6 +70,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
+            // Providing this custom handler is necessary as SetExtraDepth wouldn't work with the AuxUpgradeConsole
             return false; // Now handled by UpgradeManager HandleUpgrades
         }
     }
@@ -87,7 +80,7 @@
     internal class SubRoot_OnPlayerEntered_BeQuiet
     {
         private static bool firstEventDone = false;
-        private static VoiceNotificationManager reference;
+        private static VoiceNotificationManager voiceMgr = null;
 
         [HarmonyPrefix]
         public static void Prefix(ref SubRoot __instance)
@@ -95,21 +88,24 @@
             if (firstEventDone)
                 return;
 
-            if (reference != null || __instance.voiceNotificationManager == null)
+            if (voiceMgr != null || __instance.voiceNotificationManager == null)
                 return;
 
-            reference = __instance.voiceNotificationManager;
+            voiceMgr = __instance.voiceNotificationManager;
             __instance.voiceNotificationManager = null;
         }
 
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
-            if (reference != null && __instance.voiceNotificationManager == null)
-            {
-                __instance.voiceNotificationManager = reference;
-            }
+            if (firstEventDone)
+                return;
 
+            if (voiceMgr != null && __instance.voiceNotificationManager == null)
+            {
+                __instance.voiceNotificationManager = voiceMgr;
+            }
+            
             firstEventDone = true;
         }
     }
