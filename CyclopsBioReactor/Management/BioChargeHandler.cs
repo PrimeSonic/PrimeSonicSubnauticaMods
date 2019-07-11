@@ -15,7 +15,6 @@
 
         internal const int MaxBioReactors = 6;
 
-        private bool providingPower = false;
         private bool producingPower = false;
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
@@ -56,44 +55,31 @@
 
         protected override float GenerateNewEnergy(float requestedPower)
         {
+            float tempBioCharge = 0f;
+            float tempBioCapacity = 0f;
+            bool currentlyProducingPower = false;
+
+            foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
+            {
+                tempBioCharge += reactor.Charge;
+                tempBioCapacity = reactor.Capacity;
+                currentlyProducingPower |= reactor.ProducingPower;
+            }
+
+            producingPower = currentlyProducingPower;
+            totalBioCharge = tempBioCharge;
+            totalBioCapacity = tempBioCapacity;
+
+            // No energy is created but we can check for updates in this method since it always runs
             return 0f;
         }
 
         protected override float DrainReserveEnergy(float requestedPower)
         {
-            if (this.Manager.CyBioReactors.Count == 0)
-            {
-                providingPower = false;
-                return 0f;
-            }
-
-            float tempBioCharge = 0f;
-            float tempBioCapacity = 0f;
             float charge = 0f;
-            bool currentlyProducingPower = false;
 
-            int poweredReactors = 0;
             foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
-            {
-                if (!reactor.HasPower)
-                    continue;
-
-                if (poweredReactors < MaxBioReactors)
-                {
-                    poweredReactors++;
-
-                    charge += reactor.GetBatteryPower(BatteryDrainRate, requestedPower);
-
-                    tempBioCharge += reactor.Charge;
-                    tempBioCapacity = reactor.Capacity;
-                    currentlyProducingPower |= reactor.ProducingPower;
-                }
-            }
-
-            providingPower = poweredReactors > 0;
-            producingPower = currentlyProducingPower;
-            totalBioCharge = tempBioCharge;
-            totalBioCapacity = tempBioCapacity;
+                charge += reactor.GetBatteryPower(BatteryDrainRate, requestedPower);
 
             return charge;
         }

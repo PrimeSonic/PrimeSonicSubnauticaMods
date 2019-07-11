@@ -49,7 +49,7 @@
         private readonly IModConfig config = ModConfig.Main;
         private bool requiresVanillaCharging = false;
         private float producedPower = 0f;
-        float powerDeficit = 0f;
+        private float powerDeficit = 0f;
 
         public ICollection<CyclopsCharger> Chargers => KnownChargers.Values;
 
@@ -137,32 +137,26 @@
 
             producedPower = 0f;
 
+            // First, get renewable energy first
             foreach (ICyclopsCharger charger in KnownChargers.Values)
-            {
-                // Get renewable energy first
                 producedPower += charger.Generate(powerDeficit);
-            }
 
+            // Second, get non-renewable energy if no renewable energy was available
             if (producedPower < MinimalPowerValue && // Did the renewable energy sources not produce any power?
-                powerDeficit < config.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
+                powerDeficit > config.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
             {
-                // Get non-renewable energy if no renewable energy was available
                 foreach (ICyclopsCharger charger in KnownChargers.Values)
-                {
                     producedPower += charger.Drain(powerDeficit);
-
-                    if (producedPower > powerDeficit)
-                        break;
-                }
             }
 
-            if (producedPower > MinimalPowerValue)
+            if (producedPower > 0f)
             {
-                producedPower *= rechargePenalty;
-
-                Cyclops.powerRelay.ModifyPower(producedPower, out float amountStored);
-                powerDeficit = Mathf.Max(0f, powerDeficit - producedPower);
+                Cyclops.powerRelay.AddEnergy(producedPower * rechargePenalty, out float amountStored);
             }
+
+            // Last, inform the chargers to update their display status
+            foreach (ICyclopsCharger charger in KnownChargers.Values)
+                charger.UpdateStatus();
 
             return requiresVanillaCharging;
         }

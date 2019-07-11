@@ -1,5 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.API.Charging
-{    
+{
     using UnityEngine;
 
     internal interface ICyclopsCharger
@@ -11,6 +11,7 @@
         Atlas.Sprite StatusSprite();
         string StatusText();
         Color StatusTextColor();
+        void UpdateStatus();
     }
 
     /// <summary>
@@ -22,7 +23,6 @@
     public abstract class CyclopsCharger : ICyclopsCharger
     {
         private bool showStatus;
-        private bool lastKnownStatus;
 
         public readonly SubRoot Cyclops;
 
@@ -31,7 +31,7 @@
             Cyclops = cyclops;
         }
 
-        bool ICyclopsCharger.ShowStatusIcon => lastKnownStatus;
+        public bool ShowStatusIcon { get; private set; }
 
         float ICyclopsCharger.Generate(float requestedPower)
         {
@@ -43,8 +43,13 @@
         float ICyclopsCharger.Drain(float requestedPower)
         {
             float energy = DrainReserveEnergy(requestedPower);
-            lastKnownStatus = showStatus |= energy > 0f;
+            showStatus |= energy > 0f;
             return energy;
+        }
+
+        void ICyclopsCharger.UpdateStatus()
+        {
+            this.ShowStatusIcon = showStatus;
         }
 
         /// <summary>

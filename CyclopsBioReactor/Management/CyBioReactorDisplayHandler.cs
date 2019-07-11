@@ -48,16 +48,22 @@
             return true;
         }
 
+        public void SetActive(int charge, int capacity)
+        {
+            _status.text = $"{Language.main.Get("BaseBioReactorActive")}\n {charge}/{capacity}+";
+            _status.color = Color.green;
+        }
+
+        public void SetInActivating(int charge, int capacity)
+        {
+            _status.text = $"{Language.main.Get("BaseBioReactorInactive")}\n{charge}/{capacity}";
+            _status.color = Color.yellow;
+        }
+
         public void SetInactive()
         {
             _status.text = Language.main.Get("BaseBioReactorInactive");
             _status.color = Color.red;
-        }
-
-        public void SetActive(int charge, int capacity, bool stillProcessing)
-        {
-            _status.text = $"{Language.main.Get("BaseBioReactorActive")}\n{charge}/{capacity}{(stillProcessing ? "+" : "")}";
-            _status.color = Color.green;
         }
     }
 }

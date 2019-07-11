@@ -150,7 +150,7 @@
                 showIcons.Index = (int)value;
                 this.ShowIconsOnHoloDisplay = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnHoloDisplay;
                 this.ShowIconsWhilePiloting = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnPilotingHUD;
-                this.ShowPowerIcons = value != ShowChargerIcons.Never;
+                this.HidePowerIcons = value == ShowChargerIcons.Never;
                 SaveData();
             }
         }
@@ -178,7 +178,7 @@
             }
         }
 
-        public bool ShowPowerIcons { get; private set; } = true;
+        public bool HidePowerIcons { get; private set; } = false;
 
         public bool ShowIconsWhilePiloting { get; private set; } = true;
 
@@ -236,16 +236,13 @@
 
         private float CyclopsMaxPower = 1f;
 
-        public float MinimumEnergyDeficit { get; private set; } = 1140f;
+        public float MinimumEnergyDeficit { get; private set; } = 60f;
 
         public void UpdateCyclopsMaxPower(float maxPower)
         {
-            if (CyclopsMaxPower == maxPower)
-                return;
-
             CyclopsMaxPower = maxPower;
-
-            this.MinimumEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * this.DeficitThreshold / 100f);
+            float ratio = this.DeficitThreshold / 100f;
+            this.MinimumEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * ratio);
         }
     }
 }

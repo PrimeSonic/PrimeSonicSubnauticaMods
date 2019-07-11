@@ -203,8 +203,10 @@
             if (this.AnimationHandler == null || _displayHandler == null)
                 return;
 
-            if (this._isOperating)
-                _displayHandler.SetActive(Mathf.FloorToInt(this.Charge), Mathf.CeilToInt(this.Capacity), this.MaterialsProcessing.Count > 0);
+            if (this.ProducingPower)
+                _displayHandler.SetActive(Mathf.FloorToInt(this.Charge), Mathf.CeilToInt(this.Capacity));
+            else if (this.HasPower)
+                _displayHandler.SetInActivating(Mathf.FloorToInt(this.Charge), Mathf.CeilToInt(this.Capacity));
             else
                 _displayHandler.SetInactive();
 
@@ -442,7 +444,7 @@
 
         public void ConnectToCyclops(SubRoot parentCyclops, BioAuxCyclopsManager manager = null)
         {
-            if (ParentCyclops != null)
+            if (ParentCyclops != null && Manager != null)
                 return;
 
             ParentCyclops = parentCyclops;

@@ -70,7 +70,7 @@
 
         protected override float DrainReserveEnergy(float requestedPower)
         {
-            if (requestedPower < MinimalPowerValue || this.NuclearHandler.TotalBatteryCharge <= MinimalPowerValue)
+            if (this.NuclearHandler.TotalBatteryCharge < MinimalPowerValue)
             {
                 chargeRate = Mathf.Max(MinNuclearChargeRate, chargeRate - MinNuclearChargeRate);
                 nuclearState = NuclearState.None;

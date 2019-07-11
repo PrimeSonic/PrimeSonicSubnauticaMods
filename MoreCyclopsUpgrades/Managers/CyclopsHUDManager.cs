@@ -64,9 +64,9 @@
             }
 
             if (!powerIconsInitialized)
-            {
                 AddPowerIcons(cyclopsHelmHUD, this.ChargeManager.Chargers.Count);
-            }
+            else
+                UpdatePowerIcons(this.ChargeManager.Chargers);
 
             if (lastPowerInt < 0f)
                 return;
@@ -92,8 +92,6 @@
                     cyclopsHelmHUD.powerText.text = $"{percentInt}%";
                     break;
             }
-
-            UpdatePowerIcons(this.ChargeManager.Chargers);
         }
 
         /// <summary>
@@ -235,24 +233,17 @@
             if (!powerIconsInitialized)
                 return;
 
+            HidePowerIcons();
+
+            if (settings.HidePowerIcons)
+                return;
+
             bool powerIconTextVisibility =
-                    Player.main.currentSub == Cyclops &&
-                    holographicHUD != null &&
-                    Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
+                Player.main.currentSub == Cyclops &&
+                holographicHUD != null &&
+                Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
 
-            foreach (Indicator indicator in HelmIndicatorsOdd)
-                indicator.Enabled = false;
-
-            foreach (Indicator indicator in HelmIndicatorsEven)
-                indicator.Enabled = false;
-
-            foreach (Indicator indicator in HealthBarIndicatorsOdd)
-                indicator.Enabled = false;
-
-            foreach (Indicator indicator in HealthBarIndicatorsEven)
-                indicator.Enabled = false;
-
-            if (!powerIconTextVisibility || !settings.ShowPowerIcons)
+            if (!powerIconTextVisibility)
                 return;
 
             bool isEven = true;
@@ -281,6 +272,21 @@
                 hpIcon.Enabled = settings.ShowIconsOnHoloDisplay;
                 helmIcon.Enabled = settings.ShowIconsWhilePiloting;
             }
+        }
+
+        private void HidePowerIcons()
+        {
+            foreach (Indicator indicator in HelmIndicatorsOdd)
+                indicator.Enabled = false;
+
+            foreach (Indicator indicator in HelmIndicatorsEven)
+                indicator.Enabled = false;
+
+            foreach (Indicator indicator in HealthBarIndicatorsOdd)
+                indicator.Enabled = false;
+
+            foreach (Indicator indicator in HealthBarIndicatorsEven)
+                indicator.Enabled = false;
         }
     }
 }
