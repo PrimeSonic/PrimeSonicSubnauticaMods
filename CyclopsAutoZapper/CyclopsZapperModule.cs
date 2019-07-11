@@ -6,17 +6,11 @@
 
     internal class CyclopsZapperModule : CyclopsUpgrade
     {
-        internal static TechType TechTypeID { get; private set; }
-
         public CyclopsZapperModule()
             : base("CyclopsZapperModule",
                    "Cyclops Auto Defense System",
                    "Extends and automates the Perimeter Defense System of a docked Seamoth to protect the Cyclops from aggressive fauna.")
         {
-            OnFinishedPatching += () =>
-            {
-                TechTypeID = this.TechType;
-            };
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
@@ -28,6 +22,7 @@
         {
             return new TechData
             {
+                craftAmount = 1,
                 Ingredients =
                 {
                     new Ingredient(TechType.WiringKit, 1),
