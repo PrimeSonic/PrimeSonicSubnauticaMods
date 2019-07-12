@@ -15,12 +15,15 @@
         protected override float MaximumEnergyStatus => 100f;
         protected override float MinimumEnergyStatus => 35f;
 
-        protected override float GetEnergyStatus()
+        protected override void UpdateEnergyStatus(ref float ambientEnergyStatus)
         {
             if (WaterTemperatureSimulation.main == null)
-                return 0f; // Safety check
+            {
+                ambientEnergyStatus = 0f; // Safety check
+                return;
+            }
 
-            return WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
+            ambientEnergyStatus = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
         }
 
         protected override float ConvertToAvailableEnergy(float energyStatus)

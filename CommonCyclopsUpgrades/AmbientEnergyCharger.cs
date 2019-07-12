@@ -13,7 +13,6 @@
         private bool ambientEnergyAvailable = false;
 
         protected abstract string PercentNotation { get; }
-
         protected abstract float MaximumEnergyStatus { get; }
         protected abstract float MinimumEnergyStatus { get; }
 
@@ -29,6 +28,7 @@
         private readonly TechType tier2Id2;
 
         private float energyStatus = 0f;
+        private float resultingEnergy = 0f;
 
         protected AmbientEnergyCharger(TechType tier1TechType, TechType tier2TechType, SubRoot cyclops) : base(cyclops)
         {
@@ -37,6 +37,10 @@
             tier1Sprite = SpriteManager.Get(tier1TechType);
             tier2Sprite = SpriteManager.Get(tier2TechType);
         }
+
+        protected abstract void UpdateEnergyStatus(ref float ambientEnergyStatus);
+
+        protected abstract float ConvertToAvailableEnergy(float energyStatus);
 
         public override Atlas.Sprite StatusSprite()
         {
@@ -72,21 +76,18 @@
                 return 0f;
             }
 
-            energyStatus = GetEnergyStatus();
+            UpdateEnergyStatus(ref energyStatus);
 
             ambientEnergyAvailable = energyStatus > this.MinimumEnergyStatus;
 
             if (ambientEnergyAvailable)
             {
+                resultingEnergy = this.AmbientEnergyUpgrade.ChargeMultiplier * ConvertToAvailableEnergy(energyStatus);
 
-                float availableEnergy = ConvertToAvailableEnergy(energyStatus);
+                if (requestedPower < resultingEnergy)
+                    this.AmbientEnergyUpgrade.RechargeBatteries(resultingEnergy - requestedPower);
 
-                float multipliedEnergy = this.AmbientEnergyUpgrade.ChargeMultiplier * availableEnergy;
-
-                if (requestedPower < multipliedEnergy)
-                    this.AmbientEnergyUpgrade.RechargeBatteries(multipliedEnergy - requestedPower);
-
-                return multipliedEnergy;
+                return resultingEnergy;
             }
 
             return 0f;
@@ -101,9 +102,5 @@
 
             return 0f;
         }
-
-        protected abstract float GetEnergyStatus();
-
-        protected abstract float ConvertToAvailableEnergy(float energyStatus);
     }
 }

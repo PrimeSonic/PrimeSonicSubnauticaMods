@@ -14,6 +14,7 @@
         private float totalBatteryCharge = 0f;
         private float totalBatteryCapacity = 0f;
         private bool updating = false;
+        private float totalDrainedAmt = 0f;
 
         public float TotalBatteryCapacity
         {
@@ -23,10 +24,7 @@
                 {
                     totalBatteryCapacity = 0f;
                     for (int i = 0; i < batteries.Count; i++)
-                    {
-                        var battery = batteries[i];
-                        totalBatteryCapacity += battery.BatteryRef._capacity;
-                    }
+                        totalBatteryCapacity += batteries[i].BatteryRef._capacity;
                 }
 
                 return totalBatteryCapacity;
@@ -41,10 +39,7 @@
                 {
                     totalBatteryCharge = 0f;
                     for (int i = 0; i < batteries.Count; i++)
-                    {
-                        var battery = batteries[i];
-                        totalBatteryCharge += battery.BatteryRef._charge;
-                    }
+                        totalBatteryCharge += batteries[i].BatteryRef._charge;
                 }
 
                 return totalBatteryCharge;
@@ -53,11 +48,6 @@
 
         public float ChargeMultiplier { get; private set; } = 1f;
 
-        public bool HasBatteriesToCharge => tier2.Count > 0;
-
-        public readonly TechType Tier1ID;
-        public readonly TechType Tier2ID;
-
         private readonly StackingUpgradeHandler tier1;
         private readonly StackingUpgradeHandler tier2;
         private readonly string maxCountReachedMsg;
@@ -65,9 +55,6 @@
         public AmbientEnergyUpgradeHandler(TechType tier1Id, TechType tier2Id, string maxedOutMsg, SubRoot cyclops)
             : base(cyclops)
         {
-            Tier1ID = tier1Id;
-            Tier2ID = tier2Id;
-
             this.MaxCount = MaxChargers;
             maxCountReachedMsg = maxedOutMsg;
 
@@ -133,14 +120,13 @@
 
         public float GetBatteryPower(float drainingRate, float requestedPower)
         {
-            float totalDrainedAmt = 0f;
+            totalDrainedAmt = 0f;
             for (int i = 0; i < batteries.Count; i++)
             {
-                var details = batteries[i];
                 if (requestedPower < MinimalPowerValue) // No power deficit left to charge
                     break; // Exit
 
-                Battery battery = details.BatteryRef;
+                Battery battery = batteries[i].BatteryRef;
 
                 if (battery._charge < MinimalPowerValue) // The battery has no charge left
                     continue; // Skip this battery
@@ -148,15 +134,8 @@
                 // Mathf.Min is to prevent accidentally taking too much power from the battery
                 float amtToDrain = Mathf.Min(requestedPower, drainingRate * DayNightCycle.main.deltaTime);
 
-                if (battery._charge > amtToDrain)
-                {
-                    battery._charge -= amtToDrain;
-                }
-                else // Battery about to be fully drained
-                {
-                    amtToDrain = battery._charge; // Take what's left
-                    battery._charge = 0f; // Set battery to empty
-                }
+                // As a hidden treat, the last "blip" of battery power will be more than it otherwise would have been
+                battery._charge = Mathf.Max(0f, battery._charge - amtToDrain);
 
                 totalBatteryCharge -= amtToDrain;
                 requestedPower -= amtToDrain; // This is to prevent draining more than needed if the power cells were topped up mid-loop
@@ -169,15 +148,9 @@
 
         public void RechargeBatteries(float surplusPower)
         {
-            bool batteryCharged = false;
             for (int i = 0; i < batteries.Count; i++)
             {
-                var details = batteries[i];
-                if (batteryCharged)
-                    continue;
-
-                if (surplusPower < MinimalPowerValue)
-                    continue;
+                BatteryDetails details = batteries[i];
 
                 if (details.IsFull)
                     continue;
@@ -185,10 +158,8 @@
                 Battery batteryToCharge = details.BatteryRef;
                 batteryToCharge._charge = Mathf.Min(batteryToCharge._capacity, batteryToCharge._charge + surplusPower);
                 surplusPower -= (batteryToCharge._capacity - batteryToCharge._charge);
-                batteryCharged = true;
+                break;
             }
-
-            totalBatteryCharge = Mathf.Min(totalBatteryCharge + surplusPower, totalBatteryCapacity);
         }
     }
 }

@@ -18,17 +18,20 @@
         protected override float MaximumEnergyStatus => 90f;
         protected override float MinimumEnergyStatus => 10f;
 
-        protected override float GetEnergyStatus()
+        protected override void UpdateEnergyStatus(ref float ambientEnergyStatus)
         {
             DayNightCycle daynightCycle = DayNightCycle.main;
 
             if (daynightCycle == null)
-                return 0f; // Safety check
+            {
+                ambientEnergyStatus = 0f; // Safety check
+                return;
+            }
 
             // This based on the how the Solar Panel and Seamoth generate solar power.
-            return daynightCycle.GetLocalLightScalar() * // Sun Scalar
-                   Mathf.Clamp01((MaxSolarDepth - Cyclops.transform.position.y) / MaxSolarDepth) * // Depth Scalar
-                   PercentageMaker; // Make into percentage - will be cancled out later
+            ambientEnergyStatus = daynightCycle.GetLocalLightScalar() * // Sun Scalar
+                                  Mathf.Clamp01((MaxSolarDepth - Cyclops.transform.position.y) / MaxSolarDepth) * // Depth Scalar
+                                  PercentageMaker; // Make into percentage - will be cancled out later
         }
 
         protected override float ConvertToAvailableEnergy(float energyStatus)
