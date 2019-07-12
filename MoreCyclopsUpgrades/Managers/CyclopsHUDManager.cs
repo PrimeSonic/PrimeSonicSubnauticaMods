@@ -150,17 +150,6 @@
             Canvas pilotingCanvas = cyclopsHelmHUD.powerText.canvas;
             Canvas holoCanvas = holographicHUD.healthBar.canvas;
 
-            /* --- 3-1-2 --- */
-            /* ---- 1-2 ---- */
-
-            if (totalIcons % 2 != 0)
-                totalIcons--;
-
-            HelmIndicatorsOdd = new Indicator[totalIcons + 1];
-            HelmIndicatorsEven = new Indicator[totalIcons];
-            HealthBarIndicatorsOdd = new Indicator[totalIcons + 1];
-            HealthBarIndicatorsEven = new Indicator[totalIcons];
-
             const float helmspacing = 140;
             const float helmzoffset = 0.05f;
             const float helmyoffset = -225;
@@ -171,31 +160,55 @@
             const float healthbaryoffset = -300;
             const float healthbarscale = 0.70f;
 
-            HelmIndicatorsOdd[0] = CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
-            HealthBarIndicatorsOdd[0] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
+            /* --- 3-1-2 --- */
+            /* ---- 1-2 ---- */
 
-            int index = 0;
-            float spacing = helmspacing;
-            float spacingSmall = helmspacing / 2;
-            do
+            if (totalIcons == 1)
             {
-                HelmIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(pilotingCanvas, spacing, helmyoffset, helmzoffset, helmscale);
-                HelmIndicatorsOdd[index + 2] = CreatePowerIndicatorIcon(pilotingCanvas, -spacing, helmyoffset, helmzoffset, helmscale);
+                HelmIndicatorsOdd = new Indicator[1];
+                HelmIndicatorsEven = new Indicator[0];
+                HealthBarIndicatorsOdd = new Indicator[1];
+                HealthBarIndicatorsEven = new Indicator[0];
 
-                HelmIndicatorsEven[index] = CreatePowerIndicatorIcon(pilotingCanvas, -spacing / 2, helmyoffset, helmzoffset, helmscale);
-                HelmIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(pilotingCanvas, spacing / 2, helmyoffset, helmzoffset, helmscale);
+                HelmIndicatorsOdd[0] = CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
+                HealthBarIndicatorsOdd[0] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
+            }
+            else
+            {
+                if (totalIcons % 2 != 0)
+                    totalIcons--;
 
-                HealthBarIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + spacingSmall, healthbaryoffset, healthbarzoffset, healthbarscale);
-                HealthBarIndicatorsOdd[index + 2] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + -spacingSmall, healthbaryoffset, healthbarzoffset, healthbarscale);
+                HelmIndicatorsOdd = new Indicator[totalIcons + 1];
+                HelmIndicatorsEven = new Indicator[totalIcons];
+                HealthBarIndicatorsOdd = new Indicator[totalIcons + 1];
+                HealthBarIndicatorsEven = new Indicator[totalIcons];
 
-                HealthBarIndicatorsEven[index] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + -spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
-                HealthBarIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+                HelmIndicatorsOdd[0] = CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
+                HealthBarIndicatorsOdd[0] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
 
-                index += 2;
-                spacing += helmspacing;
-                spacingSmall += spacingSmall;
+                int index = 0;
+                float spacing = helmspacing;
+                float spacingSmall = helmspacing / 2;
+                do
+                {
+                    HelmIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(pilotingCanvas, spacing, helmyoffset, helmzoffset, helmscale);
+                    HelmIndicatorsOdd[index + 2] = CreatePowerIndicatorIcon(pilotingCanvas, -spacing, helmyoffset, helmzoffset, helmscale);
 
-            } while (totalIcons > index);
+                    HelmIndicatorsEven[index] = CreatePowerIndicatorIcon(pilotingCanvas, -spacing / 2, helmyoffset, helmzoffset, helmscale);
+                    HelmIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(pilotingCanvas, spacing / 2, helmyoffset, helmzoffset, helmscale);
+
+                    HealthBarIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + spacingSmall, healthbaryoffset, healthbarzoffset, healthbarscale);
+                    HealthBarIndicatorsOdd[index + 2] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + -spacingSmall, healthbaryoffset, healthbarzoffset, healthbarscale);
+
+                    HealthBarIndicatorsEven[index] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + -spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+                    HealthBarIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + spacingSmall / 2, healthbaryoffset, healthbarzoffset, healthbarscale);
+
+                    index += 2;
+                    spacing += helmspacing;
+                    spacingSmall += spacingSmall;
+
+                } while (totalIcons > index);
+            }
 
             powerIconsInitialized = true;
 
