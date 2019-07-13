@@ -38,9 +38,9 @@
             tier2Sprite = SpriteManager.Get(tier2TechType);
         }
 
-        protected abstract void UpdateEnergyStatus(ref float ambientEnergyStatus);
+        protected abstract bool HasAmbientEnergy(ref float ambientEnergyStatus);
 
-        protected abstract float ConvertToAvailableEnergy(float energyStatus);
+        protected abstract float GetAmbientEnergy();
 
         public override Atlas.Sprite StatusSprite()
         {
@@ -75,14 +75,12 @@
             {
                 return 0f;
             }
-
-            UpdateEnergyStatus(ref energyStatus);
-
-            ambientEnergyAvailable = energyStatus > this.MinimumEnergyStatus;
+            
+            ambientEnergyAvailable = HasAmbientEnergy(ref energyStatus);
 
             if (ambientEnergyAvailable)
             {
-                resultingEnergy = this.AmbientEnergyUpgrade.ChargeMultiplier * ConvertToAvailableEnergy(energyStatus);
+                resultingEnergy = this.AmbientEnergyUpgrade.ChargeMultiplier * GetAmbientEnergy();
 
                 if (requestedPower < resultingEnergy)
                     this.AmbientEnergyUpgrade.RechargeBatteries(resultingEnergy - requestedPower);

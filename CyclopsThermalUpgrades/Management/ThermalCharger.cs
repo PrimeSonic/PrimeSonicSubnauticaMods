@@ -6,6 +6,8 @@
     {
         private const float ThermalChargingFactor = 1.5f;
 
+        private float temperature;
+
         public ThermalCharger(TechType tier2Id2, SubRoot cyclops)
             : base(TechType.CyclopsThermalReactorModule, tier2Id2, cyclops)
         {
@@ -15,23 +17,23 @@
         protected override float MaximumEnergyStatus => 100f;
         protected override float MinimumEnergyStatus => 35f;
 
-        protected override void UpdateEnergyStatus(ref float ambientEnergyStatus)
+        protected override bool HasAmbientEnergy(ref float ambientEnergyStatus)
         {
-            if (WaterTemperatureSimulation.main == null)
-            {
-                ambientEnergyStatus = 0f; // Safety check
-                return;
-            }
+            ambientEnergyStatus = 0f;
 
-            ambientEnergyStatus = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
+            if (WaterTemperatureSimulation.main == null)
+                return false;
+
+            ambientEnergyStatus = temperature = WaterTemperatureSimulation.main.GetTemperature(base.Cyclops.transform.position);
+
+            return temperature > 35f;
         }
 
-        protected override float ConvertToAvailableEnergy(float energyStatus)
+        protected override float GetAmbientEnergy()
         {
-            // This is based on the original Cyclops thermal charging code
             return ThermalChargingFactor *
                    DayNightCycle.main.deltaTime *
-                   base.Cyclops.thermalReactorCharge.Evaluate(energyStatus); // Temperature
+                   base.Cyclops.thermalReactorCharge.Evaluate(temperature);
         }
     }
 }

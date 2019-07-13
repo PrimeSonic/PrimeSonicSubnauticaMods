@@ -24,14 +24,14 @@
         internal float Generate(float requestedPower)
         {
             float energy = GenerateNewEnergy(requestedPower);
-            showStatus = energy > 0f;
+            showStatus = energy > MCUServices.MinimalPowerValue;
             return energy;
         }
 
         internal float Drain(float requestedPower)
         {
             float energy = DrainReserveEnergy(requestedPower);
-            showStatus |= energy > 0f;
+            showStatus |= energy > MCUServices.MinimalPowerValue;
             return energy;
         }
 
