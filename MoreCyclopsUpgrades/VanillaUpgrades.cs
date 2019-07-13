@@ -6,7 +6,7 @@
 
     internal interface IVanillaUpgrades
     {
-        IEnumerable<TechType> OriginalUpgradeIDs { get; }
+        List<TechType> OriginalUpgradeIDs { get; }
 
         UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops);
         bool IsUsingVanillaUpgrade(TechType upgradeID);
@@ -16,9 +16,12 @@
     {
         public static readonly IVanillaUpgrades Main = new VanillaUpgrades();
 
-        private VanillaUpgrades() { }
+        public List<TechType> OriginalUpgradeIDs { get; }
 
-        public IEnumerable<TechType> OriginalUpgradeIDs => originalUpgrades.Keys;
+        private VanillaUpgrades()
+        {
+            this.OriginalUpgradeIDs = new List<TechType>(originalUpgrades.Keys);
+        }
 
         public UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops)
         {

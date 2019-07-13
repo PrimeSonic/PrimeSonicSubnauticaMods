@@ -28,8 +28,8 @@
         {
             float rating = settings.RechargePenalty;
 
-            foreach (float modifier in modifiers.Values)
-                rating *= modifier;
+            foreach (KeyValuePair<TechType, float> modifier in modifiers)
+                rating *= modifier.Value;
 
             if (rating != cyclops.currPowerRating)
             {

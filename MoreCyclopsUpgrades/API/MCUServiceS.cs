@@ -91,7 +91,7 @@
         public void CyclopsCharger<T>(CreateCyclopsCharger createEvent)
             where T : CyclopsCharger
         {
-            if (ChargeManager.Initialized)
+            if (ChargeManager.TooLateToRegister)
                 QuickLogger.Error("CyclopsChargerCreator have already been invoked. This method should only be called during patch time.");
             else
                 ChargeManager.RegisterChargerCreator(createEvent, typeof(T).Name);
@@ -105,7 +105,7 @@
 
         public void CyclopsUpgradeHandler(CreateUpgradeHandler createEvent)
         {
-            if (UpgradeManager.Initialized)
+            if (UpgradeManager.TooLateToRegister)
                 QuickLogger.Error("UpgradeHandlerCreators have already been invoked. This method should only be called during patch time.");
             else
                 UpgradeManager.RegisterHandlerCreator(createEvent, Assembly.GetCallingAssembly().GetName().Name);
@@ -113,7 +113,7 @@
 
         public void CyclopsUpgradeHandler(IUpgradeHandlerCreator handlerCreator)
         {
-            if (UpgradeManager.Initialized)
+            if (UpgradeManager.TooLateToRegister)
                 QuickLogger.Error("UpgradeHandlerCreators have already been invoked. This method should only be called during patch time.");
             else
                 UpgradeManager.RegisterHandlerCreator(handlerCreator.CreateUpgradeHandler, Assembly.GetCallingAssembly().GetName().Name);
@@ -122,7 +122,7 @@
         public void AuxCyclopsManager<T>(CreateAuxCyclopsManager createEvent)
             where T : IAuxCyclopsManager
         {
-            if (CyclopsManager.Initialized)
+            if (CyclopsManager.TooLateToRegister)
                 QuickLogger.Error("AuxCyclopsManagerCreator have already been invoked. This method should only be called during patch time.");
             else
                 CyclopsManager.RegisterAuxManagerCreator(createEvent, typeof(T).Name);
@@ -131,7 +131,7 @@
         public void AuxCyclopsManager<T>(IAuxCyclopsManagerCreator managerCreator)
             where T : IAuxCyclopsManager
         {
-            if (CyclopsManager.Initialized)
+            if (CyclopsManager.TooLateToRegister)
                 QuickLogger.Error("AuxCyclopsManagerCreator have already been invoked. This method should only be called during patch time.");
             else
                 CyclopsManager.RegisterAuxManagerCreator(managerCreator.CreateAuxCyclopsManager, typeof(T).Name);
@@ -175,9 +175,9 @@
 
         public IEnumerable<T> AllCyclopsChargers<T>() where T : CyclopsCharger
         {
-            foreach (CyclopsManager item in CyclopsManager.GetAllManagers())
+            for (int m = 0; m < CyclopsManager.Managers.Count; m++)
             {
-                T chg = item.Charge?.GetCharger<T>(typeof(T).Name);
+                T chg = CyclopsManager.Managers[m].Charge?.GetCharger<T>(typeof(T).Name);
 
                 if (chg != null)
                     yield return chg;

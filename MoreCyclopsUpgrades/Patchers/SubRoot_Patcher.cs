@@ -4,14 +4,16 @@
     using Managers;
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("Awake")]
-    internal class SubRoot_Awake_Patcher
+    [HarmonyPatch("Start")]
+    internal class SubRoot_Start_Patcher
     {
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
+            if (__instance.isCyclops)            
+                CyclopsManager.GetManager(__instance);
+
             // Set up a CyclopsManager early if possible
-            CyclopsManager.GetManager(__instance);
         }
     }
 
@@ -22,11 +24,13 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            bool requiresVanillaCharging = CyclopsManager.GetManager(__instance).Charge.RechargeCyclops();
+            var mgr = CyclopsManager.GetManager(__instance);
+            if (mgr == null)
+                return true; // Safety Check
 
             // If there is no mod taking over how thermal charging is done on the Cyclops,
             // then we will allow the original method to run so it provides the vanilla thermal charging.            
-            return requiresVanillaCharging;
+            return mgr.Charge.RechargeCyclops(); // Returns True if vanilla charging should proceed; Otherwise False.
         }
     }
 
@@ -37,8 +41,12 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
+            var mgr = CyclopsManager.GetManager(__instance);
+            if (mgr == null)
+                return true; // Safety Check
+
             // Performing this custom handling was necessary as UpdatePowerRating wouldn't work with the AuxUpgradeConsole
-            CyclopsManager.GetManager(__instance).Engine.UpdatePowerRating();
+            mgr.Engine.UpdatePowerRating();
 
             return false; // Completely override the method and do not continue with original execution
         }
@@ -56,7 +64,11 @@
             if (cyclopsLife == null || !cyclopsLife.IsAlive())
                 return true; // safety check
 
-            CyclopsManager.GetManager(__instance).Upgrade.HandleUpgrades();
+            var mgr = CyclopsManager.GetManager(__instance);
+            if (mgr == null)
+                return true; // Safety Check
+
+            mgr.Upgrade.HandleUpgrades();
 
             // No need to execute original method anymore
             return false; // Completely override the method and do not continue with original execution
@@ -105,7 +117,7 @@
             {
                 __instance.voiceNotificationManager = voiceMgr;
             }
-            
+
             firstEventDone = true;
         }
     }

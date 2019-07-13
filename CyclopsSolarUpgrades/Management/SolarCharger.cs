@@ -7,7 +7,11 @@
     {
         private const float MaxSolarDepth = 200f;
         private const float PercentageMaker = 100f;
-        private const float SolarChargingFactor = 1.25f / PercentageMaker;
+        private const float SolarChargingFactor = 1.45f;
+
+        private float lightRatio;
+        private float depthRatio;
+        private float rechargeRatio;
 
         public SolarCharger(TechType tier1TechType, TechType tier2TechType, SubRoot cyclops)
             : base(tier1TechType, tier2TechType, cyclops)
@@ -16,24 +20,36 @@
 
         protected override string PercentNotation => "%Θ";
         protected override float MaximumEnergyStatus => 90f;
-        protected override float MinimumEnergyStatus => 10f;
+        protected override float MinimumEnergyStatus => 5f;
 
-        protected override float GetEnergyStatus()
+        protected override bool HasAmbientEnergy(ref float ambientEnergyStatus)
         {
+            ambientEnergyStatus = 0f;
+
+            if (Cyclops.transform.position.y < -MaxSolarDepth)
+                return false;
+
+            depthRatio = Mathf.Clamp01((MaxSolarDepth + Cyclops.transform.position.y) / MaxSolarDepth);
+
             DayNightCycle daynightCycle = DayNightCycle.main;
-
             if (daynightCycle == null)
-                return 0f; // Safety check
+                return false;
 
-            // This based on the how the Solar Panel and Seamoth generate solar power.
-            return daynightCycle.GetLocalLightScalar() * // Sun Scalar
-                   Mathf.Clamp01((MaxSolarDepth - Cyclops.transform.position.y) / MaxSolarDepth) * // Depth Scalar
-                   PercentageMaker; // Make into percentage - will be cancled out later
+            lightRatio = daynightCycle.GetLocalLightScalar();
+
+            bool hasEnergy = lightRatio > 0.05f;
+
+            rechargeRatio = depthRatio * lightRatio;
+
+            if (hasEnergy)
+                ambientEnergyStatus = rechargeRatio * PercentageMaker;
+
+            return hasEnergy;
         }
 
-        protected override float ConvertToAvailableEnergy(float energyStatus)
+        protected override float GetAmbientEnergy()
         {
-            return energyStatus * DayNightCycle.main.deltaTime * SolarChargingFactor;
+            return rechargeRatio * DayNightCycle.main.deltaTime * SolarChargingFactor;
         }
     }
 }
