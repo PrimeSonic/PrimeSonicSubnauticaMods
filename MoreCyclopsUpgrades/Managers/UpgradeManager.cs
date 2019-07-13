@@ -60,7 +60,7 @@
 
         private bool initialized = false;
         public readonly SubRoot Cyclops;
-        private readonly Equipment engineRoomUpgradeConsole;
+        private Equipment engineRoomUpgradeConsole;
 
         internal List<AuxCyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<AuxCyUpgradeConsoleMono>();
 
@@ -124,8 +124,7 @@
         {
             QuickLogger.Debug("Creating new UpgradeManager");
             Cyclops = cyclops;
-            engineRoomUpgradeConsole = cyclops.upgradeConsole.modules;
-            AttachEquipmentEvents(ref engineRoomUpgradeConsole);
+            engineRoomUpgradeConsole = Cyclops.upgradeConsole.modules;
         }
 
         private void InitializeUpgradeHandlers()
@@ -174,6 +173,13 @@
             foreach (UpgradeHandler upgrade in KnownsUpgradeModules.Values)
                 upgradeHandlers[u++] = upgrade;
 
+            QuickLogger.Debug("Attaching events to Engine Room Upgrade Console");
+
+            if (engineRoomUpgradeConsole == null)
+                engineRoomUpgradeConsole = Cyclops.upgradeConsole.modules;
+
+            AttachEquipmentEvents(ref engineRoomUpgradeConsole);
+
             initialized = true;
             TooLateToRegister = true;
         }
@@ -210,15 +216,15 @@
             HandleUpgrades();
         }
 
-        public void AttachEquipmentEvents(ref Equipment upgradeConsole)
+        public void AttachEquipmentEvents(ref Equipment upgradeConsoleEquipment)
         {
-            if (upgradeConsole == null)
+            if (upgradeConsoleEquipment == null)
             {
                 QuickLogger.Error("Engine room upgrade console in Cyclops was null");
                 return;
             }
 
-            upgradeConsole.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
+            upgradeConsoleEquipment.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
             {
                 if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
                 {
@@ -228,7 +234,7 @@
                 return true;
             };
 
-            upgradeConsole.isAllowedToRemove += (Pickupable pickupable, bool verbose) =>
+            upgradeConsoleEquipment.isAllowedToRemove += (Pickupable pickupable, bool verbose) =>
             {
                 if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
                 {
