@@ -1,6 +1,6 @@
 ﻿namespace CyclopsBioReactor.Management
 {
-    using CommonCyclopsUpgrades;
+    using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;

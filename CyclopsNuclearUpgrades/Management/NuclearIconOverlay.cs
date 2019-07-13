@@ -1,6 +1,6 @@
 ﻿namespace CyclopsNuclearUpgrades.Management
 {
-    using CommonCyclopsUpgrades;
+    using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;

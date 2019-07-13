@@ -85,7 +85,7 @@
             if (AuxManagerCreators.TryGetValue(auxManagerName, out CreateAuxCyclopsManager creator))
             {
                 IAuxCyclopsManager auxMgr = creator.Invoke(mgr.Cyclops);
-                if (auxMgr != null)
+                if (auxMgr != null || !auxMgr.Initialize(mgr.Cyclops))
                 {
                     QuickLogger.Debug($"Created new IAuxCyclopsManager '{auxManagerName}'");
                     mgr.AuxiliaryManagers.Add(auxManagerName, auxMgr);

@@ -1,7 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using Common;
-    using CommonCyclopsUpgrades;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;

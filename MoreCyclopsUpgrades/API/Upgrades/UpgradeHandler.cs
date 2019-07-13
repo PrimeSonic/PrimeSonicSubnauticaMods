@@ -137,21 +137,26 @@
         /// <param name="cyclops">The cyclops where the handler is being registered.</param>
         public UpgradeHandler(TechType techType, SubRoot cyclops)
         {
-            this.TechType = techType;
-            this.Cyclops = cyclops;
+            TechType = techType;
+            Cyclops = cyclops;
         }
+
+        private readonly List<InventoryItem> trackedItems = new List<InventoryItem>();
 
         internal virtual void UpgradesCleared()
         {
             OnClearUpgrades?.Invoke();
             count = 0;
+            trackedItems.Clear();
         }
 
         internal virtual void UpgradeCounted(Equipment modules, string slot)
         {
             count++;
+            InventoryItem trackedItem = modules.equipment[slot];
+            trackedItems.Add(trackedItem);
             OnUpgradeCounted?.Invoke();
-            OnUpgradeCountedDetailed?.Invoke(modules, slot, modules.equipment[slot]);
+            OnUpgradeCountedDetailed?.Invoke(modules, slot, trackedItem);
         }
 
         internal virtual void UpgradesFinished()
@@ -189,7 +194,20 @@
                 return IsAllowedToAdd.Invoke(item, verbose);
             }
 
-            return count < this.MaxCount;
+            if (count < this.MaxCount)
+                return true;
+
+            // When maxed out, we can still allow currently equipped items to be moved around.
+            if (trackedItems.Count == this.MaxCount)
+            {
+                for (int i = 0; i < this.MaxCount; i++)
+                {
+                    if (trackedItems[i] == item.inventoryItem)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         internal virtual bool CanUpgradeBeRemoved(Pickupable item, bool verbose)
