@@ -145,6 +145,7 @@
 
         private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD, int totalIcons)
         {
+            QuickLogger.Debug($"CyclopsHUDManager Adding Power Info Icons for '{totalIcons}' CyclopsChargers");
             holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
 
             Canvas pilotingCanvas = cyclopsHelmHUD.powerText.canvas;
@@ -249,7 +250,7 @@
 
         private void UpdatePowerIcons()
         {
-            if (!powerIconsInitialized || !ChargeManager.Initialized)
+            if (!powerIconsInitialized || !this.ChargeManager.Initialized)
                 return;
 
             HidePowerIcons();

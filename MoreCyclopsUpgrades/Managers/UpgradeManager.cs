@@ -11,7 +11,7 @@
     /// </summary>
     internal class UpgradeManager
     {
-        internal static bool Initialized { get; private set; }
+        internal static bool TooLateToRegister { get; private set; }
 
         private static readonly IDictionary<CreateUpgradeHandler, string> HandlerCreators = new Dictionary<CreateUpgradeHandler, string>();
 
@@ -45,11 +45,8 @@
         {
             get
             {
-                if (Cyclops.upgradeConsole != null)
-                {
-                    for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
-                        yield return new UpgradeSlot(Cyclops.upgradeConsole.modules, SlotHelper.SlotNames[s]);
-                }
+                for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
+                    yield return new UpgradeSlot(engineRoomUpgradeConsole, SlotHelper.SlotNames[s]);
 
                 for (int a = 0; a < this.AuxUpgradeConsoles.Count; a++)
                 {
@@ -61,7 +58,9 @@
             }
         }
 
-        internal readonly SubRoot Cyclops;
+        private bool initialized = false;
+        public readonly SubRoot Cyclops;
+        private readonly Equipment engineRoomUpgradeConsole;
 
         internal List<AuxCyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<AuxCyUpgradeConsoleMono>();
 
@@ -123,13 +122,13 @@
 
         internal UpgradeManager(SubRoot cyclops)
         {
+            QuickLogger.Debug("Creating new UpgradeManager");
             Cyclops = cyclops;
-
-            Equipment cyclopsConsole = Cyclops.upgradeConsole.modules;
-            AttachEquipmentEvents(ref cyclopsConsole);
+            engineRoomUpgradeConsole = cyclops.upgradeConsole.modules;
+            AttachEquipmentEvents(ref engineRoomUpgradeConsole);
         }
 
-        public bool InitializeUpgradeHandlers()
+        private void InitializeUpgradeHandlers()
         {
             QuickLogger.Debug($"UpgradeManager adding new UpgradeHandlers from external mods");
             // First, register upgrades from other mods.
@@ -175,10 +174,11 @@
             foreach (UpgradeHandler upgrade in KnownsUpgradeModules.Values)
                 upgradeHandlers[u++] = upgrade;
 
-            return Initialized = true;
+            initialized = true;
+            TooLateToRegister = true;
         }
 
-        internal void SyncUpgradeConsoles()
+        public void SyncUpgradeConsoles()
         {
             TempCache.Clear();
 
@@ -210,19 +210,39 @@
             HandleUpgrades();
         }
 
-        internal void AttachEquipmentEvents(ref Equipment upgradeConsoleEquipment)
+        public void AttachEquipmentEvents(ref Equipment upgradeConsole)
         {
-            if (upgradeConsoleEquipment == null)
+            if (upgradeConsole == null)
+            {
+                QuickLogger.Error("Engine room upgrade console in Cyclops was null");
                 return;
+            }
 
-            upgradeConsoleEquipment.isAllowedToAdd += IsAllowedToAdd;
-            upgradeConsoleEquipment.isAllowedToRemove += IsAllowedToRemove;
+            upgradeConsole.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
+            {
+                if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
+                {
+                    return handler.CanUpgradeBeAdded(pickupable, verbose);
+                }
+
+                return true;
+            };
+
+            upgradeConsole.isAllowedToRemove += (Pickupable pickupable, bool verbose) =>
+            {
+                if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
+                {
+                    return handler.CanUpgradeBeRemoved(pickupable, verbose);
+                }
+
+                return true;
+            };
         }
 
-        internal void HandleUpgrades()
+        public void HandleUpgrades()
         {
-            if (!Initialized)
-                return;
+            if (!initialized)
+                InitializeUpgradeHandlers();
 
             QuickLogger.Debug($"UpgradeManager clearing cyclops upgrades");
 
@@ -279,26 +299,6 @@
             }
 
             Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
-        }
-
-        private bool IsAllowedToAdd(Pickupable pickupable, bool verbose)
-        {
-            if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
-            {
-                return handler.CanUpgradeBeAdded(pickupable, verbose);
-            }
-
-            return true;
-        }
-
-        private bool IsAllowedToRemove(Pickupable pickupable, bool verbose)
-        {
-            if (KnownsUpgradeModules.TryGetValue(pickupable.GetTechType(), out UpgradeHandler handler))
-            {
-                return handler.CanUpgradeBeRemoved(pickupable, verbose);
-            }
-
-            return true;
         }
     }
 }

@@ -23,7 +23,7 @@
 
         #region Static
 
-        internal static bool Initialized { get; private set; }
+        internal static bool TooLateToRegister { get; private set; }
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;
 
         private static readonly List<ChargerCreator> CyclopsChargerCreators = new List<ChargerCreator>();
@@ -45,6 +45,7 @@
         private readonly IDictionary<string, CyclopsCharger> KnownChargers = new Dictionary<string, CyclopsCharger>();
         private readonly SubRoot Cyclops;
 
+        public bool Initialized { get; private set; } = false;
         private float rechargePenalty = ModConfig.Main.RechargePenalty;
         private readonly IModConfig config = ModConfig.Main;
         private bool requiresVanillaCharging = false;
@@ -55,6 +56,7 @@
 
         public ChargeManager(SubRoot cyclops)
         {
+            QuickLogger.Debug("Creating new ChargeManager");
             Cyclops = cyclops;
         }
 
@@ -68,9 +70,9 @@
             return null;
         }
 
-        public void InitializeChargers()
+        private void InitializeChargers()
         {
-            QuickLogger.Debug("ChargeManager InitializeChargingHandlers");
+            QuickLogger.Debug("ChargeManager Initialize CyclopsChargers from external mods");
 
             // First, register chargers from other mods.
             for (int i = 0; i < CyclopsChargerCreators.Count; i++)
@@ -105,7 +107,8 @@
             // This is to allow players to choose whether or not they want the newer form of charging.
             requiresVanillaCharging = VanillaUpgrades.Main.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
 
-            Initialized = true;
+            this.Initialized = true;
+            TooLateToRegister = true;
         }
 
         internal void UpdateRechargePenalty(float penalty)
@@ -119,6 +122,9 @@
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
         public int GetTotalReservePower()
         {
+            if (!this.Initialized)
+                InitializeChargers();
+
             float availableReservePower = 0f;
 
             for (int i = 0; i < this.Chargers.Length; i++)
@@ -131,12 +137,15 @@
         /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
         /// </summary>
         /// <returns><c>True</c> if the original code for the vanilla Cyclops Thermal Reactor Module is required; Otherwise <c>false</c>.</returns>
-        internal bool RechargeCyclops()
+        public bool RechargeCyclops()
         {
+            if (!this.Initialized)
+                InitializeChargers();
+
             if (Time.timeScale == 0f) // Is the game paused?
                 return false;
 
-            if (!Initialized)
+            if (!TooLateToRegister)
                 return false;
 
             if (this.Chargers == null)
