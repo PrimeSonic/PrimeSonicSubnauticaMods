@@ -1,5 +1,6 @@
 ﻿namespace CommonCyclopsUpgrades
 {
+    using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;

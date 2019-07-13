@@ -86,6 +86,13 @@
     <Compile Include="AuxConsole\AuxCyUpgradeConsoleMono.cs" />
     <Compile Include="AuxConsole\AuxCyUpgradeConsoleSaveData.cs" />
     <Compile Include="API\General\IPowerRatingManager.cs" />
+    <Compile Include="Config\ModConfigMenuOptions.cs" />
+    <Compile Include="Config\ModConfigSaveData.cs" />
+    <Compile Include="Config\Options\ChoiceOption.cs" />
+    <Compile Include="Config\Options\ConfigOption.cs" />
+    <Compile Include="Config\Options\OptionTypes.cs" />
+    <Compile Include="Config\Options\SliderOption.cs" />
+    <Compile Include="Config\Options\ToggleOption.cs" />
     <Compile Include="Managers\PdaOverlayManager.cs" />
     <Compile Include="Managers\PowerRatingManager.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
@@ -127,7 +134,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
-  <Import Project="..\CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

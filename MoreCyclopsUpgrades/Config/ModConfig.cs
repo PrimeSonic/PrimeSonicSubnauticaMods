@@ -3,9 +3,8 @@
     using System;
     using System.Collections.Generic;
     using Common;
-    using CommonCyclopsUpgrades;
-    using CommonCyclopsUpgrades.Options;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;
+    using MoreCyclopsUpgrades.Config.Options;
     using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
 
@@ -123,7 +122,7 @@
                 for (int m = 0; m < CyclopsManager.Managers.Count; m++)
                 {
                     CyclopsManager mgr = CyclopsManager.Managers[m];
-                    mgr.Charge.UpdateRechargePenalty(rechargePenalty);
+                    mgr.Charge.RechargePenalty = rechargePenalty;
                     mgr.Cyclops.UpdatePowerRating();
                 }
             }
@@ -237,12 +236,16 @@
         private float CyclopsMaxPower = 1f;
 
         public float MinimumEnergyDeficit { get; private set; } = 60f;
+        public float EmergencyEnergyDeficit { get; private set; } = 600f;
 
         public void UpdateCyclopsMaxPower(float maxPower)
         {
             CyclopsMaxPower = maxPower;
             float ratio = this.DeficitThreshold / 100f;
             this.MinimumEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * ratio);
+
+            const float emergencyPowerKickIn = 0.5f;
+            this.EmergencyEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * emergencyPowerKickIn);
         }
     }
 }

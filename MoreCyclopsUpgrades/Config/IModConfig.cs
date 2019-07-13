@@ -15,6 +15,7 @@
         bool ShowIconsOnHoloDisplay { get; }
         bool ShowIconsWhilePiloting { get; }
         float MinimumEnergyDeficit { get; }
+        float EmergencyEnergyDeficit { get; }
         void UpdateCyclopsMaxPower(float maxPower);
     }
 }

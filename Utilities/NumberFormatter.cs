@@ -1,4 +1,4 @@
-﻿namespace CommonCyclopsUpgrades
+﻿namespace Common
 {
     using System.Collections.Generic;
     using UnityEngine;

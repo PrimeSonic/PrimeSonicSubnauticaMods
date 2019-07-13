@@ -46,7 +46,8 @@
         private readonly SubRoot Cyclops;
 
         public bool Initialized { get; private set; } = false;
-        private float rechargePenalty = ModConfig.Main.RechargePenalty;
+        public float RechargePenalty { get; set; } = ModConfig.Main.RechargePenalty;
+
         private readonly IModConfig config = ModConfig.Main;
         private bool requiresVanillaCharging = false;
         private float producedPower = 0f;
@@ -111,11 +112,6 @@
             TooLateToRegister = true;
         }
 
-        internal void UpdateRechargePenalty(float penalty)
-        {
-            rechargePenalty = penalty;
-        }
-
         /// <summary>
         /// Gets the total available reserve power across all equipment upgrade modules.
         /// </summary>
@@ -130,7 +126,7 @@
             for (int i = 0; i < this.Chargers.Length; i++)
                 availableReservePower += this.Chargers[i].TotalReserveEnergy;
 
-            return Mathf.FloorToInt(availableReservePower);
+            return Mathf.RoundToInt(availableReservePower);
         }
 
         /// <summary>
@@ -145,12 +141,6 @@
             if (Time.timeScale == 0f) // Is the game paused?
                 return false;
 
-            if (!TooLateToRegister)
-                return false;
-
-            if (this.Chargers == null)
-                return false;
-
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
             powerDeficit = GameModeUtils.RequiresPower()
@@ -161,33 +151,23 @@
 
             // First, get renewable energy first
             for (int i = 0; i < this.Chargers.Length; i++)
-            {
-                CyclopsCharger charger = this.Chargers[i];
-                producedPower += charger.Generate(powerDeficit);
-            }
+                producedPower += this.Chargers[i].Generate(powerDeficit);
 
             // Second, get non-renewable energy if no renewable energy was available
             if (producedPower < MinimalPowerValue && // Did the renewable energy sources not produce any power?
-                powerDeficit > config.MinimumEnergyDeficit) // Is the power deficit over the threshhold to start consuming non-renewable energy?
+                (powerDeficit > config.MinimumEnergyDeficit ||  // Is the power deficit over the threshhold to start consuming non-renewable energy?
+                powerDeficit > config.EmergencyEnergyDeficit))
             {
                 for (int i = 0; i < this.Chargers.Length; i++)
-                {
-                    CyclopsCharger charger = this.Chargers[i];
-                    producedPower += charger.Drain(powerDeficit);
-                }
+                    producedPower += this.Chargers[i].Drain(powerDeficit);
             }
 
-            if (producedPower > 0f)
-            {
-                Cyclops.powerRelay.ModifyPower(producedPower * rechargePenalty, out float amountStored);
-            }
+            if (producedPower > 0f)            
+                Cyclops.powerRelay.ModifyPower(producedPower * this.RechargePenalty, out float amountStored);            
 
             // Last, inform the chargers to update their display status
             for (int i = 0; i < this.Chargers.Length; i++)
-            {
-                CyclopsCharger charger = this.Chargers[i];
-                charger.UpdateStatus();
-            }
+                this.Chargers[i].UpdateStatus();
 
             return requiresVanillaCharging;
         }

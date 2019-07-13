@@ -1,4 +1,4 @@
-﻿namespace CommonCyclopsUpgrades.Options
+﻿namespace MoreCyclopsUpgrades.Config.Options
 {
     internal abstract class ConfigOption
     {
