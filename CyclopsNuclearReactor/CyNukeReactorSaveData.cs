@@ -1,10 +1,10 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using System.Collections.Generic;
+    using System.IO;
     using Common;
     using Common.EasyMarkup;
     using SMLHelper.V2.Utility;
-    using System.Collections.Generic;
-    using System.IO;
 
     internal class CyNukeReactorSaveData : EmPropertyCollectionList<CyNukeRodSaveData>
     {
@@ -26,14 +26,13 @@
             this.Values.Clear();
         }
 
-        public IEnumerable<CyNukeRodSaveData> SlotData => this.Values;
+        public IList<CyNukeRodSaveData> SlotData => this.Values;
 
-        public void AddSlotData(IEnumerable<SlotData> slotDataCollection)
+        public void AddSlotData(IList<SlotData> slotDataCollection)
         {
-            foreach (SlotData slotData in slotDataCollection)
-            {
-                this.Values.Add(new CyNukeRodSaveData(slotData));
-            }
+            for (int r = 0; r < slotDataCollection.Count; r++)
+                this.Values.Add(new CyNukeRodSaveData(slotDataCollection[r]));
+
         }
 
         public void SaveData()
@@ -50,8 +49,8 @@
         {
             var cyNukeReactorSaveData = new CyNukeReactorSaveData(PreFabId, MaxSlots);
 
-            foreach (CyNukeRodSaveData item in this.Values)
-                cyNukeReactorSaveData.Values.Add(item.Copy() as CyNukeRodSaveData);
+            for (int r = 0; r < this.Values.Count; r++)
+                cyNukeReactorSaveData.Values.Add(this.Values[r].Copy() as CyNukeRodSaveData);
 
             return cyNukeReactorSaveData;
         }

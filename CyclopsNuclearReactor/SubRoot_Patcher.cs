@@ -4,15 +4,15 @@
     using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("Awake")]
-    internal class SubRoot_Awake
+    [HarmonyPatch("Start")]
+    internal class SubRoot_Start_Postfix
     {
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
             if (__instance.isCyclops)
             {
-                MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(__instance)?.SyncReactorsExternally();
+                MCUServices.Find.AuxCyclopsManager<CyNukeManager>(__instance)?.SyncReactorsExternally();
             }
         }
     }

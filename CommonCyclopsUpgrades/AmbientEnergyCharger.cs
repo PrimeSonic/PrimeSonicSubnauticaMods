@@ -72,8 +72,9 @@
 
         protected override float GenerateNewEnergy(float requestedPower)
         {
-            if (this.AmbientEnergyUpgrade.Count == 0)
+            if (this.AmbientEnergyUpgrade == null || this.AmbientEnergyUpgrade.Count == 0)
             {
+                ambientEnergyAvailable = false;
                 return 0f;
             }
             

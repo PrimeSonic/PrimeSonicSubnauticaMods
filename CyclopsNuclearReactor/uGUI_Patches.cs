@@ -41,7 +41,7 @@
             if (label != CyNukReactorBuildable.StorageLabel())
                 return; // Not a CyNukReactor
 
-            List<CyNukeReactorMono> reactors = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(Player.main.currentSub)?.CyNukeReactors;
+            List<CyNukeReactorMono> reactors = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Player.main.currentSub)?.CyNukeReactors;
 
             if (reactors == null || reactors.Count == 0)
                 return; // Cyclops has no reactors

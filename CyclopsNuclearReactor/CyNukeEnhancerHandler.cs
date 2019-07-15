@@ -13,9 +13,9 @@
         private readonly TieredUpgradeHandler<int> tier1;
         private readonly TieredUpgradeHandler<int> tier2;
 
-        private CyNukeChargeManager manager;
-        private CyNukeChargeManager ChargeManager => manager ?? 
-            (manager = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(Cyclops));
+        private CyNukeManager manager;
+        private CyNukeManager ChargeManager => manager ??
+            (manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Cyclops));
 
         public CyNukeEnhancerHandler(SubRoot cyclops) : base(NoUpgradesValue, cyclops)
         {
@@ -27,7 +27,7 @@
             OnUpgradeCounted = () => // Doing the final sync during HandleUpgrades may be unorthodox, but it somehow doesn't want to work any other way.
             {
                 if (manager == null)
-                    manager = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(cyclops);
+                    manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
 
                 OnUpgradeCounted = null; // This method only needs to be called once
             };
@@ -41,8 +41,8 @@
 
             if (this.ChargeManager != null)
             {
-                foreach (CyNukeReactorMono reactor in this.ChargeManager.CyNukeReactors)
-                    reactor?.UpdateUpgradeLevel(this.HighestValue);
+                for (int r = 0; r < this.ChargeManager.CyNukeReactors.Count; r++)
+                    this.ChargeManager.CyNukeReactors[r]?.UpdateUpgradeLevel(this.HighestValue);
             }
             else
             {

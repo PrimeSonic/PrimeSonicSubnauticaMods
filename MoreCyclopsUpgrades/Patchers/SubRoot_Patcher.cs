@@ -4,15 +4,14 @@
     using Managers;
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("Start")]
-    internal class SubRoot_Start_Patcher
+    [HarmonyPatch("Awake")]
+    internal class SubRoot_Awake_Patcher
     {
-        [HarmonyPostfix]
-        public static void Postfix(ref SubRoot __instance)
+        [HarmonyPrefix]
+        public static void Prefix(ref SubRoot __instance)
         {
-            if (__instance.isCyclops)            
+            if (__instance.isCyclops)
                 CyclopsManager.GetManager(__instance);
-
             // Set up a CyclopsManager early if possible
         }
     }

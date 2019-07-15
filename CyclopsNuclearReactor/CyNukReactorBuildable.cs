@@ -100,9 +100,9 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                CyNukeChargeManager mgr = MCUServices.Find.CyclopsCharger<CyNukeChargeManager>(cyclops);
+                CyNukeManager mgr = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
 
-                if (mgr != null && mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
+                if (mgr != null && mgr.CyNukeReactors.Count >= CyNukeManager.MaxReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitMessage());
                     return null;
