@@ -18,6 +18,10 @@
         private bool producingPower = false;
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
+        private float drainingEnergy = 0f;
+        private float tempBioCharge = 0f;
+        private float tempBioCapacity = 0f;
+        private bool tempProducingPower = false;
 
         private readonly Atlas.Sprite sprite;
 
@@ -26,8 +30,8 @@
             get
             {
                 float totalPower = 0f;
-                foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
-                    totalPower += reactor.Charge;
+                for (int b = 0; b < this.Manager.CyBioReactors.Count; b++)
+                    totalPower += this.Manager.CyBioReactors[b].Charge;
 
                 return totalPower;
             }
@@ -55,18 +59,19 @@
 
         protected override float GenerateNewEnergy(float requestedPower)
         {
-            float tempBioCharge = 0f;
-            float tempBioCapacity = 0f;
-            bool currentlyProducingPower = false;
+            tempBioCharge = 0f;
+            tempBioCapacity = 0f;
+            tempProducingPower = false;
 
-            foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
+            for (int b = 0; b < this.Manager.CyBioReactors.Count; b++)
             {
+                CyBioReactorMono reactor = this.Manager.CyBioReactors[b];
                 tempBioCharge += reactor.Charge;
                 tempBioCapacity = reactor.Capacity;
-                currentlyProducingPower |= reactor.ProducingPower;
+                tempProducingPower |= reactor.ProducingPower;
             }
 
-            producingPower = currentlyProducingPower;
+            producingPower = tempProducingPower;
             totalBioCharge = tempBioCharge;
             totalBioCapacity = tempBioCapacity;
 
@@ -76,12 +81,12 @@
 
         protected override float DrainReserveEnergy(float requestedPower)
         {
-            float charge = 0f;
+            drainingEnergy = 0f;
 
-            foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
-                charge += reactor.GetBatteryPower(BatteryDrainRate, requestedPower);
+            for (int b = 0; b < this.Manager.CyBioReactors.Count; b++)
+                drainingEnergy += this.Manager.CyBioReactors[b].GetBatteryPower(BatteryDrainRate, requestedPower);
 
-            return charge;
+            return drainingEnergy;
         }
     }
 }

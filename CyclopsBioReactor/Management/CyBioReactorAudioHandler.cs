@@ -5,14 +5,11 @@
 
     internal class CyBioReactorAudioHandler : MonoBehaviour
     {
-        #region Private Members
         private FMODAsset _doorOpen;
         private FMODAsset _doorClose;
         private bool _allowedToPlaySounds;
         private readonly Transform _transform;
-        #endregion
 
-        #region Constructor
         /// <summary>
         /// Default Constructor 
         /// </summary>
@@ -21,9 +18,7 @@
             _transform = transform;
             LoadFModAssets();
         }
-        #endregion
 
-        #region Private Methods
         private void LoadFModAssets()
         {
             FMODAsset[] fmods = Resources.FindObjectsOfTypeAll<FMODAsset>();
@@ -67,9 +62,7 @@
         {
             _allowedToPlaySounds = value;
         }
-        #endregion
 
-        #region Internal Methods    
         /// <summary>
         /// Plays the door open/close sound clip
         /// </summary>
@@ -83,6 +76,5 @@
                 return;
             FMODUWE.PlayOneShot(asset, _transform.position, 1f);
         }
-        #endregion
     }
 }

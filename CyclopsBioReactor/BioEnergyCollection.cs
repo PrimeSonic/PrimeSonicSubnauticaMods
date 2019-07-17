@@ -1,30 +1,26 @@
 ﻿namespace CyclopsBioReactor
 {
-    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
 
-    internal class BioEnergyCollection : IEnumerable<BioEnergy>, ICollection<BioEnergy>
+    internal class BioEnergyCollection : List<BioEnergy>
     {
-        private readonly List<BioEnergy> collection = new List<BioEnergy>();
         private readonly List<BioEnergy> forRemoval = new List<BioEnergy>();
-
-        public int Count => collection.Count;
         public int SpacesOccupied { get; private set; } = 0;
 
         public bool IsReadOnly => false;
 
         public BioEnergy Find(Pickupable pickupable)
         {
-            return collection.Find(material => material.Pickupable == pickupable);
+            return Find(material => material.Pickupable == pickupable);
         }
 
         public BioEnergy GetCandidateForRemoval()
         {
-            if (collection.Count == 0)
+            if (this.Count == 0)
                 return null;
 
-            List<BioEnergy> largeCandidates = collection.FindAll(c => c.Size > 1);
+            List<BioEnergy> largeCandidates = FindAll(c => c.Size > 1);
 
             if (largeCandidates != null && largeCandidates.Count > 0)
             {
@@ -32,7 +28,7 @@
             }
             else // candidates Count == 0
             {
-                return GetMaterialWithLeastEnergy(collection);
+                return GetMaterialWithLeastEnergy(this);
             }
         }
 
@@ -49,9 +45,9 @@
             return candidate;
         }
 
-        public void Add(BioEnergy material)
+        public new void Add(BioEnergy material)
         {
-            collection.Add(material);
+            base.Add(material);
             this.SpacesOccupied += material.Size;
         }
 
@@ -59,7 +55,7 @@
         {
             InventoryItem inventoryItem = container.AddItem(material.Pickupable);
             material.Size = inventoryItem.width * inventoryItem.height;
-            collection.Add(material);
+            base.Add(material);
             this.SpacesOccupied += material.Size;
         }
 
@@ -68,9 +64,9 @@
             forRemoval.Add(material);
         }
 
-        public bool Remove(BioEnergy material)
+        public new bool Remove(BioEnergy material)
         {
-            bool removed = collection.Remove(material);
+            bool removed = base.Remove(material);
 
             if (removed)
                 this.SpacesOccupied -= material.Size;
@@ -95,39 +91,17 @@
         {
             if (forRemoval.Count > 0)
             {
-                foreach (BioEnergy material in forRemoval)
-                {
-                    Remove(material, container);
-                }
+                for (int i = 0; i < forRemoval.Count; i++)
+                    Remove(forRemoval[i], container);
 
                 forRemoval.Clear();
             }
         }
 
-        public IEnumerator<BioEnergy> GetEnumerator()
+        public new void Clear()
         {
-            return collection.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return collection.GetEnumerator();
-        }
-
-        public void Clear()
-        {
-            collection.Clear();
+            base.Clear();
             this.SpacesOccupied = 0;
-        }
-
-        public bool Contains(BioEnergy material)
-        {
-            return collection.Contains(material);
-        }
-
-        public void CopyTo(BioEnergy[] array, int arrayIndex)
-        {
-            collection.CopyTo(array, arrayIndex);
         }
     }
 }

@@ -10,7 +10,7 @@
         private GameObject _gameobject;
         private Text _status;
 
-        internal void Setup(CyBioReactorMono mono)
+        internal CyBioReactorDisplayHandler(CyBioReactorMono mono)
         {
             _mono = mono;
             _gameobject = mono.gameObject;

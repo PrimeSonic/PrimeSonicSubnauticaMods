@@ -5,7 +5,10 @@
 
     internal class CyBioReactorAnimationHandler
     {
-        internal void Setup(CyBioReactorMono mono)
+        private Animator _animator;
+        private CyBioReactorMono _mono;
+
+        internal CyBioReactorAnimationHandler(CyBioReactorMono mono)
         {
             _mono = mono;
             _animator = mono.transform.GetComponent<Animator>();
@@ -22,14 +25,6 @@
             }
         }
 
-        #region Private Members
-
-        private Animator _animator;
-        private CyBioReactorMono _mono;
-
-        #endregion
-
-        #region Internal Methods
         /// <summary>
         /// Sets the an animator boolean to a certain value
         /// </summary>
@@ -88,7 +83,5 @@
 
             return _animator.GetBool(hash);
         }
-        #endregion
-
     }
 }

@@ -47,22 +47,22 @@
         {
             TempCache.Clear();
 
-            SubRoot cyclops = Cyclops;
+            CyBioReactorMono[] cyBioReactors = Cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
 
-            CyBioReactorMono[] cyBioReactors = cyclops.GetAllComponentsInChildren<CyBioReactorMono>();
-
-            foreach (CyBioReactorMono cyBioReactor in cyBioReactors)
+            for (int b = 0; b < cyBioReactors.Length; b++)
             {
+                CyBioReactorMono cyBioReactor = cyBioReactors[b];
+
                 if (TempCache.Contains(cyBioReactor))
                     continue; // This is a workaround because of the object references being returned twice in this array.
 
                 TempCache.Add(cyBioReactor);
 
-                if (cyBioReactor.ParentCyclops == null)
+                if (!cyBioReactor.IsConnectedToCyclops)
                 {
                     QuickLogger.Debug("CyBioReactorMono synced externally");
                     // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    cyBioReactor.ConnectToCyclops(cyclops, this);
+                    cyBioReactor.ConnectToCyclops(Cyclops, this);
                 }
             }
 
