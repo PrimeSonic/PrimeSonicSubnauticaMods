@@ -202,12 +202,14 @@
             this.transform.SetParent(parentCyclops.transform);
             UpgradeManager = manager ?? CyclopsManager.GetManager(parentCyclops).Upgrade;
 
-            UpgradeManager upgradeManager = UpgradeManager;
-            upgradeManager.AddBuildable(this);
+            if (UpgradeManager != null)
+            {
+                UpgradeManager.AddBuildable(this);
 
-            Equipment console = this.Modules;
-            upgradeManager.AttachEquipmentEvents(ref console);
-            QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
+                Equipment console = this.Modules;
+                UpgradeManager.AttachEquipmentEvents(ref console);
+                QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
+            }
         }
 
         internal void CyclopsUpgradeChange()
