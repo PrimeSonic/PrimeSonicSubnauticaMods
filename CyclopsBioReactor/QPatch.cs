@@ -15,7 +15,11 @@
             try
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
-
+#if DEBUG
+                QuickLogger.DebugLogsEnabled = true;
+#else
+                QuickLogger.DebugLogsEnabled = false;
+#endif
                 var booster = new BioReactorBooster();
                 booster.Patch();
 

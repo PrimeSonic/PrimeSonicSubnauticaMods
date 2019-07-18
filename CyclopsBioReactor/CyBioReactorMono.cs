@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
+    using CommonCyclopsBuildables;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
     using CyclopsBioReactor.SaveData;
@@ -10,7 +11,7 @@
     using UnityEngine;
 
     [ProtoContract]
-    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, IConstructable
+    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, IConstructable, ICyclopsBuildable
     {
         internal static bool PdaIsOpen = false;
         internal static CyBioReactorMono OpenInPda = null;
@@ -31,11 +32,17 @@
         // When at full capacity, charging rates will nearly double.
         private float chargeRate = baselineChargeRate;
 
+        private BioAuxCyclopsManager manager;
+        private BioAuxCyclopsManager Manager
+        {
+            get => manager ?? (manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops));
+            set => manager = value;
+        }
+
         [AssertNotNull]
         private ChildObjectIdentifier storageRoot;
         private ItemsContainer container;
         private Constructable buildable;
-        private BioAuxCyclopsManager manager;
         private string prefabID;
         private float textDelay = TextDelayInterval;
         private bool isLoadingSaveData = false;
@@ -44,12 +51,13 @@
         private int lastKnownBioBooster = 0;
         private CyBioReactorDisplayHandler displayHandler;
         private CyBioReactorAudioHandler audioHandler;
+
         private readonly BioEnergyCollection bioMaterialsProcessing = new BioEnergyCollection();
 
         // Careful, this map only exists while the PDA screen is open
         private Dictionary<InventoryItem, uGUI_ItemIcon> pdaInventoryMapping = null;
 
-        public bool IsConnectedToCyclops => Cyclops != null;
+        public bool IsConnectedToCyclops => Cyclops != null && manager != null;
         public bool ProducingPower => this.IsContructed && bioMaterialsProcessing.Count > 0;
         public bool HasPower => this.IsContructed && this.Charge > 0f;
         public bool IsContructed => (buildable != null) && buildable.constructed;
@@ -416,21 +424,17 @@
 
         public void ConnectToCyclops(SubRoot parentCyclops, BioAuxCyclopsManager manager = null)
         {
-            if (Cyclops != null && this.manager != null)
+            if (this.IsConnectedToCyclops)
                 return;
 
             Cyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            this.manager = manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(parentCyclops);
+            this.Manager = manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(parentCyclops);
 
-            if (!this.manager.CyBioReactors.Contains(this))
+            if (this.Manager != null)
             {
-                this.manager.CyBioReactors.Add(this);
+                this.Manager.AddBuildable(this);
             }
-
-            BioBoosterUpgradeHandler boosterHandler = MCUServices.Find.CyclopsUpgradeHandler<BioBoosterUpgradeHandler>(parentCyclops, this.manager.cyBioBooster);
-            UpdateBoosterCount(boosterHandler.TotalBoosters);
-            QuickLogger.Debug("Bioreactor has been connected to Cyclops", true);
         }
 
         public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
@@ -511,7 +515,7 @@
         private void OnDestroy()
         {
             if (manager != null)
-                manager.RemoveSingleReactor(this);
+                manager.RemoveBuildable(this);
             else
                 BioAuxCyclopsManager.RemoveReactor(this);
 
@@ -551,7 +555,7 @@
                     case 2:
                         return boost2; // 9 slots
                     case 3: // MaxBoosters
-                        return boost1; // 12 slots
+                        return boost3; // 12 slots
                 }
             }
         }

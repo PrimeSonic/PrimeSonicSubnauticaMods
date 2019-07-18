@@ -25,17 +25,7 @@
 
         private readonly Atlas.Sprite sprite;
 
-        public override float TotalReserveEnergy
-        {
-            get
-            {
-                float totalPower = 0f;
-                for (int b = 0; b < this.Manager.CyBioReactors.Count; b++)
-                    totalPower += this.Manager.CyBioReactors[b].Charge;
-
-                return totalPower;
-            }
-        }
+        public override float TotalReserveEnergy => this.Manager.TotalEnergyCharge;
 
         public BioChargeHandler(TechType cyBioBooster, SubRoot cyclops) : base(cyclops)
         {
@@ -59,17 +49,19 @@
 
         protected override float GenerateNewEnergy(float requestedPower)
         {
+            if (this.Manager == null)
+                return 0f;
+
             tempBioCharge = 0f;
             tempBioCapacity = 0f;
             tempProducingPower = false;
 
-            for (int b = 0; b < this.Manager.CyBioReactors.Count; b++)
+            this.Manager.ApplyToAll((CyBioReactorMono reactor) =>
             {
-                CyBioReactorMono reactor = this.Manager.CyBioReactors[b];
                 tempBioCharge += reactor.Charge;
                 tempBioCapacity = reactor.Capacity;
                 tempProducingPower |= reactor.ProducingPower;
-            }
+            });
 
             producingPower = tempProducingPower;
             totalBioCharge = tempBioCharge;
@@ -81,10 +73,15 @@
 
         protected override float DrainReserveEnergy(float requestedPower)
         {
+            if (this.Manager == null)
+                return 0f;
+
             drainingEnergy = 0f;
 
-            for (int b = 0; b < this.Manager.CyBioReactors.Count; b++)
-                drainingEnergy += this.Manager.CyBioReactors[b].GetBatteryPower(BatteryDrainRate, requestedPower);
+            this.Manager.ApplyToAll((CyBioReactorMono reactor) =>
+            {
+                drainingEnergy += reactor.GetBatteryPower(BatteryDrainRate, requestedPower);
+            });
 
             return drainingEnergy;
         }

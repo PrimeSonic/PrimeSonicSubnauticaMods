@@ -24,8 +24,7 @@
             {
                 QuickLogger.Debug($"Handling BioBooster at {this.Count}");
 
-                for (int b = 0; b < this.Manager.CyBioReactors.Count; b++)
-                    this.Manager.CyBioReactors[b].UpdateBoosterCount(this.Count);
+                this.Manager.ApplyToAll((CyBioReactorMono reactor) => reactor.UpdateBoosterCount(this.Count));
             };
 
             OnFirstTimeMaxCountReached = () =>
@@ -35,21 +34,14 @@
 
             IsAllowedToRemove = (Pickupable item, bool verbose) =>
             {
-                for (int b = 0; b < this.Manager.CyBioReactors.Count; b++)
+                return this.Manager.FindFirst(false, (CyBioReactorMono reactor) => reactor.HasRoomToShrink(), () =>
                 {
-                    if (!this.Manager.CyBioReactors[b].HasRoomToShrink())
+                    if (Time.time > errorDelay)
                     {
-                        if (Time.time > errorDelay)
-                        {
-                            errorDelay = Time.time + delayInterval;
-                            ErrorMessage.AddMessage(BioReactorBooster.CannotRemove);
-                        }
-
-                        return false;
+                        errorDelay = Time.time + delayInterval;
+                        ErrorMessage.AddMessage(BioReactorBooster.CannotRemove);
                     }
-                }
-
-                return true;
+                });
             };
         }
     }
