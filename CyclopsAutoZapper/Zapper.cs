@@ -45,6 +45,9 @@
         private VehicleDockingBay dockingBay;
         private VehicleDockingBay DockingBay => dockingBay ?? (dockingBay = Cyclops.GetComponentInChildren<VehicleDockingBay>());
 
+        private CyclopsShieldButton shieldButton;
+        private CyclopsShieldButton ShieldButton => shieldButton ?? (shieldButton = Cyclops.GetComponentInChildren<CyclopsShieldButton>());
+
         private UpgradeHandler upgradeHandler;
         private UpgradeHandler UpgradeHandler => upgradeHandler ?? (upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler(Cyclops, UpgradeTechType));
 
@@ -75,6 +78,8 @@
         }
 
         public bool IsOnCooldown => Time.time < timeOfLastZap + TimeBetweenZaps;
+
+        public bool HasShieldModule => MCUServices.CrossMod.HasUpgradeInstalled(Cyclops, TechType.CyclopsShieldModule);
 
         public Zapper(TechType zapperTechType, SubRoot cyclops)
         {
@@ -118,6 +123,25 @@
                 return;
 
             ZapCreature();
+        }
+
+        public void PulseShield()
+        {
+            if (!this.HasShieldModule)
+                return;
+
+            if (this.IsOnCooldown)
+                return;
+
+            timeOfLastZap = Time.time; // Update time of last zap for cooldown purposes
+
+            float originalCost = Cyclops.shieldPowerCost;
+            Cyclops.shieldPowerCost = originalCost * 0.2f;
+
+            this.ShieldButton?.StartShield();
+            this.ShieldButton?.StopShield();
+
+            Cyclops.shieldPowerCost = originalCost;
         }
 
         private void ZapRadius()

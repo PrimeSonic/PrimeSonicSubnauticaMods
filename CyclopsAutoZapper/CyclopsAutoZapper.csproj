@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CyclopsParasiteRemover.cs" />
     <Compile Include="Patchers.cs" />
     <Compile Include="CyclopsZapperModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

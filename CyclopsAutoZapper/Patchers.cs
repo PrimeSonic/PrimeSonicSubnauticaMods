@@ -63,4 +63,20 @@
             }
         }
     }
+
+    [HarmonyPatch(typeof(CyclopsHolographicHUD))]
+    [HarmonyPatch("AttachedLavaLarva")]
+    internal static class CyclopsHolographicHUD_AttachedLavaLarva_Patcher
+    {
+        [HarmonyPostfix]
+        internal static void Postfix(CyclopsHolographicHUD __instance)
+        {
+            SubRoot cyclops = __instance?.subFire?.subRoot;
+
+            if (cyclops != null)
+            {
+                MCUServices.Find.AuxCyclopsManager<Zapper>(cyclops)?.PulseShield();
+            }
+        }
+    }
 }
