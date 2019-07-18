@@ -38,12 +38,13 @@
             ID = preFabID;
         }
 
-        public void SaveMaterialsProcessing(IEnumerable<BioEnergy> materialsInProcessor)
+        public void SaveMaterialsProcessing(IList<BioEnergy> materialsInProcessor)
         {
             _materials.Values.Clear();
 
-            foreach (BioEnergy item in materialsInProcessor)
+            for (int m = 0; m < materialsInProcessor.Count; m++)
             {
+                BioEnergy item = materialsInProcessor[m];
                 _materials.Add(new EmModuleSaveData
                 {
                     ItemID = (int)item.Pickupable.GetTechType(),
@@ -56,8 +57,9 @@
         {
             var list = new List<BioEnergy>();
 
-            foreach (EmModuleSaveData savedItem in _materials.Values)
+            for (int m = 0; m < _materials.Values.Count; m++)
             {
+                EmModuleSaveData savedItem = _materials.Values[m];
                 var techTypeID = (TechType)savedItem.ItemID;
                 var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 

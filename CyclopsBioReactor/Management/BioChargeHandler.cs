@@ -18,20 +18,14 @@
         private bool producingPower = false;
         private float totalBioCharge = 0f;
         private float totalBioCapacity = 0f;
+        private float drainingEnergy = 0f;
+        private float tempBioCharge = 0f;
+        private float tempBioCapacity = 0f;
+        private bool tempProducingPower = false;
 
         private readonly Atlas.Sprite sprite;
 
-        public override float TotalReserveEnergy
-        {
-            get
-            {
-                float totalPower = 0f;
-                foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
-                    totalPower += reactor.Charge;
-
-                return totalPower;
-            }
-        }
+        public override float TotalReserveEnergy => this.Manager.TotalEnergyCharge;
 
         public BioChargeHandler(TechType cyBioBooster, SubRoot cyclops) : base(cyclops)
         {
@@ -55,18 +49,21 @@
 
         protected override float GenerateNewEnergy(float requestedPower)
         {
-            float tempBioCharge = 0f;
-            float tempBioCapacity = 0f;
-            bool currentlyProducingPower = false;
+            if (this.Manager == null)
+                return 0f;
 
-            foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
+            tempBioCharge = 0f;
+            tempBioCapacity = 0f;
+            tempProducingPower = false;
+
+            this.Manager.ApplyToAll((CyBioReactorMono reactor) =>
             {
                 tempBioCharge += reactor.Charge;
                 tempBioCapacity = reactor.Capacity;
-                currentlyProducingPower |= reactor.ProducingPower;
-            }
+                tempProducingPower |= reactor.ProducingPower;
+            });
 
-            producingPower = currentlyProducingPower;
+            producingPower = tempProducingPower;
             totalBioCharge = tempBioCharge;
             totalBioCapacity = tempBioCapacity;
 
@@ -76,12 +73,17 @@
 
         protected override float DrainReserveEnergy(float requestedPower)
         {
-            float charge = 0f;
+            if (this.Manager == null)
+                return 0f;
 
-            foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
-                charge += reactor.GetBatteryPower(BatteryDrainRate, requestedPower);
+            drainingEnergy = 0f;
 
-            return charge;
+            this.Manager.ApplyToAll((CyBioReactorMono reactor) =>
+            {
+                drainingEnergy += reactor.GetBatteryPower(BatteryDrainRate, requestedPower);
+            });
+
+            return drainingEnergy;
         }
     }
 }

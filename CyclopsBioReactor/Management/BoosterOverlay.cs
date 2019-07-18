@@ -19,7 +19,7 @@
             upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<BioBoosterUpgradeHandler>(base.Cyclops, base.TechType);
             cyclopsManager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(base.Cyclops);
 
-            reactorCount = cyclopsManager.CyBioReactors.Count;
+            reactorCount = cyclopsManager.TrackedBuildablesCount;
             maxedReactors = reactorCount == BioAuxCyclopsManager.MaxBioReactors;
         }
 

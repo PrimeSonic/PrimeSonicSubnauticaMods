@@ -20,37 +20,28 @@
         {
             this.MaxCount = CyBioReactorMono.MaxBoosters;
 
-            OnFinishedUpgrades += () =>
+            OnFinishedUpgrades = () =>
             {
                 QuickLogger.Debug($"Handling BioBooster at {this.Count}");
-                foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
-                {
-                    reactor.UpdateBoosterCount(this.Count);
-                }
+
+                this.Manager.ApplyToAll((CyBioReactorMono reactor) => reactor.UpdateBoosterCount(this.Count));
             };
 
-            OnFirstTimeMaxCountReached += () =>
+            OnFirstTimeMaxCountReached = () =>
             {
                 ErrorMessage.AddMessage(BioReactorBooster.MaxBoostAchived);
             };
 
-            IsAllowedToRemove += (Pickupable item, bool verbose) =>
+            IsAllowedToRemove = (Pickupable item, bool verbose) =>
             {
-                foreach (CyBioReactorMono reactor in this.Manager.CyBioReactors)
+                return this.Manager.FindFirst(false, (CyBioReactorMono reactor) => reactor.HasRoomToShrink(), () =>
                 {
-                    if (!reactor.HasRoomToShrink())
+                    if (Time.time > errorDelay)
                     {
-                        if (Time.time > errorDelay)
-                        {
-                            errorDelay = Time.time + delayInterval;
-                            ErrorMessage.AddMessage(BioReactorBooster.CannotRemove);
-                        }
-
-                        return false;
+                        errorDelay = Time.time + delayInterval;
+                        ErrorMessage.AddMessage(BioReactorBooster.CannotRemove);
                     }
-                }
-
-                return true;
+                });
             };
         }
     }

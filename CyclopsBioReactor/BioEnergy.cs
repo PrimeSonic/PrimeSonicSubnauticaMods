@@ -6,7 +6,6 @@
     internal class BioEnergy
     {
         public bool FullyConsumed => RemainingEnergy <= 0f;
-        public string EnergyString => $"{Mathf.FloorToInt(RemainingEnergy)}/{MaxEnergy}";
 
         public Pickupable Pickupable;
         public float RemainingEnergy;
@@ -33,7 +32,7 @@
             if (this.DisplayText is null)
                 return;
 
-            this.DisplayText.text = this.EnergyString;
+            this.DisplayText.text = $"{Mathf.FloorToInt(RemainingEnergy)}/{MaxEnergy}";
         }
 
         public void AddDisplayText(uGUI_ItemIcon icon)

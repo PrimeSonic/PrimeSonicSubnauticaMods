@@ -64,7 +64,7 @@ namespace CyclopsBioReactor.Items
             {
                 BioAuxCyclopsManager mgr = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(cyclops);
 
-                if (mgr.CyBioReactors.Count >= BioAuxCyclopsManager.MaxBioReactors)
+                if (mgr.TrackedBuildablesCount >= BioAuxCyclopsManager.MaxBioReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitString());
                     return null;
