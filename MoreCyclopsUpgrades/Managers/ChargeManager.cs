@@ -40,12 +40,21 @@
             CyclopsChargerCreators.Add(new ChargerCreator(createEvent, name));
         }
 
+        internal static int TotalRegisteredChargers
+        {
+            get
+            {
+                TooLateToRegister = true;
+                return CyclopsChargerCreators.Count;
+            }
+        }
+
         #endregion
 
+        private bool initialized;
         private readonly IDictionary<string, CyclopsCharger> KnownChargers = new Dictionary<string, CyclopsCharger>();
         private readonly SubRoot Cyclops;
 
-        public bool Initialized { get; private set; } = false;
         public float RechargePenalty { get; set; } = ModConfig.Main.RechargePenalty;
 
         private readonly IModConfig config = ModConfig.Main;
@@ -63,6 +72,9 @@
 
         internal T GetCharger<T>(string chargeHandlerName) where T : CyclopsCharger
         {
+            if (!initialized)
+                InitializeChargers();
+
             if (KnownChargers.TryGetValue(chargeHandlerName, out CyclopsCharger cyclopsCharger))
             {
                 return (T)cyclopsCharger;
@@ -108,7 +120,7 @@
             // This is to allow players to choose whether or not they want the newer form of charging.
             requiresVanillaCharging = VanillaUpgrades.Main.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
 
-            this.Initialized = true;
+            initialized = true;
             TooLateToRegister = true;
         }
 
@@ -118,7 +130,7 @@
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
         public int GetTotalReservePower()
         {
-            if (!this.Initialized)
+            if (!initialized)
                 InitializeChargers();
 
             float availableReservePower = 0f;
@@ -135,7 +147,7 @@
         /// <returns><c>True</c> if the original code for the vanilla Cyclops Thermal Reactor Module is required; Otherwise <c>false</c>.</returns>
         public bool RechargeCyclops()
         {
-            if (!this.Initialized)
+            if (!initialized)
                 InitializeChargers();
 
             if (Time.timeScale == 0f) // Is the game paused?
@@ -162,8 +174,8 @@
                     producedPower += this.Chargers[i].Drain(powerDeficit);
             }
 
-            if (producedPower > 0f)            
-                Cyclops.powerRelay.ModifyPower(producedPower * this.RechargePenalty, out float amountStored);            
+            if (producedPower > 0f)
+                Cyclops.powerRelay.ModifyPower(producedPower * this.RechargePenalty, out float amountStored);
 
             // Last, inform the chargers to update their display status
             for (int i = 0; i < this.Chargers.Length; i++)

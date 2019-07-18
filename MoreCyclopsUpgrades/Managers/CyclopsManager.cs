@@ -110,21 +110,21 @@
 
         private readonly Dictionary<string, IAuxCyclopsManager> AuxiliaryManagers = new Dictionary<string, IAuxCyclopsManager>();
 
-        private UpgradeManager _upgrade;
-        private ChargeManager _charge;
-        private CyclopsHUDManager _hud;
-        private PowerRatingManager _engine;
-
-        internal UpgradeManager Upgrade => _upgrade ?? (_upgrade = new UpgradeManager(Cyclops));
-        internal ChargeManager Charge => _charge ?? (_charge = new ChargeManager(Cyclops));
-        internal CyclopsHUDManager HUD => _hud ?? (_hud = new CyclopsHUDManager(Cyclops));
-        internal PowerRatingManager Engine => _engine ?? (_engine = new PowerRatingManager(Cyclops));
+        internal readonly UpgradeManager Upgrade;// => _upgrade ?? (_upgrade = new UpgradeManager(Cyclops));
+        internal readonly ChargeManager Charge; //=> _charge ?? (_charge = new ChargeManager(Cyclops));
+        internal readonly CyclopsHUDManager HUD; //=> _hud ?? (_hud = new CyclopsHUDManager(Cyclops));
+        internal readonly PowerRatingManager Engine; //=> _engine ?? (_engine = new PowerRatingManager(Cyclops));
 
         private CyclopsManager(SubRoot cyclops)
         {
             QuickLogger.Debug($"Creating main CyclopsManager");
             Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
+
+            Upgrade = new UpgradeManager(cyclops);
+            Charge = new ChargeManager(cyclops);
+            HUD = new CyclopsHUDManager(cyclops, ChargeManager.TotalRegisteredChargers);
+            Engine = new PowerRatingManager(cyclops);
         }
 
         #endregion
