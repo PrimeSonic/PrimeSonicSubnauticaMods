@@ -61,6 +61,7 @@
         private bool requiresVanillaCharging = false;
         private float producedPower = 0f;
         private float powerDeficit = 0f;
+        private int totalChargers = -1;
 
         public CyclopsCharger[] Chargers { get; private set; }
 
@@ -85,7 +86,7 @@
 
         private void InitializeChargers()
         {
-            QuickLogger.Debug("ChargeManager Initialize CyclopsChargers from external mods");
+            QuickLogger.Debug("ChargeManager Initializing CyclopsChargers from external mods");
 
             // First, register chargers from other mods.
             for (int i = 0; i < CyclopsChargerCreators.Count; i++)
@@ -115,6 +116,9 @@
             foreach (CyclopsCharger charger in KnownChargers.Values)
                 this.Chargers[c++] = charger;
 
+            totalChargers = c;
+            QuickLogger.Debug($"ChargeManager has '{totalChargers}' CyclopsChargers from external mods");
+
             // Next, check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
             // If not, then the original thermal charging code will be allowed to run.
             // This is to allow players to choose whether or not they want the newer form of charging.
@@ -132,6 +136,9 @@
         {
             if (!initialized)
                 InitializeChargers();
+
+            if (totalChargers < 0)
+                return 0;
 
             float availableReservePower = 0f;
 
@@ -152,6 +159,9 @@
 
             if (Time.timeScale == 0f) // Is the game paused?
                 return false;
+
+            if (totalChargers < 0)
+                return true;
 
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.

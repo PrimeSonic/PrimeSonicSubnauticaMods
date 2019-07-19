@@ -333,8 +333,11 @@
                     var techtype = (TechType)savedModule.ItemID;
                     InventoryItem spanwedItem = CyclopsUpgrade.SpawnCyclopsModule(techtype);
 
-                    if (spanwedItem is null)
+                    if (spanwedItem == null)
+                    {
+                        QuickLogger.Warning($"Unknown upgrade module '{techtype.AsString()}' could not be spamned in from save data");
                         continue;
+                    }
 
                     QuickLogger.Debug($"Spawned in {techtype.AsString()} from save data");
 

@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
+    using Common;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -76,7 +77,20 @@
         /// <returns>A new <see cref="InventoryItem"/> that wraps up a <see cref="Pickupable"/> game object.</returns>
         public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
         {
-            var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
+            GameObject prefab;
+            try
+            {
+                prefab = CraftData.GetPrefabForTechType(techTypeID);
+            }
+            catch
+            {
+                return null;
+            }
+
+            if (prefab == null)
+                return null;
+
+            var gameObject = GameObject.Instantiate(prefab);
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
             return new InventoryItem(pickupable);
