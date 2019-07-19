@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
+    using CommonCyclopsBuildables;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.AuxConsole;
     using UnityEngine;
@@ -9,7 +10,7 @@
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
     /// </summary>
-    internal class UpgradeManager
+    internal class UpgradeManager : BuildableManager<AuxCyUpgradeConsoleMono>
     {
         internal static bool TooLateToRegister { get; private set; }
 
@@ -39,8 +40,6 @@
             }
         }
 
-        private readonly List<AuxCyUpgradeConsoleMono> TempCache = new List<AuxCyUpgradeConsoleMono>();
-
         private IEnumerable<UpgradeSlot> UpgradeSlots
         {
             get
@@ -48,9 +47,9 @@
                 for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
                     yield return new UpgradeSlot(engineRoomUpgradeConsole, SlotHelper.SlotNames[s]);
 
-                for (int a = 0; a < this.AuxUpgradeConsoles.Count; a++)
+                for (int a = 0; a < base.TrackedBuildables.Count; a++)
                 {
-                    AuxCyUpgradeConsoleMono aux = this.AuxUpgradeConsoles[a];
+                    AuxCyUpgradeConsoleMono aux = base.TrackedBuildables[a];
 
                     for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
                         yield return new UpgradeSlot(aux.Modules, SlotHelper.SlotNames[s]);
@@ -59,10 +58,7 @@
         }
 
         private bool initialized = false;
-        public readonly SubRoot Cyclops;
         private Equipment engineRoomUpgradeConsole;
-
-        internal List<AuxCyUpgradeConsoleMono> AuxUpgradeConsoles { get; } = new List<AuxCyUpgradeConsoleMono>();
 
         internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
 
@@ -70,6 +66,9 @@
 
         internal T GetUpgradeHandler<T>(TechType upgradeId) where T : UpgradeHandler
         {
+            if (!initialized)
+                InitializeUpgradeHandlers();
+
             if (KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
             {
                 if (upgradeHandler is IGroupedUpgradeHandler groupMember)
@@ -83,6 +82,9 @@
 
         internal UpgradeHandler GetUpgradeHandler(TechType upgradeId)
         {
+            if (!initialized)
+                InitializeUpgradeHandlers();
+
             if (KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
             {
                 if (upgradeHandler is IGroupedUpgradeHandler groupMember)
@@ -96,6 +98,9 @@
 
         internal T GetGroupHandler<T>(TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
+            if (!initialized)
+                InitializeUpgradeHandlers();
+
             if (!KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
                 return null;
 
@@ -120,10 +125,9 @@
             return (T)upgradeHandler;
         }
 
-        internal UpgradeManager(SubRoot cyclops)
+        internal UpgradeManager(SubRoot cyclops) : base(cyclops)
         {
             QuickLogger.Debug("Creating new UpgradeManager");
-            Cyclops = cyclops;
             engineRoomUpgradeConsole = Cyclops.upgradeConsole.modules;
         }
 
@@ -184,38 +188,6 @@
             TooLateToRegister = true;
         }
 
-        public void SyncUpgradeConsoles()
-        {
-            TempCache.Clear();
-
-            AuxCyUpgradeConsoleMono[] auxUpgradeConsoles = Cyclops.GetAllComponentsInChildren<AuxCyUpgradeConsoleMono>();
-
-            for (int i = 0; i < auxUpgradeConsoles.Length; i++)
-            {
-                AuxCyUpgradeConsoleMono auxConsole = auxUpgradeConsoles[i];
-
-                if (TempCache.Contains(auxConsole))
-                    continue; // This is a workaround because of the object references being returned twice in this array.
-
-                TempCache.Add(auxConsole);
-
-                if (auxConsole.ParentCyclops == null)
-                {
-                    QuickLogger.Debug("CyUpgradeConsoleMono synced externally");
-                    // This is a workaround to get a reference to the Cyclops into the AuxUpgradeConsole
-                    auxConsole.ConnectToCyclops(Cyclops, this);
-                }
-            }
-
-            if (TempCache.Count != this.AuxUpgradeConsoles.Count)
-            {
-                this.AuxUpgradeConsoles.Clear();
-                this.AuxUpgradeConsoles.AddRange(TempCache);
-            }
-
-            HandleUpgrades();
-        }
-
         public void AttachEquipmentEvents(ref Equipment upgradeConsoleEquipment)
         {
             if (upgradeConsoleEquipment == null)
@@ -243,6 +215,12 @@
 
                 return true;
             };
+        }
+
+        public override void SyncBuildables()
+        {
+            base.SyncBuildables();
+            HandleUpgrades();
         }
 
         public void HandleUpgrades()
@@ -305,6 +283,19 @@
             }
 
             Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
+        }
+
+        public override bool Initialize(SubRoot cyclops)
+        {
+            if (!initialized)
+                InitializeUpgradeHandlers();
+
+            return cyclops == Cyclops;
+        }
+
+        protected override void ConnectWithManager(AuxCyUpgradeConsoleMono buildable)
+        {
+            buildable.ConnectToCyclops(base.Cyclops, this);
         }
     }
 }

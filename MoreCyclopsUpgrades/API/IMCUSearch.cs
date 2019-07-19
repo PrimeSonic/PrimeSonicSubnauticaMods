@@ -36,13 +36,6 @@
         T CyclopsCharger<T>(SubRoot cyclops) where T : CyclopsCharger;
 
         /// <summary>
-        /// Gets all typed <see cref="CyclopsCharger"/>s across all Cyclops subd for the provided <seealso cref="CyclopsCharger.Name"/> string.<para/>
-        /// </summary>
-        /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>
-        /// <returns>A type casted <see cref="CyclopsCharger"/> if found; Otherwise returns null.</returns>
-        IEnumerable<T> AllCyclopsChargers<T>() where T : CyclopsCharger;
-
-        /// <summary>
         /// Gets the upgrade handler at the specified Cyclops sub for the specified upgrade module <see cref="TechType"/>.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="UpgradeHandler"/> for something else in your mod.
         /// </summary>        

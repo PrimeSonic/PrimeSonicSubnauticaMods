@@ -76,6 +76,7 @@ Global
 		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{da01f903-5e97-47fc-a7e5-d67967d89646}*SharedItemsImports = 13
+		CommonCyclopsBuildables\CommonCyclopsBuildables.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
 		CommonCyclopsBuildables\CommonCyclopsBuildables.projitems*{fcb57595-3f3f-4ce0-a40f-bc161f367467}*SharedItemsImports = 13
 	EndGlobalSection

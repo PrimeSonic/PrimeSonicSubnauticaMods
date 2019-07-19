@@ -40,18 +40,28 @@
             CyclopsChargerCreators.Add(new ChargerCreator(createEvent, name));
         }
 
+        internal static int TotalRegisteredChargers
+        {
+            get
+            {
+                TooLateToRegister = true;
+                return CyclopsChargerCreators.Count;
+            }
+        }
+
         #endregion
 
+        private bool initialized;
         private readonly IDictionary<string, CyclopsCharger> KnownChargers = new Dictionary<string, CyclopsCharger>();
         private readonly SubRoot Cyclops;
 
-        public bool Initialized { get; private set; } = false;
         public float RechargePenalty { get; set; } = ModConfig.Main.RechargePenalty;
 
         private readonly IModConfig config = ModConfig.Main;
         private bool requiresVanillaCharging = false;
         private float producedPower = 0f;
         private float powerDeficit = 0f;
+        private int totalChargers = -1;
 
         public CyclopsCharger[] Chargers { get; private set; }
 
@@ -63,6 +73,9 @@
 
         internal T GetCharger<T>(string chargeHandlerName) where T : CyclopsCharger
         {
+            if (!initialized)
+                InitializeChargers();
+
             if (KnownChargers.TryGetValue(chargeHandlerName, out CyclopsCharger cyclopsCharger))
             {
                 return (T)cyclopsCharger;
@@ -73,7 +86,7 @@
 
         private void InitializeChargers()
         {
-            QuickLogger.Debug("ChargeManager Initialize CyclopsChargers from external mods");
+            QuickLogger.Debug("ChargeManager Initializing CyclopsChargers from external mods");
 
             // First, register chargers from other mods.
             for (int i = 0; i < CyclopsChargerCreators.Count; i++)
@@ -103,12 +116,15 @@
             foreach (CyclopsCharger charger in KnownChargers.Values)
                 this.Chargers[c++] = charger;
 
+            totalChargers = c;
+            QuickLogger.Debug($"ChargeManager has '{totalChargers}' CyclopsChargers from external mods");
+
             // Next, check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
             // If not, then the original thermal charging code will be allowed to run.
             // This is to allow players to choose whether or not they want the newer form of charging.
             requiresVanillaCharging = VanillaUpgrades.Main.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
 
-            this.Initialized = true;
+            initialized = true;
             TooLateToRegister = true;
         }
 
@@ -118,8 +134,11 @@
         /// <returns>The <see cref="int"/> value of the total available reserve power.</returns>
         public int GetTotalReservePower()
         {
-            if (!this.Initialized)
+            if (!initialized)
                 InitializeChargers();
+
+            if (totalChargers < 0)
+                return 0;
 
             float availableReservePower = 0f;
 
@@ -135,11 +154,14 @@
         /// <returns><c>True</c> if the original code for the vanilla Cyclops Thermal Reactor Module is required; Otherwise <c>false</c>.</returns>
         public bool RechargeCyclops()
         {
-            if (!this.Initialized)
+            if (!initialized)
                 InitializeChargers();
 
             if (Time.timeScale == 0f) // Is the game paused?
                 return false;
+
+            if (totalChargers < 0)
+                return true;
 
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
@@ -162,8 +184,8 @@
                     producedPower += this.Chargers[i].Drain(powerDeficit);
             }
 
-            if (producedPower > 0f)            
-                Cyclops.powerRelay.ModifyPower(producedPower * this.RechargePenalty, out float amountStored);            
+            if (producedPower > 0f)
+                Cyclops.powerRelay.ModifyPower(producedPower * this.RechargePenalty, out float amountStored);
 
             // Last, inform the chargers to update their display status
             for (int i = 0; i < this.Chargers.Length; i++)

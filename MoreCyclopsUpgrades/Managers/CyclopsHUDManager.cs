@@ -40,31 +40,19 @@
 
         private ChargeManager chargeManager;
         private ChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(Cyclops).Charge);
-
+        
         private bool powerIconsInitialized = false;
 
         private CyclopsHolographicHUD holographicHUD;
         private readonly IModConfig settings = ModConfig.Main;
+        private readonly int totalPowerInfoIcons;
 
         private HelmEnergyDisplay lastDisplay = HelmEnergyDisplay.PowerCellPercentage;
 
-        internal CyclopsHUDManager(SubRoot cyclops)
+        internal CyclopsHUDManager(SubRoot cyclops, int totalIcons)
         {
             Cyclops = cyclops;
-        }
-
-        internal void UpdateTextVisibility()
-        {
-            powerIconTextVisibility =
-                Player.main.currentSub == Cyclops &&
-                holographicHUD != null &&
-                Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
-
-            if (lastKnownTextVisibility != powerIconTextVisibility)
-            {
-                UpdatePowerIcons();
-                lastKnownTextVisibility = powerIconTextVisibility;
-            }
+            totalPowerInfoIcons = totalIcons;
         }
 
         internal void FastUpdate(CyclopsHelmHUDManager cyclopsHelmHUD, int lastPowerInt)
@@ -72,10 +60,13 @@
             if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != Cyclops)
                 return; // Same early exit            
 
-            if (!powerIconsInitialized)
-                AddPowerIcons(cyclopsHelmHUD, this.ChargeManager.Chargers.Length);
-            else
-                UpdatePowerIcons();
+            if (totalPowerInfoIcons > 0)
+            {
+                if (!powerIconsInitialized)
+                    AddPowerIcons(cyclopsHelmHUD);
+                else
+                    UpdatePowerIcons();
+            }
 
             if (lastPowerInt < 0f)
                 return;
@@ -108,7 +99,7 @@
         /// <param name="hudManager">The console HUD manager.</param>
         internal void SlowUpdate(CyclopsUpgradeConsoleHUDManager hudManager)
         {
-            if (!Cyclops.LOD.IsFull() || Player.main.currentSub != Cyclops)
+            if (!Cyclops.LOD.IsFull() || Player.main.currentSub != Cyclops || !Cyclops.live.IsAlive())
             {
                 return; // Same early exit
             }
@@ -139,12 +130,30 @@
 
             settings.UpdateCyclopsMaxPower(normalMaxPower);
 
-            UpdateTextVisibility();
+            if (totalPowerInfoIcons > 0)
+            {
+                powerIconTextVisibility =
+                    Player.main.currentSub == Cyclops &&
+                    holographicHUD != null &&
+                    Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
+
+                if (lastKnownTextVisibility != powerIconTextVisibility)
+                {
+                    UpdatePowerIcons();
+                    lastKnownTextVisibility = powerIconTextVisibility;
+                }
+            }
         }
 
-        private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD, int totalIcons)
+        private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
-            QuickLogger.Debug($"CyclopsHUDManager Adding Power Info Icons for '{totalIcons}' CyclopsChargers");
+            if (totalPowerInfoIcons == 0)
+            {
+                QuickLogger.Debug($"CyclopsHUDManager 0 Power Info Icons required");
+                return;
+            }
+
+            QuickLogger.Debug($"CyclopsHUDManager Adding Power Info Icons for '{totalPowerInfoIcons}' CyclopsChargers");
             holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
 
             Canvas pilotingCanvas = cyclopsHelmHUD.powerText.canvas;
@@ -163,7 +172,7 @@
             /* --- 3-1-2 --- */
             /* ---- 1-2 ---- */
 
-            if (totalIcons == 1)
+            if (totalPowerInfoIcons == 1)
             {
                 HelmIndicatorsOdd = new Indicator[1];
                 HelmIndicatorsEven = new Indicator[0];
@@ -175,6 +184,8 @@
             }
             else
             {
+                int totalIcons = totalPowerInfoIcons;
+
                 if (totalIcons % 2 != 0)
                     totalIcons--;
 
@@ -249,7 +260,7 @@
 
         private void UpdatePowerIcons()
         {
-            if (!powerIconsInitialized || !this.ChargeManager.Initialized)
+            if (!powerIconsInitialized)
                 return;
 
             HidePowerIcons();

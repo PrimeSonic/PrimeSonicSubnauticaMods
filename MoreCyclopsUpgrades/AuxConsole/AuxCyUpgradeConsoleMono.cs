@@ -3,6 +3,7 @@
     using System;
     using System.Reflection;
     using Common;
+    using CommonCyclopsBuildables;
     using Managers;
     using MoreCyclopsUpgrades.API.Upgrades;
     using ProtoBuf;
@@ -10,14 +11,14 @@
     using UnityEngine.UI;
 
     [ProtoContract]
-    internal class AuxCyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
+    internal class AuxCyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ICyclopsBuildable
     {
-        // This will be set externally
-        public SubRoot ParentCyclops { get; private set; }
-
-        internal UpgradeManager UpgradeManager { get; private set; }
+        private SubRoot ParentCyclops;
+        private UpgradeManager UpgradeManager;
 
         public Equipment Modules { get; private set; }
+
+        public bool IsConnectedToCyclops => ParentCyclops != null && UpgradeManager != null;
 
         private Constructable Buildable = null;
 
@@ -50,7 +51,7 @@
             {
                 QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Attempting external syncronize.");
                 for (int i = 0; i < CyclopsManager.Managers.Count; i++)
-                    CyclopsManager.Managers[i].Upgrade.SyncUpgradeConsoles();
+                    CyclopsManager.Managers[i].Upgrade.SyncBuildables();
             }
             else
             {
@@ -188,8 +189,8 @@
 
             bool allEmpty = true;
 
-            for (int s = 0; s < SlotHelper.SlotNames.Length; s++)            
-                allEmpty &= this.Modules.GetTechTypeInSlot(SlotHelper.SlotNames[s]) == TechType.None;            
+            for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
+                allEmpty &= this.Modules.GetTechTypeInSlot(SlotHelper.SlotNames[s]) == TechType.None;
 
             // Deconstruction only allowed if all slots are empty
             Buildable.deconstructionAllowed = allEmpty;
@@ -197,28 +198,26 @@
 
         internal void ConnectToCyclops(SubRoot parentCyclops, UpgradeManager manager = null)
         {
-            this.ParentCyclops = parentCyclops;
+            ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            this.UpgradeManager = manager ?? CyclopsManager.GetManager(parentCyclops).Upgrade;
+            UpgradeManager = manager ?? CyclopsManager.GetManager(parentCyclops).Upgrade;
 
-            UpgradeManager upgradeManager = this.UpgradeManager;
-
-            if (!upgradeManager.AuxUpgradeConsoles.Contains(this))
+            if (UpgradeManager != null)
             {
-                upgradeManager.AuxUpgradeConsoles.Add(this);
-            }
+                UpgradeManager.AddBuildable(this);
 
-            Equipment console = this.Modules;
-            upgradeManager.AttachEquipmentEvents(ref console);
-            QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
+                Equipment console = this.Modules;
+                UpgradeManager.AttachEquipmentEvents(ref console);
+                QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
+            }
         }
 
         internal void CyclopsUpgradeChange()
         {
-            if (this.ParentCyclops is null)
+            if (ParentCyclops is null)
                 return;
 
-            this.ParentCyclops.subModulesDirty = true;
+            ParentCyclops.subModulesDirty = true;
         }
 
         private void UpdateVisuals()
@@ -334,8 +333,11 @@
                     var techtype = (TechType)savedModule.ItemID;
                     InventoryItem spanwedItem = CyclopsUpgrade.SpawnCyclopsModule(techtype);
 
-                    if (spanwedItem is null)
+                    if (spanwedItem == null)
+                    {
+                        QuickLogger.Warning($"Unknown upgrade module '{techtype.AsString()}' could not be spamned in from save data");
                         continue;
+                    }
 
                     QuickLogger.Debug($"Spawned in {techtype.AsString()} from save data");
 

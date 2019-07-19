@@ -22,7 +22,7 @@
 
         public abstract bool Initialize(SubRoot cyclops);
 
-        public void SyncBuildables()
+        public virtual void SyncBuildables()
         {
             tempBuildables.Clear();
 

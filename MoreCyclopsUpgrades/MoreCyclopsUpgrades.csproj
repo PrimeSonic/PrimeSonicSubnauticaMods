@@ -32,7 +32,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.3</LangVersion>
@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="..\CommonCyclopsBuildables\CommonCyclopsBuildables.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
