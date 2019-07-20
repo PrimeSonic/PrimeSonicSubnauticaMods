@@ -4,9 +4,9 @@
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
 
-    internal class CyclopsZapperModule : CyclopsUpgrade
+    internal class CyclopsAutoDefense : CyclopsUpgrade
     {
-        public CyclopsZapperModule()
+        public CyclopsAutoDefense()
             : base("CyclopsZapperModule",
                    "Cyclops Auto Defense System",
                    "Extends and automates the Perimeter Defense System of a docked Seamoth to protect the Cyclops from aggressive fauna.")

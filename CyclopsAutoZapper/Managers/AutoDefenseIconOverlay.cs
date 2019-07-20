@@ -4,11 +4,11 @@
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;
 
-    internal class ZapperIconOverlay : IconOverlay
+    internal class AutoDefenseIconOverlay : IconOverlay
     {
         private readonly Zapper zapper;
 
-        public ZapperIconOverlay(TechType zapperTechType, uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
+        public AutoDefenseIconOverlay(TechType zapperTechType, uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
         {
             zapper = MCUServices.Find.AuxCyclopsManager<Zapper>(base.Cyclops);
         }

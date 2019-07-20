@@ -12,7 +12,7 @@
         {
             QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-            var zapper = new CyclopsZapperModule();
+            var zapper = new CyclopsAutoDefense();
             zapper.Patch();
 
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
@@ -25,7 +25,7 @@
 
             MCUServices.Register.PdaIconOverlay(zapper.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
             {
-                return new ZapperIconOverlay(zapper.TechType, icon, upgradeModule);
+                return new AutoDefenseIconOverlay(zapper.TechType, icon, upgradeModule);
             });
 
             MCUServices.Register.AuxCyclopsManager<Zapper>((SubRoot cyclops) =>
