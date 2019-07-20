@@ -1,11 +1,11 @@
 ﻿namespace CyclopsNuclearReactor
 {
-    using Common;
-    using CyclopsNuclearReactor.Helpers;
-    using MoreCyclopsUpgrades.Managers;
-    using ProtoBuf;
     using System;
     using System.Collections.Generic;
+    using Common;
+    using CyclopsNuclearReactor.Helpers;
+    using MoreCyclopsUpgrades.API;
+    using ProtoBuf;
     using UnityEngine;
 
     [ProtoContract]
@@ -26,7 +26,7 @@
         private float textDelay = TextDelayInterval;
 
         public SubRoot ParentCyclops = null;
-        public CyNukeChargeManager Manager = null;
+        public CyNukeManager Manager = null;
         internal ItemsContainer RodsContainer = null;
         private ChildObjectIdentifier _rodsRoot = null;
         private Constructable _buildable = null;
@@ -48,9 +48,9 @@
             get
             {
                 int count = 0;
-                foreach (SlotData slot in reactorRodData)
+                for (int r = 0; r < reactorRodData.Count; r++)
                 {
-                    if (slot.HasPower())
+                    if (reactorRodData[r].HasPower())
                         count++;
                 }
 
@@ -67,7 +67,7 @@
             if (reactorRodData.Count == 0)
                 return CyNukReactorBuildable.NoPoweMessage();
 
-            return NumberFormatter.FormatNumber(Mathf.CeilToInt(GetTotalAvailablePower()));
+            return NumberFormatter.FormatValue(GetTotalAvailablePower());
         }
 
         internal float GetTotalAvailablePower()
@@ -107,9 +107,9 @@
             return false;
         }
 
-        public float ProducePower(ref float powerDeficit)
+        public float GetPower(ref float powerDeficit)
         {
-            if (powerDeficit <= PowerManager.MinimalPowerValue)
+            if (powerDeficit <= MCUServices.MinimalPowerValue)
                 return 0f;
 
             if (reactorRodData.Count == 0)
@@ -121,18 +121,22 @@
             int max = Math.Min(this.MaxActiveSlots, this.TotalItemCount);
             for (int i = 0; i < max; i++)
             {
+                if (powerDeficit <= MCUServices.MinimalPowerValue)
+                    break;
+
                 SlotData slotData = reactorRodData[i];
 
                 if (!slotData.HasPower())
                     continue;
 
                 float powerProduced = Mathf.Min(PowerMultiplier * DayNightCycle.main.deltaTime, slotData.Charge);
+                powerProduced = Mathf.Min(powerDeficit, powerProduced);
 
                 slotData.Charge -= powerProduced;
                 totalPowerProduced += powerProduced;
                 powerDeficit -= powerProduced;
 
-                if (slotData.Charge <= PowerManager.MinimalPowerValue)
+                if (slotData.Charge <= MCUServices.MinimalPowerValue)
                     depletedRod = slotData;
 
                 UpdateGraphicalRod(slotData);
@@ -179,42 +183,60 @@
 
         private void Start()
         {
-            if (Manager != null)
+            InvokeRepeating(nameof(GetMCUHandler), 3f, 1f);
+            SubRoot cyclops = GetComponentInParent<SubRoot>();
+
+            if (cyclops == null)
             {
-                ConnectToCyclops(Manager.Cyclops, Manager);
-            }
-            else if (ParentCyclops != null)
-            {
-                ConnectToCyclops(ParentCyclops);
+
+
             }
             else
             {
-                SubRoot cyclops = GetComponentInParent<SubRoot>();
-
-                if (cyclops == null)
-                {
-                    QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
-                    CyNukeChargeManager.SyncReactors();
-                }
-                else
-                {
-                    QuickLogger.Debug("Parent cyclops found directly!");
-                    ConnectToCyclops(cyclops);
-                }
+                QuickLogger.Debug("Parent cyclops found directly!");
+                ConnectToCyclops(cyclops);
             }
         }
 
-        public void ConnectToCyclops(SubRoot cyclops, CyNukeChargeManager manager = null)
+        private void GetMCUHandler()
         {
+            ParentCyclops = ParentCyclops ?? GetComponentInParent<SubRoot>();
+
+            if (ParentCyclops == null)
+            {
+                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
+                CyNukeManager.SyncReactors();
+            }
+            else if (Manager == null)
+            {
+                QuickLogger.Debug("Looking for CyNukeChargeManager.");
+                Manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(ParentCyclops);
+            }
+
+            if (Manager != null)
+                CancelInvoke(nameof(GetMCUHandler));
+        }
+
+        public void ConnectToCyclops(SubRoot cyclops, CyNukeManager manager = null)
+        {
+            if (cyclops == null)
+                return;
+
             ParentCyclops = cyclops;
             this.transform.SetParent(cyclops.transform);
 
-            Manager = manager ?? CyNukeChargeManager.GetManager(cyclops);
+            Manager = manager ?? MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
+
+            if (Manager == null)
+            {
+                QuickLogger.Debug("CyNukeChargeManager still missing");
+                return;
+            }
+
             Manager.AddReactor(this);
-
             UpdateUpgradeLevel(Manager.UpgradeLevel);
-
             QuickLogger.Debug("Cyclops Nuclear Reactor has been connected", true);
+
         }
 
         private void InitializeRodsContainer()
@@ -259,7 +281,7 @@
                 }
                 else
                 {
-                    CyNukeRodHelper.EmptyRod(this.gameObject,i);
+                    CyNukeRodHelper.EmptyRod(this.gameObject, i);
                 }
             }
         }
@@ -296,8 +318,9 @@
                 reactorRodData.Clear();
 
                 int nonEmptySlots = 0;
-                foreach (CyNukeRodSaveData rodData in _saveData.SlotData)
+                for (int r = 0; r < _saveData.SlotData.Count; r++)
                 {
+                    CyNukeRodSaveData rodData = _saveData.SlotData[r];
                     TechType techTypeID = rodData.TechTypeID;
 
                     if (techTypeID != TechType.None)
@@ -369,7 +392,7 @@
             int currentPower = Mathf.CeilToInt(GetTotalAvailablePower());
 
             string text = currentPower > 0
-                ? CyNukReactorBuildable.OnHoverPoweredText(NumberFormatter.FormatNumber(currentPower), this.ActiveRodCount, this.MaxActiveSlots)
+                ? CyNukReactorBuildable.OnHoverPoweredText(NumberFormatter.FormatValue(currentPower), this.ActiveRodCount, this.MaxActiveSlots)
                 : CyNukReactorBuildable.OnHoverNoPowerText();
 
             main.SetInteractText(text);
@@ -380,8 +403,8 @@
         {
             _slotMapping = null;
 
-            foreach (SlotData data in reactorRodData)
-                data.InfoDisplay = null;
+            for (int r = 0; r < reactorRodData.Count; r++)
+                reactorRodData[r].InfoDisplay = null;
 
             pdaIsOpen = false;
 
@@ -460,7 +483,7 @@
                 {
                     if (i < this.MaxActiveSlots)
                     {
-                        item.InfoDisplay.text = NumberFormatter.FormatNumber(Mathf.CeilToInt(item.Charge));
+                        item.InfoDisplay.text = NumberFormatter.FormatValue(item.Charge);
                         item.InfoDisplay.color = Color.white;
                     }
                     else
@@ -510,7 +533,7 @@
                 return Vector3.zero;
             float fuelPercentage = slotData.Charge / InitialReactorRodCharge;
 
-            Vector3 positon = new Vector3(uranium.transform.localPosition.x, fuelPercentage,
+            var positon = new Vector3(uranium.transform.localPosition.x, fuelPercentage,
                 uranium.transform.localPosition.z);
             return positon;
         }
@@ -543,7 +566,7 @@
             if (Manager != null)
                 Manager.CyNukeReactors.Remove(this);
             else
-                CyNukeChargeManager.RemoveReactor(this);
+                CyNukeManager.RemoveReactor(this);
 
             ParentCyclops = null;
             Manager = null;

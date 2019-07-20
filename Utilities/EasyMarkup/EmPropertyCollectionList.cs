@@ -5,10 +5,10 @@
     using System.Collections.Generic;
     using Common;
 
-    internal class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation 
+    internal class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation
         where ListedType : EmPropertyCollection, new()
     {
-        public override bool HasValue => Count > 0;
+        public override bool HasValue => this.Count > 0;
 
         public Type ItemType => typeof(ListedType);
 
@@ -25,9 +25,15 @@
 
         public IList<ListedType> Values { get; } = new List<ListedType>();
 
-        public IEnumerator<ListedType> GetEnumerator() => this.Values.GetEnumerator();
+        public IEnumerator<ListedType> GetEnumerator()
+        {
+            return this.Values.GetEnumerator();
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => this.Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.Values.GetEnumerator();
+        }
 
         public EmPropertyCollectionList(string key)
         {
@@ -101,7 +107,10 @@
             return serialValues.TrimEnd(SpChar_ListItemSplitter) + SpChar_FinishComplexValue;
         }
 
-        internal override EmProperty Copy() => new EmPropertyCollectionList<ListedType>(this.Key) { Optional = this.Optional };
+        internal override EmProperty Copy()
+        {
+            return new EmPropertyCollectionList<ListedType>(this.Key) { Optional = this.Optional };
+        }
 
         internal override bool ValueEquals(EmProperty other)
         {

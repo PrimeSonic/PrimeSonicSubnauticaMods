@@ -1,117 +1,132 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
-    using Common;
-    using MoreCyclopsUpgrades.Monobehaviors;
     using System.Collections.Generic;
+    using Common;
+    using MoreCyclopsUpgrades.API.General;
 
     internal class CyclopsManager
     {
-        public readonly UpgradeManager UpgradeManager;
-        public readonly PowerManager PowerManager;
-        public readonly CyclopsHUDManager HUDManager;
-        public readonly ChargeManager ChargeManager;
+        #region Static Data
 
-        public List<CyBioReactorMono> BioReactors => ChargeManager.CyBioReactors;
-        public int TotalPowerChargers => PowerManager.PowerChargers.Count;
+        private static readonly Dictionary<string, CreateAuxCyclopsManager> AuxManagerCreators = new Dictionary<string, CreateAuxCyclopsManager>();
+        internal static List<CyclopsManager> Managers { get; } = new List<CyclopsManager>();
 
-        public readonly SubRoot Cyclops;
+        #endregion
 
-        public readonly int InstanceID;
+        #region Static Methods
 
-        public CyclopsManager(SubRoot cyclops, UpgradeManager upgradeManager, PowerManager powerManager, CyclopsHUDManager hUDManager, ChargeManager chargeManager)
+        internal static bool TooLateToRegister => Managers.Count > 0;
+
+        internal static void RegisterAuxManagerCreator(CreateAuxCyclopsManager createEvent, string typeName)
         {
-            UpgradeManager = upgradeManager;
-            PowerManager = powerManager;
-            HUDManager = hUDManager;
-            ChargeManager = chargeManager;
-            Cyclops = cyclops;
-            InstanceID = cyclops.GetInstanceID();
+            if (AuxManagerCreators.ContainsKey(typeName))
+            {
+                QuickLogger.Warning($"Block duplicate AuxManagerCreator '{typeName}'");
+                return;
+            }
+
+            QuickLogger.Info($"Received AuxManagerCreator '{typeName}'");
+            AuxManagerCreators.Add(typeName, createEvent);
         }
 
-        // List was chosen because of the very small number of entries it will have.
-        private static List<CyclopsManager> Managers = new List<CyclopsManager>();
-
-        public static CyclopsManager GetAllManagers(SubRoot cyclops)
+        internal static IEnumerable<T> GetAllManagers<T>(string auxManagerName)
+            where T : class, IAuxCyclopsManager
         {
-            return GetManager(cyclops.GetInstanceID(), cyclops);
+            for (int i = 0; i < Managers.Count; i++)
+            {
+                CyclopsManager mgr = Managers[i];
+                if (mgr != null && mgr.AuxiliaryManagers.TryGetValue(auxManagerName, out IAuxCyclopsManager auxManager))
+                {
+                    yield return (T)auxManager;
+                }
+            }
         }
 
-        public static UpgradeManager GetUpgradeManager(SubRoot cyclops)
+        internal static T GetManager<T>(SubRoot cyclops, string auxManagerName)
+            where T : class, IAuxCyclopsManager
         {
-            return GetManager(cyclops.GetInstanceID(), cyclops)?.UpgradeManager;
+            CyclopsManager mgr = GetManager(cyclops);
+
+            if (mgr != null && mgr.AuxiliaryManagers.TryGetValue(auxManagerName, out IAuxCyclopsManager auxManager))
+            {
+                return (T)auxManager;
+            }
+
+            return CreateNewAuxManager<T>(mgr, auxManagerName);
         }
 
-        public static PowerManager GetPowerManager(SubRoot cyclops)
-        {
-            return GetManager(cyclops.GetInstanceID(), cyclops)?.PowerManager;
-        }
-
-        public static ChargeManager GetChargeManager(SubRoot cyclops)
-        {
-            return GetManager(cyclops.GetInstanceID(), cyclops)?.ChargeManager;
-        }
-
-        public static List<CyBioReactorMono> GetBioReactors(SubRoot cyclops)
-        {
-            return GetManager(cyclops.GetInstanceID(), cyclops)?.BioReactors;
-        }
-
-        public static CyclopsHUDManager GetHUDManager(SubRoot cyclops)
-        {
-            return GetManager(cyclops.GetInstanceID(), cyclops)?.HUDManager;
-        }
-
-        private static CyclopsManager GetManager(int id, SubRoot cyclops)
+        internal static CyclopsManager GetManager(SubRoot cyclops)
         {
             if (cyclops.isBase || !cyclops.isCyclops)
                 return null;
 
-            CyclopsManager mgr = Managers.Find(m => m.InstanceID == cyclops.GetInstanceID());
-
-            return mgr ?? CreateNewManagers(cyclops);
-        }
-
-        private static CyclopsManager CreateNewManagers(SubRoot cyclops)
-        {
-            var upgradeMgr = new UpgradeManager(cyclops);
-            var powerMgr = new PowerManager(cyclops);
-            var hudManager = new CyclopsHUDManager(cyclops);
-            var chargeMgr = new ChargeManager(cyclops);
-
-            var mgr = new CyclopsManager(cyclops, upgradeMgr, powerMgr, hudManager, chargeMgr);
-
-            Managers.Add(mgr);
-
-            // Managers must be initialized in this order
-            if (!upgradeMgr.Initialize(mgr) ||
-                !chargeMgr.Initialize(mgr) ||
-                !powerMgr.Initialize(mgr) ||
-                !hudManager.Initialize(mgr))
+            for (int m = 0; m < Managers.Count; m++)
             {
-                QuickLogger.Error("Failed to initialized manager", true);
-                Managers.Remove(mgr);
-                return null;
+                CyclopsManager mgr = Managers[m];
+                if (mgr.Cyclops == cyclops && mgr.InstanceID == cyclops.GetInstanceID())
+                    return mgr;
             }
 
+            return CreateNewCyclopsManager(cyclops);
+        }
+
+        private static CyclopsManager CreateNewCyclopsManager(SubRoot cyclops)
+        {
+            QuickLogger.Debug("Creating new CyclopsManager");
+            var mgr = new CyclopsManager(cyclops);
+            Managers.Add(mgr);
             return mgr;
         }
 
-        public static void SyncUpgradeConsoles()
+        private static T CreateNewAuxManager<T>(CyclopsManager mgr, string auxManagerName)
+            where T : class, IAuxCyclopsManager
         {
-            foreach (CyclopsManager mgr in Managers)
-                mgr.UpgradeManager.SyncUpgradeConsoles();
+            QuickLogger.Debug($"Started creating new IAuxCyclopsManager '{auxManagerName}'");
+            if (AuxManagerCreators.TryGetValue(auxManagerName, out CreateAuxCyclopsManager creator))
+            {
+                IAuxCyclopsManager auxMgr = creator.Invoke(mgr.Cyclops);
+                if (auxMgr != null || !auxMgr.Initialize(mgr.Cyclops))
+                {
+                    QuickLogger.Debug($"Created new IAuxCyclopsManager '{auxManagerName}'");
+                    mgr.AuxiliaryManagers.Add(auxManagerName, auxMgr);
+                    return (T)auxMgr;
+                }
+                else
+                {
+                    QuickLogger.Error($"Failed in creating IAuxCyclopsManager '{auxManagerName}'");
+                }
+            }
+
+            QuickLogger.Warning($"Did not find creator method for IAuxCyclopsManager '{auxManagerName}'");
+            return null;
         }
 
-        public static void SyncBioReactors()
+        #endregion
+
+        #region Instance Members
+
+        public readonly SubRoot Cyclops;
+        public readonly int InstanceID;
+
+        private readonly Dictionary<string, IAuxCyclopsManager> AuxiliaryManagers = new Dictionary<string, IAuxCyclopsManager>();
+
+        internal readonly UpgradeManager Upgrade;// => _upgrade ?? (_upgrade = new UpgradeManager(Cyclops));
+        internal readonly ChargeManager Charge; //=> _charge ?? (_charge = new ChargeManager(Cyclops));
+        internal readonly CyclopsHUDManager HUD; //=> _hud ?? (_hud = new CyclopsHUDManager(Cyclops));
+        internal readonly PowerRatingManager Engine; //=> _engine ?? (_engine = new PowerRatingManager(Cyclops));
+
+        private CyclopsManager(SubRoot cyclops)
         {
-            foreach (CyclopsManager mgr in Managers)
-                mgr.ChargeManager.SyncBioReactors();
+            QuickLogger.Debug($"Creating main CyclopsManager");
+            Cyclops = cyclops;
+            InstanceID = cyclops.GetInstanceID();
+
+            Upgrade = new UpgradeManager(cyclops);
+            Charge = new ChargeManager(cyclops);
+            HUD = new CyclopsHUDManager(cyclops, ChargeManager.TotalRegisteredChargers);
+            Engine = new PowerRatingManager(cyclops);
         }
 
-        internal static void RemoveReactor(CyBioReactorMono cyBioReactorMono)
-        {
-            foreach (CyclopsManager mgr in Managers)
-                mgr.BioReactors.Remove(cyBioReactorMono);
-        }
+        #endregion
     }
 }

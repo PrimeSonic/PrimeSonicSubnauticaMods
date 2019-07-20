@@ -39,19 +39,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony-1.2.0.1">
-      <HintPath>..\Dependencies\0Harmony-1.2.0.1.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Assembly-CSharp-firstpass_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp-firstpass_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass_publicized">
-      <HintPath>..\Dependencies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+    <Reference Include="Assembly-CSharp_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp_publicized">
-      <HintPath>..\Dependencies\Assembly-CSharp_publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="SMLHelper">
-      <HintPath>..\Dependencies\SMLHelper.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="SMLHelper, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <HintPath>..\Dependencies\System.dll</HintPath>
@@ -60,16 +58,8 @@
     <Reference Include="System.Core">
       <HintPath>..\Dependencies\System.Core.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data">
-      <HintPath>..\Dependencies\System.Data.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Drawing">
-      <HintPath>..\Dependencies\System.Drawing.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\Dependencies\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\DependenciesUnity5\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

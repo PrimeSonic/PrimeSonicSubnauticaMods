@@ -1,18 +1,18 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using Harmony;
+    using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("Awake")]
-    internal class SubRoot_Awake
+    [HarmonyPatch("Start")]
+    internal class SubRoot_Start_Postfix
     {
         [HarmonyPostfix]
         public static void Postfix(ref SubRoot __instance)
         {
             if (__instance.isCyclops)
             {
-                var mgr = CyNukeChargeManager.GetManager(__instance);
-                mgr.SyncReactorsExternally();
+                MCUServices.Find.AuxCyclopsManager<CyNukeManager>(__instance)?.SyncReactorsExternally();
             }
         }
     }

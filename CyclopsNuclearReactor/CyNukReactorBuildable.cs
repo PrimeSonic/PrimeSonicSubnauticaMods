@@ -1,11 +1,12 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using System;
     using Common;
-    using CyclopsNuclearReactor.Helpers;
+    using Common.Helpers;
+    using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
-    using System;
     using UnityEngine;
 
     internal class CyNukReactorBuildable : Buildable
@@ -99,9 +100,9 @@
             SubRoot cyclops = Player.main.currentSub;
             if (cyclops != null)
             {
-                var mgr = CyNukeChargeManager.GetManager(cyclops);
+                CyNukeManager mgr = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
 
-                if (mgr.CyNukeReactors.Count >= CyNukeChargeManager.MaxReactors)
+                if (mgr != null && mgr.CyNukeReactors.Count >= CyNukeManager.MaxReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitMessage());
                     return null;

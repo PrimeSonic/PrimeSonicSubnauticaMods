@@ -19,6 +19,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\AssetHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DirectoryHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\MaterialHelpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NumberFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QuickLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveDataExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />

@@ -2,7 +2,7 @@
 {
     using Common;
     using Harmony;
-    using MoreCyclopsUpgrades.Managers;
+    using MoreCyclopsUpgrades.API;
     using System;
     using System.Reflection;
 
@@ -37,16 +37,21 @@
 
         private static void RegisterWithMoreCyclopsUpgrades()
         {
-            PowerManager.RegisterReusableChargerCreator((SubRoot cyclops) =>
-            {
-                QuickLogger.Debug("Registering CyclopsNuclearReactor ICyclopsCharger");
-                return CyNukeChargeManager.GetManager(cyclops);
+            QuickLogger.Debug("Registering with MoreCyclopsUpgrades");
+
+            MCUServices.Register.CyclopsCharger<CyNukeChargeManager>((SubRoot cyclops) =>
+            {                
+                return new CyNukeChargeManager(cyclops);
             });
 
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                QuickLogger.Debug("Registering CyNukeEnhancerHandler UpgradeHandler");
-                return new CyNukeEnhancerHandler();
+                return new CyNukeEnhancerHandler(cyclops);
+            });
+
+            MCUServices.Register.AuxCyclopsManager<CyNukeManager>((SubRoot cyclops) =>
+            {
+                return new CyNukeManager(cyclops);
             });
         }
     }

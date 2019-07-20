@@ -32,16 +32,18 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +56,15 @@
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
+      <Project>{FC87AF94-413D-482E-AB0D-501E120E6E2D}</Project>
+      <Name>MoreCyclopsUpgrades</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Upgrades\" />
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

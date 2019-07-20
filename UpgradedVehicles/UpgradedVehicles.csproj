@@ -34,22 +34,29 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony-1.2.0.1">
-      <HintPath>..\Dependencies\0Harmony-1.2.0.1.dll</HintPath>
+    <Reference Include="0Harmony-1.2.0.1, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\0Harmony-1.2.0.1.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass_publicized">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+    <Reference Include="Assembly-CSharp-firstpass_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp-firstpass_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp_publicized">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+    <Reference Include="Assembly-CSharp_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="SMLHelper">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+    <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\DependenciesUnity5\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

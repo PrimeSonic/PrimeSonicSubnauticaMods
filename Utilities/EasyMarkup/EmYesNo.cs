@@ -21,25 +21,25 @@
                     retValue = false;
                     break;
                 default:
-                    retValue = DefaultValue;
+                    retValue = this.DefaultValue;
                     break;
             }
 
-            this.SerializedValue = retValue ? "YES" : "NO";
+            SerializedValue = retValue ? "YES" : "NO";
 
             return retValue;
         }
 
         public override string ToString()
         {
-            this.SerializedValue = Value ? "YES" : "NO";
+            SerializedValue = this.Value ? "YES" : "NO";
 
             return base.ToString();
         }
 
         internal override EmProperty Copy()
         {
-            if (HasValue)
+            if (this.HasValue)
                 return new EmYesNo(this.Key, this.Value) { Optional = this.Optional };
 
             return new EmYesNo(this.Key, this.DefaultValue) { Optional = this.Optional };

@@ -12,3 +12,9 @@ packages
 *.user
 
 CyclopsNuclearReactor/CyclopsNuclearReactor\.csproj
+/DependenciesUnity5/Assembly-CSharp.dll
+/DependenciesUnity5/Assembly-CSharp_publicized.dll
+/DependenciesUnity5/Assembly-CSharp-firstpass.dll
+/DependenciesUnity5/Assembly-CSharp-firstpass_publicized.dll
+/DependenciesUnity2018/Assembly-CSharp.dll
+/DependenciesUnity2018/Assembly-CSharp-firstpass.dll

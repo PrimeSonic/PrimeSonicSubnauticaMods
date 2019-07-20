@@ -1,0 +1,14 @@
+{
+  "Id": "CyclopsEngineUpgrades",
+  "DisplayName": "CyclopsEngineUpgrades",
+  "Author": "PrimeSonic|FCStudios",
+  "Version": "4.0.0",
+  "Enable": true,
+  "Game": "Subnautica",
+  "AssemblyName": "CyclopsEngineUpgrades.dll",
+  "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
+  "VersionDependencies": { "MoreCyclopsUpgrades": "4.0" },
+  "LoadBefore": [ "MoreCyclopsUpgrades" ],
+  "AssemblyName": "CyclopsEngineUpgrades.dll",
+  "EntryMethod": "CyclopsEngineUpgrades.QPatch.Patch"
+}

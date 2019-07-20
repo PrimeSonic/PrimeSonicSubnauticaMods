@@ -19,7 +19,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -32,7 +32,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;RELEASE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.3</LangVersion>
@@ -41,125 +41,88 @@
   <ItemGroup>
     <Reference Include="0Harmony-1.2.0.1, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\0Harmony-1.2.0.1.dll</HintPath>
+      <HintPath>..\DependenciesUnity5\0Harmony-1.2.0.1.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass_publicized">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp_publicized">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="SMLHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Assembly-CSharp-firstpass_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\DependenciesUnity5\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Buildables\CyUpgradeConsole.cs" />
-    <Compile Include="Buildables\CyBioReactor.cs" />
-    <Compile Include="Caching\BioEnergyCollection.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\BioChargeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\ICyclopsCharger.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\NuclearChargeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\SolarChargeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\CyclopsCharging\ThermalChargeHandler.cs" />
-    <Compile Include="Managers\ChargeManager.cs" />
-    <Compile Include="NumberFormat.cs" />
-    <Compile Include="Caching\NumberFormatter.cs" />
-    <Compile Include="CyclopsUpgrades\BatteryDetails.cs" />
-    <Compile Include="CyclopsUpgrades\BatteryUpgradeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\BioBoosterUpgradeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\CrushDepthUpgradesHandler.cs" />
-    <Compile Include="CyclopsUpgrades\NuclearUpgradeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\TieredUpgradeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\TieredUpgradesHandlerCollection.cs" />
-    <Compile Include="CyclopsUpgrades\UpgradeHandler.cs" />
-    <Compile Include="CyclopsUpgrades\ChargingCyclopsUpgrade.cs" />
+    <Compile Include="API\Charging\CyclopsCharger.cs" />
+    <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
+    <Compile Include="API\IMCUCrossMod.cs" />
+    <Compile Include="API\IMCURegistration.cs" />
+    <Compile Include="API\IMCUSearch.cs" />
+    <Compile Include="API\PDA\IconOverlay.cs" />
+    <Compile Include="API\PDA\IconOverlayCollection.cs" />
+    <Compile Include="API\PDA\IconOverlayText.cs" />
+    <Compile Include="API\PDA\IIconOverlayText.cs" />
+    <Compile Include="API\PDA\IconOverlayCreator.cs" />
+    <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
+    <Compile Include="Config\ChoiceEnums\ConfigExtensions.cs" />
+    <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />
+    <Compile Include="Config\IModConfig.cs" />
+    <Compile Include="Config\ModConfig.cs" />
+    <Compile Include="Config\ChoiceEnums\ShowChargerIcons.cs" />
+    <Compile Include="AuxConsole\AuxCyUpgradeConsole.cs" />
+    <Compile Include="AuxConsole\AuxCyUpgradeConsoleMono.cs" />
+    <Compile Include="AuxConsole\AuxCyUpgradeConsoleSaveData.cs" />
+    <Compile Include="API\General\IPowerRatingManager.cs" />
+    <Compile Include="Config\ModConfigMenuOptions.cs" />
+    <Compile Include="Config\ModConfigSaveData.cs" />
+    <Compile Include="Config\Options\ChoiceOption.cs" />
+    <Compile Include="Config\Options\ConfigOption.cs" />
+    <Compile Include="Config\Options\OptionTypes.cs" />
+    <Compile Include="Config\Options\SliderOption.cs" />
+    <Compile Include="Config\Options\ToggleOption.cs" />
+    <Compile Include="Managers\PdaOverlayManager.cs" />
+    <Compile Include="Managers\PowerRatingManager.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
-    <Compile Include="Caching\OtherMods.cs" />
+    <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />
+    <Compile Include="API\General\IAuxCyclopsManager.cs" />
+    <Compile Include="API\Upgrades\IGroupHandler.cs" />
+    <Compile Include="API\Upgrades\ITieredUpgradeHandler.cs" />
+    <Compile Include="API\MCUServices.cs" />
+    <Compile Include="API\Upgrades\StackingGroupHandler.cs" />
+    <Compile Include="API\Upgrades\StackingUpgradeHandler.cs" />
+    <Compile Include="API\Upgrades\TieredGroupHandler.cs" />
+    <Compile Include="API\Upgrades\UpgradeHandlerCreator.cs" />
+    <Compile Include="Managers\ChargeManager.cs" />
+    <Compile Include="API\Upgrades\CyclopsUpgrade.cs" />
+    <Compile Include="API\Upgrades\TieredUpgradeHandler.cs" />
+    <Compile Include="API\Upgrades\UpgradeHandler.cs" />
     <Compile Include="Managers\CyclopsHUDManager.cs" />
-    <Compile Include="Modules\Enhancement\BioReactorBooster.cs" />
-    <Compile Include="Modules\Enhancement\CyclopsSpeedBooster.cs" />
-    <Compile Include="Caching\BioEnergy.cs" />
-    <Compile Include="Monobehaviors\CyBioReactorMono.cs" />
-    <Compile Include="Patchers\CyclopsHolographicHUD_Patcher.cs" />
-    <Compile Include="Patchers\CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher.cs" />
+    <Compile Include="Patchers\HUD_Patcher.cs" />
     <Compile Include="Patchers\SubRoot_Patcher.cs" />
-    <Compile Include="SaveData\CyBioReactorSaveData.cs" />
-    <Compile Include="SaveData\CyclopsPowerLevels.cs" />
-    <Compile Include="SaveData\ModConfig.cs" />
-    <Compile Include="SaveData\EmModuleSaveData.cs" />
-    <Compile Include="Monobehaviors\CyUpgradeConsoleMono.cs" />
-    <Compile Include="Managers\PowerManager.cs" />
-    <Compile Include="Patchers\uGUI_Patches.cs" />
+    <Compile Include="AuxConsole\EmModuleSaveData.cs" />
     <Compile Include="Managers\UpgradeManager.cs" />
-    <Compile Include="Buildables\NuclearFabricator.cs" />
-    <Compile Include="Modules\CyclopsModule.cs" />
-    <Compile Include="Modules\Recharging\Nuclear\DepletedNuclearModule.cs" />
-    <Compile Include="SaveData\EmNuclearConfig.cs" />
-    <Compile Include="Modules\Recharging\Nuclear\NuclearCharger.cs" />
-    <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk3.cs" />
-    <Compile Include="Modules\PowerUpgrade\PowerUpgradeMk2.cs" />
-    <Compile Include="SaveData\ModConfigOptions.cs" />
-    <Compile Include="SaveData\NuclearModuleConfig.cs" />
-    <Compile Include="Modules\Recharging\Solar\SolarCharger.cs" />
-    <Compile Include="Modules\Recharging\Solar\SolarChargerMk2.cs" />
-    <Compile Include="Modules\Recharging\Thermal\ThermalChargerMk2.cs" />
-    <Compile Include="SaveData\AuxUpgradeConsoleSaveData.cs" />
-    <Compile Include="Patchers\CyclopsHelmHUDManager_Update_Patcher.cs" />
+    <Compile Include="Patchers\uGUI_Patches.cs" />
+    <Compile Include="Patchers\UpgradeConsole_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
     <Compile Include="SlotHelper.cs" />
+    <Compile Include="VanillaUpgrades.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AuxCyUpgradeConsole.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\BioReactorBooster.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyBioReactor.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyBioReactorT.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyclopsNuclearModule.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyclopsSpeedModule.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\DepletedCyclopsNuclearModule.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\NuclearFabricatorI.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\NuclearFabricatorT.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\PowerUpgradeModuleMk2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\PowerUpgradeModuleMk3.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyclopsSolarCharger.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyclopsSolarChargerMk2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CyclopsThermalChargerMk2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -171,6 +134,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="..\CommonCyclopsBuildables\CommonCyclopsBuildables.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

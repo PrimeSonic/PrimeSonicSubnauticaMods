@@ -167,7 +167,7 @@
 
             public static class Torpedoes
             {
-                public static readonly CraftingTab TorpedoesTab = new CraftingTab(SeamothUpgradesScheme, "CommonModules");
+                public static readonly CraftingTab TorpedoesTab = new CraftingTab(SeamothUpgradesScheme, "Torpedoes");
             }
         }
 

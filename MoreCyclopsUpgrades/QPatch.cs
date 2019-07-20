@@ -1,57 +1,34 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using Buildables;
-    using Caching;
-    using Common;
-    using Harmony;
-    using Modules;
-    using MoreCyclopsUpgrades.CyclopsUpgrades;
-    using MoreCyclopsUpgrades.Managers;
-    using SaveData;
     using System;
     using System.IO;
     using System.Reflection;
+    using Common;
+    using Harmony;
+    using MoreCyclopsUpgrades.Config;
+    using MoreCyclopsUpgrades.AuxConsole;
 
     /// <summary>
     /// Entry point class for patching. For use by QModManager only.
     /// </summary>
     public class QPatch
     {
+        private static readonly IModConfig settings = ModConfig.Main;
         /// <summary>
         /// Main patching method. For use by QModManager only.
         /// </summary>
         public static void Patch()
         {
-#if RELEASE
-                QuickLogger.DebugLogsEnabled = false;
-#endif
-
-#if DEBUG
-            QuickLogger.DebugLogsEnabled = true;
-#endif
-
             try
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-                ModConfig.Initialize();
+                QuickLogger.DebugLogsEnabled = settings.DebugLogsEnabled;
+                QuickLogger.Info($"Debug logging is {(QuickLogger.DebugLogsEnabled ? "en" : "dis")}abled");
 
-                QuickLogger.Info($"Difficult set to {ModConfig.Settings.PowerLevel}");
+                RemoveOldConfigs();
 
-                OtherMods.VehicleUpgradesInCyclops = Directory.Exists(@"./QMods/VehicleUpgradesInCyclops");
-
-                if (OtherMods.VehicleUpgradesInCyclops)
-                    QuickLogger.Debug("VehicleUpgradesInCyclops detected. Correcting placement of craft nodes in Cyclops Fabricator.");
-
-                // TODO - Configure cyclops power levels
-
-                PatchUpgradeModules(ModConfig.Settings.EnableNewUpgradeModules);
-
-                PatchAuxUpgradeConsole(ModConfig.Settings.EnableAuxiliaryUpgradeConsoles);
-
-                PatchBioEnergy(ModConfig.Settings.EnableBioReactors);
-
-                RegisterExternalUpgrades();
+                PatchAuxUpgradeConsole();
 
                 var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -65,103 +42,34 @@
             }
         }
 
-        private static void PatchUpgradeModules(bool enableNewUpgradeModules)
+        private static void RemoveOldConfigs()
         {
-            if (enableNewUpgradeModules)
-                QuickLogger.Info("Patching new upgrade modules");
-            else
-                QuickLogger.Info("New upgrade modules disabled by config settings");
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string oldConfig1 = Path.Combine(executingLocation, $"CyclopsNuclearChargerConfig.txt");
+            string oldConfig2 = Path.Combine(executingLocation, $"MoreCyclopsUpgradesConfig.txt");
 
-            CyclopsModule.PatchAllModules(enableNewUpgradeModules);
+            if (File.Exists(oldConfig1))
+            {
+                QuickLogger.Info("Deleted old config file 'CyclopsNuclearChargerConfig.txt'");
+                File.Delete(oldConfig1);
+            }
+
+            if (File.Exists(oldConfig2))
+            {
+                QuickLogger.Info("Deleted old config file 'MoreCyclopsUpgradesConfig.txt'");
+                File.Delete(oldConfig2);
+            }
         }
 
-        private static void PatchAuxUpgradeConsole(bool enableAuxiliaryUpgradeConsoles)
+        private static void PatchAuxUpgradeConsole()
         {
-            if (enableAuxiliaryUpgradeConsoles)
-                QuickLogger.Info("Patching Auxiliary Upgrade Console");
+            if (ModConfig.Main.AuxConsoleEnabled)
+                QuickLogger.Debug("Patching Auxiliary Upgrade Console");
             else
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
 
-            CyUpgradeConsole.PatchAuxUpgradeConsole(enableAuxiliaryUpgradeConsoles);
-        }
-
-        private static void PatchBioEnergy(bool enableBioreactors)
-        {
-            if (enableBioreactors)
-                QuickLogger.Info("Patching Cyclops Bioreactor");
-            else
-                QuickLogger.Info("Cyclops Bioreactor disabled by config settings");
-
-            CyBioReactor.PatchCyBioReactor(enableBioreactors);
-        }
-
-        private static void RegisterExternalUpgrades()
-        {
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: Depth Upgrades Collection");
-                return new CrushDepthUpgradesHandler();
-            });
-
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsShieldModule");
-                return new UpgradeHandler(TechType.CyclopsShieldModule)
-                {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.shieldUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.shieldUpgrade = true; },
-                };
-            });
-
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsSonarModule");
-                return new UpgradeHandler(TechType.CyclopsSonarModule)
-                {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.sonarUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.sonarUpgrade = true; },
-                };
-            });
-
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsSeamothRepairModule");
-                return new UpgradeHandler(TechType.CyclopsSeamothRepairModule)
-                {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.vehicleRepairUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.vehicleRepairUpgrade = true; },
-                };
-            });
-
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsDecoyModule");
-                return new UpgradeHandler(TechType.CyclopsDecoyModule)
-                {
-                    OnClearUpgrades = (SubRoot cyclops) => { cyclops.decoyTubeSizeIncreaseUpgrade = false; },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) => { cyclops.decoyTubeSizeIncreaseUpgrade = true; },
-                };
-            });
-
-            UpgradeManager.RegisterReusableHandlerCreator(() =>
-            {
-                QuickLogger.Debug("UpgradeHandler Registered: CyclopsFireSuppressionModule");
-                return new UpgradeHandler(TechType.CyclopsFireSuppressionModule)
-                {
-                    OnClearUpgrades = (SubRoot cyclops) =>
-                    {
-                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                        if (fss != null)
-                            fss.fireSuppressionSystem.SetActive(false);
-                    },
-                    OnUpgradeCounted = (SubRoot cyclops, Equipment modules, string slot) =>
-                    {
-                        CyclopsHolographicHUD fss = cyclops.GetComponentInChildren<CyclopsHolographicHUD>();
-                        if (fss != null)
-                            fss.fireSuppressionSystem.SetActive(true);
-                    },
-                };
-            });
+            var console = new AuxCyUpgradeConsole();
+            console.Patch(settings.AuxConsoleEnabled);
         }
     }
 }

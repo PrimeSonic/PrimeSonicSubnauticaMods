@@ -1,6 +1,5 @@
 ﻿namespace DataBoxScannerFix
 {
-    using Common;
     using Harmony;
     using UnityEngine;
 

@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{55314209-DE35-4A05-A188-EA01FC1DCA95}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IonCubeGenerator</RootNamespace>
+    <AssemblyName>IonCubeGenerator</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony-1.2.0.1, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\0Harmony-1.2.0.1.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesUnity5\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Buildable\CubeGeneratorAuxPatcher.cs" />
+    <Compile Include="Buildable\CubeGeneratorModelPrefab.cs" />
+    <Compile Include="Buildable\CubeGeneratorPatcher.cs" />
+    <Compile Include="Craftables\AlienElectronicsCasePrefab.cs" />
+    <Compile Include="Craftables\AlienEletronicsCase.cs" />
+    <Compile Include="Craftables\AlienIngot.cs" />
+    <Compile Include="Craftables\AlienIngotPrefab.cs" />
+    <Compile Include="CubeGeneratorSaveData.cs" />
+    <Compile Include="Debug_IONCube\DebugMenu.cs" />
+    <Compile Include="Debug_IONCube\Patches\OpenDebugMenu.cs" />
+    <Compile Include="Debug_IONCube\Patches\temp.cs" />
+    <Compile Include="Display\InterfaceButton.cs" />
+    <Compile Include="Display\IonGeneratorDisplay.cs" />
+    <Compile Include="Display\OnScreenButton.cs" />
+    <Compile Include="Display\Patching\DisplayLanguagePatching.cs" />
+    <Compile Include="Enums\CubePhases.cs" />
+    <Compile Include="Enums\InterfaceButtonMode.cs" />
+    <Compile Include="Interfaces\ICubeGeneratorSaveHandler.cs" />
+    <Compile Include="Interfaces\ICubeGeneratorSaveData.cs" />
+    <Compile Include="Interfaces\ICubeProduction.cs" />
+    <Compile Include="Mono\CubeGeneratorAnimator.cs" />
+    <Compile Include="Mono\CubeGeneratorAudioHandler.cs" />
+    <Compile Include="Mono\CubeGeneratorContainer.cs" />
+    <Compile Include="Mono\CubeGeneratorProducer.cs" />
+    <Compile Include="Interfaces\ICubeContainer.cs" />
+    <Compile Include="Patchers.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QPatch.cs" />
+    <Compile Include="Enums\SpeedModes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\ioncubegeneratorbundle">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="mod.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\AlienCase.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\AlienIngot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CubeGenerator.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

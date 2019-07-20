@@ -1,0 +1,14 @@
+{
+  "Id": "CyclopsThermalUpgrades",
+  "DisplayName": "CyclopsThermalUpgrades",
+  "Author": "PrimeSonic",
+  "Version": "4.0.3",
+  "Enable": true,
+  "Game": "Subnautica",
+  "AssemblyName": "CyclopsThermalUpgrades.dll",
+  "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
+  "VersionDependencies": { "MoreCyclopsUpgrades": "4.0" },
+  "LoadBefore": [ "MoreCyclopsUpgrades" ],
+  "AssemblyName": "CyclopsThermalUpgrades.dll",
+  "EntryMethod": "CyclopsThermalUpgrades.QPatch.Patch"
+}

@@ -2,7 +2,7 @@
   "Id": "BetterBioReactor",
   "DisplayName": "BetterBioReactor",
   "Author": "PrimeSonic",
-  "Version": "1.1.1",
+  "Version": "1.1.2",
   "Enable": true,
   "Game": "BelowZero",
   "AssemblyName": "BetterBioReactor.dll",
