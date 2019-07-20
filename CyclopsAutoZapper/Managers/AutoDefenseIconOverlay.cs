@@ -8,7 +8,7 @@
     {
         private readonly Zapper zapper;
 
-        public AutoDefenseIconOverlay(TechType zapperTechType, uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
+        public AutoDefenseIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
         {
             zapper = MCUServices.Find.AuxCyclopsManager<Zapper>(base.Cyclops);
         }

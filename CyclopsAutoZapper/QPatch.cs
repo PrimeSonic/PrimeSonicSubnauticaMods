@@ -12,31 +12,46 @@
         {
             QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-            var zapper = new CyclopsAutoDefense();
-            zapper.Patch();
+            var defenseSystem = new CyclopsAutoDefense();
+            defenseSystem.Patch();
 
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                return new UpgradeHandler(zapper.TechType, cyclops)
-                {
-                    MaxCount = 2,                    
-                };
-            });
+            var antiParasites = new CyclopsParasiteRemover();
+            antiParasites.Patch();
 
-            MCUServices.Register.PdaIconOverlay(zapper.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
-            {
-                return new AutoDefenseIconOverlay(zapper.TechType, icon, upgradeModule);
-            });
-
-            MCUServices.Register.AuxCyclopsManager<Zapper>((SubRoot cyclops) =>
-            {
-                return new Zapper(zapper.TechType, cyclops);
-            });
+            RegisterWithMoreCyclopsUpgrades(defenseSystem, antiParasites);
 
             var harmony = HarmonyInstance.Create("com.cyclopsautozapper.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             QuickLogger.Info("Finished Patching");
+        }
+
+        private static void RegisterWithMoreCyclopsUpgrades(CyclopsAutoDefense defenseSystem, CyclopsParasiteRemover antiParasites)
+        {
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+            {
+                return new UpgradeHandler(defenseSystem.TechType, cyclops) { MaxCount = 1 };
+            });
+
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+            {
+                return new UpgradeHandler(antiParasites.TechType, cyclops) { MaxCount = 1 };
+            });
+
+            MCUServices.Register.PdaIconOverlay(defenseSystem.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+            {
+                return new AutoDefenseIconOverlay(icon, upgradeModule);
+            });
+
+            MCUServices.Register.PdaIconOverlay(antiParasites.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+            {
+                return new AntiParasiteIconOverlay(icon, upgradeModule);
+            });
+
+            MCUServices.Register.AuxCyclopsManager<Zapper>((SubRoot cyclops) =>
+            {
+                return new Zapper(defenseSystem.TechType, cyclops);
+            });
         }
     }
 }

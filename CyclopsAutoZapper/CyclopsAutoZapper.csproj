@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Items\CyclopsParasiteRemover.cs" />
     <Compile Include="Items\CyclopsAutoDefense.cs" />
+    <Compile Include="Managers\AntiParasiteIconOverlay.cs" />
     <Compile Include="Managers\Zapper.cs" />
     <Compile Include="Managers\AutoDefenseIconOverlay.cs" />
     <Compile Include="Patchers.cs" />
