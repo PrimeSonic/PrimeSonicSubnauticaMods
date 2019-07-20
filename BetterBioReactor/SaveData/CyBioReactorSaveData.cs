@@ -55,14 +55,13 @@
                 var techTypeID = (TechType)savedItem.ItemID;
                 var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 
-                Pickupable pickupable = gameObject.GetComponent<Pickupable>();
-                pickupable.Initialize();
+                Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
 
                 yield return new BioEnergy(pickupable, savedItem.RemainingCharge);
             }
         }
 
-        private string SaveDirectory => Path.Combine(SaveLoadManager.GetTemporarySavePath(), MainKey);
+        private string SaveDirectory => Path.Combine(Path.Combine(SNUtils.savedGamesDir, Utils.GetSavegameDir()), MainKey);
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
         public bool LoadSaveFile()

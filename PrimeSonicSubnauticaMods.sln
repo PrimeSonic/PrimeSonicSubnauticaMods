@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsAutoZapper", "Cyclop
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CommonCyclopsBuildables", "CommonCyclopsBuildables\CommonCyclopsBuildables.shproj", "{FCB57595-3F3F-4CE0-A40F-BC161F367467}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnSlowSeaTruck", "UnSlowSeaTruck\UnSlowSeaTruck.csproj", "{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
@@ -153,6 +155,10 @@ Global
 		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
