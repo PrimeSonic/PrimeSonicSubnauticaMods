@@ -57,6 +57,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EasyMarkup", "EasyMarkup\Ea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsSimpleSolar", "CyclopsSimpleSolar\CyclopsSimpleSolar.csproj", "{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnSlowSeaTruck", "UnSlowSeaTruck\UnSlowSeaTruck.csproj", "{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		EasyMarkup\EasyMarkup.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
@@ -164,6 +166,10 @@ Global
 		{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
 		{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
 		{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
