@@ -268,17 +268,13 @@
                 }
             }
 
+            for (int i = 0; i < upgradeHandlers.Length; i++)            
+                upgradeHandlers[i].UpgradesFinished(); // UpgradeHandler event            
+
             // If any upgrades were found, play the sound to alert the player
             if (foundUpgrades.Count > 0)
             {
                 Cyclops.slotModSFX?.Play();
-
-                for (int i = 0; i < upgradeHandlers.Length; i++)
-                {
-                    UpgradeHandler upgradeType = upgradeHandlers[i];
-                    upgradeType.UpgradesFinished(); // UpgradeHandler event
-                }
-
                 PdaOverlayManager.RemapItems();
             }
 
