@@ -30,11 +30,14 @@
 
         private Indicator[] HelmIndicatorsOdd;
         private Indicator[] HelmIndicatorsEven;
-
         private Indicator[] HealthBarIndicatorsOdd;
         private Indicator[] HealthBarIndicatorsEven;
+
         private bool lastKnownTextVisibility = false;
         private bool powerIconTextVisibility = false;
+
+        private const float delayInterval = 0.9876f;
+        private float iconUpdateDelay = Time.deltaTime;
 
         private readonly SubRoot Cyclops;
 
@@ -58,7 +61,7 @@
         internal void FastUpdate(CyclopsHelmHUDManager cyclopsHelmHUD, int lastPowerInt)
         {
             if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != Cyclops)
-                return; // Same early exit            
+                return; // Same early exit
 
             if (totalPowerInfoIcons > 0)
             {
@@ -79,9 +82,8 @@
                     cyclopsHelmHUD.powerText.text = NumberFormatter.FormatValue(powerRelay.GetPower());
                     break;
                 case HelmEnergyDisplay.PercentageOverPowerCells:
-                    // Max out at 999 because only 4 characters fit on the display
                     float percentOver = (powerRelay.GetPower() + this.ChargeManager.GetTotalReservePower()) / powerRelay.GetMaxPower();
-                    cyclopsHelmHUD.powerText.text = $"{NumberFormatter.FormatValue(Mathf.Min(percentOver * 100f, 999f))}%";
+                    cyclopsHelmHUD.powerText.text = $"{NumberFormatter.FormatValue(percentOver * 100f)}%";
                     break;
                 case HelmEnergyDisplay.CombinedAmount:
                     cyclopsHelmHUD.powerText.text = NumberFormatter.FormatValue(powerRelay.GetPower() + this.ChargeManager.GetTotalReservePower());
@@ -147,6 +149,8 @@
 
         private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
+            cyclopsHelmHUD.powerText.resizeTextForBestFit = true;
+
             if (totalPowerInfoIcons == 0)
             {
                 QuickLogger.Debug($"CyclopsHUDManager 0 Power Info Icons required");
@@ -263,6 +267,11 @@
             if (!powerIconsInitialized)
                 return;
 
+            if (Time.time < iconUpdateDelay)
+                return;
+
+            iconUpdateDelay = Time.time + delayInterval;
+
             HidePowerIcons();
 
             if (settings.HidePowerIcons)
@@ -301,7 +310,11 @@
 
                 hpIcon.Text.enabled = powerIconTextVisibility;
                 hpIcon.Text.text = helmIcon.Text.text = charger.StatusText();
-                hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
+
+                if (charger.ProvidingPower)
+                    hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
+                else
+                    hpIcon.Text.color = helmIcon.Text.color = Color.white;
             }
         }
 

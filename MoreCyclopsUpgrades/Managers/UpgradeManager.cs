@@ -60,9 +60,21 @@
         private bool initialized = false;
         private Equipment engineRoomUpgradeConsole;
 
-        internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
-
+        private readonly IVanillaUpgrades vanillaUpgrades = new VanillaUpgrades();
         private UpgradeHandler[] upgradeHandlers;
+
+        internal IVanillaUpgrades VanillaUpgrades
+        {
+            get
+            {
+                if (!initialized)
+                    InitializeUpgradeHandlers();
+
+                return vanillaUpgrades;
+            }
+        }
+
+        internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
 
         internal T GetUpgradeHandler<T>(TechType upgradeId) where T : UpgradeHandler
         {
@@ -158,15 +170,14 @@
             // Next, if no external mod has provided an UpgradeHandler for the vanilla upgrades, they will be added here.
             // This is to allow other mods to provide new functionality to the original upgrades.
 
-            IVanillaUpgrades originalUpgrades = VanillaUpgrades.Main;
             QuickLogger.Debug($"UpgradeManager adding default UpgradeHandlers for unmanaged vanilla upgrades");
 
-            for (int i = 0; i < originalUpgrades.OriginalUpgradeIDs.Count; i++)
+            for (int i = 0; i < vanillaUpgrades.OriginalUpgradeIDs.Count; i++)
             {
-                TechType upgradeID = originalUpgrades.OriginalUpgradeIDs[i];
+                TechType upgradeID = vanillaUpgrades.OriginalUpgradeIDs[i];
                 if (!KnownsUpgradeModules.ContainsKey(upgradeID))
                 {
-                    UpgradeHandler vanillaUpgrade = originalUpgrades.CreateUpgradeHandler(upgradeID, Cyclops);
+                    UpgradeHandler vanillaUpgrade = vanillaUpgrades.CreateUpgradeHandler(upgradeID, Cyclops);
                     vanillaUpgrade.RegisterSelf(KnownsUpgradeModules);
                 }
             }
@@ -268,7 +279,7 @@
                 }
             }
 
-            for (int i = 0; i < upgradeHandlers.Length; i++)            
+            for (int i = 0; i < upgradeHandlers.Length; i++)
                 upgradeHandlers[i].UpgradesFinished(); // UpgradeHandler event            
 
             // If any upgrades were found, play the sound to alert the player
