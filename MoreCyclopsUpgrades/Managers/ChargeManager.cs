@@ -58,7 +58,12 @@
         public float RechargePenalty { get; set; } = ModConfig.Main.RechargePenalty;
 
         private readonly IModConfig config = ModConfig.Main;
-        private bool requiresVanillaCharging = false;
+
+        // Check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
+        // If not, then the original thermal charging code will be allowed to run.
+        // This is to allow players to choose whether or not they want the newer form of charging.
+        private bool requiresVanillaCharging;
+
         private float producedPower = 0f;
         private float powerDeficit = 0f;
         private int totalChargers = -1;
@@ -84,7 +89,7 @@
             return null;
         }
 
-        private void InitializeChargers()
+        internal void InitializeChargers()
         {
             QuickLogger.Debug("ChargeManager Initializing CyclopsChargers from external mods");
 
@@ -119,13 +124,15 @@
             totalChargers = c;
             QuickLogger.Debug($"ChargeManager has '{totalChargers}' CyclopsChargers from external mods");
 
-            // Next, check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
-            // If not, then the original thermal charging code will be allowed to run.
-            // This is to allow players to choose whether or not they want the newer form of charging.
-            requiresVanillaCharging = VanillaUpgrades.Main.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
-
             initialized = true;
             TooLateToRegister = true;
+
+            requiresVanillaCharging = totalChargers == 0 || CyclopsManager.GetManager(Cyclops).Upgrade.VanillaUpgrades.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
+
+            if (requiresVanillaCharging)
+                QuickLogger.Info("Vanilla thermal reactor charging enabled");
+            else
+                QuickLogger.Info("Vanilla thermal reactor charging overridden by mod");
         }
 
         /// <summary>
@@ -175,11 +182,12 @@
             for (int i = 0; i < this.Chargers.Length; i++)
                 producedPower += this.Chargers[i].Generate(powerDeficit);
 
-            // Second, get non-renewable energy if no renewable energy was available
-            if (producedPower < MinimalPowerValue && // Did the renewable energy sources not produce any power?
-                (powerDeficit > config.MinimumEnergyDeficit ||  // Is the power deficit over the threshhold to start consuming non-renewable energy?
-                powerDeficit > config.EmergencyEnergyDeficit))
+            if (powerDeficit > config.EmergencyEnergyDeficit ||
+                // Did the renewable energy sources not produce any power?                                                                
+                (powerDeficit > config.MinimumEnergyDeficit && producedPower < MinimalPowerValue))
+            // Is the power deficit over the threshhold to start consuming non-renewable energy?
             {
+                // Second, get non-renewable energy if there isn't enough renewable energy
                 for (int i = 0; i < this.Chargers.Length; i++)
                     producedPower += this.Chargers[i].Drain(powerDeficit);
             }

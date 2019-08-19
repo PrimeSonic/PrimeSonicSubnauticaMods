@@ -10,7 +10,7 @@
     /// </summary>
     public abstract class CyclopsCharger
     {
-        private bool showStatus;
+        private bool gettingEnergy;
 
         public readonly SubRoot Cyclops;
 
@@ -19,25 +19,28 @@
             Cyclops = cyclops;
         }
 
-        public bool ShowStatusIcon { get; private set; }
+        public bool ShowStatusIcon => this.ProvidingPower || this.HasReservePower;
+        public bool ProvidingPower { get; private set; }
+        public bool HasReservePower { get; private set; }
 
         internal float Generate(float requestedPower)
         {
             float energy = GenerateNewEnergy(requestedPower);
-            showStatus = energy > MCUServices.MinimalPowerValue;
+            gettingEnergy = energy > MCUServices.MinimalPowerValue;
             return energy;
         }
 
         internal float Drain(float requestedPower)
         {
             float energy = DrainReserveEnergy(requestedPower);
-            showStatus |= energy > MCUServices.MinimalPowerValue;
+            gettingEnergy |= energy > MCUServices.MinimalPowerValue;
             return energy;
         }
 
         internal void UpdateStatus()
         {
-            this.ShowStatusIcon = showStatus;
+            this.ProvidingPower = gettingEnergy;
+            this.HasReservePower = this.TotalReserveEnergy > MCUServices.MinimalPowerValue;
         }
 
         /// <summary>
