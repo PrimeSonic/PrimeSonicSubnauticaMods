@@ -3,9 +3,8 @@
   "DisplayName": "DataBoxScannerFix",
   "Author": "PrimeSonic",
   "Version": "1.0.0",
-  "Requires": [ ],
   "Enable": true,
+  "Game": "BelowZero",
   "AssemblyName": "DataBoxScannerFix.dll",
-  "EntryMethod": "DataBoxScannerFix.QPatch.Patch",
-  "Config": {}
+  "EntryMethod": "DataBoxScannerFix.QPatch.Patch"
 }

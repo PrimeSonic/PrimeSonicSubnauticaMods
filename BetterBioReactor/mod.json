@@ -6,7 +6,5 @@
   "Enable": true,
   "Game": "BelowZero",
   "AssemblyName": "BetterBioReactor.dll",
-  "Dependencies": [ ],  
-  "AssemblyName": "BetterBioReactor.dll",
   "EntryMethod": "BetterBioReactor.QPatch.Patch",
 }
