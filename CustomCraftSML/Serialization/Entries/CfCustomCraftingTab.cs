@@ -26,7 +26,7 @@
 
         public bool IsAtRoot => this.ParentTabPath == this.ParentFabricator.ItemID;
 
-        public CraftingPath CraftingNodePath => new CraftingPath(this.ParentTabPath);
+        public CraftingPath CraftingNodePath => new CraftingPath(this.ParentTabPath, this.TabID);
 
         protected override bool ValidFabricator()
         {

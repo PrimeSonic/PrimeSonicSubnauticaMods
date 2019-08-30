@@ -90,7 +90,53 @@
             if (File.Exists(Path))
                 return;
 
-            File.WriteAllText(Path, PathHelper.GeneratePathString());
+            string[] originalPaths =
+            {
+                "# Mobile Vehicle Bay #",
+                "Constructor",
+                "Constructor/Vehicles",
+                "Constructor/Rocket",
+                "",
+                "# Cyclops Fabricator #",
+                "CyclopsFabricator",
+                "",
+                "# Fabricator #",
+                "Fabricator",
+                "Fabricator/Resources",
+                "Fabricator/Resources/BasicMaterials",
+                "Fabricator/Resources/AdvancedMaterials",
+                "Fabricator/Resources/Electronics",
+                "Fabricator/Survival",
+                "Fabricator/Survival/Water",
+                "Fabricator/Survival/CookedFood",
+                "Fabricator/Survival/CuredFood",
+                "Fabricator/Personal",
+                "Fabricator/Personal/Equipment",
+                "Fabricator/Personal/Tools",
+                "Fabricator/Machines",
+                "",
+                "# Scanner Room #",
+                "MapRoom",
+                "",
+                "# Vehicle Upgrade Console #",
+                "SeamothUpgrades",
+                "SeamothUpgrades/CommonModules",
+                "SeamothUpgrades/SeamothModules",
+                "SeamothUpgrades/ExosuitModules",
+                "SeamothUpgrades/CommonModules",
+                "",
+                "# Modification Station #",
+                "Workbench",
+                "Workbench/KnifeMenu",
+                "Workbench/TankMenu",
+                "Workbench/FinsMenu",
+                "Workbench/PropulsionCannonMenu",
+                "Workbench/CyclopsMenu",
+                "Workbench/SeamothMenu",
+                "Workbench/ExosuitMenu"
+            };
+
+            File.WriteAllLines(Path, originalPaths);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }

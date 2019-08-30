@@ -91,9 +91,7 @@
     <Compile Include="WorkingFileParser.cs" />
     <Compile Include="HelpFilesWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CraftingNodeFamily.cs" />
     <Compile Include="PublicAPI\CraftingPath.cs" />
-    <Compile Include="PublicAPI\PathHelper.cs" />
     <Compile Include="QPatch.cs" />
     <Compile Include="Serialization\Components\EmTechTyped.cs" />
     <Compile Include="Serialization\Entries\AddedRecipe.cs" />

@@ -10,50 +10,42 @@
         public CraftTree.Type Scheme { get; private set; } = CraftTree.Type.None;
         public string Path { get; private set; }
         public string[] Steps { get; internal set; }
-        public string[] CraftNodeSteps { get; internal set; }
-        public bool IsAtRoot => this.Steps == null || string.IsNullOrEmpty(this.Path) || this.Steps.Length == 0;
+        public bool IsAtRoot { get; private set; }
 
         internal CraftingPath(CraftTree.Type scheme, string path, string craftNode = null) : this(path, craftNode)
         {
             this.Scheme = scheme;
         }
 
-        internal CraftingPath(string path, string craftNode = null)
+        internal CraftingPath(string path, string craftNode)
         {
+            this.Path = path;
+
             if (string.IsNullOrEmpty(path) && this.Scheme == CraftTree.Type.None)
             {
                 return;
             }
 
-            path = path.TrimEnd(Separator);
-
-            int firstBreak = path.IndexOf(Separator);
-
-            string schemeString;
-
-            if (firstBreak > -1)
-            {
-                schemeString = path.Substring(0, firstBreak);
-                this.Steps = path.Substring(firstBreak + 1).Split(Separator);
-            }
-            else
-            {
-                schemeString = path;
-                this.Steps = new[] { path };
-            }
+            string[] pathSteps = path.Trim(Separator).Split(Separator);
 
             if (this.Scheme == CraftTree.Type.None)
-                this.Scheme = GetCraftTreeType(schemeString);
+                this.Scheme = GetCraftTreeType(pathSteps[0]);
 
-            if (!string.IsNullOrEmpty(craftNode))
+            if (pathSteps.Length == 1)
             {
-                this.Path = $"{path.TrimEnd(Separator)}/{craftNode}";
-                this.CraftNodeSteps = this.Path.Substring(firstBreak + 1).Split(Separator);
+                this.Steps = new[] { craftNode };
+                this.IsAtRoot = true;
             }
             else
             {
-                this.Path = $"{path.TrimEnd(Separator)}";
+                this.Steps = new string[pathSteps.Length - 1];
+                this.IsAtRoot = false;
+
+                for (int p = 1; p < pathSteps.Length; p++)                
+                    this.Steps[p - 1] = pathSteps[p];                
             }
+
+            
         }
 
         public override string ToString() => this.Path.TrimEnd(Separator);

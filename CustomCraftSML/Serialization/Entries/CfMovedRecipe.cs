@@ -27,7 +27,7 @@
             {
                 string trimmedPath = this.NewPath.Replace($"{this.ParentFabricator.ItemID}", string.Empty).TrimStart('/');
 
-                return new CraftingPath(this.TreeTypeID, this.NewPath);
+                return new CraftingPath(this.TreeTypeID, this.NewPath, this.ItemID);
             }
         }
 

@@ -80,7 +80,7 @@
         {
             try
             {
-                craftingPath = new CraftingPath(this.ParentTabPath.TrimEnd(CraftingPath.Separator));
+                craftingPath = new CraftingPath(this.ParentTabPath.TrimEnd(CraftingPath.Separator), this.TabID);
             }
             catch
             {
@@ -136,6 +136,8 @@
             }
         }
 
+        public bool TabIsAtRoot => craftingPath.IsAtRoot;
+
         public string FullPath => $"{this.ParentTabPath}{"/"}{this.TabID}";
 
         internal override EmProperty Copy()
@@ -184,7 +186,7 @@
         {
             Atlas.Sprite sprite = GetCraftingTabSprite();
 
-            if (this.StepsToTab == null)
+            if (this.TabIsAtRoot)
             {
                 CraftTreeHandler.AddTabNode(this.FabricatorType, this.TabID, this.DisplayName, sprite);
             }
