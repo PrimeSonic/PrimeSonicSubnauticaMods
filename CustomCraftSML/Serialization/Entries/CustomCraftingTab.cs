@@ -132,7 +132,7 @@
                 if (craftingPath is null)
                     return null;
 
-                return craftingPath.Steps;
+                return craftingPath.StepsToParent;
             }
         }
 

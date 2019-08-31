@@ -9,15 +9,16 @@
 
         public CraftTree.Type Scheme { get; private set; } = CraftTree.Type.None;
         public string Path { get; private set; }
-        public string[] Steps { get; internal set; }
+        public string[] StepsToParent { get; internal set; }
+        public string[] StepsToNode { get; internal set; }
         public bool IsAtRoot { get; private set; }
 
-        internal CraftingPath(CraftTree.Type scheme, string path, string craftNode = null) : this(path, craftNode)
+        internal CraftingPath(CraftTree.Type scheme, string path, string leafNode) : this(path, leafNode)
         {
             this.Scheme = scheme;
         }
 
-        internal CraftingPath(string path, string craftNode)
+        internal CraftingPath(string path, string leafNode)
         {
             this.Path = path;
 
@@ -33,22 +34,29 @@
 
             if (pathSteps.Length == 1)
             {
-                this.Steps = new[] { craftNode };
+                this.StepsToParent = new[] { leafNode };
+                this.StepsToNode = this.StepsToParent;
                 this.IsAtRoot = true;
             }
             else
             {
-                this.Steps = new string[pathSteps.Length - 1];
+                this.StepsToParent = new string[pathSteps.Length - 1];
+                this.StepsToNode = new string[pathSteps.Length];
                 this.IsAtRoot = false;
 
-                for (int p = 1; p < pathSteps.Length; p++)                
-                    this.Steps[p - 1] = pathSteps[p];                
+                for (int p = 1; p < pathSteps.Length; p++)
+                {
+                    this.StepsToParent[p - 1] = pathSteps[p];
+                    this.StepsToNode[p - 1] = pathSteps[p];
+                }
+                this.StepsToNode[this.StepsToNode.Length - 1] = leafNode;
             }
-
-            
         }
 
-        public override string ToString() => this.Path.TrimEnd(Separator);
+        public override string ToString()
+        {
+            return this.Path.TrimEnd(Separator);
+        }
 
         internal static readonly Dictionary<string, CraftTree.Type> CraftTreeLookup = new Dictionary<string, CraftTree.Type>(StringComparer.InvariantCultureIgnoreCase)
         {

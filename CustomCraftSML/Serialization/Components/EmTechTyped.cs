@@ -80,7 +80,7 @@
             if (newPath.IsAtRoot)
                 CraftTreeHandler.AddCraftingNode(newPath.Scheme, techType);
             else
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, techType, newPath.Steps);
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, techType, newPath.StepsToParent);
 
             QuickLogger.Debug($"New crafting node for {this.Key} '{this.ItemID}' from added at '{newPath.Path}'");
         }
