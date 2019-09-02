@@ -80,7 +80,7 @@
         {
             try
             {
-                craftingPath = new CraftTreePath(this.ParentTabPath.TrimEnd(CraftTreePath.Separator), this.TabID);
+                craftingPath = new CraftTreePath(this.ParentTabPath, this.TabID);
             }
             catch
             {
@@ -125,7 +125,7 @@
             set => emParentTabPath.Value = value;
         }
 
-        public string[] StepsToTab => craftingPath.StepsToParentTab;
+        public string[] StepsToParentTab => craftingPath.StepsToParentTab;
 
         public bool TabIsAtRoot => craftingPath.IsAtRoot;
 
@@ -183,7 +183,7 @@
             }
             else
             {
-                CraftTreeHandler.AddTabNode(this.FabricatorType, this.TabID, this.DisplayName, sprite, this.StepsToTab);
+                CraftTreeHandler.AddTabNode(this.FabricatorType, this.TabID, this.DisplayName, sprite, this.StepsToParentTab);
             }
         }
 

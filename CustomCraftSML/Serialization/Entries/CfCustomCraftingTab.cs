@@ -50,7 +50,7 @@
                 }
                 else
                 {
-                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(this.CraftingNodePath.StepsToNode);
+                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(this.CraftingNodePath.StepsToParentTab);
                     otherTab.AddTabNode(this.TabID, this.DisplayName, GetCraftingTabSprite());
                 }
 

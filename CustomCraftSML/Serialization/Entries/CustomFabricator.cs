@@ -225,7 +225,7 @@
                 else
                 {
 
-                    ModCraftTreeTab otherTab = this.RootNode.GetTabNode(entry.CraftingNodePath.StepsToNode);
+                    ModCraftTreeTab otherTab = this.RootNode.GetTabNode(entry.CraftingNodePath.StepsToParentTab);
                     otherTab.AddCraftingNode(entry.TechType);
                 }
             }
