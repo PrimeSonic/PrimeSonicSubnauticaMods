@@ -95,8 +95,8 @@
   <ItemGroup>
     <Compile Include="AddedRecipeTests.cs" />
     <Compile Include="AliasRecipeTests.cs" />
-    <Compile Include="CraftingPathTests.cs" />
     <Compile Include="CraftingTabTests.cs" />
+    <Compile Include="CraftTreePathTests.cs" />
     <Compile Include="CustomFabricatorTests.cs" />
     <Compile Include="CustomFoodTests.cs" />
     <Compile Include="CustomSizeTests.cs" />

@@ -3,7 +3,7 @@
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Crafting;
     using System;
     using System.Collections.Generic;
@@ -26,7 +26,7 @@
 
         public bool IsAtRoot => this.ParentTabPath == this.ParentFabricator.ItemID;
 
-        public CraftingPath CraftingNodePath => new CraftingPath(this.ParentTabPath, this.TabID);
+        public CraftTreePath CraftingNodePath => new CraftTreePath(this.ParentTabPath, this.TabID);
 
         protected override bool ValidFabricator()
         {
@@ -50,7 +50,7 @@
                 }
                 else
                 {
-                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(this.CraftingNodePath.StepsToParent);
+                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(this.CraftingNodePath.StepsToNode);
                     otherTab.AddTabNode(this.TabID, this.DisplayName, GetCraftingTabSprite());
                 }
 

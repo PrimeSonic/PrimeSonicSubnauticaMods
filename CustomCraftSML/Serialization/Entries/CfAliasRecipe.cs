@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization;
 
     internal class CfAliasRecipe : AliasRecipe, ICustomFabricatorEntry
     {
@@ -21,7 +21,7 @@
 
         public bool IsAtRoot => this.Path == this.ParentFabricator.ItemID;
 
-        public CraftingPath CraftingNodePath => new CraftingPath(this.Path, this.ItemID);
+        public CraftTreePath CraftingNodePath => new CraftTreePath(this.Path, this.ItemID);
 
         protected override void HandleCraftTreeAddition() => this.ParentFabricator.HandleCraftTreeAddition(this);
 

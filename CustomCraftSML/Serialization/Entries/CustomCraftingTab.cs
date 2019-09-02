@@ -1,15 +1,15 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using IOPath = System.IO.Path;
 
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCraft
@@ -44,7 +44,7 @@
         protected readonly EmProperty<TechType> emSpriteID;
         protected readonly EmProperty<string> emParentTabPath;
 
-        protected CraftingPath craftingPath;
+        protected CraftTreePath craftingPath;
 
         protected static ICollection<EmProperty> CustomCraftingTabProperties => new List<EmProperty>(4)
         {
@@ -80,7 +80,7 @@
         {
             try
             {
-                craftingPath = new CraftingPath(this.ParentTabPath.TrimEnd(CraftingPath.Separator), this.TabID);
+                craftingPath = new CraftTreePath(this.ParentTabPath.TrimEnd(CraftTreePath.Separator), this.TabID);
             }
             catch
             {
@@ -106,7 +106,7 @@
         {
             get
             {
-                if (craftingPath is null)
+                if (craftingPath == null)
                     return CraftTree.Type.None;
 
                 return craftingPath.Scheme;
@@ -125,16 +125,7 @@
             set => emParentTabPath.Value = value;
         }
 
-        public string[] StepsToTab
-        {
-            get
-            {
-                if (craftingPath is null)
-                    return null;
-
-                return craftingPath.StepsToParent;
-            }
-        }
+        public string[] StepsToTab => craftingPath.StepsToParentTab;
 
         public bool TabIsAtRoot => craftingPath.IsAtRoot;
 

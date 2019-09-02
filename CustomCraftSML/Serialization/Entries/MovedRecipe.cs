@@ -4,7 +4,7 @@
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Handlers;
@@ -135,7 +135,7 @@
         {
             if (this.Hidden || !this.Copied)
             {
-                var oldPath = new CraftingPath(this.OldPath, this.ItemID);
+                var oldPath = new CraftTreePath(this.OldPath, this.ItemID);
 
                 CraftTreeHandler.RemoveNode(oldPath.Scheme, oldPath.StepsToNode);
                 QuickLogger.Debug($"Removed crafting node at '{this.ItemID}' - Entry from {this.Origin}");
@@ -153,7 +153,7 @@
 
         protected virtual void HandleCraftTreeAddition()
         {
-            var newPath = new CraftingPath(this.NewPath, this.ItemID);
+            var newPath = new CraftTreePath(this.NewPath, this.ItemID);
 
             AddCraftNode(newPath, this.TechType);
         }

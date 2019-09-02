@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization;
 
     internal class CfMovedRecipe : MovedRecipe, ICustomFabricatorEntry
     {
@@ -21,18 +21,16 @@
 
         public bool IsAtRoot => this.NewPath == this.ParentFabricator.ItemID;
 
-        public CraftingPath CraftingNodePath
-        {
-            get
-            {
-                string trimmedPath = this.NewPath.Replace($"{this.ParentFabricator.ItemID}", string.Empty).TrimStart('/');
+        public CraftTreePath CraftingNodePath => new CraftTreePath(this.NewPath, this.ItemID);
 
-                return new CraftingPath(this.TreeTypeID, this.NewPath, this.ItemID);
-            }
+        protected override void HandleCraftTreeAddition()
+        {
+            this.ParentFabricator.HandleCraftTreeAddition(this);
         }
 
-        protected override void HandleCraftTreeAddition() => this.ParentFabricator.HandleCraftTreeAddition(this);
-
-        internal override EmProperty Copy() => new CfMovedRecipe(this.Key, CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CfMovedRecipe(this.Key, this.CopyDefinitions);
+        }
     }
 }
