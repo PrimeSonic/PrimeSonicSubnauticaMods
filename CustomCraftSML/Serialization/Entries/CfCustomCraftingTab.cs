@@ -26,7 +26,10 @@
 
         public bool IsAtRoot => this.ParentTabPath == this.ParentFabricator.ItemID;
 
-        public CraftTreePath CraftingNodePath => new CraftTreePath(this.ParentTabPath, this.TabID);
+        public CraftTreePath GetCraftTreePath()
+        {
+            return new CraftTreePath(this.ParentTabPath, this.TabID);
+        }
 
         protected override bool ValidFabricator()
         {
@@ -50,7 +53,14 @@
                 }
                 else
                 {
-                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(this.CraftingNodePath.StepsToParentTab);
+                    CraftTreePath craftTreePath = GetCraftTreePath();
+                    if (craftTreePath.HasError)
+                    {
+                        QuickLogger.Error($"Encountered error in path for '{this.TabID}' - Entry from {this.Origin} - Error Message: {this.CraftingPath.Error}");
+                        return false;
+                    }
+
+                    ModCraftTreeTab otherTab = this.ParentFabricator.RootNode.GetTabNode(craftTreePath.StepsToParentTab);
                     otherTab.AddTabNode(this.TabID, this.DisplayName, GetCraftingTabSprite());
                 }
 

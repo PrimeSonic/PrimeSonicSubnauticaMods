@@ -14,17 +14,44 @@
         public string FinalNodeID { get; }
         public string[] StepsToParentTab { get; }
         public string[] StepsToNode { get; }
+        public bool HasError { get; }
+        public string Error { get; }
 
         public CraftTreePath(string rawPath, string finalNode)
         {
             this.RawPath = rawPath;
             this.RawSteps = new List<string>(rawPath.Trim(Separator).Split(Separator));
+
+            if (string.IsNullOrEmpty(this.RawPath) || this.RawSteps.Count == 0)
+            {
+                this.HasError = true;
+                this.Error = "Empty craft tree path";
+                return;
+            }
+            
             this.Scheme = GetCraftTreeType(this.RawSteps[0]);
+
+            if (this.Scheme == CraftTree.Type.None)
+            {
+                this.HasError = true;
+                this.Error = "Unable to identify fabricator from path";
+                return;
+            }
+
             this.IsAtRoot = this.RawSteps.Count == 1;
             this.FinalNodeID = finalNode;
 
+            if (string.IsNullOrEmpty(this.FinalNodeID))
+            {
+                this.HasError = true;
+                this.Error = "Missing TabID or ItemID";
+                return;
+            }
+
             this.StepsToParentTab = StepsToParentAdding();
             this.StepsToNode = StepsToNodeRemoving();
+
+            this.HasError = false;
         }
 
         private string[] StepsToParentAdding()

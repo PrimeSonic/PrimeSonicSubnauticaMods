@@ -8,6 +8,7 @@
         CustomFabricator ParentFabricator { get; set; }
         CraftTree.Type TreeTypeID { get; }
         bool IsAtRoot { get; }
-        CraftTreePath CraftingNodePath { get; }
+
+        CraftTreePath GetCraftTreePath();
     }
 }

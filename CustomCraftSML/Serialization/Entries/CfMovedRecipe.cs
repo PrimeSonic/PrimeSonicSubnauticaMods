@@ -21,7 +21,10 @@
 
         public bool IsAtRoot => this.NewPath == this.ParentFabricator.ItemID;
 
-        public CraftTreePath CraftingNodePath => new CraftTreePath(this.NewPath, this.ItemID);
+        public CraftTreePath GetCraftTreePath()
+        {
+            return new CraftTreePath(this.NewPath, this.ItemID);
+        }
 
         protected override void HandleCraftTreeAddition()
         {

@@ -136,7 +136,10 @@
         {
             var craftPath = new CraftTreePath(this.Path, this.ItemID);
 
-            AddCraftNode(craftPath, this.TechType);
+            if (craftPath.HasError)
+                QuickLogger.Error($"Encountered error in path for '{this.ItemID}' - Entry from {this.Origin} - Error Message: {craftPath.Error}");
+            else
+                AddCraftNode(craftPath, this.TechType);
         }
     }
 }
