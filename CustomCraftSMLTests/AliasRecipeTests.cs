@@ -1,6 +1,5 @@
 ﻿namespace CustomCraftSMLTests
 {
-    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
@@ -321,7 +320,6 @@
             const string displayName = "My Custom Food";
             const string toolTip = "My Food Tooltip";
 
-            string fabPath = PathHelper.Fabricator.Sustenance.CookedFood.CookedFoodTab.GetCraftingPath.ToString();
 
             string serialized = "AliasRecipes:" + lineBreak +
                                 "(" + lineBreak +
@@ -342,7 +340,7 @@
                                $"            ItemID:{TechType.CookedEyeye};" + lineBreak +
                                 "            Required:1;" + lineBreak +
                                 "        );" + lineBreak +
-                               $"    Path:{fabPath};" +
+                               $"    Path:Fabricator/Sustenance/CookedFood;" +
                                 "    FunctionalID:CuredLavaEyeye;" +
                                 ");" + lineBreak;
 
@@ -375,7 +373,7 @@
             Assert.AreEqual(displayName, r.DisplayName);
             Assert.AreEqual(toolTip, r.Tooltip);
 
-            Assert.AreEqual(fabPath, r.Path);
+            Assert.AreEqual("Fabricator/Sustenance/CookedFood", r.Path);
 
             Assert.AreEqual(TechType.CuredLavaEyeye.ToString(), r.FunctionalID);
         }

@@ -4,7 +4,7 @@
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
-    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Handlers;
 
     internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped
@@ -75,14 +75,14 @@
             return TechType.None;
         }
 
-        protected void AddCraftNode(CraftingPath newPath, TechType techType)
+        protected void AddCraftNode(CraftTreePath newPath, TechType techType)
         {
             if (newPath.IsAtRoot)
                 CraftTreeHandler.AddCraftingNode(newPath.Scheme, techType);
             else
-                CraftTreeHandler.AddCraftingNode(newPath.Scheme, techType, newPath.Steps);
+                CraftTreeHandler.AddCraftingNode(newPath.Scheme, techType, newPath.StepsToParentTab);
 
-            QuickLogger.Debug($"New crafting node for {this.Key} '{this.ItemID}' from added at '{newPath.Path}'");
+            QuickLogger.Debug($"New crafting node for {this.Key} '{newPath.FinalNodeID}' from added at '{newPath.RawPath}'");
         }
     }
 }

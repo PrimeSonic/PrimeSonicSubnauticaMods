@@ -1,7 +1,6 @@
 ﻿namespace CustomCraftSMLTests
 {
     using System.IO;
-    using CustomCraft2SML.PublicAPI;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Entries;
     using CustomCraft2SML.Serialization.Lists;
@@ -92,7 +91,7 @@
                 ItemID = TechType.NutrientBlock.ToString(),
                 AmountCrafted = 1,
                 ForceUnlockAtStart = false,
-                Path = PathHelper.Fabricator.Sustenance.CuredFood.CuredFoodTab.GetCraftingPath.ToString(),
+                Path = "Fabricator/Survival/CuredFood",
                 Ingredients =
                 {
                     new EmIngredient(TechType.CuredReginald, 1),
@@ -105,7 +104,7 @@
             {
                 ItemID = TechType.BigFilteredWater.ToString(),
                 AmountCrafted = 1,
-                Path = PathHelper.Fabricator.Sustenance.Water.WaterTab.GetCraftingPath.ToString(),
+                Path = "Fabricator/Survival/Water",
                 ForceUnlockAtStart = false,
                 Ingredients =
                 {
@@ -334,27 +333,34 @@
             var moveTiIngot = new MovedRecipe
             {
                 ItemID = TechType.TitaniumIngot.ToString(),
-                OldPath = PathHelper.Fabricator.Resources.BasicMaterials.BasicMaterialsTab.GetCraftingPath.ToString(),
-                NewPath = PathHelper.Fabricator.Resources.AdvancedMaterials.AdvancedMaterialsTab.GetCraftingPath.ToString(),
+                OldPath = "Fabricator/Resources/BasicMaterials",
+                NewPath = "Fabricator/Resources/AdvancedMaterials",
             };
 
             var hideRifile = new MovedRecipe
             {
                 ItemID = TechType.StasisRifle.ToString(),
-                OldPath = PathHelper.Fabricator.Personal.Tools.ToolsTab.GetCraftingPath.ToString(),
+                OldPath = "Fabricator/Personal/Tools",
+                Hidden = true
+            };
+
+            var hideFss = new MovedRecipe
+            {
+                ItemID = TechType.CyclopsFireSuppressionModule.ToString(),
+                OldPath = "CyclopsFabricator",
                 Hidden = true
             };
 
             var copyUltraFins = new MovedRecipe
             {
                 ItemID = TechType.UltraGlideFins.ToString(),
-                NewPath = PathHelper.Fabricator.Personal.Tools.ToolsTab.GetCraftingPath.ToString(),
+                NewPath = "Fabricator/Personal/Tools",
                 Copied = true
             };
 
             var origMovedRepList = new MovedRecipeList
             {
-                moveTiIngot, hideRifile, copyUltraFins
+                moveTiIngot, hideRifile, hideFss, copyUltraFins
             };
 
             string serialized = origMovedRepList.PrettyPrint();
@@ -375,7 +381,8 @@
 
             Assert.AreEqual(TechType.TitaniumIngot.ToString(), readingSizesList[0].ItemID);
             Assert.AreEqual(TechType.StasisRifle.ToString(), readingSizesList[1].ItemID);
-            Assert.AreEqual(TechType.UltraGlideFins.ToString(), readingSizesList[2].ItemID);
+            Assert.AreEqual(TechType.CyclopsFireSuppressionModule.ToString(), readingSizesList[2].ItemID);
+            Assert.AreEqual(TechType.UltraGlideFins.ToString(), readingSizesList[3].ItemID);
 
             Assert.AreEqual(moveTiIngot.OldPath, readingSizesList[0].OldPath);
             Assert.AreEqual(moveTiIngot.NewPath, readingSizesList[0].NewPath);
@@ -387,10 +394,15 @@
             Assert.AreEqual(hideRifile.Hidden, readingSizesList[1].Hidden);
             Assert.AreEqual(hideRifile.Copied, readingSizesList[1].Copied);
 
-            Assert.AreEqual(copyUltraFins.OldPath, readingSizesList[2].OldPath);
-            Assert.AreEqual(copyUltraFins.NewPath, readingSizesList[2].NewPath);
-            Assert.AreEqual(copyUltraFins.Hidden, readingSizesList[2].Hidden);
-            Assert.AreEqual(copyUltraFins.Copied, readingSizesList[2].Copied);
+            Assert.AreEqual(hideFss.OldPath, readingSizesList[2].OldPath);
+            Assert.AreEqual(hideFss.NewPath, readingSizesList[2].NewPath);
+            Assert.AreEqual(hideFss.Hidden, readingSizesList[2].Hidden);
+            Assert.AreEqual(hideFss.Copied, readingSizesList[2].Copied);
+
+            Assert.AreEqual(copyUltraFins.OldPath, readingSizesList[3].OldPath);
+            Assert.AreEqual(copyUltraFins.NewPath, readingSizesList[3].NewPath);
+            Assert.AreEqual(copyUltraFins.Hidden, readingSizesList[3].Hidden);
+            Assert.AreEqual(copyUltraFins.Copied, readingSizesList[3].Copied);
         }
     }
 }

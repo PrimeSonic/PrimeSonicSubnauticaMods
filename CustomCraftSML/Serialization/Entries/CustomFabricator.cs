@@ -200,6 +200,7 @@
         {
             this.RootNode = CraftTreeHandler.CreateCustomCraftTreeAndType(this.ItemID, out CraftTree.Type craftType);
             this.TreeTypeID = craftType;
+            CraftTreePath.CraftTreeLookup[this.ItemID] = this.TreeTypeID;
         }
 
         internal void FinishCustomCraftingTree()
@@ -214,18 +215,23 @@
         internal void HandleCraftTreeAddition<CraftingNode>(CraftingNode entry)
             where CraftingNode : ICustomFabricatorEntry, ITechTyped
         {
-            QuickLogger.Debug($"Sending {entry.Key} '{entry.ItemID}' to be added to the crafting tree at {entry.CraftingNodePath.ToString()}");
-
             try
             {
+                CraftTreePath craftingNodePath = entry.GetCraftTreePath();
+                if (craftingNodePath.HasError)
+                {
+                    QuickLogger.Error($"Encountered error in path for '{this.ItemID}' - Entry from {this.Origin} - Error Message: {craftingNodePath.Error}");
+                    return;
+                }
+
+                QuickLogger.Debug($"Sending {entry.Key} '{entry.ItemID}' to be added to the crafting tree at '{craftingNodePath.RawPath}'");
                 if (entry.IsAtRoot)
                 {
                     this.RootNode.AddCraftingNode(entry.TechType);
                 }
                 else
                 {
-
-                    ModCraftTreeTab otherTab = this.RootNode.GetTabNode(entry.CraftingNodePath.Steps);
+                    ModCraftTreeTab otherTab = this.RootNode.GetTabNode(craftingNodePath.StepsToParentTab);
                     otherTab.AddCraftingNode(entry.TechType);
                 }
             }

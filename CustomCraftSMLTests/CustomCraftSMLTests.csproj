@@ -96,12 +96,12 @@
     <Compile Include="AddedRecipeTests.cs" />
     <Compile Include="AliasRecipeTests.cs" />
     <Compile Include="CraftingTabTests.cs" />
+    <Compile Include="CraftTreePathTests.cs" />
     <Compile Include="CustomFabricatorTests.cs" />
     <Compile Include="CustomFoodTests.cs" />
     <Compile Include="CustomSizeTests.cs" />
     <Compile Include="DequeTests.cs" />
     <Compile Include="EasyMarkupTests.cs" />
-    <Compile Include="EquipmentSalvageFiles.cs" />
     <Compile Include="ModifiedRecipeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleFileTests.cs" />

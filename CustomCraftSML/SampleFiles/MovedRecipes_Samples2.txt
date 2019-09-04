@@ -10,6 +10,11 @@ MovedRecipes:
     Hidden: YES;
 ),
 (
+    ItemID: CyclopsFireSuppressionModule;
+    OldPath: CyclopsFabricator;
+    Hidden: YES;
+),
+(
     ItemID: UltraGlideFins;
     NewPath: Fabricator/Personal/Tools;
     Copied: YES;
