@@ -14,7 +14,6 @@
 
     [HarmonyPatch(typeof(SeaTruckMotor))]
     [HarmonyPatch("GetWeight")]
-    [HarmonyPatch("GetTotalWeight")]
     internal static class SeatruckMotor_GetWeight_Override
     {
         [HarmonyPrefix]
@@ -28,6 +27,7 @@
 
     [HarmonyPatch(typeof(SeaTruckSegment))]
     [HarmonyPatch("GetAttachedWeight")]
+    [HarmonyPatch("GetTotalWeight")]
     internal static class SeaTruckSegment_GetAttachedWeight_Override
     {
         [HarmonyPrefix]
