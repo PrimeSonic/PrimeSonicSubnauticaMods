@@ -108,5 +108,6 @@
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems" Label="Shared" />
   <Import Project="..\CommonCyclopsBuildables\CommonCyclopsBuildables.projitems" Label="Shared" />
+  <Import Project="..\FCStudioHelpers\FCStudioHelpers.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
