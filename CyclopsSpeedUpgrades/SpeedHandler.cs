@@ -67,7 +67,7 @@
                 lastKnownSpeedIndex = speedIndex;
 
                 float speedMultiplier = this.SpeedMultiplier = SpeedModifiers[speedIndex];
-                float noiseMultiplier = this.NoisePenalty = 1f + 0.1f * speedIndex;
+                float noiseMultiplier = this.NoisePenalty = 1f + 0.05f * speedIndex;
 
                 // These will apply when changing speed modes
                 this.MotorMode.motorModeSpeeds[0] = originalSpeeds[0] * speedMultiplier;
