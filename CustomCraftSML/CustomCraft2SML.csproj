@@ -61,6 +61,9 @@
     <Reference Include="UnityEngine">
       <HintPath>..\DependenciesSubnautica\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\DependenciesSubnautica\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\ICustomFood.cs" />
