@@ -4,7 +4,7 @@
     using MoreCyclopsUpgrades.Managers;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
-    [HarmonyPatch("OnOpenPDA")]
+    [HarmonyPatch(nameof(uGUI_InventoryTab.OnOpenPDA))]
     internal class UGUI_InventoryTab_OnOpenPDA_Patcher
     {
         [HarmonyPostfix]

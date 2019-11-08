@@ -5,7 +5,7 @@ using UnityEngine;
 namespace IonCubeGenerator.Debug_IONCube.Patches
 {
     [HarmonyPatch(typeof(Player))]
-    [HarmonyPatch("Update")]
+    [HarmonyPatch(nameof(Player.Update))]
     public class OpenDebugMenu
     {
         [HarmonyPostfix]

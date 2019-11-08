@@ -5,7 +5,7 @@
     // The immediate access to the internals of the BaseBioReactor (without the use of Reflection) was made possible thanks to the AssemblyPublicizer
     // https://github.com/CabbageCrow/AssemblyPublicizer
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
-    [HarmonyPatch("OnOpenPDA")]
+    [HarmonyPatch(nameof(uGUI_InventoryTab.OnOpenPDA))]
     internal class UGUI_InventoryTab_OnOpenPDA_Patcher
     {
         [HarmonyPostfix]

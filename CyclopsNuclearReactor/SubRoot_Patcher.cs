@@ -4,7 +4,7 @@
     using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("Start")]
+    [HarmonyPatch(nameof(SubRoot.Start))]
     internal class SubRoot_Start_Postfix
     {
         [HarmonyPostfix]

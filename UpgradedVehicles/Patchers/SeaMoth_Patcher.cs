@@ -3,7 +3,7 @@
     using Harmony;
 
     [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch("OnUpgradeModuleChange")]
+    [HarmonyPatch(nameof(SeaMoth.OnUpgradeModuleChange))]
     internal class SeaMoth_OnUpgradeModuleChange_Patcher
     {
         [HarmonyPostfix]

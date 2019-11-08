@@ -25,7 +25,7 @@
     }
 
     [HarmonyPatch(typeof(CyclopsHelmHUDManager))]
-    [HarmonyPatch("PlayCavitationWarningAfterSeconds")]
+    [HarmonyPatch(nameof(CyclopsHelmHUDManager.PlayCavitationWarningAfterSeconds))]
     internal class NoiseAlertPatch
     {
         [HarmonyPrefix]

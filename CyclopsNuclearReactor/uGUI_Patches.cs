@@ -7,7 +7,7 @@
     using System.Reflection;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]
-    [HarmonyPatch("OnOpenPDA")]
+    [HarmonyPatch(nameof(uGUI_InventoryTab.OnOpenPDA))]
     internal class UGUI_InventoryTab_OnOpenPDA_Patcher
     {
         private static readonly Type uGUIContainerType = typeof(uGUI_ItemsContainer);

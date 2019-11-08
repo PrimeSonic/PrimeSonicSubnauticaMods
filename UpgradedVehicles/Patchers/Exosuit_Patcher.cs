@@ -3,7 +3,7 @@
     using Harmony;
 
     [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch("OnUpgradeModuleChange")]
+    [HarmonyPatch(nameof(Exosuit.OnUpgradeModuleChange))]
     internal class Exosuit_OnUpgradeModuleChange_Patcher
     {
         [HarmonyPostfix]
