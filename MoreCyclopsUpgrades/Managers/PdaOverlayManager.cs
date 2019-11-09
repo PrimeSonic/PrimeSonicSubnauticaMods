@@ -42,6 +42,13 @@
             else
             {
                 QuickLogger.Debug("PdaOverlayManager failed to connect upgrade console to PDA overlay");
+
+                if (upgradeModules == null)
+                    QuickLogger.Debug("upgradeModules null");
+
+                if (uGUI_Equipment == null)
+                    QuickLogger.Debug("uGUI_Equipment null");
+
                 DisconnectFromPda();
             }
         }
