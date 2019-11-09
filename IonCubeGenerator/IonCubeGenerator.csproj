@@ -85,9 +85,6 @@
     <Compile Include="Craftables\AlienIngot.cs" />
     <Compile Include="Craftables\AlienIngotPrefab.cs" />
     <Compile Include="CubeGeneratorSaveData.cs" />
-    <Compile Include="Debug_IONCube\DebugMenu.cs" />
-    <Compile Include="Debug_IONCube\Patches\OpenDebugMenu.cs" />
-    <Compile Include="Debug_IONCube\Patches\temp.cs" />
     <Compile Include="Display\InterfaceButton.cs" />
     <Compile Include="Display\IonGeneratorDisplay.cs" />
     <Compile Include="Display\OnScreenButton.cs" />

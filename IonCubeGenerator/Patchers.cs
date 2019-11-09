@@ -6,7 +6,7 @@
 
     // Adapted from https://github.com/kylinator25/SubnauticaMods/blob/master/AlienRifle/PDAScannerUnlockPatch.cs
     [HarmonyPatch(typeof(PDAScanner))]
-    [HarmonyPatch(nameof(PDAScanner.Unlock))] // TODO - Figure this out
+    [HarmonyPatch("Unlock")]
     public static class PDAScannerUnlockPatch
     {
         [HarmonyPrefix]

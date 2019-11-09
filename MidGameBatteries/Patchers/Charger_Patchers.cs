@@ -1,7 +1,6 @@
 ﻿namespace MidGameBatteries.Patchers
 {
     using System.Collections.Generic;
-    using System.Reflection;
     using Craftables;
     using Harmony;
 
@@ -12,10 +11,7 @@
         [HarmonyPrefix] // This will run just before the code in the chosen method
         public static void Prefix(ref BatteryCharger __instance)
         {
-            // The HashSet of compatible batteries is a private static field
-            FieldInfo compatibleTechFieldInfo = typeof(BatteryCharger).GetField("compatibleTech", BindingFlags.Static | BindingFlags.NonPublic);
-
-            var compatibleTech = (HashSet<TechType>)compatibleTechFieldInfo.GetValue(null);
+            HashSet<TechType> compatibleTech = BatteryCharger.compatibleTech;
 
             // Make sure the Deep Battery is allowed in the battery charger
             if (!compatibleTech.Contains(DeepBatteryCellBase.BatteryID))
@@ -31,10 +27,7 @@
         [HarmonyPrefix] // This will run just before the code in the chosen method
         public static void Prefix(ref PowerCellCharger __instance)
         {
-            // The HashSet of compatible power cells is a private static field
-            FieldInfo compatibleTechFieldInfo = typeof(PowerCellCharger).GetField("compatibleTech", BindingFlags.Static | BindingFlags.NonPublic);
-
-            var compatibleTech = (HashSet<TechType>)compatibleTechFieldInfo.GetValue(null);
+            HashSet<TechType> compatibleTech = PowerCellCharger.compatibleTech;
 
             // Make sure the Deep Power Cell is allowed in the power cell charger
             if (!compatibleTech.Contains(DeepBatteryCellBase.PowerCellID))
