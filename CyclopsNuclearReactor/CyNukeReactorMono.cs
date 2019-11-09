@@ -287,18 +287,10 @@
                 (container as IItemsContainer).onAddItem += OnAddItem;
                 (container as IItemsContainer).onRemoveItem += OnRemoveItem;
 
-                EventInfo onChangeItemPositionInfo = typeof(ItemsContainer).GetEvent("onChangeItemPositionInfo", BindingFlags.Public | BindingFlags.Instance);
-                if (onChangeItemPositionInfo is null)
-                    QuickLogger.Debug("onChangeItemPositionInfo null");
-
+                EventInfo onChangeItemPositionInfo = typeof(ItemsContainer).GetEvent("onChangeItemPosition", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo myChangeItemPositionMethod = typeof(CyNukeReactorMono).GetMethod(nameof(CyNukeReactorMono.RodsContainer_onChangeItemPosition), BindingFlags.NonPublic | BindingFlags.Instance);
-                if (myChangeItemPositionMethod is null)
-                    QuickLogger.Debug("myChangeItemPositionMethod null");
 
                 var onChangeDelegate = Delegate.CreateDelegate(typeof(ItemsContainer.OnChangeItemPosition), this, myChangeItemPositionMethod);
-                if (onChangeDelegate is null)
-                    QuickLogger.Debug("onChangeDelegate null");
-
                 onChangeItemPositionInfo.AddEventHandler(container, onChangeDelegate);
             }
         }
