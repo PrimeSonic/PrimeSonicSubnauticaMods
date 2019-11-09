@@ -11,7 +11,7 @@
     using UnityEngine;
 
     [ProtoContract]
-    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IConstructable, ICyclopsBuildable
+    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable
     {
         internal static bool PdaIsOpen = false;
         internal static CyBioReactorMono OpenInPda = null;
@@ -140,6 +140,8 @@
 
             audioHandler = new CyBioReactorAudioHandler(this.transform);
             audioHandler.SetSoundActive(true);
+
+            displayHandler.TurnOnDisplay();
         }
 
         private void InitializeContainer()
@@ -561,21 +563,6 @@
                     case 3: // MaxBoosters
                         return boost3; // 12 slots
                 }
-            }
-        }
-
-        public bool CanDeconstruct(out string reason)
-        {
-            bool flag = this.Buildable.CanDeconstruct(out string result);
-            reason = result;
-            return flag;
-        }
-
-        public void OnConstructedChanged(bool constructed)
-        {
-            if (constructed)
-            {
-                displayHandler.TurnOnDisplay();
             }
         }
     }
