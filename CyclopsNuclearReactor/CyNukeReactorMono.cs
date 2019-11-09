@@ -9,7 +9,7 @@
     using UnityEngine;
 
     [ProtoContract]
-    internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
+    internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener
     {
         internal const float InitialReactorRodCharge = 10000f; // Half of what the Base Nuclear Reactor provides
         internal const float PowerMultiplier = 4.05f; // Rounded down and slightly reduced from what the Base Nuclear Reactor provides
@@ -29,7 +29,21 @@
         public CyNukeManager Manager = null;
         internal ItemsContainer RodsContainer = null;
         private ChildObjectIdentifier _rodsRoot = null;
+        private string prefabId = null;
+
         private Constructable _buildable = null;
+        internal Constructable Buildable
+        {
+            get
+            {
+                if (_buildable == null)
+                {
+                    _buildable = GetComponentInParent<Constructable>() ?? GetComponent<Constructable>();
+                }
+
+                return _buildable;
+            }
+        }
 
         private bool pdaIsOpen = false;
         private bool isLoadingSaveData = false;
@@ -60,7 +74,7 @@
 
         internal readonly List<SlotData> reactorRodData = new List<SlotData>(MaxSlots);
 
-        internal bool IsConstructed => _buildable != null && _buildable.constructed;
+        internal bool IsConstructed => this.Buildable != null && this.Buildable.constructed;
 
         internal string PowerIndicatorString()
         {
@@ -167,16 +181,8 @@
         {
             base.Awake();
 
-            if (_buildable == null)
-            {
-                _buildable = GetComponentInParent<Constructable>();
-            }
-
             if (_saveData == null)
-            {
-                string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CyNukeReactorSaveData(id, MaxSlots);
-            }
+                ReadySaveData();
 
             InitializeRodsContainer();
         }
@@ -195,6 +201,21 @@
             {
                 QuickLogger.Debug("Parent cyclops found directly!");
                 ConnectToCyclops(cyclops);
+            }
+        }
+
+        private void ReadySaveData()
+        {
+            if (prefabId == null)
+            {
+                PrefabIdentifier prefabIdentifier = GetComponentInParent<PrefabIdentifier>() ?? GetComponent<PrefabIdentifier>();
+                prefabId = prefabIdentifier.Id;
+            }
+
+            if (prefabId != null)
+            {
+                QuickLogger.Debug($"CyNukeReactorMono PrefabIdentifier {prefabId}");
+                _saveData = new CyNukeReactorSaveData(prefabId, MaxSlots);
             }
         }
 
@@ -305,13 +326,21 @@
 
         #region Save Data
 
-        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
+        public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
+            isLoadingSaveData = true;
+
+            InitializeRodsContainer();
+
+            RodsContainer.Clear();
+
             QuickLogger.Debug("Loading save data");
+
+            if (_saveData == null)
+                ReadySaveData();
 
             if (_saveData.LoadData())
             {
-                isLoadingSaveData = true;
                 QuickLogger.Debug("Save data found");
 
                 RodsContainer.Clear(false);
@@ -337,18 +366,11 @@
                 }
 
                 QuickLogger.Debug($"Added {nonEmptySlots} items from save data");
-
-                isLoadingSaveData = false;
             }
-        }
-
-        public void OnProtoDeserialize(ProtobufSerializer serializer)
-        {
-            isLoadingSaveData = true;
-
-            InitializeRodsContainer();
-
-            RodsContainer.Clear();
+            else
+            {
+                QuickLogger.Debug("No save data found");
+            }
 
             isLoadingSaveData = false;
         }
@@ -360,10 +382,6 @@
             _saveData.SaveData();
         }
 
-        public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
-        {
-            // Intentionally empty
-        }
 
         #endregion
 
@@ -371,7 +389,7 @@
 
         public void OnHandClick(GUIHand hand)
         {
-            if (!_buildable.constructed)
+            if (!this.Buildable.constructed)
                 return;
 
             Player main = Player.main;
@@ -384,7 +402,7 @@
 
         public void OnHandHover(GUIHand hand)
         {
-            if (!_buildable.constructed)
+            if (!this.Buildable.constructed)
                 return;
 
             HandReticle main = HandReticle.main;
