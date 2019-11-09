@@ -112,6 +112,7 @@
             base.Awake();
 
             ReadySaveData();
+
             InitializeStorageRoot();
             InitializeContainer();
             InitializeAnimations();
@@ -269,7 +270,7 @@
 
         public void OnHandHover(GUIHand guiHand)
         {
-            if (!IsContructed)
+            if (!this.IsContructed)
                 return;
 
             HandReticle main = HandReticle.main;
@@ -396,9 +397,16 @@
 
             InitializeStorageRoot();
 
+            InitializeContainer();
+
             container.Clear(false);
 
-            if (saveData.Load())
+            QuickLogger.Debug("Checking save data");
+
+            if (saveData == null)
+                ReadySaveData();
+
+            if (saveData != null && saveData.Load())
             {
                 QuickLogger.Debug("Save data found");
 
@@ -443,7 +451,7 @@
             }
         }
 
-        public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
+        public void ConnectToContainer(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
         {
             pdaInventoryMapping = lookup;
 
