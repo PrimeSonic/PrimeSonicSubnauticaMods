@@ -1,13 +1,13 @@
 ﻿namespace IonCubeGenerator.Mono
 {
+    using System;
+    using System.Collections.Generic;
     using Common;
     using IonCubeGenerator.Enums;
     using IonCubeGenerator.Interfaces;
-    using System;
-    using System.Collections.Generic;
     using UnityEngine;
 
-    internal class CubeGeneratorMono : MonoBehaviour, ICubeGeneratorSaveData, IProtoTreeEventListener, ICubeContainer, ICubeProduction
+    internal class CubeGeneratorMono : MonoBehaviour, ICubeGeneratorSaveData, IProtoEventListener, ICubeContainer, ICubeProduction
     {
         internal const float ProgressComplete = 100f;
         internal const SpeedModes StartingMode = SpeedModes.Off;
@@ -19,7 +19,21 @@
 
         private SpeedModes _currentMode = StartingMode;
         private PowerRelay _connectedRelay = null;
-        private Constructable _buildable = null;
+        private Constructable buildable = null;
+
+        internal Constructable Buildable
+        {
+            get
+            {
+                if (buildable == null)
+                {
+                    buildable = GetComponentInParent<Constructable>() ?? GetComponent<Constructable>();
+                }
+
+                return buildable;
+            }
+        }
+
         private ICubeContainer _cubeContainer;
         private ICubeGeneratorSaveHandler _saveData;
 
@@ -39,7 +53,7 @@
             }
         }
 
-        internal bool IsConstructed => _buildable != null && _buildable.constructed;
+        internal bool IsConstructed => this.Buildable != null && this.Buildable.constructed;
 
         public bool IsFull => _cubeContainer.IsFull;
 
@@ -103,20 +117,22 @@
 
         public void Awake()
         {
-            if (_buildable == null)
-            {
-                _buildable = GetComponentInParent<Constructable>();
-            }
-
             if (_saveData == null)
-            {
-                string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CubeGeneratorSaveData(id);
-            }
+                ReadySaveData();
 
-            _cubeContainer = new CubeGeneratorContainer(this);
+            if (_cubeContainer == null)
+                _cubeContainer = new CubeGeneratorContainer(this);
 
             UpdatePowerRelay();
+        }
+
+        private void ReadySaveData()
+        {
+            PrefabIdentifier prefabIdentifier = GetComponentInParent<PrefabIdentifier>() ?? GetComponent<PrefabIdentifier>();
+            string id = prefabIdentifier.Id;
+
+            QuickLogger.Debug($"CubeGeneratorMono prefabIdentifier: {id}");
+            _saveData = new CubeGeneratorSaveData(id);
         }
 
         private void Start()
@@ -155,7 +171,7 @@
             else if (this.GenerationProgress >= CubeEnergyCost)
             {
                 QuickLogger.Debug("IonCube Generator - Cooldown", true);
-                
+
                 // Finished generating cube - Start cool down
                 this.CoolDownProgress = 0f;
             }
@@ -231,28 +247,38 @@
 
         internal void OnAddItemEvent(InventoryItem item)
         {
-            _buildable.deconstructionAllowed = false;
+            this.Buildable.deconstructionAllowed = false;
         }
 
         internal void OnRemoveItemEvent(InventoryItem item)
         {
-            _buildable.deconstructionAllowed = _cubeContainer.NumberOfCubes == 0;
+            this.Buildable.deconstructionAllowed = _cubeContainer.NumberOfCubes == 0;
             TryStartingNextCube();
         }
 
         #region ProtoTree methods
 
-        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
+        public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
             this.PauseUpdates = true;
-            _saveData.LoadData(this);
+
+            if (_saveData == null)
+                ReadySaveData();
+
+            if (_cubeContainer == null)
+                _cubeContainer = new CubeGeneratorContainer(this);
+
+            _saveData?.LoadData(this);
+
             this.PauseUpdates = false;
         }
 
-        public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
+        public void OnProtoSerialize(ProtobufSerializer serializer)
         {
             this.PauseUpdates = true;
+
             _saveData.SaveData(this);
+
             this.PauseUpdates = false;
         }
 
