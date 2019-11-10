@@ -1,5 +1,8 @@
 ﻿namespace MidGameBatteries.Craftables
 {
+    using System.IO;
+    using System.Reflection;
+    using Common;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
@@ -14,15 +17,20 @@
 
         private static readonly string[] PathToNewTab = new[] { ResourcesCraftingTab, ElectronicsCraftingTab, BatteryPowerCraftingTab };
 
-    // Class level elements
+        // Class level elements
 
-    public static TechType BatteryID { get; protected set; }
+        public static TechType BatteryID { get; protected set; }
         public static TechType PowerCellID { get; protected set; }
 
         internal static void PatchAll()
         {
+            string mainDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
             // Create a new crafting tree tab for batteries and power cells
-            var tabIcon = ImageUtils.LoadSpriteFromFile(@"./Qmods/" + MgBatteryAssets + @"/CraftingTabIcon.png");
+            string assetsFolder = Path.Combine(mainDirectory, "Assets");
+            string pathToIcon = Path.Combine(assetsFolder, @"/CraftingTabIcon.png");
+
+            Atlas.Sprite tabIcon = ImageUtils.LoadSpriteFromFile(pathToIcon);
             CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, BatteryPowerCraftingTab, "Batteries and Power Cells", tabIcon, ResourcesCraftingTab, ElectronicsCraftingTab);
 
             // Remove the original batteries from the Electronics tab
@@ -30,17 +38,21 @@
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResourcesCraftingTab, ElectronicsCraftingTab, TechType.PowerCell.ToString());
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResourcesCraftingTab, ElectronicsCraftingTab, TechType.PrecursorIonBattery.ToString());
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResourcesCraftingTab, ElectronicsCraftingTab, TechType.PrecursorIonPowerCell.ToString());
-            
+
             // And add them back in on the new Batteries and PowerCells tab
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, PathToNewTab);
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, PathToNewTab);
-            
-            var config = new DeepConfig();
-            config.ReadConfigFile();
 
+            var config = new DeepConfig();
+            config.ReadConfigFile(mainDirectory);
+
+            QuickLogger.Info($"Selected PowerStyle in config: {config.SelectedPowerStyle} - (Battery Capacity:{Mathf.RoundToInt(config.BatteryCapacity)})");
+
+            QuickLogger.Info("Patching DeepBattery");
             var lithiumBattery = new DeepBattery(config.BatteryCapacity);
             lithiumBattery.Patch();
 
+            QuickLogger.Info("Patching DeepPowerCell");
             var lithiumPowerCell = new DeepPowerCell(lithiumBattery);
             lithiumPowerCell.Patch();
 

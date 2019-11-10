@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Reflection;
     using System.Text;
     using Common;
     using Common.EasyMarkup;
@@ -22,8 +23,8 @@
         private const string PowerStyleKey = "BatteryPower";
         private const float BasePower = 100f;
 
-        private const string ConfigDirectory = "./QMods/MidGameBatteries";
-        private const string ConfigFile = ConfigDirectory + "/" + MainKey + ".txt";
+        private string executingDirectory;
+        private string ConfigFile;
 
         private readonly EmProperty<PowerStyle> PowerStyleConfig;
 
@@ -47,22 +48,34 @@
         {
             get
             {
-                switch (SelectedPowerStyle)
+                switch (this.SelectedPowerStyle)
                 {
-                    case PowerStyle.VeryLow: return BasePower * 1.5f;
-                    case PowerStyle.Low: return BasePower * 2f;
-                    case PowerStyle.Normal: return BasePower * 2.5f;
-                    case PowerStyle.High: return BasePower * 3f;
-                    case PowerStyle.VeryHigh: return BasePower * 3.75f;
-                    default: return BasePower * 1.75f;
+                    case PowerStyle.VeryLow:
+                        return BasePower * 1.5f;
+                    case PowerStyle.Low:
+                        return BasePower * 2f;
+                    case PowerStyle.Normal:
+                        return BasePower * 2.5f;
+                    case PowerStyle.High:
+                        return BasePower * 3f;
+                    case PowerStyle.VeryHigh:
+                        return BasePower * 3.75f;
+                    default:
+                        return BasePower * 1.75f;
                 }
             }
         }
 
-        internal override EmProperty Copy() => new DeepConfig() { SelectedPowerStyle = this.SelectedPowerStyle };
-
-        internal void ReadConfigFile()
+        internal override EmProperty Copy()
         {
+            return new DeepConfig() { SelectedPowerStyle = this.SelectedPowerStyle };
+        }
+
+        internal void ReadConfigFile(string mainDirectory)
+        {
+            executingDirectory = mainDirectory;
+            ConfigFile = Path.Combine(executingDirectory, $"{MainKey}.txt");
+
             try
             {
                 Load();
@@ -76,7 +89,7 @@
 
         public void Save()
         {
-            File.WriteAllLines(ConfigFile, new[]
+            File.WriteAllLines(this.ConfigFile, new[]
             {
                 "# --------------------------------------------------------------------------- #",
                 "# Updates to this config file will ONLY take effect AFTER restarting the game #",
@@ -102,14 +115,14 @@
 
         private void Load()
         {
-            if (!File.Exists(ConfigFile))
+            if (!File.Exists(this.ConfigFile))
             {
                 QuickLogger.Message($"Config file not found. Writing default file.");
                 Save();
                 return;
             }
 
-            string text = File.ReadAllText(ConfigFile, Encoding.UTF8);
+            string text = File.ReadAllText(this.ConfigFile, Encoding.UTF8);
 
             bool readCorrectly = FromString(text);
 

@@ -5,7 +5,7 @@
     using Harmony;
 
     [HarmonyPatch(typeof(BatteryCharger))] // Patches the BatteryCharger class
-    [HarmonyPatch(nameof(BatteryCharger.Start))]
+    [HarmonyPatch(nameof(BatteryCharger.Initialize))]
     internal class BatteryCharger_Patcher
     {
         [HarmonyPrefix] // This will run just before the code in the chosen method
@@ -21,7 +21,7 @@
     }
 
     [HarmonyPatch(typeof(PowerCellCharger))] // Patches the PowerCellCharger class
-    [HarmonyPatch(nameof(PowerCellCharger.Start))]
+    [HarmonyPatch(nameof(PowerCellCharger.Initialize))]
     internal class PowerCellCharger_Patcher
     {
         [HarmonyPrefix] // This will run just before the code in the chosen method
