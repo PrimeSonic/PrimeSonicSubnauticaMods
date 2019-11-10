@@ -28,7 +28,7 @@
 
             // Create a new crafting tree tab for batteries and power cells
             string assetsFolder = Path.Combine(mainDirectory, "Assets");
-            string pathToIcon = Path.Combine(assetsFolder, @"/CraftingTabIcon.png");
+            string pathToIcon = Path.Combine(assetsFolder, @"CraftingTabIcon.png");
 
             Atlas.Sprite tabIcon = ImageUtils.LoadSpriteFromFile(pathToIcon);
             CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, BatteryPowerCraftingTab, "Batteries and Power Cells", tabIcon, ResourcesCraftingTab, ElectronicsCraftingTab);
