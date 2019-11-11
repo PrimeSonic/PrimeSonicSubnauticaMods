@@ -40,6 +40,9 @@
             };
         }
 
-        private void SetStaticTechType() => PowerCellID = this.TechType;
+        private void SetStaticTechType()
+        {
+            PowerCellID = this.TechType;
+        }
     }
 }

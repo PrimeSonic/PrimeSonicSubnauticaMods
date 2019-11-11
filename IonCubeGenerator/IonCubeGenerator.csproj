@@ -35,30 +35,45 @@
   <ItemGroup>
     <Reference Include="0Harmony-1.2.0.1, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesUnity5\0Harmony-1.2.0.1.dll</HintPath>
+      <HintPath>..\DependenciesSubnautica\0Harmony-1.2.0.1.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesUnity5\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\DependenciesSubnautica\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesUnity5\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\DependenciesSubnautica\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
+      <HintPath>..\DependenciesSubnautica\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesUnity5\UnityEngine.dll</HintPath>
+      <HintPath>..\DependenciesSubnautica\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>..\DependenciesSubnautica\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\DependenciesSubnautica\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\DependenciesSubnautica\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\DependenciesSubnautica\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesUnity5\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\DependenciesSubnautica\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\DependenciesSubnautica\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -70,9 +85,6 @@
     <Compile Include="Craftables\AlienIngot.cs" />
     <Compile Include="Craftables\AlienIngotPrefab.cs" />
     <Compile Include="CubeGeneratorSaveData.cs" />
-    <Compile Include="Debug_IONCube\DebugMenu.cs" />
-    <Compile Include="Debug_IONCube\Patches\OpenDebugMenu.cs" />
-    <Compile Include="Debug_IONCube\Patches\temp.cs" />
     <Compile Include="Display\InterfaceButton.cs" />
     <Compile Include="Display\IonGeneratorDisplay.cs" />
     <Compile Include="Display\OnScreenButton.cs" />

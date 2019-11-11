@@ -5,7 +5,7 @@
     using Harmony;
 
     [HarmonyPatch(typeof(EnergyMixin))] // Patches the EnergyMixin class
-    [HarmonyPatch("Start")] // Patches the Start method
+    [HarmonyPatch(nameof(EnergyMixin.Start))]
     internal class EnergyMixin_Initialize_Patcher
     {
         [HarmonyPostfix] // This will run right after the code of the chosen method
@@ -39,7 +39,7 @@
     }
 
     [HarmonyPatch(typeof(EnergyMixin))] // Patches the EnergyMixin class
-    [HarmonyPatch("NotifyHasBattery")] // Patches the NotifyHasBattery method
+    [HarmonyPatch(nameof(EnergyMixin.NotifyHasBattery))] // Patches the NotifyHasBattery method
     internal class EnergyMixin_NotifyHasBattery_Patcher
     {
         [HarmonyPostfix] // This will run right after the code of the chosen method
