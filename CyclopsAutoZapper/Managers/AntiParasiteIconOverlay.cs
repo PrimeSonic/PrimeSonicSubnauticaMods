@@ -16,6 +16,10 @@
 
         public override void UpdateText()
         {
+            base.UpperText.FontSize = 16;
+            base.MiddleText.FontSize = 16;
+            base.LowerText.FontSize = 16;
+
             if (zapper.HasShieldModule)
             {
                 base.UpperText.TextString = "Shield\n[Connected]";
