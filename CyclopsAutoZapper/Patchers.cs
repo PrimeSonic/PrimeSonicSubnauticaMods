@@ -5,7 +5,7 @@
     using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(CyclopsSonarDisplay))]
-    [HarmonyPatch("NewEntityOnSonar")]
+    [HarmonyPatch(nameof(CyclopsSonarDisplay.NewEntityOnSonar))]
     internal static class CyclopsSonarDisplay_NewEntityOnSonar_Patcher
     {
         [HarmonyPostfix]
@@ -34,7 +34,7 @@
     }
 
     [HarmonyPatch(typeof(CyclopsSonarDisplay))]
-    [HarmonyPatch("DistanceCheck")]
+    [HarmonyPatch(nameof(CyclopsSonarDisplay.DistanceCheck))]
     internal static class CyclopsSonarDisplay_DistanceCheck_Patcher
     {
         [HarmonyPostfix]

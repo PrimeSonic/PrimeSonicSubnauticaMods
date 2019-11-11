@@ -4,7 +4,7 @@
     using Harmony;
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("Start")]
+    [HarmonyPatch(nameof(BaseBioReactor.Start))]
     internal class Post_Start_Patcher
     {
         [HarmonyPostfix]
@@ -15,7 +15,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("OnHover")]
+    [HarmonyPatch(nameof(BaseBioReactor.OnHover))]
     internal class OnHover_Patcher
     {
         [HarmonyPrefix]
@@ -28,7 +28,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("OnUse")]
+    [HarmonyPatch(nameof(BaseBioReactor.OnUse))]
     internal class OnUse_Patcher
     {
         [HarmonyPrefix]
@@ -41,7 +41,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("Update")]
+    [HarmonyPatch(nameof(BaseBioReactor.Update))]
     internal class Update_Patcher
     {
         [HarmonyPostfix]
@@ -52,7 +52,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("ProducePower")]
+    [HarmonyPatch(nameof(BaseBioReactor.ProducePower))]
     internal class ProducePower_Patcher
     {
         [HarmonyPrefix]
@@ -65,21 +65,20 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("OnProtoDeserializeObjectTree")]
+    [HarmonyPatch(nameof(BaseBioReactor.OnProtoDeserializeObjectTree))]
     internal class OnProtoDeserializeObjectTree_Patcher
     {
         [HarmonyPrefix]
         internal static bool Prefix(BaseBioReactor __instance, ProtobufSerializer serializer)
         {
             QuickLogger.Debug("OnProtoDeserializeObjectTree");
-
             CyBioReactorMini.GetMiniReactor(__instance).OnProtoDeserializeObjectTree(serializer);
             return false;
         }
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("OnProtoDeserialize")]
+    [HarmonyPatch(nameof(BaseBioReactor.OnProtoDeserialize))]
     internal class OnProtoDeserialize_Patcher
     {
         [HarmonyPrefix]
@@ -92,7 +91,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("OnProtoSerializeObjectTree")]
+    [HarmonyPatch(nameof(BaseBioReactor.OnProtoSerializeObjectTree))]
     internal class OnProtoSerializeObjectTree_Patcher
     {
         [HarmonyPostfix]
@@ -104,7 +103,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("OnProtoSerialize")]
+    [HarmonyPatch(nameof(BaseBioReactor.OnProtoSerialize))]
     internal class OnProtoSerialize_Patcher
     {
         [HarmonyPostfix]

@@ -4,7 +4,7 @@
     using Managers;
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("Awake")]
+    [HarmonyPatch(nameof(SubRoot.Awake))]
     internal class SubRoot_Awake_Patcher
     {
         [HarmonyPrefix]
@@ -17,7 +17,7 @@
     }
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("UpdateThermalReactorCharge")]
+    [HarmonyPatch(nameof(SubRoot.UpdateThermalReactorCharge))]
     internal class SubRoot_UpdateThermalReactorCharge_Patcher
     {
         [HarmonyPrefix]
@@ -34,7 +34,7 @@
     }
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("UpdatePowerRating")]
+    [HarmonyPatch(nameof(SubRoot.UpdatePowerRating))]
     internal class SubRoot_UpdatePowerRating_Patcher
     {
         [HarmonyPrefix]
@@ -52,7 +52,7 @@
     }
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("SetCyclopsUpgrades")]
+    [HarmonyPatch(nameof(SubRoot.SetCyclopsUpgrades))]
     internal class SubRoot_SetCyclopsUpgrades_Patcher
     {
         [HarmonyPrefix]
@@ -75,7 +75,7 @@
     }
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("SetExtraDepth")]
+    [HarmonyPatch(nameof(SubRoot.SetExtraDepth))]
     internal class SubRoot_SetExtraDepth_Patcher
     {
         [HarmonyPrefix]
@@ -87,7 +87,7 @@
     }
 
     [HarmonyPatch(typeof(SubRoot))]
-    [HarmonyPatch("OnPlayerEntered")]
+    [HarmonyPatch(nameof(SubRoot.OnPlayerEntered))]
     internal class SubRoot_OnPlayerEntered_BeQuiet
     {
         private static bool firstEventDone = false;

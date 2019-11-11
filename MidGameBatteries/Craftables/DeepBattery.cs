@@ -37,6 +37,9 @@
             };
         }
 
-        private void SetStaticTechType() => BatteryID = this.TechType;
+        private void SetStaticTechType()
+        {
+            BatteryID = this.TechType;
+        }
     }
 }

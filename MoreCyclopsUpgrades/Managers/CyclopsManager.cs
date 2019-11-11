@@ -110,10 +110,10 @@
 
         private readonly Dictionary<string, IAuxCyclopsManager> AuxiliaryManagers = new Dictionary<string, IAuxCyclopsManager>();
 
-        internal readonly UpgradeManager Upgrade;// => _upgrade ?? (_upgrade = new UpgradeManager(Cyclops));
-        internal readonly ChargeManager Charge; //=> _charge ?? (_charge = new ChargeManager(Cyclops));
-        internal readonly CyclopsHUDManager HUD; //=> _hud ?? (_hud = new CyclopsHUDManager(Cyclops));
-        internal readonly PowerRatingManager Engine; //=> _engine ?? (_engine = new PowerRatingManager(Cyclops));
+        internal readonly UpgradeManager Upgrade;
+        internal readonly ChargeManager Charge;
+        internal readonly CyclopsHUDManager HUD;
+        internal readonly PowerRatingManager Engine;
 
         private CyclopsManager(SubRoot cyclops)
         {

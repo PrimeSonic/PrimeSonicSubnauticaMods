@@ -31,7 +31,7 @@
         private const string DebugLogsEnabledKey = "EnableDebugLogs";
         private const string HelmEnergyDisplayKey = "HelmEnergyDisplay";
 
-        private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable AuxUpgradeConsole                        (Restart game)")
+        private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable AuxUpgradeConsole (Restart game)")
         {
             State = true
         };
@@ -48,7 +48,7 @@
         private readonly SliderOption deficitThreshHold = new SliderOption(DeficitThresholdKey, "Conserve chargers when over %")
         {
             MinValue = 10f,
-            MaxValue = 99f,
+            MaxValue = 100f,
             Value = 95f
         };
         private readonly ChoiceOption showIcons = new ChoiceOption(ChargerIconsKey, "Charging Status Icons")
@@ -236,16 +236,18 @@
         private float CyclopsMaxPower = 1f;
 
         public float MinimumEnergyDeficit { get; private set; } = 60f;
-        public float EmergencyEnergyDeficit { get; private set; } = 600f;
+        public float EmergencyEnergyDeficit { get; private set; } = 6f;
 
         public void UpdateCyclopsMaxPower(float maxPower)
         {
+            if (CyclopsMaxPower == maxPower)
+                return;
+
             CyclopsMaxPower = maxPower;
             float ratio = this.DeficitThreshold / 100f;
             this.MinimumEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * ratio);
 
-            const float emergencyPowerKickIn = 0.5f;
-            this.EmergencyEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * emergencyPowerKickIn);
+            this.EmergencyEnergyDeficit = Mathf.Round(CyclopsMaxPower / 2f);
         }
     }
 }

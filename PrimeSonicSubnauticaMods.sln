@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsAutoZapper", "Cyclop
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CommonCyclopsBuildables", "CommonCyclopsBuildables\CommonCyclopsBuildables.shproj", "{FCB57595-3F3F-4CE0-A40F-BC161F367467}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FCStudioHelpers", "FCStudioHelpers\FCStudioHelpers.shproj", "{5C00A82E-51C7-4721-8052-5DD9A14C78AB}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
@@ -58,11 +60,14 @@ Global
 		Utilities\Utilities.projitems*{0fdbc24d-27cf-435f-b49c-d0a8a580971a}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{405a8ab5-3671-4bc7-9fcb-b8a2f6a456f1}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{4186cf53-c9f3-4635-a108-84cf60a2ed0e}*SharedItemsImports = 4
+		FCStudioHelpers\FCStudioHelpers.projitems*{55314209-de35-4a05-a188-ea01fc1dca95}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{55314209-de35-4a05-a188-ea01fc1dca95}*SharedItemsImports = 4
 		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{58c9178b-e77d-4f01-b911-131a7043c188}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{58c9178b-e77d-4f01-b911-131a7043c188}*SharedItemsImports = 4
+		FCStudioHelpers\FCStudioHelpers.projitems*{5c00a82e-51c7-4721-8052-5dd9a14c78ab}*SharedItemsImports = 13
 		CommonCyclopsBuildables\CommonCyclopsBuildables.projitems*{63ed29ed-9c34-47b8-ba79-c3392ac44edc}*SharedItemsImports = 4
 		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{63ed29ed-9c34-47b8-ba79-c3392ac44edc}*SharedItemsImports = 4
+		FCStudioHelpers\FCStudioHelpers.projitems*{63ed29ed-9c34-47b8-ba79-c3392ac44edc}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{63ed29ed-9c34-47b8-ba79-c3392ac44edc}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{656a031a-0bae-4633-89f7-0f3464d247e2}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{7219cbf2-da8a-45c3-aee9-9651b8f1f5fe}*SharedItemsImports = 4
@@ -74,6 +79,7 @@ Global
 		Utilities\Utilities.projitems*{a14a9bd2-6817-4beb-9664-8b24279a3dab}*SharedItemsImports = 4
 		CommonCyclopsBuildables\CommonCyclopsBuildables.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
+		FCStudioHelpers\FCStudioHelpers.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{da01f903-5e97-47fc-a7e5-d67967d89646}*SharedItemsImports = 13
 		CommonCyclopsBuildables\CommonCyclopsBuildables.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4

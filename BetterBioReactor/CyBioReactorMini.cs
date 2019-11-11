@@ -17,18 +17,20 @@
             if (LookupMiniReactor.TryGetValue(bioReactor, out CyBioReactorMini existingBioMini))
                 return existingBioMini;
 
-            QuickLogger.Debug("CyBioReactorMini Connected");
-
             var createdBioMini = new CyBioReactorMini(bioReactor);
             LookupMiniReactor.Add(bioReactor, createdBioMini);
 
+            QuickLogger.Debug("CyBioReactorMini Connected");
+
             return createdBioMini;
         }
+
         internal static bool PdaIsOpen = false;
         internal static CyBioReactorMini OpenInPda = null;
 
-        private const int TextDelayTicks = 60;
-        private int textDelay = TextDelayTicks;
+        private const float TextDelayInterval = 2f;
+        private float textDelay = TextDelayInterval;
+
         private bool isLoadingSaveData = false;
         private float numberOfContainerSlots = 12;
         private CyBioReactorSaveData SaveData;
@@ -48,7 +50,12 @@
         {
             BioReactor = bioReactor;
 
-            string id = BioReactor.GetComponentInParent<PrefabIdentifier>().Id;
+            PrefabIdentifier prefabIdentifier = bioReactor.GetComponentInParent<PrefabIdentifier>() ?? bioReactor.GetComponent<PrefabIdentifier>();
+
+            string id = prefabIdentifier.Id;
+
+            QuickLogger.Debug($"CyBioReactorMini PrefabIdentifier: {id}");
+            
             SaveData = new CyBioReactorSaveData(id);
         }
 
@@ -180,10 +187,10 @@
 
         internal void UpdateDisplayText()
         {
-            if (textDelay-- > 0)
+            if (Time.time < textDelay)
                 return; // Slow down the text update
 
-            textDelay = TextDelayTicks;
+            textDelay = Time.time + TextDelayInterval;
 
             if (MaterialsProcessing.Count > 0 || this.CurrentPower > 0)
             {

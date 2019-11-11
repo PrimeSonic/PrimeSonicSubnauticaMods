@@ -1,5 +1,0 @@
-If you have pulled this project to your local machine, you will need to provide your own Subnautica  Assembly-CSharp DLLs.
-../Subnautica/Subnautica_Data/Managed
-
-For the publicized assemblies, you will need to generate your own using the AssemblyPublicizer
-https://github.com/CabbageCrow/AssemblyPublicizer

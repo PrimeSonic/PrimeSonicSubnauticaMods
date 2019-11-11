@@ -5,7 +5,7 @@
     using UnityEngine;
 
     [HarmonyPatch(typeof(CyclopsHelmHUDManager))]
-    [HarmonyPatch("Update")]
+    [HarmonyPatch(nameof(CyclopsHelmHUDManager.Update))]
     internal class CyclopsHelmHUDManager_Update_Patcher
     {
         [HarmonyPrefix]
@@ -29,7 +29,7 @@
     }
 
     [HarmonyPatch(typeof(CyclopsHolographicHUD))]
-    [HarmonyPatch("RefreshUpgradeConsoleIcons")]
+    [HarmonyPatch(nameof(CyclopsHolographicHUD.RefreshUpgradeConsoleIcons))]
     internal class CyclopsHolographicHUD_Patcher
     {
         [HarmonyPrefix]
@@ -40,7 +40,7 @@
     }
 
     [HarmonyPatch(typeof(CyclopsUpgradeConsoleHUDManager))]
-    [HarmonyPatch("RefreshScreen")]
+    [HarmonyPatch(nameof(CyclopsUpgradeConsoleHUDManager.RefreshScreen))]
     internal class CyclopsUpgradeConsoleHUDManager_RefreshScreen_Patcher
     {
         [HarmonyPrefix]

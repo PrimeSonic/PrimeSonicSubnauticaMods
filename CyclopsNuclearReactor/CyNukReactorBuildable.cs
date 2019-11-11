@@ -2,7 +2,7 @@
 {
     using System;
     using Common;
-    using Common.Helpers;
+    using FCStudioHelpers;
     using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using Common;
     using CyclopsNuclearReactor.Helpers;
     using MoreCyclopsUpgrades.API;
@@ -9,8 +10,11 @@
     using UnityEngine;
 
     [ProtoContract]
-    internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener
+    internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener
     {
+        internal static bool PdaIsOpen = false;
+        internal static CyNukeReactorMono OpenInPda = null;
+
         internal const float InitialReactorRodCharge = 10000f; // Half of what the Base Nuclear Reactor provides
         internal const float PowerMultiplier = 4.05f; // Rounded down and slightly reduced from what the Base Nuclear Reactor provides
 
@@ -27,11 +31,24 @@
 
         public SubRoot ParentCyclops = null;
         public CyNukeManager Manager = null;
-        internal ItemsContainer RodsContainer = null;
+        private ItemsContainer container = null;
         private ChildObjectIdentifier _rodsRoot = null;
-        private Constructable _buildable = null;
+        private string prefabId = null;
 
-        private bool pdaIsOpen = false;
+        private Constructable _buildable = null;
+        internal Constructable Buildable
+        {
+            get
+            {
+                if (_buildable == null)
+                {
+                    _buildable = GetComponentInParent<Constructable>() ?? GetComponent<Constructable>();
+                }
+
+                return _buildable;
+            }
+        }
+
         private bool isLoadingSaveData = false;
         private bool isDepletingRod = false;
 
@@ -60,7 +77,7 @@
 
         internal readonly List<SlotData> reactorRodData = new List<SlotData>(MaxSlots);
 
-        internal bool IsConstructed => _buildable != null && _buildable.constructed;
+        internal bool IsConstructed => this.Buildable != null && this.Buildable.constructed;
 
         internal string PowerIndicatorString()
         {
@@ -146,16 +163,16 @@
             {
                 isDepletingRod = true;
 
-                RodsContainer.RemoveItem(depletedRod.Item, true);
+                container.RemoveItem(depletedRod.Item, true);
                 GameObject.Destroy(depletedRod.Item.gameObject);
-                RodsContainer.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
+                container.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
 
                 ErrorMessage.AddMessage(CyNukReactorBuildable.DepletedMessage());
 
                 isDepletingRod = false;
             }
 
-            if (pdaIsOpen)
+            if (PdaIsOpen)
                 UpdateDisplayText();
 
             return totalPowerProduced;
@@ -167,16 +184,8 @@
         {
             base.Awake();
 
-            if (_buildable == null)
-            {
-                _buildable = GetComponentInParent<Constructable>();
-            }
-
             if (_saveData == null)
-            {
-                string id = GetComponentInParent<PrefabIdentifier>().Id;
-                _saveData = new CyNukeReactorSaveData(id, MaxSlots);
-            }
+                ReadySaveData();
 
             InitializeRodsContainer();
         }
@@ -195,6 +204,21 @@
             {
                 QuickLogger.Debug("Parent cyclops found directly!");
                 ConnectToCyclops(cyclops);
+            }
+        }
+
+        private void ReadySaveData()
+        {
+            if (prefabId == null)
+            {
+                PrefabIdentifier prefabIdentifier = GetComponentInParent<PrefabIdentifier>() ?? GetComponent<PrefabIdentifier>();
+                prefabId = prefabIdentifier.Id;
+            }
+
+            if (prefabId != null)
+            {
+                QuickLogger.Debug($"CyNukeReactorMono PrefabIdentifier {prefabId}");
+                _saveData = new CyNukeReactorSaveData(prefabId, MaxSlots);
             }
         }
 
@@ -244,24 +268,30 @@
             if (_rodsRoot == null)
             {
                 QuickLogger.Debug("Initializing StorageRoot");
+
                 var storageRoot = new GameObject("StorageRoot");
                 storageRoot.transform.SetParent(this.transform, false);
                 _rodsRoot = storageRoot.AddComponent<ChildObjectIdentifier>();
             }
 
-            if (RodsContainer == null)
+            if (container == null)
             {
                 QuickLogger.Debug("Initializing RodsContainer");
-                RodsContainer = new ItemsContainer(ContainerWidth, ContainerHeight, _rodsRoot.transform, CyNukReactorBuildable.StorageLabel(), null);
-                RodsContainer.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
 
-                RodsContainer.isAllowedToAdd += IsAllowedToAdd;
-                RodsContainer.isAllowedToRemove += IsAllowedToRemove;
+                container = new ItemsContainer(ContainerWidth, ContainerHeight, _rodsRoot.transform, CyNukReactorBuildable.StorageLabel(), null);
+                container.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
 
-                RodsContainer.onAddItem += OnAddItem;
-                RodsContainer.onRemoveItem += OnRemoveItem;
+                container.isAllowedToAdd += IsAllowedToAdd;
+                container.isAllowedToRemove += IsAllowedToRemove;
 
-                RodsContainer.onChangeItemPosition += RodsContainer_onChangeItemPosition;
+                (container as IItemsContainer).onAddItem += OnAddItem;
+                (container as IItemsContainer).onRemoveItem += OnRemoveItem;
+
+                EventInfo onChangeItemPositionInfo = typeof(ItemsContainer).GetEvent("onChangeItemPosition", BindingFlags.Public | BindingFlags.Instance);
+                MethodInfo myChangeItemPositionMethod = typeof(CyNukeReactorMono).GetMethod(nameof(CyNukeReactorMono.RodsContainer_onChangeItemPosition), BindingFlags.NonPublic | BindingFlags.Instance);
+
+                var onChangeDelegate = Delegate.CreateDelegate(typeof(ItemsContainer.OnChangeItemPosition), this, myChangeItemPositionMethod);
+                onChangeItemPositionInfo.AddEventHandler(container, onChangeDelegate);
             }
         }
 
@@ -305,16 +335,24 @@
 
         #region Save Data
 
-        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
+        public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
+            isLoadingSaveData = true;
+
+            InitializeRodsContainer();
+
+            container.Clear();
+
             QuickLogger.Debug("Loading save data");
+
+            if (_saveData == null)
+                ReadySaveData();
 
             if (_saveData.LoadData())
             {
-                isLoadingSaveData = true;
                 QuickLogger.Debug("Save data found");
 
-                RodsContainer.Clear(false);
+                container.Clear(false);
                 reactorRodData.Clear();
 
                 int nonEmptySlots = 0;
@@ -329,7 +367,7 @@
 
                         if (spanwedItem != null)
                         {
-                            InventoryItem rod = RodsContainer.AddItem(spanwedItem.item);
+                            InventoryItem rod = container.AddItem(spanwedItem.item);
                             AddNewRod(rodData.RemainingCharge, rod.item);
                             nonEmptySlots++;
                         }
@@ -337,18 +375,11 @@
                 }
 
                 QuickLogger.Debug($"Added {nonEmptySlots} items from save data");
-
-                isLoadingSaveData = false;
             }
-        }
-
-        public void OnProtoDeserialize(ProtobufSerializer serializer)
-        {
-            isLoadingSaveData = true;
-
-            InitializeRodsContainer();
-
-            RodsContainer.Clear();
+            else
+            {
+                QuickLogger.Debug("No save data found");
+            }
 
             isLoadingSaveData = false;
         }
@@ -360,10 +391,6 @@
             _saveData.SaveData();
         }
 
-        public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
-        {
-            // Intentionally empty
-        }
 
         #endregion
 
@@ -371,20 +398,20 @@
 
         public void OnHandClick(GUIHand hand)
         {
-            if (!_buildable.constructed)
+            if (!this.Buildable.constructed)
                 return;
 
-            Player main = Player.main;
-            PDA pda = main.GetPDA();
-            Inventory.main.SetUsedStorage(RodsContainer, false);
-            pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
+            PdaIsOpen = true;
+            OpenInPda = this;
 
-            pdaIsOpen = true;
+            PDA pda = Player.main.GetPDA();
+            Inventory.main.SetUsedStorage(container, false);
+            pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
         }
 
         public void OnHandHover(GUIHand hand)
         {
-            if (!_buildable.constructed)
+            if (!this.Buildable.constructed)
                 return;
 
             HandReticle main = HandReticle.main;
@@ -406,9 +433,10 @@
             for (int r = 0; r < reactorRodData.Count; r++)
                 reactorRodData[r].InfoDisplay = null;
 
-            pdaIsOpen = false;
+            PdaIsOpen = false;
+            OpenInPda = null;
 
-            RodsContainer.onAddItem -= OnAddItemLate;
+            (container as IItemsContainer).onAddItem -= OnAddItemLate;
         }
 
         private void OnAddItem(InventoryItem item)
@@ -441,7 +469,10 @@
         {
             _slotMapping = lookup;
 
-            RodsContainer.onAddItem += OnAddItemLate;
+            (container as IItemsContainer).onAddItem += OnAddItemLate;
+
+            if (this.TotalItemCount == 0)
+                return;
 
             foreach (KeyValuePair<InventoryItem, uGUI_ItemIcon> pair in lookup)
             {

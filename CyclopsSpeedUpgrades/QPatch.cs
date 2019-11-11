@@ -1,6 +1,8 @@
 ﻿namespace CyclopsSpeedUpgrades
 {
+    using System.Reflection;
     using Common;
+    using Harmony;
     using MoreCyclopsUpgrades.API;
 
     public static class QPatch
@@ -15,7 +17,22 @@
             MCUServices.Register.CyclopsUpgradeHandler(speedUpgrade.CreateSpeedUpgradeHandler);
             MCUServices.Register.PdaIconOverlay(speedUpgrade.TechType, speedUpgrade.CreateSpeedIconOverlay);
 
+            var harmony = HarmonyInstance.Create("com.cyclopsspeedupgrades.psmod");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+
             QuickLogger.Info($"Finished patching.");
+        }
+    }
+
+    [HarmonyPatch(typeof(CyclopsHelmHUDManager))]
+    [HarmonyPatch(nameof(CyclopsHelmHUDManager.PlayCavitationWarningAfterSeconds))]
+    internal class NoiseAlertPatch
+    {
+        [HarmonyPrefix]
+        internal static bool Prefix(CyclopsHelmHUDManager __instance)
+        {
+            // Ensure that the alert only plays when in Flank mode
+            return __instance.motorMode.cyclopsMotorMode == CyclopsMotorMode.CyclopsMotorModes.Flank;
         }
     }
 }

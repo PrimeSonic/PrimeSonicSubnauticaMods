@@ -27,7 +27,7 @@
 
         public static void EmptyRod(GameObject gameObject, int index)
         {
-            GameObject uranium = Find(gameObject, index).FindChild("PowerRod_Uranium")?.gameObject;
+            GameObject uranium = Find(gameObject, index)?.FindChild("PowerRod_Uranium")?.gameObject;
 
             if (uranium != null)
             {

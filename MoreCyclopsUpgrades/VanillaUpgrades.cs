@@ -14,11 +14,9 @@
 
     internal class VanillaUpgrades : IVanillaUpgrades
     {
-        public static readonly IVanillaUpgrades Main = new VanillaUpgrades();
-
         public List<TechType> OriginalUpgradeIDs { get; }
 
-        private VanillaUpgrades()
+        internal VanillaUpgrades()
         {
             this.OriginalUpgradeIDs = new List<TechType>(originalUpgrades.Keys);
         }

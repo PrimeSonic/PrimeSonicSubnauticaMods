@@ -1,9 +1,8 @@
-﻿using Common;
-using Common.Helpers;
-
-namespace CyclopsBioReactor.Items
+﻿namespace CyclopsBioReactor.Items
 {
+    using Common;
     using CyclopsBioReactor.Management;
+    using FCStudioHelpers;
     using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
