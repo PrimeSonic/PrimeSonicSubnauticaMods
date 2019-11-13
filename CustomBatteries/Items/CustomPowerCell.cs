@@ -15,7 +15,7 @@
         protected override TechType PrefabType => TechType.PowerCell;
         protected override EquipmentType ChargerType => EquipmentType.PowerCellCharger;
 
-        public void CreateBlueprintData(params TechType[] parts)
+        public void CreateBlueprintData(IEnumerable<TechType> parts)
         {
             var partsList = new List<Ingredient>()
             {

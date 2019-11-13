@@ -66,6 +66,7 @@
     <Compile Include="Items\CustomPack.cs" />
     <Compile Include="Items\CustomPowerCell.cs" />
     <Compile Include="PackReading\PackReader.cs" />
+    <Compile Include="PackReading\PluginPack.cs" />
     <Compile Include="Patches\Charger_Patchers.cs" />
     <Compile Include="Patches\EnergyMixin_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

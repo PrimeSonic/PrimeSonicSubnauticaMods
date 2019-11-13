@@ -34,22 +34,15 @@
         private static void PatchPacks()
         {
             QuickLogger.Info("Reading pluging packs");
-
             string pluginPacksFolder = Path.Combine(CbCore.ExecutingFolder, "Packs");
-
-            IPackReader packReader = null; // TODO
-
-            IEnumerable<IPluginPack> packs = packReader.GetAllPacks(pluginPacksFolder);
-
-            QuickLogger.Info("Building pluging packs");
-
+            
             var customPacks = new List<CustomPack>();
 
-            foreach (IPluginPack pluginPack in packs)
+            QuickLogger.Info("Building pluging packs");
+            foreach (IPluginPack pluginPack in PackReader.GetAllPacks(pluginPacksFolder))
                 customPacks.Add(new CustomPack(pluginPack));
 
             QuickLogger.Info("Patching pluging packs with SMLHelper");
-
             foreach (CustomPack customPack in customPacks)
                 customPack.Patch();
         }

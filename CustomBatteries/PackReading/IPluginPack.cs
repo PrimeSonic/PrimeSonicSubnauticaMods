@@ -1,4 +1,6 @@
-﻿namespace CustomBatteries.PackReading
+﻿using System.Collections.Generic;
+
+namespace CustomBatteries.PackReading
 {
     public interface IPluginPack
     {
@@ -14,7 +16,7 @@
 
         string BatterFlavorText { get; }
 
-        TechType[] BatteryParts { get; }
+        IList<TechType> BatteryParts { get; }
 
         string BatteryIconFile { get; }
 
@@ -24,7 +26,7 @@
 
         string PowerCellFlavorText { get; }
 
-        TechType[] PowerCellAdditionalParts { get; }
+        IList<TechType> PowerCellAdditionalParts { get; }
 
         string PowerCellIconFile { get; }
     }

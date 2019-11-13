@@ -56,7 +56,7 @@
             return obj;
         }
 
-        protected static void CreateIngredients(TechType[] parts, List<Ingredient> partsList)
+        protected static void CreateIngredients(IEnumerable<TechType> parts, List<Ingredient> partsList)
         {
             if (parts == null)
                 return;

@@ -12,7 +12,7 @@
         protected override TechType PrefabType => TechType.Battery;
         protected override EquipmentType ChargerType => EquipmentType.BatteryCharger;
 
-        public void CreateBlueprintData(params TechType[] parts)
+        public void CreateBlueprintData(IEnumerable<TechType> parts)
         {
             var partsList = new List<Ingredient>();
 
