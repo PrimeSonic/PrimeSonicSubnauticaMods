@@ -39,6 +39,9 @@
             set => manager = value;
         }
 
+        private BioBoosterUpgradeHandler upgradeHandler;
+        private BioBoosterUpgradeHandler UpgradeHandler => upgradeHandler ?? (upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<BioBoosterUpgradeHandler>(Cyclops, BioReactorBooster.BoosterTechType));
+
         [AssertNotNull]
         private ChildObjectIdentifier storageRoot;
         private ItemsContainer container;
@@ -281,6 +284,9 @@
 
         public void OnHandClick(GUIHand guiHand)
         {
+            if (!this.IsContructed)
+                return;
+
             PdaIsOpen = true;
             OpenInPda = this;
 
@@ -443,11 +449,15 @@
 
             Cyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            this.Manager = manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(parentCyclops);
 
             if (this.Manager != null)
             {
                 this.Manager.AddBuildable(this);
+            }
+
+            if (this.UpgradeHandler != null)
+            {
+                UpdateBoosterCount(this.UpgradeHandler.Count);
             }
         }
 

@@ -7,6 +7,8 @@
 
     internal class BioReactorBooster : CyclopsUpgrade
     {
+        internal static TechType BoosterTechType { get; private set; }
+
         private const string MaxBoostKey = "CyBioBoostMaxed";
         public static string MaxBoostAchived => Language.main.Get(MaxBoostKey);
 
@@ -27,6 +29,7 @@
             {
                 LanguageHandler.SetLanguageLine(MaxBoostKey, "Maximum boost to cyclops bioreactors achieved");
                 LanguageHandler.SetLanguageLine(CannotRemoveKey, "Cannot remove BioReactor Booster while bioreactor is too full");
+                BoosterTechType = this.TechType;
             };
         }
 
