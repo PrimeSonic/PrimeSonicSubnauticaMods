@@ -5,5 +5,7 @@
   "Version": "1.2.1",
   "Enable": true,
   "AssemblyName": "MidGameBatteries.dll",
+  "Game": "Subnautica",
+  "Dependencies": [ "SMLHelper" ],
   "EntryMethod": "MidGameBatteries.QPatch.Patch"
 }

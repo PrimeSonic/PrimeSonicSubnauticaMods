@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Reflection;
     using System.Text;
     using Common;
     using Common.EasyMarkup;
@@ -21,8 +22,8 @@
         internal const string SeamothBonusSpeedID = "SeamothBonusSpeed";
         internal const string ExosuitBonusSpeedID = "ExosuitBonusSpeed";
 
-        private const string ConfigDirectory = "./QMods/UpgradedVehicles";
-        private const string ConfigFile = ConfigDirectory + "/" + ConfigKey + ".txt";
+        private static readonly string ConfigDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static string ConfigFile => Path.Combine(ConfigDirectory, $"{ConfigKey}.txt");
 
         internal bool ValidDataRead = true;
 
