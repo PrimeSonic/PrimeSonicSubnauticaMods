@@ -5,6 +5,7 @@
     using Common;
     using ProtoBuf;
     using UnityEngine;
+    using UnityEngine.UI;
 
     // The immediate access to the internals of the BaseBioReactor (without the use of Reflection) was made possible thanks to the AssemblyPublicizer
     // https://github.com/CabbageCrow/AssemblyPublicizer
@@ -12,12 +13,12 @@
     internal class CyBioReactorMini
     {
         private static readonly Dictionary<BaseBioReactor, CyBioReactorMini> LookupMiniReactor = new Dictionary<BaseBioReactor, CyBioReactorMini>();
-        internal static CyBioReactorMini GetMiniReactor(BaseBioReactor bioReactor)
+        internal static CyBioReactorMini GetMiniReactor(ref BaseBioReactor bioReactor)
         {
             if (LookupMiniReactor.TryGetValue(bioReactor, out CyBioReactorMini existingBioMini))
                 return existingBioMini;
 
-            var createdBioMini = new CyBioReactorMini(bioReactor);
+            var createdBioMini = new CyBioReactorMini(ref bioReactor);
             LookupMiniReactor.Add(bioReactor, createdBioMini);
 
             QuickLogger.Debug("CyBioReactorMini Connected");
@@ -42,11 +43,12 @@
         public int CurrentPower => Mathf.RoundToInt(BioReactor._powerSource.GetPower());
 
         public readonly BaseBioReactor BioReactor;
+        private BaseBioReactorGeometry fallbackGeometry = null;
 
         // Careful, this map only exists while the PDA screen is open
         public Dictionary<InventoryItem, uGUI_ItemIcon> InventoryMapping { get; private set; }
 
-        public CyBioReactorMini(BaseBioReactor bioReactor)
+        public CyBioReactorMini(ref BaseBioReactor bioReactor)
         {
             BioReactor = bioReactor;
 
@@ -55,12 +57,14 @@
             string id = prefabIdentifier.Id;
 
             QuickLogger.Debug($"CyBioReactorMini PrefabIdentifier: {id}");
-            
+
             SaveData = new CyBioReactorSaveData(id);
         }
 
-        public void UpdateInternals()
+        public void Start()
         {
+            QuickLogger.Debug("CyBioReactorMini starting");
+
             (BioReactor.container as IItemsContainer).onAddItem += OnAddItem;
             BioReactor.container.Clear();
 
@@ -70,6 +74,8 @@
             numberOfContainerSlots = totalContainerSpaces;
 
             RestoreItemsFromSaveData();
+
+            QuickLogger.Debug("CyBioReactorMini started");
         }
 
         #region Player interaction
@@ -80,13 +86,16 @@
             HandReticle main = HandReticle.main;
 
             // All this is getting updated in Unity 2018
-            main.SetInteractText(Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText), "Tooltip_UseBaseBioReactor", false, true, true);
+            string text1 = Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText);
+            main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
         // Completely replaces the original OnUse method in the BaseBioReactor
         internal void OnPdaOpen(BaseBioReactorGeometry model)
         {
+            fallbackGeometry = model;
+
             PdaIsOpen = true;
             OpenInPda = this;
 
@@ -194,11 +203,13 @@
 
             if (MaterialsProcessing.Count > 0 || this.CurrentPower > 0)
             {
-                string maxPowerText = this.MaxPowerText;
-                string currentPowerString = this.CurrentPower.ToString().PadLeft(maxPowerText.Length, ' ');
-
-                BaseBioReactorGeometry baseBioReactorGeometry = BioReactor.GetModel();
-                baseBioReactorGeometry.text.text = $"<color=#00ff00>{Language.main.Get("BaseBioReactorActive")}\n{currentPowerString}/{maxPowerText}</color>";
+                Text displayText = (BioReactor.GetModel() ?? fallbackGeometry)?.text;
+                if (displayText != null)
+                {
+                    string maxPowerText = this.MaxPowerText;
+                    string currentPowerString = this.CurrentPower.ToString().PadLeft(maxPowerText.Length, ' ');
+                    displayText.text = $"<color=#00ff00>{Language.main.Get("BaseBioReactorActive")}\n{currentPowerString}/{maxPowerText}</color>";
+                }
             }
 
             if (!PdaIsOpen)

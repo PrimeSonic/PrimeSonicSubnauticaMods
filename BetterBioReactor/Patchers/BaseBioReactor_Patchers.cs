@@ -10,7 +10,7 @@
         [HarmonyPostfix]
         internal static void Postfix(BaseBioReactor __instance)
         {
-            CyBioReactorMini.GetMiniReactor(__instance).UpdateInternals();
+            CyBioReactorMini.GetMiniReactor(ref __instance).Start();
         }
     }
 
@@ -21,7 +21,7 @@
         [HarmonyPrefix]
         internal static bool Prefix(BaseBioReactor __instance)
         {
-            CyBioReactorMini.GetMiniReactor(__instance).OnHover();
+            CyBioReactorMini.GetMiniReactor(ref __instance).OnHover();
 
             return false; // Full override
         }
@@ -34,20 +34,20 @@
         [HarmonyPrefix]
         internal static bool Prefix(BaseBioReactor __instance, ref BaseBioReactorGeometry model)
         {
-            CyBioReactorMini.GetMiniReactor(__instance).OnPdaOpen(model);
+            CyBioReactorMini.GetMiniReactor(ref __instance).OnPdaOpen(model);
 
-            return false; // Full override            
+            return false; // Full override
         }
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch(nameof(BaseBioReactor.Update))]
+    [HarmonyPatch("Update")]
     internal class Update_Patcher
     {
         [HarmonyPostfix]
         internal static void Postfix(BaseBioReactor __instance)
         {
-            CyBioReactorMini.GetMiniReactor(__instance).UpdateDisplayText();
+            CyBioReactorMini.GetMiniReactor(ref __instance).UpdateDisplayText();
         }
     }
 
@@ -58,7 +58,7 @@
         [HarmonyPrefix]
         internal static bool Prefix(BaseBioReactor __instance, float requested, ref float __result)
         {
-            __result = CyBioReactorMini.GetMiniReactor(__instance).ProducePower(requested);
+            __result = CyBioReactorMini.GetMiniReactor(ref __instance).ProducePower(requested);
 
             return false; // Full override
         }
@@ -72,7 +72,7 @@
         internal static bool Prefix(BaseBioReactor __instance, ProtobufSerializer serializer)
         {
             QuickLogger.Debug("OnProtoDeserializeObjectTree");
-            CyBioReactorMini.GetMiniReactor(__instance).OnProtoDeserializeObjectTree(serializer);
+            CyBioReactorMini.GetMiniReactor(ref __instance).OnProtoDeserializeObjectTree(serializer);
             return false;
         }
     }
@@ -85,7 +85,7 @@
         internal static bool Prefix(BaseBioReactor __instance, ProtobufSerializer serializer)
         {
             QuickLogger.Debug("OnProtoDeserialize");
-            CyBioReactorMini.GetMiniReactor(__instance).OnProtoDeserialize(serializer);
+            CyBioReactorMini.GetMiniReactor(ref __instance).OnProtoDeserialize(serializer);
             return false;
         }
     }
@@ -98,7 +98,7 @@
         internal static void Postfix(BaseBioReactor __instance, ProtobufSerializer serializer)
         {
             QuickLogger.Debug("OnProtoSerializeObjectTree");
-            CyBioReactorMini.GetMiniReactor(__instance).OnProtoSerializeObjectTree(serializer);
+            CyBioReactorMini.GetMiniReactor(ref __instance).OnProtoSerializeObjectTree(serializer);
         }
     }
 
@@ -110,7 +110,7 @@
         internal static void Postfix(BaseBioReactor __instance, ProtobufSerializer serializer)
         {
             QuickLogger.Debug("OnProtoSerialize");
-            CyBioReactorMini.GetMiniReactor(__instance).OnProtoSerialize(serializer);
+            CyBioReactorMini.GetMiniReactor(ref __instance).OnProtoSerialize(serializer);
         }
     }
 }
