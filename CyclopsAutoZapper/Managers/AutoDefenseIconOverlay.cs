@@ -1,21 +1,22 @@
-﻿namespace CyclopsAutoZapper
+﻿namespace CyclopsAutoZapper.Managers
 {
+    using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;
 
     internal class AutoDefenseIconOverlay : IconOverlay
     {
-        private readonly Zapper zapper;
+        private readonly AutoDefenser zapper;
 
         public AutoDefenseIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
         {
-            zapper = MCUServices.Find.AuxCyclopsManager<Zapper>(base.Cyclops);
+            zapper = MCUServices.Find.AuxCyclopsManager<AutoDefenser>(base.Cyclops);
         }
 
         public override void UpdateText()
         {
-            if (base.Cyclops.powerRelay.GetPower() < Zapper.EnergyRequiredToZap)
+            if (base.Cyclops.powerRelay.GetPower() < AutoDefenser.EnergyRequiredToZap)
             {
                 base.UpperText.FontSize = 20;
                 base.MiddleText.FontSize = 20;

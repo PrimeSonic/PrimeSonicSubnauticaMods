@@ -1,11 +1,8 @@
-﻿namespace CyclopsAutoZapper
+﻿namespace CyclopsAutoZapper.Managers
 {
-    using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.General;
-    using MoreCyclopsUpgrades.API.Upgrades;
     using UnityEngine;
 
-    internal class Zapper : IAuxCyclopsManager
+    internal class AutoDefenser : CooldownManager
     {
         private class CreatureTarget
         {
@@ -25,7 +22,8 @@
             }
         }
 
-        private const float TimeBetweenZaps = 7.0f;
+        protected override float TimeBetweenUses => 7.0f;
+
         private const float EnergyCostPerRadiusZap = 36f;
         private const float DirectZapMultiplier = 0.5f;
         private const float EnergyCostPerDirectZap = EnergyCostPerRadiusZap * DirectZapMultiplier;
@@ -35,23 +33,13 @@
         private const float BaseRadius = 1f;
 
         private const float DirectZapDamage = (BaseRadius + ZapPower * BaseCharge) * DamageMultiplier * DirectZapMultiplier;
-        // Calculations and initial values base off ElectricalDefense component
+        // Calculations and initial values based off ElectricalDefense component
 
         internal const float EnergyRequiredToZap = EnergyCostPerRadiusZap + EnergyCostPerDirectZap;
-
-        private readonly SubRoot Cyclops;
-        private readonly TechType UpgradeTechType;
 
         private VehicleDockingBay dockingBay;
         private VehicleDockingBay DockingBay => dockingBay ?? (dockingBay = Cyclops.GetComponentInChildren<VehicleDockingBay>());
 
-        private CyclopsShieldButton shieldButton;
-        private CyclopsShieldButton ShieldButton => shieldButton ?? (shieldButton = Cyclops.GetComponentInChildren<CyclopsShieldButton>());
-
-        private UpgradeHandler upgradeHandler;
-        private UpgradeHandler UpgradeHandler => upgradeHandler ?? (upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler(Cyclops, UpgradeTechType));
-
-        private float timeOfLastZap = Time.time;
         private SeaMoth seaMoth;
         private CreatureTarget target;
 
@@ -77,19 +65,14 @@
             }
         }
 
-        public bool IsOnCooldown => Time.time < timeOfLastZap + TimeBetweenZaps;
-
-        public bool HasShieldModule => MCUServices.CrossMod.HasUpgradeInstalled(Cyclops, TechType.CyclopsShieldModule);
-
-        public Zapper(TechType zapperTechType, SubRoot cyclops)
+        public AutoDefenser(TechType autoDefense, SubRoot cyclops)
+            : base(autoDefense, cyclops)
         {
-            Cyclops = cyclops;
-            UpgradeTechType = zapperTechType;
         }
 
         public void Zap(CyclopsSonarCreatureDetector.EntityData creatureToZap = null)
         {
-            if (!this.UpgradeHandler.HasUpgrade)
+            if (!this.HasUpgrade)
                 return;
 
             if (!this.SeamothInBay)
@@ -106,7 +89,7 @@
 
             ZapRadius();
 
-            timeOfLastZap = Time.time; // Update time of last zap for cooldown purposes
+            UpdateCooldown();
 
             if (creatureToZap != null)
             {
@@ -123,25 +106,6 @@
                 return;
 
             ZapCreature();
-        }
-
-        public void PulseShield()
-        {
-            if (!this.HasShieldModule)
-                return;
-
-            if (this.IsOnCooldown)
-                return;
-
-            timeOfLastZap = Time.time; // Update time of last zap for cooldown purposes
-
-            float originalCost = Cyclops.shieldPowerCost;
-            Cyclops.shieldPowerCost = originalCost * 0.2f;
-
-            this.ShieldButton?.StartShield();
-            this.ShieldButton?.StopShield();
-
-            Cyclops.shieldPowerCost = originalCost;
         }
 
         private void ZapRadius()
@@ -163,9 +127,5 @@
             Cyclops.powerRelay.ConsumeEnergy(EnergyCostPerDirectZap, out float amountConsumed);
         }
 
-        public bool Initialize(SubRoot cyclops)
-        {
-            return Cyclops == cyclops;
-        }
     }
 }

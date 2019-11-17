@@ -1,5 +1,6 @@
-﻿namespace CyclopsAutoZapper
+﻿namespace CyclopsAutoZapper.Managers
 {
+    using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;
@@ -7,11 +8,11 @@
 
     internal class AntiParasiteIconOverlay : IconOverlay
     {
-        private readonly Zapper zapper;
+        private readonly ShieldPulser shieldPulser;
 
         public AntiParasiteIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule) : base(icon, upgradeModule)
         {
-            zapper = MCUServices.Find.AuxCyclopsManager<Zapper>(base.Cyclops);
+            shieldPulser = MCUServices.Find.AuxCyclopsManager<ShieldPulser>(base.Cyclops);
         }
 
         public override void UpdateText()
@@ -20,12 +21,12 @@
             base.MiddleText.FontSize = 16;
             base.LowerText.FontSize = 16;
 
-            if (zapper.HasShieldModule)
+            if (shieldPulser.HasShieldModule)
             {
                 base.UpperText.TextString = "Shield\n[Connected]";
                 base.UpperText.TextColor = Color.green;
 
-                if (zapper.IsOnCooldown)
+                if (shieldPulser.IsOnCooldown)
                 {
                     base.LowerText.TextString = "Defense System\n[Cooldown]";
                     base.LowerText.TextColor = Color.yellow;
