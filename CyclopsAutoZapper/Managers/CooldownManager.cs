@@ -9,8 +9,8 @@
     {
         protected abstract float TimeBetweenUses { get; }
 
-        protected readonly SubRoot Cyclops;
-        protected readonly TechType UpgradeTechType;
+        public readonly SubRoot Cyclops;
+        public readonly TechType UpgradeTechType;
 
         private UpgradeHandler upgradeHandler;
         private UpgradeHandler UpgradeHandler => upgradeHandler ?? (upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler(Cyclops, UpgradeTechType));
@@ -24,7 +24,7 @@
         }
 
         public bool IsOnCooldown => Time.time < timeOfLastUse + this.TimeBetweenUses;
-        public bool HasUpgrade => this.UpgradeHandler.HasUpgrade;
+        public bool HasUpgrade => this.UpgradeHandler?.HasUpgrade ?? false;
 
         public bool Initialize(SubRoot cyclops)
         {

@@ -99,7 +99,7 @@
                     target = newTarget;
             }
 
-            if (!target.IsValidTarget)
+            if (target != null && !target.IsValidTarget)
                 target = null;
 
             if (target == null)
