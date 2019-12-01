@@ -14,6 +14,7 @@
 
         protected override TechType PrefabType => TechType.PowerCell;
         protected override EquipmentType ChargerType => EquipmentType.PowerCellCharger;
+        protected override string[] StepsToFabricatorTab => CbCore.PowCellCraftPath;
 
         public void CreateBlueprintData(IEnumerable<TechType> parts)
         {

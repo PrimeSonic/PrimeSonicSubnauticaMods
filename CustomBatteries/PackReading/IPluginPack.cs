@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace CustomBatteries.PackReading
+﻿namespace CustomBatteries.PackReading
 {
+    using System.Collections.Generic;
+
     public interface IPluginPack
     {
         string PluginPackName { get; }

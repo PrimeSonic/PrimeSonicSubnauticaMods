@@ -11,6 +11,7 @@
 
         protected override TechType PrefabType => TechType.Battery;
         protected override EquipmentType ChargerType => EquipmentType.BatteryCharger;
+        protected override string[] StepsToFabricatorTab => CbCore.BatteryCraftPath;
 
         public void CreateBlueprintData(IEnumerable<TechType> parts)
         {

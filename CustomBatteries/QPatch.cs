@@ -13,7 +13,7 @@
     {
         public static void Patch()
         {
-            QuickLogger.Message("Start patching. Version: " + QuickLogger.GetAssemblyVersion());
+            QuickLogger.Info("Start patching. Version: " + QuickLogger.GetAssemblyVersion());
 
             try
             {
@@ -21,9 +21,10 @@
                 var harmony = HarmonyInstance.Create("com.custombatteries.mod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
+                CbCore.PatchCraftingTabs();
                 PatchPacks();
 
-                QuickLogger.Message("Finished patching");
+                QuickLogger.Info("Finished patching");
             }
             catch (Exception ex)
             {
