@@ -7,15 +7,17 @@
 
     internal static class PackReader
     {
-        public static IEnumerable<IPluginPack> GetAllPacks(string folderLocation)
+        public static IEnumerable<IPluginDetails> GetAllPacks(string folderLocation)
         {
+            // Check all folders
             foreach (string pluginFolder in Directory.GetDirectories(folderLocation))
             {
-                string pluginDataFile = Path.Combine(pluginFolder, "Plugin.txt");
+                // Find the CustomBatteriesPack.txt file
+                string pluginDataFile = Path.Combine(pluginFolder, "CustomBatteriesPack.txt");
 
                 if (!File.Exists(pluginFolder))
                 {
-                    QuickLogger.Warning($"Plugin folder '{pluginFolder}' did not contain a 'Plugin.txt' file");
+                    QuickLogger.Warning($"Packs folder '{pluginFolder}' did not contain a file named 'CustomBatteriesPack.txt'");
                     continue;
                 }
 
@@ -23,9 +25,11 @@
 
                 if (plugin == null)
                 {
-                    QuickLogger.Warning($"Plugin file contained errors and could not be read");
+                    QuickLogger.Warning($"Pack file in '{pluginFolder}' contained errors and could not be read");
                     continue;
                 }
+
+                plugin.PluginPackFolder = pluginFolder;
 
                 yield return plugin;
             }

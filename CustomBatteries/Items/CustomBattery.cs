@@ -13,11 +13,11 @@
         protected override EquipmentType ChargerType => EquipmentType.BatteryCharger;
         protected override string[] StepsToFabricatorTab => CbCore.BatteryCraftPath;
 
-        public void CreateBlueprintData(IEnumerable<TechType> parts)
+        public override TechData GetBlueprintRecipe()
         {
             var partsList = new List<Ingredient>();
 
-            CreateIngredients(parts, partsList);
+            CreateIngredients(this.Parts, partsList);
 
             if (partsList.Count == 0)
                 partsList.Add(new Ingredient(TechType.Titanium, 1));
@@ -28,7 +28,7 @@
                 Ingredients = partsList
             };
 
-            this.BlueprintRecipe = batteryBlueprint;
+            return batteryBlueprint;
         }
 
         protected override void AddToList()

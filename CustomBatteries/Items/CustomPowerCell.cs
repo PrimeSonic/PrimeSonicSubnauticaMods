@@ -16,7 +16,7 @@
         protected override EquipmentType ChargerType => EquipmentType.PowerCellCharger;
         protected override string[] StepsToFabricatorTab => CbCore.PowCellCraftPath;
 
-        public void CreateBlueprintData(IEnumerable<TechType> parts)
+        public override TechData GetBlueprintRecipe()
         {
             var partsList = new List<Ingredient>()
             {
@@ -24,7 +24,7 @@
                 new Ingredient(TechType.Silicone, 1),
             };
 
-            CreateIngredients(parts, partsList);
+            CreateIngredients(this.Parts, partsList);
 
             var batteryBlueprint = new TechData
             {
@@ -32,7 +32,7 @@
                 Ingredients = partsList
             };
 
-            this.BlueprintRecipe = batteryBlueprint;
+            return batteryBlueprint;
         }
 
         protected override void AddToList()

@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PackReading\IPluginDetails.cs" />
     <Compile Include="PackReading\IPluginPack.cs" />
     <Compile Include="Items\CbCore.cs" />
     <Compile Include="Items\CustomBattery.cs" />
@@ -77,8 +78,24 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Packs\" />
+    <Content Include="Packs\EnzymeChargedBatteries\EnzymeBattery.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Packs\EnzymeChargedBatteries\CustomBatteriesPlugin.txt" />
+    <Content Include="Packs\EnzymeChargedBatteries\EnzymePowerCell.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Packs\MidGameBatteries\DeepBattery.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Packs\MidGameBatteries\DeepPowerCell.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Packs\MidGameBatteries\CustomBatteriesPlugin.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

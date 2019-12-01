@@ -34,9 +34,10 @@
         protected abstract TechType PrefabType { get; } // Should only ever be Battery or PowerCell
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
 
-        public TechType RequiredForUnlock { get; } = TechType.None;
+        public TechType RequiredForUnlock { get; set; } = TechType.None;
+        public bool UnlocksAtStart => this.RequiredForUnlock == TechType.None;
 
-        public TechData BlueprintRecipe { get; set; }
+        public abstract TechData GetBlueprintRecipe();
 
         public float PowerCapacity { get; set; }
 
@@ -47,6 +48,10 @@
         public string IconFileName { get; set; }
 
         public string PluginPackName { get; set; }
+
+        public string PluginFolder { get; set; }
+
+        public IList<TechType> Parts { get; set; }
 
         protected CbCore(string classId)
             : base(classId, $"{classId}PreFab", TechType.None)
@@ -87,11 +92,14 @@
 
         public void Patch()
         {
-            this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, false);
+            this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, this.UnlocksAtStart);
 
-            SpriteHandler.RegisterSprite(this.TechType, IOUtilities.Combine(ExecutingFolder, this.PluginPackName, this.IconFileName));
+            if (!this.UnlocksAtStart)
+                KnownTechHandler.SetAnalysisTechEntry(this.RequiredForUnlock, new TechType[] { this.TechType });
 
-            CraftDataHandler.SetTechData(this.TechType, this.BlueprintRecipe);
+            SpriteHandler.RegisterSprite(this.TechType, IOUtilities.Combine(ExecutingFolder, this.PluginFolder, this.IconFileName));
+
+            CraftDataHandler.SetTechData(this.TechType, GetBlueprintRecipe());
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
 

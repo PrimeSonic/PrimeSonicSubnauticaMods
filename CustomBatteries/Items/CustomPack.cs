@@ -1,19 +1,17 @@
 ﻿namespace CustomBatteries.Items
 {
-    using Common;
     using CustomBatteries.PackReading;
 
     internal class CustomPack
     {
         private readonly CustomBattery _customBattery;
-
         private readonly CustomPowerCell _customPowerCell;
 
-        private readonly IPluginPack _pluginPack;
+        internal string PluginPackName { get; }
 
-        public CustomPack(IPluginPack pluginPack)
+        public CustomPack(IPluginDetails pluginPack)
         {
-            _pluginPack = pluginPack;
+            this.PluginPackName = pluginPack.PluginPackName;
 
             _customBattery = new CustomBattery(pluginPack.BatteryID)
             {
@@ -21,9 +19,11 @@
                 FriendlyName = pluginPack.BatteryName,
                 Description = pluginPack.BatterFlavorText,
                 IconFileName = pluginPack.BatteryIconFile,
-                PowerCapacity = pluginPack.BatteryCapacity
+                PowerCapacity = pluginPack.BatteryCapacity,
+                RequiredForUnlock = pluginPack.UnlocksWith,
+                Parts = pluginPack.BatteryParts,
+                PluginFolder = pluginPack.PluginPackFolder
             };
-            _customBattery.CreateBlueprintData(pluginPack.BatteryParts);
 
             _customPowerCell = new CustomPowerCell(pluginPack.PowerCellID, _customBattery)
             {
@@ -31,18 +31,17 @@
                 FriendlyName = pluginPack.PowerCellName,
                 Description = pluginPack.PowerCellFlavorText,
                 IconFileName = pluginPack.PowerCellIconFile,
-                PowerCapacity = pluginPack.BatteryCapacity * 2f
+                PowerCapacity = pluginPack.BatteryCapacity * 2f,
+                RequiredForUnlock = pluginPack.UnlocksWith,
+                Parts = pluginPack.PowerCellAdditionalParts,
+                PluginFolder = pluginPack.PluginPackFolder
             };
         }
 
         public void Patch()
         {
-            QuickLogger.Info($"Patching plugin pack '{_pluginPack.PluginPackName}'");
-
+            // Batteries must always patch before Power Cells
             _customBattery.Patch();
-
-            _customPowerCell.CreateBlueprintData(_pluginPack.PowerCellAdditionalParts);
-
             _customPowerCell.Patch();
         }
     }

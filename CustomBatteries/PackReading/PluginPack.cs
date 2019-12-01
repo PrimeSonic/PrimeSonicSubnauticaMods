@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Common.EasyMarkup;
 
-    internal class PluginPack : EmPropertyCollection, IPluginPack
+    internal class PluginPack : EmPropertyCollection, IPluginDetails
     {
         private static ICollection<EmProperty> PluginDefinitions => new List<EmProperty>
         {
@@ -37,7 +37,7 @@
         private readonly EmProperty<string> powerCellIconFile;
 
         public PluginPack()
-            : base("CustomBatteriesPlugin", PluginDefinitions)
+            : base("CustomBatteriesPack", PluginDefinitions)
         {
             pluginPackName = (EmProperty<string>)Properties[nameof(IPluginPack.PluginPackName)];
             batteryCapacity = (EmProperty<int>)Properties[nameof(IPluginPack.BatteryCapacity)];
@@ -147,6 +147,8 @@
             get => powerCellIconFile.Value;
             private set => powerCellIconFile.Value = value;
         }
+
+        public string PluginPackFolder { get; set; }
 
         internal override EmProperty Copy()
         {
