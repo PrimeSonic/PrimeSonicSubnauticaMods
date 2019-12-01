@@ -1,12 +1,13 @@
 ﻿namespace CyclopsAutoZapper
 {
+    using System.IO;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
 
-    internal class CyclopsZapperModule : CyclopsUpgrade
+    internal class CyclopsAutoDefense : CyclopsUpgrade
     {
-        public CyclopsZapperModule()
+        public CyclopsAutoDefense()
             : base("CyclopsZapperModule",
                    "Cyclops Auto Defense System",
                    "Extends and automates the Perimeter Defense System of a docked Seamoth to protect the Cyclops from aggressive fauna.")
@@ -14,9 +15,9 @@
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
-        public override string AssetsFolder { get; } = "CyclopsAutoZapper/Assets";
+        public override string AssetsFolder { get; } = Path.Combine("CyclopsAutoZapper", "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.SeamothElectricalDefense;
-        public override string[] StepsToFabricatorTab => MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
+        public override string[] StepsToFabricatorTab { get; } = MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
 
         protected override TechData GetBlueprintRecipe()
         {

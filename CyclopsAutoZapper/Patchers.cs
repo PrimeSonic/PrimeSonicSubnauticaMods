@@ -1,6 +1,7 @@
 ﻿namespace CyclopsAutoZapper
 {
     using Common;
+    using CyclopsAutoZapper.Managers;
     using Harmony;
     using MoreCyclopsUpgrades.API;
 
@@ -29,7 +30,7 @@
             if (!entityData.attackCyclops.IsAggressiveTowardsCyclops(cyclops.gameObject))
                 return;
 
-            MCUServices.Find.AuxCyclopsManager<Zapper>(cyclops)?.Zap(entityData);
+            MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap(entityData);
         }
     }
 
@@ -58,8 +59,24 @@
                         return;
                     }
 
-                    MCUServices.Find.AuxCyclopsManager<Zapper>(cyclops)?.Zap();
+                    MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap();
                 }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(CyclopsHolographicHUD))]
+    [HarmonyPatch("AttachedLavaLarva")]
+    internal static class CyclopsHolographicHUD_AttachedLavaLarva_Patcher
+    {
+        [HarmonyPostfix]
+        internal static void Postfix(CyclopsHolographicHUD __instance)
+        {
+            SubRoot cyclops = __instance?.subFire?.subRoot;
+
+            if (cyclops != null)
+            {
+                MCUServices.Find.AuxCyclopsManager<ShieldPulser>(cyclops)?.PulseShield();
             }
         }
     }
