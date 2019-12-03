@@ -19,7 +19,7 @@
         /// <value>
         /// The name of the plugin pack.
         /// </value>
-        public string PluginPackName { get; }
+        public IPluginPack OriginalPlugInPack { get; }
 
         /// <summary>
         /// Gets the custom battery.
@@ -45,15 +45,15 @@
         /// </value>
         public bool IsPatched => _customBattery.IsPatched && _customPowerCell.IsPatched;
 
-        private CustomPack(IPluginPack pluginPack, string packName)
+        private CustomPack(IPluginPack pluginPack)
         {
-            this.PluginPackName = packName;
+            this.OriginalPlugInPack = pluginPack;
             _customBattery = new CustomBattery(pluginPack.BatteryID)
             {
                 PluginPackName = pluginPack.PluginPackName,
                 FriendlyName = pluginPack.BatteryName,
                 Description = pluginPack.BatterFlavorText,
-                IconFileName = pluginPack.BatteryIconFile,
+                
                 PowerCapacity = pluginPack.BatteryCapacity,
                 RequiredForUnlock = pluginPack.UnlocksWith,
                 Parts = pluginPack.BatteryParts
@@ -64,30 +64,33 @@
                 PluginPackName = pluginPack.PluginPackName,
                 FriendlyName = pluginPack.PowerCellName,
                 Description = pluginPack.PowerCellFlavorText,
-                IconFileName = pluginPack.PowerCellIconFile,
+                
                 PowerCapacity = pluginPack.BatteryCapacity * 2f, // Power Cell capacity is always 2x the battery capacity
                 RequiredForUnlock = pluginPack.UnlocksWith,
                 Parts = pluginPack.PowerCellAdditionalParts
             };
         }
 
-        internal CustomPack(IPluginPack pluginPack, Atlas.Sprite batterySprite, Atlas.Sprite powerCellSprite)
-            : this(pluginPack, pluginPack.PluginPackName)
+        internal CustomPack(IModPluginPack pluginPack)
+            : this((IPluginPack)pluginPack)
         {
-            _customBattery.Sprite = batterySprite;
-            _customPowerCell.Sprite = powerCellSprite;
+            _customBattery.Sprite = pluginPack.BatteryIcon;
+            _customPowerCell.Sprite = pluginPack.PowerCellIcon;
         }
 
-        internal CustomPack(IPluginDetails pluginPack)
-            : this(pluginPack, pluginPack.PluginPackName)
+        internal CustomPack(IParsedPluginPack pluginPack)
+            : this((IPluginPack)pluginPack)
         {
             _customBattery.PluginFolder = pluginPack.PluginPackFolder;
+            _customBattery.IconFileName = pluginPack.BatteryIconFile;
+
             _customPowerCell.PluginFolder = pluginPack.PluginPackFolder;
+            _customPowerCell.IconFileName = pluginPack.PowerCellIconFile;
         }
 
         internal void Patch()
         {
-            QuickLogger.Info($"Patching plugin pack '{this.PluginPackName}'");
+            QuickLogger.Info($"Patching plugin pack '{this.OriginalPlugInPack.PluginPackName}'");
             // Batteries must always patch before Power Cells
             _customBattery.Patch();
             _customPowerCell.Patch();

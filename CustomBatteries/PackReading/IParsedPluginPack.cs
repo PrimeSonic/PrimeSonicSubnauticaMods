@@ -2,7 +2,7 @@
 {
     using CustomBatteries.API;
 
-    internal interface IPluginDetails : IPluginPack
+    internal interface IParsedPluginPack : ITextPluginPack
     {
         string PluginPackFolder { get; set; }
     }

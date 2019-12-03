@@ -23,7 +23,7 @@
 
             var customPacks = new List<CustomPack>();
 
-            foreach (IPluginDetails pluginPack in PackReader.GetAllPacks(pluginPacksFolder))
+            foreach (IParsedPluginPack pluginPack in PackReader.GetAllPacks(pluginPacksFolder))
             {
                 QuickLogger.Info($"Found CustomBatteriesPack '{pluginPack.PluginPackName}'");
                 customPacks.Add(new CustomPack(pluginPack));
@@ -58,7 +58,7 @@
             return null;
         }
 
-        private static IEnumerable<IPluginDetails> GetAllPacks(string folderLocation)
+        private static IEnumerable<IParsedPluginPack> GetAllPacks(string folderLocation)
         {
             // Check all folders
             foreach (string pluginFolder in Directory.GetDirectories(folderLocation))

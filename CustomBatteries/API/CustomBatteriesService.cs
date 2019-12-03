@@ -32,16 +32,14 @@
         /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded items returned.
         /// </summary>
         /// <param name="modPluginPack">The mod plugin pack.</param>
-        /// <param name="batterySprite">The battery sprite.</param>
-        /// <param name="powerCellSprite">The power cell sprite.</param>
         /// <returns>
         /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
         /// </returns>
-        public CustomPack AddPluginPackFromMod(IPluginPack modPluginPack, Atlas.Sprite batterySprite, Atlas.Sprite powerCellSprite)
+        public CustomPack AddPluginPackFromMod(IModPluginPack modPluginPack)
         {
             QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}' from '{Assembly.GetCallingAssembly().GetName().Name}'");
 
-            var pack = new CustomPack(modPluginPack, batterySprite, powerCellSprite);
+            var pack = new CustomPack(modPluginPack);
             pack.Patch();
 
             return pack;

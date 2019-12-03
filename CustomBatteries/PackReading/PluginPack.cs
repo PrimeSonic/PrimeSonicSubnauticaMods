@@ -4,7 +4,7 @@
     using Common.EasyMarkup;
     using CustomBatteries.API;
 
-    internal class PluginPack : EmPropertyCollection, IPluginDetails
+    internal class PluginPack : EmPropertyCollection, IParsedPluginPack
     {
         private static ICollection<EmProperty> PluginDefinitions => new List<EmProperty>
         {
@@ -15,12 +15,12 @@
             new EmProperty<string>(nameof(IPluginPack.BatteryName)),
             new EmProperty<string>(nameof(IPluginPack.BatterFlavorText)),
             new EmPropertyList<TechType>(nameof(IPluginPack.BatteryParts)),
-            new EmProperty<string>(nameof(IPluginPack.BatteryIconFile)),
+            new EmProperty<string>(nameof(ITextPluginPack.BatteryIconFile)),
             new EmProperty<string>(nameof(IPluginPack.PowerCellID)),
             new EmProperty<string>(nameof(IPluginPack.PowerCellName)),
             new EmProperty<string>(nameof(IPluginPack.PowerCellFlavorText)),
             new EmPropertyList<TechType>(nameof(IPluginPack.PowerCellAdditionalParts)){ Optional = true },
-            new EmProperty<string>(nameof(IPluginPack.PowerCellIconFile))
+            new EmProperty<string>(nameof(ITextPluginPack.PowerCellIconFile))
         };
 
         private readonly EmProperty<string> pluginPackName;
@@ -47,15 +47,15 @@
             batteryName = (EmProperty<string>)Properties[nameof(IPluginPack.BatteryName)];
             batterFlavorText = (EmProperty<string>)Properties[nameof(IPluginPack.BatterFlavorText)];
             batteryParts = (EmPropertyList<TechType>)Properties[nameof(IPluginPack.BatteryParts)];
-            batteryIconFile = (EmProperty<string>)Properties[nameof(IPluginPack.BatteryIconFile)];
+            batteryIconFile = (EmProperty<string>)Properties[nameof(ITextPluginPack.BatteryIconFile)];
             powerCellID = (EmProperty<string>)Properties[nameof(IPluginPack.PowerCellID)];
             powerCellName = (EmProperty<string>)Properties[nameof(IPluginPack.PowerCellName)];
             powerCellFlavorText = (EmProperty<string>)Properties[nameof(IPluginPack.PowerCellFlavorText)];
             powerCellAdditionalParts = (EmPropertyList<TechType>)Properties[nameof(IPluginPack.PowerCellAdditionalParts)];
-            powerCellIconFile = (EmProperty<string>)Properties[nameof(IPluginPack.PowerCellIconFile)];
+            powerCellIconFile = (EmProperty<string>)Properties[nameof(ITextPluginPack.PowerCellIconFile)];
         }
 
-        private PluginPack(IPluginPack pluginPack)
+        private PluginPack(ITextPluginPack pluginPack)
             : this()
         {
             this.PluginPackName = pluginPack.PluginPackName;
