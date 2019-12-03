@@ -17,12 +17,11 @@
             HashSet<TechType> compatibleTech = BatteryCharger.compatibleTech;
 
             // Make sure all custom batteries are allowed in the battery charger
-            if (!compatibleTech.Contains(CbCore.SampleBattery))
+            if (!compatibleTech.Contains(CbCore.ModdedBattery))
             {
-                foreach (TechType moddedBattery in CbCore.BatteryTechTypes)
-                    compatibleTech.Add(moddedBattery);
+                for (int i = 0; i < CbCore.BatteryTechTypes.Count; i++)
+                    compatibleTech.Add(CbCore.BatteryTechTypes[i]);
             }
-
         }
     }
 
@@ -39,10 +38,10 @@
             HashSet<TechType> compatibleTech = PowerCellCharger.compatibleTech;
 
             // Make sure all modded power cells are allowed in the power cell charger
-            if (!compatibleTech.Contains(CbCore.SamplePowerCell))
+            if (!compatibleTech.Contains(CbCore.ModdedPowerCell))
             {
-                foreach (TechType moddedPowerCell in CbCore.PowerCellTechTypes)
-                    compatibleTech.Add(moddedPowerCell);
+                for (int i = 0; i < CbCore.PowerCellTechTypes.Count; i++)
+                    compatibleTech.Add(CbCore.PowerCellTechTypes[i]);
             }
         }
     }

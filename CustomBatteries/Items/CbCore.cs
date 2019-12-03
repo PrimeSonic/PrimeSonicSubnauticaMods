@@ -25,11 +25,11 @@
 
         public static List<TechType> BatteryTechTypes { get; } = new List<TechType>();
         public static bool HasBatteries { get; protected set; } = false;
-        public static TechType SampleBattery => BatteryTechTypes[0];
+        public static TechType ModdedBattery => BatteryTechTypes[0];
 
         public static List<TechType> PowerCellTechTypes { get; } = new List<TechType>();
         public static bool HasPowerCells { get; protected set; } = false;
-        public static TechType SamplePowerCell => PowerCellTechTypes[0];
+        public static TechType ModdedPowerCell => PowerCellTechTypes[0];
 
         protected abstract TechType PrefabType { get; } // Should only ever be Battery or PowerCell
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
@@ -51,7 +51,11 @@
 
         public string PluginFolder { get; set; }
 
+        public Atlas.Sprite Sprite { get; set; }
+
         public IList<TechType> Parts { get; set; }
+
+        public bool IsPatched { get; private set; }
 
         protected CbCore(string classId)
             : base(classId, $"{classId}PreFab", TechType.None)
@@ -92,12 +96,18 @@
 
         public void Patch()
         {
+            if (this.IsPatched)
+                return;
+
             this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, this.UnlocksAtStart);
 
             if (!this.UnlocksAtStart)
                 KnownTechHandler.SetAnalysisTechEntry(this.RequiredForUnlock, new TechType[] { this.TechType });
 
-            SpriteHandler.RegisterSprite(this.TechType, IOUtilities.Combine(ExecutingFolder, this.PluginFolder, this.IconFileName));
+            if (this.Sprite == null)
+                this.Sprite = ImageUtils.LoadSpriteFromFile(IOUtilities.Combine(ExecutingFolder, this.PluginFolder, this.IconFileName));
+
+            SpriteHandler.RegisterSprite(this.TechType, this.Sprite);
 
             CraftDataHandler.SetTechData(this.TechType, GetBlueprintRecipe());
 
@@ -110,6 +120,8 @@
             PrefabHandler.RegisterPrefab(this);
 
             AddToList();
+
+            this.IsPatched = true;
         }
 
         internal static void PatchCraftingTabs()
@@ -117,7 +129,7 @@
             if (CraftingTabsPatched)
                 return; // Just a safety
 
-            QuickLogger.Info("Patching crafting tabs");
+            QuickLogger.Info("Separating batteries and power cells into their own fabricator crafting tabs");
 
             // Remove original crafting nodes
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.Battery.ToString());

@@ -60,6 +60,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\CustomBatteriesService.cs" />
+    <Compile Include="API\ICustomBatteriesService.cs" />
     <Compile Include="PackReading\IPluginDetails.cs" />
     <Compile Include="PackReading\IPluginPack.cs" />
     <Compile Include="Items\CbCore.cs" />

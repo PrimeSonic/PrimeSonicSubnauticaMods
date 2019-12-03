@@ -18,14 +18,11 @@
             try
             {
                 CbCore.PatchCraftingTabs();
-                bool success = PatchPacks();
+                PatchPacks();
 
-                if (success)
-                {
-                    QuickLogger.Info("Applying Harmony Patches");
-                    var harmony = HarmonyInstance.Create("com.custombatteries.mod");
-                    harmony.PatchAll(Assembly.GetExecutingAssembly());
-                }
+                QuickLogger.Info("Applying Harmony Patches");
+                var harmony = HarmonyInstance.Create("com.custombatteries.mod");
+                harmony.PatchAll(Assembly.GetExecutingAssembly());
 
                 QuickLogger.Info("Finished patching");
             }
@@ -35,16 +32,16 @@
             }
         }
 
-        private static bool PatchPacks()
+        private static void PatchPacks()
         {
             QuickLogger.Info("Reading pluging packs");
             string pluginPacksFolder = Path.Combine(CbCore.ExecutingFolder, "Packs");
 
             if (!Directory.Exists(pluginPacksFolder))
             {
-                QuickLogger.Warning("'Packs' folder was not found. Folder will be created. No plugins were patched.");
+                QuickLogger.Warning("'Packs' folder was not found. Folder will be created. No text plugins were patched.");
                 Directory.CreateDirectory(pluginPacksFolder);
-                return false;
+                return;
             }
 
             var customPacks = new List<CustomPack>();
@@ -58,8 +55,8 @@
 
             if (customPacks.Count == 0)
             {
-                QuickLogger.Warning("No plugin files were found in the 'Packs' folder. No plugins were patched.");
-                return false;
+                QuickLogger.Warning("No plugin files were found in the 'Packs' folder. No text plugins were patched.");
+                return;
             }
 
             QuickLogger.Info($"Patching '{customPacks.Count}' pluging pack(s) with SMLHelper");
@@ -68,8 +65,6 @@
                 QuickLogger.Info($"Patching plugin pack '{customPack.PluginPackName}'");
                 customPack.Patch();
             }
-
-            return true;
         }
     }
 }

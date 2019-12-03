@@ -17,28 +17,28 @@
                 return;
 
             if (!__instance.allowBatteryReplacement)
-                return; // Battery replacement not allowed - No need to make changes            
+                return; // Battery replacement not allowed - No need to make changes
 
             List<TechType> compatibleBatteries = __instance.compatibleBatteries;
 
             if (compatibleBatteries.Contains(TechType.Battery) &&
-                !compatibleBatteries.Contains(CbCore.SampleBattery))
+                !compatibleBatteries.Contains(CbCore.ModdedBattery))
             {
                 // If the regular Battery is compatible with this item,
                 // then modded batteries should also be compatible
-                foreach (TechType moddedBattery in CbCore.BatteryTechTypes)
-                    compatibleBatteries.Add(moddedBattery);
+                for (int i = 0; i < CbCore.BatteryTechTypes.Count; i++)
+                    compatibleBatteries.Add(CbCore.BatteryTechTypes[i]);
 
                 return;
             }
 
             if (compatibleBatteries.Contains(TechType.PowerCell) &&
-                !compatibleBatteries.Contains(CbCore.SamplePowerCell))
+                !compatibleBatteries.Contains(CbCore.ModdedPowerCell))
             {
                 // If the regular Power Cell is compatible with this item,
                 // then modded power cells should also be compatible
-                foreach (TechType moddedBattery in CbCore.PowerCellTechTypes)
-                    compatibleBatteries.Add(moddedBattery);
+                for (int i = 0; i < CbCore.PowerCellTechTypes.Count; i++)
+                    compatibleBatteries.Add(CbCore.PowerCellTechTypes[i]);
 
                 return;
             }
