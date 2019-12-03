@@ -34,7 +34,6 @@
         protected override void AddToList()
         {
             BatteryTechTypes.Add(this.TechType);
-            HasBatteries = true;
         }
     }
 }

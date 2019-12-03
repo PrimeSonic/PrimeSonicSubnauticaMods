@@ -1,4 +1,4 @@
-﻿namespace CustomBatteries.PackReading
+﻿namespace CustomBatteries.API
 {
     using System.Collections.Generic;
 

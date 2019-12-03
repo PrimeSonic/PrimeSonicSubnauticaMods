@@ -24,12 +24,10 @@
         public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static List<TechType> BatteryTechTypes { get; } = new List<TechType>();
-        public static bool HasBatteries { get; protected set; } = false;
-        public static TechType ModdedBattery => BatteryTechTypes[0];
+        public static TechType LastModdedBattery => BatteryTechTypes[BatteryTechTypes.Count - 1];
 
         public static List<TechType> PowerCellTechTypes { get; } = new List<TechType>();
-        public static bool HasPowerCells { get; protected set; } = false;
-        public static TechType ModdedPowerCell => PowerCellTechTypes[0];
+        public static TechType LastModdedPowerCell => PowerCellTechTypes[PowerCellTechTypes.Count - 1];
 
         protected abstract TechType PrefabType { get; } // Should only ever be Battery or PowerCell
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger

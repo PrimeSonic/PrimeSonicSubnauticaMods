@@ -63,15 +63,15 @@
     <Compile Include="API\CustomBatteriesService.cs" />
     <Compile Include="API\ICustomBatteriesService.cs" />
     <Compile Include="PackReading\IPluginDetails.cs" />
-    <Compile Include="PackReading\IPluginPack.cs" />
+    <Compile Include="API\IPluginPack.cs" />
     <Compile Include="Items\CbCore.cs" />
     <Compile Include="Items\CustomBattery.cs" />
-    <Compile Include="Items\CustomPack.cs" />
+    <Compile Include="API\CustomPack.cs" />
     <Compile Include="Items\CustomPowerCell.cs" />
     <Compile Include="PackReading\PackReader.cs" />
     <Compile Include="PackReading\PluginPack.cs" />
-    <Compile Include="Patches\Charger_Patchers.cs" />
-    <Compile Include="Patches\EnergyMixin_Patcher.cs" />
+    <Compile Include="Patches\ChargerPatcher.cs" />
+    <Compile Include="Patches\EnergyMixinPatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
   </ItemGroup>

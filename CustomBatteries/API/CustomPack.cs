@@ -1,5 +1,7 @@
-﻿namespace CustomBatteries.Items
+﻿namespace CustomBatteries.API
 {
+    using Common;
+    using CustomBatteries.Items;
     using CustomBatteries.PackReading;
     using SMLHelper.V2.Assets;
 
@@ -85,6 +87,7 @@
 
         internal void Patch()
         {
+            QuickLogger.Info($"Patching plugin pack '{this.PluginPackName}'");
             // Batteries must always patch before Power Cells
             _customBattery.Patch();
             _customPowerCell.Patch();

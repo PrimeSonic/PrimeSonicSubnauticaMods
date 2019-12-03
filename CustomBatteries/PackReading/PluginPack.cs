@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Common.EasyMarkup;
+    using CustomBatteries.API;
 
     internal class PluginPack : EmPropertyCollection, IPluginDetails
     {

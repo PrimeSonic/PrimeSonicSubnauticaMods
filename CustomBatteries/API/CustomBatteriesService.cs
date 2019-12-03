@@ -3,19 +3,13 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
-    using CustomBatteries.Items;
-    using CustomBatteries.PackReading;
 
+    /// <summary>
+    /// An API class that handles services from CustomBatteries for external mods.<para/>
+    /// </summary>
+    /// <seealso cref="ICustomBatteriesService" />
     public class CustomBatteriesService : ICustomBatteriesService
     {
-        /// <summary>
-        /// Gets the entry point for the Custom Batteries APIs.
-        /// </summary>
-        /// <value>
-        /// The Custom Batteries service API.
-        /// </value>
-        public static ICustomBatteriesService API { get; } = new CustomBatteriesService();
-
         /// <summary>
         /// Gets the full collection of <see cref="TechType" />s for all batteries, both vanilla and modded.
         /// </summary>
@@ -34,8 +28,6 @@
         /// <seealso cref="PowerCellCharger" />
         public HashSet<TechType> AllPowerCells => PowerCellCharger.compatibleTech;
 
-        private CustomBatteriesService() { } // Hide constructor
-
         /// <summary>
         /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded items returned.
         /// </summary>
@@ -48,6 +40,7 @@
         public CustomPack AddPluginPackFromMod(IPluginPack modPluginPack, Atlas.Sprite batterySprite, Atlas.Sprite powerCellSprite)
         {
             QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}' from '{Assembly.GetCallingAssembly().GetName().Name}'");
+
             var pack = new CustomPack(modPluginPack, batterySprite, powerCellSprite);
             pack.Patch();
 

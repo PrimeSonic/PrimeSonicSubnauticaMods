@@ -38,7 +38,6 @@
         protected override void AddToList()
         {
             PowerCellTechTypes.Add(this.TechType);
-            HasPowerCells = true;
         }
     }
 }
