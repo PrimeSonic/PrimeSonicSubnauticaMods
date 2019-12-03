@@ -65,13 +65,15 @@
     <Compile Include="API\IModPluginPack.cs" />
     <Compile Include="API\ITextPluginPack.cs" />
     <Compile Include="API\IPluginPack.cs" />
+    <Compile Include="API\ModPluginPack.cs" />
+    <Compile Include="API\TextPluginPack.cs" />
     <Compile Include="Items\CbCore.cs" />
     <Compile Include="Items\CustomBattery.cs" />
     <Compile Include="API\CustomPack.cs" />
     <Compile Include="Items\CustomPowerCell.cs" />
+    <Compile Include="PackReading\EmTextPluginPack.cs" />
     <Compile Include="PackReading\IParsedPluginPack.cs" />
     <Compile Include="PackReading\PackReader.cs" />
-    <Compile Include="PackReading\PluginPack.cs" />
     <Compile Include="Patches\ChargerPatcher.cs" />
     <Compile Include="Patches\EnergyMixinPatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

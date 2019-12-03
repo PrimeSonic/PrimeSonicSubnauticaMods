@@ -4,7 +4,7 @@
     using SMLHelper.V2.Assets;
 
     /// <summary>
-    /// A simple service to allow other mods to use CustomBatteries as a service to quickly add in their own modded batteries.
+    /// A simple interface that defines the services that CustomBatteries can provide to external mods.
     /// </summary>
     public interface ICustomBatteriesService
     {

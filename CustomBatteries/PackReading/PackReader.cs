@@ -21,12 +21,12 @@
                 return;
             }
 
-            var customPacks = new List<CustomPack>();
+            var customPacks = new List<TextPluginPack>();
 
-            foreach (IParsedPluginPack pluginPack in PackReader.GetAllPacks(pluginPacksFolder))
+            foreach (IParsedPluginPack pluginPack in GetAllPacks(pluginPacksFolder))
             {
                 QuickLogger.Info($"Found CustomBatteriesPack '{pluginPack.PluginPackName}'");
-                customPacks.Add(new CustomPack(pluginPack));
+                customPacks.Add(new TextPluginPack(pluginPack));
             }
 
             if (customPacks.Count == 0)
@@ -35,18 +35,17 @@
                 return;
             }
 
-            QuickLogger.Info($"Patching '{customPacks.Count}' pluging pack(s) with SMLHelper");
-            foreach (CustomPack customPack in customPacks)
+            foreach (TextPluginPack customPack in customPacks)
             {
                 customPack.Patch();
             }
         }
 
-        private static PluginPack LoadFromFile(string file)
+        private static EmTextPluginPack LoadFromFile(string file)
         {
             string text = File.ReadAllText(file, Encoding.UTF8);
 
-            var pluginPack = new PluginPack();
+            var pluginPack = new EmTextPluginPack();
 
             bool readCorrectly = pluginPack.FromString(text);
 
@@ -72,7 +71,7 @@
                     continue;
                 }
 
-                PluginPack plugin = LoadFromFile(pluginDataFile);
+                EmTextPluginPack plugin = LoadFromFile(pluginDataFile);
 
                 if (plugin == null)
                 {

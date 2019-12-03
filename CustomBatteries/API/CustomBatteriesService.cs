@@ -5,7 +5,7 @@
     using Common;
 
     /// <summary>
-    /// An API class that handles services from CustomBatteries for external mods.<para/>
+    /// An API service class that handles requests for CustomBatteries from external mods.
     /// </summary>
     /// <seealso cref="ICustomBatteriesService" />
     public class CustomBatteriesService : ICustomBatteriesService
@@ -39,7 +39,7 @@
         {
             QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}' from '{Assembly.GetCallingAssembly().GetName().Name}'");
 
-            var pack = new CustomPack(modPluginPack);
+            var pack = new ModPluginPack(modPluginPack);
             pack.Patch();
 
             return pack;

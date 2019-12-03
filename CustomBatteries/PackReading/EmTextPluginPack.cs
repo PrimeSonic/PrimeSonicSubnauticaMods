@@ -4,7 +4,7 @@
     using Common.EasyMarkup;
     using CustomBatteries.API;
 
-    internal class PluginPack : EmPropertyCollection, IParsedPluginPack
+    internal class EmTextPluginPack : EmPropertyCollection, IParsedPluginPack
     {
         private static ICollection<EmProperty> PluginDefinitions => new List<EmProperty>
         {
@@ -13,7 +13,7 @@
             new EmProperty<TechType>(nameof(IPluginPack.UnlocksWith), TechType.None){ Optional = true },
             new EmProperty<string>(nameof(IPluginPack.BatteryID)),
             new EmProperty<string>(nameof(IPluginPack.BatteryName)),
-            new EmProperty<string>(nameof(IPluginPack.BatterFlavorText)),
+            new EmProperty<string>(nameof(IPluginPack.BatteryFlavorText)),
             new EmPropertyList<TechType>(nameof(IPluginPack.BatteryParts)),
             new EmProperty<string>(nameof(ITextPluginPack.BatteryIconFile)),
             new EmProperty<string>(nameof(IPluginPack.PowerCellID)),
@@ -37,7 +37,7 @@
         private readonly EmPropertyList<TechType> powerCellAdditionalParts;
         private readonly EmProperty<string> powerCellIconFile;
 
-        public PluginPack()
+        public EmTextPluginPack()
             : base("CustomBatteriesPack", PluginDefinitions)
         {
             pluginPackName = (EmProperty<string>)Properties[nameof(IPluginPack.PluginPackName)];
@@ -45,7 +45,7 @@
             unlocksWith = (EmProperty<TechType>)Properties[nameof(IPluginPack.UnlocksWith)];
             batteryID = (EmProperty<string>)Properties[nameof(IPluginPack.BatteryID)];
             batteryName = (EmProperty<string>)Properties[nameof(IPluginPack.BatteryName)];
-            batterFlavorText = (EmProperty<string>)Properties[nameof(IPluginPack.BatterFlavorText)];
+            batterFlavorText = (EmProperty<string>)Properties[nameof(IPluginPack.BatteryFlavorText)];
             batteryParts = (EmPropertyList<TechType>)Properties[nameof(IPluginPack.BatteryParts)];
             batteryIconFile = (EmProperty<string>)Properties[nameof(ITextPluginPack.BatteryIconFile)];
             powerCellID = (EmProperty<string>)Properties[nameof(IPluginPack.PowerCellID)];
@@ -55,7 +55,7 @@
             powerCellIconFile = (EmProperty<string>)Properties[nameof(ITextPluginPack.PowerCellIconFile)];
         }
 
-        private PluginPack(ITextPluginPack pluginPack)
+        private EmTextPluginPack(ITextPluginPack pluginPack)
             : this()
         {
             this.PluginPackName = pluginPack.PluginPackName;
@@ -63,7 +63,7 @@
             this.UnlocksWith = pluginPack.UnlocksWith;
             this.BatteryID = pluginPack.BatteryID;
             this.BatteryName = pluginPack.BatteryName;
-            this.BatterFlavorText = pluginPack.BatterFlavorText;
+            this.BatteryFlavorText = pluginPack.BatteryFlavorText;
             this.BatteryParts = pluginPack.BatteryParts;
             this.BatteryIconFile = pluginPack.BatteryIconFile;
             this.PowerCellID = pluginPack.PowerCellID;
@@ -98,7 +98,7 @@
             get => batteryName.Value;
             private set => batteryName.Value = value;
         }
-        public string BatterFlavorText
+        public string BatteryFlavorText
         {
             get => batterFlavorText.Value;
             private set => batterFlavorText.Value = value;
@@ -153,7 +153,7 @@
 
         internal override EmProperty Copy()
         {
-            return new PluginPack(this);
+            return new EmTextPluginPack(this);
         }
     }
 }

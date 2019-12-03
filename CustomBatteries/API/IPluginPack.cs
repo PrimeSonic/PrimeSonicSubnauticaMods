@@ -37,11 +37,12 @@
         /// <summary>
         /// The flavor text for the custom battery shown in-game when viewing it from a PDA screen.
         /// </summary>
-        string BatterFlavorText { get; }
+        string BatteryFlavorText { get; }
 
         /// <summary>
         /// The materials required to craft the battery.<para/>
-        /// If you want multiple copies of the same material, include multiple entries of that <see cref="TechType"/>.
+        /// If you want multiple copies of the same material, include multiple entries of that <see cref="TechType"/>.<para/>
+        /// If this list is empty, a default recipe of a single <see cref="TechType.Titanium"/> will be applied instead.
         /// </summary>
         IList<TechType> BatteryParts { get; }        
 
@@ -60,6 +61,11 @@
         /// </summary>
         string PowerCellFlavorText { get; }
 
+        /// <summary>
+        /// The <c>additional</c> crafting materials required to convert two batteries and one <see cref="TechType.Silicone"/> Rubber into a power cell.<para/>
+        /// All power cells always require two batteries and one silicone rubber. The items you list here are added to that.<para/>
+        /// You can leave this empty to require no additional materials.
+        /// </summary>
         IList<TechType> PowerCellAdditionalParts { get; }        
     }
 }

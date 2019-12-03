@@ -6,7 +6,7 @@
     UnlocksWith:HatchingEnzymes;
     BatteryID:EnzymeBattery;
     BatteryName:"Enzyme-Charged Ion Battery";
-    BatterFlavorText:"A new battery based on the discovery of a chemical interaction between hatching enzymes, radiation, and ion crystals.";
+    BatteryFlavorText:"A new battery based on the discovery of a chemical interaction between hatching enzymes, radiation, and ion crystals.";
     BatteryParts:
     (
         PrecursorIonBattery,HatchingEnzymes,HatchingEnzymes,

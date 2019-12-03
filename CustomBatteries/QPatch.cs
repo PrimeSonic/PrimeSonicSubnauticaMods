@@ -18,6 +18,9 @@
                 CbCore.PatchCraftingTabs();
                 PackReader.PatchTextPacks();
 
+                // Packs from external mods are patched as they arrive.
+                // They can still be patched in even after the harmony patches have completed.
+
                 var harmony = HarmonyInstance.Create("com.custombatteries.mod");
                 ChargerPatcher.Patch(harmony);
                 EnergyMixinPatcher.Patch(harmony);

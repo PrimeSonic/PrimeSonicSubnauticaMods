@@ -8,16 +8,16 @@
     /// <summary>
     /// A container class that a holds the modded battery and power cell prefab objects.
     /// </summary>
-    public class CustomPack
+    public abstract class CustomPack
     {
-        private readonly CustomBattery _customBattery;
-        private readonly CustomPowerCell _customPowerCell;
+        internal readonly CustomBattery _customBattery;
+        internal readonly CustomPowerCell _customPowerCell;
 
         /// <summary>
-        /// Gets the name of the plugin pack.
+        /// Gets the original plugin pack.
         /// </summary>
         /// <value>
-        /// The name of the plugin pack.
+        /// The original plugin pack.
         /// </value>
         public IPluginPack OriginalPlugInPack { get; }
 
@@ -45,15 +45,16 @@
         /// </value>
         public bool IsPatched => _customBattery.IsPatched && _customPowerCell.IsPatched;
 
-        private CustomPack(IPluginPack pluginPack)
+        internal CustomPack(IPluginPack pluginPack)
         {
             this.OriginalPlugInPack = pluginPack;
+
             _customBattery = new CustomBattery(pluginPack.BatteryID)
             {
                 PluginPackName = pluginPack.PluginPackName,
                 FriendlyName = pluginPack.BatteryName,
-                Description = pluginPack.BatterFlavorText,
-                
+                Description = pluginPack.BatteryFlavorText,
+
                 PowerCapacity = pluginPack.BatteryCapacity,
                 RequiredForUnlock = pluginPack.UnlocksWith,
                 Parts = pluginPack.BatteryParts
@@ -64,28 +65,11 @@
                 PluginPackName = pluginPack.PluginPackName,
                 FriendlyName = pluginPack.PowerCellName,
                 Description = pluginPack.PowerCellFlavorText,
-                
+
                 PowerCapacity = pluginPack.BatteryCapacity * 2f, // Power Cell capacity is always 2x the battery capacity
                 RequiredForUnlock = pluginPack.UnlocksWith,
                 Parts = pluginPack.PowerCellAdditionalParts
             };
-        }
-
-        internal CustomPack(IModPluginPack pluginPack)
-            : this((IPluginPack)pluginPack)
-        {
-            _customBattery.Sprite = pluginPack.BatteryIcon;
-            _customPowerCell.Sprite = pluginPack.PowerCellIcon;
-        }
-
-        internal CustomPack(IParsedPluginPack pluginPack)
-            : this((IPluginPack)pluginPack)
-        {
-            _customBattery.PluginFolder = pluginPack.PluginPackFolder;
-            _customBattery.IconFileName = pluginPack.BatteryIconFile;
-
-            _customPowerCell.PluginFolder = pluginPack.PluginPackFolder;
-            _customPowerCell.IconFileName = pluginPack.PowerCellIconFile;
         }
 
         internal void Patch()

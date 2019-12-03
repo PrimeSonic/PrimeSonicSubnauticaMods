@@ -6,7 +6,7 @@
     UnlocksWith:WhiteMushroom;
     BatteryID:DeepBattery;
     BatteryName:"Deep Battery";
-    BatterFlavorText:"A longer lasting battery created from rare materials and stronger chemicals.";
+    BatteryFlavorText:"A longer lasting battery created from rare materials and stronger chemicals.";
     BatteryParts:
     (
         WhiteMushroom,WhiteMushroom,WhiteMushroom,

@@ -7,7 +7,7 @@
     public interface ITextPluginPack : IPluginPack
     {
         /// <summary>
-        /// Gets the battery icon file name.
+        /// Gets the battery icon file name. This should be a PNG image file.
         /// </summary>
         /// <value>
         /// The battery icon file name.
@@ -15,7 +15,7 @@
         string BatteryIconFile { get; }
 
         /// <summary>
-        /// Gets the battery icon file name.
+        /// Gets the battery icon file name. This should be a PNG image file.
         /// </summary>
         /// <value>
         /// The battery icon file name.

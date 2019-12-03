@@ -16,9 +16,8 @@
 
             MethodInfo initializePreFixMethod = AccessTools.Method(typeof(ChargerPatcher), nameof(ChargerPatcher.InitializePrefix));
 
-            var harmonyInitPrefix = new HarmonyMethod(initializePreFixMethod);
-            harmony.Patch(batteryChargerInitializeMethod, prefix: harmonyInitPrefix); // Patches the BatteryCharger Initialize method
-            harmony.Patch(powerCellChargerInitializeMethod, prefix: harmonyInitPrefix); // Patches the PowerCellCharger Initialize method
+            harmony.Patch(batteryChargerInitializeMethod, prefix: new HarmonyMethod(initializePreFixMethod)); // Patches the BatteryCharger Initialize method
+            harmony.Patch(powerCellChargerInitializeMethod, prefix: new HarmonyMethod(initializePreFixMethod)); // Patches the PowerCellCharger Initialize method
         }
 
         public static void InitializePrefix(HashSet<TechType> compatibleTech, List<TechType> toBeAdded)
