@@ -1,10 +1,8 @@
 ﻿namespace CyclopsAutoZapper.Managers
 {
-    using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;
-
 
     internal class AntiParasiteIconOverlay : IconOverlay
     {
@@ -17,9 +15,9 @@
 
         public override void UpdateText()
         {
-            base.UpperText.FontSize = 16;
-            base.MiddleText.FontSize = 16;
-            base.LowerText.FontSize = 16;
+            base.UpperText.FontSize = 12;
+            base.MiddleText.FontSize = 12;
+            base.LowerText.FontSize = 12;
 
             if (shieldPulser.HasShieldModule)
             {

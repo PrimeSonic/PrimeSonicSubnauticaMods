@@ -58,12 +58,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Items\CyclopsAutoDefenseMk2.cs" />
     <Compile Include="Items\CyclopsParasiteRemover.cs" />
     <Compile Include="Items\CyclopsAutoDefense.cs" />
     <Compile Include="Managers\AntiParasiteIconOverlay.cs" />
+    <Compile Include="Managers\AutoDefenseMk2IconOverlay.cs" />
     <Compile Include="Managers\AutoDefenser.cs" />
+    <Compile Include="Managers\AutoDefenserMk2.cs" />
     <Compile Include="Managers\CooldownManager.cs" />
     <Compile Include="Managers\AutoDefenseIconOverlay.cs" />
+    <Compile Include="Managers\Zapper.cs" />
     <Compile Include="Patchers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
@@ -86,6 +90,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\CyclopsZapperModule.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CyclopsZapperModuleMk2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
