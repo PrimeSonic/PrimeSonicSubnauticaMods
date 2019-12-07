@@ -15,9 +15,9 @@
 
         public override void UpdateText()
         {
-            base.UpperText.FontSize = 14;
-            base.MiddleText.FontSize = 14;
-            base.LowerText.FontSize = 14;
+            base.UpperText.FontSize = 12;
+            base.MiddleText.FontSize = 12;
+            base.LowerText.FontSize = 12;
 
             if (shieldPulser.HasShieldModule)
             {
