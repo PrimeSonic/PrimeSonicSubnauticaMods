@@ -1,6 +1,5 @@
 ﻿namespace CyclopsAutoZapper.Managers
 {
-    using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;
@@ -16,7 +15,7 @@
 
         public override void UpdateText()
         {
-            if (base.Cyclops.powerRelay.GetPower() < AutoDefenser.EnergyRequiredToZap)
+            if (GameModeUtils.RequiresPower() && base.Cyclops.powerRelay.GetPower() < Zapper.EnergyRequiredToZap)
             {
                 base.UpperText.FontSize = 20;
                 base.MiddleText.FontSize = 20;
@@ -40,7 +39,7 @@
                     base.UpperText.TextString = "Seamoth\n[Connected]";
                     base.UpperText.TextColor = Color.green;
 
-                    if (zapper.HasElectricalDefense)
+                    if (zapper.HasSeamothWithElectricalDefense)
                     {
                         if (zapper.IsOnCooldown)
                         {

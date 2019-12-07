@@ -9,7 +9,7 @@
     {
         public CyclopsAutoDefense()
             : base("CyclopsZapperModule",
-                   "Cyclops Auto Defense System",
+                   "Cyclops Auto Defense System Mk1",
                    "Extends and automates the Perimeter Defense System of a docked Seamoth to protect the Cyclops from aggressive fauna.")
         {
         }
@@ -26,6 +26,7 @@
                 craftAmount = 1,
                 Ingredients =
                 {
+                    new Ingredient(TechType.ComputerChip, 1),
                     new Ingredient(TechType.WiringKit, 1),
                     new Ingredient(TechType.CopperWire, 1),
                     new Ingredient(TechType.Polyaniline, 1),

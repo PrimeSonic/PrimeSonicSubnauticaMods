@@ -60,13 +60,14 @@
                     }
 
                     MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap();
+                    MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops)?.Zap();
                 }
             }
         }
     }
 
     [HarmonyPatch(typeof(CyclopsHolographicHUD))]
-    [HarmonyPatch("AttachedLavaLarva")]
+    [HarmonyPatch(nameof(CyclopsHolographicHUD.AttachedLavaLarva))]
     internal static class CyclopsHolographicHUD_AttachedLavaLarva_Patcher
     {
         [HarmonyPostfix]
