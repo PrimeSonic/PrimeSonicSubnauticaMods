@@ -1,6 +1,7 @@
 ﻿namespace CyclopsAutoZapper
 {
     using System.IO;
+    using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -15,6 +16,17 @@
                    "Self contained, automated, anti-predator electrical defense system for the Cyclops.")
         {
             autoDefenseMk1 = zapperMk1.TechType;
+            OnFinishedPatching += () =>
+            {
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+                { return new UpgradeHandler(this.TechType, cyclops) { MaxCount = 1 }; });
+
+                MCUServices.Register.PdaIconOverlay(this.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+                { return new AutoDefenseMk2IconOverlay(icon, upgradeModule); });
+
+                MCUServices.Register.AuxCyclopsManager<AutoDefenserMk2>((SubRoot cyclops) =>
+                { return new AutoDefenserMk2(this.TechType, cyclops); });
+            };
         }
 
         public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;

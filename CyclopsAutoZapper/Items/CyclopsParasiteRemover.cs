@@ -1,6 +1,7 @@
 ﻿namespace CyclopsAutoZapper
 {
     using System.IO;
+    using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -12,6 +13,17 @@
                    "Cyclops Auto Parasite Remover",
                    "Automatically pulses the Cyclops shield at low power to detach parasites.")
         {
+            OnFinishedPatching += () =>
+            {
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+                { return new UpgradeHandler(this.TechType, cyclops) { MaxCount = 1 }; });
+
+                MCUServices.Register.PdaIconOverlay(this.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+                { return new AntiParasiteIconOverlay(icon, upgradeModule); });
+
+                MCUServices.Register.AuxCyclopsManager<ShieldPulser>((SubRoot cyclops) =>
+                { return new ShieldPulser(this.TechType, cyclops); });
+            };
         }
 
         public override CraftTree.Type FabricatorType => CraftTree.Type.CyclopsFabricator;

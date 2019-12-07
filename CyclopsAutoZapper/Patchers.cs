@@ -30,7 +30,9 @@
             if (!entityData.attackCyclops.IsAggressiveTowardsCyclops(cyclops.gameObject))
                 return;
 
+            // Yes, both auto-defense zappers can be activated at the same time
             MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap(entityData);
+            MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops)?.Zap(entityData);
         }
     }
 
@@ -41,27 +43,28 @@
         [HarmonyPostfix]
         internal static void Postfix(CyclopsSonarDisplay __instance)
         {
+            SubRoot cyclops = __instance.GetComponentInParent<SubRoot>();
+
+            if (cyclops == null)
+            {
+                QuickLogger.Error("Unable to find Cyclops SubRoot in CyclopsSonarDisplay parent");
+                return;
+            }
+
             foreach (CyclopsSonarDisplay.EntityPing entity in __instance.entitysOnSonar)
             {
-                if (entity == null || entity.ping == null)
+                CyclopsHUDSonarPing ping = entity?.ping?.GetComponent<CyclopsHUDSonarPing>();
+
+                if (ping == null)
                     continue;
 
-                CyclopsHUDSonarPing ping = entity.ping.GetComponent<CyclopsHUDSonarPing>();
-
                 // Are there any aggressive creatures on sonar?
-                if (ping.currentColor == ping.aggressiveColor)
-                {
-                    SubRoot cyclops = __instance.GetComponentInParent<SubRoot>();
+                if (ping.currentColor != ping.aggressiveColor)
+                    return;
 
-                    if (cyclops == null)
-                    {
-                        QuickLogger.Error("Unable to find Cyclops SubRoot in CyclopsSonarDisplay parent");
-                        return;
-                    }
-
-                    MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap();
-                    MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops)?.Zap();
-                }
+                // Yes, both auto-defense zappers can be activated at the same time
+                MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap();
+                MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops)?.Zap();
             }
         }
     }

@@ -5,7 +5,7 @@
 
     internal class ShieldPulser : CooldownManager
     {
-        protected override float TimeBetweenUses => 5.0f;
+        protected override float TimeBetweenUses => 4.0f;
 
         private const float ShieldCostModifier = 0.1f;
 

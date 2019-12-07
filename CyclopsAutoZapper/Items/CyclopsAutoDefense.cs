@@ -1,6 +1,7 @@
 ﻿namespace CyclopsAutoZapper
 {
     using System.IO;
+    using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -12,6 +13,17 @@
                    "Cyclops Auto Defense System Mk1",
                    "Extends and automates the Perimeter Defense System of a docked Seamoth to protect the Cyclops from aggressive fauna.")
         {
+            OnFinishedPatching += () =>
+            {
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+                { return new UpgradeHandler(this.TechType, cyclops) { MaxCount = 1 }; });
+
+                MCUServices.Register.PdaIconOverlay(this.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+                { return new AutoDefenseIconOverlay(icon, upgradeModule); });
+
+                MCUServices.Register.AuxCyclopsManager<AutoDefenser>((SubRoot cyclops) =>
+                { return new AutoDefenser(this.TechType, cyclops); });
+            };
         }
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
