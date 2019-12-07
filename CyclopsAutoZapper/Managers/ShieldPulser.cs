@@ -36,7 +36,10 @@
             Cyclops.shieldPowerCost = originalCost * ShieldCostModifier;
 
             this.ShieldButton?.StartShield();
-            Cyclops.powerRelay.ConsumeEnergy(Cyclops.shieldPowerCost, out float amountConsumed);
+
+            if (GameModeUtils.RequiresPower())
+                Cyclops.powerRelay.ConsumeEnergy(Cyclops.shieldPowerCost, out float amountConsumed);
+
             this.ShieldButton?.StopShield();
 
             Cyclops.shieldPowerCost = originalCost;
