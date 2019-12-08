@@ -32,7 +32,7 @@
         public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
         public override string AssetsFolder => Path.Combine("CyclopsAutoZapper", "Assets");
         public override TechType RequiredForUnlock => autoDefenseMk1;
-        public override string[] StepsToFabricatorTab => MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
+        public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
 
         protected override TechData GetBlueprintRecipe()
         {
