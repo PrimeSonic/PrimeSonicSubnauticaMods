@@ -44,7 +44,7 @@
         /// If you want multiple copies of the same material, include multiple entries of that <see cref="TechType"/>.<para/>
         /// If this list is empty, a default recipe of a single <see cref="TechType.Titanium"/> will be applied instead.
         /// </summary>
-        IList<TechType> BatteryParts { get; }        
+        IList<TechType> BatteryParts { get; }
 
         /// <summary>
         /// The internal ID for the custom power cell.
@@ -66,6 +66,6 @@
         /// All power cells always require two batteries and one silicone rubber. The items you list here are added to that.<para/>
         /// You can leave this empty to require no additional materials.
         /// </summary>
-        IList<TechType> PowerCellAdditionalParts { get; }        
+        IList<TechType> PowerCellAdditionalParts { get; }
     }
 }

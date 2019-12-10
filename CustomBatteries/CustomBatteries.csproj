@@ -91,7 +91,9 @@
     <Content Include="Packs\EnzymeChargedBatteries\EnzymeBattery.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Packs\EnzymeChargedBatteries\CustomBatteriesPlugin.txt" />
+    <Content Include="Packs\EnzymeChargedBatteries\CustomBatteriesPlugin.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Packs\EnzymeChargedBatteries\EnzymePowerCell.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

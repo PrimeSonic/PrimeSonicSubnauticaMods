@@ -6,6 +6,8 @@
 
     internal class EmTextPluginPack : EmPropertyCollection, IParsedPluginPack
     {
+        internal const string MainKey = "CustomBatteriesPlugin";
+
         private static ICollection<EmProperty> PluginDefinitions => new List<EmProperty>
         {
             new EmProperty<string>(nameof(IPluginPack.PluginPackName)),
@@ -38,7 +40,7 @@
         private readonly EmProperty<string> powerCellIconFile;
 
         public EmTextPluginPack()
-            : base("CustomBatteriesPack", PluginDefinitions)
+            : base(MainKey, PluginDefinitions)
         {
             pluginPackName = (EmProperty<string>)Properties[nameof(IPluginPack.PluginPackName)];
             batteryCapacity = (EmProperty<int>)Properties[nameof(IPluginPack.BatteryCapacity)];

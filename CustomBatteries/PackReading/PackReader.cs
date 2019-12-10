@@ -1,5 +1,6 @@
 ﻿namespace CustomBatteries.PackReading
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
@@ -9,9 +10,10 @@
 
     internal static class PackReader
     {
+        private const string PluginFileName = EmTextPluginPack.MainKey + ".txt";
+
         public static void PatchTextPacks()
         {
-            QuickLogger.Info("Reading pluging packs");
             string pluginPacksFolder = Path.Combine(CbCore.ExecutingFolder, "Packs");
 
             if (!Directory.Exists(pluginPacksFolder))
@@ -25,7 +27,6 @@
 
             foreach (IParsedPluginPack pluginPack in GetAllPacks(pluginPacksFolder))
             {
-                QuickLogger.Info($"Found CustomBatteriesPack '{pluginPack.PluginPackName}'");
                 customPacks.Add(new TextPluginPack(pluginPack));
             }
 
@@ -41,39 +42,30 @@
             }
         }
 
-        private static EmTextPluginPack LoadFromFile(string file)
-        {
-            string text = File.ReadAllText(file, Encoding.UTF8);
-
-            var pluginPack = new EmTextPluginPack();
-
-            bool readCorrectly = pluginPack.FromString(text);
-
-            if (readCorrectly)
-            {
-                return pluginPack;
-            }
-            
-            return null;
-        }
-
         private static IEnumerable<IParsedPluginPack> GetAllPacks(string folderLocation)
         {
             // Check all folders
             foreach (string pluginFolder in Directory.GetDirectories(folderLocation))
             {
                 // Find the CustomBatteriesPack.txt file
-                string pluginDataFile = Path.Combine(pluginFolder, "CustomBatteriesPack.txt");
+                string pluginDataFilePath = Path.Combine(pluginFolder, PluginFileName);
+                string plugingFolderName = new DirectoryInfo(Path.GetDirectoryName(pluginDataFilePath)).Name;
 
-                if (!File.Exists(pluginFolder))
+                if (!File.Exists(pluginDataFilePath))
                 {
-                    QuickLogger.Warning($"Packs folder '{pluginFolder}' did not contain a file named 'CustomBatteriesPack.txt'");
+                    QuickLogger.Warning($"Plugin packs folder '{plugingFolderName}' did not contain a file named '{PluginFileName}'");
                     continue;
                 }
 
-                EmTextPluginPack plugin = LoadFromFile(pluginDataFile);
+                QuickLogger.Info($"Reading plugin pack '{plugingFolderName}'");
 
-                if (plugin == null)
+                string text = File.ReadAllText(pluginDataFilePath, Encoding.UTF8);
+
+                var plugin = new EmTextPluginPack();
+
+                bool readCorrectly = plugin.FromString(text);
+
+                if (!readCorrectly)
                 {
                     QuickLogger.Warning($"Pack file in '{pluginFolder}' contained errors and could not be read");
                     continue;
@@ -82,6 +74,30 @@
                 plugin.PluginPackFolder = pluginFolder;
 
                 yield return plugin;
+            }
+        }
+
+        private static EmTextPluginPack LoadFromFile(string file)
+        {
+            string text = File.ReadAllText(file, Encoding.UTF8);
+
+            var pluginPack = new EmTextPluginPack();
+
+            try
+            {
+                bool readCorrectly = pluginPack.FromString(text);
+
+                if (readCorrectly)
+                {
+                    return pluginPack;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Error reading file '{file}'", ex);
+                return null;
             }
         }
     }

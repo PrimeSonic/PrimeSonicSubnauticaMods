@@ -72,13 +72,19 @@
             return obj;
         }
 
-        protected static void CreateIngredients(IEnumerable<TechType> parts, List<Ingredient> partsList)
+        protected void CreateIngredients(IEnumerable<TechType> parts, List<Ingredient> partsList)
         {
             if (parts == null)
                 return;
 
             foreach (TechType part in parts)
             {
+                if (part == TechType.None)
+                {
+                    QuickLogger.Warning($"Parts list for '{this.ClassID}' contained an unidentified TechType");
+                    continue;
+                }
+
                 Ingredient priorIngredient = partsList.Find(i => i.techType == part);
 
                 if (priorIngredient != null)
