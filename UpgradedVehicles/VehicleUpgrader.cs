@@ -98,8 +98,7 @@
         private DealDamageOnImpact _dmgOnImpact;
         private DealDamageOnImpact DmgOnImpact => _dmgOnImpact ?? (_dmgOnImpact = ParentVehicle.GetComponent<DealDamageOnImpact>());
 
-        private LiveMixin _lifeMix;
-        private LiveMixin LifeMix => _lifeMix ?? (_lifeMix = ParentVehicle.GetComponent<LiveMixin>());
+        private LiveMixin LifeMix => ParentVehicle.liveMixin;
 
         private int DepthIndex = -1;
         private bool IsSeamoth = false;
