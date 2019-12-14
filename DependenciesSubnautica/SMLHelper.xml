@@ -26,14 +26,15 @@
         </member>
         <member name="T:SMLHelper.V2.Assets.Craftable">
             <summary>
-            An item that can be crafted into the game world.
+            An item that can be crafted into the game world from a fabricator.
             </summary>
             <seealso cref="T:SMLHelper.V2.Assets.PdaItem" />
             <seealso cref="T:SMLHelper.V2.Assets.Spawnable" />
         </member>
         <member name="P:SMLHelper.V2.Assets.Craftable.FabricatorType">
             <summary>
-            Override with the fabricator that crafts this item.
+            Override with the vanilla fabricator that crafts this item.<para/>
+            Leave this as <see cref="F:CraftTree.Type.None"/> if you are manually adding this item to a custom fabricator.
             </summary>
         </member>
         <member name="P:SMLHelper.V2.Assets.Craftable.StepsToFabricatorTab">
@@ -49,6 +50,169 @@
             <param name="classId">The main internal identifier for this item. Your item's <see cref="T:TechType" /> will be created using this name.</param>
             <param name="friendlyName">The name displayed in-game for this item whether in the open world or in the inventory.</param>
             <param name="description">The description for this item; Typically seen in the PDA, inventory, or crafting screens.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Assets.CustomFabricator">
+            <summary>
+            An asset class similar to <seealso cref="T:SMLHelper.V2.Assets.Buildable"/> that streamlines the process of creating a custom fabricator with a custom crafting tree.
+            </summary>
+            <seealso cref="T:SMLHelper.V2.Assets.ModPrefab"/>
+        </member>
+        <member name="T:SMLHelper.V2.Assets.CustomFabricator.Models">
+            <summary>
+            Defines a list of available models for your <see cref="T:SMLHelper.V2.Assets.CustomFabricator"/>.
+            </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Assets.CustomFabricator.Models.Fabricator">
+            <summary>
+            The regular fabricator like the one in the life pod.
+            </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Assets.CustomFabricator.Models.Workbench">
+            <summary>
+            The modification station that upgrades your equipment.
+            </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Assets.CustomFabricator.Models.MoonPool">
+            <summary>
+            The style of fabricator found in the Moon Pool and the Cyclops sub.
+            </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Assets.CustomFabricator.Models.Custom">
+            <summary>
+            Use this option only if you want to provide your own custom model for your fabricator.<para/>
+            To use this value, you must override the <see cref="M:SMLHelper.V2.Assets.CustomFabricator.GetCustomCrafterPreFab"/> method.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.CustomFabricator.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initialized a new <see cref="T:SMLHelper.V2.Assets.CustomFabricator"/> based on the <see cref="T:SMLHelper.V2.Assets.Spawnable"/> asset class.
+            </summary>
+            <param name="classId">The main internal identifier for this item. Your item's <see cref="T:TechType"/> will be created using this name.</param>
+            <param name="friendlyName">The name displayed in-game for this item whether in the open world or in the inventory.</param>
+            <param name="description">The description for this item; Typically seen in the PDA, inventory, or crafting screens.</param>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.Model">
+            <summary>
+            Override this property to change which model your custom fabricator will use.<para/>
+            By default, this will be the standard <see cref="F:SMLHelper.V2.Assets.CustomFabricator.Models.Fabricator"/> as seen in the lifepod.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.AllowedInBase">
+            <summary>
+            Override this property to change the value of <see cref="F:Constructable.allowedInBase"/>.<para/>
+            Defaults to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.AllowedInCyclops">
+            <summary>
+            Override this property to change the value of <see cref="F:Constructable.allowedInSub"/>.<para/>
+            Defaults to <c>true</c>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.AllowedOutside">
+            <summary>
+            Override this property to change the value of <see cref="F:Constructable.allowedOutside"/>.<para/>
+            Defaults to <c>false</c>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.AllowedOnCeiling">
+            <summary>
+            Override this property to change the value of <see cref="F:Constructable.allowedOnCeiling"/>.<para/>
+            Defaults to <c>false</c>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.AllowedOnGround">
+            <summary>
+            Override this property to change the value of <see cref="F:Constructable.allowedOnGround"/>.<para/>
+            Defaults to <c>true</c> for <see cref="F:SMLHelper.V2.Assets.CustomFabricator.Models.Workbench"/> and <c>false</c> for all others.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.AllowedOnWall">
+            <summary>
+            Override this property to change the value of <see cref="F:Constructable.allowedOnWall"/>.<para/>
+            Defaults to <c>false</c> for <see cref="F:SMLHelper.V2.Assets.CustomFabricator.Models.Workbench"/> and <c>true</c> for all others.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.RotationEnabled">
+            <summary>
+            Override this property to change the value of <see cref="F:Constructable.rotationEnabled"/>.<para/>
+            Defaults to <c>true</c> for <see cref="F:SMLHelper.V2.Assets.CustomFabricator.Models.Workbench"/> and <c>false</c> for all others.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.UseCustomTint">
+            <summary>
+            Override this value tp <c>true</c> along with <see cref="P:SMLHelper.V2.Assets.CustomFabricator.ColorTint"/> to apply a simple tint to your custom fabricator for easy customization.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.ColorTint">
+            <summary>
+            Override this value to your desired <see cref="T:UnityEngine.Color"/> along with <see cref="P:SMLHelper.V2.Assets.CustomFabricator.UseCustomTint"/> to apply a simple tint to your custom fabricator for easy customization.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.TreeTypeID">
+            <summary>
+            The ID value for your custom craft tree. This is set in the <see cref="M:SMLHelper.V2.Assets.CustomFabricator.CreateCustomCraftTree(CraftTree.Type@)"/> method.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.CustomFabricator.GetGameObject">
+            <summary>
+            The in-game <see cref="T:UnityEngine.GameObject"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.CustomFabricator.GetCustomCrafterPreFab">
+            <summary>
+            Override this method if you want to provide your own prefab and model for your custom fabricator.<para/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.CustomFabricator.CreateCustomCraftTree(CraftTree.Type@)">
+            <summary>
+            Override this method if you want full control over how your custom craft tree is built up.<para/>
+            To use this method's default behavior, you must use the following methods to build up your crafting tree.<para/>
+            - <see cref="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(TechType,System.String)"/><para/>
+            - <see cref="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(System.String,System.String)"/><para/>
+            - <see cref="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(SMLHelper.V2.Assets.Craftable,System.String)"/><para/>
+            - <see cref="M:SMLHelper.V2.Assets.CustomFabricator.AddTabNode(System.String,System.String,Atlas.Sprite,System.String)"/>
+            </summary>
+            <param name="craftTreeType"></param>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.CustomFabricator.AddTabNode(System.String,System.String,Atlas.Sprite,System.String)">
+            <summary>
+            Adds a new tab node to the custom crafting tree of this fabricator.
+            </summary>
+            <param name="tabId">The internal ID for the tab node.</param>
+            <param name="displayText">The in-game text shown for the tab node.</param>
+            <param name="tabSprite">The sprite used for the tab node.</param>
+            <param name="parentTabId">Optional. The parent tab of this tab.<para/>
+            When this value is null, the tab will be added to the root of the craft tree.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(TechType,System.String)">
+            <summary>
+            Adds a new crafting node to the custom crafting tree of this fabricator.
+            </summary>
+            <param name="techType">The item to craft.</param>
+            <param name="parentTabId">Optional. The parent tab of this craft node.<para/>
+            When this value is null, the craft node will be added to the root of the craft tree.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(System.String,System.String)">
+            <summary>
+            Safely attempts to add a new crafting node to the custom crafting tree of this fabricator.<para/>
+            If the modded TechType is not found, the craft node will not be added.
+            </summary>
+            <param name="moddedTechType">The modded item to craft.</param>
+            <param name="parentTabId">Optional. The parent tab of this craft node.<para/>
+            When this value is null, the craft node will be added to the root of the craft tree.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(SMLHelper.V2.Assets.Craftable,System.String)">
+            <summary>
+            Safely adds a new crafting node to the custom crafting tree of this fabricator.<para/>
+            If the item has not been patched yet, its <see cref="M:SMLHelper.V2.Assets.Spawnable.Patch"/> method will first be invoked.
+            </summary>
+            <param name="item">The <see cref="T:SMLHelper.V2.Assets.Craftable"/> item to craft from this fabricator.</param>
+            <param name="parentTabId">Optional. The parent tab of this craft node.<para/>
+            When this value is null, the item's <see cref="P:SMLHelper.V2.Assets.Craftable.StepsToFabricatorTab"/> property will be checked instead.<para/>
+            The craft node will be added to the root of the craft tree if both are null.</param>
         </member>
         <member name="T:SMLHelper.V2.Assets.Fish">
             <summary>
@@ -328,7 +492,7 @@
         <member name="P:SMLHelper.V2.Assets.Spawnable.AssetsFolder">
             <summary>
             Override with the folder where your mod's icons and other assets are stored.
-            Normally, this will be something like "MyModAssembly/Assets".
+            By default, this will point to the same folder where your mod DLL is.
             </summary>
             <example>"MyModAssembly/Assets"</example>
         </member>
@@ -388,6 +552,13 @@
             </summary>
             <seealso cref="F:SMLHelper.V2.Assets.Spawnable.OnStartedPatching"/>
             <seealso cref="F:SMLHelper.V2.Assets.Spawnable.OnFinishedPatching"/>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.Spawnable.GetItemSprite">
+            <summary>
+            Determines thee <see cref="T:Atlas.Sprite"/> to be used for this spawnable's icon.<para/>
+            Default behavior will look for a PNG file named <see cref="P:SMLHelper.V2.Assets.Spawnable.IconFileName"/> inside <see cref="P:SMLHelper.V2.Assets.Spawnable.AssetsFolder"/>.
+            </summary>
+            <returns>Returns the <see cref="T:Atlas.Sprite"/> that will be used in the <see cref="M:SMLHelper.V2.Handlers.SpriteHandler.RegisterSprite(TechType,Atlas.Sprite)"/> call.</returns>
         </member>
         <member name="T:SMLHelper.V2.Crafting.ModCraftTreeCraft">
             <summary>
@@ -660,6 +831,76 @@
             <param name="techType">The item ID.</param>
             <param name="amount">The number of instances of this item required for the recipe.</param>
         </member>
+        <member name="T:SMLHelper.V2.Handler">
+            <summary>
+            A simple location where every SMLHelper handler class can be accessed.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.BioReactorHandler">
+            <summary>
+            A handler with common methods for updating BioReactor values.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.CraftDataHandler">
+            <summary>
+            A handler class for adding and editing crafted items.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.CraftTreeHandler">
+            <summary>
+            A handler class for creating and editing of crafting trees.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.IngameMenuHandler">
+            <summary>
+            A handler class that offers simple ways to tap into functionality of the in game menu.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.FishHandler">
+            <summary>
+            Class to manage registering of fish into the game
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.ItemActionHandler">
+            <summary>
+            A handler class for registering your custom middle click actions for items
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.KnownTechHandler">
+            <summary>
+            A handler class for configuring custom unlocking conditions for item blueprints.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.LanguageHandler">
+            <summary>
+            A handler for adding language lines.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.OptionsPanelHandler">
+            <summary>
+            A handler class for registering your custom in-game mod options.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.PDAHandler">
+            <summary>
+            A handler class for various scanner related data.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.SpriteHandler">
+            <summary>
+            A handler class for adding custom sprites into the game.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.TechTypeHandler">
+            <summary>
+            A handler class for everything related to creating new TechTypes.
+            </summary>
+        </member>
+        <member name="T:SMLHelper.V2.Handlers.BioReactorHandler">
+            <summary>
+            A handler with common methods for updating BioReactor values.
+            </summary>
+        </member>
         <member name="P:SMLHelper.V2.Handlers.BioReactorHandler.Main">
             <summary>
             Main entry point for all calls to this handler.
@@ -685,29 +926,14 @@
             <summary>
             A handler class for adding and editing crafted items.
             </summary>
+            <summary>
+            A handler class for adding and editing crafted items.
+            </summary>
         </member>
         <member name="P:SMLHelper.V2.Handlers.CraftDataHandler.Main">
             <summary>
             Main entry point for all calls to this handler.
             </summary>
-        </member>
-        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SetTechData(TechType,ITechData)">
-            <summary>
-            <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
-            <para>Can be used for existing TechTypes too.</para>
-            </summary>
-            <param name="techType">The TechType whose TechData you want to edit.</param>
-            <param name="techData">The TechData for that TechType.</param>
-            <seealso cref="T:SMLHelper.V2.Crafting.TechData"/>
-        </member>
-        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)">
-            <summary>
-            <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
-            <para>Can be used for existing TechTypes too.</para>
-            </summary>
-            <param name="techType">The TechType whose TechData you want to edit.</param>
-            <param name="techData">The TechData for that TechType.</param>
-            <seealso cref="T:SMLHelper.V2.Crafting.TechData"/>
         </member>
         <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SetEquipmentType(TechType,EquipmentType)">
             <summary>
@@ -823,6 +1049,51 @@
             <param name="category">The TechCategory in which the TechType is located.</param>
             <param name="techType">The TechType which you want to remove.</param>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#AddToGroup(TechGroup,TechCategory,TechType)">
+            <summary>
+            Allows you to add items to the game's internal grouping system.
+            Required if you want to make buildable items show up in the Habitat Builder.
+            </summary>
+            <param name="group">The TechGroup you want to add your TechType to.</param>
+            <param name="category">The TechCategory (in the TechGroup) you want to add your TechType to.</param>
+            <param name="techType">The TechType you want to add.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#AddToGroup(TechGroup,TechCategory,TechType,TechType)">
+            <summary>
+            Allows you to add items to the game's internal grouping system.
+            Required if you want to make buildable items show up in the Habitat Builder.
+            </summary>
+            <param name="group">The TechGroup you want to add your TechType to.</param>
+            <param name="category">The TechCategory (in the TechGroup) you want to add your TechType to.</param>
+            <param name="techType">The TechType you want to add.</param>
+            <param name="after">Added TechType will be added after this TechType, for sorting purposes.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#RemoveFromGroup(TechGroup,TechCategory,TechType)">
+            <summary>
+            Allows you to remove an existing TechType from the game's internal group system.
+            </summary>
+            <param name="group">The TechGroup in which the TechType is located.</param>
+            <param name="category">The TechCategory in which the TechType is located.</param>
+            <param name="techType">The TechType which you want to remove.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SetTechData(TechType,ITechData)">
+            <summary>
+            <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
+            <para>Can be used for existing TechTypes too.</para>
+            </summary>
+            <param name="techType">The TechType whose TechData you want to edit.</param>
+            <param name="techData">The TechData for that TechType.</param>
+            <seealso cref="T:SMLHelper.V2.Crafting.TechData"/>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)">
+            <summary>
+            <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
+            <para>Can be used for existing TechTypes too.</para>
+            </summary>
+            <param name="techType">The TechType whose TechData you want to edit.</param>
+            <param name="techData">The TechData for that TechType.</param>
+            <seealso cref="T:SMLHelper.V2.Crafting.TechData"/>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.GetModdedTechData(TechType)">
             <summary>
             Safely accesses the crafting data from a modded item.<para/>
@@ -936,33 +1207,6 @@
             Allows you to add items to the buildable list.
             </summary>
             <param name="techType">The TechType which you want to add to the buildable list.</param>
-        </member>
-        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#AddToGroup(TechGroup,TechCategory,TechType)">
-            <summary>
-            Allows you to add items to the game's internal grouping system.
-            Required if you want to make buildable items show up in the Habitat Builder.
-            </summary>
-            <param name="group">The TechGroup you want to add your TechType to.</param>
-            <param name="category">The TechCategory (in the TechGroup) you want to add your TechType to.</param>
-            <param name="techType">The TechType you want to add.</param>
-        </member>
-        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#AddToGroup(TechGroup,TechCategory,TechType,TechType)">
-            <summary>
-            Allows you to add items to the game's internal grouping system.
-            Required if you want to make buildable items show up in the Habitat Builder.
-            </summary>
-            <param name="group">The TechGroup you want to add your TechType to.</param>
-            <param name="category">The TechCategory (in the TechGroup) you want to add your TechType to.</param>
-            <param name="techType">The TechType you want to add.</param>
-            <param name="after">Added TechType will be added after this TechType, for sorting purposes.</param>
-        </member>
-        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#RemoveFromGroup(TechGroup,TechCategory,TechType)">
-            <summary>
-            Allows you to remove an existing TechType from the game's internal group system.
-            </summary>
-            <param name="group">The TechGroup in which the TechType is located.</param>
-            <param name="category">The TechCategory in which the TechType is located.</param>
-            <param name="techType">The TechType which you want to remove.</param>
         </member>
         <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#GetModdedTechData(TechType)">
             <summary>
@@ -1229,6 +1473,54 @@
             <param name="fish">The CustomFish that you are registering</param>
             <returns>The TechType created using the info from your CustomFish object</returns>
         </member>
+        <member name="T:SMLHelper.V2.Handlers.IngameMenuHandler">
+            <summary>
+            A handler class that offers simple ways to tap into functionality of the in game menu.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handlers.IngameMenuHandler.Main">
+            <summary>
+            Main entry point for all calls to this handler.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOnSaveEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke whenever the player saves the game via the in game menu.
+            </summary>
+            <param name="onSaveAction">The method to invoke.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.UnregisterOnSaveEvent(System.Action)">
+            <summary>
+            Removes a method previously added through <see cref="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOnSaveEvent(System.Action)"/> so it is no longer invoked when saving the game.<para/>
+            If you plan on using this, do not register an anonymous method.
+            </summary>
+            <param name="onSaveAction">The method invoked.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOneTimeUseOnSaveEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player saves the game via the in game menu.
+            </summary>
+            <param name="onSaveAction">The method to invoke. This action will not be invoked a second time.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#RegisterOnSaveEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke whenever the player saves the game via the in game menu.
+            </summary>
+            <param name="onSaveAction">The method to invoke.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#UnregisterOnSaveEvent(System.Action)">
+            <summary>
+            Removes a method previously added through <see cref="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOnSaveEvent(System.Action)"/> so it is no longer invoked when saving the game.<para/>
+            If you plan on using this, do not register an anonymous method.
+            </summary>
+            <param name="onSaveAction">The method invoked.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#RegisterOneTimeUseOnSaveEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player saves the game via the in game menu.
+            </summary>
+            <param name="onSaveAction">The method to invoke. This action will not be invoked a second time.</param>
+        </member>
         <member name="T:SMLHelper.V2.Handlers.ItemActionHandler">
             <summary>
             A handler class for registering your custom middle click actions for items
@@ -1280,7 +1572,7 @@
             A handler class for configuring custom unlocking conditions for item blueprints.
             </summary>
         </member>
-        <member name="F:SMLHelper.V2.Handlers.KnownTechHandler.singleton">
+        <member name="P:SMLHelper.V2.Handlers.KnownTechHandler.Main">
             <summary>
             Main entry point for all calls to this handler.
             </summary>
@@ -1380,6 +1672,11 @@
             <param name="techTypesToUnlock">The TechTypes that will be unlocked when "techTypeToSet" is unlocked.</param>
             <param name="UnlockSound">The sound that plays when you unlock the blueprint.</param>
             <param name="UnlockSprite">The sprite that shows up when you unlock the blueprint.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Handlers.LanguageHandler">
+            <summary>
+            A handler for adding custom language lines.
+            </summary>
         </member>
         <member name="P:SMLHelper.V2.Handlers.LanguageHandler.Main">
             <summary>
@@ -1489,6 +1786,11 @@
             </summary>
             <param name="techType">Can be either techtype of the fragment or the crafted item.</param>
             <param name="scanTime">The relative time spent on scanning. Default value is 1.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Handlers.PrefabHandler">
+            <summary>
+            A handler for registering Unity prefabs associated to a <see cref="T:TechType"/>.
+            </summary>
         </member>
         <member name="P:SMLHelper.V2.Handlers.PrefabHandler.Main">
             <summary>
@@ -1845,6 +2147,21 @@
             so if two mods are added at the same time, it may take a second game load for both to be visible to each other.
             </remarks>
         </member>
+        <member name="T:SMLHelper.V2.Initializer">
+            <summary>
+            WARNING: This class is for use only by QModManager.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Initializer.Patch">
+            <summary>
+            WARNING: This method is for use only by QModManager.
+            </summary>
+        </member>
+        <member name="T:SMLHelper.V2.Interfaces.IBioReactorHandler">
+            <summary>
+            A handler with common methods for updating BioReactor values.
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Interfaces.IBioReactorHandler.SetBioReactorCharge(TechType,System.Single)">
             <summary>
             <para>Allows you to specify the quantity of energy that a TechType will produce with bio reactors.</para>
@@ -1853,23 +2170,10 @@
             <param name="charge">The quantity of energy that will be produced by this TechType.</param>
             <seealso cref="T:CraftData.BackgroundType"/>
         </member>
-        <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetTechData(TechType,ITechData)">
+        <member name="T:SMLHelper.V2.Interfaces.ICraftDataHandler">
             <summary>
-            <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
-            <para>Can be used for existing TechTypes too.</para>
+            A handler class for adding and editing crafted and some non-crafted items.
             </summary>
-            <param name="techType">The TechType whose TechData you want to edit.</param>
-            <param name="techData">The TechData for that TechType.</param>
-            <seealso cref="T:SMLHelper.V2.Crafting.TechData"/>
-        </member>
-        <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)">
-            <summary>
-            <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
-            <para>Can be used for existing TechTypes too.</para>
-            </summary>
-            <param name="techType">The TechType whose TechData you want to edit.</param>
-            <param name="techData">The TechData for that TechType.</param>
-            <seealso cref="T:SMLHelper.V2.Crafting.TechData"/>
         </member>
         <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetEquipmentType(TechType,EquipmentType)">
             <summary>
@@ -1985,6 +2289,24 @@
             <param name="category">The TechCategory in which the TechType is located.</param>
             <param name="techType">The TechType which you want to remove.</param>
         </member>
+        <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetTechData(TechType,ITechData)">
+            <summary>
+            <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
+            <para>Can be used for existing TechTypes too.</para>
+            </summary>
+            <param name="techType">The TechType whose TechData you want to edit.</param>
+            <param name="techData">The TechData for that TechType.</param>
+            <seealso cref="T:SMLHelper.V2.Crafting.TechData"/>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)">
+            <summary>
+            <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
+            <para>Can be used for existing TechTypes too.</para>
+            </summary>
+            <param name="techType">The TechType whose TechData you want to edit.</param>
+            <param name="techData">The TechData for that TechType.</param>
+            <seealso cref="T:SMLHelper.V2.Crafting.TechData"/>
+        </member>
         <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.GetModdedTechData(TechType)">
             <summary>
             Safely accesses the crafting data from a modded item.<para/>
@@ -1993,6 +2315,11 @@
             </summary>
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>The ITechData from the modded item if it exists; Otherwise, returns <c>null</c>.</returns>
+        </member>
+        <member name="T:SMLHelper.V2.Interfaces.ICraftTreeHandler">
+            <summary>
+            A handler class for creating and editing of crafting trees.
+            </summary>
         </member>
         <member name="M:SMLHelper.V2.Interfaces.ICraftTreeHandler.CreateCustomCraftTreeAndType(System.String,CraftTree.Type@)">
             <summary>
@@ -2115,6 +2442,35 @@
             <param name="fish">The CustomFish that you are registering</param>
             <returns>The TechType created using the info from your CustomFish object</returns>
         </member>
+        <member name="T:SMLHelper.V2.Interfaces.IIngameMenuHandler">
+            <summary>
+            A handler class that offers simple ways to tap into functionality of the in game menu.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.RegisterOnSaveEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke whenever the player saves the game via the in game menu.
+            </summary>
+            <param name="onSaveAction">The method to invoke.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.UnregisterOnSaveEvent(System.Action)">
+            <summary>
+            Removes a method previously added through <see cref="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.RegisterOnSaveEvent(System.Action)"/> so it is no longer invoked when saving the game.<para/>
+            If you plan on using this, do not register an anonymous method.
+            </summary>
+            <param name="onSaveAction">The method invoked.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.RegisterOneTimeUseOnSaveEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player saves the game via the in game menu.
+            </summary>
+            <param name="onSaveAction">The method to invoke. This action will not be invoked a second time.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Interfaces.IItemActionHandler">
+            <summary>
+            A handler class for registering your custom middle click actions for items
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Interfaces.IItemActionHandler.RegisterLeftClickAction(TechType,System.Action{InventoryItem},System.String,System.Predicate{InventoryItem})">
             <summary>
             Registers a custom left click action for a <see cref="T:TechType"/>
@@ -2132,6 +2488,11 @@
             <param name="callback">The method which will be called when a matching <see cref="T:InventoryItem"/> with the specified <see cref="T:TechType"/> was middle-clicked</param>
             <param name="tooltip">The secondary tooltip which will appear in the description of the item</param>
             <param name="condition">The condition which must return <see langword="true"/> for the action to be called when the item is clicked<para/>If ommited, the action will always be called</param>
+        </member>
+        <member name="T:SMLHelper.V2.Interfaces.IKnownTechHandler">
+            <summary>
+            A handler class for configuring custom unlocking conditions for item blueprints.
+            </summary>
         </member>
         <member name="M:SMLHelper.V2.Interfaces.IKnownTechHandler.UnlockOnStart(TechType)">
             <summary>
@@ -2211,6 +2572,11 @@
             <param name="UnlockSound">The sound that plays when you unlock the blueprint.</param>
             <param name="UnlockSprite">The sprite that shows up when you unlock the blueprint.</param>
         </member>
+        <member name="T:SMLHelper.V2.Interfaces.ILanguageHandler">
+            <summary>
+            A handler for adding custom language lines.
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Interfaces.ILanguageHandler.SetLanguageLine(System.String,System.String)">
             <summary>
             Allows you to define a language entry into the game.
@@ -2232,12 +2598,22 @@
             <param name="techType">The <see cref="T:TechType"/> whose tooltip that is to be changed.</param>
             <param name="text">The new tooltip for the chosen <see cref="T:TechType"/>.</param>
         </member>
+        <member name="T:SMLHelper.V2.Interfaces.IOptionsPanelHandler">
+            <summary>
+            A handler class for registering your custom in-game mod options.
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Interfaces.IOptionsPanelHandler.RegisterModOptions(SMLHelper.V2.Options.ModOptions)">
             <summary>
             Registers your mod options to the in-game menu.
             </summary>
             <param name="options">The mod options. Create a new child class inheriting from this one and add your options to it.</param>
             <seealso cref="T:SMLHelper.V2.Options.ModOptions"/>
+        </member>
+        <member name="T:SMLHelper.V2.Interfaces.IPDAHandler">
+            <summary>
+            A handler class for various scanner related data.
+            </summary>
         </member>
         <member name="M:SMLHelper.V2.Interfaces.IPDAHandler.EditFragmentsToScan(TechType,System.Int32)">
             <summary>
@@ -2253,12 +2629,22 @@
             <param name="techType">Can be either techtype of the fragment or the crafted item.</param>
             <param name="scanTime">The relative time spent on scanning. Default value is 1.</param>
         </member>
+        <member name="T:SMLHelper.V2.Interfaces.IPrefabHandler">
+            <summary>
+            A handler for registering Unity prefabs associated to a <see cref="T:TechType"/>.
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Interfaces.IPrefabHandler.RegisterPrefab(SMLHelper.V2.Assets.ModPrefab)">
             <summary>
             Registers a ModPrefab into the game.
             </summary>
             <param name="prefab">The mod prefab to register. Create a child class inheriting off this one and configure as needed.</param>
             <seealso cref="T:SMLHelper.V2.Assets.ModPrefab"/>
+        </member>
+        <member name="T:SMLHelper.V2.Interfaces.ISpriteHandler">
+            <summary>
+            A handler class for adding custom sprites into the game.
+            </summary>
         </member>
         <member name="M:SMLHelper.V2.Interfaces.ISpriteHandler.RegisterSprite(TechType,Atlas.Sprite)">
             <summary>
@@ -2329,6 +2715,11 @@
             <param name="id">The sprite internal identifier.</param>
             <param name="filePathToImage">The file path to image.</param>
             <seealso cref="M:SMLHelper.V2.Utility.ImageUtils.LoadSpriteFromFile(System.String,UnityEngine.TextureFormat)" />
+        </member>
+        <member name="T:SMLHelper.V2.Interfaces.ITechTypeHandler">
+            <summary>
+            A handler class for everything related to creating new TechTypes.
+            </summary>
         </member>
         <member name="M:SMLHelper.V2.Interfaces.ITechTypeHandler.AddTechType(System.String,System.String,System.String)">
             <summary>
@@ -2418,6 +2809,12 @@
             so if two mods are added at the same time, it may take a second game load for both to be visible to each other.
             </remarks>
         </member>
+        <member name="T:SMLHelper.V2.Utility.IStorageHelper">
+            <summary>
+            A utility class that offers additional info about <see cref="T:ItemsContainer"/> instances.
+            </summary>
+            <seealso cref="T:SMLHelper.V2.Utility.StorageHelperExtensions" />
+        </member>
         <member name="M:SMLHelper.V2.Utility.IStorageHelper.HasRoomForCached(ItemsContainer,System.Int32,System.Int32)">
             <summary>
             Using the cached container info, determines whether the specified container has room for an item of the specified size.
@@ -2498,6 +2895,11 @@
             </summary>
             <param name="enumName">Name of the enum.</param>
             <returns>An <see cref="T:System.Collections.IEnumerable"/> of banned indexes not to be issued for new entries of the specified enum.</returns>
+        </member>
+        <member name="T:SMLHelper.V2.Utility.ImageUtils">
+            <summary>
+            A collection of image loading utility methods that can create Unity objects from image files at runtime.
+            </summary>
         </member>
         <member name="M:SMLHelper.V2.Utility.ImageUtils.LoadTextureFromFile(System.String,UnityEngine.TextureFormat)">
             <summary>
@@ -2681,6 +3083,11 @@
             The collection of techtypes allowed in the container.
             </returns>
         </member>
+        <member name="T:SMLHelper.V2.Utility.KeyCodeUtils">
+            <summary>
+            A collection of <see cref="T:UnityEngine.KeyCode"/> related utility methods.
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.KeyCodeToString(UnityEngine.KeyCode)">
             <summary>
             Turn a <seealso cref="T:UnityEngine.KeyCode"/> into a <seealso cref="T:System.String"/>
@@ -2694,6 +3101,11 @@
             </summary>
             <param name="s"></param>
             <returns></returns>
+        </member>
+        <member name="T:SMLHelper.V2.Utility.PlayerPrefsExtra">
+            <summary>
+            A collection of utility methods that simplify calls into <see cref="T:UnityEngine.PlayerPrefs"/> for quick custom save data.
+            </summary>
         </member>
         <member name="M:SMLHelper.V2.Utility.PlayerPrefsExtra.GetBool(System.String,System.Boolean)">
             <summary>
@@ -2855,6 +3267,32 @@
             <param name="key"></param>
             <param name="value"></param>
         </member>
+        <member name="T:SMLHelper.V2.Utility.PrefabUtils">
+            <summary>
+            A small collection of prefab related utilities.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.PrefabUtils.AddBasicComponents(UnityEngine.GameObject@,System.String)">
+            <summary>
+            Adds and configures the following components on the gameobject passed by reference:<para/>
+            - <see cref="T:UnityEngine.Rigidbody"/>
+            - <see cref="T:LargeWorldEntity"/>
+            - <see cref="T:UnityEngine.Renderer"/>
+            - <see cref="T:SkyApplier"/>
+            - <see cref="T:WorldForces"/>
+            </summary>
+            <param name="_object"></param>
+            <param name="classId"></param>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.PrefabUtils.GetOrAddComponent``1(UnityEngine.GameObject)">
+            <summary>
+            Will attempt to return <see cref="M:UnityEngine.GameObject.GetComponent``1"/>.<para/>
+            If the component is not found, it will be added through <see cref="M:UnityEngine.GameObject.AddComponent``1"/>.
+            </summary>
+            <typeparam name="T">A type of Unity <see cref="T:UnityEngine.Component"/>.</typeparam>
+            <param name="obj">The gameobject that should have the component.</param>
+            <returns>The existing component attached to the gameobject or a newly created and attached one.</returns>
+        </member>
         <member name="T:SMLHelper.V2.Utility.ReflectionHelper">
             <summary>
             An extension method class for simplifying reflection calls for improved readability.
@@ -2990,6 +3428,11 @@
             <param name="bindingFlags">The additional binding flags you wish to set.
             <see cref="F:System.Reflection.BindingFlags.Instance" /> is already included.</param>
         </member>
+        <member name="T:SMLHelper.V2.Utility.SaveUtils">
+            <summary>
+            A small collection of save data related utilities.
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Utility.SaveUtils.GetCurrentSaveDataDir">
             <summary>
             Returns the path to the current save slot's directory.
@@ -3065,6 +3508,11 @@
             The collection of techtypes allowed in the container.
             </returns>
         </member>
+        <member name="T:SMLHelper.V2.MonoBehaviours.Fixer">
+            <summary>
+            This <see cref="T:UnityEngine.MonoBehaviour"/> is <c>automatically</c> added to any <see cref="T:UnityEngine.GameObject"/> created through <see cref="M:SMLHelper.V2.Assets.ModPrefab.GetGameObject"/>.
+            </summary>
+        </member>
         <member name="T:SMLHelper.V2.Options.ChoiceChangedEventArgs">
             <summary>
             Contains all the information about a choice changed event.
@@ -3082,8 +3530,23 @@
         </member>
         <member name="P:SMLHelper.V2.Options.ChoiceChangedEventArgs.Value">
             <summary>
-            The value of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> as a string
+            The value of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> as a string.
             </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ChoiceChangedEventArgs.#ctor(System.String,System.Int32)">
+            <summary>
+            Constructs a new <see cref="T:SMLHelper.V2.Options.ChoiceChangedEventArgs"/>.
+            </summary>
+            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> that was changed.</param>
+            <param name="index">The new index for the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ChoiceChangedEventArgs.#ctor(System.String,System.Int32,System.String)">
+            <summary>
+            Constructs a new <see cref="T:SMLHelper.V2.Options.ChoiceChangedEventArgs"/>.
+            </summary>
+            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> that was changed.</param>
+            <param name="index">The new index for the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.</param>
+            <param name="value">The value of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> as a string.</param>
         </member>
         <member name="T:SMLHelper.V2.Options.ModOptions">
             <summary>
@@ -3257,6 +3720,16 @@
             A mod option class for handling an option that can select one item from a list of values.
             </summary>
         </member>
+        <member name="P:SMLHelper.V2.Options.ModChoiceOption.Options">
+            <summary>
+            The array of readable string options to choose between in the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModChoiceOption.Index">
+            <summary>
+            The currently selected index among the options array.
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Options.ModChoiceOption.#ctor(System.String,System.String,System.String[],System.Int32)">
             <summary>
             Instantiates a new <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> for handling an option that can select one item from a list of values.
@@ -3286,9 +3759,26 @@
             The new value for the <see cref="T:SMLHelper.V2.Options.ModKeybindOption"/> parsed as a <see cref="T:System.String"/>
             </summary>
         </member>
+        <member name="M:SMLHelper.V2.Options.KeybindChangedEventArgs.#ctor(System.String,UnityEngine.KeyCode)">
+            <summary>
+            Constructs a new <see cref="T:SMLHelper.V2.Options.KeybindChangedEventArgs"/>.
+            </summary>
+            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModKeybindOption"/> that was changed.</param>
+            <param name="key">The new value for the <see cref="T:SMLHelper.V2.Options.ModKeybindOption"/>.</param>
+        </member>
         <member name="T:SMLHelper.V2.Options.ModKeybindOption">
             <summary>
             A mod option class for handling an option that is a keybind.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModKeybindOption.Key">
+            <summary>
+            The currently selected <see cref="T:UnityEngine.KeyCode"/> for the <see cref="T:SMLHelper.V2.Options.ModKeybindOption"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModKeybindOption.Device">
+            <summary>
+            The currently select input source device for the <see cref="T:SMLHelper.V2.Options.ModKeybindOption"/>.
             </summary>
         </member>
         <member name="M:SMLHelper.V2.Options.ModKeybindOption.#ctor(System.String,System.String,GameInput.Device,UnityEngine.KeyCode)">
@@ -3373,9 +3863,31 @@
             The new value for the <see cref="T:SMLHelper.V2.Options.ModSliderOption"/> parsed as an <see cref="T:System.Int32"/>
             </summary>
         </member>
+        <member name="M:SMLHelper.V2.Options.SliderChangedEventArgs.#ctor(System.String,System.Single)">
+            <summary>
+            Constructs a new <see cref="T:SMLHelper.V2.Options.SliderChangedEventArgs"/>.
+            </summary>
+            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModSliderOption"/> that was changed.</param>
+            <param name="value">The new value for the <see cref="T:SMLHelper.V2.Options.ModSliderOption"/>.</param>
+        </member>
         <member name="T:SMLHelper.V2.Options.ModSliderOption">
             <summary>
             A mod option class for handling an option that can have any floating point value between a minimum and maximum.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModSliderOption.MinValue">
+            <summary>
+            The minimum value of the <see cref="T:SMLHelper.V2.Options.ModSliderOption"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModSliderOption.MaxValue">
+            <summary>
+            The maximum value of the <see cref="T:SMLHelper.V2.Options.ModSliderOption"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModSliderOption.Value">
+            <summary>
+            The current value of the <see cref="T:SMLHelper.V2.Options.ModSliderOption"/>.
             </summary>
         </member>
         <member name="M:SMLHelper.V2.Options.ModSliderOption.#ctor(System.String,System.String,System.Single,System.Single,System.Single)">
@@ -3403,9 +3915,21 @@
             The new value for the <see cref="T:SMLHelper.V2.Options.ModToggleOption"/>.
             </summary>
         </member>
+        <member name="M:SMLHelper.V2.Options.ToggleChangedEventArgs.#ctor(System.String,System.Boolean)">
+            <summary>
+            Constructs a new <see cref="T:SMLHelper.V2.Options.ToggleChangedEventArgs"/>.
+            </summary>
+            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModToggleOption"/> that was changed.</param>
+            <param name="value">The new value for the <see cref="T:SMLHelper.V2.Options.ModToggleOption"/>.</param>
+        </member>
         <member name="T:SMLHelper.V2.Options.ModToggleOption">
             <summary>
             A mod option class for handling an option that can be either ON or OFF.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModToggleOption.Value">
+            <summary>
+            The current value of the <see cref="T:SMLHelper.V2.Options.ModToggleOption"/>.
             </summary>
         </member>
         <member name="M:SMLHelper.V2.Options.ModToggleOption.#ctor(System.String,System.String,System.Boolean)">
