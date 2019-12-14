@@ -26,8 +26,10 @@
                 // New behavior that toggles the near field sonar map
                 this.CySonar?.SetMapState(hasUpgrade);
 
-                if (hasUpgrade)
+                if (hasUpgrade && this.CyButton != null)
                 {
+                    // 1 sonar module = 5 seconds (vanilla)
+                    // 2 sonar modules = 3.9 seconds
                     float pinginterval = 6.1f - 1.1f * this.Count;
                     this.CyButton.pingIterationDuration = pinginterval;
                 }

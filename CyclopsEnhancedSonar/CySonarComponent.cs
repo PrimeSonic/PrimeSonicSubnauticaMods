@@ -15,7 +15,7 @@
             }
         }
 
-        private static readonly GameObject template = Resources.Load<GameObject>("WorldEntities/Tools/SeaGlide");
+        private readonly GameObject template = CraftData.GetPrefabForTechType(TechType.Seaglide);
 
         public void SetMapState(bool state)
         {
