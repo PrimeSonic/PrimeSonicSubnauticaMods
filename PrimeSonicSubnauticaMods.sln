@@ -52,6 +52,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CommonCyclopsBuildables", "
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FCStudioHelpers", "FCStudioHelpers\FCStudioHelpers.shproj", "{5C00A82E-51C7-4721-8052-5DD9A14C78AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsEnhancedSonar", "CyclopsEnhancedSonar\CyclopsEnhancedSonar.csproj", "{E347C779-52A3-428A-AC51-D02E5C606562}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
@@ -82,6 +84,8 @@ Global
 		FCStudioHelpers\FCStudioHelpers.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{da01f903-5e97-47fc-a7e5-d67967d89646}*SharedItemsImports = 13
+		CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems*{e347c779-52a3-428a-ac51-d02e5c606562}*SharedItemsImports = 4
+		Utilities\Utilities.projitems*{e347c779-52a3-428a-ac51-d02e5c606562}*SharedItemsImports = 4
 		CommonCyclopsBuildables\CommonCyclopsBuildables.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{fc87af94-413d-482e-ab0d-501e120e6e2d}*SharedItemsImports = 4
 		CommonCyclopsBuildables\CommonCyclopsBuildables.projitems*{fcb57595-3f3f-4ce0-a40f-bc161f367467}*SharedItemsImports = 13
@@ -159,6 +163,10 @@ Global
 		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E347C779-52A3-428A-AC51-D02E5C606562}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E347C779-52A3-428A-AC51-D02E5C606562}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E347C779-52A3-428A-AC51-D02E5C606562}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E347C779-52A3-428A-AC51-D02E5C606562}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -176,6 +184,7 @@ Global
 		{7505FE7E-0ED8-48D6-ADCB-710DCD727CF2} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{7A11A1DB-09F4-44A5-BCD7-2CEAC6B1FEBD} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 		{FCB57595-3F3F-4CE0-A40F-BC161F367467} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
+		{E347C779-52A3-428A-AC51-D02E5C606562} = {8CE53864-B6EA-4EEA-A251-F8940719FA18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE0C8D9E-28B2-4836-8250-A175A58A5566}
