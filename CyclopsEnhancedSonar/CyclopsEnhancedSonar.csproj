@@ -72,7 +72,6 @@
       <Name>MoreCyclopsUpgrades</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\CommonCyclopsUpgrades\CommonCyclopsUpgrades.projitems" Label="Shared" />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

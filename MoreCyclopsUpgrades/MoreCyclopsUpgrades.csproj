@@ -76,6 +76,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\AmbientEnergy\AmbientEnergyCharger.cs" />
+    <Compile Include="API\AmbientEnergy\AmbientEnergyIconOverlay.cs" />
+    <Compile Include="API\AmbientEnergy\AmbientEnergyUpgradeHandler.cs" />
+    <Compile Include="API\AmbientEnergy\BatteryDetails.cs" />
+    <Compile Include="API\Buildables\BuildableManager.cs" />
+    <Compile Include="API\Buildables\ICyclopsBuildable.cs" />
     <Compile Include="API\Charging\CyclopsCharger.cs" />
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
     <Compile Include="API\IMCUCrossMod.cs" />
@@ -144,7 +150,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
-  <Import Project="..\CommonCyclopsBuildables\CommonCyclopsBuildables.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

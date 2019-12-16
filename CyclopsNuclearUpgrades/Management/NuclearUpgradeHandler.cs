@@ -1,7 +1,7 @@
 ﻿namespace CyclopsNuclearUpgrades.Management
 {
     using System.Collections.Generic;
-    using CommonCyclopsUpgrades;
+    using MoreCyclopsUpgrades.API.AmbientEnergy;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using UnityEngine;

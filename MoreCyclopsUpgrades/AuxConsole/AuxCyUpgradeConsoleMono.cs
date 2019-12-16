@@ -3,7 +3,7 @@
     using System;
     using System.Reflection;
     using Common;
-    using CommonCyclopsBuildables;
+    using MoreCyclopsUpgrades.API.Buildables;
     using Managers;
     using MoreCyclopsUpgrades.API.Upgrades;
     using ProtoBuf;

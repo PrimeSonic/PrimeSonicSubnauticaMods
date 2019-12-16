@@ -22,7 +22,22 @@
                 CyNukeEnhancerMk1.PatchSMLHelper();
                 CyNukeEnhancerMk2.PatchSMLHelper();
 
-                RegisterWithMoreCyclopsUpgrades();
+                QuickLogger.Debug("Registering with MoreCyclopsUpgrades");
+
+                MCUServices.Register.CyclopsCharger<CyNukeChargeManager>((SubRoot cyclops) =>
+                {
+                    return new CyNukeChargeManager(cyclops);
+                });
+
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+                {
+                    return new CyNukeEnhancerHandler(cyclops);
+                });
+
+                MCUServices.Register.AuxCyclopsManager<CyNukeManager>((SubRoot cyclops) =>
+                {
+                    return new CyNukeManager(cyclops);
+                });
 
                 var harmony = HarmonyInstance.Create("com.cyclopsnuclearreactor.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -33,26 +48,6 @@
             {
                 QuickLogger.Error(ex);
             }
-        }
-
-        private static void RegisterWithMoreCyclopsUpgrades()
-        {
-            QuickLogger.Debug("Registering with MoreCyclopsUpgrades");
-
-            MCUServices.Register.CyclopsCharger<CyNukeChargeManager>((SubRoot cyclops) =>
-            {                
-                return new CyNukeChargeManager(cyclops);
-            });
-
-            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
-            {
-                return new CyNukeEnhancerHandler(cyclops);
-            });
-
-            MCUServices.Register.AuxCyclopsManager<CyNukeManager>((SubRoot cyclops) =>
-            {
-                return new CyNukeManager(cyclops);
-            });
         }
     }
 }

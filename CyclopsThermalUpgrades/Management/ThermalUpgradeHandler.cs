@@ -1,6 +1,6 @@
 ﻿namespace CyclopsThermalUpgrades.Management
 {
-    using CommonCyclopsUpgrades;
+    using MoreCyclopsUpgrades.API.AmbientEnergy;
     using CyclopsThermalUpgrades.Craftables;
 
     internal class ThermalUpgradeHandler : AmbientEnergyUpgradeHandler

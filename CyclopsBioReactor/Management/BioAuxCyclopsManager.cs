@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
-    using CommonCyclopsBuildables;
+    using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API;
 
     internal class BioAuxCyclopsManager : BuildableManager<CyBioReactorMono>
@@ -27,21 +27,14 @@
 
         #endregion
 
-        internal readonly TechType CyBioBoosterID;
-        internal readonly TechType CyBioReactorID;
 
-        public BioAuxCyclopsManager(SubRoot cyclops, TechType bioBooster, TechType bioReactor) : base(cyclops)
+        public BioAuxCyclopsManager(SubRoot cyclops) : base(cyclops)
         {
-            CyBioBoosterID = bioBooster;
-            CyBioReactorID = bioReactor;
         }
 
         public override bool Initialize(SubRoot cyclops)
         {
-            return
-                Cyclops == cyclops &&
-                CyBioBoosterID != TechType.None &&
-                CyBioReactorID != TechType.None;
+            return base.Cyclops == cyclops;
         }
 
         protected override void ConnectWithManager(CyBioReactorMono buildable)

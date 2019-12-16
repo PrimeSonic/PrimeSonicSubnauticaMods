@@ -1,11 +1,16 @@
-﻿namespace CommonCyclopsBuildables
+﻿namespace MoreCyclopsUpgrades.API.Buildables
 {
     using System;
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API.General;
     using UnityEngine;
 
-    internal abstract class BuildableManager<BuildableMono> : IAuxCyclopsManager
+    /// <summary>
+    /// A generic <see cref="IAuxCyclopsManager"/> that can track buildables in the Cyclops
+    /// </summary>
+    /// <typeparam name="BuildableMono">The type of the uildable mono.</typeparam>
+    /// <seealso cref="IAuxCyclopsManager" />
+    public abstract class BuildableManager<BuildableMono> : IAuxCyclopsManager
         where BuildableMono : MonoBehaviour, ICyclopsBuildable
     {
         protected readonly List<BuildableMono> TrackedBuildables = new List<BuildableMono>();
@@ -26,7 +31,7 @@
         {
             tempBuildables.Clear();
 
-            BuildableMono[] buildables = Cyclops.GetAllComponentsInChildren<BuildableMono>();
+            BuildableMono[] buildables = Cyclops.GetComponentsInChildren<BuildableMono>();
 
             for (int b = 0; b < buildables.Length; b++)
             {

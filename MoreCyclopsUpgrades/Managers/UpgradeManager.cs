@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
-    using CommonCyclopsBuildables;
+    using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.AuxConsole;
     using UnityEngine;

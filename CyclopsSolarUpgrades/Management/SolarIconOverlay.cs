@@ -1,6 +1,6 @@
 ﻿namespace CyclopsSolarUpgrades.Management
 {
-    using CommonCyclopsUpgrades;
+    using MoreCyclopsUpgrades.API.AmbientEnergy;
 
     internal class SolarIconOverlay : AmbientEnergyIconOverlay<SolarUpgradeHandler, SolarCharger>
     {

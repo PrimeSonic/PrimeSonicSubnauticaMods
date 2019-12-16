@@ -6,11 +6,12 @@
     using Common;
     using CyclopsNuclearReactor.Helpers;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Buildables;
     using ProtoBuf;
     using UnityEngine;
 
     [ProtoContract]
-    internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener
+    internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable
     {
         internal static bool PdaIsOpen = false;
         internal static CyNukeReactorMono OpenInPda = null;
@@ -49,6 +50,10 @@
             }
         }
 
+        private CyNukeEnhancerHandler upgradeHandler;
+        private CyNukeEnhancerHandler CyNukeEnhancer => upgradeHandler ??
+            (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(ParentCyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
+
         private bool isLoadingSaveData = false;
         private bool isDepletingRod = false;
 
@@ -78,6 +83,8 @@
         internal readonly List<SlotData> reactorRodData = new List<SlotData>(MaxSlots);
 
         internal bool IsConstructed => this.Buildable != null && this.Buildable.constructed;
+
+        public bool IsConnectedToCyclops => ParentCyclops != null && Manager != null;
 
         internal string PowerIndicatorString()
         {
@@ -229,7 +236,7 @@
             if (ParentCyclops == null)
             {
                 QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
-                CyNukeManager.SyncReactors();
+                CyNukeManager.SyncAllReactors();
             }
             else if (Manager == null)
             {
@@ -257,10 +264,9 @@
                 return;
             }
 
-            Manager.AddReactor(this);
-            UpdateUpgradeLevel(Manager.UpgradeLevel);
+            Manager.AddBuildable(this);
+            UpdateUpgradeLevel(this.CyNukeEnhancer.HighestValue);
             QuickLogger.Debug("Cyclops Nuclear Reactor has been connected", true);
-
         }
 
         private void InitializeRodsContainer()

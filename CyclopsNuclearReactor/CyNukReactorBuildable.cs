@@ -98,7 +98,7 @@
         public override GameObject GetGameObject()
         {
             SubRoot cyclops = Player.main.currentSub;
-            if (cyclops != null)
+            if (cyclops != null && cyclops.isCyclops)
             {
                 CyNukeManager mgr = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
 
