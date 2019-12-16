@@ -5,6 +5,11 @@
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
+    /// <summary>
+    /// A generic <see cref="CyclopsCharger"/> for upgrade modules that draw in ambient energy like the solar or thermal.
+    /// </summary>
+    /// <typeparam name="T">The upgrade handler that implements <see cref="AmbientEnergyUpgradeHandler"/></typeparam>
+    /// <seealso cref="CyclopsCharger" />
     public abstract class AmbientEnergyCharger<T> : CyclopsCharger
         where T : AmbientEnergyUpgradeHandler
     {
