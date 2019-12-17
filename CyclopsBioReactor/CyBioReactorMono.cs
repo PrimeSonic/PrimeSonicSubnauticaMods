@@ -476,11 +476,6 @@
             {
                 this.Manager.AddBuildable(this);
             }
-
-            if (this.UpgradeHandler != null)
-            {
-                UpdateBoosterCount(this.UpgradeHandler.Count);
-            }
         }
 
         public void ConnectToContainer(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)

@@ -264,11 +264,6 @@
             {
                 this.Manager.AddBuildable(this);
             }
-
-            if (this.UpgradeHandler != null)
-            {
-                UpdateUpgradeLevel(this.UpgradeHandler.Count);
-            }
         }
 
         private void InitializeRodsContainer()

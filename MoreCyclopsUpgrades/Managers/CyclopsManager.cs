@@ -42,10 +42,10 @@
             }
         }
 
-        internal static T GetManager<T>(SubRoot cyclops, string auxManagerName)
+        internal static T GetManager<T>(ref SubRoot cyclops, string auxManagerName)
             where T : class, IAuxCyclopsManager
         {
-            CyclopsManager mgr = GetManager(cyclops);
+            CyclopsManager mgr = GetManager(ref cyclops);
 
             if (mgr != null && mgr.AuxiliaryManagers.TryGetValue(auxManagerName, out IAuxCyclopsManager auxManager))
             {
@@ -55,9 +55,9 @@
             return CreateNewAuxManager<T>(mgr, auxManagerName);
         }
 
-        internal static CyclopsManager GetManager(SubRoot cyclops)
+        internal static CyclopsManager GetManager(ref SubRoot cyclops)
         {
-            if (cyclops.isBase || !cyclops.isCyclops)
+            if (cyclops == null || cyclops.isBase || !cyclops.isCyclops)
                 return null;
 
             for (int m = 0; m < Managers.Count; m++)
@@ -67,10 +67,10 @@
                     return mgr;
             }
 
-            return CreateNewCyclopsManager(cyclops);
+            return CreateNewCyclopsManager(ref cyclops);
         }
 
-        private static CyclopsManager CreateNewCyclopsManager(SubRoot cyclops)
+        private static CyclopsManager CreateNewCyclopsManager(ref SubRoot cyclops)
         {
             QuickLogger.Debug("Creating new CyclopsManager");
             var mgr = new CyclopsManager(cyclops);

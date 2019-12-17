@@ -7,14 +7,17 @@
         public const int MaxUpgrades = 2;
 
         private CySonarComponent cySonar;
-        private CySonarComponent CySonar => cySonar ?? (cySonar = base.Cyclops.GetComponentInChildren<SubControl>()?.gameObject.GetComponent<CySonarComponent>());
+        private CySonarComponent CySonar => cySonar ?? (cySonar = base.Cyclops?.gameObject?.GetComponentInChildren<SubControl>()?.gameObject.GetComponent<CySonarComponent>());
 
         private CyclopsSonarButton cyButton;
-        private CyclopsSonarButton CyButton => cyButton ?? (cyButton = base.Cyclops.GetComponentInChildren<CyclopsSonarButton>());
+        private CyclopsSonarButton CyButton => cyButton ?? (cyButton = base.Cyclops?.gameObject?.GetComponentInChildren<CyclopsSonarButton>());
 
         public SonarUpgradeHandler(SubRoot cyclops)
             : base(TechType.CyclopsSonarModule, cyclops)
         {
+            cySonar = base.Cyclops?.gameObject?.GetComponentInChildren<SubControl>()?.gameObject.GetComponent<CySonarComponent>();
+            cyButton = base.Cyclops?.gameObject?.GetComponentInChildren<CyclopsSonarButton>();
+
             this.MaxCount = MaxUpgrades;
             OnFinishedUpgrades = () =>
             {

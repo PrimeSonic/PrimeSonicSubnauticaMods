@@ -3,8 +3,8 @@
     using System;
     using System.Reflection;
     using Common;
-    using MoreCyclopsUpgrades.API.Buildables;
     using Managers;
+    using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
     using ProtoBuf;
     using UnityEngine;
@@ -40,14 +40,11 @@
             base.Awake();
 
             if (SaveData == null)
-            {
                 ReadySaveData();
-            }
 
             if (this.Modules == null)
-            {
                 InitializeModules();
-            }
+
         }
 
         private string prefabId = null;
@@ -227,7 +224,7 @@
         {
             ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            UpgradeManager = manager ?? CyclopsManager.GetManager(parentCyclops).Upgrade;
+            UpgradeManager = manager ?? CyclopsManager.GetManager(ref parentCyclops).Upgrade;
 
             if (UpgradeManager != null)
             {
@@ -293,6 +290,9 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
+            if (SaveData == null)
+                ReadySaveData();
+
             for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
             {
                 string slot = SlotHelper.SlotNames[s];
@@ -327,6 +327,9 @@
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
+            if (SaveData == null)
+                ReadySaveData();
+
             if (this.Modules == null)
                 InitializeModules();
 

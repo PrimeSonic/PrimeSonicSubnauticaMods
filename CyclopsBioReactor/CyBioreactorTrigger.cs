@@ -13,14 +13,14 @@ namespace CyclopsBioReactor
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.GetComponent<Player>() == null) return;
-            QuickLogger.Debug("In OnTriggerEnter");
+            //QuickLogger.Debug("In OnTriggerEnter");
             OnPlayerEnter?.Invoke();
         }
 
         private void OnTriggerStay(Collider other)
         {
             if (other.gameObject.GetComponent<Player>() == null) return;
-            QuickLogger.Debug($"In OnTriggerStay {other.gameObject.name}", true);
+            //QuickLogger.Debug($"In OnTriggerStay {other.gameObject.name}", true);
             OnPlayerStay?.Invoke();
         }
 
@@ -28,7 +28,7 @@ namespace CyclopsBioReactor
         {
             if (other.gameObject.GetComponent<Player>() == null) return;
 
-            QuickLogger.Debug("In OnTriggerExit");
+            //QuickLogger.Debug("In OnTriggerExit");
             OnPlayerExit?.Invoke();
         }
     }

@@ -145,6 +145,9 @@
 
         private void InitializeUpgradeHandlers()
         {
+            if (initialized)
+                return;
+
             QuickLogger.Debug($"UpgradeManager adding new UpgradeHandlers from external mods");
             // First, register upgrades from other mods.
             foreach (KeyValuePair<CreateUpgradeHandler, string> pair in HandlerCreators)
@@ -226,12 +229,6 @@
 
                 return true;
             };
-        }
-
-        public override void SyncBuildables()
-        {
-            base.SyncBuildables();
-            HandleUpgrades();
         }
 
         public void HandleUpgrades()
