@@ -37,7 +37,7 @@
                 return false;
             }
 
-            string serializedData = File.ReadAllText(fileLocation);
+            string serializedData = File.ReadAllText(fileLocation, Encoding.UTF8);
 
             bool validData = data.FromString(serializedData);
 
