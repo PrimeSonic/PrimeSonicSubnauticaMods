@@ -14,7 +14,7 @@ Mods built using the `MoreCyclopsUpgrades` APIs in part or in whole.
 
 **Mod** | **Description** | **Nexus** 
 -|-|- 
-**CyclopsAutoZapper** | Use the Seamoth Electrical Defense System as automated protection against hostile predators. | [276](https://www.nexusmods.com/subnautica/mods/276) 
+**CyclopsAutoZappers** | Use the Seamoth Electrical Defense System as automated protection against hostile predators. | [276](https://www.nexusmods.com/subnautica/mods/276) 
 **CyclopsBioReactor** | Build a miniature, upgradeable bioreactor for your Cyclops.<br/>New bioreactor model created by  [ccgould](https://github.com/ccgould) / [FCStudios](https://www.nexusmods.com/subnautica/users/66012691) | [277](https://www.nexusmods.com/subnautica/mods/277)
 **CyclopsEngineUpgrades** | Adds another 2 tiers of Cyclops Engine Efficiency upgrades. | [275](https://www.nexusmods.com/subnautica/mods/275) 
 **CyclopsNuclearReactor** | The nuclear reactor the Cyclops always deserved!<br/>Created in collaboration with [ccgould](https://github.com/ccgould) / [FCStudios](https://www.nexusmods.com/subnautica/users/66012691) | [241](https://www.nexusmods.com/subnautica/mods/241) 
@@ -22,6 +22,7 @@ Mods built using the `MoreCyclopsUpgrades` APIs in part or in whole.
 **CyclopsSolarUpgrades** | Provides two tiers of solar charging upgrade modules. | [273](https://www.nexusmods.com/subnautica/mods/273) 
 **CyclopsSpeedUpgrades** | Provides a speed boosting upgrade module for the Cyclops. | [272](https://www.nexusmods.com/subnautica/mods/272) 
 **CyclopsThermalUpgrades** | Improves the original Cyclops Thermal Reactor Module and lets you upgrade it into a better version. | [271](https://www.nexusmods.com/subnautica/mods/271) 
+**CyclopsEnhancedSonar** | (Remake of [CyclopsNearFieldSonar](https://www.nexusmods.com/subnautica/mods/175)) Adds the near field scan effect of the Seaglide to the Cyclops Sonar Upgrade. | [370](https://www.nexusmods.com/subnautica/mods/370) 
 
 ## Other Mods
 
@@ -34,3 +35,4 @@ Mods built using the `MoreCyclopsUpgrades` APIs in part or in whole.
 **BetterBioReactor** | All the enhancements of the Cyclops BioReactor brought to the base<br/>Special thanks to [Waisie Milliams Hah](https://github.com/brett-taylor) for helping with the UI additions. | [218](https://www.nexusmods.com/subnautica/mods/218)
 **VehicleModuleFabricator** | Adds a new buildable fabricator for vehicle upgrade modules.<br/>Big thanks to [OSubMarin](https://github.com/K07H/) for getting the new model working.<br/>Now remade inside [CustomCraft2](https://www.nexusmods.com/subnautica/mods/114). | [93](https://www.nexusmods.com/subnautica/mods/93) 
 **IonCubeGenerator** | Makes ion cubes from inside your own base!<br/>Created in collaboration with [ccgould](https://github.com/ccgould) / [FCStudios](https://www.nexusmods.com/subnautica/users/66012691) | [242](https://www.nexusmods.com/subnautica/mods/242) 
+
