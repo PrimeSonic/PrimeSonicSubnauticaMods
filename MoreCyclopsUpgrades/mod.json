@@ -2,7 +2,7 @@
   "Id": "MoreCyclopsUpgrades",
   "DisplayName": "MoreCyclopsUpgrades",
   "Author": "PrimeSonic",
-  "Version": "4.2.0",
+  "Version": "4.1.99",
   "Enable": true,
   "Game": "Subnautica",
   "Dependencies": [ "SMLHelper" ],
