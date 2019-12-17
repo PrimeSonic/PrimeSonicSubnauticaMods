@@ -19,12 +19,11 @@
         private const float MaxPowerBaseline = 200;
         private const float TextDelayInterval = 2f;
 
-        private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private const float baselineChargeRate = 0.75f;
 
-        private int storageWidth = 2;
-        private int storageHeight = 2;
-        private int TotalContainerSpaces => storageHeight * storageWidth;
+        private const int StorageWidth = 6;
+        private const int StorageHeight = 3;
+        private const int TotalContainerSpaces = StorageHeight * StorageWidth;        
 
         // Because now each item produces charge in parallel, the charge rate will be variable.
         // At half-full, we get close to original charging rates.
@@ -80,12 +79,13 @@
 
         public float Charge { get; private set; }
         public float Capacity { get; private set; } = MaxPowerBaseline;
+        public int ProcessingCapacity { get; private set; }
 
         #region Initialization
 
         private void Start()
         {
-            chargeRate = baselineChargeRate / this.TotalContainerSpaces * 2;
+            chargeRate = baselineChargeRate / TotalContainerSpaces * 2;
 
             SubRoot cyclops = GetComponentInParent<SubRoot>();
 
@@ -152,7 +152,7 @@
             if (container != null)
                 return;
 
-            container = new ItemsContainer(storageWidth, storageHeight, storageRoot.transform, CyBioReactor.StorageLabel, null);
+            container = new ItemsContainer(StorageWidth, StorageHeight, storageRoot.transform, CyBioReactor.StorageLabel, null);
 
             container.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
             {
@@ -250,7 +250,7 @@
             {
                 float powerDeficit = this.Capacity - this.Charge;
 
-                if (powerDeficit > MinimalPowerValue)
+                if (powerDeficit > MCUServices.MinimalPowerValue)
                 {
                     float chargeOverTime = chargeRate * DayNightCycle.main.deltaTime;
                     float powerDrawnPerItem = Mathf.Min(powerDeficit, chargeOverTime);
@@ -354,9 +354,15 @@
             if (powerDrawnPerItem > 0f && // More than zero energy being produced per item per time delta
                 bioMaterialsProcessing.Count > 0) // There should be materials in the reactor to process
             {
+                int processingCapacity = this.ProcessingCapacity;
                 for (int m = 0; m < bioMaterialsProcessing.Count; m++)
                 {
                     BioEnergy material = bioMaterialsProcessing[m];
+                    processingCapacity -= material.Size;
+
+                    if (processingCapacity < 0)
+                        break;
+
                     float availablePowerPerItem = Mathf.Min(material.RemainingEnergy, material.Size * powerDrawnPerItem);
 
                     material.RemainingEnergy -= availablePowerPerItem;
@@ -374,7 +380,7 @@
 
         public float GetBatteryPower(float drainingRate, float requestedAmount)
         {
-            if (requestedAmount < MinimalPowerValue || !this.HasPower)
+            if (requestedAmount < MCUServices.MinimalPowerValue || !this.HasPower)
                 return 0f;
 
             // Mathf.Min is to prevent accidentally taking too much power from the battery
@@ -506,13 +512,6 @@
             }
         }
 
-        public bool HasRoomToShrink()
-        {
-            var nextStats = ReactorStats.GetStatsForBoosterCount(lastKnownBioBooster - 1);
-
-            return nextStats.TotalSpaces >= bioMaterialsProcessing.SpacesOccupied;
-        }
-
         public bool UpdateBoosterCount(int boosterCount)
         {
             if (boosterCount > MaxBoosters)
@@ -524,31 +523,14 @@
             var nextStats = ReactorStats.GetStatsForBoosterCount(boosterCount);
 
             this.Capacity = nextStats.Capacity;
+            this.ProcessingCapacity = nextStats.ProcessingCapacity;
 
             if (!isLoadingSaveData)
             {
                 this.Charge = Mathf.Min(this.Charge, this.Capacity);
-
-                if (lastKnownBioBooster > boosterCount) // Getting smaller
-                {
-                    int nextAvailableSpace = nextStats.TotalSpaces;
-                    while (bioMaterialsProcessing.SpacesOccupied > nextAvailableSpace)
-                    {
-                        BioEnergy material = bioMaterialsProcessing.GetCandidateForRemoval();
-
-                        if (material == null)
-                            break;
-
-                        MCUServices.Logger.Debug($"Removing material of size {material.Size}", true);
-                        bioMaterialsProcessing.Remove(material, container);
-                    }
-                }
             }
 
-            container.Resize(storageWidth = nextStats.Width, storageHeight = nextStats.Height);
-            container.Sort();
-
-            chargeRate = baselineChargeRate / this.TotalContainerSpaces * 2f;
+            chargeRate = baselineChargeRate / TotalContainerSpaces * 2f;
 
             lastKnownBioBooster = boosterCount;
 
@@ -568,23 +550,18 @@
 
         private class ReactorStats
         {
-            private static readonly ReactorStats boost0 = new ReactorStats(2, 2, MaxPowerBaseline);
-            private static readonly ReactorStats boost1 = new ReactorStats(3, 2, MaxPowerBaseline + 50f);
-            private static readonly ReactorStats boost2 = new ReactorStats(3, 3, MaxPowerBaseline + 100f);
-            private static readonly ReactorStats boost3 = new ReactorStats(6, 2, MaxPowerBaseline + 150f);
+            private static readonly ReactorStats boost0 = new ReactorStats(2 * 2, MaxPowerBaseline);
+            private static readonly ReactorStats boost1 = new ReactorStats(3 * 2, MaxPowerBaseline + 50f);
+            private static readonly ReactorStats boost2 = new ReactorStats(3 * 3, MaxPowerBaseline + 100f);
+            private static readonly ReactorStats boost3 = new ReactorStats(6 * 2, MaxPowerBaseline + 150f);
 
-            internal readonly int Width;
-            internal readonly int Height;
+            internal readonly int ProcessingCapacity;
             internal readonly float Capacity;
 
-            internal readonly int TotalSpaces;
-
-            private ReactorStats(int width, int height, float capacity)
+            private ReactorStats(int processingCapacity, float capacity)
             {
-                Width = width;
-                Height = height;
                 Capacity = capacity;
-                TotalSpaces = Width * Height;
+                ProcessingCapacity = processingCapacity;
             }
 
             internal static ReactorStats GetStatsForBoosterCount(int boosterCount)

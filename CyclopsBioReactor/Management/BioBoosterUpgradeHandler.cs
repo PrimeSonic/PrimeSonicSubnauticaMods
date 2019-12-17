@@ -3,7 +3,6 @@
     using CyclopsBioReactor.Items;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using UnityEngine;
 
     internal class BioBoosterUpgradeHandler : UpgradeHandler
     {
@@ -29,18 +28,6 @@
             OnFirstTimeMaxCountReached = () =>
             {
                 ErrorMessage.AddMessage(BioReactorBooster.MaxBoostAchived);
-            };
-
-            IsAllowedToRemove = (Pickupable item, bool verbose) =>
-            {
-                return this.Manager.FindFirst(false, (CyBioReactorMono reactor) => reactor.HasRoomToShrink(), () =>
-                {
-                    if (Time.time > errorDelay)
-                    {
-                        errorDelay = Time.time + delayInterval;
-                        ErrorMessage.AddMessage(BioReactorBooster.CannotRemove);
-                    }
-                });
             };
         }
     }
