@@ -394,6 +394,9 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
+            if (_saveData == null)
+                ReadySaveData();
+
             _saveData.ClearOldData();
             _saveData.AddSlotData(reactorRodData);
             _saveData.SaveData();
@@ -602,8 +605,8 @@
 
         private void OnDestroy()
         {
-            if (this.Manager != null)
-                this.Manager.RemoveBuildable(this);
+            if (_manager != null)
+                _manager.RemoveBuildable(this);
             else
                 CyNukeManager.RemoveReactor(this);
 

@@ -63,7 +63,7 @@
         private string prefabId;
         private float textDelay = TextDelayInterval;
         private bool isLoadingSaveData = false;
-        private CyBioReactorSaveData saveData;
+        private CyBioReactorSaveData _saveData;
         private SubRoot Cyclops;
         private int lastKnownBioBooster = 0;
         private CyBioReactorDisplayHandler displayHandler;
@@ -113,7 +113,7 @@
         {
             base.Awake();
 
-            if (saveData == null)
+            if (_saveData == null)
                 ReadySaveData();
 
             InitializeStorageRoot();
@@ -210,7 +210,7 @@
             if (prefabId != null)
             {
                 QuickLogger.Debug($"CyBioReactorMono PrefabIdentifier {prefabId}");
-                saveData = new CyBioReactorSaveData(prefabId);
+                _saveData = new CyBioReactorSaveData(prefabId);
             }
         }
 
@@ -409,11 +409,14 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            saveData.ReactorBatterCharge = this.Charge;
-            saveData.SaveMaterialsProcessing(bioMaterialsProcessing);
-            saveData.BoosterCount = lastKnownBioBooster;
+            if (_saveData == null)
+                ReadySaveData();
 
-            saveData.Save();
+            _saveData.ReactorBatterCharge = this.Charge;
+            _saveData.SaveMaterialsProcessing(bioMaterialsProcessing);
+            _saveData.BoosterCount = lastKnownBioBooster;
+
+            _saveData.Save();
         }
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
@@ -428,20 +431,20 @@
 
             QuickLogger.Debug("Checking save data");
 
-            if (saveData == null)
+            if (_saveData == null)
                 ReadySaveData();
 
-            if (saveData != null && saveData.Load())
+            if (_saveData != null && _saveData.Load())
             {
                 QuickLogger.Debug("Save data found");
 
                 container.Clear(false);
 
-                UpdateBoosterCount(saveData.BoosterCount);
+                UpdateBoosterCount(_saveData.BoosterCount);
 
-                this.Charge = Mathf.Min(this.Capacity, saveData.ReactorBatterCharge);
+                this.Charge = Mathf.Min(this.Capacity, _saveData.ReactorBatterCharge);
 
-                List<BioEnergy> savedMaterials = saveData.GetMaterialsInProcessing();
+                List<BioEnergy> savedMaterials = _saveData.GetMaterialsInProcessing();
                 QuickLogger.Debug($"Found {savedMaterials.Count} materials in save data");
 
                 for (int i = 0; i < savedMaterials.Count; i++)
@@ -557,8 +560,8 @@
 
         private void OnDestroy()
         {
-            if (this.Manager != null)
-                this.Manager.RemoveBuildable(this);
+            if (_manager != null)
+                _manager.RemoveBuildable(this);
             else
                 BioAuxCyclopsManager.RemoveReactor(this);
 
