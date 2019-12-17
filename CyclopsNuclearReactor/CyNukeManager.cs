@@ -58,7 +58,7 @@
 
         protected override void ConnectWithManager(CyNukeReactorMono buildable)
         {
-            QuickLogger.Debug("Connecting CyNukeReactorMono with Cyclops");
+            MCUServices.Logger.Debug("Connecting CyNukeReactorMono with Cyclops");
             buildable.ConnectToCyclops(base.Cyclops, this);
         }
     }

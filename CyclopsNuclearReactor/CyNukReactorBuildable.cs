@@ -78,7 +78,7 @@
         {
             if (!main.GetPrefabs())
             {
-                QuickLogger.Error("CyNukReactor has failed to retrieve the prefab from the asset bundle");
+                MCUServices.Logger.Error("CyNukReactor has failed to retrieve the prefab from the asset bundle");
                 throw new NullReferenceException("CyNukReactor has failed to retrieve the prefab from the asset bundle");
             }
 

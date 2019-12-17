@@ -9,6 +9,7 @@
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
+    using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Managers;
 
     /// <summary>
@@ -155,7 +156,7 @@
         /// <summary>
         /// Provides methods to find the upgrades, chargers, and managers you registered once the Cyclops sub is running.
         /// </summary>
-        public static IMCUSearch Find => singleton;        
+        public static IMCUSearch Find => singleton;
 
         public T AuxCyclopsManager<T>(SubRoot cyclops)
             where T : class, IAuxCyclopsManager
@@ -211,7 +212,15 @@
         /// Provides a set of logging APIs that other mods can use.<para/>
         /// Debug level logs will only be printed of MCU's debug logging is enabled.
         /// </summary>
-        public static IMCULogger Logger => singleton;
+        public static IMCULogger Logger
+        {
+            get
+            {
+                ModConfig.LoadOnDemand();
+                
+                return singleton;
+            }
+        }
 
         public bool DebugLogsEnabled => QuickLogger.DebugLogsEnabled;
 

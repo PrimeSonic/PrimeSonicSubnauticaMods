@@ -209,7 +209,7 @@
 
             if (cyclops != null)
             {
-                QuickLogger.Debug("Parent cyclops found directly!");
+                MCUServices.Logger.Debug("Parent cyclops found directly!");
                 ConnectToCyclops(cyclops);
             }
             else
@@ -228,7 +228,7 @@
 
             if (prefabId != null && _saveData == null)
             {
-                QuickLogger.Debug($"CyNukeReactorMono PrefabIdentifier {prefabId}");
+                MCUServices.Logger.Debug($"CyNukeReactorMono PrefabIdentifier {prefabId}");
                 _saveData = new CyNukeReactorSaveData(prefabId, MaxSlots);
             }
         }
@@ -239,12 +239,12 @@
 
             if (Cyclops == null)
             {
-                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
+                MCUServices.Logger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
                 CyNukeManager.SyncAllReactors();
             }
             else if (this.Manager == null)
             {
-                QuickLogger.Debug("Looking for CyNukeChargeManager.");
+                MCUServices.Logger.Debug("Looking for CyNukeChargeManager.");
                 this.Manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Cyclops);
             }
 
@@ -270,7 +270,7 @@
         {
             if (_rodsRoot == null)
             {
-                QuickLogger.Debug("Initializing StorageRoot");
+                MCUServices.Logger.Debug("Initializing StorageRoot");
 
                 var storageRoot = new GameObject("StorageRoot");
                 storageRoot.transform.SetParent(this.transform, false);
@@ -279,7 +279,7 @@
 
             if (container == null)
             {
-                QuickLogger.Debug("Initializing RodsContainer");
+                MCUServices.Logger.Debug("Initializing RodsContainer");
 
                 container = new ItemsContainer(ContainerWidth, ContainerHeight, _rodsRoot.transform, CyNukReactorBuildable.StorageLabel(), null);
                 container.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
@@ -345,13 +345,13 @@
 
             InitializeRodsContainer();
 
-            QuickLogger.Debug("Loading save data");
+            MCUServices.Logger.Debug("Loading save data");
 
             isLoadingSaveData = true;
 
             if (_saveData != null &&_saveData.LoadData())
             {
-                QuickLogger.Debug("Save data found");
+                MCUServices.Logger.Debug("Save data found");
 
                 container.Clear(false);
                 reactorRodData.Clear();
@@ -368,7 +368,7 @@
 
                         if (spanwedItem != null)
                         {
-                            QuickLogger.Debug($"Adding {techTypeID.AsString()} with {rodData.RemainingCharge} charge from save data");
+                            MCUServices.Logger.Debug($"Adding {techTypeID.AsString()} with {rodData.RemainingCharge} charge from save data");
                             InventoryItem rod = container.AddItem(spanwedItem.item);
                             AddNewRod(rodData.RemainingCharge, rod.item);
                             nonEmptySlots++;
@@ -376,11 +376,11 @@
                     }
                 }
 
-                QuickLogger.Debug($"Added {nonEmptySlots} items from save data");
+                MCUServices.Logger.Debug($"Added {nonEmptySlots} items from save data");
             }
             else
             {
-                QuickLogger.Debug("No save data found");
+                MCUServices.Logger.Debug("No save data found");
             }
 
             isLoadingSaveData = false;
@@ -554,12 +554,12 @@
                 }
                 else
                 {
-                    QuickLogger.Error($"PowerRod_Uranium not found in GameObject {graphicalRod.name}");
+                    MCUServices.Logger.Error($"PowerRod_Uranium not found in GameObject {graphicalRod.name}");
                 }
             }
             else
             {
-                QuickLogger.Error($"GraphicalRod is null", true);
+                MCUServices.Logger.Error($"GraphicalRod is null", true);
             }
         }
 
@@ -581,11 +581,11 @@
             UpdateGraphicalRod(slotData);
             if (chargeLevel < 0 && item.GetTechType() == TechType.ReactorRod)
             {
-                QuickLogger.Warning("ReactorRod added with no power");
+                MCUServices.Logger.Warning("ReactorRod added with no power");
             }
             else if (chargeLevel > 0 && item.GetTechType() == TechType.DepletedReactorRod)
             {
-                QuickLogger.Warning("DepletedReactorRod added with power");
+                MCUServices.Logger.Warning("DepletedReactorRod added with power");
             }
         }
 

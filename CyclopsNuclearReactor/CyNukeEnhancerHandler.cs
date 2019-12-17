@@ -25,7 +25,7 @@
 
             OnFinishedUpgrades = () =>
             {
-                QuickLogger.Debug($"Handling all CyNukeEnhancers at {this.HighestValue}");
+                MCUServices.Logger.Debug($"Handling all CyNukeEnhancers at {this.HighestValue}");
 
                 this.Manager?.ApplyToAll((reactor) => reactor.UpdateUpgradeLevel(this.HighestValue));
             };
