@@ -7,7 +7,6 @@
   "Game": "Subnautica",
   "AssemblyName": "CyclopsNuclearReactor.dll",
   "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
-  "VersionDependencies": { "MoreCyclopsUpgrades": "4.2" },
   "LoadBefore": [ "MoreCyclopsUpgrades" ],
   "EntryMethod": "CyclopsNuclearReactor.QPatch.Patch"
 }

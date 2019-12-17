@@ -5,7 +5,6 @@
   "Version": "4.2.0",
   "Enable": true,
   "Game": "Subnautica",
-  "AssemblyName": "MoreCyclopsUpgrades.dll",
   "Dependencies": [ "SMLHelper" ],
   "AssemblyName": "MoreCyclopsUpgrades.dll",
   "EntryMethod": "MoreCyclopsUpgrades.QPatch.Patch",

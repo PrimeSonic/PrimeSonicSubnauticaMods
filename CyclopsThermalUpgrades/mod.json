@@ -7,7 +7,6 @@
   "Game": "Subnautica",
   "AssemblyName": "CyclopsThermalUpgrades.dll",
   "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
-  "VersionDependencies": { "MoreCyclopsUpgrades": "4.2" },
   "LoadBefore": [ "MoreCyclopsUpgrades" ],
   "EntryMethod": "CyclopsThermalUpgrades.QPatch.Patch"
 }

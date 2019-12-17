@@ -1,13 +1,12 @@
 {
   "Id": "CyclopsBioReactor",
   "DisplayName": "CyclopsBioReactor",
-  "Author": "PrimeSonic",
+  "Author": "PrimeSonic|FCStudios",
   "Version": "4.2.0",
   "Enable": true,
   "Game": "Subnautica",
   "AssemblyName": "CyclopsBioReactor.dll",
   "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
-  "VersionDependencies": { "MoreCyclopsUpgrades": "4.2" },
   "LoadBefore": [ "MoreCyclopsUpgrades" ],
   "EntryMethod": "CyclopsBioReactor.QPatch.Patch"
 }
