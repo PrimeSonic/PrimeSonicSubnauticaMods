@@ -14,11 +14,8 @@
         {
             try
             {
-                QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
-#if DEBUG
-            QuickLogger.DebugLogsEnabled = true;
-            QuickLogger.Debug("Debug logs enabled");
-#endif
+                MCUServices.Logger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
+
                 var booster = new BioReactorBooster();
                 booster.Patch();
 
@@ -48,11 +45,11 @@
                     return new BoosterOverlay(icon, upgradeModule);
                 });
 
-                QuickLogger.Info("Finished Patching");
+                MCUServices.Logger.Info("Finished Patching");
             }
             catch (Exception ex)
             {
-                QuickLogger.Error(ex);
+                MCUServices.Logger.Error(ex);
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿namespace CyclopsBioReactor.Management
 {
-    using Common;
     using CyclopsBioReactor.Items;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -22,7 +21,7 @@
 
             OnFinishedUpgrades = () =>
             {
-                QuickLogger.Debug($"Handling all BioBoosters at {this.Count}");
+                MCUServices.Logger.Debug($"Handling all BioBoosters at {this.Count}");
 
                 this.Manager?.ApplyToAll((CyBioReactorMono reactor) => reactor.UpdateBoosterCount(this.Count));
             };

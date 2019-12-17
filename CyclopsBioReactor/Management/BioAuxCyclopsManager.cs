@@ -1,7 +1,6 @@
 ﻿namespace CyclopsBioReactor.Management
 {
     using System.Collections.Generic;
-    using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Buildables;
 
@@ -47,7 +46,7 @@
 
         protected override void ConnectWithManager(CyBioReactorMono buildable)
         {
-            QuickLogger.Debug("Connecting CyBioReactorMono with Cyclops");
+            MCUServices.Logger.Debug("Connecting CyBioReactorMono with Cyclops");
             buildable.ConnectToCyclops(base.Cyclops, this);
         }
 

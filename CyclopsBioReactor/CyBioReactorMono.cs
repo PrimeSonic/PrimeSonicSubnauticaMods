@@ -1,7 +1,6 @@
 ﻿namespace CyclopsBioReactor
 {
     using System.Collections.Generic;
-    using Common;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
     using CyclopsBioReactor.SaveData;
@@ -92,7 +91,7 @@
 
             if (cyclops != null)
             {
-                QuickLogger.Debug("CyBioReactorMono: Parent cyclops found!");
+                MCUServices.Logger.Debug("CyBioReactorMono: Parent cyclops found!");
                 ConnectToCyclops(cyclops);
             }
             else
@@ -209,7 +208,7 @@
 
             if (prefabId != null && _saveData == null)
             {
-                QuickLogger.Debug($"CyBioReactorMono PrefabIdentifier {prefabId}");
+                MCUServices.Logger.Debug($"CyBioReactorMono PrefabIdentifier {prefabId}");
                 _saveData = new CyBioReactorSaveData(prefabId);
             }
         }
@@ -230,12 +229,12 @@
 
             if (Cyclops == null)
             {
-                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
+                MCUServices.Logger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
                 BioAuxCyclopsManager.SyncAllBioReactors();
             }
             else if (this.Manager == null)
             {
-                QuickLogger.Debug("Looking for BioAuxCyclopsManager.");
+                MCUServices.Logger.Debug("Looking for BioAuxCyclopsManager.");
                 this.Manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops);
             }
 
@@ -338,7 +337,7 @@
 
                 if (bioEnergy is null)
                 {
-                    QuickLogger.Debug("Matching pickable in bioreactor not found", true);
+                    MCUServices.Logger.Debug("Matching pickable in bioreactor not found", true);
                     return;
                 }
 
@@ -428,38 +427,38 @@
 
             InitializeContainer();
 
-            QuickLogger.Debug("Checking save data");
+            MCUServices.Logger.Debug("Checking save data");
 
             isLoadingSaveData = true;
 
             if (_saveData != null && _saveData.Load())
             {
-                QuickLogger.Debug("Save data found");
+                MCUServices.Logger.Debug("Save data found");
 
                 container.Clear(false);
                 bioMaterialsProcessing.Clear();
 
-                QuickLogger.Debug($"Setting up Boosters at {_saveData.BoosterCount} from save data");
+                MCUServices.Logger.Debug($"Setting up Boosters at {_saveData.BoosterCount} from save data");
                 UpdateBoosterCount(_saveData.BoosterCount);
 
-                QuickLogger.Debug($"Restoring {_saveData.ReactorBatterCharge} energy from save data");
+                MCUServices.Logger.Debug($"Restoring {_saveData.ReactorBatterCharge} energy from save data");
                 this.Charge = Mathf.Min(this.Capacity, _saveData.ReactorBatterCharge);
 
                 List<BioEnergy> savedMaterials = _saveData.GetMaterialsInProcessing();
-                QuickLogger.Debug($"Found {savedMaterials.Count} materials in save data");
+                MCUServices.Logger.Debug($"Found {savedMaterials.Count} materials in save data");
 
                 for (int i = 0; i < savedMaterials.Count; i++)
                 {
                     BioEnergy material = savedMaterials[i];
-                    QuickLogger.Debug($"Adding {material.Pickupable.GetTechName()} to container from save data");
+                    MCUServices.Logger.Debug($"Adding {material.Pickupable.GetTechName()} to container from save data");
                     bioMaterialsProcessing.Add(material, container);
                 }
 
-                QuickLogger.Debug($"Added {savedMaterials.Count} items from save data");
+                MCUServices.Logger.Debug($"Added {savedMaterials.Count} items from save data");
             }
             else
             {
-                QuickLogger.Debug("No save data found");
+                MCUServices.Logger.Debug("No save data found");
             }
 
             isLoadingSaveData = false;
@@ -499,7 +498,7 @@
 
                 if (bioEnergy == null)
                 {
-                    QuickLogger.Debug("Matching pickable in bioreactor not found", true);
+                    MCUServices.Logger.Debug("Matching pickable in bioreactor not found", true);
                     continue;
                 }
 
@@ -540,7 +539,7 @@
                         if (material == null)
                             break;
 
-                        QuickLogger.Debug($"Removing material of size {material.Size}", true);
+                        MCUServices.Logger.Debug($"Removing material of size {material.Size}", true);
                         bioMaterialsProcessing.Remove(material, container);
                     }
                 }
