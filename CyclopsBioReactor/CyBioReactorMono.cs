@@ -2,11 +2,11 @@
 {
     using System.Collections.Generic;
     using Common;
-    using MoreCyclopsUpgrades.API.Buildables;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
     using CyclopsBioReactor.SaveData;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Buildables;
     using ProtoBuf;
     using UnityEngine;
 
@@ -32,11 +32,11 @@
         // When at full capacity, charging rates will nearly double.
         private float chargeRate = baselineChargeRate;
 
-        private BioAuxCyclopsManager manager;
+        private BioAuxCyclopsManager _manager = null;
         private BioAuxCyclopsManager Manager
         {
-            get => manager ?? (manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops));
-            set => manager = value;
+            get => _manager ?? (_manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops));
+            set => _manager = value;
         }
 
         private BioBoosterUpgradeHandler upgradeHandler;
@@ -74,7 +74,7 @@
         // Careful, this map only exists while the PDA screen is open
         private Dictionary<InventoryItem, uGUI_ItemIcon> pdaInventoryMapping = null;
 
-        public bool IsConnectedToCyclops => Cyclops != null && manager != null;
+        public bool IsConnectedToCyclops => Cyclops != null && _manager != null;
         public bool ProducingPower => this.IsContructed && bioMaterialsProcessing.Count > 0;
         public bool HasPower => this.IsContructed && this.Charge > 0f;
         public bool IsContructed => (this.Buildable != null) && this.Buildable.constructed;
@@ -90,15 +90,14 @@
 
             SubRoot cyclops = GetComponentInParent<SubRoot>();
 
-            if (cyclops == null)
-            {
-                QuickLogger.Debug("CyBioReactorMono: Could not find Cyclops during Start. Attempting external syncronize.");
-                BioAuxCyclopsManager.SyncAllBioReactors();
-            }
-            else
+            if (cyclops != null)
             {
                 QuickLogger.Debug("CyBioReactorMono: Parent cyclops found!");
                 ConnectToCyclops(cyclops);
+            }
+            else
+            {
+                InvokeRepeating(nameof(GetMCUHandler), 3f, 1f);
             }
         }
 
@@ -114,7 +113,8 @@
         {
             base.Awake();
 
-            ReadySaveData();
+            if (saveData == null)
+                ReadySaveData();
 
             InitializeStorageRoot();
             InitializeContainer();
@@ -222,6 +222,25 @@
             var storeRoot = new GameObject("StorageRoot");
             storeRoot.transform.SetParent(this.transform, false);
             storageRoot = storeRoot.AddComponent<ChildObjectIdentifier>();
+        }
+
+        private void GetMCUHandler()
+        {
+            Cyclops = Cyclops ?? GetComponentInParent<SubRoot>();
+
+            if (Cyclops == null)
+            {
+                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
+                BioAuxCyclopsManager.SyncAllBioReactors();
+            }
+            else if (this.Manager == null)
+            {
+                QuickLogger.Debug("Looking for BioAuxCyclopsManager.");
+                this.Manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops);
+            }
+
+            if (this.Manager != null)
+                CancelInvoke(nameof(GetMCUHandler));
         }
 
         #endregion
@@ -538,13 +557,13 @@
 
         private void OnDestroy()
         {
-            if (manager != null)
-                manager.RemoveBuildable(this);
+            if (_manager != null)
+                _manager.RemoveBuildable(this);
             else
                 BioAuxCyclopsManager.RemoveReactor(this);
 
             Cyclops = null;
-            manager = null;
+            this.Manager = null;
         }
 
         private class ReactorStats

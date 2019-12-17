@@ -31,6 +31,9 @@
         {
             tempBuildables.Clear();
 
+            if (Cyclops == null)
+                return;
+
             BuildableMono[] buildables = Cyclops.GetComponentsInChildren<BuildableMono>();
 
             for (int b = 0; b < buildables.Length; b++)

@@ -30,8 +30,14 @@
         private const float TextDelayInterval = 1.4f;
         private float textDelay = TextDelayInterval;
 
-        public SubRoot ParentCyclops = null;
-        public CyNukeManager Manager = null;
+        public SubRoot Cyclops = null;
+        private CyNukeManager _manager = null;
+        public CyNukeManager Manager
+        {
+            get => _manager ?? (_manager ?? MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Cyclops));
+            set => _manager = value;
+        }
+
         private ItemsContainer container = null;
         private ChildObjectIdentifier _rodsRoot = null;
         private string prefabId = null;
@@ -51,8 +57,8 @@
         }
 
         private CyNukeEnhancerHandler upgradeHandler;
-        private CyNukeEnhancerHandler CyNukeEnhancer => upgradeHandler ??
-            (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(ParentCyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
+        private CyNukeEnhancerHandler UpgradeHandler => upgradeHandler ??
+            (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(Cyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
 
         private bool isLoadingSaveData = false;
         private bool isDepletingRod = false;
@@ -84,7 +90,7 @@
 
         internal bool IsConstructed => this.Buildable != null && this.Buildable.constructed;
 
-        public bool IsConnectedToCyclops => ParentCyclops != null && Manager != null;
+        public bool IsConnectedToCyclops => Cyclops != null && this.Manager != null;
 
         internal string PowerIndicatorString()
         {
@@ -199,18 +205,16 @@
 
         private void Start()
         {
-            InvokeRepeating(nameof(GetMCUHandler), 3f, 1f);
             SubRoot cyclops = GetComponentInParent<SubRoot>();
 
-            if (cyclops == null)
-            {
-
-
-            }
-            else
+            if (cyclops != null)
             {
                 QuickLogger.Debug("Parent cyclops found directly!");
                 ConnectToCyclops(cyclops);
+            }
+            else
+            {
+                InvokeRepeating(nameof(GetMCUHandler), 3f, 1f);
             }
         }
 
@@ -231,42 +235,40 @@
 
         private void GetMCUHandler()
         {
-            ParentCyclops = ParentCyclops ?? GetComponentInParent<SubRoot>();
+            Cyclops = Cyclops ?? GetComponentInParent<SubRoot>();
 
-            if (ParentCyclops == null)
+            if (Cyclops == null)
             {
                 QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
                 CyNukeManager.SyncAllReactors();
             }
-            else if (Manager == null)
+            else if (this.Manager == null)
             {
                 QuickLogger.Debug("Looking for CyNukeChargeManager.");
-                Manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(ParentCyclops);
+                this.Manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Cyclops);
             }
 
-            if (Manager != null)
+            if (this.Manager != null)
                 CancelInvoke(nameof(GetMCUHandler));
         }
 
-        public void ConnectToCyclops(SubRoot cyclops, CyNukeManager manager = null)
+        public void ConnectToCyclops(SubRoot parentCyclops, CyNukeManager manager = null)
         {
-            if (cyclops == null)
+            if (this.IsConnectedToCyclops)
                 return;
 
-            ParentCyclops = cyclops;
-            this.transform.SetParent(cyclops.transform);
+            Cyclops = parentCyclops;
+            this.transform.SetParent(parentCyclops.transform);
 
-            Manager = manager ?? MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
-
-            if (Manager == null)
+            if (this.Manager != null)
             {
-                QuickLogger.Debug("CyNukeChargeManager still missing");
-                return;
+                this.Manager.AddBuildable(this);
             }
 
-            Manager.AddBuildable(this);
-            UpdateUpgradeLevel(this.CyNukeEnhancer.HighestValue);
-            QuickLogger.Debug("Cyclops Nuclear Reactor has been connected", true);
+            if (this.UpgradeHandler != null)
+            {
+                UpdateUpgradeLevel(this.UpgradeHandler.Count);
+            }
         }
 
         private void InitializeRodsContainer()
@@ -600,13 +602,13 @@
 
         private void OnDestroy()
         {
-            if (Manager != null)
-                Manager.CyNukeReactors.Remove(this);
+            if (_manager != null)
+                _manager.RemoveBuildable(this);
             else
                 CyNukeManager.RemoveReactor(this);
 
-            ParentCyclops = null;
-            Manager = null;
+            Cyclops = null;
+            this.Manager = null;
         }
 
         private static InventoryItem SpawnItem(TechType techTypeID)

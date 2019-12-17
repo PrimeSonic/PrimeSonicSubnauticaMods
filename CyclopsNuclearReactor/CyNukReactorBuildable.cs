@@ -102,7 +102,7 @@
             {
                 CyNukeManager mgr = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
 
-                if (mgr != null && mgr.CyNukeReactors.Count >= CyNukeManager.MaxReactors)
+                if (mgr != null && mgr.TrackedBuildablesCount >= CyNukeManager.MaxReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitMessage());
                     return null;

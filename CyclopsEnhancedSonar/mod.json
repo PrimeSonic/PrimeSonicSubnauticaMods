@@ -7,7 +7,6 @@
   "Game": "Subnautica",
   "AssemblyName": "CyclopsEnhancedSonar.dll",
   "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
-  "VersionDependencies": { "MoreCyclopsUpgrades": "4.1" },
   "LoadBefore": [ "MoreCyclopsUpgrades" ],
   "AssemblyName": "CyclopsEnhancedSonar.dll",
   "EntryMethod": "CyclopsEnhancedSonar.QPatch.Patch"

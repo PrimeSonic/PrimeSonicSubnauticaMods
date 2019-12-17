@@ -8,21 +8,42 @@
     {
         public const int MaxReactors = CyNukeChargeManager.MaxReactors;
 
-        private static IEnumerable<CyNukeManager> AllNukManagers => MCUServices.Find.AllAuxCyclopsManagers<CyNukeManager>();
+        private static IEnumerable<CyNukeManager> GetAllNukManagers()
+        {
+            return MCUServices.Find.AllAuxCyclopsManagers<CyNukeManager>();
+        }
 
         internal static void SyncAllReactors()
         {
-            foreach (CyNukeManager mgr in AllNukManagers)
+            IEnumerable<CyNukeManager> allMgrs = GetAllNukManagers();
+            if (allMgrs == null)
+                return;
+
+            foreach (CyNukeManager mgr in allMgrs)
                 mgr.SyncBuildables();
         }
 
         public static void RemoveReactor(CyNukeReactorMono reactor)
         {
-            foreach (CyNukeManager mgr in AllNukManagers)
-                mgr.CyNukeReactors.Remove(reactor);
+            IEnumerable<CyNukeManager> allMgrs = GetAllNukManagers();
+            if (allMgrs == null)
+                return;
+
+            foreach (CyNukeManager mgr in allMgrs)
+                mgr.TrackedBuildables.Remove(reactor);
         }
 
-        public readonly List<CyNukeReactorMono> CyNukeReactors = new List<CyNukeReactorMono>();
+        public float TotalEnergyCharge
+        {
+            get
+            {
+                float totalPower = 0f;
+                for (int b = 0; b < TrackedBuildables.Count; b++)
+                    totalPower += TrackedBuildables[b].GetTotalAvailablePower();
+
+                return totalPower;
+            }
+        }
 
         public CyNukeManager(SubRoot cyclops) : base(cyclops)
         {
@@ -32,6 +53,9 @@
         {
             return base.Cyclops == cyclops;
         }
+
+        public CyNukeReactorMono First => TrackedBuildables[0];
+        public CyNukeReactorMono Second => TrackedBuildables[1];
 
         protected override void ConnectWithManager(CyNukeReactorMono buildable)
         {

@@ -24,7 +24,7 @@
             {
                 QuickLogger.Debug($"Handling all BioBoosters at {this.Count}");
 
-                this.Manager.ApplyToAll((CyBioReactorMono reactor) => reactor.UpdateBoosterCount(this.Count));
+                this.Manager?.ApplyToAll((CyBioReactorMono reactor) => reactor.UpdateBoosterCount(this.Count));
             };
 
             OnFirstTimeMaxCountReached = () =>

@@ -2,31 +2,41 @@
 {
     using System.Collections.Generic;
     using Common;
-    using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Buildables;
 
     internal class BioAuxCyclopsManager : BuildableManager<CyBioReactorMono>
     {
         #region Static Members
 
-        private static IEnumerable<BioAuxCyclopsManager> AllBioManagers => MCUServices.Find.AllAuxCyclopsManagers<BioAuxCyclopsManager>();
+        private static IEnumerable<BioAuxCyclopsManager> GetAllBioManagers()
+        {
+            return MCUServices.Find.AllAuxCyclopsManagers<BioAuxCyclopsManager>();
+        }
 
         internal static void SyncAllBioReactors()
         {
-            foreach (BioAuxCyclopsManager mgr in AllBioManagers)
+            IEnumerable<BioAuxCyclopsManager> allMgrs = GetAllBioManagers();
+            if (allMgrs == null)
+                return;
+
+            foreach (BioAuxCyclopsManager mgr in allMgrs)
                 mgr.SyncBuildables();
         }
 
         internal static void RemoveReactor(CyBioReactorMono cyBioReactorMono)
         {
-            foreach (BioAuxCyclopsManager mgr in AllBioManagers)
+            IEnumerable<BioAuxCyclopsManager> allMgrs = GetAllBioManagers();
+            if (allMgrs == null)
+                return;
+
+            foreach (BioAuxCyclopsManager mgr in allMgrs)
                 mgr.RemoveBuildable(cyBioReactorMono);
         }
 
         internal const int MaxBioReactors = BioChargeHandler.MaxBioReactors;
 
         #endregion
-
 
         public BioAuxCyclopsManager(SubRoot cyclops) : base(cyclops)
         {

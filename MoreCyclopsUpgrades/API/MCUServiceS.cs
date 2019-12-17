@@ -159,6 +159,9 @@
         public T AuxCyclopsManager<T>(SubRoot cyclops)
             where T : class, IAuxCyclopsManager
         {
+            if (cyclops == null)
+                return null;
+
             return CyclopsManager.GetManager<T>(cyclops, typeof(T).Name);
         }
 
