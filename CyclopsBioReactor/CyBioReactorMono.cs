@@ -442,7 +442,7 @@
                 QuickLogger.Debug($"Setting up Boosters at {_saveData.BoosterCount} from save data");
                 UpdateBoosterCount(_saveData.BoosterCount);
 
-                QuickLogger.Debug($"Restorying {_saveData.ReactorBatterCharge} energy from save data");
+                QuickLogger.Debug($"Restoring {_saveData.ReactorBatterCharge} energy from save data");
                 this.Charge = Mathf.Min(this.Capacity, _saveData.ReactorBatterCharge);
 
                 List<BioEnergy> savedMaterials = _saveData.GetMaterialsInProcessing();

@@ -1,8 +1,10 @@
 ﻿namespace Common
 {
+    using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Text;
+    using System.Threading;
     using Common.EasyMarkup;
 
     internal static class SaveDataExtensions
@@ -20,7 +22,12 @@
                 Directory.CreateDirectory(directory);
             }
 
+            CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             File.WriteAllText(fileLocation, (extraText ?? string.Empty) + data.PrettyPrint(), Encoding.UTF8);
+
+            Thread.CurrentThread.CurrentCulture = originalCulture;
         }
 
         public static void Save<T>(this T data, string extraText = null) where T : EmProperty
@@ -37,9 +44,14 @@
                 return false;
             }
 
+            CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
+
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             string serializedData = File.ReadAllText(fileLocation, Encoding.UTF8);
 
             bool validData = data.FromString(serializedData);
+
+            Thread.CurrentThread.CurrentCulture = originalCulture;
 
             if (!validData)
             {
