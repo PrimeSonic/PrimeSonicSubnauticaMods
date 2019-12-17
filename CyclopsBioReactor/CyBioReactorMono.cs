@@ -19,16 +19,16 @@
         private const float MaxPowerBaseline = 200;
         private const float TextDelayInterval = 2f;
 
-        private const float baselineChargeRate = 0.75f;
+        private const float baselineChargeRate = 0.765f;
 
-        private const int StorageWidth = 6;
-        private const int StorageHeight = 3;
-        private const int TotalContainerSpaces = StorageHeight * StorageWidth;
+        private const int StorageWidth = 4;
+        private const int StorageHeight = 4;
+        private const float TotalContainerSpaces = StorageHeight * StorageWidth;
 
         // Because now each item produces charge in parallel, the charge rate will be variable.
         // At half-full, we get close to original charging rates.
         // When at full capacity, charging rates will nearly double.
-        private float chargeRate = baselineChargeRate;
+        private float chargeRate = baselineChargeRate / 6f;
 
         private BioAuxCyclopsManager _manager = null;
         private BioAuxCyclopsManager Manager
@@ -86,8 +86,6 @@
 
         private void Start()
         {
-            chargeRate = baselineChargeRate / TotalContainerSpaces * 2;
-
             SubRoot cyclops = GetComponentInParent<SubRoot>();
 
             if (cyclops != null)
@@ -531,7 +529,7 @@
                 this.Charge = Mathf.Min(this.Charge, this.Capacity);
             }
 
-            chargeRate = baselineChargeRate / TotalContainerSpaces * 2f;
+            chargeRate = baselineChargeRate / nextStats.ProcessingCapacity * 2f;
 
             lastKnownBioBooster = boosterCount;
 
@@ -551,10 +549,10 @@
 
         private class ReactorStats
         {
-            private static readonly ReactorStats boost0 = new ReactorStats(2 * 2, MaxPowerBaseline);
-            private static readonly ReactorStats boost1 = new ReactorStats(3 * 2, MaxPowerBaseline + 50f);
-            private static readonly ReactorStats boost2 = new ReactorStats(3 * 3, MaxPowerBaseline + 100f);
-            private static readonly ReactorStats boost3 = new ReactorStats(6 * 2, MaxPowerBaseline + 150f);
+            private static readonly ReactorStats boost0 = new ReactorStats(3, MaxPowerBaseline);
+            private static readonly ReactorStats boost1 = new ReactorStats(6, MaxPowerBaseline + 50f);
+            private static readonly ReactorStats boost2 = new ReactorStats(9, MaxPowerBaseline + 100f);
+            private static readonly ReactorStats boost3 = new ReactorStats(12, MaxPowerBaseline + 150f);
 
             internal readonly int ProcessingCapacity;
             internal readonly float Capacity;
