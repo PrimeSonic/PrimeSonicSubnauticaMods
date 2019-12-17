@@ -63,7 +63,7 @@
             {
                 BioAuxCyclopsManager mgr = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(cyclops);
 
-                if (mgr != null && mgr.TrackedBuildablesCount >= BioAuxCyclopsManager.MaxBioReactors)
+                if (mgr != null && mgr.TrackedBuildablesCount >= BioChargeHandler.MaxBioReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitString());
                     return null;

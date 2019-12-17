@@ -20,7 +20,7 @@
             cyclopsManager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(base.Cyclops);
 
             reactorCount = cyclopsManager.TrackedBuildablesCount;
-            maxedReactors = reactorCount == BioAuxCyclopsManager.MaxBioReactors;
+            maxedReactors = reactorCount == BioChargeHandler.MaxBioReactors;
         }
 
         public override void UpdateText()

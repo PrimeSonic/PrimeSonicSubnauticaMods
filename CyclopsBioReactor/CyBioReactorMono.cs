@@ -35,7 +35,7 @@
         private BioAuxCyclopsManager _manager = null;
         private BioAuxCyclopsManager Manager
         {
-            get => _manager ?? (_manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops));
+            get => _manager ?? (_manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops));
             set => _manager = value;
         }
 
@@ -557,8 +557,8 @@
 
         private void OnDestroy()
         {
-            if (_manager != null)
-                _manager.RemoveBuildable(this);
+            if (this.Manager != null)
+                this.Manager.RemoveBuildable(this);
             else
                 BioAuxCyclopsManager.RemoveReactor(this);
 

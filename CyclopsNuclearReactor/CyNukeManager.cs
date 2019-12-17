@@ -1,13 +1,12 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using System.Collections.Generic;
+    using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Buildables;
 
     internal class CyNukeManager : BuildableManager<CyNukeReactorMono>
     {
-        public const int MaxReactors = CyNukeChargeManager.MaxReactors;
-
         private static IEnumerable<CyNukeManager> GetAllNukManagers()
         {
             return MCUServices.Find.AllAuxCyclopsManagers<CyNukeManager>();
@@ -59,6 +58,7 @@
 
         protected override void ConnectWithManager(CyNukeReactorMono buildable)
         {
+            QuickLogger.Debug("Connecting CyNukeReactorMono with Cyclops");
             buildable.ConnectToCyclops(base.Cyclops, this);
         }
     }

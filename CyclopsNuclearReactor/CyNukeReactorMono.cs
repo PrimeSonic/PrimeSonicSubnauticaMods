@@ -34,7 +34,7 @@
         private CyNukeManager _manager = null;
         public CyNukeManager Manager
         {
-            get => _manager ?? (_manager ?? MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Cyclops));
+            get => _manager ?? (_manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Cyclops));
             set => _manager = value;
         }
 
@@ -602,8 +602,8 @@
 
         private void OnDestroy()
         {
-            if (_manager != null)
-                _manager.RemoveBuildable(this);
+            if (this.Manager != null)
+                this.Manager.RemoveBuildable(this);
             else
                 CyNukeManager.RemoveReactor(this);
 

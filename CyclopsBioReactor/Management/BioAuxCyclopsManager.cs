@@ -34,8 +34,6 @@
                 mgr.RemoveBuildable(cyBioReactorMono);
         }
 
-        internal const int MaxBioReactors = BioChargeHandler.MaxBioReactors;
-
         #endregion
 
         public BioAuxCyclopsManager(SubRoot cyclops) : base(cyclops)
