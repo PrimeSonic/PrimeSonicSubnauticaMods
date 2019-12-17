@@ -23,7 +23,7 @@
 
         private const int StorageWidth = 6;
         private const int StorageHeight = 3;
-        private const int TotalContainerSpaces = StorageHeight * StorageWidth;        
+        private const int TotalContainerSpaces = StorageHeight * StorageWidth;
 
         // Because now each item produces charge in parallel, the charge rate will be variable.
         // At half-full, we get close to original charging rates.
@@ -80,6 +80,7 @@
         public float Charge { get; private set; }
         public float Capacity { get; private set; } = MaxPowerBaseline;
         public int ProcessingCapacity { get; private set; }
+        private int currentProcessingCapacity;
 
         #region Initialization
 
@@ -354,15 +355,15 @@
             if (powerDrawnPerItem > 0f && // More than zero energy being produced per item per time delta
                 bioMaterialsProcessing.Count > 0) // There should be materials in the reactor to process
             {
-                int processingCapacity = this.ProcessingCapacity;
+                currentProcessingCapacity = this.ProcessingCapacity;
                 for (int m = 0; m < bioMaterialsProcessing.Count; m++)
                 {
                     BioEnergy material = bioMaterialsProcessing[m];
-                    processingCapacity -= material.Size;
 
-                    if (processingCapacity < 0)
-                        break;
+                    if (material.Size > currentProcessingCapacity)
+                        continue;
 
+                    currentProcessingCapacity -= material.Size;
                     float availablePowerPerItem = Mathf.Min(material.RemainingEnergy, material.Size * powerDrawnPerItem);
 
                     material.RemainingEnergy -= availablePowerPerItem;
@@ -427,7 +428,7 @@
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
             if (_saveData == null)
-                ReadySaveData();            
+                ReadySaveData();
 
             InitializeStorageRoot();
 

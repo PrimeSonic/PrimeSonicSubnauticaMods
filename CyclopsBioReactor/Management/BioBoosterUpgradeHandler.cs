@@ -6,7 +6,6 @@
 
     internal class BioBoosterUpgradeHandler : UpgradeHandler
     {
-        private float errorDelay = 0f;
         private const float delayInterval = 10f;
         internal int TotalBoosters => this.Count;
 
