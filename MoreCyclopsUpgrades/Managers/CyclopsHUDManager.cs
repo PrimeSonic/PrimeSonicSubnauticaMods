@@ -53,7 +53,7 @@
         private HelmEnergyDisplay lastDisplay = HelmEnergyDisplay.PowerCellPercentage;
 
         internal CyclopsHUDManager(SubRoot cyclops, int totalIcons)
-        {
+        {            
             Cyclops = cyclops;
             totalPowerInfoIcons = totalIcons;
         }

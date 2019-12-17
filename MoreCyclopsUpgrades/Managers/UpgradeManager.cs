@@ -139,7 +139,6 @@
 
         internal UpgradeManager(SubRoot cyclops) : base(cyclops)
         {
-            QuickLogger.Debug("Creating new UpgradeManager");
             engineRoomUpgradeConsole = Cyclops.upgradeConsole.modules;
         }
 

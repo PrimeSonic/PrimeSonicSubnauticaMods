@@ -72,7 +72,6 @@
 
         public ChargeManager(SubRoot cyclops)
         {
-            QuickLogger.Debug("Creating new ChargeManager");
             Cyclops = cyclops;
         }
 

@@ -72,7 +72,6 @@
 
         private static CyclopsManager CreateNewCyclopsManager(ref SubRoot cyclops)
         {
-            QuickLogger.Debug("Creating new CyclopsManager");
             var mgr = new CyclopsManager(cyclops);
             Managers.Add(mgr);
             return mgr;
@@ -117,7 +116,7 @@
 
         private CyclopsManager(SubRoot cyclops)
         {
-            QuickLogger.Debug($"Creating main CyclopsManager");
+            QuickLogger.Debug($"Creating new main CyclopsManager");
             Cyclops = cyclops;
             InstanceID = cyclops.GetInstanceID();
 

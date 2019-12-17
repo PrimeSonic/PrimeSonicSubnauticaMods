@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
@@ -14,7 +15,7 @@
     /// The main entry point for all API services provided by MoreCyclopsUpgrades.
     /// </summary>
     /// <seealso cref="IMCUCrossMod" />
-    public class MCUServices : IMCUCrossMod, IMCURegistration, IMCUSearch
+    public class MCUServices : IMCUCrossMod, IMCURegistration, IMCUSearch, IMCULogger
     {
         /// <summary>
         /// "Practically zero" for all intents and purposes.<para/>
@@ -154,7 +155,7 @@
         /// <summary>
         /// Provides methods to find the upgrades, chargers, and managers you registered once the Cyclops sub is running.
         /// </summary>
-        public static IMCUSearch Find => singleton;
+        public static IMCUSearch Find => singleton;        
 
         public T AuxCyclopsManager<T>(SubRoot cyclops)
             where T : class, IAuxCyclopsManager
@@ -200,6 +201,46 @@
         public T CyclopsGroupUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
             return CyclopsManager.GetManager(ref cyclops)?.Upgrade?.GetGroupHandler<T>(upgradeId);
+        }
+
+        #endregion
+
+        #region IMCULogger
+
+        /// <summary>
+        /// Provides a set of logging APIs that other mods can use.<para/>
+        /// Debug level logs will only be printed of MCU's debug logging is enabled.
+        /// </summary>
+        public static IMCULogger Logger => singleton;
+
+        public bool DebugLogsEnabled => QuickLogger.DebugLogsEnabled;
+
+        public void Info(string logmessage, bool showOnScreen = false)
+        {
+            QuickLogger.Info(logmessage, showOnScreen, Assembly.GetCallingAssembly());
+        }
+
+        public void Warning(string logmessage, bool showOnScreen = false)
+        {
+            QuickLogger.Warning(logmessage, showOnScreen, Assembly.GetCallingAssembly());
+        }
+
+        public void Error(string logmessage, bool showOnScreen = false)
+        {
+            QuickLogger.Error(logmessage, showOnScreen, Assembly.GetCallingAssembly());
+        }
+
+        public void Error(Exception ex, string logmessage = null)
+        {
+            if (logmessage == null)
+                QuickLogger.Error(ex, Assembly.GetCallingAssembly());
+            else
+                QuickLogger.Error(logmessage, ex, Assembly.GetCallingAssembly());
+        }
+
+        public void Debug(string logmessage, bool showOnScreen = false)
+        {
+            QuickLogger.Debug(logmessage, showOnScreen, Assembly.GetCallingAssembly());
         }
 
         #endregion

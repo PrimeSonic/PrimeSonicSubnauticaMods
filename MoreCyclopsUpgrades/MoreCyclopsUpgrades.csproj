@@ -95,6 +95,7 @@
     <Compile Include="API\Charging\CyclopsCharger.cs" />
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
     <Compile Include="API\IMCUCrossMod.cs" />
+    <Compile Include="API\IMCULogger.cs" />
     <Compile Include="API\IMCURegistration.cs" />
     <Compile Include="API\IMCUSearch.cs" />
     <Compile Include="API\PDA\IconOverlay.cs" />

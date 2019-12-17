@@ -17,7 +17,7 @@
         {
             try
             {
-                QuickLogger.Message("Started patching - " + QuickLogger.GetAssemblyVersion());
+                QuickLogger.Info("Started patching - " + QuickLogger.GetAssemblyVersion());
 
                 //Handle CrossMod Updates
                 if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
@@ -39,7 +39,7 @@
                 var harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-                QuickLogger.Message("Finished patching");
+                QuickLogger.Info("Finished patching");
             }
             catch (Exception ex)
             {

@@ -207,7 +207,7 @@
                 prefabId = prefabIdentifier.id;
             }
 
-            if (prefabId != null)
+            if (prefabId != null && _saveData == null)
             {
                 QuickLogger.Debug($"CyBioReactorMono PrefabIdentifier {prefabId}");
                 _saveData = new CyBioReactorSaveData(prefabId);
@@ -421,27 +421,28 @@
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
-            isLoadingSaveData = true;
+            if (_saveData == null)
+                ReadySaveData();            
 
             InitializeStorageRoot();
 
             InitializeContainer();
 
-            container.Clear(false);
-
             QuickLogger.Debug("Checking save data");
 
-            if (_saveData == null)
-                ReadySaveData();
+            isLoadingSaveData = true;
 
             if (_saveData != null && _saveData.Load())
             {
                 QuickLogger.Debug("Save data found");
 
                 container.Clear(false);
+                bioMaterialsProcessing.Clear();
 
+                QuickLogger.Debug($"Setting up Boosters at {_saveData.BoosterCount} from save data");
                 UpdateBoosterCount(_saveData.BoosterCount);
 
+                QuickLogger.Debug($"Restorying {_saveData.ReactorBatterCharge} energy from save data");
                 this.Charge = Mathf.Min(this.Capacity, _saveData.ReactorBatterCharge);
 
                 List<BioEnergy> savedMaterials = _saveData.GetMaterialsInProcessing();
@@ -453,6 +454,8 @@
                     QuickLogger.Debug($"Adding {material.Pickupable.GetTechName()} to container from save data");
                     bioMaterialsProcessing.Add(material, container);
                 }
+
+                QuickLogger.Debug($"Added {savedMaterials.Count} items from save data");
             }
             else
             {

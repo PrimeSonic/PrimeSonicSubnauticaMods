@@ -226,7 +226,7 @@
                 prefabId = prefabIdentifier.Id;
             }
 
-            if (prefabId != null)
+            if (prefabId != null && _saveData == null)
             {
                 QuickLogger.Debug($"CyNukeReactorMono PrefabIdentifier {prefabId}");
                 _saveData = new CyNukeReactorSaveData(prefabId, MaxSlots);
@@ -340,18 +340,16 @@
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
-            isLoadingSaveData = true;
-
-            InitializeRodsContainer();
-
-            container.Clear();
-
-            QuickLogger.Debug("Loading save data");
-
             if (_saveData == null)
                 ReadySaveData();
 
-            if (_saveData.LoadData())
+            InitializeRodsContainer();
+
+            QuickLogger.Debug("Loading save data");
+
+            isLoadingSaveData = true;
+
+            if (_saveData != null &&_saveData.LoadData())
             {
                 QuickLogger.Debug("Save data found");
 
@@ -370,6 +368,7 @@
 
                         if (spanwedItem != null)
                         {
+                            QuickLogger.Debug($"Adding {techTypeID.AsString()} with {rodData.RemainingCharge} charge from save data");
                             InventoryItem rod = container.AddItem(spanwedItem.item);
                             AddNewRod(rodData.RemainingCharge, rod.item);
                             nonEmptySlots++;
@@ -580,6 +579,14 @@
             var slotData = new SlotData(chargeLevel, item);
             reactorRodData.Add(slotData);
             UpdateGraphicalRod(slotData);
+            if (chargeLevel < 0 && item.GetTechType() == TechType.ReactorRod)
+            {
+                QuickLogger.Warning("ReactorRod added with no power");
+            }
+            else if (chargeLevel > 0 && item.GetTechType() == TechType.DepletedReactorRod)
+            {
+                QuickLogger.Warning("DepletedReactorRod added with power");
+            }
         }
 
         #endregion

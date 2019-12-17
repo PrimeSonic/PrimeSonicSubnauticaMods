@@ -13,6 +13,7 @@
 
         public PowerRatingManager(SubRoot cyclops)
         {
+
             this.cyclops = cyclops;
         }
 

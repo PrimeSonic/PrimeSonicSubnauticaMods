@@ -39,7 +39,7 @@
         {
             base.Awake();
 
-            if (SaveData == null)
+            if (_saveData == null)
                 ReadySaveData();
 
             if (this.Modules == null)
@@ -57,10 +57,10 @@
                 prefabId = prefabIdentifier.id;
             }
 
-            if (prefabId != null)
+            if (prefabId != null && _saveData == null)
             {
                 QuickLogger.Debug($"AuxCyUpgradeConsole PrefabIdentifier {prefabId}");
-                SaveData = new AuxCyUpgradeConsoleSaveData(prefabId);
+                _saveData = new AuxCyUpgradeConsoleSaveData(prefabId);
             }
         }
 
@@ -290,13 +290,13 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            if (SaveData == null)
+            if (_saveData == null)
                 ReadySaveData();
 
             for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
             {
                 string slot = SlotHelper.SlotNames[s];
-                EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
+                EmModuleSaveData savedModule = _saveData.GetModuleInSlot(slot);
                 InventoryItem item = this.Modules.GetItemInSlot(slot);
 
                 if (item == null)
@@ -322,12 +322,12 @@
 
             }
 
-            SaveData.Save();
+            _saveData.Save();
         }
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
-            if (SaveData == null)
+            if (_saveData == null)
                 ReadySaveData();
 
             if (this.Modules == null)
@@ -337,12 +337,7 @@
 
             QuickLogger.Debug("Checking save data");
 
-            if (SaveData == null)
-            {
-                ReadySaveData();
-            }
-
-            if (SaveData != null && SaveData.Load())
+            if (_saveData != null && _saveData.Load())
             {
                 // Because the items here aren't being serialized with everything else normally,
                 // I've used custom save data to handle whatever gets left in these slots.
@@ -355,7 +350,7 @@
                     // These slots need to be added before we can add items to them
                     this.Modules.AddSlot(slot);
 
-                    EmModuleSaveData savedModule = SaveData.GetModuleInSlot(slot);
+                    EmModuleSaveData savedModule = _saveData.GetModuleInSlot(slot);
 
                     if (savedModule.ItemID == 0) // (int)TechType.None
                         continue; // Nothing here
@@ -403,7 +398,7 @@
 
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
-        public AuxCyUpgradeConsoleSaveData SaveData;
+        public AuxCyUpgradeConsoleSaveData _saveData;
         //#if DEBUG
         //        // Also shamelessly copied from RandyKnapp
         //        // https://github.com/RandyKnapp/SubnauticaModSystem/blob/master/SubnauticaModSystem/HabitatControlPanel/HabitatControlPanel.cs#L711
