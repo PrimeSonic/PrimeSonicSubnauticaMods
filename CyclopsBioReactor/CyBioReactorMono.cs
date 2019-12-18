@@ -549,10 +549,10 @@
 
         private class ReactorStats
         {
-            private static readonly ReactorStats boost0 = new ReactorStats(3, MaxPowerBaseline);
-            private static readonly ReactorStats boost1 = new ReactorStats(6, MaxPowerBaseline + 50f);
-            private static readonly ReactorStats boost2 = new ReactorStats(9, MaxPowerBaseline + 100f);
-            private static readonly ReactorStats boost3 = new ReactorStats(12, MaxPowerBaseline + 150f);
+            private static readonly ReactorStats boost0 = new ReactorStats(4, MaxPowerBaseline);
+            private static readonly ReactorStats boost1 = new ReactorStats(7, MaxPowerBaseline + 50f);
+            private static readonly ReactorStats boost2 = new ReactorStats(10, MaxPowerBaseline + 100f);
+            private static readonly ReactorStats boost3 = new ReactorStats(13, MaxPowerBaseline + 150f);
 
             internal readonly int ProcessingCapacity;
             internal readonly float Capacity;
