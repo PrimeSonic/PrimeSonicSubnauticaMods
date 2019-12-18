@@ -67,7 +67,7 @@
 
         public void Initialize()
         {
-            QuickLogger.Message("Initializing save data and options");
+            QuickLogger.Info("Initializing save data and options");
             SaveData.InitializeSaveFile();
             OptionsPanelHandler.RegisterModOptions(this);
         }

@@ -6,11 +6,12 @@
     using Common;
     using CyclopsNuclearReactor.Helpers;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Buildables;
     using ProtoBuf;
     using UnityEngine;
 
     [ProtoContract]
-    internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener
+    internal partial class CyNukeReactorMono : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable
     {
         internal static bool PdaIsOpen = false;
         internal static CyNukeReactorMono OpenInPda = null;
@@ -29,8 +30,14 @@
         private const float TextDelayInterval = 1.4f;
         private float textDelay = TextDelayInterval;
 
-        public SubRoot ParentCyclops = null;
-        public CyNukeManager Manager = null;
+        public SubRoot Cyclops = null;
+        private CyNukeManager _manager = null;
+        public CyNukeManager Manager
+        {
+            get => _manager ?? (_manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Cyclops));
+            set => _manager = value;
+        }
+
         private ItemsContainer container = null;
         private ChildObjectIdentifier _rodsRoot = null;
         private string prefabId = null;
@@ -48,6 +55,10 @@
                 return _buildable;
             }
         }
+
+        private CyNukeEnhancerHandler upgradeHandler;
+        private CyNukeEnhancerHandler UpgradeHandler => upgradeHandler ??
+            (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(Cyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
 
         private bool isLoadingSaveData = false;
         private bool isDepletingRod = false;
@@ -78,6 +89,8 @@
         internal readonly List<SlotData> reactorRodData = new List<SlotData>(MaxSlots);
 
         internal bool IsConstructed => this.Buildable != null && this.Buildable.constructed;
+
+        public bool IsConnectedToCyclops => Cyclops != null && this.Manager != null;
 
         internal string PowerIndicatorString()
         {
@@ -192,18 +205,16 @@
 
         private void Start()
         {
-            InvokeRepeating(nameof(GetMCUHandler), 3f, 1f);
             SubRoot cyclops = GetComponentInParent<SubRoot>();
 
-            if (cyclops == null)
+            if (cyclops != null)
             {
-
-
+                MCUServices.Logger.Debug("Parent cyclops found directly!");
+                ConnectToCyclops(cyclops);
             }
             else
             {
-                QuickLogger.Debug("Parent cyclops found directly!");
-                ConnectToCyclops(cyclops);
+                InvokeRepeating(nameof(GetMCUHandler), 3f, 1f);
             }
         }
 
@@ -215,59 +226,51 @@
                 prefabId = prefabIdentifier.Id;
             }
 
-            if (prefabId != null)
+            if (prefabId != null && _saveData == null)
             {
-                QuickLogger.Debug($"CyNukeReactorMono PrefabIdentifier {prefabId}");
+                MCUServices.Logger.Debug($"CyNukeReactorMono PrefabIdentifier {prefabId}");
                 _saveData = new CyNukeReactorSaveData(prefabId, MaxSlots);
             }
         }
 
         private void GetMCUHandler()
         {
-            ParentCyclops = ParentCyclops ?? GetComponentInParent<SubRoot>();
+            Cyclops = Cyclops ?? GetComponentInParent<SubRoot>();
 
-            if (ParentCyclops == null)
+            if (Cyclops == null)
             {
-                QuickLogger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
-                CyNukeManager.SyncReactors();
+                MCUServices.Logger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
+                CyNukeManager.SyncAllReactors();
             }
-            else if (Manager == null)
+            else if (this.Manager == null)
             {
-                QuickLogger.Debug("Looking for CyNukeChargeManager.");
-                Manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(ParentCyclops);
+                MCUServices.Logger.Debug("Looking for CyNukeChargeManager.");
+                this.Manager = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(Cyclops);
             }
 
-            if (Manager != null)
+            if (this.Manager != null)
                 CancelInvoke(nameof(GetMCUHandler));
         }
 
-        public void ConnectToCyclops(SubRoot cyclops, CyNukeManager manager = null)
+        public void ConnectToCyclops(SubRoot parentCyclops, CyNukeManager manager = null)
         {
-            if (cyclops == null)
+            if (this.IsConnectedToCyclops)
                 return;
 
-            ParentCyclops = cyclops;
-            this.transform.SetParent(cyclops.transform);
+            Cyclops = parentCyclops;
+            this.transform.SetParent(parentCyclops.transform);
 
-            Manager = manager ?? MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
-
-            if (Manager == null)
+            if (this.Manager != null)
             {
-                QuickLogger.Debug("CyNukeChargeManager still missing");
-                return;
+                this.Manager.AddBuildable(this);
             }
-
-            Manager.AddReactor(this);
-            UpdateUpgradeLevel(Manager.UpgradeLevel);
-            QuickLogger.Debug("Cyclops Nuclear Reactor has been connected", true);
-
         }
 
         private void InitializeRodsContainer()
         {
             if (_rodsRoot == null)
             {
-                QuickLogger.Debug("Initializing StorageRoot");
+                MCUServices.Logger.Debug("Initializing StorageRoot");
 
                 var storageRoot = new GameObject("StorageRoot");
                 storageRoot.transform.SetParent(this.transform, false);
@@ -276,7 +279,7 @@
 
             if (container == null)
             {
-                QuickLogger.Debug("Initializing RodsContainer");
+                MCUServices.Logger.Debug("Initializing RodsContainer");
 
                 container = new ItemsContainer(ContainerWidth, ContainerHeight, _rodsRoot.transform, CyNukReactorBuildable.StorageLabel(), null);
                 container.SetAllowedTechTypes(new[] { TechType.ReactorRod, TechType.DepletedReactorRod });
@@ -337,20 +340,18 @@
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
-            isLoadingSaveData = true;
-
-            InitializeRodsContainer();
-
-            container.Clear();
-
-            QuickLogger.Debug("Loading save data");
-
             if (_saveData == null)
                 ReadySaveData();
 
-            if (_saveData.LoadData())
+            InitializeRodsContainer();
+
+            MCUServices.Logger.Debug("Loading save data");
+
+            isLoadingSaveData = true;
+
+            if (_saveData != null &&_saveData.LoadData())
             {
-                QuickLogger.Debug("Save data found");
+                MCUServices.Logger.Debug("Save data found");
 
                 container.Clear(false);
                 reactorRodData.Clear();
@@ -367,6 +368,7 @@
 
                         if (spanwedItem != null)
                         {
+                            MCUServices.Logger.Debug($"Adding {techTypeID.AsString()} with {rodData.RemainingCharge} charge from save data");
                             InventoryItem rod = container.AddItem(spanwedItem.item);
                             AddNewRod(rodData.RemainingCharge, rod.item);
                             nonEmptySlots++;
@@ -374,11 +376,11 @@
                     }
                 }
 
-                QuickLogger.Debug($"Added {nonEmptySlots} items from save data");
+                MCUServices.Logger.Debug($"Added {nonEmptySlots} items from save data");
             }
             else
             {
-                QuickLogger.Debug("No save data found");
+                MCUServices.Logger.Debug("No save data found");
             }
 
             isLoadingSaveData = false;
@@ -386,6 +388,9 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
+            if (_saveData == null)
+                ReadySaveData();
+
             _saveData.ClearOldData();
             _saveData.AddSlotData(reactorRodData);
             _saveData.SaveData();
@@ -549,12 +554,12 @@
                 }
                 else
                 {
-                    QuickLogger.Error($"PowerRod_Uranium not found in GameObject {graphicalRod.name}");
+                    MCUServices.Logger.Error($"PowerRod_Uranium not found in GameObject {graphicalRod.name}");
                 }
             }
             else
             {
-                QuickLogger.Error($"GraphicalRod is null", true);
+                MCUServices.Logger.Error($"GraphicalRod is null", true);
             }
         }
 
@@ -574,6 +579,14 @@
             var slotData = new SlotData(chargeLevel, item);
             reactorRodData.Add(slotData);
             UpdateGraphicalRod(slotData);
+            if (chargeLevel < 0 && item.GetTechType() == TechType.ReactorRod)
+            {
+                MCUServices.Logger.Warning("ReactorRod added with no power");
+            }
+            else if (chargeLevel > 0 && item.GetTechType() == TechType.DepletedReactorRod)
+            {
+                MCUServices.Logger.Warning("DepletedReactorRod added with power");
+            }
         }
 
         #endregion
@@ -594,13 +607,13 @@
 
         private void OnDestroy()
         {
-            if (Manager != null)
-                Manager.CyNukeReactors.Remove(this);
+            if (_manager != null)
+                _manager.RemoveBuildable(this);
             else
                 CyNukeManager.RemoveReactor(this);
 
-            ParentCyclops = null;
-            Manager = null;
+            Cyclops = null;
+            this.Manager = null;
         }
 
         private static InventoryItem SpawnItem(TechType techTypeID)

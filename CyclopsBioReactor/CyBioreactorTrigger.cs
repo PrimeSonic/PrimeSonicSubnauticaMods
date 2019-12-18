@@ -1,5 +1,4 @@
-﻿using Common;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace CyclopsBioReactor
@@ -13,14 +12,14 @@ namespace CyclopsBioReactor
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.GetComponent<Player>() == null) return;
-            QuickLogger.Debug("In OnTriggerEnter");
+            //MCUServices.Logger.Debug("In OnTriggerEnter");
             OnPlayerEnter?.Invoke();
         }
 
         private void OnTriggerStay(Collider other)
         {
             if (other.gameObject.GetComponent<Player>() == null) return;
-            QuickLogger.Debug($"In OnTriggerStay {other.gameObject.name}", true);
+            //MCUServices.Logger.Debug($"In OnTriggerStay {other.gameObject.name}", true);
             OnPlayerStay?.Invoke();
         }
 
@@ -28,7 +27,7 @@ namespace CyclopsBioReactor
         {
             if (other.gameObject.GetComponent<Player>() == null) return;
 
-            QuickLogger.Debug("In OnTriggerExit");
+            //MCUServices.Logger.Debug("In OnTriggerExit");
             OnPlayerExit?.Invoke();
         }
     }

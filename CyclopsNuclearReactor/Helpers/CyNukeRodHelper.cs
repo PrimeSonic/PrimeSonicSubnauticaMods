@@ -1,7 +1,7 @@
 ﻿namespace CyclopsNuclearReactor.Helpers
-{
-    using Common;
+{    
     using UnityEngine;
+    using MoreCyclopsUpgrades.API;
 
     public static class CyNukeRodHelper
     {
@@ -9,7 +9,7 @@
         {
             if (gameObject == null)
             {
-                QuickLogger.Error($"CyNukeRodHelper Cannot find gameObject");
+                MCUServices.Logger.Error($"CyNukeRodHelper Cannot find gameObject");
                 return null;
             }
 
@@ -21,7 +21,7 @@
             if (rod != null)
                 return rod;
 
-            QuickLogger.Error($"Cannot find gameObject PowerRod_Item_{index}");
+            MCUServices.Logger.Error($"Cannot find gameObject PowerRod_Item_{index}");
             return null;
         }
 

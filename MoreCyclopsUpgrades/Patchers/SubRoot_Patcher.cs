@@ -11,7 +11,7 @@
         public static void Prefix(ref SubRoot __instance)
         {
             if (__instance.isCyclops)
-                CyclopsManager.GetManager(__instance);
+                CyclopsManager.GetManager(ref __instance);
             // Set up a CyclopsManager early if possible
         }
     }
@@ -23,7 +23,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            var mgr = CyclopsManager.GetManager(__instance);
+            var mgr = CyclopsManager.GetManager(ref __instance);
             if (mgr == null)
                 return true; // Safety Check
 
@@ -40,7 +40,7 @@
         [HarmonyPrefix]
         public static bool Prefix(ref SubRoot __instance)
         {
-            var mgr = CyclopsManager.GetManager(__instance);
+            var mgr = CyclopsManager.GetManager(ref __instance);
             if (mgr == null)
                 return true; // Safety Check
 
@@ -63,7 +63,7 @@
             if (cyclopsLife == null || !cyclopsLife.IsAlive())
                 return true; // safety check
 
-            var mgr = CyclopsManager.GetManager(__instance);
+            var mgr = CyclopsManager.GetManager(ref __instance);
             if (mgr == null)
                 return true; // Safety Check
 
