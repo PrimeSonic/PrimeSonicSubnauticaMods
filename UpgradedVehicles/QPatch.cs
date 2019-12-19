@@ -12,6 +12,9 @@
     {
         private static UpgradeOptions configOptions;
         private static Craftable speedModule;
+        private static Craftable HullArmorMk2Module;
+        private static Craftable HullArmorMk3Module;
+        private static Craftable HullArmorMk4Module;
 
         public static void Patch()
         {
@@ -27,8 +30,15 @@
                 }
                 //Handle SpeedBooster
                 speedModule = SpeedBooster.GetSpeedBoosterCraftable();
-
-                VehicleUpgrader.SetSpeedBooster(speedModule);
+                VehicleUpgrader.SetNewModule(speedModule);
+                
+                //Handle HullArmorUpgrades (ugly and repetitive...)
+                HullArmorMk2Module = HullArmorMk2.GetHullArmorMk2Craftable();
+                HullArmorMk3Module = HullArmorMk3.GetHullArmorMk3Craftable();
+                HullArmorMk4Module = HullArmorMk4.GetHullArmorMk4Craftable();
+                VehicleUpgrader.SetNewModule(HullArmorMk2Module);
+                VehicleUpgrader.SetNewModule(HullArmorMk3Module);
+                VehicleUpgrader.SetNewModule(HullArmorMk4Module);
 
                 //Handle Config Options
                 configOptions = new UpgradeOptions();
