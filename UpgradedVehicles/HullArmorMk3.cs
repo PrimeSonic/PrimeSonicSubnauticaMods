@@ -6,11 +6,13 @@ namespace UpgradedVehicles
     internal class HullArmorMk3 : VehicleUpgradeModule
     {
         private const int ArmorCount = 3;
-        public HullArmorMk3()
+        private readonly TechType HullArmorMk2;
+        public HullArmorMk3(TechType hullArmorMk2)
             : base(classId: "HullArmorMk3",
                 friendlyName: "Hull Reinforcement Mk III",
                 description: "An even better hull upgrade. Equivalent to 3 regular Hull Reinforcements")
         {
+            this.HullArmorMk2 = hullArmorMk2;
             OnFinishedPatching += () =>
             {
                 VehicleUpgrader.CommonUpgradeModules.Add(this.TechType);
@@ -18,6 +20,9 @@ namespace UpgradedVehicles
             };
         }
 
+        public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
+        public override string[] StepsToFabricatorTab => new[] { "SeamothMenu" };
+        
         protected override TechData GetBlueprintRecipe()
         {
             return new TechData()
@@ -25,7 +30,8 @@ namespace UpgradedVehicles
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>
                 {
-                    new Ingredient(TechType.VehicleArmorPlating, ArmorCount)
+                    new Ingredient(HullArmorMk2, 1),
+                    new Ingredient(TechType.Titanium, ArmorCount),
                 }
             };
         }

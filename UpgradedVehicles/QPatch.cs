@@ -34,10 +34,10 @@
                 var hullArmorMk2Module = new HullArmorMk2();
                 hullArmorMk2Module.Patch();
 
-                var hullArmorMk3Module = new HullArmorMk3();
+                var hullArmorMk3Module = new HullArmorMk3(hullArmorMk2Module.TechType);
                 hullArmorMk3Module.Patch();
 
-                var hullArmorMk4Module = new HullArmorMk4();
+                var hullArmorMk4Module = new HullArmorMk4(hullArmorMk3Module.TechType);
                 hullArmorMk4Module.Patch();
 
                 //Handle Config Options

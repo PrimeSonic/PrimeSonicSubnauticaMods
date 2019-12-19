@@ -18,6 +18,9 @@ namespace UpgradedVehicles
             };
         }
 
+        public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
+        public override string[] StepsToFabricatorTab => new[] { "SeamothMenu" };
+
         protected override TechData GetBlueprintRecipe()
         {
             return new TechData()
@@ -25,7 +28,8 @@ namespace UpgradedVehicles
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>
                 {
-                    new Ingredient(TechType.VehicleArmorPlating, ArmorCount)
+                    new Ingredient(TechType.VehicleArmorPlating, ArmorCount),
+                    new Ingredient(TechType.Titanium, ArmorCount)
                 }
             };
         }
