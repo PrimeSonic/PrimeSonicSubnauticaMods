@@ -22,8 +22,10 @@
                 if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
                     TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
                 {
-                    VehicleUpgrader.SetModdedDepthModules(vehicleHullModule4, vehicleHullModule5);
+                    VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule4, 4);
+                    VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
                 }
+
                 //Handle SpeedBooster
                 var speedModule = new SpeedBooster();
                 speedModule.Patch();
@@ -31,8 +33,10 @@
                 //Handle HullArmorUpgrades
                 var hullArmorMk2Module = new HullArmorMk2();
                 hullArmorMk2Module.Patch();
+
                 var hullArmorMk3Module = new HullArmorMk3();
                 hullArmorMk3Module.Patch();
+
                 var hullArmorMk4Module = new HullArmorMk4();
                 hullArmorMk4Module.Patch();
 

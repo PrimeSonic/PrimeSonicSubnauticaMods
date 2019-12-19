@@ -4,7 +4,7 @@ namespace UpgradedVehicles
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
-    public abstract class VehicleUpgradeModule: Craftable
+    public abstract class VehicleUpgradeModule : Craftable
     {
         protected VehicleUpgradeModule(string classId, string friendlyName, string description)
             : base(classId, friendlyName, description)
@@ -19,7 +19,7 @@ namespace UpgradedVehicles
         public override CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
         public override string[] StepsToFabricatorTab => new[] { "CommonModules" };
         public override string AssetsFolder => "UpgradedVehicles/Assets";
-        
+
         public override GameObject GetGameObject()
         {
             GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabTemplate);
@@ -27,13 +27,11 @@ namespace UpgradedVehicles
 
             return obj;
         }
-        
+
         private void PostPatch()
         {
             CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.VehicleModule);
             CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Passive);
         }
-        
-        
     }
 }
