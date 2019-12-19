@@ -296,16 +296,19 @@
 
         private int CalculateArmorPlatingAmount()
         {
-            int total = 0;
+            int max = 0;
+
             foreach (KeyValuePair<TechType, int> armorModule in ArmorPlatingModules)
             {
-                TechType techType = armorModule.Key;
-                int multiplier = armorModule.Value;
-                int quantity = UpgradeModules.GetCount(techType);
-                total += quantity * multiplier;
+                TechType techType = armorModule.Key;                
+                if (UpgradeModules.GetCount(techType) > 0)
+                {
+                    int multiplier = armorModule.Value;
+                    max = Math.Max(max, multiplier);
+                }
             }
 
-            return total;
+            return max;
         }
 
         private int CalculateDepthModuleIndex()
@@ -323,10 +326,10 @@
                 int max = 0;
                 foreach (KeyValuePair<TechType, int> seamothDepth in SeamothDepthModules)
                 {
-                    TechType techType = seamothDepth.Key;
-                    int depthIndex = seamothDepth.Value;
+                    TechType techType = seamothDepth.Key;                    
                     if (UpgradeModules.GetCount(techType) > 0)
                     {
+                        int depthIndex = seamothDepth.Value;
                         max = Math.Max(max, depthIndex);
                     }
                 }
