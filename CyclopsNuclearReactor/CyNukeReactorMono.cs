@@ -27,7 +27,7 @@
         internal int MaxActiveSlots => 2 + lastKnownUpgradeLevel * 4;
 
         private int lastKnownUpgradeLevel = 0;
-        private const float TextDelayInterval = 1.4f;
+        private const float TextDelayInterval = 1.5f;
         private float textDelay = TextDelayInterval;
 
         public SubRoot Cyclops = null;
@@ -63,7 +63,7 @@
         private bool isLoadingSaveData = false;
         private bool isDepletingRod = false;
 
-        private Dictionary<InventoryItem, uGUI_ItemIcon> _slotMapping;
+        private Dictionary<InventoryItem, uGUI_ItemIcon> pdaInventoryMapping;
 
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
@@ -185,9 +185,6 @@
                 isDepletingRod = false;
             }
 
-            if (PdaIsOpen)
-                UpdateDisplayText();
-
             return totalPowerProduced;
         }
 
@@ -264,6 +261,11 @@
             {
                 this.Manager.AddBuildable(this);
             }
+
+            if (this.UpgradeHandler != null)
+            {
+                UpdateUpgradeLevel(this.UpgradeHandler.HighestValue);
+            }
         }
 
         private void InitializeRodsContainer()
@@ -336,6 +338,12 @@
 
         #endregion
 
+        private void Update() // The all important Update method
+        {
+            if (PdaIsOpen)
+                UpdateDisplayText();
+        }
+
         #region Save Data
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
@@ -349,7 +357,7 @@
 
             isLoadingSaveData = true;
 
-            if (_saveData != null &&_saveData.LoadData())
+            if (_saveData != null && _saveData.LoadData())
             {
                 MCUServices.Logger.Debug("Save data found");
 
@@ -403,7 +411,7 @@
 
         public void OnHandClick(GUIHand hand)
         {
-            if (!this.Buildable.constructed)
+            if (!this.IsConstructed)
                 return;
 
             PdaIsOpen = true;
@@ -433,7 +441,7 @@
 
         internal void CyOnPdaClose(PDA pda)
         {
-            _slotMapping = null;
+            pdaInventoryMapping = null;
 
             for (int r = 0; r < reactorRodData.Count; r++)
                 reactorRodData[r].InfoDisplay = null;
@@ -461,10 +469,10 @@
 
         private void OnAddItemLate(InventoryItem item)
         {
-            if (_slotMapping == null)
+            if (pdaInventoryMapping == null)
                 return; // Safety check
 
-            if (_slotMapping.TryGetValue(item, out uGUI_ItemIcon icon))
+            if (pdaInventoryMapping.TryGetValue(item, out uGUI_ItemIcon icon))
             {
                 AddDisplayText(item, icon);
             }
@@ -472,7 +480,7 @@
 
         internal void ConnectToContainer(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
         {
-            _slotMapping = lookup;
+            pdaInventoryMapping = lookup;
 
             (container as IItemsContainer).onAddItem += OnAddItemLate;
 
