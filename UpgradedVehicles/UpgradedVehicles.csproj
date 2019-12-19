@@ -71,6 +71,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HullArmorMk2.cs" />
+    <Compile Include="HullArmorMk3.cs" />
+    <Compile Include="HullArmorMk4.cs" />
+    <Compile Include="VehicleUpgradeModule.cs" />
     <Compile Include="SpeedBooster.cs" />
     <Compile Include="Patchers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -11,7 +11,6 @@
     public class QPatch
     {
         private static UpgradeOptions configOptions;
-        private static Craftable speedModule;
 
         public static void Patch()
         {
@@ -26,9 +25,16 @@
                     VehicleUpgrader.SetModdedDepthModules(vehicleHullModule4, vehicleHullModule5);
                 }
                 //Handle SpeedBooster
-                speedModule = SpeedBooster.GetSpeedBoosterCraftable();
+                var speedModule = new SpeedBooster();
+                speedModule.Patch();
 
-                VehicleUpgrader.SetSpeedBooster(speedModule);
+                //Handle HullArmorUpgrades
+                var hullArmorMk2Module = new HullArmorMk2();
+                hullArmorMk2Module.Patch();
+                var hullArmorMk3Module = new HullArmorMk3();
+                hullArmorMk3Module.Patch();
+                var hullArmorMk4Module = new HullArmorMk4();
+                hullArmorMk4Module.Patch();
 
                 //Handle Config Options
                 configOptions = new UpgradeOptions();
