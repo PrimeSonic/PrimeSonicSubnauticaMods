@@ -4,7 +4,7 @@
     using MoreCyclopsUpgrades.Managers;
 
     [HarmonyPatch(typeof(UpgradeConsole))]
-    [HarmonyPatch("OnHandClick")]
+    [HarmonyPatch(nameof(UpgradeConsole.OnHandClick))]
     internal static class UpgradeConsole_OnHandClick_Patcher
     {
         [HarmonyPrefix]

@@ -1,7 +1,7 @@
 ﻿namespace IonCubeGenerator.Buildable
 {
     using Common;
-    using Common.Helpers;
+    using FCStudioHelpers;
     using UnityEngine;
 
     internal partial class CubeGeneratorBuildable

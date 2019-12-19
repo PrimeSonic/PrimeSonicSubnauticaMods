@@ -1,9 +1,9 @@
-﻿using Common;
-using Common.Helpers;
-using UnityEngine;
-
-namespace IonCubeGenerator.Craftables
+﻿namespace IonCubeGenerator.Craftables
 {
+    using Common;
+    using FCStudioHelpers;
+    using UnityEngine;
+
     internal partial class AlienEletronicsCase
     {
         private AssetBundle _assetBundle;

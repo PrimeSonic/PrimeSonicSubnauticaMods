@@ -1,11 +1,12 @@
 ﻿namespace CyclopsAutoZapper
 {
     using Common;
+    using CyclopsAutoZapper.Managers;
     using Harmony;
     using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(CyclopsSonarDisplay))]
-    [HarmonyPatch("NewEntityOnSonar")]
+    [HarmonyPatch(nameof(CyclopsSonarDisplay.NewEntityOnSonar))]
     internal static class CyclopsSonarDisplay_NewEntityOnSonar_Patcher
     {
         [HarmonyPostfix]
@@ -29,37 +30,57 @@
             if (!entityData.attackCyclops.IsAggressiveTowardsCyclops(cyclops.gameObject))
                 return;
 
-            MCUServices.Find.AuxCyclopsManager<Zapper>(cyclops)?.Zap(entityData);
+            // Yes, both auto-defense zappers can be activated at the same time
+            MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap(entityData);
+            MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops)?.Zap(entityData);
         }
     }
 
     [HarmonyPatch(typeof(CyclopsSonarDisplay))]
-    [HarmonyPatch("DistanceCheck")]
+    [HarmonyPatch(nameof(CyclopsSonarDisplay.DistanceCheck))]
     internal static class CyclopsSonarDisplay_DistanceCheck_Patcher
     {
         [HarmonyPostfix]
         internal static void Postfix(CyclopsSonarDisplay __instance)
         {
+            SubRoot cyclops = __instance.GetComponentInParent<SubRoot>();
+
+            if (cyclops == null)
+            {
+                QuickLogger.Error("Unable to find Cyclops SubRoot in CyclopsSonarDisplay parent");
+                return;
+            }
+
             foreach (CyclopsSonarDisplay.EntityPing entity in __instance.entitysOnSonar)
             {
-                if (entity == null || entity.ping == null)
+                CyclopsHUDSonarPing ping = entity?.ping?.GetComponent<CyclopsHUDSonarPing>();
+
+                if (ping == null)
                     continue;
 
-                CyclopsHUDSonarPing ping = entity.ping.GetComponent<CyclopsHUDSonarPing>();
-
                 // Are there any aggressive creatures on sonar?
-                if (ping.currentColor == ping.aggressiveColor)
-                {
-                    SubRoot cyclops = __instance.GetComponentInParent<SubRoot>();
+                if (ping.currentColor != ping.aggressiveColor)
+                    return;
 
-                    if (cyclops == null)
-                    {
-                        QuickLogger.Error("Unable to find Cyclops SubRoot in CyclopsSonarDisplay parent");
-                        return;
-                    }
+                // Yes, both auto-defense zappers can be activated at the same time
+                MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap();
+                MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops)?.Zap();
+            }
+        }
+    }
 
-                    MCUServices.Find.AuxCyclopsManager<Zapper>(cyclops)?.Zap();
-                }
+    [HarmonyPatch(typeof(CyclopsHolographicHUD))]
+    [HarmonyPatch(nameof(CyclopsHolographicHUD.AttachedLavaLarva))]
+    internal static class CyclopsHolographicHUD_AttachedLavaLarva_Patcher
+    {
+        [HarmonyPostfix]
+        internal static void Postfix(CyclopsHolographicHUD __instance)
+        {
+            SubRoot cyclops = __instance?.subFire?.subRoot;
+
+            if (cyclops != null)
+            {
+                MCUServices.Find.AuxCyclopsManager<ShieldPulser>(cyclops)?.PulseShield();
             }
         }
     }

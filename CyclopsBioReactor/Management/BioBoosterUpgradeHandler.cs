@@ -22,7 +22,7 @@
 
             OnFinishedUpgrades = () =>
             {
-                QuickLogger.Debug($"Handling BioBooster at {this.Count}");
+                QuickLogger.Debug($"Handling all BioBoosters at {this.Count}");
 
                 this.Manager.ApplyToAll((CyBioReactorMono reactor) => reactor.UpdateBoosterCount(this.Count));
             };

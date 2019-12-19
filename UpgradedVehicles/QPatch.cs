@@ -19,9 +19,22 @@
             {
                 QuickLogger.Message("Started patching - " + QuickLogger.GetAssemblyVersion());
 
-                HandleCrossModUpdates();
-                HandleSpeedBooster();
-                HandleConfigOptions();
+                //Handle CrossMod Updates
+                if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
+                    TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
+                {
+                    VehicleUpgrader.SetModdedDepthModules(vehicleHullModule4, vehicleHullModule5);
+                }
+                //Handle SpeedBooster
+                speedModule = SpeedBooster.GetSpeedBoosterCraftable();
+
+                VehicleUpgrader.SetSpeedBooster(speedModule);
+
+                //Handle Config Options
+                configOptions = new UpgradeOptions();
+                configOptions.Initialize();
+
+                VehicleUpgrader.SetBonusSpeedMultipliers(configOptions.SeamothBonusSpeedMultiplier, configOptions.ExosuitBonusSpeedMultiplier);
 
                 var harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -31,30 +44,6 @@
             catch (Exception ex)
             {
                 QuickLogger.Error("EXCEPTION on Patch: " + ex.ToString());
-            }
-        }
-
-        private static void HandleConfigOptions()
-        {
-            configOptions = new UpgradeOptions();
-            configOptions.Initialize();
-
-            VehicleUpgrader.SetBonusSpeedMultipliers(configOptions.SeamothBonusSpeedMultiplier, configOptions.ExosuitBonusSpeedMultiplier);
-        }
-
-        private static void HandleSpeedBooster()
-        {
-            speedModule = SpeedBooster.GetSpeedBoosterCraftable();
-
-            VehicleUpgrader.SetSpeedBooster(speedModule);
-        }
-
-        private static void HandleCrossModUpdates()
-        {
-            if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
-                TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
-            {
-                VehicleUpgrader.SetModdedDepthModules(vehicleHullModule4, vehicleHullModule5);
             }
         }
     }

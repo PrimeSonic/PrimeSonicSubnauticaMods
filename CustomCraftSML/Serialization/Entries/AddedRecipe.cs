@@ -3,7 +3,7 @@
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
-    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
     using SMLHelper.V2.Crafting;
@@ -134,9 +134,12 @@
 
         protected virtual void HandleCraftTreeAddition()
         {
-            var craftPath = new CraftingPath(this.Path, this.ItemID);
+            var craftPath = new CraftTreePath(this.Path, this.ItemID);
 
-            AddCraftNode(craftPath, this.TechType);
+            if (craftPath.HasError)
+                QuickLogger.Error($"Encountered error in path for '{this.ItemID}' - Entry from {this.Origin} - Error Message: {craftPath.Error}");
+            else
+                AddCraftNode(craftPath, this.TechType);
         }
     }
 }

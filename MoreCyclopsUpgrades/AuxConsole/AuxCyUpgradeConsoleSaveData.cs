@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.AuxConsole
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using Common;
@@ -74,7 +75,15 @@
 
         public bool Load()
         {
-            return this.Load(this.SaveDirectory, this.SaveFile);
+            try
+            {
+                return this.Load(this.SaveDirectory, this.SaveFile);
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error("Error when attempting to load AuxCyUpgradeConsoleSaveData", ex);
+                return false;
+            }
         }
 
         internal override EmProperty Copy()

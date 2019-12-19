@@ -1,13 +1,12 @@
 {
   "Id": "CustomCraft2SML",
   "DisplayName": "CustomCraft2SML",
-  "Author": "PrimeSonic | With special thanks to Fdiwen",
-  "Version": "1.8.1",
+  "Author": "PrimeSonic & contributors",
+  "Version": "1.8.2",
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
   "EntryMethod": "CustomCraft2SML.QPatch.Patch",
   "Game": "Subnautica",
   "Dependencies": [ "SMLHelper" ],
-  "Priority": "Last",
-  "LoadAfter": [ "DecorationsMod", "MidGameBatteries",  "UpgradedVehicles", "MoreCyclopsUpgrades", "MoreSeamothUpgrades", "ScannerModule", "RepairModule", "LaserCannon" ]
+  "Priority": "Last"
 }

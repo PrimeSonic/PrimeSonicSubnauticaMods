@@ -1,15 +1,15 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.PublicAPI;
+    using CustomCraft2SML.Serialization;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using IOPath = System.IO.Path;
 
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCraft
@@ -44,7 +44,7 @@
         protected readonly EmProperty<TechType> emSpriteID;
         protected readonly EmProperty<string> emParentTabPath;
 
-        protected CraftingPath craftingPath;
+        public CraftTreePath CraftingPath { get; protected set; }
 
         protected static ICollection<EmProperty> CustomCraftingTabProperties => new List<EmProperty>(4)
         {
@@ -70,21 +70,15 @@
 
         public OriginFile Origin { get; set; }
 
-        internal CustomCraftingTab(string path) : this()
-        {
-            this.ParentTabPath = path;
-            ParsePath();
-        }
-
         protected void ParsePath()
         {
             try
             {
-                craftingPath = new CraftingPath(this.ParentTabPath.TrimEnd(CraftingPath.Separator));
+                this.CraftingPath = new CraftTreePath(this.ParentTabPath, this.TabID);
             }
             catch
             {
-                craftingPath = null;
+                this.CraftingPath = null;
             }
         }
 
@@ -102,17 +96,6 @@
             set => emDisplayName.Value = value;
         }
 
-        public virtual CraftTree.Type FabricatorType
-        {
-            get
-            {
-                if (craftingPath is null)
-                    return CraftTree.Type.None;
-
-                return craftingPath.Scheme;
-            }
-        }
-
         public TechType SpriteItemID
         {
             get => emSpriteID.Value;
@@ -125,17 +108,6 @@
             set => emParentTabPath.Value = value;
         }
 
-        public string[] StepsToTab
-        {
-            get
-            {
-                if (craftingPath is null)
-                    return null;
-
-                return craftingPath.Steps;
-            }
-        }
-
         public string FullPath => $"{this.ParentTabPath}{"/"}{this.TabID}";
 
         internal override EmProperty Copy()
@@ -145,18 +117,18 @@
 
         public bool PassesPreValidation()
         {
-            return craftingPath != null & ValidFabricator();
+            return this.CraftingPath != null & ValidFabricator();
         }
 
         protected virtual bool ValidFabricator()
         {
-            if (this.FabricatorType > CraftTree.Type.Rocket)
+            if (this.CraftingPath.Scheme > CraftTree.Type.Rocket)
             {
                 QuickLogger.Error($"Error on crafting tab '{this.TabID}'. This API in intended only for use with standard, non-modded CraftTree.Types.");
                 return false;
             }
 
-            if (this.FabricatorType == CraftTree.Type.None)
+            if (this.CraftingPath.Scheme == CraftTree.Type.None)
             {
                 QuickLogger.Error($"Error on crafting tab '{this.TabID}'. {ParentTabPathKey} must identify a fabricator for the custom tab.");
                 return false;
@@ -182,15 +154,21 @@
 
         protected void HandleCraftingTab()
         {
+            if (this.CraftingPath.HasError)
+            {
+                QuickLogger.Error($"Encountered error in path for '{this.TabID}' - Entry from {this.Origin} - Error Message: {this.CraftingPath.Error}");
+                return;
+            }
+
             Atlas.Sprite sprite = GetCraftingTabSprite();
 
-            if (this.StepsToTab == null)
+            if (this.CraftingPath.IsAtRoot)
             {
-                CraftTreeHandler.AddTabNode(this.FabricatorType, this.TabID, this.DisplayName, sprite);
+                CraftTreeHandler.AddTabNode(this.CraftingPath.Scheme, this.TabID, this.DisplayName, sprite);
             }
             else
             {
-                CraftTreeHandler.AddTabNode(this.FabricatorType, this.TabID, this.DisplayName, sprite, this.StepsToTab);
+                CraftTreeHandler.AddTabNode(this.CraftingPath.Scheme, this.TabID, this.DisplayName, sprite, this.CraftingPath.StepsToParentTab);
             }
         }
 

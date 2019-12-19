@@ -36,15 +36,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp_publicized">
-      <HintPath>..\DependenciesUnity5\Assembly-CSharp_publicized.dll</HintPath>
+      <HintPath>..\DependenciesSubnautica\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="SMLHelper">
-      <HintPath>..\DependenciesUnity5\SMLHelper.dll</HintPath>
+    <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesSubnautica\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
-      <HintPath>..\DependenciesUnity5\UnityEngine.dll</HintPath>
+      <HintPath>..\DependenciesSubnautica\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\DependenciesSubnautica\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

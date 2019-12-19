@@ -11,7 +11,7 @@
     using UnityEngine;
 
     [ProtoContract]
-    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, IConstructable, ICyclopsBuildable
+    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable
     {
         internal static bool PdaIsOpen = false;
         internal static CyBioReactorMono OpenInPda = null;
@@ -39,11 +39,28 @@
             set => manager = value;
         }
 
+        private BioBoosterUpgradeHandler upgradeHandler;
+        private BioBoosterUpgradeHandler UpgradeHandler => upgradeHandler ?? (upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<BioBoosterUpgradeHandler>(Cyclops, BioReactorBooster.BoosterTechType));
+
         [AssertNotNull]
         private ChildObjectIdentifier storageRoot;
         private ItemsContainer container;
-        private Constructable buildable;
-        private string prefabID;
+        private Constructable _buildable;
+
+        internal Constructable Buildable
+        {
+            get
+            {
+                if (_buildable == null)
+                {
+                    _buildable = GetComponentInParent<Constructable>() ?? GetComponent<Constructable>();
+                }
+
+                return _buildable;
+            }
+        }
+
+        private string prefabId;
         private float textDelay = TextDelayInterval;
         private bool isLoadingSaveData = false;
         private CyBioReactorSaveData saveData;
@@ -60,7 +77,7 @@
         public bool IsConnectedToCyclops => Cyclops != null && manager != null;
         public bool ProducingPower => this.IsContructed && bioMaterialsProcessing.Count > 0;
         public bool HasPower => this.IsContructed && this.Charge > 0f;
-        public bool IsContructed => (buildable != null) && buildable.constructed;
+        public bool IsContructed => (this.Buildable != null) && this.Buildable.constructed;
 
         public float Charge { get; private set; }
         public float Capacity { get; private set; } = MaxPowerBaseline;
@@ -97,8 +114,8 @@
         {
             base.Awake();
 
-            InitializeConstructible();
-            InitializeSaveData();
+            ReadySaveData();
+
             InitializeStorageRoot();
             InitializeContainer();
             InitializeAnimations();
@@ -127,6 +144,8 @@
 
             audioHandler = new CyBioReactorAudioHandler(this.transform);
             audioHandler.SetSoundActive(true);
+
+            displayHandler.TurnOnDisplay();
         }
 
         private void InitializeContainer()
@@ -180,13 +199,19 @@
             };
         }
 
-        private void InitializeSaveData()
+        private void ReadySaveData()
         {
-            if (saveData != null)
-                return;
+            if (prefabId == null)
+            {
+                PrefabIdentifier prefabIdentifier = GetComponentInParent<PrefabIdentifier>() ?? GetComponent<PrefabIdentifier>();
+                prefabId = prefabIdentifier.id;
+            }
 
-            prefabID = GetComponentInParent<PrefabIdentifier>().Id;
-            saveData = new CyBioReactorSaveData(prefabID);
+            if (prefabId != null)
+            {
+                QuickLogger.Debug($"CyBioReactorMono PrefabIdentifier {prefabId}");
+                saveData = new CyBioReactorSaveData(prefabId);
+            }
         }
 
         private void InitializeStorageRoot()
@@ -197,14 +222,6 @@
             var storeRoot = new GameObject("StorageRoot");
             storeRoot.transform.SetParent(this.transform, false);
             storageRoot = storeRoot.AddComponent<ChildObjectIdentifier>();
-        }
-
-        private void InitializeConstructible()
-        {
-            if (buildable != null)
-                return;
-
-            buildable = this.gameObject.GetComponent<Constructable>();
         }
 
         #endregion
@@ -256,7 +273,7 @@
 
         public void OnHandHover(GUIHand guiHand)
         {
-            if (!buildable.constructed)
+            if (!this.IsContructed)
                 return;
 
             HandReticle main = HandReticle.main;
@@ -267,6 +284,9 @@
 
         public void OnHandClick(GUIHand guiHand)
         {
+            if (!this.IsContructed)
+                return;
+
             PdaIsOpen = true;
             OpenInPda = this;
 
@@ -383,23 +403,19 @@
 
             InitializeStorageRoot();
 
+            InitializeContainer();
+
             container.Clear(false);
 
-            isLoadingSaveData = false;
-        }
+            QuickLogger.Debug("Checking save data");
 
-        public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
-        {
-        }
+            if (saveData == null)
+                ReadySaveData();
 
-        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
-        {
-            isLoadingSaveData = true;
-
-            bool hasSaveData = saveData.Load();
-
-            if (hasSaveData)
+            if (saveData != null && saveData.Load())
             {
+                QuickLogger.Debug("Save data found");
+
                 container.Clear(false);
 
                 UpdateBoosterCount(saveData.BoosterCount);
@@ -416,6 +432,10 @@
                     bioMaterialsProcessing.Add(material, container);
                 }
             }
+            else
+            {
+                QuickLogger.Debug("No save data found");
+            }
 
             isLoadingSaveData = false;
         }
@@ -429,15 +449,19 @@
 
             Cyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            this.Manager = manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(parentCyclops);
 
             if (this.Manager != null)
             {
                 this.Manager.AddBuildable(this);
             }
+
+            if (this.UpgradeHandler != null)
+            {
+                UpdateBoosterCount(this.UpgradeHandler.Count);
+            }
         }
 
-        public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
+        public void ConnectToContainer(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
         {
             pdaInventoryMapping = lookup;
 
@@ -557,21 +581,6 @@
                     case 3: // MaxBoosters
                         return boost3; // 12 slots
                 }
-            }
-        }
-
-        public bool CanDeconstruct(out string reason)
-        {
-            bool flag = buildable.CanDeconstruct(out string result);
-            reason = result;
-            return flag;
-        }
-
-        public void OnConstructedChanged(bool constructed)
-        {
-            if (constructed)
-            {
-                displayHandler.TurnOnDisplay();
             }
         }
     }

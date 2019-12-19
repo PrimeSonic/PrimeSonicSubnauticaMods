@@ -11,7 +11,7 @@
     using UnityEngine.UI;
 
     [ProtoContract]
-    internal class AuxCyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, IProtoTreeEventListener, ICyclopsBuildable
+    internal class AuxCyUpgradeConsoleMono : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable
     {
         private SubRoot ParentCyclops;
         private UpgradeManager UpgradeManager;
@@ -20,26 +20,50 @@
 
         public bool IsConnectedToCyclops => ParentCyclops != null && UpgradeManager != null;
 
-        private Constructable Buildable = null;
+        private Constructable _buildable = null;
+        internal Constructable Buildable
+        {
+            get
+            {
+                if (_buildable == null)
+                {
+                    _buildable = GetComponentInParent<Constructable>() ?? GetComponent<Constructable>();
+                }
+
+                return _buildable;
+            }
+
+        }
 
         public override void Awake()
         {
             base.Awake();
 
-            if (Buildable == null)
-            {
-                Buildable = GetComponentInChildren<Constructable>();
-            }
-
             if (SaveData == null)
             {
-                string id = GetComponentInParent<PrefabIdentifier>().Id;
-                SaveData = new AuxCyUpgradeConsoleSaveData(id);
+                ReadySaveData();
             }
 
             if (this.Modules == null)
             {
                 InitializeModules();
+            }
+        }
+
+        private string prefabId = null;
+
+        private void ReadySaveData()
+        {
+            if (prefabId == null)
+            {
+                PrefabIdentifier prefabIdentifier = GetComponentInParent<PrefabIdentifier>() ?? GetComponent<PrefabIdentifier>();
+                prefabId = prefabIdentifier.id;
+            }
+
+            if (prefabId != null)
+            {
+                QuickLogger.Debug($"AuxCyUpgradeConsole PrefabIdentifier {prefabId}");
+                SaveData = new AuxCyUpgradeConsoleSaveData(prefabId);
             }
         }
 
@@ -147,12 +171,13 @@
 
         private void UnlockDefaultModuleSlots()
         {
+            QuickLogger.Debug("Unlocking default modules");
             this.Modules.AddSlots(SlotHelper.SlotNames);
         }
 
         public void OnHandHover(GUIHand guiHand)
         {
-            if (!Buildable.constructed)
+            if (!this.Buildable.constructed)
                 return;
 
             HandReticle main = HandReticle.main;
@@ -162,7 +187,7 @@
 
         public void OnHandClick(GUIHand guiHand)
         {
-            if (!Buildable.constructed)
+            if (!this.Buildable.constructed)
                 return;
 
             PdaOverlayManager.StartConnectingToPda(this.Modules);
@@ -179,7 +204,8 @@
             UpdateVisuals();
 
             // Disallow deconstruction while there are modules in here
-            Buildable.deconstructionAllowed = false;
+            if (this.Buildable != null)
+                this.Buildable.deconstructionAllowed = false;
         }
 
         private void OnUnequip(string slot, InventoryItem item)
@@ -193,7 +219,8 @@
                 allEmpty &= this.Modules.GetTechTypeInSlot(SlotHelper.SlotNames[s]) == TechType.None;
 
             // Deconstruction only allowed if all slots are empty
-            Buildable.deconstructionAllowed = allEmpty;
+            if (this.Buildable != null)
+                this.Buildable.deconstructionAllowed = allEmpty;
         }
 
         internal void ConnectToCyclops(SubRoot parentCyclops, UpgradeManager manager = null)
@@ -214,7 +241,7 @@
 
         internal void CyclopsUpgradeChange()
         {
-            if (ParentCyclops is null)
+            if (ParentCyclops == null)
                 return;
 
             ParentCyclops.subModulesDirty = true;
@@ -257,7 +284,7 @@
             }
             else
             {
-                icon.sprite = null; // Clear the sprite when empty                
+                icon.sprite = null; // Clear the sprite when empty
             }
 
             canvasObject.SetActive(hasItem);
@@ -304,15 +331,15 @@
                 InitializeModules();
 
             this.Modules.Clear();
-        }
 
-        public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
-        {
-        }
+            QuickLogger.Debug("Checking save data");
 
-        public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
-        {
-            if (SaveData.Load())
+            if (SaveData == null)
+            {
+                ReadySaveData();
+            }
+
+            if (SaveData != null && SaveData.Load())
             {
                 // Because the items here aren't being serialized with everything else normally,
                 // I've used custom save data to handle whatever gets left in these slots.
@@ -331,15 +358,18 @@
                         continue; // Nothing here
 
                     var techtype = (TechType)savedModule.ItemID;
+                    string itemName = techtype.AsString();
+
+                    QuickLogger.Debug($"Spawning '{itemName}' from save data");
                     InventoryItem spanwedItem = CyclopsUpgrade.SpawnCyclopsModule(techtype);
 
                     if (spanwedItem == null)
                     {
-                        QuickLogger.Warning($"Unknown upgrade module '{techtype.AsString()}' could not be spamned in from save data");
+                        QuickLogger.Warning($"Unknown upgrade module '{itemName}' could not be spamned in from save data");
                         continue;
                     }
 
-                    QuickLogger.Debug($"Spawned in {techtype.AsString()} from save data");
+                    QuickLogger.Debug($"Spawned in {itemName} from save data");
 
                     if (savedModule.RemainingCharge > 0f) // Modules without batteries are stored with a -1 value for charge
                         spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;
@@ -349,6 +379,7 @@
             }
             else
             {
+                QuickLogger.Debug("No save data found.");
                 UnlockDefaultModuleSlots();
             }
         }

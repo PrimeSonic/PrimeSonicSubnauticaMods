@@ -2,10 +2,8 @@
   "Id": "VehicleUpgradesInCyclops",
   "DisplayName": "VehicleUpgradesInCyclops",
   "Author": "PrimeSonic",
-  "Version": "2.0.3",
-  "Requires": [ ],
+  "Version": "2.1.0",
   "Enable": true,
   "AssemblyName": "VehicleUpgradesInCyclops.dll",
-  "EntryMethod": "VehicleUpgradesInCyclops.QPatch.Patch",
-  "Config": {}
+  "EntryMethod": "VehicleUpgradesInCyclops.QPatch.Patch"
 }

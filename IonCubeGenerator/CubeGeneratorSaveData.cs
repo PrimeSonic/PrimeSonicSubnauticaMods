@@ -109,6 +109,7 @@
                 QuickLogger.Debug("Save data found");
 
                 cubeGenerator.NumberOfCubes = this.NumberOfCubes;
+                QuickLogger.Debug($"NumberOfCubes {cubeGenerator.NumberOfCubes} <-- {this.NumberOfCubes}");
 
                 cubeGenerator.StartUpProgress = this.StartUpProgress;
                 QuickLogger.Debug($"StartUpProgress {cubeGenerator.StartUpProgress} <-- {this.StartUpProgress}");
@@ -120,6 +121,7 @@
                 QuickLogger.Debug($"CoolDownProgress {cubeGenerator.CoolDownProgress} <-- {this.CoolDownProgress}");
 
                 cubeGenerator.CurrentSpeedMode = this.CurrentSpeedMode;
+                QuickLogger.Debug($"CoolDownProgress {cubeGenerator.CurrentSpeedMode} <-- {this.CurrentSpeedMode}");
 
                 QuickLogger.Debug("Save data loaded");
             }

@@ -1,4 +1,4 @@
-﻿namespace Common.Helpers
+﻿namespace FCStudioHelpers
 {
     using System.Collections.Generic;
     using UnityEngine;

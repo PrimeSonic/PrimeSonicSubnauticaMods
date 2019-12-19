@@ -1,9 +1,8 @@
-﻿using Common;
-using Common.Helpers;
-
-namespace CyclopsBioReactor.Items
+﻿namespace CyclopsBioReactor.Items
 {
+    using Common;
     using CyclopsBioReactor.Management;
+    using FCStudioHelpers;
     using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
@@ -60,11 +59,11 @@ namespace CyclopsBioReactor.Items
         public override GameObject GetGameObject()
         {
             SubRoot cyclops = Player.main.currentSub;
-            if (cyclops != null)
+            if (cyclops != null && cyclops.isCyclops)
             {
                 BioAuxCyclopsManager mgr = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(cyclops);
 
-                if (mgr.TrackedBuildablesCount >= BioAuxCyclopsManager.MaxBioReactors)
+                if (mgr != null && mgr.TrackedBuildablesCount >= BioAuxCyclopsManager.MaxBioReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitString());
                     return null;
@@ -75,7 +74,6 @@ namespace CyclopsBioReactor.Items
             {
                 QuickLogger.Error("_prefab is null", true);
             }
-
 
             var prefab = GameObject.Instantiate(_prefab);
 
