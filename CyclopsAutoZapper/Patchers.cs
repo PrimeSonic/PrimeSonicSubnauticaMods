@@ -18,7 +18,7 @@
             if (entityData.attackCyclops == null)
                 return;
 
-            SubRoot cyclops = __instance.GetComponentInParent<SubRoot>();
+            SubRoot cyclops = __instance?.noiseManager?.subRoot;
 
             if (cyclops == null)
             {
@@ -43,7 +43,7 @@
         [HarmonyPostfix]
         internal static void Postfix(CyclopsSonarDisplay __instance)
         {
-            SubRoot cyclops = __instance.GetComponentInParent<SubRoot>();
+            SubRoot cyclops = __instance?.noiseManager?.subRoot;
 
             if (cyclops == null)
             {

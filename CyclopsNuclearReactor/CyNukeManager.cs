@@ -1,76 +1,65 @@
 ﻿namespace CyclopsNuclearReactor
 {
-    using System;
     using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API;
-    using MoreCyclopsUpgrades.API.General;
+    using MoreCyclopsUpgrades.API.Buildables;
 
-    internal class CyNukeManager : IAuxCyclopsManager
+    internal class CyNukeManager : BuildableManager<CyNukeReactorMono>
     {
-        public const int MaxReactors = CyNukeChargeManager.MaxReactors;
-
-        internal static void SyncReactors()
+        private static IEnumerable<CyNukeManager> GetAllNukManagers()
         {
-            foreach (CyNukeManager mgr in MCUServices.Find.AllAuxCyclopsManagers<CyNukeManager>())
-                mgr.SyncReactorsExternally();
+            return MCUServices.Find.AllAuxCyclopsManagers<CyNukeManager>();
+        }
+
+        internal static void SyncAllReactors()
+        {
+            IEnumerable<CyNukeManager> allMgrs = GetAllNukManagers();
+            if (allMgrs == null)
+                return;
+
+            foreach (CyNukeManager mgr in allMgrs)
+                mgr.SyncBuildables();
         }
 
         public static void RemoveReactor(CyNukeReactorMono reactor)
         {
-            foreach (CyNukeManager mgr in MCUServices.Find.AllAuxCyclopsManagers<CyNukeManager>())
-                mgr.CyNukeReactors.Remove(reactor);
+            IEnumerable<CyNukeManager> allMgrs = GetAllNukManagers();
+            if (allMgrs == null)
+                return;
+
+            foreach (CyNukeManager mgr in allMgrs)
+                mgr.TrackedBuildables.Remove(reactor);
         }
 
-        private readonly SubRoot Cyclops;
-
-        private CyNukeEnhancerHandler upgradeHandler;
-        private CyNukeEnhancerHandler CyNukeEnhancer => upgradeHandler ??
-            (upgradeHandler = MCUServices.Find.CyclopsGroupUpgradeHandler<CyNukeEnhancerHandler>(Cyclops, CyNukeEnhancerMk1.TechTypeID, CyNukeEnhancerMk2.TechTypeID));
-
-        internal int UpgradeLevel => this.CyNukeEnhancer == null ? 0 : this.CyNukeEnhancer.HighestValue;
-
-        public readonly List<CyNukeReactorMono> CyNukeReactors = new List<CyNukeReactorMono>();
-
-        public CyNukeManager(SubRoot cyclops)
+        public float TotalEnergyCharge
         {
-            Cyclops = cyclops;
-        }
-
-        public void SyncReactorsExternally()
-        {
-            var _tempCache = new List<CyNukeReactorMono>();
-
-            CyNukeReactorMono[] foundReactors = Cyclops.GetAllComponentsInChildren<CyNukeReactorMono>();
-
-            for (int r = 0; r < foundReactors.Length; r++)
+            get
             {
-                CyNukeReactorMono reactor = foundReactors[r];
-                if (_tempCache.Contains(reactor))
-                    continue; // This is a workaround because of the object references being returned twice in this array.
+                float totalPower = 0f;
+                for (int b = 0; b < TrackedBuildables.Count; b++)
+                    totalPower += TrackedBuildables[b].GetTotalAvailablePower();
 
-                _tempCache.Add(reactor);
-
-                if (reactor.ParentCyclops == null)
-                {
-                    QuickLogger.Debug("Cyclops Nuclear Reactor synced externally");
-                    // This is a workaround to get a reference to the Cyclops into the CyNukeReactorMono
-                    reactor.ConnectToCyclops(Cyclops, this);
-                }
+                return totalPower;
             }
         }
 
-        public void AddReactor(CyNukeReactorMono reactor)
+        public CyNukeManager(SubRoot cyclops) : base(cyclops)
         {
-            if (!CyNukeReactors.Contains(reactor))
-            {
-                CyNukeReactors.Add(reactor);
-            }
         }
 
-        public bool Initialize(SubRoot cyclops)
+        public override bool Initialize(SubRoot cyclops)
         {
-            return this.Cyclops == cyclops;
+            return base.Cyclops == cyclops;
+        }
+
+        public CyNukeReactorMono First => TrackedBuildables[0];
+        public CyNukeReactorMono Second => TrackedBuildables[1];
+
+        protected override void ConnectWithManager(CyNukeReactorMono buildable)
+        {
+            MCUServices.Logger.Debug("Connecting CyNukeReactorMono with Cyclops");
+            buildable.ConnectToCyclops(base.Cyclops, this);
         }
     }
 }

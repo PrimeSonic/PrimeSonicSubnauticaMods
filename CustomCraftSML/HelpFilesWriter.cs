@@ -9,6 +9,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
 
     internal static partial class HelpFilesWriter
     {
@@ -77,7 +78,7 @@
 
             printyPrints.Add(bioFuelList.PrettyPrint());
 
-            File.WriteAllLines(Path, printyPrints.ToArray());
+            File.WriteAllLines(Path, printyPrints.ToArray(), Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -136,7 +137,7 @@
                 "Workbench/ExosuitMenu"
             };
 
-            File.WriteAllLines(Path, originalPaths);
+            File.WriteAllLines(Path, originalPaths, Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -158,7 +159,7 @@
                 strings[i] = models[i].ToString();
             }
 
-            File.WriteAllLines(Path, strings);
+            File.WriteAllLines(Path, strings,Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -167,16 +168,16 @@
         {
             if (!File.Exists(FileLocations.HowToFile))
             {
-                File.WriteAllLines(FileLocations.HowToFile, ReadMeFileLines());
+                File.WriteAllLines(FileLocations.HowToFile, ReadMeFileLines(), Encoding.UTF8);
                 QuickLogger.Debug($"{FileLocations.HowToFile} file not found. File created.");
             }
             else
             {
-                string[] readmeLines = File.ReadAllLines(FileLocations.HowToFile);
+                string[] readmeLines = File.ReadAllLines(FileLocations.HowToFile, Encoding.UTF8);
 
                 if (readmeLines.Length < 1 || readmeLines[0] != ReadMeVersionLine)
                 {
-                    File.WriteAllLines(FileLocations.HowToFile, ReadMeFileLines());
+                    File.WriteAllLines(FileLocations.HowToFile, ReadMeFileLines(), Encoding.UTF8);
                     QuickLogger.Info($"{FileLocations.HowToFile} out of date. Regenerated with new version.");
                 }
             }
@@ -320,7 +321,7 @@
 
             printyPrints.Add(originals.PrettyPrint());
 
-            File.WriteAllLines(FileLocations.OriginalsFolder + fileName, printyPrints.ToArray());
+            File.WriteAllLines(FileLocations.OriginalsFolder + fileName, printyPrints.ToArray(), Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }

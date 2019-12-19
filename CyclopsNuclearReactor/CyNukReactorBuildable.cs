@@ -78,7 +78,7 @@
         {
             if (!main.GetPrefabs())
             {
-                QuickLogger.Error("CyNukReactor has failed to retrieve the prefab from the asset bundle");
+                MCUServices.Logger.Error("CyNukReactor has failed to retrieve the prefab from the asset bundle");
                 throw new NullReferenceException("CyNukReactor has failed to retrieve the prefab from the asset bundle");
             }
 
@@ -98,11 +98,11 @@
         public override GameObject GetGameObject()
         {
             SubRoot cyclops = Player.main.currentSub;
-            if (cyclops != null)
+            if (cyclops != null && cyclops.isCyclops)
             {
                 CyNukeManager mgr = MCUServices.Find.AuxCyclopsManager<CyNukeManager>(cyclops);
 
-                if (mgr != null && mgr.CyNukeReactors.Count >= CyNukeManager.MaxReactors)
+                if (mgr != null && mgr.TrackedBuildablesCount >= CyNukeChargeManager.MaxReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitMessage());
                     return null;

@@ -1,0 +1,12 @@
+{
+  "Id": "CyclopsEnhancedSonar",
+  "DisplayName": "CyclopsEnhancedSonar",
+  "Author": "PrimeSonic & frigidpenguin",
+  "Version": "1.0.1",
+  "Enable": true,
+  "Game": "Subnautica",
+  "AssemblyName": "CyclopsEnhancedSonar.dll",
+  "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
+  "LoadBefore": [ "MoreCyclopsUpgrades" ],
+  "EntryMethod": "CyclopsEnhancedSonar.QPatch.Patch"
+}

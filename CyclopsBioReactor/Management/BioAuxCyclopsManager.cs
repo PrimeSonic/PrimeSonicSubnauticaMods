@@ -1,52 +1,52 @@
 ﻿namespace CyclopsBioReactor.Management
 {
     using System.Collections.Generic;
-    using Common;
-    using CommonCyclopsBuildables;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Buildables;
 
     internal class BioAuxCyclopsManager : BuildableManager<CyBioReactorMono>
     {
         #region Static Members
 
-        private static IEnumerable<BioAuxCyclopsManager> AllBioManagers => MCUServices.Find.AllAuxCyclopsManagers<BioAuxCyclopsManager>();
+        private static IEnumerable<BioAuxCyclopsManager> GetAllBioManagers()
+        {
+            return MCUServices.Find.AllAuxCyclopsManagers<BioAuxCyclopsManager>();
+        }
 
         internal static void SyncAllBioReactors()
         {
-            foreach (BioAuxCyclopsManager mgr in AllBioManagers)
+            IEnumerable<BioAuxCyclopsManager> allMgrs = GetAllBioManagers();
+            if (allMgrs == null)
+                return;
+
+            foreach (BioAuxCyclopsManager mgr in allMgrs)
                 mgr.SyncBuildables();
         }
 
         internal static void RemoveReactor(CyBioReactorMono cyBioReactorMono)
         {
-            foreach (BioAuxCyclopsManager mgr in AllBioManagers)
+            IEnumerable<BioAuxCyclopsManager> allMgrs = GetAllBioManagers();
+            if (allMgrs == null)
+                return;
+
+            foreach (BioAuxCyclopsManager mgr in allMgrs)
                 mgr.RemoveBuildable(cyBioReactorMono);
         }
 
-        internal const int MaxBioReactors = BioChargeHandler.MaxBioReactors;
-
         #endregion
 
-        internal readonly TechType CyBioBoosterID;
-        internal readonly TechType CyBioReactorID;
-
-        public BioAuxCyclopsManager(SubRoot cyclops, TechType bioBooster, TechType bioReactor) : base(cyclops)
+        public BioAuxCyclopsManager(SubRoot cyclops) : base(cyclops)
         {
-            CyBioBoosterID = bioBooster;
-            CyBioReactorID = bioReactor;
         }
 
         public override bool Initialize(SubRoot cyclops)
         {
-            return
-                Cyclops == cyclops &&
-                CyBioBoosterID != TechType.None &&
-                CyBioReactorID != TechType.None;
+            return base.Cyclops == cyclops;
         }
 
         protected override void ConnectWithManager(CyBioReactorMono buildable)
         {
-            QuickLogger.Debug("Connecting CyBioReactorMono with Cyclops");
+            MCUServices.Logger.Debug("Connecting CyBioReactorMono with Cyclops");
             buildable.ConnectToCyclops(base.Cyclops, this);
         }
 

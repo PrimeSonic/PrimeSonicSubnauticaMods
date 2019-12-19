@@ -39,10 +39,10 @@
         private const float delayInterval = 0.9876f;
         private float iconUpdateDelay = Time.deltaTime;
 
-        private readonly SubRoot Cyclops;
+        private SubRoot Cyclops;
 
         private ChargeManager chargeManager;
-        private ChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(Cyclops).Charge);
+        private ChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(ref Cyclops).Charge);
 
         private bool powerIconsInitialized = false;
 
@@ -53,7 +53,7 @@
         private HelmEnergyDisplay lastDisplay = HelmEnergyDisplay.PowerCellPercentage;
 
         internal CyclopsHUDManager(SubRoot cyclops, int totalIcons)
-        {
+        {            
             Cyclops = cyclops;
             totalPowerInfoIcons = totalIcons;
         }

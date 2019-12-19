@@ -11,6 +11,13 @@
     internal class ModConfig : IModConfig
     {
         private static readonly ModConfig main = new ModConfig();
+
+        internal static void LoadOnDemand()
+        {
+            if (!main.initialized)
+                main.Initialize();
+        }
+
         internal static IModConfig Main
         {
             get
@@ -187,7 +194,7 @@
 
         internal void Initialize()
         {
-            QuickLogger.Info("Initializing mod config");
+            QuickLogger.Info("Initializing config settings");
             try
             {
                 saveData.LoadFromFile();
@@ -225,6 +232,9 @@
 
             menuOptions.Register();
 
+            QuickLogger.DebugLogsEnabled = this.DebugLogsEnabled;
+            QuickLogger.Info($"Debug logging is {(this.DebugLogsEnabled ? "en" : "dis")}abled");
+
             initialized = true;
         }
 
@@ -249,5 +259,6 @@
 
             this.EmergencyEnergyDeficit = Mathf.Round(CyclopsMaxPower / 2f);
         }
+
     }
 }

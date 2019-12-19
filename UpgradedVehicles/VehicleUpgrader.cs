@@ -37,7 +37,7 @@
 
         internal static void SetModdedDepthModules(TechType seamothDepth4, TechType seamothDepth5)
         {
-            QuickLogger.Message("Additional Seamoth Depth Modules from MoreSeamothUpgrades registered");
+            QuickLogger.Info("Additional Seamoth Depth Modules from MoreSeamothUpgrades registered");
 
             CommonUpgradeModules.Add(SeamothHullModule4 = seamothDepth4);
             CommonUpgradeModules.Add(SeamothHullModule5 = seamothDepth5);

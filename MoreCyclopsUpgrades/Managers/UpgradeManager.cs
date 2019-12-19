@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
-    using CommonCyclopsBuildables;
+    using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.AuxConsole;
     using UnityEngine;
@@ -139,12 +139,14 @@
 
         internal UpgradeManager(SubRoot cyclops) : base(cyclops)
         {
-            QuickLogger.Debug("Creating new UpgradeManager");
             engineRoomUpgradeConsole = Cyclops.upgradeConsole.modules;
         }
 
         private void InitializeUpgradeHandlers()
         {
+            if (initialized)
+                return;
+
             QuickLogger.Debug($"UpgradeManager adding new UpgradeHandlers from external mods");
             // First, register upgrades from other mods.
             foreach (KeyValuePair<CreateUpgradeHandler, string> pair in HandlerCreators)
@@ -226,12 +228,6 @@
 
                 return true;
             };
-        }
-
-        public override void SyncBuildables()
-        {
-            base.SyncBuildables();
-            HandleUpgrades();
         }
 
         public void HandleUpgrades()

@@ -14,12 +14,8 @@
         {
             try
             {
-                QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
-#if DEBUG
-                QuickLogger.DebugLogsEnabled = true;
-#else
-                QuickLogger.DebugLogsEnabled = false;
-#endif
+                MCUServices.Logger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
+
                 var booster = new BioReactorBooster();
                 booster.Patch();
 
@@ -31,7 +27,7 @@
 
                 MCUServices.Register.AuxCyclopsManager<BioAuxCyclopsManager>((SubRoot cyclops) =>
                 {
-                    return new BioAuxCyclopsManager(cyclops, booster.TechType, reactor.TechType);
+                    return new BioAuxCyclopsManager(cyclops);
                 });
 
                 MCUServices.Register.CyclopsCharger<BioChargeHandler>((SubRoot cyclops) =>
@@ -49,11 +45,11 @@
                     return new BoosterOverlay(icon, upgradeModule);
                 });
 
-                QuickLogger.Info("Finished Patching");
+                MCUServices.Logger.Info("Finished Patching");
             }
             catch (Exception ex)
             {
-                QuickLogger.Error(ex);
+                MCUServices.Logger.Error(ex);
             }
         }
     }

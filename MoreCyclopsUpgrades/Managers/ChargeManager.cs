@@ -53,7 +53,7 @@
 
         private bool initialized;
         private readonly IDictionary<string, CyclopsCharger> KnownChargers = new Dictionary<string, CyclopsCharger>();
-        private readonly SubRoot Cyclops;
+        private SubRoot Cyclops;
 
         public float RechargePenalty { get; set; } = ModConfig.Main.RechargePenalty;
 
@@ -72,7 +72,6 @@
 
         public ChargeManager(SubRoot cyclops)
         {
-            QuickLogger.Debug("Creating new ChargeManager");
             Cyclops = cyclops;
         }
 
@@ -127,7 +126,7 @@
             initialized = true;
             TooLateToRegister = true;
 
-            requiresVanillaCharging = totalChargers == 0 || CyclopsManager.GetManager(Cyclops).Upgrade.VanillaUpgrades.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
+            requiresVanillaCharging = totalChargers == 0 || CyclopsManager.GetManager(ref Cyclops).Upgrade.VanillaUpgrades.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
 
             if (requiresVanillaCharging)
                 QuickLogger.Info("Vanilla thermal reactor charging enabled");

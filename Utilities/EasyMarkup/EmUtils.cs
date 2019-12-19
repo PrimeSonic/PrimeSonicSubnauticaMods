@@ -38,7 +38,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[EasyMarkup] DeserializeKeyOnly halted unexpectedly for {emProperty.Key}{Environment.NewLine}" +
+                QuickLogger.Error($"[EasyMarkup] DeserializeKeyOnly halted unexpectedly for {emProperty.Key}{Environment.NewLine}" +
                            $"Error reported: {ex}");
                 foundKey = null;
                 return false;
