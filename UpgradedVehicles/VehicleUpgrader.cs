@@ -1,10 +1,10 @@
 ﻿namespace UpgradedVehicles
 {
     using System.Collections.Generic;
-    using System.Linq;
     using Common;
     using SMLHelper.V2.Assets;
     using UnityEngine;
+    using Valve.VR;
 
     internal class VehicleUpgrader
     {
@@ -26,17 +26,27 @@
             // Mk4 and Mk5 Seamoth depth modules optionally added during patching
         };
 
-        //Replaced SetSpeedBooster with SetNewModule to avoid duplicate code
-        //Not sure it a good practice to replace a function like that...
-        internal static void SetNewModule(Craftable upgradeModule)
+        private static readonly  HashSet<TechType> ArmorPlatingModules = new HashSet<TechType>()
+        {
+            TechType.VehicleArmorPlating,
+            // HullArmorUpgrades added during patching
+        };
+
+        private static readonly IDictionary<string, TechType> OtherUpgradeTechTypes = new Dictionary<string, TechType>();
+        
+        internal static void SetNewModule(Craftable upgradeModule, bool isArmor = false)
         {
             if (!upgradeModule.IsPatched)
             {
                 QuickLogger.Debug($"{upgradeModule.ClassID} was not patched", true);
                 return;
             }
-
+            OtherUpgradeTechTypes.Add(nameof(upgradeModule), upgradeModule.TechType);
             CommonUpgradeModules.Add(upgradeModule.TechType);
+            if (isArmor)
+            {
+                ArmorPlatingModules.Add(upgradeModule.TechType);
+            }
         }
 
         internal static void SetModdedDepthModules(TechType seamothDepth4, TechType seamothDepth5)
@@ -303,12 +313,19 @@
 
         private int CalculateArmorPlatingAmount()
         {
-            int armorModuleCount = UpgradeModules.GetCount(TechType.VehicleArmorPlating);
-            int armorModuleMk2Count = UpgradeModules.GetCount(HullArmorMk2.HullArmorMk2TechType);
-            int armorModuleMk3Count = UpgradeModules.GetCount(HullArmorMk3.HullArmorMk3TechType);
-            int armorModuleMk4Count = UpgradeModules.GetCount(HullArmorMk4.HullArmorMk4TechType);
-
-            return armorModuleCount + 2 * armorModuleMk2Count + 3 * armorModuleMk3Count + 4 * armorModuleMk4Count;
+            if (UpgradeModules.GetCount(OtherUpgradeTechTypes["HullArmorMk4"]) > 0)
+                return 4;
+            
+            if (UpgradeModules.GetCount(OtherUpgradeTechTypes["HullArmorMk3"]) > 0)
+                return 3;
+            
+            if (UpgradeModules.GetCount(OtherUpgradeTechTypes["HullArmorMk2"]) > 0)
+                return 2;
+            
+            if (UpgradeModules.GetCount(TechType.VehicleArmorPlating) > 0)
+                return 1;
+            
+            return 0;
         }
         
         private int CalculateDepthModuleIndex()
@@ -354,17 +371,10 @@
             }
 
             int nextDepthIndex = CalculateDepthModuleIndex();
-            TechType[] armorPlatingModules =
-            {
-                TechType.VehicleArmorPlating,
-                HullArmorMk2.HullArmorMk2TechType,
-                HullArmorMk3.HullArmorMk3TechType,
-                HullArmorMk4.HullArmorMk4TechType
-            };
-            
+
             bool updateHp = DepthIndex != nextDepthIndex;
-            bool updateArmor = updateHp || armorPlatingModules.Contains(upgradeModule);
-            bool updateSpeed = updateHp || upgradeModule == SpeedBooster.SpeedBoosterTechType;
+            bool updateArmor = updateHp || ArmorPlatingModules.Contains(upgradeModule);
+            bool updateSpeed = updateHp || upgradeModule == OtherUpgradeTechTypes["SpeedBooster"];
             bool updateEfficiency = updateHp || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
 
             DepthIndex = nextDepthIndex;
@@ -383,7 +393,7 @@
 
             if (updateEfficiency) // Efficiency
             {
-                int speedBoosterCount = UpgradeModules.GetCount(SpeedBooster.SpeedBoosterTechType);
+                int speedBoosterCount = UpgradeModules.GetCount(OtherUpgradeTechTypes["SpeedBooster"]);
                 int powerModuleCount = UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
 
                 UpdatePowerRating(speedBoosterCount, powerModuleCount);
