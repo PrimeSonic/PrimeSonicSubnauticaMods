@@ -4,6 +4,7 @@
     using Common.EasyMarkup;
     using System.Collections.Generic;
     using System.IO;
+    using System.Text;
 
     internal class CustomCraft2Config : EmPropertyCollection
     {
@@ -47,7 +48,7 @@
             }
             else
             {
-                string configText = File.ReadAllText(FileLocations.ConfigFile);
+                string configText = File.ReadAllText(FileLocations.ConfigFile, Encoding.UTF8);
 
                 if (Config.FromString(configText))
                 {

@@ -1,11 +1,16 @@
-﻿namespace CommonCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.API.AmbientEnergy
 {
     using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using UnityEngine;
 
-    internal abstract class AmbientEnergyCharger<T> : CyclopsCharger
+    /// <summary>
+    /// A generic <see cref="CyclopsCharger"/> for upgrade modules that draw in ambient energy like the solar or thermal.
+    /// </summary>
+    /// <typeparam name="T">The upgrade handler that implements <see cref="AmbientEnergyUpgradeHandler"/></typeparam>
+    /// <seealso cref="CyclopsCharger" />
+    public abstract class AmbientEnergyCharger<T> : CyclopsCharger
         where T : AmbientEnergyUpgradeHandler
     {
         internal const float MinimalPowerValue = MCUServices.MinimalPowerValue;

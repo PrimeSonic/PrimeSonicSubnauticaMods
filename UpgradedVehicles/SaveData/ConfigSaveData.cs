@@ -100,7 +100,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Message($"Error loading {ConfigKey}: " + ex.ToString());
+                QuickLogger.Info($"Error loading {ConfigKey}: " + ex.ToString());
                 Save();
             }
         }
@@ -123,7 +123,7 @@
         {
             if (!File.Exists(ConfigFile))
             {
-                QuickLogger.Message($"Config file not found. Writing default file.");
+                QuickLogger.Info($"Config file not found. Writing default file.");
                 Save();
                 return;
             }
@@ -134,7 +134,7 @@
 
             if (!readCorrectly || !ValidDataRead)
             {
-                QuickLogger.Message($"Config file contained errors. Writing default file.");
+                QuickLogger.Info($"Config file contained errors. Writing default file.");
                 Save();
             }
         }

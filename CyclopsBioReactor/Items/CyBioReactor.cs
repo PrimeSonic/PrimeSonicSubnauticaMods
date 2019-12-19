@@ -1,6 +1,5 @@
 ﻿namespace CyclopsBioReactor.Items
 {
-    using Common;
     using CyclopsBioReactor.Management;
     using FCStudioHelpers;
     using MoreCyclopsUpgrades.API;
@@ -34,7 +33,7 @@
 
             if (!GetPrefabs())
             {
-                QuickLogger.Error("Error in asset bundle!");
+                MCUServices.Logger.Error("Error in asset bundle!");
             }
 
             OnStartedPatching += () =>
@@ -63,7 +62,7 @@
             {
                 BioAuxCyclopsManager mgr = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(cyclops);
 
-                if (mgr != null && mgr.TrackedBuildablesCount >= BioAuxCyclopsManager.MaxBioReactors)
+                if (mgr != null && mgr.TrackedBuildablesCount >= BioChargeHandler.MaxBioReactors)
                 {
                     ErrorMessage.AddMessage(OverLimitString());
                     return null;
@@ -72,14 +71,14 @@
 
             if (_prefab == null)
             {
-                QuickLogger.Error("_prefab is null", true);
+                MCUServices.Logger.Error("_prefab is null", true);
             }
 
             var prefab = GameObject.Instantiate(_prefab);
 
             if (prefab == null)
             {
-                QuickLogger.Error("Prefab is null", true);
+                MCUServices.Logger.Error("Prefab is null", true);
             }
 
             GameObject model = prefab.FindChild("model");
@@ -126,19 +125,19 @@
         }
         public bool GetPrefabs()
         {
-            QuickLogger.Debug("GetPrefabs");
+            MCUServices.Logger.Debug("GetPrefabs");
             AssetBundle assetBundle = AssetHelper.Asset("CyclopsBioReactor", "cyclopsbioreactormodbundle");
 
             //If the result is null return false.
             if (assetBundle == null)
             {
-                QuickLogger.Error($"AssetBundle is Null!");
+                MCUServices.Logger.Error($"AssetBundle is Null!");
                 return false;
             }
 
             _assetBundle = assetBundle;
 
-            QuickLogger.Debug($"AssetBundle Set");
+            MCUServices.Logger.Debug($"AssetBundle Set");
 
             //We have found the asset bundle and now we are going to continue by looking for the model.
             GameObject prefab = assetBundle.LoadAsset<GameObject>("CyclopsBioreactor");
@@ -151,11 +150,11 @@
                 //Lets apply the material shader
                 ApplyShaders(_prefab);
 
-                QuickLogger.Debug($"{this.FriendlyName} Prefab Found!");
+                MCUServices.Logger.Debug($"{this.FriendlyName} Prefab Found!");
             }
             else
             {
-                QuickLogger.Error($"{this.FriendlyName} Prefab Not Found!");
+                MCUServices.Logger.Error($"{this.FriendlyName} Prefab Not Found!");
                 return false;
             }
 

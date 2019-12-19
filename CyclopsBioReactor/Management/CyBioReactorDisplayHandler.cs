@@ -1,6 +1,6 @@
 ﻿namespace CyclopsBioReactor.Management
 {
-    using Common;
+    using MoreCyclopsUpgrades.API;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -26,7 +26,7 @@
         {
             if (_gameobject == null)
             {
-                QuickLogger.Error("GameObject is null canceling screen setup.");
+                MCUServices.Logger.Error("GameObject is null canceling screen setup.");
                 return false;
             }
 
@@ -34,7 +34,7 @@
 
             if (canvas == null)
             {
-                QuickLogger.Error("Canvas is null canceling screen setup.");
+                MCUServices.Logger.Error("Canvas is null canceling screen setup.");
                 return false;
             }
 
@@ -42,7 +42,7 @@
 
             if (_status == null)
             {
-                QuickLogger.Error("Status label is null canceling screen setup.");
+                MCUServices.Logger.Error("Status label is null canceling screen setup.");
                 return false;
             }
             return true;

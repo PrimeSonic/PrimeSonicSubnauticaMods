@@ -1,6 +1,6 @@
 ﻿namespace CyclopsThermalUpgrades.Management
 {
-    using CommonCyclopsUpgrades;
+    using MoreCyclopsUpgrades.API.AmbientEnergy;
 
     internal class ThermalIconOverlay : AmbientEnergyIconOverlay<ThermalUpgradeHandler, ThermalCharger>
     {

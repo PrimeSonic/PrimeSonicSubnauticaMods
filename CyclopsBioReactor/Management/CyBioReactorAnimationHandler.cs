@@ -1,7 +1,7 @@
 ﻿namespace CyclopsBioReactor.Management
 {
-    using Common;
     using UnityEngine;
+    using MoreCyclopsUpgrades.API;
 
     internal class CyBioReactorAnimationHandler
     {
@@ -15,12 +15,12 @@
 
             if (_animator == null)
             {
-                QuickLogger.Error("Animator component not found on the GameObject.");
+                MCUServices.Logger.Error("Animator component not found on the GameObject.");
             }
 
             if (_animator != null && _animator.enabled == false)
             {
-                QuickLogger.Debug("Animator was disabled and now has been enabled");
+                MCUServices.Logger.Debug("Animator was disabled and now has been enabled");
                 _animator.enabled = true;
             }
         }

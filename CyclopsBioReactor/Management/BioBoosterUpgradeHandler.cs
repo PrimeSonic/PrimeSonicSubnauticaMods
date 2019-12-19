@@ -1,14 +1,11 @@
 ﻿namespace CyclopsBioReactor.Management
 {
-    using Common;
     using CyclopsBioReactor.Items;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using UnityEngine;
 
     internal class BioBoosterUpgradeHandler : UpgradeHandler
     {
-        private float errorDelay = 0f;
         private const float delayInterval = 10f;
         internal int TotalBoosters => this.Count;
 
@@ -22,26 +19,14 @@
 
             OnFinishedUpgrades = () =>
             {
-                QuickLogger.Debug($"Handling all BioBoosters at {this.Count}");
+                MCUServices.Logger.Debug($"Handling all BioBoosters at {this.Count}");
 
-                this.Manager.ApplyToAll((CyBioReactorMono reactor) => reactor.UpdateBoosterCount(this.Count));
+                this.Manager?.ApplyToAll((CyBioReactorMono reactor) => reactor.UpdateBoosterCount(this.Count));
             };
 
             OnFirstTimeMaxCountReached = () =>
             {
                 ErrorMessage.AddMessage(BioReactorBooster.MaxBoostAchived);
-            };
-
-            IsAllowedToRemove = (Pickupable item, bool verbose) =>
-            {
-                return this.Manager.FindFirst(false, (CyBioReactorMono reactor) => reactor.HasRoomToShrink(), () =>
-                {
-                    if (Time.time > errorDelay)
-                    {
-                        errorDelay = Time.time + delayInterval;
-                        ErrorMessage.AddMessage(BioReactorBooster.CannotRemove);
-                    }
-                });
             };
         }
     }

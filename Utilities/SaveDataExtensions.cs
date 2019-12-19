@@ -1,8 +1,10 @@
 ﻿namespace Common
 {
+    using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Text;
+    using System.Threading;
     using Common.EasyMarkup;
 
     internal static class SaveDataExtensions
@@ -20,7 +22,14 @@
                 Directory.CreateDirectory(directory);
             }
 
+            // Accounting for CurrentCultureInfo became necessary with the jump to Unity2019 and/or .NET 4
+            CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             File.WriteAllText(fileLocation, (extraText ?? string.Empty) + data.PrettyPrint(), Encoding.UTF8);
+
+            // To avoid any unexpected side-effect, we'll change this back once we're done writing the file.
+            Thread.CurrentThread.CurrentCulture = originalCulture;
         }
 
         public static void Save<T>(this T data, string extraText = null) where T : EmProperty
@@ -37,9 +46,14 @@
                 return false;
             }
 
-            string serializedData = File.ReadAllText(fileLocation);
+            // Accounting for CurrentCultureInfo became necessary with the jump to Unity2019 and/or .NET 4
+            CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-            bool validData = data.FromString(serializedData);
+            bool validData = data.FromString(File.ReadAllText(fileLocation, Encoding.UTF8));
+
+            // To avoid any unexpected side-effect, we'll change this back once we're done reading the file.
+            Thread.CurrentThread.CurrentCulture = originalCulture;
 
             if (!validData)
             {

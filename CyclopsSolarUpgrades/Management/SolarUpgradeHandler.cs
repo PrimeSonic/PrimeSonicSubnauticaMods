@@ -1,6 +1,6 @@
 ﻿namespace CyclopsSolarUpgrades.Management
 {
-    using CommonCyclopsUpgrades;
+    using MoreCyclopsUpgrades.API.AmbientEnergy;
     using CyclopsSolarUpgrades.Craftables;
 
     internal class SolarUpgradeHandler : AmbientEnergyUpgradeHandler

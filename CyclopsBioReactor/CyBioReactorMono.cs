@@ -1,12 +1,11 @@
 ﻿namespace CyclopsBioReactor
 {
     using System.Collections.Generic;
-    using Common;
-    using CommonCyclopsBuildables;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
     using CyclopsBioReactor.SaveData;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.Buildables;
     using ProtoBuf;
     using UnityEngine;
 
@@ -18,25 +17,24 @@
 
         public const int MaxBoosters = 3;
         private const float MaxPowerBaseline = 200;
-        private const float TextDelayInterval = 2f;
+        private const float TextDelayInterval = 1.5f;
 
-        private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        private const float baselineChargeRate = 0.75f;
+        private const float baselineChargeRate = 0.765f;
 
-        private int storageWidth = 2;
-        private int storageHeight = 2;
-        private int TotalContainerSpaces => storageHeight * storageWidth;
+        private const int StorageWidth = 4;
+        private const int StorageHeight = 4;
+        private const float TotalContainerSpaces = StorageHeight * StorageWidth;
 
         // Because now each item produces charge in parallel, the charge rate will be variable.
         // At half-full, we get close to original charging rates.
         // When at full capacity, charging rates will nearly double.
-        private float chargeRate = baselineChargeRate;
+        private float chargeRate = baselineChargeRate / 6f;
 
-        private BioAuxCyclopsManager manager;
+        private BioAuxCyclopsManager _manager = null;
         private BioAuxCyclopsManager Manager
         {
-            get => manager ?? (manager ?? MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops));
-            set => manager = value;
+            get => _manager ?? (_manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops));
+            set => _manager = value;
         }
 
         private BioBoosterUpgradeHandler upgradeHandler;
@@ -63,7 +61,7 @@
         private string prefabId;
         private float textDelay = TextDelayInterval;
         private bool isLoadingSaveData = false;
-        private CyBioReactorSaveData saveData;
+        private CyBioReactorSaveData _saveData;
         private SubRoot Cyclops;
         private int lastKnownBioBooster = 0;
         private CyBioReactorDisplayHandler displayHandler;
@@ -74,31 +72,29 @@
         // Careful, this map only exists while the PDA screen is open
         private Dictionary<InventoryItem, uGUI_ItemIcon> pdaInventoryMapping = null;
 
-        public bool IsConnectedToCyclops => Cyclops != null && manager != null;
+        public bool IsConnectedToCyclops => Cyclops != null && _manager != null;
         public bool ProducingPower => this.IsContructed && bioMaterialsProcessing.Count > 0;
         public bool HasPower => this.IsContructed && this.Charge > 0f;
         public bool IsContructed => (this.Buildable != null) && this.Buildable.constructed;
 
         public float Charge { get; private set; }
         public float Capacity { get; private set; } = MaxPowerBaseline;
+        public int ProcessingCapacity { get; private set; } = 4;
 
         #region Initialization
 
         private void Start()
         {
-            chargeRate = baselineChargeRate / this.TotalContainerSpaces * 2;
-
             SubRoot cyclops = GetComponentInParent<SubRoot>();
 
-            if (cyclops == null)
+            if (cyclops != null)
             {
-                QuickLogger.Debug("CyBioReactorMono: Could not find Cyclops during Start. Attempting external syncronize.");
-                BioAuxCyclopsManager.SyncAllBioReactors();
+                MCUServices.Logger.Debug("CyBioReactorMono: Parent cyclops found!");
+                ConnectToCyclops(cyclops);
             }
             else
             {
-                QuickLogger.Debug("CyBioReactorMono: Parent cyclops found!");
-                ConnectToCyclops(cyclops);
+                InvokeRepeating(nameof(GetMCUHandler), 3f, 1f);
             }
         }
 
@@ -114,7 +110,8 @@
         {
             base.Awake();
 
-            ReadySaveData();
+            if (_saveData == null)
+                ReadySaveData();
 
             InitializeStorageRoot();
             InitializeContainer();
@@ -153,7 +150,7 @@
             if (container != null)
                 return;
 
-            container = new ItemsContainer(storageWidth, storageHeight, storageRoot.transform, CyBioReactor.StorageLabel, null);
+            container = new ItemsContainer(StorageWidth, StorageHeight, storageRoot.transform, CyBioReactor.StorageLabel, null);
 
             container.isAllowedToAdd += (Pickupable pickupable, bool verbose) =>
             {
@@ -207,10 +204,10 @@
                 prefabId = prefabIdentifier.id;
             }
 
-            if (prefabId != null)
+            if (prefabId != null && _saveData == null)
             {
-                QuickLogger.Debug($"CyBioReactorMono PrefabIdentifier {prefabId}");
-                saveData = new CyBioReactorSaveData(prefabId);
+                MCUServices.Logger.Debug($"CyBioReactorMono PrefabIdentifier {prefabId}");
+                _saveData = new CyBioReactorSaveData(prefabId);
             }
         }
 
@@ -224,22 +221,50 @@
             storageRoot = storeRoot.AddComponent<ChildObjectIdentifier>();
         }
 
+        private void GetMCUHandler()
+        {
+            Cyclops = Cyclops ?? GetComponentInParent<SubRoot>();
+
+            if (Cyclops == null)
+            {
+                MCUServices.Logger.Debug("Could not find Cyclops during Start. Attempting external synchronize.");
+                BioAuxCyclopsManager.SyncAllBioReactors();
+            }
+            else if (this.Manager == null)
+            {
+                MCUServices.Logger.Debug("Looking for BioAuxCyclopsManager.");
+                this.Manager = MCUServices.Find.AuxCyclopsManager<BioAuxCyclopsManager>(Cyclops);
+            }
+
+            if (this.Manager != null)
+                CancelInvoke(nameof(GetMCUHandler));
+        }
+
         #endregion
 
         private void Update() // The all important Update method
         {
             if (this.ProducingPower)
             {
-                float powerDeficit = this.Capacity - this.Charge;
-
-                if (powerDeficit > MinimalPowerValue)
+                if (this.Charge > this.Capacity + 1f)
                 {
+                    // Overcharged
                     float chargeOverTime = chargeRate * DayNightCycle.main.deltaTime;
-                    float powerDrawnPerItem = Mathf.Min(powerDeficit, chargeOverTime);
+                    this.Charge = Mathf.Min(this.Charge + chargeOverTime, this.Capacity);
+                }
+                else // Normal operation
+                {
+                    float powerDeficit = this.Capacity - this.Charge;
 
-                    float powerProduced = ProducePower(powerDrawnPerItem);
+                    if (powerDeficit > MCUServices.MinimalPowerValue)
+                    {
+                        float chargeOverTime = chargeRate * DayNightCycle.main.deltaTime;
+                        float powerDrawnPerItem = Mathf.Min(powerDeficit, chargeOverTime);
 
-                    this.Charge = Mathf.Min(this.Charge + powerProduced, this.Capacity);
+                        float powerProduced = ProducePower(powerDrawnPerItem);
+
+                        this.Charge = Mathf.Min(this.Charge + powerProduced, this.Capacity);
+                    }
                 }
             }
 
@@ -317,9 +342,9 @@
             {
                 BioEnergy bioEnergy = bioMaterialsProcessing.Find(item.item);
 
-                if (bioEnergy is null)
+                if (bioEnergy == null)
                 {
-                    QuickLogger.Debug("Matching pickable in bioreactor not found", true);
+                    MCUServices.Logger.Debug("Matching pickable in bioreactor not found", true);
                     return;
                 }
 
@@ -336,9 +361,17 @@
             if (powerDrawnPerItem > 0f && // More than zero energy being produced per item per time delta
                 bioMaterialsProcessing.Count > 0) // There should be materials in the reactor to process
             {
-                for (int m = 0; m < bioMaterialsProcessing.Count; m++)
+                int currentProcessingCapacity = this.ProcessingCapacity;
+                int m = 0;
+                while (m < bioMaterialsProcessing.Count && currentProcessingCapacity > 0)                
                 {
                     BioEnergy material = bioMaterialsProcessing[m];
+                    m++;
+
+                    if (material.Size > currentProcessingCapacity)
+                        continue;
+
+                    currentProcessingCapacity -= material.Size;
                     float availablePowerPerItem = Mathf.Min(material.RemainingEnergy, material.Size * powerDrawnPerItem);
 
                     material.RemainingEnergy -= availablePowerPerItem;
@@ -356,7 +389,7 @@
 
         public float GetBatteryPower(float drainingRate, float requestedAmount)
         {
-            if (requestedAmount < MinimalPowerValue || !this.HasPower)
+            if (requestedAmount < MCUServices.MinimalPowerValue || !this.HasPower)
                 return 0f;
 
             // Mathf.Min is to prevent accidentally taking too much power from the battery
@@ -390,51 +423,57 @@
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
-            saveData.ReactorBatterCharge = this.Charge;
-            saveData.SaveMaterialsProcessing(bioMaterialsProcessing);
-            saveData.BoosterCount = lastKnownBioBooster;
+            if (_saveData == null)
+                ReadySaveData();
 
-            saveData.Save();
+            _saveData.ReactorBatterCharge = this.Charge;
+            _saveData.SaveMaterialsProcessing(bioMaterialsProcessing);
+            _saveData.BoosterCount = lastKnownBioBooster;
+
+            _saveData.Save();
         }
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
-            isLoadingSaveData = true;
+            if (_saveData == null)
+                ReadySaveData();
 
             InitializeStorageRoot();
 
             InitializeContainer();
 
-            container.Clear(false);
+            MCUServices.Logger.Debug("Checking save data");
 
-            QuickLogger.Debug("Checking save data");
+            isLoadingSaveData = true;
 
-            if (saveData == null)
-                ReadySaveData();
-
-            if (saveData != null && saveData.Load())
+            if (_saveData != null && _saveData.Load())
             {
-                QuickLogger.Debug("Save data found");
+                MCUServices.Logger.Debug("Save data found");
 
                 container.Clear(false);
+                bioMaterialsProcessing.Clear();
 
-                UpdateBoosterCount(saveData.BoosterCount);
+                MCUServices.Logger.Debug($"Setting up Boosters at {_saveData.BoosterCount} from save data");
+                UpdateBoosterCount(_saveData.BoosterCount);
 
-                this.Charge = Mathf.Min(this.Capacity, saveData.ReactorBatterCharge);
+                MCUServices.Logger.Debug($"Restoring {_saveData.ReactorBatterCharge} energy from save data");
+                this.Charge = Mathf.Min(this.Capacity, _saveData.ReactorBatterCharge);
 
-                List<BioEnergy> savedMaterials = saveData.GetMaterialsInProcessing();
-                QuickLogger.Debug($"Found {savedMaterials.Count} materials in save data");
+                List<BioEnergy> savedMaterials = _saveData.GetMaterialsInProcessing();
+                MCUServices.Logger.Debug($"Found {savedMaterials.Count} materials in save data");
 
                 for (int i = 0; i < savedMaterials.Count; i++)
                 {
                     BioEnergy material = savedMaterials[i];
-                    QuickLogger.Debug($"Adding {material.Pickupable.GetTechName()} to container from save data");
+                    MCUServices.Logger.Debug($"Adding {material.Pickupable.GetTechName()} to container from save data");
                     bioMaterialsProcessing.Add(material, container);
                 }
+
+                MCUServices.Logger.Debug($"Added {savedMaterials.Count} items from save data");
             }
             else
             {
-                QuickLogger.Debug("No save data found");
+                MCUServices.Logger.Debug("No save data found");
             }
 
             isLoadingSaveData = false;
@@ -479,19 +518,12 @@
 
                 if (bioEnergy == null)
                 {
-                    QuickLogger.Debug("Matching pickable in bioreactor not found", true);
+                    MCUServices.Logger.Debug("Matching pickable in bioreactor not found", true);
                     continue;
                 }
 
                 bioEnergy.AddDisplayText(icon);
             }
-        }
-
-        public bool HasRoomToShrink()
-        {
-            var nextStats = ReactorStats.GetStatsForBoosterCount(lastKnownBioBooster - 1);
-
-            return nextStats.TotalSpaces >= bioMaterialsProcessing.SpacesOccupied;
         }
 
         public bool UpdateBoosterCount(int boosterCount)
@@ -505,31 +537,9 @@
             var nextStats = ReactorStats.GetStatsForBoosterCount(boosterCount);
 
             this.Capacity = nextStats.Capacity;
+            this.ProcessingCapacity = nextStats.ProcessingCapacity;
 
-            if (!isLoadingSaveData)
-            {
-                this.Charge = Mathf.Min(this.Charge, this.Capacity);
-
-                if (lastKnownBioBooster > boosterCount) // Getting smaller
-                {
-                    int nextAvailableSpace = nextStats.TotalSpaces;
-                    while (bioMaterialsProcessing.SpacesOccupied > nextAvailableSpace)
-                    {
-                        BioEnergy material = bioMaterialsProcessing.GetCandidateForRemoval();
-
-                        if (material == null)
-                            break;
-
-                        QuickLogger.Debug($"Removing material of size {material.Size}", true);
-                        bioMaterialsProcessing.Remove(material, container);
-                    }
-                }
-            }
-
-            container.Resize(storageWidth = nextStats.Width, storageHeight = nextStats.Height);
-            container.Sort();
-
-            chargeRate = baselineChargeRate / this.TotalContainerSpaces * 2f;
+            chargeRate = baselineChargeRate / nextStats.ProcessingCapacity * 2f;
 
             lastKnownBioBooster = boosterCount;
 
@@ -538,34 +548,29 @@
 
         private void OnDestroy()
         {
-            if (manager != null)
-                manager.RemoveBuildable(this);
+            if (_manager != null)
+                _manager.RemoveBuildable(this);
             else
                 BioAuxCyclopsManager.RemoveReactor(this);
 
             Cyclops = null;
-            manager = null;
+            this.Manager = null;
         }
 
         private class ReactorStats
         {
-            private static readonly ReactorStats boost0 = new ReactorStats(2, 2, MaxPowerBaseline);
-            private static readonly ReactorStats boost1 = new ReactorStats(3, 2, MaxPowerBaseline + 50f);
-            private static readonly ReactorStats boost2 = new ReactorStats(3, 3, MaxPowerBaseline + 100f);
-            private static readonly ReactorStats boost3 = new ReactorStats(6, 2, MaxPowerBaseline + 150f);
+            private static readonly ReactorStats boost0 = new ReactorStats(4, MaxPowerBaseline);
+            private static readonly ReactorStats boost1 = new ReactorStats(7, MaxPowerBaseline + 100f);
+            private static readonly ReactorStats boost2 = new ReactorStats(10, MaxPowerBaseline + 175f);
+            private static readonly ReactorStats boost3 = new ReactorStats(13, MaxPowerBaseline + 250f);
 
-            internal readonly int Width;
-            internal readonly int Height;
+            internal readonly int ProcessingCapacity;
             internal readonly float Capacity;
 
-            internal readonly int TotalSpaces;
-
-            private ReactorStats(int width, int height, float capacity)
+            private ReactorStats(int processingCapacity, float capacity)
             {
-                Width = width;
-                Height = height;
                 Capacity = capacity;
-                TotalSpaces = Width * Height;
+                ProcessingCapacity = processingCapacity;
             }
 
             internal static ReactorStats GetStatsForBoosterCount(int boosterCount)

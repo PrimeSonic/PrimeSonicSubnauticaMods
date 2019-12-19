@@ -29,7 +29,7 @@
             TechTypeID = pickupable.GetTechType();
             Charge = charge;
             Item = pickupable;
-            InfoDisplay = null;
+            InfoDisplay = null;            
         }
 
         public bool HasPower()

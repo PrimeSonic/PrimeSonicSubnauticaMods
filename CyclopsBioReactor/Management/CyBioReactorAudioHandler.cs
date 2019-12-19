@@ -1,6 +1,6 @@
 ﻿namespace CyclopsBioReactor.Management
 {
-    using Common;
+    using MoreCyclopsUpgrades.API;
     using UnityEngine;
 
     internal class CyBioReactorAudioHandler : MonoBehaviour
@@ -28,12 +28,12 @@
                 switch (fmod.name.ToLower())
                 {
                     case "bioreactor_hatch_close":
-                        QuickLogger.Debug("bioreactor_hatch_close found!", true);
+                        MCUServices.Logger.Debug("bioreactor_hatch_close found!", true);
                         _doorClose = fmod;
                         break;
 
                     case "bioreactor_hatch_open":
-                        QuickLogger.Debug("bioreactor_hatch_open found!", true);
+                        MCUServices.Logger.Debug("bioreactor_hatch_open found!", true);
                         _doorOpen = fmod;
                         break;
                 }
@@ -41,14 +41,14 @@
 
             if (_doorClose == null)
             {
-                QuickLogger.Debug("bioreactor_hatch_close not found trying to search again...", true);
+                MCUServices.Logger.Debug("bioreactor_hatch_close not found trying to search again...", true);
                 Resources.Load<GameObject>("/sub/base/bioreactor_hatch_close");
                 LoadFModAssets();
             }
 
             if (_doorOpen == null)
             {
-                QuickLogger.Debug("bioreactor_hatch_open not found trying to search again...", true);
+                MCUServices.Logger.Debug("bioreactor_hatch_open not found trying to search again...", true);
                 Resources.Load<GameObject>("/sub/base/bioreactor_hatch_open");
                 LoadFModAssets();
             }

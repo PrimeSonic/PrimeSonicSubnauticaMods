@@ -24,7 +24,7 @@
         [HarmonyPostfix]
         public static void Postfix(ref CyclopsHelmHUDManager __instance, ref int __state)
         {
-            CyclopsManager.GetManager(__instance.subRoot)?.HUD.FastUpdate(__instance, __state);
+            CyclopsManager.GetManager(ref __instance.subRoot)?.HUD.FastUpdate(__instance, __state);
         }
     }
 
@@ -48,7 +48,7 @@
         {
             PdaOverlayManager.UpdateIconOverlays();
 
-            CyclopsHUDManager hudMgr = CyclopsManager.GetManager(__instance.subRoot)?.HUD;
+            CyclopsHUDManager hudMgr = CyclopsManager.GetManager(ref __instance.subRoot)?.HUD;
 
             if (hudMgr == null)
                 return true;

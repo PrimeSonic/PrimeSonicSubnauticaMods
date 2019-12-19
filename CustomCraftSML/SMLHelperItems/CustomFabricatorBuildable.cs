@@ -4,6 +4,7 @@
     using SMLHelper.V2.Assets;
     using System;
     using UnityEngine;
+    using CustomFabricator = Serialization.Entries.CustomFabricator;
 
     internal class CustomFabricatorBuildable : ModPrefab
     {

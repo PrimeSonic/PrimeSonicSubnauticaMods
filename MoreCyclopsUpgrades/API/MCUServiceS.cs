@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
@@ -8,13 +9,14 @@
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.PDA;
     using MoreCyclopsUpgrades.API.Upgrades;
+    using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Managers;
 
     /// <summary>
     /// The main entry point for all API services provided by MoreCyclopsUpgrades.
     /// </summary>
     /// <seealso cref="IMCUCrossMod" />
-    public class MCUServices : IMCUCrossMod, IMCURegistration, IMCUSearch
+    public class MCUServices : IMCUCrossMod, IMCURegistration, IMCUSearch, IMCULogger
     {
         /// <summary>
         /// "Practically zero" for all intents and purposes.<para/>
@@ -40,17 +42,17 @@
 
         public IPowerRatingManager GetPowerRatingManager(SubRoot cyclops)
         {
-            return CyclopsManager.GetManager(cyclops)?.Engine;
+            return CyclopsManager.GetManager(ref cyclops)?.Engine;
         }
 
         public void ApplyPowerRatingModifier(SubRoot cyclops, TechType techType, float modifier)
         {
-            CyclopsManager.GetManager(cyclops)?.Engine.ApplyPowerRatingModifier(techType, modifier);
+            CyclopsManager.GetManager(ref cyclops)?.Engine.ApplyPowerRatingModifier(techType, modifier);
         }
 
         public bool HasUpgradeInstalled(SubRoot cyclops, TechType techType)
         {
-            var mgr = CyclopsManager.GetManager(cyclops);
+            var mgr = CyclopsManager.GetManager(ref cyclops);
 
             if (mgr == null)
                 return false;
@@ -65,7 +67,7 @@
 
         public int GetUpgradeCount(SubRoot cyclops, TechType techType)
         {
-            var mgr = CyclopsManager.GetManager(cyclops);
+            var mgr = CyclopsManager.GetManager(ref cyclops);
 
             if (mgr == null)
                 return 0;
@@ -159,7 +161,10 @@
         public T AuxCyclopsManager<T>(SubRoot cyclops)
             where T : class, IAuxCyclopsManager
         {
-            return CyclopsManager.GetManager<T>(cyclops, typeof(T).Name);
+            if (cyclops == null)
+                return null;
+
+            return CyclopsManager.GetManager<T>(ref cyclops, typeof(T).Name);
         }
 
         public IEnumerable<T> AllAuxCyclopsManagers<T>()
@@ -170,7 +175,7 @@
 
         public T CyclopsCharger<T>(SubRoot cyclops) where T : CyclopsCharger
         {
-            return CyclopsManager.GetManager(cyclops)?.Charge.GetCharger<T>(typeof(T).Name);
+            return CyclopsManager.GetManager(ref cyclops)?.Charge.GetCharger<T>(typeof(T).Name);
         }
 
         public IEnumerable<T> AllCyclopsChargers<T>() where T : CyclopsCharger
@@ -186,17 +191,65 @@
 
         public UpgradeHandler CyclopsUpgradeHandler(SubRoot cyclops, TechType upgradeId)
         {
-            return CyclopsManager.GetManager(cyclops).Upgrade?.GetUpgradeHandler<UpgradeHandler>(upgradeId);
+            return CyclopsManager.GetManager(ref cyclops)?.Upgrade?.GetUpgradeHandler<UpgradeHandler>(upgradeId);
         }
 
         public T CyclopsUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId) where T : UpgradeHandler
         {
-            return CyclopsManager.GetManager(cyclops).Upgrade?.GetUpgradeHandler<T>(upgradeId);
+            return CyclopsManager.GetManager(ref cyclops)?.Upgrade?.GetUpgradeHandler<T>(upgradeId);
         }
 
         public T CyclopsGroupUpgradeHandler<T>(SubRoot cyclops, TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
-            return CyclopsManager.GetManager(cyclops).Upgrade?.GetGroupHandler<T>(upgradeId);
+            return CyclopsManager.GetManager(ref cyclops)?.Upgrade?.GetGroupHandler<T>(upgradeId);
+        }
+
+        #endregion
+
+        #region IMCULogger
+
+        /// <summary>
+        /// Provides a set of logging APIs that other mods can use.<para/>
+        /// Debug level logs will only be printed of MCU's debug logging is enabled.
+        /// </summary>
+        public static IMCULogger Logger
+        {
+            get
+            {
+                ModConfig.LoadOnDemand();
+                
+                return singleton;
+            }
+        }
+
+        public bool DebugLogsEnabled => QuickLogger.DebugLogsEnabled;
+
+        public void Info(string logmessage, bool showOnScreen = false)
+        {
+            QuickLogger.Info(logmessage, showOnScreen, Assembly.GetCallingAssembly());
+        }
+
+        public void Warning(string logmessage, bool showOnScreen = false)
+        {
+            QuickLogger.Warning(logmessage, showOnScreen, Assembly.GetCallingAssembly());
+        }
+
+        public void Error(string logmessage, bool showOnScreen = false)
+        {
+            QuickLogger.Error(logmessage, showOnScreen, Assembly.GetCallingAssembly());
+        }
+
+        public void Error(Exception ex, string logmessage = null)
+        {
+            if (logmessage == null)
+                QuickLogger.Error(ex, Assembly.GetCallingAssembly());
+            else
+                QuickLogger.Error(logmessage, ex, Assembly.GetCallingAssembly());
+        }
+
+        public void Debug(string logmessage, bool showOnScreen = false)
+        {
+            QuickLogger.Debug(logmessage, showOnScreen, Assembly.GetCallingAssembly());
         }
 
         #endregion
