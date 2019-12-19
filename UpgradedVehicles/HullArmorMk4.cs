@@ -1,10 +1,7 @@
 namespace UpgradedVehicles
 {
     using System.Collections.Generic;
-    using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
-    using UnityEngine;
 
     internal class HullArmorMk4 : VehicleUpgradeModule
     {

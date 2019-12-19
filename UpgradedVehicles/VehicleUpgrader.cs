@@ -41,7 +41,7 @@
                 QuickLogger.Debug($"{upgradeModule.ClassID} was not patched", true);
                 return;
             }
-            OtherUpgradeTechTypes.Add(nameof(upgradeModule), upgradeModule.TechType);
+            OtherUpgradeTechTypes.Add(upgradeModule.GetType().Name, upgradeModule.TechType);
             CommonUpgradeModules.Add(upgradeModule.TechType);
             if (isArmor)
             {
