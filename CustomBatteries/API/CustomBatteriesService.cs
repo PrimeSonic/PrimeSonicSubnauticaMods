@@ -13,20 +13,26 @@
         /// <summary>
         /// Gets the full collection of <see cref="TechType" />s for all batteries, both vanilla and modded.
         /// </summary>
-        /// <value>
+        /// <returns>
         /// The full collection of battery <see cref="TechType" />s.
-        /// </value>
+        /// </returns>
         /// <seealso cref="BatteryCharger" />
-        public HashSet<TechType> AllBatteries => BatteryCharger.compatibleTech;
+        public HashSet<TechType> GetAllBatteries()
+        {
+            return new HashSet<TechType>(BatteryCharger.compatibleTech);
+        }
 
         /// <summary>
         /// Gets the full collection of <see cref="TechType" />s for all power cells, both vanilla and modded.
         /// </summary>
-        /// <value>
+        /// <returns>
         /// The full collection of power cell <see cref="TechType" />s.
-        /// </value>
+        /// </returns>
         /// <seealso cref="PowerCellCharger" />
-        public HashSet<TechType> AllPowerCells => PowerCellCharger.compatibleTech;
+        public HashSet<TechType> GetAllPowerCells()
+        {
+            return new HashSet<TechType>(PowerCellCharger.compatibleTech);
+        }
 
         /// <summary>
         /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded items returned.
