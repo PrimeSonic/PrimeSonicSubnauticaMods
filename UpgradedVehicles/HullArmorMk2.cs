@@ -5,21 +5,29 @@ namespace UpgradedVehicles
 
     internal class HullArmorMk2 : VehicleUpgradeModule
     {
+        private const int ArmorCount = 2;
         public HullArmorMk2()
             : base(classId: "HullArmorMk2",
                 friendlyName: "Hull Reinforcement Mk II",
                 description: "A better hull upgrade. Equivalent to 2 regular Hull Reinforcements")
         {
-            OnFinishedPatching += () => { VehicleUpgrader.SetNewModule(this, true); };
+            OnFinishedPatching += () =>
+            {
+                VehicleUpgrader.CommonUpgradeModules.Add(this.TechType);
+                VehicleUpgrader.ArmorPlatingModules.Add(this.TechType, ArmorCount);
+            };
         }
 
-        protected override TechData GetBlueprintRecipe() => new TechData()
+        protected override TechData GetBlueprintRecipe()
         {
-            craftAmount = 1,
-            Ingredients = new List<Ingredient>(new Ingredient[1]
+            return new TechData()
             {
-                new Ingredient(TechType.VehicleArmorPlating, 2)
-            })
-        };
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>
+                {
+                    new Ingredient(TechType.VehicleArmorPlating, ArmorCount)
+                }
+            };
+        }
     }
 }

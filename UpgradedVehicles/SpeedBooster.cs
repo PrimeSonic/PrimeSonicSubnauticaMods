@@ -10,18 +10,24 @@
                 friendlyName: "Speed Boost Module",
                 description: "Allows small vehicle engines to go into overdrive, adding greater speeds but at the cost of higher energy consumption rates.")
         {
-            OnFinishedPatching += () => { VehicleUpgrader.SetNewModule(this); };
+            OnFinishedPatching += () =>
+            {
+                VehicleUpgrader.CommonUpgradeModules.Add(this.TechType);
+            };
         }
 
-        protected override TechData GetBlueprintRecipe() => new TechData()
+        protected override TechData GetBlueprintRecipe()
         {
-            craftAmount = 1,
-            Ingredients = new List<Ingredient>(new Ingredient[3]
+            return new TechData()
             {
-                new Ingredient(TechType.Aerogel, 1),
-                new Ingredient(TechType.Magnetite, 1),
-                new Ingredient(TechType.Titanium, 2),
-            })
-        };
+                craftAmount = 1,
+                Ingredients = new List<Ingredient>
+                {
+                    new Ingredient(TechType.Aerogel, 1),
+                    new Ingredient(TechType.Magnetite, 1),
+                    new Ingredient(TechType.Titanium, 2),
+                }
+            };
+        }
     }
 }
