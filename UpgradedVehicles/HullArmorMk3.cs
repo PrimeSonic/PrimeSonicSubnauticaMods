@@ -10,7 +10,7 @@ namespace UpgradedVehicles
         public HullArmorMk3(TechType hullArmorMk2)
             : base(classId: "HullArmorMk3",
                 friendlyName: "Hull Reinforcement Mk III",
-                description: "An even better hull upgrade.\nEquivalent to 3 regular Hull Reinforcements")
+                description: "An upgrade containing nanites improving and maintaining the inner structure of the hull.\nEquivalent to 3 regular Hull Reinforcements")
         {
             HullArmorMk2 = hullArmorMk2;
             OnFinishedPatching += () =>
@@ -32,7 +32,8 @@ namespace UpgradedVehicles
                 {
                     new Ingredient(HullArmorMk2, 1),
                     new Ingredient(TechType.Titanium, 3),
-                    new Ingredient(TechType.AluminumOxide, 1)
+                    new Ingredient(TechType.AluminumOxide, 1),
+                    new Ingredient(TechType.ComputerChip, 1)
                 }
             };
         }
