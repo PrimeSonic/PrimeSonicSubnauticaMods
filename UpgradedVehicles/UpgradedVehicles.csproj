@@ -71,6 +71,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HullArmorMk2.cs" />
+    <Compile Include="HullArmorMk3.cs" />
+    <Compile Include="HullArmorMk4.cs" />
+    <Compile Include="VehicleUpgradeModule.cs" />
     <Compile Include="SpeedBooster.cs" />
     <Compile Include="Patchers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,6 +90,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\HullArmorMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\HullArmorMk3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\HullArmorMk4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\SpeedModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

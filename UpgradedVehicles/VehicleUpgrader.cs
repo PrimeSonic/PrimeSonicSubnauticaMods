@@ -1,17 +1,13 @@
 ﻿namespace UpgradedVehicles
 {
+    using System;
     using System.Collections.Generic;
     using Common;
-    using SMLHelper.V2.Assets;
     using UnityEngine;
 
     internal class VehicleUpgrader
     {
-        private static TechType SeamothHullModule4 = TechType.UnusedOld;
-        private static TechType SeamothHullModule5 = TechType.UnusedOld;
-        private static bool HasModdedDepthModules = false;
-
-        private static readonly HashSet<TechType> CommonUpgradeModules = new HashSet<TechType>()
+        internal static readonly ICollection<TechType> CommonUpgradeModules = new HashSet<TechType>()
         {
             TechType.ExoHullModule2,
             TechType.ExoHullModule1,
@@ -21,28 +17,26 @@
             TechType.VehiclePowerUpgradeModule,
             TechType.VehicleArmorPlating,
             // SpeedBooster added during patching
-            // Mk4 and Mk5 Seamoth depth modules optionally added durting patching
+            // HullArmorUpgrades added during patching
+            // Mk4 and Mk5 Seamoth depth modules optionally added during patching
         };
 
-        internal static void SetSpeedBooster(Craftable speedModule)
+        internal static readonly IDictionary<TechType, int> ArmorPlatingModules = new Dictionary<TechType, int>()
         {
-            if (!speedModule.IsPatched)
-            {
-                QuickLogger.Debug($"SpeedBooster was not patched", true);
-                return;
-            }
+            { TechType.VehicleArmorPlating, 1 }
+            // HullArmorUpgrades added during patching
+        };
 
-            CommonUpgradeModules.Add(speedModule.TechType);
-        }
+        // Added during patching
+        internal static TechType SpeedBoostingModule;
 
-        internal static void SetModdedDepthModules(TechType seamothDepth4, TechType seamothDepth5)
+        internal static IDictionary<TechType, int> SeamothDepthModules = new Dictionary<TechType, int>()
         {
-            QuickLogger.Info("Additional Seamoth Depth Modules from MoreSeamothUpgrades registered");
-
-            CommonUpgradeModules.Add(SeamothHullModule4 = seamothDepth4);
-            CommonUpgradeModules.Add(SeamothHullModule5 = seamothDepth5);
-            HasModdedDepthModules = true;
-        }
+            { TechType.VehicleHullModule3, 3 },
+            { TechType.VehicleHullModule2, 2 },
+            { TechType.VehicleHullModule1, 1 },
+            // Depth Modules Mk4 and Mk5 optionaly added during patching
+        };
 
         internal static void SetBonusSpeedMultipliers(float seamothMultiplier, float exosuitMultiplier)
         {
@@ -133,7 +127,10 @@
 
             if (IsSeamoth)
             {
-                bonusHpRatio = HasModdedDepthModules ? 0.4f : 0.5f;
+                const int DefaultSeamothDepthModulesCount = 3;
+                bool hasModdedDepthModules = SeamothDepthModules.Count > DefaultSeamothDepthModulesCount;
+
+                bonusHpRatio = hasModdedDepthModules ? 0.4f : 0.5f;
                 baseHp = 200f;
             }
 
@@ -209,7 +206,7 @@
         /// <summary>
         /// Calculates the general damage reduction fraction based off the number of hull armor modules and the current depth index.
         /// </summary>
-        private float GeneralArmorFraction(float armorModuleCount)
+        private float GeneralArmorFraction(int armorModuleCount)
         {
             //               Depth Index
             // Armor Modules  0      1      2      3      4*     5*
@@ -227,7 +224,7 @@
             float damageReduction = 1f;
 
             float reduction = 0.10f;
-            while (armorModuleCount-- > 0f)
+            while (armorModuleCount-- > 0)
             {
                 damageReduction -= reduction;
                 reduction = Mathf.Max(0.01f, reduction - 0.02f);
@@ -297,6 +294,23 @@
             return true;
         }
 
+        private int CalculateArmorPlatingAmount()
+        {
+            int max = 0;
+
+            foreach (KeyValuePair<TechType, int> armorModule in ArmorPlatingModules)
+            {
+                TechType techType = armorModule.Key;                
+                if (UpgradeModules.GetCount(techType) > 0)
+                {
+                    int multiplier = armorModule.Value;
+                    max = Math.Max(max, multiplier);
+                }
+            }
+
+            return max;
+        }
+
         private int CalculateDepthModuleIndex()
         {
             if (IsExosuit)
@@ -309,23 +323,18 @@
             }
             else if (IsSeamoth)
             {
-                if (HasModdedDepthModules)
+                int max = 0;
+                foreach (KeyValuePair<TechType, int> seamothDepth in SeamothDepthModules)
                 {
-                    if (UpgradeModules.GetCount(SeamothHullModule5) > 0)
-                        return 5;
-
-                    if (UpgradeModules.GetCount(SeamothHullModule4) > 0)
-                        return 4;
+                    TechType techType = seamothDepth.Key;                    
+                    if (UpgradeModules.GetCount(techType) > 0)
+                    {
+                        int depthIndex = seamothDepth.Value;
+                        max = Math.Max(max, depthIndex);
+                    }
                 }
 
-                if (UpgradeModules.GetCount(TechType.VehicleHullModule3) > 0)
-                    return 3;
-
-                if (UpgradeModules.GetCount(TechType.VehicleHullModule2) > 0)
-                    return 2;
-
-                if (UpgradeModules.GetCount(TechType.VehicleHullModule1) > 0)
-                    return 1;
+                return max;
             }
 
             return 0;
@@ -342,8 +351,8 @@
             int nextDepthIndex = CalculateDepthModuleIndex();
 
             bool updateHp = DepthIndex != nextDepthIndex;
-            bool updateArmor = updateHp || upgradeModule == TechType.VehicleArmorPlating;
-            bool updateSpeed = updateHp || upgradeModule == SpeedBooster.SpeedBoosterTechType;
+            bool updateArmor = updateHp || ArmorPlatingModules.ContainsKey(upgradeModule);
+            bool updateSpeed = updateHp || upgradeModule == SpeedBoostingModule;
             bool updateEfficiency = updateHp || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
 
             DepthIndex = nextDepthIndex;
@@ -355,14 +364,14 @@
 
             if (updateArmor) // Armor
             {
-                int armorModuleCount = UpgradeModules.GetCount(TechType.VehicleArmorPlating);
+                int armorModuleCount = CalculateArmorPlatingAmount();
 
                 UpdateArmorRating(armorModuleCount);
             }
 
             if (updateEfficiency) // Efficiency
             {
-                int speedBoosterCount = UpgradeModules.GetCount(SpeedBooster.SpeedBoosterTechType);
+                int speedBoosterCount = UpgradeModules.GetCount(SpeedBoostingModule);
                 int powerModuleCount = UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
 
                 UpdatePowerRating(speedBoosterCount, powerModuleCount);
