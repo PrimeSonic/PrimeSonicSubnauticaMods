@@ -5,24 +5,36 @@
     using System.Reflection;
     using Common;
     using Harmony;
-    using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.AuxConsole;
+    using MoreCyclopsUpgrades.Config;
+    using QModManager.API.ModLoading;
 
     /// <summary>
     /// Entry point class for patching. For use by QModManager only.
     /// </summary>
-    public class QPatch
+    [QModCore]
+    public static class QPatch
     {
+        /// <summary>
+        /// For use by QModManager only.
+        /// </summary>
+        [QModPrePatch("5294E9BE8C4062684ACAAE0B514E91E2")]
+        public static void PrePatch()
+        {
+            ModConfig.LoadOnDemand();
+
+            RemoveOldConfigs();
+        }
+
         /// <summary>
         /// Main patching method. For use by QModManager only.
         /// </summary>
+        [QModPatch]
         public static void Patch()
         {
             try
             {
-                QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());                
-
-                RemoveOldConfigs();
+                QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
                 PatchAuxUpgradeConsole();
 
