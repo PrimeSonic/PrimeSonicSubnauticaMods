@@ -2,10 +2,10 @@
   "Id": "UpgradedVehicles",
   "DisplayName": "UpgradedVehicles",
   "Author": "PrimeSonic",
-  "Version": "3.3.0",
+  "Version": "3.4.0",
   "Enable": true,
   "AssemblyName": "UpgradedVehicles.dll",
   "Game": "Subnautica",
   "Dependencies": [ "SMLHelper" ],
-  "EntryMethod": "UpgradedVehicles.QPatch.Patch"
+  "LoadAfter": [ "MoreSeamothDepth" ]
 }

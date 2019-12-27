@@ -14,7 +14,7 @@
     {
         private static readonly string version = QuickLogger.GetAssemblyVersion();
 
-        [QModPrePatch("9EE41CD5C763AFFA8E50955620BFC831")]
+        [QModPrePatch]
         public static void SetUpLogging()
         {
             QuickLogger.Info($"Setting up logging. Version {version}");
@@ -38,6 +38,7 @@
             }
         }
 
+        // Using secret key to ensure that CC2 patches all these requests after all other SMLHelper mods
         [QModPostPatch("594BAD715C15AC3ABFDA0B394DFF273F")]
         public static void PatchRequestsFromFiles()
         {

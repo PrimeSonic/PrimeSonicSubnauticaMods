@@ -18,7 +18,7 @@
         /// <summary>
         /// For use by QModManager only.
         /// </summary>
-        [QModPrePatch("5294E9BE8C4062684ACAAE0B514E91E2")]
+        [QModPrePatch]
         public static void PrePatch()
         {
             ModConfig.LoadOnDemand();
