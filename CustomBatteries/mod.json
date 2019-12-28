@@ -5,5 +5,6 @@
   "Version": "1.0.0",
   "Enable": true,
   "AssemblyName": "CustomBatteries.dll",
+  "Dependencies": [ "SMLHelper" ],
   "EntryMethod": "CustomBatteries.QPatch.Patch"
 }
