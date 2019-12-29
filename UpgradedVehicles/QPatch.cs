@@ -23,6 +23,8 @@
                 {
                     VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule4, 4);
                     VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
+                    VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule4);
+                    VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule5);
                 }
 
                 CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Armor Modules", SpriteManager.Get(TechType.VehicleArmorPlating));
