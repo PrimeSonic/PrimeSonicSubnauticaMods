@@ -82,11 +82,13 @@
             {
                 return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
             }
-            else if (version.Build > 0)
+
+            if (version.Build > 0)
             {
                 return $"{version.Major}.{version.Minor}.{version.Build}";
             }
-            else if (version.Minor > 0)
+
+            if (version.Minor > 0)
             {
                 return $"{version.Major}.{version.Minor}";
             }

@@ -6,9 +6,12 @@
     using CustomBatteries.PackReading;
     using Harmony;
     using MidGameBatteries.Patchers;
+    using QModManager.API.ModLoading;
 
+    [QModCore]
     public static class QPatch
     {
+        [QModPatch]
         public static void Patch()
         {
             QuickLogger.Info("Start patching. Version: " + QuickLogger.GetAssemblyVersion());

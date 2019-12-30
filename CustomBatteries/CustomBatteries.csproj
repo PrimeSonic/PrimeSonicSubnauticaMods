@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CustomBatteries</RootNamespace>
     <AssemblyName>CustomBatteries</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,6 +44,10 @@
     </Reference>
     <Reference Include="Assembly-CSharp_publicized">
       <HintPath>..\DependenciesSubnautica\Assembly-CSharp_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="QModInstaller, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DependenciesSubnautica\QModInstaller.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper">
       <HintPath>..\DependenciesSubnautica\SMLHelper.dll</HintPath>
