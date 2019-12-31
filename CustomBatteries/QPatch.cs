@@ -1,6 +1,7 @@
 ﻿namespace CustomBatteries
 {
     using System;
+    using System.Collections.Generic;
     using Common;
     using CustomBatteries.Items;
     using CustomBatteries.PackReading;
@@ -25,7 +26,6 @@
                 // They can still be patched in even after the harmony patches have completed.
 
                 var harmony = HarmonyInstance.Create("com.custombatteries.mod");
-                ChargerPatcher.Patch(harmony);
                 EnergyMixinPatcher.Patch(harmony);
 
                 QuickLogger.Info("Finished patching");
@@ -33,6 +33,33 @@
             catch (Exception ex)
             {
                 QuickLogger.Error(ex);
+            }
+        }
+
+        [QModPostPatch]
+        public static void UpdateStaticCollections()
+        {
+            UpdateCollection(BatteryCharger.compatibleTech, CbCore.BatteryTechTypes);
+            UpdateCollection(PowerCellCharger.compatibleTech, CbCore.PowerCellTechTypes);
+        }
+
+        private static void UpdateCollection(HashSet<TechType> compatibleTech, List<TechType> toBeAdded)
+        {
+            if (toBeAdded.Count == 0)
+                return;
+
+            // Make sure all custom batteries are allowed in the battery charger
+            if (!compatibleTech.Contains(toBeAdded[toBeAdded.Count - 1]))
+            {
+                // Checks in reverse order to account for the (unlikely) event that an external mod patches later than expected
+                for (int i = toBeAdded.Count - 1; i >= 0; i--)
+                {
+                    TechType entry = toBeAdded[i];
+                    if (compatibleTech.Contains(entry))
+                        return;
+
+                    compatibleTech.Add(entry);
+                }
             }
         }
     }

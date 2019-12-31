@@ -2,7 +2,7 @@
   "Id": "CustomBatteries",
   "DisplayName": "CustomBatteries",
   "Author": "PrimeSonic|Seraphim",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Enable": true,
   "AssemblyName": "CustomBatteries.dll",
   "Dependencies": [ "SMLHelper" ]
