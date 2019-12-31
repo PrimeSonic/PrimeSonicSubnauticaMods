@@ -5,7 +5,7 @@
     using Common;
     using UnityEngine;
 
-    internal class VehicleUpgrader
+    public class VehicleUpgrader : MonoBehaviour
     {
         internal static readonly ICollection<TechType> CommonUpgradeModules = new HashSet<TechType>()
         {
@@ -44,47 +44,9 @@
             _exosuitBonusSpeedMultiplier = exosuitMultiplier;
         }
 
-        private static List<VehicleUpgrader> Upgraders = new List<VehicleUpgrader>();
-
-        private static VehicleUpgrader CreateNewUpgrader<T>(T vehicle) where T : Vehicle
-        {
-            var upgrader = new VehicleUpgrader();
-
-            if (upgrader.Initialize(vehicle))
-            {
-                Upgraders.Add(upgrader);
-                QuickLogger.Debug("CreateNewUpgrader: Initialize successful");
-                return upgrader;
-            }
-            else
-            {
-                QuickLogger.Debug("CreateNewUpgrader: Initialize failed");
-                return null;
-            }
-        }
-
-        public static VehicleUpgrader GetUpgrader<T>(T vehicle) where T : Vehicle
-        {
-            VehicleUpgrader vehicleUpgrader = Upgraders.Find(v => v.InstanceID == vehicle.GetInstanceID());
-
-            if (vehicleUpgrader == null)
-            {
-                QuickLogger.Debug("GetUpgrader: Creating new upgrader");
-                vehicleUpgrader = CreateNewUpgrader(vehicle);
-            }
-            else
-            {
-                QuickLogger.Debug("GetUpgrader: Upgrader okay to send back");
-            }
-
-            return vehicleUpgrader;
-        }
-
         // Original values from the Vehicle class
         private float BaseForwardForce = -1f;
         private float BaseOnGroundForceMultiplier = -1f;
-
-        public int InstanceID { get; private set; }
 
         private Vehicle ParentVehicle = null;
         private Equipment UpgradeModules = null;
@@ -92,15 +54,21 @@
         private DealDamageOnImpact _dmgOnImpact;
         private DealDamageOnImpact DmgOnImpact => _dmgOnImpact ?? (_dmgOnImpact = ParentVehicle.GetComponent<DealDamageOnImpact>());
 
-        private LiveMixin LifeMix => ParentVehicle.liveMixin;
-
-        private int DepthIndex = -1;
         private bool IsSeamoth = false;
         private bool IsExosuit = false;
         internal float GeneralDamageReduction { get; private set; } = 1f;
 
         private static float _seamothBonusSpeedMultiplier = 0.15f;
         private static float _exosuitBonusSpeedMultiplier = 0.20f;
+
+        public int DepthIndex { get; private set; } = -1;
+        public float SpeedMultiplier { get; private set; } = 1f;
+        public float EfficiencyPenalty { get; private set; } = 1f;
+        public float EfficientyBonus { get; private set; } = 1f;
+        public float GeneralArmorFraction { get; private set; } = 1f;
+        public float ImpactArmorFraction { get; private set; } = 1f;
+        public float PowerRating { get; private set; } = 1f;
+        public LiveMixin LifeMix => ParentVehicle.liveMixin;
 
         /// <summary>
         /// Calculates the new maximum hit points based on the current depth index.
@@ -134,13 +102,13 @@
                 baseHp = 200f;
             }
 
-            return baseHp * (1f + DepthIndex * bonusHpRatio);
+            return baseHp * (1f + this.DepthIndex * bonusHpRatio);
         }
 
         /// <summary>
         /// Calculates the speed multiplier based on the number of speed modules and current depth index.
         /// </summary>
-        private float SpeedMultiplierBonus(float speedBoosterCount)
+        private float GetSpeedMultiplierBonus(float speedBoosterCount)
         {
             float speedBoosterRatio = 0f;
             float bonusSpeedRatio = 0f;
@@ -159,13 +127,13 @@
 
             return 1f + // Base 100%
                    speedBoosterCount * speedBoosterRatio + // Bonus from Speed Boosters
-                   DepthIndex * bonusSpeedRatio; // Bonus from Depth Modules
+                   this.DepthIndex * bonusSpeedRatio; // Bonus from Depth Modules
         }
 
         /// <summary>
         /// Calculates the engine efficiency penalty based off the number of speed modules and the current depth index.
         /// </summary>
-        private float EfficiencyPentalty(float speedBoosterCount)
+        private float GetEfficiencyPentalty(float speedBoosterCount)
         {
             //  Speed Modules
             //    0    100%
@@ -179,13 +147,13 @@
             //    8    980%
             //    9    1090%
 
-            return 1f + (1.10f * speedBoosterCount);
+            return this.EfficiencyPenalty = 1f + (1.10f * speedBoosterCount);
         }
 
         /// <summary>
         /// Calculates the engine efficiency bonus based off the number of power modules and the current depth index.
         /// </summary>
-        private float EfficiencyBonus(float powerModuleCount)
+        private float GetEfficiencyBonus(float powerModuleCount)
         {
             //                Depth Index
             //  Power Modules  0       1        2      3       4*      5*
@@ -200,13 +168,13 @@
             //        8       900%    915%    930%    945%    960%    975%
             //        9       1000%   1015%   1030%   1045%   1060%   1075%
 
-            return 1f + powerModuleCount + DepthIndex * 0.15f;
+            return this.EfficientyBonus = 1f + powerModuleCount + this.DepthIndex * 0.15f;
         }
 
         /// <summary>
         /// Calculates the general damage reduction fraction based off the number of hull armor modules and the current depth index.
         /// </summary>
-        private float GeneralArmorFraction(int armorModuleCount)
+        private float GetGeneralArmorFraction(int armorModuleCount)
         {
             //               Depth Index
             // Armor Modules  0      1      2      3      4*     5*
@@ -230,13 +198,13 @@
                 reduction = Mathf.Max(0.01f, reduction - 0.02f);
             }
 
-            return damageReduction - (0.05f * DepthIndex);
+            return this.GeneralArmorFraction = damageReduction - (0.05f * this.DepthIndex);
         }
 
         /// <summary>
         /// Calculates the impact damage reduction fraction based off the number of hull armor modules and the current depth index.
         /// </summary>
-        private float ImpactArmorFraction(float armorModuleCount)
+        private float GetImpactArmorFraction(float armorModuleCount)
         {
             //                Depth Index
             //  Armor Modules  0         1         2         3         4*        5*
@@ -251,18 +219,11 @@
             //        8      00.39%    00.34%    00.30%    00.26%    00.22%    00.20%
             //        9      00.20%    00.17%    00.15%    00.13%    00.11%    00.10%
 
-            return Mathf.Pow(0.5f, armorModuleCount + (DepthIndex * 0.2f));
+            return this.ImpactArmorFraction = Mathf.Pow(0.5f, armorModuleCount + (this.DepthIndex * 0.2f));
         }
 
-        internal bool Initialize<T>(T vehicle) where T : Vehicle
+        internal void Initialize<TVehicle>(ref TVehicle vehicle) where TVehicle : Vehicle
         {
-            if (vehicle == null)
-            {
-                QuickLogger.Debug("Initialize Vehicle: vehicle null");
-                return false;
-            }
-
-            this.InstanceID = vehicle.GetInstanceID();
             ParentVehicle = vehicle;
 
             IsSeamoth = vehicle is SeaMoth;
@@ -270,28 +231,20 @@
 
             BaseForwardForce = vehicle.forwardForce;
             BaseOnGroundForceMultiplier = vehicle.onGroundForceMultiplier;
-
-            if (vehicle.modules == null)
-            {
-                QuickLogger.Debug("Initialize Vehicle: modules null");
-                return false;
-            }
-
+            
             UpgradeModules = vehicle.modules;
 
             if (this.DmgOnImpact == null)
             {
                 QuickLogger.Debug("Initialize Vehicle: DealDamageOnImpact null");
-                return false;
+                return;
             }
 
             if (this.LifeMix == null)
             {
                 QuickLogger.Debug("Initialize Vehicle: LiveMixin null");
-                return false;
+                return;
             }
-
-            return true;
         }
 
         private int CalculateArmorPlatingAmount()
@@ -300,7 +253,7 @@
 
             foreach (KeyValuePair<TechType, int> armorModule in ArmorPlatingModules)
             {
-                TechType techType = armorModule.Key;                
+                TechType techType = armorModule.Key;
                 if (UpgradeModules.GetCount(techType) > 0)
                 {
                     int multiplier = armorModule.Value;
@@ -326,7 +279,7 @@
                 int max = 0;
                 foreach (KeyValuePair<TechType, int> seamothDepth in SeamothDepthModules)
                 {
-                    TechType techType = seamothDepth.Key;                    
+                    TechType techType = seamothDepth.Key;
                     if (UpgradeModules.GetCount(techType) > 0)
                     {
                         int depthIndex = seamothDepth.Value;
@@ -340,8 +293,12 @@
             return 0;
         }
 
-        internal void UpgradeVehicle(TechType upgradeModule)
+        internal void UpgradeVehicle<TVehicle>(TechType upgradeModule, ref TVehicle vehicle)
+            where TVehicle : Vehicle
         {
+            if (ParentVehicle == null)
+                Initialize(ref vehicle);
+
             if (!CommonUpgradeModules.Contains(upgradeModule))
             {
                 // Not an upgrade module we handle here
@@ -350,12 +307,12 @@
 
             int nextDepthIndex = CalculateDepthModuleIndex();
 
-            bool updateHp = DepthIndex != nextDepthIndex;
+            bool updateHp = this.DepthIndex != nextDepthIndex;
             bool updateArmor = updateHp || ArmorPlatingModules.ContainsKey(upgradeModule);
             bool updateSpeed = updateHp || upgradeModule == SpeedBoostingModule;
             bool updateEfficiency = updateHp || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
 
-            DepthIndex = nextDepthIndex;
+            this.DepthIndex = nextDepthIndex;
 
             if (updateHp) // Hit Points
             {
@@ -410,31 +367,30 @@
 
         private void UpdateSpeedRating(float speedBoosterCount)
         {
-            float speedMultiplier = SpeedMultiplierBonus(speedBoosterCount);
+            this.SpeedMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
 
-            ParentVehicle.forwardForce = speedMultiplier * BaseForwardForce;
-            ParentVehicle.onGroundForceMultiplier = speedMultiplier * BaseOnGroundForceMultiplier;
+            ParentVehicle.forwardForce = this.SpeedMultiplier * BaseForwardForce;
+            ParentVehicle.onGroundForceMultiplier = this.SpeedMultiplier * BaseOnGroundForceMultiplier;
 
-            ErrorMessage.AddMessage($"Now running at {speedMultiplier * 100f:00}% speed");
+            ErrorMessage.AddMessage($"Now running at {this.SpeedMultiplier * 100f:00}% speed");
         }
 
         private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)
         {
-            float powerRating = EfficiencyBonus(powerModuleCount) / EfficiencyPentalty(speedBoosterCount);
+            this.PowerRating = GetEfficiencyBonus(powerModuleCount) / GetEfficiencyPentalty(speedBoosterCount);
 
-            ParentVehicle.enginePowerRating = powerRating;
+            ParentVehicle.enginePowerRating = this.PowerRating;
 
-            ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", powerRating));
+            ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", this.PowerRating));
         }
 
         private void UpdateArmorRating(int armorModuleCount)
         {
-            this.GeneralDamageReduction = GeneralArmorFraction(armorModuleCount);
+            this.GeneralDamageReduction = GetGeneralArmorFraction(armorModuleCount);
 
-            this.DmgOnImpact.mirroredSelfDamageFraction = ImpactArmorFraction(armorModuleCount);
+            this.DmgOnImpact.mirroredSelfDamageFraction = GetImpactArmorFraction(armorModuleCount);
 
             ErrorMessage.AddMessage($"Armor rating is now {(1f - this.DmgOnImpact.mirroredSelfDamageFraction) * 100f + (1f - this.GeneralDamageReduction) * 100f:00}");
         }
-
     }
 }

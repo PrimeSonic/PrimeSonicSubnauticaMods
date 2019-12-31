@@ -9,6 +9,7 @@
     using SMLHelper.V2.Handlers;
     using UpgradedVehicles.SaveData;
 
+    [QModCore]
     public class QPatch
     {
         internal const string WorkBenchTab = "HullArmor";
@@ -16,6 +17,10 @@
         [QModPatch]
         public static void Patch()
         {
+#if DEBUG
+            QuickLogger.DebugLogsEnabled = true;
+#endif
+
             try
             {
                 QuickLogger.Info("Started patching - " + QuickLogger.GetAssemblyVersion());

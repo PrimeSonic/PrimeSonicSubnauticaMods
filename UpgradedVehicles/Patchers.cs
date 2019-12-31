@@ -1,5 +1,6 @@
 ﻿namespace UpgradedVehicles
 {
+    using Common;
     using Harmony;
     using UnityEngine;
 
@@ -10,19 +11,40 @@
         [HarmonyPostfix]
         internal static void Postfix(ref float __result, GameObject target)
         {
-            var vehicle = target.GetComponent<Vehicle>();
+            Vehicle vehicle = target.GetComponent<Vehicle>();
 
             if (vehicle != null) // Target is vehicle
             {
-                var vehicleUpgrader = VehicleUpgrader.GetUpgrader(vehicle);
-
-                if (vehicleUpgrader == null)
-                {
-                    return;
-                }
+                VehicleUpgrader vehicleUpgrader = vehicle.gameObject.EnsureComponent<VehicleUpgrader>();
 
                 __result = vehicleUpgrader.GeneralDamageReduction * __result;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(SeaMoth))]
+    [HarmonyPatch(nameof(SeaMoth.Start))]
+    internal class SeaMoth_Start_Patcher
+    {
+        [HarmonyPrefix]
+        internal static void Prefix(ref SeaMoth __instance)
+        {
+            QuickLogger.Debug("SeaMoth_Start_Patcher");
+            VehicleUpgrader vehicleUpgrader = __instance.gameObject.EnsureComponent<VehicleUpgrader>();
+            vehicleUpgrader.Initialize(ref __instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(Exosuit))]
+    [HarmonyPatch(nameof(Exosuit.Start))]
+    internal class Exosuit_Start_Patcher
+    {
+        [HarmonyPrefix]
+        internal static void Prefix(ref Exosuit __instance)
+        {
+            QuickLogger.Debug("Exosuit_Start_Patcher");
+            VehicleUpgrader vehicleUpgrader = __instance.gameObject.EnsureComponent<VehicleUpgrader>();
+            vehicleUpgrader.Initialize(ref __instance);
         }
     }
 
@@ -33,7 +55,8 @@
         [HarmonyPostfix]
         internal static void Postfix(ref SeaMoth __instance, TechType techType)
         {
-            VehicleUpgrader.GetUpgrader(__instance)?.UpgradeVehicle(techType);
+            QuickLogger.Debug("SeaMoth_OnUpgradeModuleChange_Patcher");
+            __instance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref __instance);
         }
     }
 
@@ -44,7 +67,8 @@
         [HarmonyPostfix]
         internal static void Postfix(ref Exosuit __instance, TechType techType)
         {
-            VehicleUpgrader.GetUpgrader(__instance)?.UpgradeVehicle(techType);
+            QuickLogger.Debug("Exosuit_OnUpgradeModuleChange_Patcher");
+            __instance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref __instance);
         }
     }
 }
