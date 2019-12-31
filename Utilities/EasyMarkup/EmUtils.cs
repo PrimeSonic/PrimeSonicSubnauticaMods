@@ -1,6 +1,8 @@
 ﻿namespace Common.EasyMarkup
 {
     using System;
+    using System.Globalization;
+    using System.Threading;
 
     internal static class EmUtils
     {
@@ -8,7 +10,16 @@
         {
             try
             {
-                return emProperty.FromString(serializedData);
+                // Accounting for CurrentCultureInfo became necessary with the jump to Unity2019 and/or .NET 4
+                CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
+                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+                bool result = emProperty.FromString(serializedData);
+
+                // To avoid any unexpected side-effect, we'll change this back once we're done writing the file.
+                Thread.CurrentThread.CurrentCulture = originalCulture;
+
+                return result;
             }
             catch (EmException emEx)
             {
@@ -24,10 +35,16 @@
 
         public static string Serialize<T>(this T emProperty, bool prettyPrint = true) where T : EmProperty
         {
-            if (prettyPrint)
-                return emProperty.PrettyPrint();
+            // Accounting for CurrentCultureInfo became necessary with the jump to Unity2019 and/or .NET 4
+            CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-            return emProperty.ToString();
+            string serialized = prettyPrint ? emProperty.PrettyPrint() : emProperty.ToString();
+
+            // To avoid any unexpected side-effect, we'll change this back once we're done writing the file.
+            Thread.CurrentThread.CurrentCulture = originalCulture;
+
+            return serialized;
         }
 
         public static bool DeserializeKeyOnly<T>(this T emProperty, string serializedData, out string foundKey) where T : EmProperty
@@ -55,7 +72,7 @@
 
         public static string[] CommentTextLines(string[] textArray)
         {
-            var commentedArray = new string[textArray.Length];
+            string[] commentedArray = new string[textArray.Length];
 
             for (int i = 0; i < textArray.Length; i++)
                 commentedArray[i] = CommentText(textArray[i]);
@@ -65,7 +82,7 @@
 
         public static string[] CommentTextLinesCentered(string[] textArray)
         {
-            var commentedArray = new string[textArray.Length];
+            string[] commentedArray = new string[textArray.Length];
 
             int maxSize = 0;
             for (int i = 0; i < textArray.Length; i++)

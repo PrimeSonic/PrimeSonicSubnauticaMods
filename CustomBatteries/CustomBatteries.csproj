@@ -4,25 +4,26 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0845CEEA-976E-4D0B-AE5D-7DBBA6FE1476}</ProjectGuid>
+    <ProjectGuid>{A01C6565-0AD6-42A7-978E-463A91CA8CD6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UpgradedVehicles</RootNamespace>
-    <AssemblyName>UpgradedVehicles</AssemblyName>
+    <RootNamespace>CustomBatteries</RootNamespace>
+    <AssemblyName>CustomBatteries</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.3</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,78 +32,82 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.3</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony-1.2.0.1, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="0Harmony-1.2.0.1">
       <HintPath>..\DependenciesSubnautica\0Harmony-1.2.0.1.dll</HintPath>
-      <Private>False</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Assembly-CSharp-firstpass_publicized">
       <HintPath>..\DependenciesSubnautica\Assembly-CSharp-firstpass_publicized.dll</HintPath>
-      <Private>False</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp_publicized, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Assembly-CSharp_publicized">
       <HintPath>..\DependenciesSubnautica\Assembly-CSharp_publicized.dll</HintPath>
-      <Private>False</Private>
     </Reference>
-    <Reference Include="QModInstaller">
+    <Reference Include="QModInstaller, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DependenciesSubnautica\QModInstaller.dll</HintPath>
     </Reference>
-    <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="SMLHelper">
       <HintPath>..\DependenciesSubnautica\SMLHelper.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="UnityEngine">
       <HintPath>..\DependenciesSubnautica\UnityEngine.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\DependenciesSubnautica\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\DependenciesSubnautica\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HullArmorMk2.cs" />
-    <Compile Include="HullArmorMk3.cs" />
-    <Compile Include="HullArmorMk4.cs" />
-    <Compile Include="VehicleUpgradeModule.cs" />
-    <Compile Include="SpeedBooster.cs" />
-    <Compile Include="Patchers.cs" />
+    <Compile Include="API\CustomBatteriesService.cs" />
+    <Compile Include="API\ICustomBatteriesService.cs" />
+    <Compile Include="API\IModPluginPack.cs" />
+    <Compile Include="API\ITextPluginPack.cs" />
+    <Compile Include="API\IPluginPack.cs" />
+    <Compile Include="API\ModPluginPack.cs" />
+    <Compile Include="API\TextPluginPack.cs" />
+    <Compile Include="Items\CbCore.cs" />
+    <Compile Include="Items\CustomBattery.cs" />
+    <Compile Include="API\CustomPack.cs" />
+    <Compile Include="Items\CustomPowerCell.cs" />
+    <Compile Include="PackReading\EmTextPluginPack.cs" />
+    <Compile Include="PackReading\IParsedPluginPack.cs" />
+    <Compile Include="PackReading\PackReader.cs" />
+    <Compile Include="Packs\ExampleExternalMod.cs" />
+    <Compile Include="Patches\EnergyMixinPatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
-    <Compile Include="SaveData\BonusSpeedStyles.cs" />
-    <Compile Include="SaveData\ConfigSaveData.cs" />
-    <Compile Include="SaveData\UpgradeOptions.cs" />
-    <Compile Include="VehicleUpgrader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Content Include="Assets\HullArmorMk2.png">
+    <Content Include="Packs\EnzymeChargedBatteries\EnzymeBattery.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\HullArmorMk3.png">
+    <Content Include="Packs\EnzymeChargedBatteries\CustomBatteriesPlugin.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\HullArmorMk4.png">
+    <Content Include="Packs\EnzymeChargedBatteries\EnzymePowerCell.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\SpeedModule.png">
+    <Content Include="Packs\MidGameBatteries\DeepBattery.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Packs\MidGameBatteries\DeepPowerCell.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Packs\MidGameBatteries\CustomBatteriesPlugin.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

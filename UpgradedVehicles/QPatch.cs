@@ -4,28 +4,28 @@
     using System.Reflection;
     using Common;
     using Harmony;
+    using QModManager.API;
+    using QModManager.API.ModLoading;
     using SMLHelper.V2.Handlers;
     using UpgradedVehicles.SaveData;
 
+    [QModCore]
     public class QPatch
     {
         internal const string WorkBenchTab = "HullArmor";
 
+        [QModPatch]
         public static void Patch()
         {
+#if DEBUG
+            QuickLogger.DebugLogsEnabled = true;
+#endif
+
             try
             {
                 QuickLogger.Info("Started patching - " + QuickLogger.GetAssemblyVersion());
 
-                //Handle CrossMod Updates
-                if (TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
-                    TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
-                {
-                    VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule4, 4);
-                    VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
-                    VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule4);
-                    VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule5);
-                }
+                CrossModUpdates();
 
                 CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Armor Modules", SpriteManager.Get(TechType.VehicleArmorPlating));
 
@@ -57,6 +57,20 @@
             catch (Exception ex)
             {
                 QuickLogger.Error(ex);
+            }
+        }
+
+        public static void CrossModUpdates()
+        {
+            IQMod moreSeamothDepth = QModServices.Main.FindModById("MoreSeamothDepth");
+            if (moreSeamothDepth != null &&
+                TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
+                TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
+            {
+                VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule4, 4);
+                VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
+                VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule4);
+                VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule5);
             }
         }
     }
