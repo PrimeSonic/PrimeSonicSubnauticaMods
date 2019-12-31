@@ -1,0 +1,19 @@
+﻿CustomBatteriesPack:
+(
+    # Originally created by PrimeSonic #
+    PluginPackName:MidGameBatteries;
+    BatteryCapacity:100;
+    UnlocksWith:WhiteMushroom;
+    BatteryID:DeepBattery;
+    BatteryName:"Deep Battery";
+    BatteryFlavorText:"A longer lasting battery created from rare materials and stronger chemicals.";
+    BatteryParts:
+        WhiteMushroom,WhiteMushroom,WhiteMushroom,
+        Lithium,AluminumOxide,Magnetite;
+    BatteryIconFile:"DeepBattery.png";
+    PowerCellID:DeepPowerCell;
+    PowerCellName:"Deep Power Cell";
+    PowerCellFlavorText:"A longer lasting power cell created from rare materials and stronger chemicals.";
+    PowerCellAdditionalParts:;
+    PowerCellIconFile:"DeepPowerCell.png";
+);

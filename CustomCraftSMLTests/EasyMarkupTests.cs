@@ -180,6 +180,7 @@
         [TestCase("TestKey : 1, 2, 3, 4, 5; ")]
         [TestCase(" TestKey : 1 , 2 , 3 , 4 , 5 ;")]
         [TestCase("TestKey:\r\n1,\r\n2,\r\n3,\r\n4,\r\n5;")]
+        [TestCase("TestKey:\r\n    1,2,3,\r\n    4,5;")]
         public void EmPropertyIntList_FromString_GoodString_GetExpected(string goodString)
         {
             var values = new List<int> { 1, 2, 3, 4, 5 };
