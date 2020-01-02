@@ -4,20 +4,20 @@
 
     internal static class DisplayLanguagePatching
     {
-        public const string OverClockKey = "OverClocked";
-        public const string CompletedKey = "Completed";
-        public const string StorageKey = "Storage";
-        public const string PrevSpeedKey = "PrevSpeed";
-        public const string NextSpeedKey = "NextSpeed";
-        public const string ToggleIonPowerKey = "PowerButtonDesc";
-        public const string OpenStorageKey = "OpenStorage";
-        public const string PoweredOffKey = "PoweredOff";
-        public const string ReadyKey = "Ready";
-        public const string MaxKey = "Max";
-        public const string HighKey = "High";
-        public const string MinKey = "Min";
-        public const string LowKey = "Low";
-        public const string OffKey = "Off";
+        public const string OverClockKey = "ICG_OverClocked";
+        public const string CompletedKey = "ICG_Completed";
+        public const string StorageKey = "ICG_Storage";
+        public const string PrevSpeedKey = "ICG_PrevSpeed";
+        public const string NextSpeedKey = "ICG_NextSpeed";
+        public const string ToggleIonPowerKey = "ICG_PowerButtonDesc";
+        public const string OpenStorageKey = "ICG_OpenStorage";
+        public const string PoweredOffKey = "ICG_PoweredOff";
+        public const string ReadyKey = "ICG_Ready";
+        public const string MaxKey = "ICG_Max";
+        public const string HighKey = "ICG_High";
+        public const string MinKey = "ICG_Min";
+        public const string LowKey = "ICG_Low";
+        public const string OffKey = "ICG_Off";
 
         internal static void AdditionPatching()
         {
