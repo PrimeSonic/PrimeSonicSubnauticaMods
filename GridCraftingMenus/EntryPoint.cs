@@ -1,7 +1,9 @@
 ﻿namespace GridCraftingMenus
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
+    using System.Reflection.Emit;
     using Harmony;
     using QModManager.API.ModLoading;
     using UnityEngine;
@@ -20,9 +22,37 @@
     }
 
     [HarmonyPatch(typeof(uGUI_CraftNode))]
-    [HarmonyPatch(nameof(uGUI_CraftNode.CreateIcon))]
+    [HarmonyPatch("CreateIcon")]
     internal static class UguiCraftNodePatcher
     {
+        [HarmonyTranspiler]
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            bool foundSetBackgroundRadius = false;
+            bool foundSetPosition = false;
+            MethodInfo setRadiusMethod = typeof(uGUI_ItemIcon).GetMethod(nameof(uGUI_ItemIcon.SetBackgroundRadius));
+            MethodInfo setPositionMethod = typeof(uGUI_ItemIcon).GetMethod(nameof(uGUI_ItemIcon.SetPosition), new Type[] { typeof(float), typeof(float) });
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (!foundSetBackgroundRadius)
+                {                    
+                    foundSetBackgroundRadius = instruction.opcode.Equals(OpCodes.Callvirt) &&
+                                               instruction.operand.Equals(setRadiusMethod);
+                }
+                else if (!foundSetPosition)
+                {
+                    
+                    foundSetPosition = instruction.opcode.Equals(OpCodes.Callvirt) &&
+                                       instruction.operand.Equals(setPositionMethod);
+
+                    yield return new CodeInstruction(OpCodes.Nop);
+                    continue;
+                }
+
+                yield return instruction;
+            }
+        }
+
         [HarmonyPostfix]
         public static void PostFix(ref uGUI_CraftNode __instance)
         {
@@ -52,7 +82,7 @@
 
             x += 0.5f * width;
 
-            node.icon.SetPosition(x, y);            
+            node.icon.SetPosition(x, y);
         }
 
         private static bool UseGrid(ref uGUI_CraftNode parent)
