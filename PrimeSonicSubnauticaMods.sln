@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsEnhancedSonar", "Cyc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomBatteries", "CustomBatteries\CustomBatteries.csproj", "{A01C6565-0AD6-42A7-978E-463A91CA8CD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridCraftingMenus", "GridCraftingMenus\GridCraftingMenus.csproj", "{8FD36296-373D-4539-B8ED-9D8BB2065760}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
@@ -152,6 +154,10 @@ Global
 		{A01C6565-0AD6-42A7-978E-463A91CA8CD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A01C6565-0AD6-42A7-978E-463A91CA8CD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A01C6565-0AD6-42A7-978E-463A91CA8CD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FD36296-373D-4539-B8ED-9D8BB2065760}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FD36296-373D-4539-B8ED-9D8BB2065760}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FD36296-373D-4539-B8ED-9D8BB2065760}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FD36296-373D-4539-B8ED-9D8BB2065760}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

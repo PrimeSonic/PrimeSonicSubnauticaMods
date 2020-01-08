@@ -1,0 +1,8 @@
+{
+  "Id": "GridCraftingMenus",
+  "DisplayName": "GridCraftingMenus",
+  "Author": "PrimeSonic",
+  "Version": "1.0.0",
+  "Enable": true,
+  "AssemblyName": "GridCraftingMenus.dll"
+}
