@@ -71,41 +71,6 @@
         public LiveMixin LifeMix => ParentVehicle.liveMixin;
 
         /// <summary>
-        /// Calculates the new maximum hit points based on the current depth index.
-        /// </summary>
-        /// <returns></returns>
-        private float MaxHitPoints()
-        {
-            //             Depth Index
-            //              0      1      2      3      4*     5*
-            //  ExoSuit    600    750    900
-            //  Seamoth++  200    280    360    440    520    600
-            //  Seamoth    200    300    400    500
-
-            // Original BaseHP values from LiveMixin in asset.resources
-
-            float bonusHpRatio = 0f;
-            float baseHp = 100f;
-
-            if (IsExosuit)
-            {
-                bonusHpRatio = 0.25f;
-                baseHp = 600f;
-            }
-
-            if (IsSeamoth)
-            {
-                const int DefaultSeamothDepthModulesCount = 3;
-                bool hasModdedDepthModules = SeamothDepthModules.Count > DefaultSeamothDepthModulesCount;
-
-                bonusHpRatio = hasModdedDepthModules ? 0.4f : 0.5f;
-                baseHp = 200f;
-            }
-
-            return baseHp * (1f + this.DepthIndex * bonusHpRatio);
-        }
-
-        /// <summary>
         /// Calculates the speed multiplier based on the number of speed modules and current depth index.
         /// </summary>
         private float GetSpeedMultiplierBonus(float speedBoosterCount)
@@ -174,31 +139,27 @@
         /// <summary>
         /// Calculates the general damage reduction fraction based off the number of hull armor modules and the current depth index.
         /// </summary>
-        private float GetGeneralArmorFraction(int armorModuleCount)
+        private float GetGeneralArmorFraction(float armorModuleCount)
         {
             //               Depth Index
             // Armor Modules  0      1      2      3      4*     5*
-            //      0        100%   95%    90%    85%    80%    75%
-            //      1        90%    85%    80%    75%    70%    65%
-            //      2        82%    77%    72%    67%    62%    57%
-            //      3        76%    71%    66%    61%    56%    51%
-            //      4        70%    65%    60%    55%    50%    45%
-            //      5        66%    61%    56%    51%    46%    41%
-            //      6        64%    59%    54%    49%    44%    39%
-            //      7        63%    58%    53%    48%    43%    38%
-            //      8        62%    57%    52%    47%    42%    37%
-            //      9        61%    56%    51%    46%    41%    36%
+            //      0          0%    5%    10%    15%    20%    25%
+            //      1         10%   15%    20%    25%    30%    35%
+            //      2         20%   25%    30%    35%    40%    45%
+            //      3         30%   35%    40%    45%    50%    55%
+            //      4         40%   45%    50%    55%    60%    65%
+            //      5         50%   55%    60%    65%    70%    75%
+            //      6         60%   65%    70%    75%    80%    85%
+            //      7         70%   75%    80%    85%    90%    95%
+            //      8         80%   85%    90%    95%    99%    99%
+            //      9         90%   95%    99%    99%    99%    99%
 
-            float damageReduction = 1f;
+            float reduction = 0.10f * armorModuleCount;
+            float bonus = 0.05f * this.DepthIndex;
 
-            float reduction = 0.10f;
-            while (armorModuleCount-- > 0)
-            {
-                damageReduction -= reduction;
-                reduction = Mathf.Max(0.01f, reduction - 0.02f);
-            }
+            float damageReduction = Mathf.Max(1f - reduction, 0.01f);
 
-            return this.GeneralArmorFraction = damageReduction - (0.05f * this.DepthIndex);
+            return this.GeneralArmorFraction = damageReduction;
         }
 
         /// <summary>
@@ -307,17 +268,12 @@
 
             int nextDepthIndex = CalculateDepthModuleIndex();
 
-            bool updateHp = this.DepthIndex != nextDepthIndex;
-            bool updateArmor = updateHp || ArmorPlatingModules.ContainsKey(upgradeModule);
-            bool updateSpeed = updateHp || upgradeModule == SpeedBoostingModule;
-            bool updateEfficiency = updateHp || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
+            bool indexChanged = this.DepthIndex != nextDepthIndex;
+            bool updateArmor = indexChanged || ArmorPlatingModules.ContainsKey(upgradeModule);
+            bool updateSpeed = indexChanged || upgradeModule == SpeedBoostingModule;
+            bool updateEfficiency = indexChanged || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
 
             this.DepthIndex = nextDepthIndex;
-
-            if (updateHp) // Hit Points
-            {
-                UpdateHitPoints();
-            }
 
             if (updateArmor) // Armor
             {
@@ -338,31 +294,6 @@
                     UpdateSpeedRating(speedBoosterCount);
                 }
             }
-        }
-
-        private void UpdateHitPoints()
-        {
-            float originalMaxHp = this.LifeMix.data.maxHealth;
-            float originalHp = this.LifeMix.health;
-
-            float nextMaxHp = MaxHitPoints();
-
-            float nextHp;
-
-            if (originalMaxHp <= originalHp)
-            {
-                nextHp = nextMaxHp;
-            }
-            else
-            {
-                float ratio = originalHp / originalMaxHp;
-                nextHp = Mathf.Min(ratio * nextMaxHp, nextMaxHp);
-            }
-
-            this.LifeMix.data.maxHealth = nextMaxHp;
-            this.LifeMix.health = nextHp;
-
-            ErrorMessage.AddMessage($"Vehicle durability is now {nextMaxHp}");
         }
 
         private void UpdateSpeedRating(float speedBoosterCount)
