@@ -23,26 +23,26 @@
     }
 
     [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch(nameof(SeaMoth.Start))]
-    internal class SeaMoth_Start_Patcher
+    [HarmonyPatch(nameof(SeaMoth.Awake))]
+    internal class SeaMoth_Awake_Patcher
     {
         [HarmonyPrefix]
         internal static void Prefix(ref SeaMoth __instance)
         {
-            QuickLogger.Debug("SeaMoth_Start_Patcher");
+            QuickLogger.Debug(nameof(SeaMoth_Awake_Patcher));
             VehicleUpgrader vehicleUpgrader = __instance.gameObject.EnsureComponent<VehicleUpgrader>();
             vehicleUpgrader.Initialize(ref __instance);
         }
     }
 
     [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch(nameof(Exosuit.Start))]
-    internal class Exosuit_Start_Patcher
+    [HarmonyPatch(nameof(Exosuit.Awake))]
+    internal class Exosuit_Awake_Patcher
     {
         [HarmonyPrefix]
         internal static void Prefix(ref Exosuit __instance)
         {
-            QuickLogger.Debug("Exosuit_Start_Patcher");
+            QuickLogger.Debug(nameof(Exosuit_Awake_Patcher));
             VehicleUpgrader vehicleUpgrader = __instance.gameObject.EnsureComponent<VehicleUpgrader>();
             vehicleUpgrader.Initialize(ref __instance);
         }
@@ -55,7 +55,7 @@
         [HarmonyPostfix]
         internal static void Postfix(ref SeaMoth __instance, TechType techType)
         {
-            QuickLogger.Debug("SeaMoth_OnUpgradeModuleChange_Patcher");
+            QuickLogger.Debug($"{nameof(SeaMoth_OnUpgradeModuleChange_Patcher)} {techType.AsString()}");
             __instance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref __instance);
         }
     }
@@ -67,7 +67,7 @@
         [HarmonyPostfix]
         internal static void Postfix(ref Exosuit __instance, TechType techType)
         {
-            QuickLogger.Debug("Exosuit_OnUpgradeModuleChange_Patcher");
+            QuickLogger.Debug($"{nameof(Exosuit_OnUpgradeModuleChange_Patcher)} {techType.AsString()}");
             __instance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref __instance);
         }
     }

@@ -7,7 +7,7 @@
 
     public class VehicleUpgrader : MonoBehaviour
     {
-        internal static readonly ICollection<TechType> CommonUpgradeModules = new HashSet<TechType>()
+        internal static readonly ICollection<TechType> CommonUpgradeModules = new List<TechType>()
         {
             TechType.ExoHullModule2,
             TechType.ExoHullModule1,
@@ -35,6 +35,16 @@
             { TechType.VehicleHullModule3, 3 },
             { TechType.VehicleHullModule2, 2 },
             { TechType.VehicleHullModule1, 1 },
+            // Depth Modules Mk4 and Mk5 optionaly added during patching
+        };
+
+        internal static ICollection<TechType> DepthUpgradeModules = new List<TechType>
+        {
+            TechType.ExoHullModule2,
+            TechType.ExoHullModule1,
+            TechType.VehicleHullModule3,
+            TechType.VehicleHullModule2,
+            TechType.VehicleHullModule1
             // Depth Modules Mk4 and Mk5 optionaly added during patching
         };
 
@@ -185,6 +195,7 @@
 
         internal void Initialize<TVehicle>(ref TVehicle vehicle) where TVehicle : Vehicle
         {
+            QuickLogger.Debug("Initialized vehicle");
             ParentVehicle = vehicle;
 
             IsSeamoth = vehicle is SeaMoth;
@@ -257,7 +268,7 @@
         internal void UpgradeVehicle<TVehicle>(TechType upgradeModule, ref TVehicle vehicle)
             where TVehicle : Vehicle
         {
-            if (ParentVehicle == null)
+            if (ParentVehicle != vehicle)
                 Initialize(ref vehicle);
 
             if (!CommonUpgradeModules.Contains(upgradeModule))
@@ -266,14 +277,12 @@
                 return;
             }
 
-            int nextDepthIndex = CalculateDepthModuleIndex();
+            bool updateAll = DepthUpgradeModules.Contains(upgradeModule);
+            bool updateArmor = updateAll || ArmorPlatingModules.ContainsKey(upgradeModule);
+            bool updateSpeed = updateAll || upgradeModule == SpeedBoostingModule;
+            bool updateEfficiency = updateAll || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
 
-            bool indexChanged = this.DepthIndex != nextDepthIndex;
-            bool updateArmor = indexChanged || ArmorPlatingModules.ContainsKey(upgradeModule);
-            bool updateSpeed = indexChanged || upgradeModule == SpeedBoostingModule;
-            bool updateEfficiency = indexChanged || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
-
-            this.DepthIndex = nextDepthIndex;
+            this.DepthIndex = CalculateDepthModuleIndex();
 
             if (updateArmor) // Armor
             {
