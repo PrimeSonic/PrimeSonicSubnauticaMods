@@ -21,6 +21,7 @@
         internal const string ConfigKey = "UpgradedVehiclesOptions";
         internal const string SeamothBonusSpeedID = "SeamothBonusSpeed";
         internal const string ExosuitBonusSpeedID = "ExosuitBonusSpeed";
+        internal const string EnableDebugLogsID = "EnableDebugLogging";
 
         private static readonly string ConfigDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private static string ConfigFile => Path.Combine(ConfigDirectory, $"{ConfigKey}.txt");
@@ -39,19 +40,28 @@
             set => EmExosuitBonus.Value = value;
         }
 
+        internal bool DebugLogsEnabled
+        {
+            get => EmDebugLogs.Value;
+            set => EmDebugLogs.Value = value;
+        }
+
         private readonly EmProperty<BonusSpeedStyles> EmSeamothBonus;
         private readonly EmProperty<BonusSpeedStyles> EmExosuitBonus;
+        private readonly EmProperty<bool> EmDebugLogs;
 
         private static ICollection<EmProperty> SaveDataDefinitions => new List<EmProperty>()
         {
             new EmProperty<BonusSpeedStyles>(SeamothBonusSpeedID, BonusSpeedStyles.Normal),
-            new EmProperty<BonusSpeedStyles>(ExosuitBonusSpeedID, BonusSpeedStyles.Normal)
+            new EmProperty<BonusSpeedStyles>(ExosuitBonusSpeedID, BonusSpeedStyles.Normal),
+            new EmProperty<bool>(EnableDebugLogsID, false){ Optional = true }
         };
 
         public ConfigSaveData() : base(ConfigKey, SaveDataDefinitions)
         {
             EmSeamothBonus = (EmProperty<BonusSpeedStyles>)Properties[SeamothBonusSpeedID];
             EmExosuitBonus = (EmProperty<BonusSpeedStyles>)Properties[ExosuitBonusSpeedID];
+            EmDebugLogs = (EmProperty<bool>)Properties[EnableDebugLogsID];
 
             OnValueExtractedEvent += IsReadDataValid;
         }
@@ -90,7 +100,10 @@
             }
         }
 
-        internal override EmProperty Copy() => new ConfigSaveData(this.SeamothBonusSpeedSetting, this.ExosuitBonusSpeedSetting);
+        internal override EmProperty Copy()
+        {
+            return new ConfigSaveData(this.SeamothBonusSpeedSetting, this.ExosuitBonusSpeedSetting);
+        }
 
         internal void InitializeSaveFile()
         {

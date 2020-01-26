@@ -17,13 +17,16 @@
         [QModPatch]
         public static void Patch()
         {
-#if DEBUG
-            QuickLogger.DebugLogsEnabled = true;
-#endif
-
             try
             {
                 QuickLogger.Info("Started patching - " + QuickLogger.GetAssemblyVersion());
+
+                //Handle Config Options
+                var configOptions = new UpgradeOptions();
+                configOptions.Initialize();
+
+                QuickLogger.DebugLogsEnabled = configOptions.DebugLogsEnabled;
+                QuickLogger.Debug("Debug logs enabled");
 
                 CrossModUpdates();
 
@@ -43,9 +46,7 @@
                 var hullArmorMk4Module = new HullArmorMk4(hullArmorMk3Module.TechType);
                 hullArmorMk4Module.Patch();
 
-                //Handle Config Options
-                var configOptions = new UpgradeOptions();
-                configOptions.Initialize();
+
 
                 VehicleUpgrader.SetBonusSpeedMultipliers(configOptions.SeamothBonusSpeedMultiplier, configOptions.ExosuitBonusSpeedMultiplier);
 
@@ -67,10 +68,13 @@
                 TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
                 TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
             {
+                QuickLogger.Info("Detected Seamoth Depth Modules Mk4 & Mk5");
                 VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule4, 4);
                 VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
                 VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule4);
                 VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule5);
+                VehicleUpgrader.DepthUpgradeModules.Add(vehicleHullModule4);
+                VehicleUpgrader.DepthUpgradeModules.Add(vehicleHullModule5);
             }
         }
     }
