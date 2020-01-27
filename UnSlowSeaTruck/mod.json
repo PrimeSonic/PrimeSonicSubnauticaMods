@@ -2,11 +2,9 @@
   "Id": "UnSlowSeaTruck",
   "DisplayName": "UnSlowSeaTruck",
   "Author": "PrimeSonic",
-  "Version": "1.0.1",
+  "Version": "1.1.0",
   "Enable": true,
   "Game": "BelowZero",
-  "AssemblyName": "UnSlowSeaTruck.dll",
-  "Dependencies": [ ],  
   "AssemblyName": "UnSlowSeaTruck.dll",
   "EntryMethod": "UnSlowSeaTruck.QPatch.Patch",
 }
