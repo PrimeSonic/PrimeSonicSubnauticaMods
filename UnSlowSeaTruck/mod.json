@@ -6,5 +6,5 @@
   "Enable": true,
   "Game": "BelowZero",
   "AssemblyName": "UnSlowSeaTruck.dll",
-  "EntryMethod": "UnSlowSeaTruck.QPatch.Patch",
+  "EntryMethod": "UnSlowSeaTruck.QPatch.Patch"
 }
