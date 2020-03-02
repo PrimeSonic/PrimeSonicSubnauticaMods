@@ -4,7 +4,7 @@
   "Author": "PrimeSonic",
   "Version": "1.2.2",
   "Enable": true,
-  "Game": "BelowZero",
+  "Game": "Both",
   "AssemblyName": "BetterBioReactor.dll",
   "EntryMethod": "BetterBioReactor.QPatch.Patch"
 }
