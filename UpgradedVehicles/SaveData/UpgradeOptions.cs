@@ -8,6 +8,8 @@
     {
         private readonly ConfigSaveData SaveData = new ConfigSaveData();
 
+        internal bool DebugLogsEnabled => SaveData.DebugLogsEnabled;
+
         internal float SeamothBonusSpeedMultiplier
         {
             get
@@ -74,8 +76,8 @@
 
         public override void BuildModOptions()
         {
-            AddChoiceOption(ConfigSaveData.SeamothBonusSpeedID, "Seamoth Bonus Speed", ConfigSaveData.SpeedSettingLabels, SeamothBonusSpeedIndex);
-            AddChoiceOption(ConfigSaveData.ExosuitBonusSpeedID, "Prawn Suit Bonus Speed", ConfigSaveData.SpeedSettingLabels, ExosuitBonusSpeedIndex);
+            AddChoiceOption(ConfigSaveData.SeamothBonusSpeedID, "Seamoth Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.SeamothBonusSpeedIndex);
+            AddChoiceOption(ConfigSaveData.ExosuitBonusSpeedID, "Prawn Suit Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.ExosuitBonusSpeedIndex);
         }
 
         private void OnBonusSpeedStyleChanged(object sender, ChoiceChangedEventArgs args)
@@ -83,11 +85,11 @@
             switch (args.Id)
             {
                 case ConfigSaveData.SeamothBonusSpeedID:
-                    SeamothBonusSpeedIndex = args.Index;
+                    this.SeamothBonusSpeedIndex = args.Index;
                     break;
 
                 case ConfigSaveData.ExosuitBonusSpeedID:
-                    ExosuitBonusSpeedIndex = args.Index;
+                    this.ExosuitBonusSpeedIndex = args.Index;
                     break;
 
                 default:

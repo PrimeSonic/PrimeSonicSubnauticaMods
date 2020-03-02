@@ -2,11 +2,9 @@
   "Id": "CustomCraft2SML",
   "DisplayName": "CustomCraft2SML",
   "Author": "PrimeSonic & contributors",
-  "Version": "1.8.2",
+  "Version": "1.8.3",
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
-  "EntryMethod": "CustomCraft2SML.QPatch.Patch",
   "Game": "Subnautica",
-  "Dependencies": [ "SMLHelper" ],
-  "Priority": "Last"
+  "Dependencies": [ "SMLHelper" ]
 }

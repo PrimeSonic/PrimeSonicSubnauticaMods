@@ -246,11 +246,10 @@
         {
             if (this.ProducingPower)
             {
-                if (this.Charge > this.Capacity + 1f)
+                if (this.Charge > this.Capacity)
                 {
                     // Overcharged
-                    float chargeOverTime = chargeRate * DayNightCycle.main.deltaTime;
-                    this.Charge = Mathf.Min(this.Charge + chargeOverTime, this.Capacity);
+                    this.Charge = Mathf.Min(this.Charge - chargeRate * DayNightCycle.main.deltaTime, this.Charge);
                 }
                 else // Normal operation
                 {

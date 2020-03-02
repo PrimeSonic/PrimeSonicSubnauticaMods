@@ -48,6 +48,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FCStudioHelpers", "FCStudio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsEnhancedSonar", "CyclopsEnhancedSonar\CyclopsEnhancedSonar.csproj", "{E347C779-52A3-428A-AC51-D02E5C606562}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomBatteries", "CustomBatteries\CustomBatteries.csproj", "{A01C6565-0AD6-42A7-978E-463A91CA8CD6}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnSlowSeaTruck", "UnSlowSeaTruck\UnSlowSeaTruck.csproj", "{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}"
 EndProject
 Global
@@ -68,6 +70,7 @@ Global
 		Utilities\Utilities.projitems*{7a11a1db-09f4-44a5-bcd7-2ceac6b1febd}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{8d209f6f-74bc-4c5f-bd7d-32f786b1e1d0}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{91d8d243-2590-4911-a827-c4c929e0ab69}*SharedItemsImports = 13
+		Utilities\Utilities.projitems*{a01c6565-0ad6-42a7-978e-463a91ca8cd6}*SharedItemsImports = 4
 		FCStudioHelpers\FCStudioHelpers.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{d390e5a9-2fff-48b8-acfc-9b49f0c1c4ce}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{e347c779-52a3-428a-ac51-d02e5c606562}*SharedItemsImports = 4
@@ -146,6 +149,10 @@ Global
 		{E347C779-52A3-428A-AC51-D02E5C606562}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E347C779-52A3-428A-AC51-D02E5C606562}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E347C779-52A3-428A-AC51-D02E5C606562}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A01C6565-0AD6-42A7-978E-463A91CA8CD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A01C6565-0AD6-42A7-978E-463A91CA8CD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A01C6565-0AD6-42A7-978E-463A91CA8CD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A01C6565-0AD6-42A7-978E-463A91CA8CD6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Release|Any CPU.ActiveCfg = Release|Any CPU

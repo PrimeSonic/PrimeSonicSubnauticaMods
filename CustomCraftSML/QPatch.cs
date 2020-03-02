@@ -2,32 +2,57 @@
 {
     using Common;
     using CustomCraft2SML.Serialization;
+    using QModManager.API.ModLoading;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Reflection;
 
+    [QModCore]
     public static class QPatch
     {
-        public static void Patch()
+        private static readonly string version = QuickLogger.GetAssemblyVersion();
+
+        [QModPrePatch]
+        public static void SetUpLogging()
         {
-            QuickLogger.Info($"Started patching. Version {QuickLogger.GetAssemblyVersion()}");
+            QuickLogger.Info($"Setting up logging. Version {version}");
+
+            CustomCraft2Config.CheckLogLevel();            
+        }
+
+        [QModPatch]
+        public static void RestoreFiles()
+        {
+            QuickLogger.Info($"Restoring files. Version {version}");
 
             try
             {
-                CustomCraft2Config.CheckLogLevel();
-
                 RestoreAssets();
-
                 HelpFilesWriter.HandleHelpFiles();
+            }
+            catch (Exception ex)
+            {
+                QuickLogger.Error($"Critical error during file restoration", ex);
+            }
+        }
 
+        // Using secret key to ensure that CC2 patches all these requests after all other SMLHelper mods
+        [QModPostPatch("594BAD715C15AC3ABFDA0B394DFF273F")]
+        public static void PatchRequestsFromFiles()
+        {
+            QuickLogger.Info($"Started patching. Version {version}");
+
+            try
+            {
                 WorkingFileParser.HandleWorkingFiles();
 
                 QuickLogger.Info("Finished patching.");
             }
             catch (Exception ex)
             {
-                QuickLogger.Error($"Critical error during patching{Environment.NewLine}{ex}");
+                QuickLogger.Error($"Critical error during file patching", ex);
             }
         }
 
@@ -36,7 +61,7 @@
             string prefix = "CustomCraft2SML.Assets.";
 
             var ass = Assembly.GetExecutingAssembly();
-            System.Collections.Generic.IEnumerable<string> resources = ass.GetManifestResourceNames().Where(name => name.StartsWith(prefix));
+            IEnumerable<string> resources = ass.GetManifestResourceNames().Where(name => name.StartsWith(prefix));
 
             foreach (string resource in resources)
             {

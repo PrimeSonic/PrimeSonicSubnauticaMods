@@ -212,15 +212,7 @@
         /// Provides a set of logging APIs that other mods can use.<para/>
         /// Debug level logs will only be printed of MCU's debug logging is enabled.
         /// </summary>
-        public static IMCULogger Logger
-        {
-            get
-            {
-                ModConfig.LoadOnDemand();
-                
-                return singleton;
-            }
-        }
+        public static IMCULogger Logger => singleton;
 
         public bool DebugLogsEnabled => QuickLogger.DebugLogsEnabled;
 

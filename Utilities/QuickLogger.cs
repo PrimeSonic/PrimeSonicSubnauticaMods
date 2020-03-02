@@ -1,7 +1,6 @@
 ﻿namespace Common
 {
     using System;
-    using System.Diagnostics;
     using System.Reflection;
 
     internal static class QuickLogger
@@ -71,23 +70,30 @@
         }
 
         public static string GetAssemblyVersion(Assembly assembly)
-        {            
-            var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+        {
+            Version version = assembly.GetName().Version;
 
-            if (fvi.FilePrivatePart > 0)
+            //      Major Version
+            //      Minor Version
+            //      Build Number
+            //      Revision
+
+            if (version.Revision > 0)
             {
-                return $"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}.{fvi.FilePrivatePart}";
-            }
-            else if (fvi.FileBuildPart > 0)
-            {
-                return $"{fvi.FileMajorPart}.{fvi.FileMinorPart}.{fvi.FileBuildPart}";
-            }
-            else if (fvi.FileMinorPart > 0)
-            {
-                return $"{fvi.FileMajorPart}.{fvi.FileMinorPart}";
+                return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
             }
 
-            return $"{fvi.FileMajorPart}";
+            if (version.Build > 0)
+            {
+                return $"{version.Major}.{version.Minor}.{version.Build}";
+            }
+
+            if (version.Minor > 0)
+            {
+                return $"{version.Major}.{version.Minor}";
+            }
+
+            return $"{version.Major}";
         }
     }
 }

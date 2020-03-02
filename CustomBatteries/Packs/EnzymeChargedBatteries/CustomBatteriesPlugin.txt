@@ -1,0 +1,19 @@
+﻿CustomBatteriesPack:
+(
+    # Originally created by SeraphimRisen #
+    PluginPackName:EnzymeChargedBatteries;
+    BatteryCapacity:1000;
+    UnlocksWith:HatchingEnzymes;
+    BatteryID:EnzymeBattery;
+    BatteryName:"Enzyme-Charged Ion Battery";
+    BatteryFlavorText:"A new battery based on the discovery of a chemical interaction between hatching enzymes, radiation, and ion crystals.";
+    BatteryParts:
+        PrecursorIonBattery,HatchingEnzymes,HatchingEnzymes,
+        Lead,UraniniteCrystal,UraniniteCrystal;
+    BatteryIconFile:"EnzymeBattery.png";
+    PowerCellID:EnzymePowerCell;
+    PowerCellName:"Enzyme-Charged Ion Power Cell";
+    PowerCellFlavorText:"A new power cell based on the discovery of a chemical interaction between hatching enzymes, radiation, and ion crystals.";
+    PowerCellAdditionalParts:;
+    PowerCellIconFile:"EnzymePowerCell.png";
+);

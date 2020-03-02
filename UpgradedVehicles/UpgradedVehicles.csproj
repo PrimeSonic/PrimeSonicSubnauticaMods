@@ -50,6 +50,9 @@
       <HintPath>..\DependenciesSubnautica\Assembly-CSharp_publicized.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="QModInstaller">
+      <HintPath>..\DependenciesSubnautica\QModInstaller.dll</HintPath>
+    </Reference>
     <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DependenciesSubnautica\SMLHelper.dll</HintPath>
@@ -71,6 +74,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HullArmorMk2.cs" />
+    <Compile Include="HullArmorMk3.cs" />
+    <Compile Include="HullArmorMk4.cs" />
+    <Compile Include="VehicleUpgradeModule.cs" />
     <Compile Include="SpeedBooster.cs" />
     <Compile Include="Patchers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,6 +93,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\HullArmorMk2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\HullArmorMk3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\HullArmorMk4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\SpeedModule.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

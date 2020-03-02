@@ -79,10 +79,16 @@
         {
             Type type = typeof(T);
 
-            if (type.IsEnum)
-                return (T)Enum.Parse(type, value);
-            else
-                return (T)Convert.ChangeType(value, typeof(T));
+            try
+            {
+                return type.IsEnum
+                    ? (T)Enum.Parse(type, value, true)
+                    : (T)Convert.ChangeType(value, typeof(T));
+            }
+            catch
+            {
+                return default;
+            }
         }
 
         internal override bool ValueEquals(EmProperty other)
