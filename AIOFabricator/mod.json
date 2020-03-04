@@ -1,0 +1,10 @@
+{
+  "Id": "AIOFabricator",
+  "DisplayName": "AIOFabricator",
+  "Author": "PrimeSonic",
+  "Version": "1.0.0",
+  "Enable": true,
+  "Game": "Subnautica", 
+  "AssemblyName": "AIOFabricator.dll",
+  "VersionDependencies": { "SMLHelper": "2.6.0" }
+}
