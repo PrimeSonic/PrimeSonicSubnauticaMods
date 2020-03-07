@@ -28,7 +28,7 @@
         public AiOFab()
             : base(AioFabScheme,
                    "All-In-One Fabricator",
-                   "Multi-fuction fabricator capable of synthesizing all types of blueprints.")
+                   "Multi-fuction fabricator capable of synthesizing most blueprints.")
         {
             OnStartedPatching += LoadImageFiles;
             OnFinishedPatching += () =>
@@ -129,8 +129,9 @@
                 {
                     new Ingredient(TechType.Titanium, 3),
                     new Ingredient(TechType.ComputerChip, 2),
-                    new Ingredient(TechType.Diamond, 2),
-                    new Ingredient(TechType.Lead, 1),
+                    new Ingredient(TechType.WiringKit, 1),
+                    new Ingredient(TechType.Diamond, 1),
+                    new Ingredient(TechType.AluminumOxide, 1),
                     new Ingredient(TechType.Magnetite, 1)
                 }
             };

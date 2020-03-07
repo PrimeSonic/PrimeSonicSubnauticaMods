@@ -1170,6 +1170,15 @@
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>The ITechData from the modded item if it exists; Otherwise, returns <c>null</c>.</returns>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.GetTechData(TechType)">
+            <summary>
+            Safely accesses the crafting data from any item.<para/>
+            WARNING: This method is highly dependent on mod load order. 
+            Make sure your mod is loading after the mod whose TechData you are trying to access.
+            </summary>
+            <param name="techType">The TechType whose TechData you want to access.</param>
+            <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#SetTechData(TechType,ITechData)">
             <summary>
             <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
@@ -1283,6 +1292,15 @@
             </summary>
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>The ITechData from the modded item if it exists; Otherwise, returns <c>null</c>.</returns>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#GetTechData(TechType)">
+            <summary>
+            Safely accesses the crafting data from any item.<para/>
+            WARNING: This method is highly dependent on mod load order. 
+            Make sure your mod is loading after the mod whose TechData you are trying to access.
+            </summary>
+            <param name="techType">The TechType whose TechData you want to access.</param>
+            <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
         </member>
         <member name="T:SMLHelper.V2.Handlers.CraftTreeHandler">
             <summary>
@@ -2608,6 +2626,15 @@
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>The ITechData from the modded item if it exists; Otherwise, returns <c>null</c>.</returns>
         </member>
+        <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.GetTechData(TechType)">
+            <summary>
+            Safely accesses the crafting data from any item.<para/>
+            WARNING: This method is highly dependent on mod load order. 
+            Make sure your mod is loading after the mod whose TechData you are trying to access.
+            </summary>
+            <param name="techType">The TechType whose TechData you want to access.</param>
+            <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
+        </member>
         <member name="T:SMLHelper.V2.Interfaces.ICraftTreeHandler">
             <summary>
             A handler class for creating and editing of crafting trees.
@@ -3876,6 +3903,45 @@
             <summary>
             Returns the path to the current save slot's directory.
             </summary>
+        </member>
+        <member name="T:SMLHelper.V2.Utility.SMLProtobufSerializer">
+            <summary>
+            Allows saving mod components directly into game files
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.Serialize(System.IO.Stream,System.Object)">
+            <summary>
+            Save an object to a stream
+            </summary>
+            <param name="stream">Stream for the object to be saved to</param>
+            <param name="source">Object to be saved</param>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.CanSerialize(System.Type)">
+            <summary>
+            Checks if a type can be serialized
+            </summary>
+            <param name="type">Type to check for serializability</param>
+            <returns>true if type is registered</returns>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.RegisterType(System.Type)">
+            <summary>
+            Registers Type to be serialized with SMLProtobufSerializer
+            </summary>
+            <param name="type">Type to be serialized</param>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.RegisterTypes(System.Reflection.Assembly)">
+            <summary>
+            Registers all types from an assembly to be serialized with SMLProtobufSerializer
+            </summary>
+            <param name="assembly">Assembly to register types from</param>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.Deserialize(System.IO.Stream,System.Object,System.Type)">
+            <summary>
+            Load an Object from a Stream
+            </summary>
+            <param name="stream">Stream to load the object from</param>
+            <param name="target">Object output</param>
+            <param name="type">Type of the object to load</param>
         </member>
         <member name="T:SMLHelper.V2.Utility.StorageHelperExtensions">
             <summary>
