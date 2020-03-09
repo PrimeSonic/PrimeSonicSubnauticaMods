@@ -13,7 +13,7 @@
         </member>
         <member name="P:SMLHelper.V2.Assets.Buildable.HandOverText">
             <summary>
-            Override with the text to be displayed when your hover the cursor over the built item.
+            Obsolete. No longer functional. Handle with a customized HandTarget instead.
             </summary>
         </member>
         <member name="M:SMLHelper.V2.Assets.Buildable.#ctor(System.String,System.String,System.String)">
@@ -53,7 +53,7 @@
         </member>
         <member name="T:SMLHelper.V2.Assets.CustomFabricator">
             <summary>
-            An asset class similar to <seealso cref="T:SMLHelper.V2.Assets.Buildable"/> that streamlines the process of creating a custom fabricator with a custom crafting tree.
+            An asset class inheriting from <seealso cref="T:SMLHelper.V2.Assets.Buildable"/> that streamlines the process of creating a custom fabricator with a custom crafting tree.
             </summary>
             <seealso cref="T:SMLHelper.V2.Assets.ModPrefab"/>
         </member>
@@ -151,7 +151,22 @@
         </member>
         <member name="P:SMLHelper.V2.Assets.CustomFabricator.TreeTypeID">
             <summary>
-            The ID value for your custom craft tree. This is set in the <see cref="M:SMLHelper.V2.Assets.CustomFabricator.CreateCustomCraftTree(CraftTree.Type@)"/> method.
+            The ID value for your custom craft tree. This is set after this <see cref="M:SMLHelper.V2.Assets.Spawnable.Patch"/> method is invoked.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.Root">
+            <summary>
+            Gets the root node of the crafting tree. This is set after this <see cref="M:SMLHelper.V2.Assets.Spawnable.Patch"/> method is invoked.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.CategoryForPDA">
+            <summary>
+            Override with the category within the group in the PDA blueprints where this item appears.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.CustomFabricator.GroupForPDA">
+            <summary>
+            Override with the main group in the PDA blueprints where this item appears.
             </summary>
         </member>
         <member name="M:SMLHelper.V2.Assets.CustomFabricator.GetGameObject">
@@ -173,7 +188,6 @@
             - <see cref="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(TechType,System.String)"/><para/>
             - <see cref="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(System.String,System.String)"/><para/>
             - <see cref="M:SMLHelper.V2.Assets.CustomFabricator.AddCraftNode(SMLHelper.V2.Assets.Craftable,System.String)"/><para/>
-            - <see cref="M:SMLHelper.V2.Assets.CustomFabricator.AddTabNode(System.String,System.String,Atlas.Sprite,System.String)"/>
             </summary>
             <param name="craftTreeType"></param>
         </member>
@@ -213,6 +227,29 @@
             <param name="parentTabId">Optional. The parent tab of this craft node.<para/>
             When this value is null, the item's <see cref="P:SMLHelper.V2.Assets.Craftable.StepsToFabricatorTab"/> property will be checked instead.<para/>
             The craft node will be added to the root of the craft tree if both are null.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Assets.Equipable">
+            <summary>
+            An item that can be crafted and equipped.
+            </summary>    
+            <seealso cref="T:SMLHelper.V2.Assets.Spawnable" />
+            <seealso cref="T:SMLHelper.V2.Assets.Craftable" />
+        </member>
+        <member name="P:SMLHelper.V2.Assets.Equipable.EquipmentType">
+            <summary>
+            Gets the type of equipment slot this item can fit into.
+            </summary>
+            <value>
+            The type of the equipment slot compatible with this item.
+            </value>
+        </member>
+        <member name="M:SMLHelper.V2.Assets.Equipable.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SMLHelper.V2.Assets.Equipable"/> class.
+            </summary>
+            <param name="classId">The main internal identifier for this item. Your item's <see cref="T:TechType" /> will be created using this name.</param>
+            <param name="friendlyName">The name displayed in-game for this item whether in the open world or in the inventory.</param>
+            <param name="description">The description for this item; Typically seen in the PDA, inventory, or crafting screens.</param>
         </member>
         <member name="T:SMLHelper.V2.Assets.Fish">
             <summary>
@@ -467,7 +504,6 @@
         <member name="M:SMLHelper.V2.Assets.PdaItem.#ctor(System.String,System.String,System.String)">
             <summary>
             Initializes a new <see cref="T:SMLHelper.V2.Assets.PdaItem"/>, the basic class for any item that appears among your PDA blueprints.
-            DO NOT USE THIS CLASS DIRECTLY! Use <seealso cref="T:SMLHelper.V2.Assets.Craftable"/> or <see cref="T:SMLHelper.V2.Assets.Buildable"/> instead.
             </summary>
             <param name="classId">The main internal identifier for this item. Your item's <see cref="T:TechType" /> will be created using this name.</param>
             <param name="friendlyName">The name displayed in-game for this item whether in the open world or in the inventory.</param>
@@ -517,6 +553,12 @@
             <summary>
             Returns <c>true</c> if this spawnable item has already been patched; Otherwise <c>false</c>.
             This will become <c>true</c> after the <seealso cref="M:SMLHelper.V2.Assets.Spawnable.Patch"/> method has finished running.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.Spawnable.SizeInInventory">
+            <summary>
+            Returns the size that this entity will occupy inside the player inventory.<br/>
+            By default this will be 1x1. Override to change the size.
             </summary>
         </member>
         <member name="M:SMLHelper.V2.Assets.Spawnable.#ctor(System.String,System.String,System.String)">
@@ -685,11 +727,14 @@
         </member>
         <member name="T:SMLHelper.V2.Crafting.ModCraftTreeRoot">
             <summary>
-            The root node of a CraftTree. The whole tree starts here.
+            The root node of a CraftTree. The whole tree starts here.<para/>
+            Build up your custom crafting tree from this root node using the AddCraftingNode and AddTabNode methods.<br/>
+            This tree will be automatically patched into the game. No further calls into <see cref="T:SMLHelper.V2.Handlers.CraftTreeHandler"/> required.<para/>
+            For more advanced usage, you can replace the default value of <see cref="F:SMLHelper.V2.Crafting.ModCraftTreeRoot.CraftTreeCreation"/> with your own custom function.        
             </summary>    
             <seealso cref="T:SMLHelper.V2.Crafting.ModCraftTreeLinkingNode" />
         </member>
-        <member name="P:SMLHelper.V2.Crafting.ModCraftTreeRoot.CraftTree">
+        <member name="P:SMLHelper.V2.Crafting.ModCraftTreeRoot.CustomCraftingTree">
             <summary>
             Dynamically creates the CraftTree object for this crafting tree.
             The CraftNode objects were created and linked as the classes of the ModCraftTreeFamily were created and linked.
@@ -701,6 +746,13 @@
             </summary>
             <param name="tree">The tree to create the ModCraftTreeRoot from.</param>
             <param name="root"></param>
+        </member>
+        <member name="F:SMLHelper.V2.Crafting.ModCraftTreeRoot.CraftTreeCreation">
+            <summary>
+            The craft tree creation function.<br/>
+            Default implementaion returns a new <see cref="T:CraftTree"/> instantiated with <see cref="P:SMLHelper.V2.Crafting.ModCraftTreeRoot.SchemeAsString"/> and the root <see cref="T:CraftNode"/>.<para/>
+            You can replace this function with your own to have more control of the crafting tree when it is being created.
+            </summary>
         </member>
         <member name="M:SMLHelper.V2.Crafting.ModCraftTreeRoot.GetTabNode(System.String[])">
             <summary>
@@ -894,6 +946,21 @@
         <member name="P:SMLHelper.V2.Handler.TechTypeHandler">
             <summary>
             A handler class for everything related to creating new TechTypes.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.LootDistributionHandler">
+            <summary>
+            A handler class for adding and editing resource spawns.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.WorldEntityDatabaseHandler">
+            <summary>
+            A handler for adding custom entries to the world entity database.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.PDAEncyclopediaHandler">
+            <summary>
+            A handler for adding custom entries to the PDA Encyclopedia.
             </summary>
         </member>
         <member name="T:SMLHelper.V2.Handlers.BioReactorHandler">
@@ -1103,6 +1170,15 @@
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>The ITechData from the modded item if it exists; Otherwise, returns <c>null</c>.</returns>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.GetTechData(TechType)">
+            <summary>
+            Safely accesses the crafting data from any item.<para/>
+            WARNING: This method is highly dependent on mod load order. 
+            Make sure your mod is loading after the mod whose TechData you are trying to access.
+            </summary>
+            <param name="techType">The TechType whose TechData you want to access.</param>
+            <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#SetTechData(TechType,ITechData)">
             <summary>
             <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
@@ -1217,6 +1293,15 @@
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>The ITechData from the modded item if it exists; Otherwise, returns <c>null</c>.</returns>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#GetTechData(TechType)">
+            <summary>
+            Safely accesses the crafting data from any item.<para/>
+            WARNING: This method is highly dependent on mod load order. 
+            Make sure your mod is loading after the mod whose TechData you are trying to access.
+            </summary>
+            <param name="techType">The TechType whose TechData you want to access.</param>
+            <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
+        </member>
         <member name="T:SMLHelper.V2.Handlers.CraftTreeHandler">
             <summary>
             A handler class for creating and editing of crafting trees.
@@ -1229,15 +1314,16 @@
         </member>
         <member name="M:SMLHelper.V2.Handlers.CraftTreeHandler.CreateCustomCraftTreeAndType(System.String,CraftTree.Type@)">
             <summary>
-            <para>Your first method call to start a new custom crafting tree.</para>
-            <para>Creating a new CraftTree only makes sense if you're going to use it in a new type of <see cref="T:GhostCrafter"/>.</para>
+            Your first method call to start a new custom crafting tree.<br/>
+            Creating a new CraftTree only makes sense if you're going to use it in a new type of <see cref="T:GhostCrafter"/>.
             </summary>
             <param name="name">The name for the new <see cref="T:CraftTree.Type" /> enum.</param>
             <param name="craftTreeType">The new enum instance for your custom craft tree type.</param>
             <returns>
-            <para>Returns the root node for your custom craft tree, as a new <see cref="T:SMLHelper.V2.Crafting.ModCraftTreeRoot"/> instance.</para>
-            <para>Build up your custom crafting tree from this root node.</para>
-            <para>This tree will be automatically patched into the game. No further calls into <see cref="T:SMLHelper.V2.Handlers.CraftTreeHandler"/> required.</para>
+            Returns the root node for your custom craft tree, as a new <see cref="T:SMLHelper.V2.Crafting.ModCraftTreeRoot"/> instance.<br/>
+            Build up your custom crafting tree from this root node.<br/>
+            This tree will be automatically patched into the game. No further calls into <see cref="T:SMLHelper.V2.Handlers.CraftTreeHandler"/> required.<para/>
+            For more advanced usage, you can replace the default value of <see cref="F:SMLHelper.V2.Crafting.ModCraftTreeRoot.CraftTreeCreation"/> with your own custom function.        
             </returns>
             <seealso cref="T:SMLHelper.V2.Crafting.ModCraftTreeNode"/>
             <seealso cref="T:SMLHelper.V2.Crafting.ModCraftTreeLinkingNode"/>
@@ -1276,7 +1362,7 @@
             <param name="craftTree">The target craft tree to edit.</param>
             <param name="craftingItem">The item to craft.</param>        
         </member>
-        <member name="M:SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type,System.String,System.String,Atlas.Sprite)">
+        <member name="M:SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type,System.String,System.String,UnityEngine.Sprite)">
             <summary>
             Adds a new tab node to the root of the specified crafting tree.
             </summary>
@@ -1285,7 +1371,7 @@
             <param name="displayName">The display name of the tab, which will show up when you hover your mouse on the tab.</param>
             <param name="sprite">The sprite of the tab.</param>        
         </member>
-        <member name="M:SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type,System.String,System.String,UnityEngine.Sprite)">
+        <member name="M:SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type,System.String,System.String,Atlas.Sprite)">
             <summary>
             Adds a new tab node to the root of the specified crafting tree.
             </summary>
@@ -1337,15 +1423,16 @@
         </member>
         <member name="M:SMLHelper.V2.Handlers.CraftTreeHandler.SMLHelper#V2#Interfaces#ICraftTreeHandler#CreateCustomCraftTreeAndType(System.String,CraftTree.Type@)">
             <summary>
-            <para>Your first method call to start a new custom crafting tree.</para>
-            <para>Creating a new CraftTree only makes sense if you're going to use it in a new type of <see cref="T:GhostCrafter"/>.</para>
+            Your first method call to start a new custom crafting tree.<br/>
+            Creating a new CraftTree only makes sense if you're going to use it in a new type of <see cref="T:GhostCrafter"/>.
             </summary>
             <param name="name">The name for the new <see cref="T:CraftTree.Type" /> enum.</param>
             <param name="craftTreeType">The new enum instance for your custom craft tree type.</param>
             <returns>
-            <para>Returns the root node for your custom craft tree, as a new <see cref="T:SMLHelper.V2.Crafting.ModCraftTreeRoot"/> instance.</para>
-            <para>Build up your custom crafting tree from this root node.</para>
-            <para>This tree will be automatically patched into the game. No further calls into <see cref="T:SMLHelper.V2.Handlers.CraftTreeHandler"/> required.</para>
+            Returns the root node for your custom craft tree, as a new <see cref="T:SMLHelper.V2.Crafting.ModCraftTreeRoot"/> instance.<br/>
+            Build up your custom crafting tree from this root node.<br/>
+            This tree will be automatically patched into the game. No further calls into <see cref="T:SMLHelper.V2.Handlers.CraftTreeHandler"/> required.<para/>
+            For more advanced usage, you can replace the default value of <see cref="F:SMLHelper.V2.Crafting.ModCraftTreeRoot.CraftTreeCreation"/> with your own custom function.        
             </returns>
             <seealso cref="T:SMLHelper.V2.Crafting.ModCraftTreeNode"/>
             <seealso cref="T:SMLHelper.V2.Crafting.ModCraftTreeLinkingNode"/>
@@ -1489,6 +1576,12 @@
             </summary>
             <param name="onSaveAction">The method to invoke.</param>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOnQuitEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke whenever the player quits the game via the in game menu.
+            </summary>
+            <param name="onQuitAction">The method to invoke.</param>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.UnregisterOnSaveEvent(System.Action)">
             <summary>
             Removes a method previously added through <see cref="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOnSaveEvent(System.Action)"/> so it is no longer invoked when saving the game.<para/>
@@ -1496,17 +1589,36 @@
             </summary>
             <param name="onSaveAction">The method invoked.</param>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.UnregisterOnQuitEvent(System.Action)">
+            <summary>
+            Removes a method previously added through <see cref="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOnSaveEvent(System.Action)"/> so it is no longer invoked when quitting the game.<para/>
+            If you plan on using this, do not register an anonymous method.
+            </summary>
+            <param name="onQuitAction">The method invoked.</param>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOneTimeUseOnSaveEvent(System.Action)">
             <summary>
             Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player saves the game via the in game menu.
             </summary>
             <param name="onSaveAction">The method to invoke. This action will not be invoked a second time.</param>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOneTimeUseOnQuitEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player quits the game via the in game menu.
+            </summary>
+            <param name="onQuitAction">The method to invoke. This action will not be invoked a second time.</param>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#RegisterOnSaveEvent(System.Action)">
             <summary>
             Registers a simple <see cref="T:System.Action"/> method to invoke whenever the player saves the game via the in game menu.
             </summary>
             <param name="onSaveAction">The method to invoke.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#RegisterOnQuitEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke whenever the player quits the game via the in game menu.
+            </summary>
+            <param name="onQuitAction">The method to invoke.</param>
         </member>
         <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#UnregisterOnSaveEvent(System.Action)">
             <summary>
@@ -1515,11 +1627,24 @@
             </summary>
             <param name="onSaveAction">The method invoked.</param>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#UnregisterOnQuitEvent(System.Action)">
+            <summary>
+            Removes a method previously added through <see cref="M:SMLHelper.V2.Handlers.IngameMenuHandler.RegisterOnSaveEvent(System.Action)"/> so it is no longer invoked when quiting the game.<para/>
+            If you plan on using this, do not register an anonymous method.
+            </summary>
+            <param name="onQuitAction">The method invoked.</param>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#RegisterOneTimeUseOnSaveEvent(System.Action)">
             <summary>
             Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player saves the game via the in game menu.
             </summary>
             <param name="onSaveAction">The method to invoke. This action will not be invoked a second time.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.IngameMenuHandler.SMLHelper#V2#Interfaces#IIngameMenuHandler#RegisterOneTimeUseOnQuitEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player quits the game via the in game menu.
+            </summary>
+            <param name="onQuitAction">The method to invoke. This action will not be invoked a second time.</param>
         </member>
         <member name="T:SMLHelper.V2.Handlers.ItemActionHandler">
             <summary>
@@ -1725,6 +1850,116 @@
             <param name="techType">The <see cref="T:TechType"/> whose tooltip that is to be changed.</param>
             <param name="text">The new tooltip for the chosen <see cref="T:TechType"/>.</param>
         </member>
+        <member name="T:SMLHelper.V2.Handlers.LootDistributionHandler">
+            <summary>
+            A handler that manages Loot Distribution.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handlers.LootDistributionHandler.Main">
+            <summary>
+            Main entry point for all calls to this handler.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.AddLootDistributionData(System.String,LootDistributionData.SrcData)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            </summary>
+            <param name="data"></param>
+            <param name="classId"></param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.AddLootDistributionData(System.String,LootDistributionData.SrcData,UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="data">The <see cref="T:LootDistributionData.SrcData"/> that contains data related to the spawning of a prefab, also contains the path to the prefab.</param>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.AddLootDistributionData(System.String,System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData})">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="prefabPath">The prefab path of the prefab.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.AddLootDistributionData(System.String,System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData},UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="prefabPath">The prefab path of the prefab.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.AddLootDistributionData(SMLHelper.V2.Assets.ModPrefab,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData},UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="prefab">The custom prefab which you want to spawn naturally in the game.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.EditLootDistributionData(System.String,BiomeType,System.Single,System.Int32)">
+            <summary>
+            Edits Loot Distribution Data for existing/original class IDs. 
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.EditLootDistributionData(System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData})">
+            <summary>
+            Edits Loot Distribution data for existing prefabs, for e.g. original game prefabs.
+            </summary>
+            <param name="classId">The ClassID of the prefab. If unsure, use CraftData.GetClassIdForTechType.</param>
+            <param name="biomeDistribution">The list of <see cref="T:LootDistributionData.BiomeData"/> that contains information about how/when it should spawn in biomes.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.SMLHelper#V2#Interfaces#ILootDistributionHandler#AddLootDistributionData(System.String,LootDistributionData.SrcData,UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="data">The <see cref="T:LootDistributionData.SrcData"/> that contains data related to the spawning of a prefab, also contains the path to the prefab.</param>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.SMLHelper#V2#Interfaces#ILootDistributionHandler#AddLootDistributionData(System.String,System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData})">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="prefabPath">The prefab path of the prefab.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.SMLHelper#V2#Interfaces#ILootDistributionHandler#AddLootDistributionData(System.String,System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData},UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="prefabPath">The prefab path of the prefab.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.SMLHelper#V2#Interfaces#ILootDistributionHandler#AddLootDistributionData(SMLHelper.V2.Assets.ModPrefab,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData},UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="prefab">The custom prefab which you want to spawn naturally in the game.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.SMLHelper#V2#Interfaces#ILootDistributionHandler#EditLootDistributionData(System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData})">
+            <summary>
+            Edits Loot Distribution data for existing prefabs, for e.g. original game prefabs.
+            </summary>
+            <param name="classId">The ClassID of the prefab. If unsure, use CraftData.GetClassIdForTechType.</param>
+            <param name="biomeDistribution">The list of <see cref="T:LootDistributionData.BiomeData"/> that contains information about how/when it should spawn in biomes.</param>
+        </member>
         <member name="T:SMLHelper.V2.Handlers.OptionsPanelHandler">
             <summary>
             A handler class for registering your custom in-game mod options.
@@ -1748,6 +1983,22 @@
             </summary>
             <param name="options">The mod options. Create a new child class inheriting from this one and add your options to it.</param>
             <seealso cref="T:SMLHelper.V2.Options.ModOptions"/>
+        </member>
+        <member name="T:SMLHelper.V2.Handlers.PDAEncyclopediaHandler">
+            <summary>
+            Handles Encyclopedia.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handlers.PDAEncyclopediaHandler.Main">
+            <summary>
+            Main entry point for all calls to this handler.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.PDAEncyclopediaHandler.AddCustomEntry(PDAEncyclopedia.EntryData)">
+            <summary>
+            Adds custom entry.
+            </summary>
+            <param name="entry">The <see cref="T:PDAEncyclopedia.EntryData"/> entry.</param>
         </member>
         <member name="T:SMLHelper.V2.Handlers.PDAHandler">
             <summary>
@@ -1773,6 +2024,12 @@
             <param name="techType">Can be either techtype of the fragment or the crafted item.</param>
             <param name="scanTime">The relative time spent on scanning. Default value is 1.</param>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.PDAHandler.SMLHelper#V2#Interfaces#IPDAHandler#AddCustomScannerEntry(PDAScanner.EntryData)">
+            <summary>
+            Adds in a custom <see cref="T:PDAScanner.EntryData"/>.
+            </summary>
+            <param name="entryData">The <see cref="T:PDAScanner.EntryData"/> of the entry. Must be populated when passed in.</param>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.PDAHandler.EditFragmentsToScan(TechType,System.Int32)">
             <summary>
             Edits how many fragments must be scanned before unlocking the techtype's blueprint.
@@ -1786,6 +2043,24 @@
             </summary>
             <param name="techType">Can be either techtype of the fragment or the crafted item.</param>
             <param name="scanTime">The relative time spent on scanning. Default value is 1.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.PDAHandler.AddCustomScannerEntry(PDAScanner.EntryData)">
+            <summary>
+            Adds in a custom <see cref="T:PDAScanner.EntryData"/>.
+            </summary>
+            <param name="entryData">The <see cref="T:PDAScanner.EntryData"/> of the entry. Must be populated when passed in.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.PDAHandler.AddCustomScannerEntry(TechType,TechType,System.Boolean,System.String,System.Int32,System.Single,System.Boolean)">
+            <summary>
+            Adds in a custom <see cref="T:PDAScanner.EntryData"/>.
+            </summary>
+            <param name="key">The scanned object's <see cref="T:TechType"/>. In case of fragments, the fragment <see cref="T:TechType"/> is the key.</param>
+            <param name="blueprint">The <paramref name="blueprint"/> when unlocked when scanned. In case of fragments, this is the actual <see cref="T:TechType"/> that unlocks when all fragments are scanned.</param>
+            <param name="isFragment">Whether the <paramref name="key"/> is a fragment or not.</param>
+            <param name="totalFragmentsRequired">The total amount of objects of <paramref name="key"/> that need to be scanned to unlock the <paramref name="blueprint"/> and <paramref name="encyclopediaKey"/>.</param>
+            <param name="scanTime">The amount of time it takes to finish one scan. In seconds.</param>
+            <param name="destroyAfterScan">Whether the object should be destroyed after the scan is finished.</param>
+            <param name="encyclopediaKey">The key to the encyclopedia entry.</param>
         </member>
         <member name="T:SMLHelper.V2.Handlers.PrefabHandler">
             <summary>
@@ -2147,12 +2422,47 @@
             so if two mods are added at the same time, it may take a second game load for both to be visible to each other.
             </remarks>
         </member>
+        <member name="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler">
+            <summary>
+            A handler for the WorldEntityDatabase of the game.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler.Main">
+            <summary>
+            Main entry point for all calls to this handler.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler.AddCustomInfo(System.String,UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom <see cref="T:UWE.WorldEntityInfo"/> to the <see cref="T:UWE.WorldEntityDatabase"/> of the game.
+            It contains information about the entity, like its <see cref="T:LargeWorldEntity.CellLevel"/>, its <see cref="T:EntitySlot.Type"/>, etc.
+            </summary>
+            <param name="classId">The classID of the entity whose data you are adding in.</param>
+            <param name="data">The <see cref="T:UWE.WorldEntityInfo"/> data. Data is stored in the fields of the class, so they must be populated when passed in.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler.AddCustomInfo(System.String,TechType,UnityEngine.Vector3,System.Boolean,LargeWorldEntity.CellLevel,EntitySlot.Type)">
+            <summary>
+            Adds in a custom <see cref="T:UWE.WorldEntityInfo"/> to the <see cref="T:UWE.WorldEntityDatabase"/> of the game.
+            It contains information about the entity, like its <see cref="T:LargeWorldEntity.CellLevel"/>, its <see cref="T:EntitySlotData.EntitySlotType"/>, etc.
+            </summary>
+            <param name="classId">The classId of the entity.</param>
+            <param name="techType">The <see cref="T:TechType"/> of the entity.</param>
+            <param name="prefabZUp">Whether the prefab's Z-axis should be facing up, when spawned.</param>
+            <param name="cellLevel">The <see cref="T:LargeWorldEntity.CellLevel"/> of the entity.</param>
+            <param name="slotType">The <see cref="T:EntitySlot.Type"/> of the entity. Dictates which "slots" are suitable for this entity to spawn in. For e.g., most in-crate fragments have a <see cref="F:EntitySlot.Type.Small"/> slot type.</param>
+            <param name="localScale">The scale that the entity's local scale is set to when spawned.</param>
+        </member>
         <member name="T:SMLHelper.V2.Initializer">
             <summary>
             WARNING: This class is for use only by QModManager.
             </summary>
         </member>
-        <member name="M:SMLHelper.V2.Initializer.Patch">
+        <member name="M:SMLHelper.V2.Initializer.PrePatch">
+            <summary>
+            WARNING: This method is for use only by QModManager.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Initializer.PostPatch">
             <summary>
             WARNING: This method is for use only by QModManager.
             </summary>
@@ -2316,6 +2626,15 @@
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>The ITechData from the modded item if it exists; Otherwise, returns <c>null</c>.</returns>
         </member>
+        <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.GetTechData(TechType)">
+            <summary>
+            Safely accesses the crafting data from any item.<para/>
+            WARNING: This method is highly dependent on mod load order. 
+            Make sure your mod is loading after the mod whose TechData you are trying to access.
+            </summary>
+            <param name="techType">The TechType whose TechData you want to access.</param>
+            <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
+        </member>
         <member name="T:SMLHelper.V2.Interfaces.ICraftTreeHandler">
             <summary>
             A handler class for creating and editing of crafting trees.
@@ -2323,15 +2642,16 @@
         </member>
         <member name="M:SMLHelper.V2.Interfaces.ICraftTreeHandler.CreateCustomCraftTreeAndType(System.String,CraftTree.Type@)">
             <summary>
-            <para>Your first method call to start a new custom crafting tree.</para>
-            <para>Creating a new CraftTree only makes sense if you're going to use it in a new type of <see cref="T:GhostCrafter"/>.</para>
+            Your first method call to start a new custom crafting tree.<br/>
+            Creating a new CraftTree only makes sense if you're going to use it in a new type of <see cref="T:GhostCrafter"/>.
             </summary>
             <param name="name">The name for the new <see cref="T:CraftTree.Type" /> enum.</param>
             <param name="craftTreeType">The new enum instance for your custom craft tree type.</param>
             <returns>
-            <para>Returns the root node for your custom craft tree, as a new <see cref="T:SMLHelper.V2.Crafting.ModCraftTreeRoot"/> instance.</para>
-            <para>Build up your custom crafting tree from this root node.</para>
-            <para>This tree will be automatically patched into the game. No further calls into <see cref="T:SMLHelper.V2.Interfaces.ICraftTreeHandler"/> required.</para>
+            Returns the root node for your custom craft tree, as a new <see cref="T:SMLHelper.V2.Crafting.ModCraftTreeRoot"/> instance.<br/>
+            Build up your custom crafting tree from this root node.<br/>
+            This tree will be automatically patched into the game. No further calls into <see cref="T:SMLHelper.V2.Handlers.CraftTreeHandler"/> required.<para/>
+            For more advanced usage, you can replace the default value of <see cref="F:SMLHelper.V2.Crafting.ModCraftTreeRoot.CraftTreeCreation"/> with your own custom function.        
             </returns>
             <seealso cref="T:SMLHelper.V2.Crafting.ModCraftTreeNode"/>
             <seealso cref="T:SMLHelper.V2.Crafting.ModCraftTreeLinkingNode"/>
@@ -2370,7 +2690,7 @@
             <param name="craftTree">The target craft tree to edit.</param>
             <param name="craftingItem">The item to craft.</param>        
         </member>
-        <member name="M:SMLHelper.V2.Interfaces.ICraftTreeHandler.AddTabNode(CraftTree.Type,System.String,System.String,Atlas.Sprite)">
+        <member name="M:SMLHelper.V2.Interfaces.ICraftTreeHandler.AddTabNode(CraftTree.Type,System.String,System.String,UnityEngine.Sprite)">
             <summary>
             Adds a new tab node to the root of the specified crafting tree.
             </summary>
@@ -2379,7 +2699,7 @@
             <param name="displayName">The display name of the tab, which will show up when you hover your mouse on the tab.</param>
             <param name="sprite">The sprite of the tab.</param>        
         </member>
-        <member name="M:SMLHelper.V2.Interfaces.ICraftTreeHandler.AddTabNode(CraftTree.Type,System.String,System.String,UnityEngine.Sprite)">
+        <member name="M:SMLHelper.V2.Interfaces.ICraftTreeHandler.AddTabNode(CraftTree.Type,System.String,System.String,Atlas.Sprite)">
             <summary>
             Adds a new tab node to the root of the specified crafting tree.
             </summary>
@@ -2453,6 +2773,12 @@
             </summary>
             <param name="onSaveAction">The method to invoke.</param>
         </member>
+        <member name="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.RegisterOnQuitEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke whenever the player quits the game via the in game menu.
+            </summary>
+            <param name="onQuitAction">The method to invoke.</param>
+        </member>
         <member name="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.UnregisterOnSaveEvent(System.Action)">
             <summary>
             Removes a method previously added through <see cref="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.RegisterOnSaveEvent(System.Action)"/> so it is no longer invoked when saving the game.<para/>
@@ -2460,11 +2786,24 @@
             </summary>
             <param name="onSaveAction">The method invoked.</param>
         </member>
+        <member name="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.UnregisterOnQuitEvent(System.Action)">
+            <summary>
+            Removes a method previously added through <see cref="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.RegisterOnQuitEvent(System.Action)"/> so it is no longer invoked when quiting the game.<para/>
+            If you plan on using this, do not register an anonymous method.
+            </summary>
+            <param name="onQuitAction">The method invoked.</param>
+        </member>
         <member name="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.RegisterOneTimeUseOnSaveEvent(System.Action)">
             <summary>
             Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player saves the game via the in game menu.
             </summary>
             <param name="onSaveAction">The method to invoke. This action will not be invoked a second time.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.IIngameMenuHandler.RegisterOneTimeUseOnQuitEvent(System.Action)">
+            <summary>
+            Registers a simple <see cref="T:System.Action"/> method to invoke the <c>first time</c> the player quits the game via the in game menu.
+            </summary>
+            <param name="onQuitAction">The method to invoke. This action will not be invoked a second time.</param>
         </member>
         <member name="T:SMLHelper.V2.Interfaces.IItemActionHandler">
             <summary>
@@ -2598,6 +2937,67 @@
             <param name="techType">The <see cref="T:TechType"/> whose tooltip that is to be changed.</param>
             <param name="text">The new tooltip for the chosen <see cref="T:TechType"/>.</param>
         </member>
+        <member name="T:SMLHelper.V2.Interfaces.ILootDistributionHandler">
+            <summary>
+            A handler that manages Loot Distribution (spawning of fragments, fish, etc).
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.ILootDistributionHandler.AddLootDistributionData(System.String,LootDistributionData.SrcData)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            </summary>
+            <param name="data"></param>
+            <param name="classId"></param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.ILootDistributionHandler.AddLootDistributionData(System.String,LootDistributionData.SrcData,UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="data">The <see cref="T:LootDistributionData.SrcData"/> that contains data related to the spawning of a prefab, also contains the path to the prefab.</param>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.ILootDistributionHandler.AddLootDistributionData(System.String,System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData})">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="prefabPath">The prefab path of the prefab.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.ILootDistributionHandler.AddLootDistributionData(System.String,System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData},UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="classId">The classId of the prefab.</param>
+            <param name="prefabPath">The prefab path of the prefab.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.ILootDistributionHandler.AddLootDistributionData(SMLHelper.V2.Assets.ModPrefab,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData},UWE.WorldEntityInfo)">
+            <summary>
+            Adds in a custom entry into the Loot Distribution of the game.
+            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
+            </summary>
+            <param name="prefab">The custom prefab which you want to spawn naturally in the game.</param>
+            <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
+            <param name="info">The WorldEntityInfo of the prefab. For more information on how to set this up, see <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.ILootDistributionHandler.EditLootDistributionData(System.String,BiomeType,System.Single,System.Int32)">
+            <summary>
+            Edits Loot Distribution Data for existing/original class IDs. 
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.ILootDistributionHandler.EditLootDistributionData(System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData})">
+            <summary>
+            Edits Loot Distribution data for existing prefabs, for e.g. original game prefabs.
+            </summary>
+            <param name="classId">The ClassID of the prefab. If unsure, use CraftData.GetClassIdForTechType.</param>
+            <param name="biomeDistribution">The list of <see cref="T:LootDistributionData.BiomeData"/> that contains information about how/when it should spawn in biomes.</param>
+        </member>
         <member name="T:SMLHelper.V2.Interfaces.IOptionsPanelHandler">
             <summary>
             A handler class for registering your custom in-game mod options.
@@ -2609,6 +3009,17 @@
             </summary>
             <param name="options">The mod options. Create a new child class inheriting from this one and add your options to it.</param>
             <seealso cref="T:SMLHelper.V2.Options.ModOptions"/>
+        </member>
+        <member name="T:SMLHelper.V2.Interfaces.IPDAEncyclopediaHandler">
+            <summary>
+            Handles Encyclopedia.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.IPDAEncyclopediaHandler.AddCustomEntry(PDAEncyclopedia.EntryData)">
+            <summary>
+            Adds custom entry.
+            </summary>
+            <param name="entry"></param>
         </member>
         <member name="T:SMLHelper.V2.Interfaces.IPDAHandler">
             <summary>
@@ -2628,6 +3039,12 @@
             </summary>
             <param name="techType">Can be either techtype of the fragment or the crafted item.</param>
             <param name="scanTime">The relative time spent on scanning. Default value is 1.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.IPDAHandler.AddCustomScannerEntry(PDAScanner.EntryData)">
+            <summary>
+            Adds custom scanner entry.
+            </summary>
+            <param name="entryData"></param>
         </member>
         <member name="T:SMLHelper.V2.Interfaces.IPrefabHandler">
             <summary>
@@ -2809,6 +3226,18 @@
             so if two mods are added at the same time, it may take a second game load for both to be visible to each other.
             </remarks>
         </member>
+        <member name="T:SMLHelper.V2.Interfaces.IWorldEntityDatabaseHandler">
+            <summary>
+            Handles WorldEntityDatabase.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Interfaces.IWorldEntityDatabaseHandler.AddCustomInfo(System.String,UWE.WorldEntityInfo)">
+            <summary>
+            Adds custom World Entity data to WorldEntityDatabase.
+            </summary>
+            <param name="classId"></param>
+            <param name="data"></param>
+        </member>
         <member name="T:SMLHelper.V2.Utility.IStorageHelper">
             <summary>
             A utility class that offers additional info about <see cref="T:ItemsContainer"/> instances.
@@ -2876,6 +3305,34 @@
             <param name="container">The container to check.</param>
             <returns>The collection of techtypes allowed in the container.</returns>
         </member>
+        <member name="T:SMLHelper.V2.Utility.AudioUtils">
+            <summary>
+            Utilities for audio and sound
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.AudioUtils.CreateSound(System.String,FMOD.MODE)">
+            <summary>
+            Creates a <see cref="T:FMOD.Sound"/> instance from a path. Can be stored and later used with <see cref="M:SMLHelper.V2.Utility.AudioUtils.PlaySound(FMOD.Sound)"/>
+            </summary>
+            <param name="path">The path of the sound. Relative to the base game folder.</param>
+            <param name="mode"></param>
+            <returns>The <see cref="T:FMOD.Sound"/> instance</returns>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.AudioUtils.PlaySound(System.String,FMOD.MODE)">
+            <summary>
+            Plays a <see cref="T:FMOD.Sound"/> globally from a path. Must be a .wav file
+            </summary>
+            <param name="path">The path of the sound. Relative to the base game folder.</param>
+            <param name="mode"></param>
+            <returns>The channel on which the sound was created</returns>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.AudioUtils.PlaySound(FMOD.Sound)">
+            <summary>
+            Plays a <see cref="T:FMOD.Sound"/> globally
+            </summary>
+            <param name="sound">The sound which should be played</param>
+            <returns>The channel on which the sound was created</returns>
+        </member>
         <member name="T:SMLHelper.V2.Utility.ExtBannedIdManager">
             <summary>
             This class is tasked with checking external txt files for banned IDs that are not to be isssued when patching in new enum entries.
@@ -2927,6 +3384,15 @@
             <para>Don't change this unless you really know what you're doing.</para>
             </param>
             <returns>Will return a new <see cref="T:Atlas.Sprite"/> instance if the file exists; Otherwise returns null.</returns>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.ImageUtils.LoadSpriteFromTexture(UnityEngine.Texture2D)">
+            <summary>
+            Creates a new <see cref="T:Atlas.Sprite" /> from an image file.
+            </summary>
+            <param name="texture2D">The 2D texture to convert into a sprite.</param>
+            <returns>
+            Will return a new <see cref="T:Atlas.Sprite" /> instance using the provided texture.
+            </returns>
         </member>
         <member name="T:SMLHelper.V2.Utility.IOUtilities">
             <summary>
@@ -3438,6 +3904,45 @@
             Returns the path to the current save slot's directory.
             </summary>
         </member>
+        <member name="T:SMLHelper.V2.Utility.SMLProtobufSerializer">
+            <summary>
+            Allows saving mod components directly into game files
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.Serialize(System.IO.Stream,System.Object)">
+            <summary>
+            Save an object to a stream
+            </summary>
+            <param name="stream">Stream for the object to be saved to</param>
+            <param name="source">Object to be saved</param>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.CanSerialize(System.Type)">
+            <summary>
+            Checks if a type can be serialized
+            </summary>
+            <param name="type">Type to check for serializability</param>
+            <returns>true if type is registered</returns>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.RegisterType(System.Type)">
+            <summary>
+            Registers Type to be serialized with SMLProtobufSerializer
+            </summary>
+            <param name="type">Type to be serialized</param>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.RegisterTypes(System.Reflection.Assembly)">
+            <summary>
+            Registers all types from an assembly to be serialized with SMLProtobufSerializer
+            </summary>
+            <param name="assembly">Assembly to register types from</param>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.SMLProtobufSerializer.Deserialize(System.IO.Stream,System.Object,System.Type)">
+            <summary>
+            Load an Object from a Stream
+            </summary>
+            <param name="stream">Stream to load the object from</param>
+            <param name="target">Object output</param>
+            <param name="type">Type of the object to load</param>
+        </member>
         <member name="T:SMLHelper.V2.Utility.StorageHelperExtensions">
             <summary>
             Extension methods to provide static calls for <see cref="T:ItemsContainer"/> into <see cref="T:SMLHelper.V2.Utility.ItemStorageHelper"/> methods.
@@ -3655,12 +4160,12 @@
         </member>
         <member name="P:SMLHelper.V2.Options.ModOptions.Options">
             <summary>
-            Builds and obtains the <see cref="T:SMLHelper.V2.Options.ModOption"/>s that belong to this instance.
+            Obtains the <see cref="T:SMLHelper.V2.Options.ModOption"/>s that belong to this instance. Can be null.
             </summary>
         </member>
         <member name="M:SMLHelper.V2.Options.ModOptions.#ctor(System.String)">
             <summary>
-            Creates a new insteance of <see cref="T:SMLHelper.V2.Options.ModOptions"/>.
+            Creates a new instance of <see cref="T:SMLHelper.V2.Options.ModOptions"/>.
             </summary>
             <param name="name">The name that will display above this section of options in the in-game menu.</param>
         </member>
@@ -3672,6 +4177,9 @@
             <para>Make sure you have subscribed to the events in the constructor to handle what happens when the value is changed:
             <seealso cref="E:SMLHelper.V2.Options.ModOptions.SliderChanged"/> | <seealso cref="E:SMLHelper.V2.Options.ModOptions.ToggleChanged"/> | <seealso cref="E:SMLHelper.V2.Options.ModOptions.ChoiceChanged"/> | <seealso cref="E:SMLHelper.V2.Options.ModOptions.KeybindChanged"/>.</para>
             </summary>
+        </member>
+        <member name="E:SMLHelper.V2.Options.ModOptions.GameObjectCreated">
+            <summary> The event that is called whenever a game object created for the option </summary>
         </member>
         <member name="E:SMLHelper.V2.Options.ModOptions.SliderChanged">
             <summary>
@@ -3694,6 +4202,19 @@
             <param name="minValue">The minimum value for the range.</param>
             <param name="maxValue">The maximum value for the range.</param>
             <param name="value">The starting value.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModOptions.AddSliderOption(System.String,System.String,System.Single,System.Single,System.Single,System.Nullable{System.Single},System.String)">
+            <summary>
+            Adds a new <see cref="T:SMLHelper.V2.Options.ModSliderOption"/> to this instance.
+            </summary>
+            <param name="id">The internal ID for the slider option.</param>
+            <param name="label">The display text to use in the in-game menu.</param>
+            <param name="minValue">The minimum value for the range.</param>
+            <param name="maxValue">The maximum value for the range.</param>
+            <param name="value">The starting value.</param>
+            <param name="defaultValue">The default value for the slider. If this is null then 'value' used as default.</param>
+            <param name="valueFormat"> format for value, e.g. "{0:F2}" or "{0:F0} %"
+            (more on this <see href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings">here</see>)</param>
         </member>
         <member name="E:SMLHelper.V2.Options.ModOptions.ToggleChanged">
             <summary>
@@ -3790,30 +4311,19 @@
             <param name="device">The device name.</param>
             <param name="key">The starting keybind value.</param>
         </member>
-        <member name="T:SMLHelper.V2.Options.ModOptionType">
-            <summary>
-            Indicates how the option is interacted with by the user.
-            </summary>
+        <member name="T:SMLHelper.V2.Options.GameObjectCreatedEventArgs">
+            <summary> Contains all the information about a created game object event </summary>
         </member>
-        <member name="F:SMLHelper.V2.Options.ModOptionType.Slider">
-            <summary>
-            The option uses a slider that allows for a choice within a continues range of values within a maximum and minimum.
-            </summary>
+        <member name="P:SMLHelper.V2.Options.GameObjectCreatedEventArgs.Id">
+            <summary> The ID of the <see cref="T:SMLHelper.V2.Options.ModOption"/> for which game object was created </summary>
         </member>
-        <member name="F:SMLHelper.V2.Options.ModOptionType.Toggle">
-            <summary>
-            The option uses a checkbox that can be either enabled or disabled.
-            </summary>
+        <member name="P:SMLHelper.V2.Options.GameObjectCreatedEventArgs.GameObject">
+            <summary> New game object for the <see cref="T:SMLHelper.V2.Options.ModOption"/> </summary>
         </member>
-        <member name="F:SMLHelper.V2.Options.ModOptionType.Choice">
-            <summary>
-            The option uses a selection of one of a discrete number of possible values.
-            </summary>
-        </member>
-        <member name="F:SMLHelper.V2.Options.ModOptionType.Keybind">
-            <summary>
-            The option uses a keybind field that can be changed to a certain keyt
-            </summary>
+        <member name="M:SMLHelper.V2.Options.GameObjectCreatedEventArgs.#ctor(System.String,UnityEngine.GameObject)">
+            <summary> Constructs a new <see cref="T:SMLHelper.V2.Options.GameObjectCreatedEventArgs"/> </summary>
+            <param name="id"> The ID of the <see cref="T:SMLHelper.V2.Options.ModOption"/> for which game object was created </param>
+            <param name="gameObject"> New game object for the <see cref="T:SMLHelper.V2.Options.ModOption"/> </param>
         </member>
         <member name="T:SMLHelper.V2.Options.ModOption">
             <summary>
@@ -3830,16 +4340,16 @@
             The display text to be shown for this option in the in-game menus.
             </summary>
         </member>
-        <member name="P:SMLHelper.V2.Options.ModOption.Type">
-            <summary>
-            The type of option for this instance.
-            </summary>
+        <member name="P:SMLHelper.V2.Options.ModOption.OptionGameObject">
+            <summary> UI GameObject for this option </summary>
         </member>
-        <member name="M:SMLHelper.V2.Options.ModOption.#ctor(SMLHelper.V2.Options.ModOptionType,System.String,System.String)">
+        <member name="F:SMLHelper.V2.Options.ModOption.parentOptions">
+            <summary> Parent <see cref="T:SMLHelper.V2.Options.ModOptions"/> for this option </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModOption.#ctor(System.String,System.String)">
             <summary>
             Base constructor for all mod options.
             </summary>
-            <param name="type">The mod option type.</param>
             <param name="label">The display text to show on the in-game menus.</param>
             <param name="id">The internal ID if this option.</param>
         </member>
@@ -3890,7 +4400,16 @@
             The current value of the <see cref="T:SMLHelper.V2.Options.ModSliderOption"/>.
             </summary>
         </member>
-        <member name="M:SMLHelper.V2.Options.ModSliderOption.#ctor(System.String,System.String,System.Single,System.Single,System.Single)">
+        <member name="P:SMLHelper.V2.Options.ModSliderOption.DefaultValue">
+            <summary>
+            The default value of the <see cref="T:SMLHelper.V2.Options.ModSliderOption"/>.
+            Showed on the slider by small gray circle. Slider's handle will snap to the default value near it.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModSliderOption.ValueFormat">
+            <summary> Format for value field (<see cref="M:SMLHelper.V2.Options.ModOptions.AddSliderOption(System.String,System.String,System.Single,System.Single,System.Single,System.Nullable{System.Single},System.String)"/>) </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.#ctor(System.String,System.String,System.Single,System.Single,System.Single,System.Nullable{System.Single},System.String)">
             <summary>
             Instantiates a new <see cref="T:SMLHelper.V2.Options.ModSliderOption"/> for handling an option that can have any floating point value between a minimum and maximum.
             </summary>
@@ -3899,6 +4418,78 @@
             <param name="minValue">The minimum value for the range.</param>
             <param name="maxValue">The maximum value for the range.</param>
             <param name="value">The starting value.</param>
+            <param name="defaultValue">The default value for the slider. If this is null then 'value' used as default.</param>
+            <param name="valueFormat">Format for value field (<see cref="M:SMLHelper.V2.Options.ModOptions.AddSliderOption(System.String,System.String,System.Single,System.Single,System.Single,System.Nullable{System.Single},System.String)"/>) </param>
+        </member>
+        <member name="T:SMLHelper.V2.Options.ModSliderOption.SliderValue">
+            <summary>
+            Component for customizing slider's value behaviour.
+            If you need more complex behaviour than just custom value format then you can inherit this component 
+            and add it to "Slider" game object in OnGameObjectCreated event (see <see cref="M:SMLHelper.V2.Options.ModSliderOption.AddToPanel(uGUI_TabbedControlsPanel,System.Int32)"/> for details on adding component)
+            You can override value converters <see cref="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.ConvertToDisplayValue(System.Single)"/> and <see cref="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.ConvertToSliderValue(System.Single)"/>,
+            in that case internal range for slider will be changed to [0.0f : 1.0f] and you can control displayed value with these converters
+            (also this value will be passed to <see cref="M:SMLHelper.V2.Options.ModOptions.OnSliderChange(System.String,System.Single)"/> event)
+            </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Options.ModSliderOption.SliderValue.label">
+            <summary> The value label of the <see cref="T:SMLHelper.V2.Options.ModSliderOption.SliderValue"/> </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Options.ModSliderOption.SliderValue.slider">
+            <summary> The slider controlling this <see cref="T:SMLHelper.V2.Options.ModSliderOption.SliderValue"/> </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Options.ModSliderOption.SliderValue.minValue">
+            <summary>
+            The minimum value of the <see cref="T:SMLHelper.V2.Options.ModSliderOption.SliderValue"/>.
+            In case of custom value converters it can be not equal to internal minimum value for slider
+            </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Options.ModSliderOption.SliderValue.maxValue">
+            <summary>
+            The maximum value of the <see cref="T:SMLHelper.V2.Options.ModSliderOption.SliderValue"/>.
+            In case of custom value converters it can be not equal to internal maximum value for slider
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModSliderOption.SliderValue.ValueFormat">
+            <summary> Custom value format property. Set it right after adding component to game object for proper behaviour </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Options.ModSliderOption.SliderValue.valueFormat">
+            <summary> Custom value format </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ModSliderOption.SliderValue.ValueWidth">
+            <summary>
+            Width for value text field. Used by <see cref="T:SMLHelper.V2.Options.ModSliderOption.SliderOptionAdjust"/> to adjust label width.
+            It is calculated in <see cref="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.UpdateValueWidth"/>, but you can override this property.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.InitConverters">
+            <summary> Override this if you need to initialize custom value converters </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.ConvertToDisplayValue(System.Single)">
+            <summary> Converts internal slider value [0.0f : 1.0f] to displayed value </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.ConvertToSliderValue(System.Single)">
+            <summary> Converts displayed value to internal slider value [0.0f : 1.0f] </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.Awake">
+            <summary> Component initialization. If you overriding this, make sure that you calling base.Awake() </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.Start">
+            <summary> <see cref="T:UnityEngine.MonoBehaviour"/>.Start() </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.UpdateValueWidth">
+            <summary>
+            Method for calculating necessary label's width. Creates temporary label and compares widths of min and max values,
+            then sets <see cref="P:SMLHelper.V2.Options.ModSliderOption.SliderValue.ValueWidth"/> to the wider. Be aware that in case of using custom converters some intermediate value may be wider than min/max values.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.OnValueChanged(System.Single)">
+            <summary> Called when user changes slider value </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModSliderOption.SliderValue.UpdateLabel">
+            <summary>
+            Updates label's text with formatted and converted slider's value.
+            Override this if you need even more control on slider's value behaviour.
+            </summary>
         </member>
         <member name="T:SMLHelper.V2.Options.ToggleChangedEventArgs">
             <summary>
@@ -3948,11 +4539,6 @@
         <member name="F:SMLHelper.V2.Patchers.ItemActionPatcher.CustomLeftClickItemAction">
             <summary>
             A constant <see cref="T:ItemAction"/> value to represent a custom left click item action
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Patchers.TooltipPatcher.ExtraItemInfoOption">
-            <summary>
-            Should be one of: '<see langword="Mod name (default)">'</see>, '<see langword="Mod name and item ID"></see>', or '<see langword="Nothing"></see>'
             </summary>
         </member>
         <member name="T:SMLHelper.V2.Patchers.SelfCheckingDictionary`2">
