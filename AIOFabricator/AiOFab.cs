@@ -32,16 +32,7 @@
                    "Multi-fuction fabricator capable of synthesizing most blueprints.")
         {
             OnStartedPatching += LoadImageFiles;
-            OnFinishedPatching += () =>
-            {
-                RegisterTopLevelVanillaTab(FabricatorScheme, "Fabricator", TechType.Fabricator);
-                RegisterTopLevelVanillaTab(WorkBenchScheme, "Modification Station", TechType.Workbench);
-                RegisterTopLevelVanillaTab(SeamothUpgradesScheme, "Vehicle Upgrades", TechType.BaseUpgradeConsole);
-                RegisterTopLevelVanillaTab(MapRoomScheme, "Scanner Room", TechType.BaseMapRoom);
-                RegisterTopLevelVanillaTab(CyclopsFabScheme, "Cyclops Upgrades", TechType.Cyclops);
-
-                this.Root.CraftTreeCreation = CreateCraftingTree;
-            };
+            OnFinishedPatching += RegisterCraftTreeBasics;
         }
 
         private void LoadImageFiles()
@@ -58,8 +49,19 @@
             if (sprite == null)
             {
                 string fileLocation = Path.Combine(folderPath, "AiOFab.png");
-                sprite = ImageUtils.LoadSpriteFromFile(fileLocation);
+                sprite = ImageUtils.LoadSpriteFromFile(fileLocation) ?? SpriteManager.Get(TechType.Fabricator);
             }
+        }
+
+        private void RegisterCraftTreeBasics()
+        {
+            RegisterTopLevelVanillaTab(FabricatorScheme, "Fabricator", TechType.Fabricator);
+            RegisterTopLevelVanillaTab(WorkBenchScheme, "Modification Station", TechType.Workbench);
+            RegisterTopLevelVanillaTab(SeamothUpgradesScheme, "Vehicle Upgrades", TechType.BaseUpgradeConsole);
+            RegisterTopLevelVanillaTab(MapRoomScheme, "Scanner Room", TechType.BaseMapRoom);
+            RegisterTopLevelVanillaTab(CyclopsFabScheme, "Cyclops Upgrades", TechType.Cyclops);
+
+            this.Root.CraftTreeCreation = CreateCraftingTree;
         }
 
         private CraftTree CreateCraftingTree()
@@ -99,13 +101,12 @@
                     string scheme = entry.Key.ToString();
 
                     CloneTabDetails(scheme, root, ref langLines, ref group, ref atlas);
-                    RegisterTopLevelModTab(scheme, ref langLines, ref group);
+                    CloneTopLevelModTab(scheme, ref langLines, ref group);
                     aioRoot.AddNode(root);
                 }
 
                 craftTree = new CraftTree(AioFabScheme, aioRoot);
             }
-
 
             return craftTree;
         }
@@ -121,9 +122,12 @@
         {
             GameObject gObj = base.GetGameObject();
 
-            // Set the custom texture
-            SkinnedMeshRenderer skinnedMeshRenderer = gObj.GetComponentInChildren<SkinnedMeshRenderer>();
-            skinnedMeshRenderer.material.mainTexture = texture;
+            if (texture != null)
+            {
+                // Set the custom texture
+                SkinnedMeshRenderer skinnedMeshRenderer = gObj.GetComponentInChildren<SkinnedMeshRenderer>();
+                skinnedMeshRenderer.material.mainTexture = texture;
+            }
 
             // Change size
             Vector3 scale = gObj.transform.localScale;
@@ -158,10 +162,14 @@
             LanguageHandler.SetLanguageLine(string.Format(DisplayNameFormat, AioFabScheme, scheme), tabDisplayName);
         }
 
-        private void RegisterTopLevelModTab(string scheme, ref Dictionary<string, string> languageLines, ref Dictionary<string, Atlas.Sprite> group)
+        private void CloneTopLevelModTab(string scheme, ref Dictionary<string, string> languageLines, ref Dictionary<string, Atlas.Sprite> group)
         {
             string clonedLangKey = string.Format(DisplayNameFormat, AioFabScheme, scheme);
-            languageLines[clonedLangKey] = languageLines[scheme];
+
+            if (!languageLines.ContainsKey(clonedLangKey) && languageLines.TryGetValue(scheme, out string origString))
+            {
+                languageLines[clonedLangKey] = origString;
+            }
 
             string clonedSpriteKey = string.Format(TabSpriteFormat, AioFabScheme, scheme);
 
@@ -173,6 +181,9 @@
 
         private void CloneTabDetails(string scheme, CraftNode node, ref Dictionary<string, string> languageLines, ref Dictionary<string, Atlas.Sprite> group, ref Dictionary<string, Atlas.Sprite> atlas)
         {
+            if (node == null)
+                return;
+
             switch (node.action)
             {
                 case TreeAction.Craft:
@@ -180,32 +191,42 @@
                 case TreeAction.None:
                     node.id = scheme;
                     node.action = TreeAction.Expand;
+                    Console.WriteLine($"[AIOFabricator][INFO] Cloning tab nodes for '{scheme}:{node.id}'");
                     break;
                 case TreeAction.Expand:
                 {
                     string clonedLangKey = string.Format(DisplayNameFormat, AioFabScheme, node.id);
+                    string origLangKey = string.Format(DisplayNameFormat, scheme, node.id);
 
-                    if (!languageLines.ContainsKey(clonedLangKey))
+                    try
                     {
-                        string origLangKey = string.Format(DisplayNameFormat, scheme, node.id);
-                        languageLines.Add(clonedLangKey, languageLines[origLangKey]);
-                        //Console.WriteLine($"[AIOFabricator] Cloned language key '{origLangKey}' > '{clonedLangKey}'");
+                        if (!languageLines.ContainsKey(clonedLangKey) && languageLines.TryGetValue(origLangKey, out string origString))
+                        {
+                            languageLines[clonedLangKey] = origString;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[AIOFabricator][WARN] Error cloning language line for '{scheme}:{node.id}'{Environment.NewLine}{ex}");
                     }
 
                     string origSpriteKey = string.Format(TabSpriteFormat, scheme, node.id);
                     string clonedSpriteKey = string.Format(TabSpriteFormat, AioFabScheme, node.id);
-
-                    if (group.TryGetValue(origSpriteKey, out Atlas.Sprite groupSprite))
+                    try
                     {
-                        group[clonedSpriteKey] = groupSprite;
-                        //Console.WriteLine($"[AIOFabricator] Cloned Group Sprite '{origSpriteKey}' > '{clonedSpriteKey}'");
+                        if (group.TryGetValue(origSpriteKey, out Atlas.Sprite groupSprite))
+                        {
+                            group[clonedSpriteKey] = groupSprite;
+                        }
+                        else if (atlas.TryGetValue(origSpriteKey, out Atlas.Sprite resourceSprite))
+                        {
+                            atlas[clonedSpriteKey] = resourceSprite;
+                        }
                     }
-                    else if (atlas.TryGetValue(origSpriteKey, out Atlas.Sprite resourceSprite))
+                    catch (Exception ex)
                     {
-                        atlas[clonedSpriteKey] = resourceSprite;
-                        //Console.WriteLine($"[AIOFabricator] Cloned Resource Sprite '{origSpriteKey}' > '{clonedSpriteKey}'");
+                        Console.WriteLine($"[AIOFabricator][WARN] Error cloning sprite for '{scheme}:{node.id}'{Environment.NewLine}{ex}");
                     }
-
                     break;
                 }
             }
