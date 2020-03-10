@@ -1,5 +1,6 @@
 ﻿namespace AIOFabricator
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
@@ -11,7 +12,7 @@
 
     internal class AiOFab : CustomFabricator
     {
-        private const string ToolTipFormat = "{0}Menu_{1}";
+        private const string DisplayNameFormat = "{0}Menu_{1}";
         private const string TabSpriteFormat = "{0}_{1}";
 
         private const string AioFabScheme = "AiOFab";
@@ -33,11 +34,11 @@
             OnStartedPatching += LoadImageFiles;
             OnFinishedPatching += () =>
             {
-                RegisterTopLevelTab(FabricatorScheme, "Fabricator", TechType.Fabricator);
-                RegisterTopLevelTab(WorkBenchScheme, "Modification Station", TechType.Workbench);
-                RegisterTopLevelTab(SeamothUpgradesScheme, "Vehicle Upgrades", TechType.BaseUpgradeConsole);
-                RegisterTopLevelTab(MapRoomScheme, "Scanner Room", TechType.BaseMapRoom);
-                RegisterTopLevelTab(CyclopsFabScheme, "Cyclops Upgrades", TechType.Cyclops);
+                RegisterTopLevelVanillaTab(FabricatorScheme, "Fabricator", TechType.Fabricator);
+                RegisterTopLevelVanillaTab(WorkBenchScheme, "Modification Station", TechType.Workbench);
+                RegisterTopLevelVanillaTab(SeamothUpgradesScheme, "Vehicle Upgrades", TechType.BaseUpgradeConsole);
+                RegisterTopLevelVanillaTab(MapRoomScheme, "Scanner Room", TechType.BaseMapRoom);
+                RegisterTopLevelVanillaTab(CyclopsFabScheme, "Cyclops Upgrades", TechType.Cyclops);
 
                 this.Root.CraftTreeCreation = CreateCraftingTree;
             };
@@ -86,14 +87,28 @@
 
                 CraftNode aioRoot = new CraftNode("Root").AddNode(fab, wb, su, map, cy);
 
+                Type smlCTPatcher = typeof(CraftTreeHandler).Assembly.GetType("SMLHelper.V2.Patchers.CraftTreePatcher");
+                var customTrees = (Dictionary<CraftTree.Type, ModCraftTreeRoot>)smlCTPatcher.GetField("CustomTrees", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+                foreach (KeyValuePair<CraftTree.Type, ModCraftTreeRoot> entry in customTrees)
+                {
+                    if (entry.Key == this.TreeTypeID)
+                        continue;
+
+                    CraftTree tree = entry.Value.CraftTreeCreation.Invoke();
+                    CraftNode root = tree.nodes;
+                    string scheme = entry.Key.ToString();
+
+                    CloneTabDetails(scheme, root, ref langLines, ref group, ref atlas);
+                    RegisterTopLevelModTab(scheme, ref langLines, ref group);
+                    aioRoot.AddNode(root);
+                }
+
                 craftTree = new CraftTree(AioFabScheme, aioRoot);
             }
 
+
             return craftTree;
         }
-
-        public override bool UseCustomTint => true;
-        public override Color ColorTint { get; } = new Color(0.7f, 0.7f, 0.9f);
 
         public override TechType RequiredForUnlock => TechType.Workbench;
 
@@ -137,10 +152,23 @@
             };
         }
 
-        private void RegisterTopLevelTab(string scheme, string tabDisplayName, TechType tabIconId)
+        private void RegisterTopLevelVanillaTab(string scheme, string tabDisplayName, TechType tabIconId)
         {
             SpriteHandler.RegisterSprite(SpriteManager.Group.Category, string.Format(TabSpriteFormat, AioFabScheme, scheme), SpriteManager.Get(tabIconId));
-            LanguageHandler.SetLanguageLine(string.Format(ToolTipFormat, AioFabScheme, scheme), tabDisplayName);
+            LanguageHandler.SetLanguageLine(string.Format(DisplayNameFormat, AioFabScheme, scheme), tabDisplayName);
+        }
+
+        private void RegisterTopLevelModTab(string scheme, ref Dictionary<string, string> languageLines, ref Dictionary<string, Atlas.Sprite> group)
+        {
+            string clonedLangKey = string.Format(DisplayNameFormat, AioFabScheme, scheme);
+            languageLines[clonedLangKey] = languageLines[scheme];
+
+            string clonedSpriteKey = string.Format(TabSpriteFormat, AioFabScheme, scheme);
+
+            if (TechTypeExtensions.FromString(scheme, out TechType techType, true))
+            {
+                group[clonedSpriteKey] = SpriteManager.Get(techType);
+            }
         }
 
         private void CloneTabDetails(string scheme, CraftNode node, ref Dictionary<string, string> languageLines, ref Dictionary<string, Atlas.Sprite> group, ref Dictionary<string, Atlas.Sprite> atlas)
@@ -155,11 +183,11 @@
                     break;
                 case TreeAction.Expand:
                 {
-                    string clonedLangKey = string.Format(ToolTipFormat, AioFabScheme, node.id);
+                    string clonedLangKey = string.Format(DisplayNameFormat, AioFabScheme, node.id);
 
                     if (!languageLines.ContainsKey(clonedLangKey))
                     {
-                        string origLangKey = string.Format(ToolTipFormat, scheme, node.id);
+                        string origLangKey = string.Format(DisplayNameFormat, scheme, node.id);
                         languageLines.Add(clonedLangKey, languageLines[origLangKey]);
                         //Console.WriteLine($"[AIOFabricator] Cloned language key '{origLangKey}' > '{clonedLangKey}'");
                     }
