@@ -111,8 +111,6 @@
             return craftTree;
         }
 
-        public override TechType RequiredForUnlock => TechType.Workbench;
-
         protected override Atlas.Sprite GetItemSprite()
         {
             return sprite;
@@ -200,14 +198,18 @@
 
                     try
                     {
-                        if (!languageLines.ContainsKey(clonedLangKey) && languageLines.TryGetValue(origLangKey, out string origString))
+                        if (languageLines != null && !languageLines.ContainsKey(clonedLangKey) && languageLines.TryGetValue(origLangKey, out string origString))
                         {
                             languageLines[clonedLangKey] = origString;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"[AIOFabricator][WARN] Problem cloning language line for '{scheme}:{node.id}'{Environment.NewLine}Language resource not found");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[AIOFabricator][WARN] Error cloning language line for '{scheme}:{node.id}'{Environment.NewLine}{ex.Message}");
+                        Console.WriteLine($"[AIOFabricator][ERROR] Error cloning language line for '{scheme}:{node.id}'{Environment.NewLine}{ex.Message}");
                     }
 
                     string origSpriteKey = string.Format(TabSpriteFormat, scheme, node.id);
@@ -224,12 +226,12 @@
                         }
                         else
                         {
-                            Console.WriteLine($"[AIOFabricator][WARN] Error cloning sprite for '{scheme}:{node.id}'{Environment.NewLine}Sprite resource not found");
+                            Console.WriteLine($"[AIOFabricator][WARN] Problem cloning sprite for '{scheme}:{node.id}'{Environment.NewLine}Sprite resource not found");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[AIOFabricator][WARN] Error cloning sprite for '{scheme}:{node.id}'{Environment.NewLine}{ex.Message}");
+                        Console.WriteLine($"[AIOFabricator][ERROR] Error cloning sprite for '{scheme}:{node.id}'{Environment.NewLine}{ex.Message}");
                     }
                     break;
                 }
