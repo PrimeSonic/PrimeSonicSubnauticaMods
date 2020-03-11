@@ -70,7 +70,7 @@
             {
                 Dictionary<string, string> langLines = Language.main.strings;
                 Dictionary<string, Atlas.Sprite> group = SpriteManager.groups[SpriteManager.Group.Category];
-                Dictionary<string, Atlas.Sprite> atlas = Atlas.nameToAtlas["Categories"]._nameToSprite;
+                Dictionary<string, Atlas.Sprite> atlas = Atlas.GetAtlas("Categories").nameToSprite;
 
                 CraftNode fab = CraftTree.FabricatorScheme();
                 CloneTabDetails(FabricatorScheme, fab, ref langLines, ref group, ref atlas);
@@ -207,25 +207,29 @@
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[AIOFabricator][WARN] Error cloning language line for '{scheme}:{node.id}'{Environment.NewLine}{ex}");
+                        Console.WriteLine($"[AIOFabricator][WARN] Error cloning language line for '{scheme}:{node.id}'{Environment.NewLine}{ex.Message}");
                     }
 
                     string origSpriteKey = string.Format(TabSpriteFormat, scheme, node.id);
                     string clonedSpriteKey = string.Format(TabSpriteFormat, AioFabScheme, node.id);
                     try
                     {
-                        if (group.TryGetValue(origSpriteKey, out Atlas.Sprite groupSprite))
+                        if (group != null && group.TryGetValue(origSpriteKey, out Atlas.Sprite groupSprite))
                         {
                             group[clonedSpriteKey] = groupSprite;
                         }
-                        else if (atlas.TryGetValue(origSpriteKey, out Atlas.Sprite resourceSprite))
+                        else if (atlas != null && atlas.TryGetValue(origSpriteKey, out Atlas.Sprite resourceSprite))
                         {
                             atlas[clonedSpriteKey] = resourceSprite;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"[AIOFabricator][WARN] Error cloning sprite for '{scheme}:{node.id}'{Environment.NewLine}Sprite resource not found");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[AIOFabricator][WARN] Error cloning sprite for '{scheme}:{node.id}'{Environment.NewLine}{ex}");
+                        Console.WriteLine($"[AIOFabricator][WARN] Error cloning sprite for '{scheme}:{node.id}'{Environment.NewLine}{ex.Message}");
                     }
                     break;
                 }
