@@ -84,8 +84,8 @@
         internal void OnHover()
         {
             HandReticle main = HandReticle.main;
-
-            main.SetText(HandReticle.TextType.HandSubscript, "Tooltip_UseBaseBioReactor", true, GameInput.Button.None);
+  
+            main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
             string text1 = Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText);
 #if SUBNAUTICA
             main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
@@ -216,10 +216,10 @@
 #endif
                 if (displayText != null)
                 {
-                string maxPowerText = this.MaxPowerText;
-                string currentPowerString = this.CurrentPower.ToString().PadLeft(maxPowerText.Length, ' ');
+                    string maxPowerText = this.MaxPowerText;
+                    string currentPowerString = this.CurrentPower.ToString().PadLeft(maxPowerText.Length, ' ');
                     displayText.text = $"<color=#00ff00>{Language.main.Get("BaseBioReactorActive")}\n{currentPowerString}/{maxPowerText}</color>";
-            }
+                }
             }
 
             if (!PdaIsOpen)
