@@ -55,7 +55,8 @@
                 var techTypeID = (TechType)savedItem.ItemID;
                 var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 
-                Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
+                Pickupable pickupable = gameObject.GetComponent<Pickupable>();
+                pickupable.Pickup(false);
 
                 yield return new BioEnergy(pickupable, savedItem.RemainingCharge);
             }

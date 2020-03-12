@@ -84,10 +84,9 @@
         internal void OnHover()
         {
             HandReticle main = HandReticle.main;
-
-            // All this is getting updated in Unity 2018
-            string text1 = Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText);
-            main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
+  
+            main.SetText(HandReticle.TextType.Hand, Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText), false, GameInput.Button.LeftHand);
+            main.SetText(HandReticle.TextType.HandSubscript, "Tooltip_UseBaseBioReactor", true, GameInput.Button.None);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
