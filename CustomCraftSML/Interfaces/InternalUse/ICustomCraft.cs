@@ -5,7 +5,7 @@
     internal interface ICustomCraft
     {
         string ID { get; }
-        bool PassesPreValidation();
+        bool PassesPreValidation(OriginFile originFile);
         bool SendToSMLHelper();
 
         OriginFile Origin { get; set; }

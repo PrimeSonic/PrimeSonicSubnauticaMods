@@ -146,7 +146,7 @@
         public ICollection<string> AliasRecipesIDs => this.UniqueAliasRecipes.Keys;
         public ICollection<string> CustomFoodIDs => this.UniqueCustomFoods.Keys;
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
             return ItemIDisUnique() & InnerItemsAreValid() & FunctionalItemIsValid() & ValidFabricatorValues() & ValidateInternalEntries();
         }
@@ -249,7 +249,7 @@
             {
                 entry.ParentFabricator = this;
                 entry.Origin = this.Origin;
-                if (!entry.PassesPreValidation())
+                if (!entry.PassesPreValidation(entry.Origin))
                     continue;
 
                 if (uniqueEntries.ContainsKey(entry.ID))

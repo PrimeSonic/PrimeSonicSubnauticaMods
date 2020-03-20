@@ -115,7 +115,7 @@
             return new CustomCraftingTab(this.Key, this.CopyDefinitions);
         }
 
-        public bool PassesPreValidation()
+        public bool PassesPreValidation(OriginFile originFile)
         {
             return this.CraftingPath != null & ValidFabricator();
         }
