@@ -6,6 +6,7 @@
     {
         string ID { get; }
         bool PassesPreValidation(OriginFile originFile);
+        bool PassedSecondValidation { get; }
         bool SendToSMLHelper();
 
         OriginFile Origin { get; set; }

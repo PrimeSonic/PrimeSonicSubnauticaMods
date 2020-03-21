@@ -99,6 +99,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation { get; internal set; } = true;
+
         internal ModifiedRecipe(TechType origTechType) : this()
         {
             ITechData origRecipe = CraftData.Get(origTechType);

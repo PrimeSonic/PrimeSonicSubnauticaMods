@@ -110,6 +110,8 @@
 
         public string FullPath => $"{this.ParentTabPath}{"/"}{this.TabID}";
 
+        public bool PassedSecondValidation { get; set; } = true;
+
         internal override EmProperty Copy()
         {
             return new CustomCraftingTab(this.Key, this.CopyDefinitions);

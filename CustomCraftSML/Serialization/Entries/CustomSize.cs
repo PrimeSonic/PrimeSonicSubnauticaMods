@@ -64,6 +64,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation => true;
+
         public CustomSize() : this("CustomSize", SizeProperties)
         {
         }

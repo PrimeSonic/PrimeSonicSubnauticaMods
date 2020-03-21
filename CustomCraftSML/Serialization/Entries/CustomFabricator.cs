@@ -1,5 +1,8 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Fabricators;
@@ -10,9 +13,6 @@
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using UnityEngine;
     using IOPath = System.IO.Path;
 
@@ -305,9 +305,9 @@
             }
             else
             {
-                QuickLogger.Debug($"Default sprite for {this.Key} '{this.ItemID}' from {this.Origin}");                
+                QuickLogger.Debug($"Default sprite for {this.Key} '{this.ItemID}' from {this.Origin}");
                 switch (this.Model)
-                {                    
+                {
                     case ModelTypes.Fabricator:
                         sprite = SpriteManager.Get(TechType.Fabricator);
                         break;
@@ -316,11 +316,11 @@
                         break;
                     case ModelTypes.MoonPool:
                         imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
-                        sprite = ImageUtils.LoadSpriteFromFile(imagePath);                        
+                        sprite = ImageUtils.LoadSpriteFromFile(imagePath);
                         break;
                     default:
                         throw new InvalidOperationException("Invalid ModelType encountered in HandleCustomSprite");
-                }                
+                }
 
             }
 
@@ -335,31 +335,52 @@
         public void DuplicateCustomTabDiscovered(string id)
         {
             QuickLogger.Warning($"Duplicate entry for {CustomCraftingTabList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-            this.UniqueCustomTabs.Remove(id);
+            if (this.UniqueCustomTabs.TryGetValue(id, out CfCustomCraftingTab tab))
+            {
+                tab.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+            }
         }
 
         public void DuplicateMovedRecipeDiscovered(string id)
         {
             QuickLogger.Warning($"Duplicate entry for {MovedRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-            this.UniqueMovedRecipes.Remove(id);
+            if (this.UniqueMovedRecipes.TryGetValue(id, out CfMovedRecipe moved))
+            {
+                moved.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+            }
         }
 
         public void DuplicateAddedRecipeDiscovered(string id)
         {
             QuickLogger.Warning($"Duplicate entry for {AddedRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-            this.UniqueAddedRecipes.Remove(id);
+            if (this.UniqueAddedRecipes.TryGetValue(id, out CfAddedRecipe added))
+            {
+                added.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+            }
         }
 
         public void DuplicateAliasRecipesDiscovered(string id)
         {
             QuickLogger.Warning($"Duplicate entry for {AliasRecipeList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
-            this.UniqueAliasRecipes.Remove(id);
+            if (this.UniqueAliasRecipes.TryGetValue(id, out CfAliasRecipe alias))
+            {
+                alias.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+            }
         }
 
         public void DuplicateCustomFoodsDiscovered(string id)
         {
             QuickLogger.Warning($"Duplicate entry for {CustomFoodList.ListKey} '{id}' from {this.Origin} was already added by another working file. Kept first one. Discarded duplicate.");
             this.UniqueCustomFoods.Remove(id);
+            if (this.UniqueCustomFoods.TryGetValue(id, out CfCustomFood food))
+            {
+                food.PassedSecondValidation = false;
+                this.PassedSecondValidation = false;
+            }
         }
 
         internal override EmProperty Copy()

@@ -60,6 +60,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation { get; set; } = true;
+
         public MovedRecipe() : this(TypeName, MovedRecipeProperties)
         {
         }
