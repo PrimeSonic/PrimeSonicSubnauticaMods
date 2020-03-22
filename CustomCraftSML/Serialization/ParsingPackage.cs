@@ -74,7 +74,7 @@
             int successCount = 0;
             foreach (CustomCraftEntry item in this.UniqueEntries.Values)
             {
-                if (item.PassedSecondValidation)
+                if (!item.PassedSecondValidation)
                 {
                     QuickLogger.Warning($"Entry for '{item.ID}' from file '{item.Origin}' failed secondary checks for duplicate IDs. It will not be patched.");
                 }
