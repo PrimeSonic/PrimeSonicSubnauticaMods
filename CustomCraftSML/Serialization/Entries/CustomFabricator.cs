@@ -339,6 +339,7 @@
             {
                 tab.PassedSecondValidation = false;
                 this.PassedSecondValidation = false;
+                this.UniqueCustomTabs.Remove(id);
             }
         }
 
@@ -349,6 +350,7 @@
             {
                 moved.PassedSecondValidation = false;
                 this.PassedSecondValidation = false;
+                this.UniqueMovedRecipes.Remove(id);
             }
         }
 
@@ -359,6 +361,7 @@
             {
                 added.PassedSecondValidation = false;
                 this.PassedSecondValidation = false;
+                this.UniqueAddedRecipes.Remove(id);
             }
         }
 
@@ -369,6 +372,7 @@
             {
                 alias.PassedSecondValidation = false;
                 this.PassedSecondValidation = false;
+                this.UniqueAliasRecipes.Remove(id);
             }
         }
 
@@ -380,6 +384,7 @@
             {
                 food.PassedSecondValidation = false;
                 this.PassedSecondValidation = false;
+                this.UniqueCustomFoods.Remove(id);
             }
         }
 
