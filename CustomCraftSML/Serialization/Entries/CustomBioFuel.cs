@@ -40,6 +40,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation => true;
+
         public string ID => this.ItemID;
 
         public float Energy

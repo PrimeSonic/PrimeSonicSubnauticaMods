@@ -214,9 +214,9 @@
             return new CustomFood(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
-            return base.PassesPreValidation() & ValidateCustomFoodValues();
+            return base.PassesPreValidation(originFile) & ValidateCustomFoodValues();
         }
 
         private bool ValidateCustomFoodValues()

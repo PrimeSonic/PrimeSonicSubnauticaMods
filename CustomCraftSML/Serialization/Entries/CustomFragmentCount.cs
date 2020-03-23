@@ -42,6 +42,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation => true;
+
         internal CustomFragmentCount(string itemID, int fragmentsToScan) : this()
         {
             this.ItemID = itemID;

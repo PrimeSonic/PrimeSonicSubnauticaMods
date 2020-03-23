@@ -60,6 +60,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation { get; set; } = true;
+
         public MovedRecipe() : this(TypeName, MovedRecipeProperties)
         {
         }
@@ -103,9 +105,9 @@
             return new MovedRecipe(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
-            return base.PassesPreValidation() & IsValidState();
+            return base.PassesPreValidation(originFile) & IsValidState();
         }
 
         private bool IsValidState()

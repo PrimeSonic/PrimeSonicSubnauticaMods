@@ -51,7 +51,7 @@
 
         internal override EmProperty Copy() => new EmIngredient(this.ItemID, this.Required);
 
-        public override bool PassesPreValidation() => base.PassesPreValidation() && RequireValueInRange();
+        public override bool PassesPreValidation(OriginFile originFile) => base.PassesPreValidation(originFile) && RequireValueInRange();
 
         private bool RequireValueInRange()
         {
