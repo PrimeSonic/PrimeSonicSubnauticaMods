@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using Common;
     using UnityEngine;
+    using UpgradedVehicles.SaveData;
 
     public class VehicleUpgrader : MonoBehaviour
     {
@@ -48,10 +49,10 @@
             // Depth Modules Mk4 and Mk5 optionaly added during patching
         };
 
-        internal static void SetBonusSpeedMultipliers(float seamothMultiplier, float exosuitMultiplier)
+        internal static void SetBonusSpeedMultipliers(IUpgradeOptions upgradeOptions)
         {
-            _seamothBonusSpeedMultiplier = seamothMultiplier;
-            _exosuitBonusSpeedMultiplier = exosuitMultiplier;
+            _seamothBonusSpeedMultiplier = upgradeOptions.SeamothBonusSpeedMultiplier;
+            _exosuitBonusSpeedMultiplier = upgradeOptions.ExosuitBonusSpeedMultiplier;
         }
 
         // Original values from the Vehicle class
@@ -59,7 +60,7 @@
         private float BaseOnGroundForceMultiplier = -1f;
 
         private Vehicle ParentVehicle = null;
-        private Equipment UpgradeModules = null;
+        private Equipment UpgradeModules => ParentVehicle.modules;
 
         private DealDamageOnImpact _dmgOnImpact;
         private DealDamageOnImpact DmgOnImpact => _dmgOnImpact ?? (_dmgOnImpact = ParentVehicle.GetComponent<DealDamageOnImpact>());
@@ -203,18 +204,22 @@
 
             BaseForwardForce = vehicle.forwardForce;
             BaseOnGroundForceMultiplier = vehicle.onGroundForceMultiplier;
-            
-            UpgradeModules = vehicle.modules;
+
+            if (this.UpgradeModules == null)
+            {
+                QuickLogger.Warning("Initialize Vehicle - UpgradeModules missing", true);
+                return;
+            }
 
             if (this.DmgOnImpact == null)
             {
-                QuickLogger.Debug("Initialize Vehicle: DealDamageOnImpact null");
+                QuickLogger.Warning("Initialize Vehicle - DealDamageOnImpact missing", true);
                 return;
             }
 
             if (this.LifeMix == null)
             {
-                QuickLogger.Debug("Initialize Vehicle: LiveMixin null");
+                QuickLogger.Warning("Initialize Vehicle - LiveMixin missing", true);
                 return;
             }
         }
@@ -226,7 +231,7 @@
             foreach (KeyValuePair<TechType, int> armorModule in ArmorPlatingModules)
             {
                 TechType techType = armorModule.Key;
-                if (UpgradeModules.GetCount(techType) > 0)
+                if (this.UpgradeModules.GetCount(techType) > 0)
                 {
                     int multiplier = armorModule.Value;
                     max = Math.Max(max, multiplier);
@@ -238,12 +243,15 @@
 
         private int CalculateDepthModuleIndex()
         {
+            if (this.UpgradeModules == null)            
+                return -1; // Missing UpgradeModules, cannot calculate
+
             if (IsExosuit)
             {
-                if (UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
+                if (this.UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
                     return 2;
 
-                if (UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
+                if (this.UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
                     return 1;
             }
             else if (IsSeamoth)
@@ -252,7 +260,7 @@
                 foreach (KeyValuePair<TechType, int> seamothDepth in SeamothDepthModules)
                 {
                     TechType techType = seamothDepth.Key;
-                    if (UpgradeModules.GetCount(techType) > 0)
+                    if (this.UpgradeModules.GetCount(techType) > 0)
                     {
                         int depthIndex = seamothDepth.Value;
                         max = Math.Max(max, depthIndex);
@@ -281,8 +289,17 @@
             bool updateArmor = updateAll || ArmorPlatingModules.ContainsKey(upgradeModule);
             bool updateSpeed = updateAll || upgradeModule == SpeedBoostingModule;
             bool updateEfficiency = updateAll || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
+            QuickLogger.Debug($"updateAll:{updateAll} updateArmor:{updateArmor} updateSpeed:{updateSpeed} updateEfficiency:{updateEfficiency}");
 
-            this.DepthIndex = CalculateDepthModuleIndex();
+            int newIndex = CalculateDepthModuleIndex();
+
+            if (newIndex < 0)
+            {
+                QuickLogger.Error("UpgradeVehicle - UpgradeModules missing - Unable to upgrade");
+                return;
+            }
+
+            this.DepthIndex = newIndex;
 
             if (updateArmor) // Armor
             {
@@ -293,8 +310,8 @@
 
             if (updateEfficiency) // Efficiency
             {
-                int speedBoosterCount = UpgradeModules.GetCount(SpeedBoostingModule);
-                int powerModuleCount = UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
+                int speedBoosterCount = this.UpgradeModules.GetCount(SpeedBoostingModule);
+                int powerModuleCount = this.UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
 
                 UpdatePowerRating(speedBoosterCount, powerModuleCount);
 

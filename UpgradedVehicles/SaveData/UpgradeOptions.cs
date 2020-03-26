@@ -4,13 +4,13 @@
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Options;
 
-    internal class UpgradeOptions : ModOptions
+    internal class UpgradeOptions : ModOptions, IUpgradeOptions
     {
         private readonly ConfigSaveData SaveData = new ConfigSaveData();
 
-        internal bool DebugLogsEnabled => SaveData.DebugLogsEnabled;
+        public bool DebugLogsEnabled => SaveData.DebugLogsEnabled;
 
-        internal float SeamothBonusSpeedMultiplier
+        public float SeamothBonusSpeedMultiplier
         {
             get
             {
@@ -30,7 +30,7 @@
             }
         }
 
-        internal float ExosuitBonusSpeedMultiplier
+        public float ExosuitBonusSpeedMultiplier
         {
             get
             {
@@ -96,7 +96,7 @@
                     return;
             }
 
-            VehicleUpgrader.SetBonusSpeedMultipliers(this.SeamothBonusSpeedMultiplier, this.ExosuitBonusSpeedMultiplier);
+            VehicleUpgrader.SetBonusSpeedMultipliers(this);
             SaveData.Save();
         }
     }

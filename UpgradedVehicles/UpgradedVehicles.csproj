@@ -77,6 +77,7 @@
     <Compile Include="HullArmorMk2.cs" />
     <Compile Include="HullArmorMk3.cs" />
     <Compile Include="HullArmorMk4.cs" />
+    <Compile Include="SaveData\IUpgradeOptions.cs" />
     <Compile Include="VehicleUpgradeModule.cs" />
     <Compile Include="SpeedBooster.cs" />
     <Compile Include="Patchers.cs" />

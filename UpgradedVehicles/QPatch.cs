@@ -46,9 +46,7 @@
                 var hullArmorMk4Module = new HullArmorMk4(hullArmorMk3Module.TechType);
                 hullArmorMk4Module.Patch();
 
-
-
-                VehicleUpgrader.SetBonusSpeedMultipliers(configOptions.SeamothBonusSpeedMultiplier, configOptions.ExosuitBonusSpeedMultiplier);
+                VehicleUpgrader.SetBonusSpeedMultipliers(configOptions);
 
                 var harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -63,6 +61,8 @@
 
         public static void CrossModUpdates()
         {
+            QuickLogger.Info("Checking if MoreSeamothDepth mod is present");
+
             IQMod moreSeamothDepth = QModServices.Main.FindModById("MoreSeamothDepth");
             if (moreSeamothDepth != null &&
                 TechTypeHandler.TryGetModdedTechType("SeamothHullModule4", out TechType vehicleHullModule4) &&
