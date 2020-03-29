@@ -7,6 +7,6 @@
         short FoodValue { get; }
         short WaterValue { get; }
         float DecayRateMod { get; }
-        bool AllowOverfill { get; }
+        bool UseDrinkSound { get; }
     }
 }

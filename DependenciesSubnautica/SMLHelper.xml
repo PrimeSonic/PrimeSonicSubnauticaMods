@@ -43,6 +43,12 @@
             If not overriden, the item will appear at the craft tree's root.
             </summary>
         </member>
+        <member name="P:SMLHelper.V2.Assets.Craftable.CraftingTime">
+            <summary>
+            Override with a custom crafting time for this item. Normal default crafting time is <c>1f</c>.<para/>
+            Any value zero or less will be ignored.
+            </summary>
+        </member>
         <member name="M:SMLHelper.V2.Assets.Craftable.#ctor(System.String,System.String,System.String)">
             <summary>
             Initializes a new <see cref="T:SMLHelper.V2.Assets.Craftable"/>, the basic class for any item that can be crafted at a fabricator.
@@ -1179,6 +1185,22 @@
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
         </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SetEatingSound(TechType,System.String)">
+            <summary>
+            Sets the eating sound for the provided TechType.
+            </summary>
+            <param name="consumable">The item being consumed during <see cref="M:Survival.Eat(UnityEngine.GameObject)"/>.</param>
+            <param name="soundPath">
+            The sound path.
+            <para>
+            Value values are
+            - "event:/player/drink"
+            - "event:/player/drink_stillsuit"
+            - "event:/player/use_first_aid"
+            - "event:/player/eat" (default)
+            </para>
+            </param>
+        </member>
         <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#SetTechData(TechType,ITechData)">
             <summary>
             <para>Allows you to edit recipes, i.e. TechData for TechTypes.</para>
@@ -1301,6 +1323,22 @@
             </summary>
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
+        </member>
+        <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#SetEatingSound(TechType,System.String)">
+            <summary>
+            Sets the eating sound for the provided TechType.
+            </summary>
+            <param name="consumable">The item being consumed during <see cref="M:Survival.Eat(UnityEngine.GameObject)"/>.</param>
+            <param name="soundPath">
+            The sound path.
+            <para>
+            Value values are
+            - "event:/player/drink"
+            - "event:/player/drink_stillsuit"
+            - "event:/player/use_first_aid"
+            - "event:/player/eat" (default)
+            </para>
+            </param>
         </member>
         <member name="T:SMLHelper.V2.Handlers.CraftTreeHandler">
             <summary>
@@ -2635,6 +2673,22 @@
             <param name="techType">The TechType whose TechData you want to access.</param>
             <returns>Returns TechData if it exists; Otherwise, returns <c>null</c>.</returns>
         </member>
+        <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetEatingSound(TechType,System.String)">
+            <summary>
+            Sets the eating sound for the provided TechType.
+            </summary>
+            <param name="consumable">The item being consumed during <see cref="M:Survival.Eat(UnityEngine.GameObject)"/>.</param>
+            <param name="soundPath">
+            The sound path.
+            <para>
+            Value values are
+            - "event:/player/drink"
+            - "event:/player/drink_stillsuit"
+            - "event:/player/use_first_aid"
+            - "event:/player/eat" (default)
+            </para>
+            </param>
+        </member>
         <member name="T:SMLHelper.V2.Interfaces.ICraftTreeHandler">
             <summary>
             A handler class for creating and editing of crafting trees.
@@ -3567,6 +3621,93 @@
             </summary>
             <param name="s"></param>
             <returns></returns>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyDown(UnityEngine.KeyCode)">
+            <summary>
+            Check this is the first frame a key has been pressed
+            </summary>
+            <param name="keyCode"></param>
+            <returns>True during the first frame a key has been pressed, otherwise false</returns>
+            <seealso cref="T:UnityEngine.KeyCode"/>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyDown(System.String)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyDown(System.String)">
+            <summary>
+            Check this is the first frame a key has been pressed.
+            </summary>
+            <param name="s"></param>
+            <returns>True during the first frame a key has been pressed, otherwise false</returns>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyDown(UnityEngine.KeyCode)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyHeld(UnityEngine.KeyCode)">
+            <summary>
+            Check a key is currently held down
+            </summary>
+            <param name="keyCode"></param>
+            <returns>True every frame a key is held down, otherwise false</returns>
+            <seealso cref="T:UnityEngine.KeyCode"/>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyHeld(System.String)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyHeld(System.String)">
+            <summary>
+            Check a key is currently held down
+            </summary>
+            <param name="s"></param>
+            <returns>True every frame a key is held down, otherwise false</returns>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyHeld(UnityEngine.KeyCode)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyHeldTime(UnityEngine.KeyCode)">
+            <summary>
+            Check how long a key has been held down
+            </summary>
+            <param name="keyCode"></param>
+            <returns></returns>
+            <seealso cref="T:UnityEngine.KeyCode"/>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyHeldTime(System.String)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyHeldTime(System.String)">
+            <summary>
+            Check how long a key has been held down
+            </summary>
+            <param name="s"></param>
+            <returns></returns>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyHeldTime(UnityEngine.KeyCode)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyUp(UnityEngine.KeyCode)">
+            <summary>
+            Check this is the frame a key has been released
+            </summary>
+            <param name="keyCode"></param>
+            <returns>True during the first frame a key has been released, otherwise false</returns>
+            <seealso cref="T:UnityEngine.KeyCode"/>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyUp(System.String)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyUp(System.String)">
+            <summary>
+            Check this is the first frame a key has been released
+            </summary>
+            <param name="s"></param>
+            <returns>True during the first frame a key has been released, otherwise false</returns>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetKeyUp(UnityEngine.KeyCode)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetAnalogValueForKey(UnityEngine.KeyCode)">
+            <summary>
+            Gets the analog value for a <seealso cref="T:UnityEngine.KeyCode"/> following the same logic as
+            <seealso cref="M:GameInput.GetAnalogValueForButton(GameInput.Button)"/>
+            </summary>
+            <param name="keyCode"></param>
+            <returns>1f while a key is being held, otherwise 0f</returns>
+            <seealso cref="T:UnityEngine.KeyCode"/>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetAnalogValueForKey(System.String)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.KeyCodeUtils.GetAnalogValueForKey(System.String)">
+            <summary>
+            Gets the analog value for a key by <seealso cref="T:System.String"/> value, following the same logic as
+            <seealso cref="M:GameInput.GetAnalogValueForButton(GameInput.Button)"/>
+            </summary>
+            <param name="s"></param>
+            <returns>1f while a key is being held, otherwise 0f</returns>
+            <seealso cref="M:SMLHelper.V2.Utility.KeyCodeUtils.GetAnalogValueForKey(UnityEngine.KeyCode)"/>
         </member>
         <member name="T:SMLHelper.V2.Utility.PlayerPrefsExtra">
             <summary>

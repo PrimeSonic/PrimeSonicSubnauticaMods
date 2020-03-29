@@ -1,5 +1,8 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
     using Common;
     using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
@@ -8,9 +11,6 @@
     using CustomCraft2SML.SMLHelperItems;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
     using IOPath = System.IO.Path;
 
     internal class CustomFood : AliasRecipe, ICustomFood, ICustomCraft
@@ -32,10 +32,12 @@
             "            If set to 0.5 it will decay half as fast.",
             "            And if set to 0 it will not decay.",
             "            Without this property, the food item will not decay.",
-            $"        {OverfillKey}: Defines if the eaten item can exceed the normal food-limit.",
-            "            Defaults to YES when not present.",
             $"        {FoodModelKey}: Sets the model the food should use in the fabricator and upon being dropped. This needs to be an already existing food or drink.",
             "            Leaving out this property results in an automatic definition based on the food and water values.",
+            $"        {UseDrinkSoundKey}: An optional property that sets whether the drinking sound effect should be used when consuming this item.",
+            $"            Set to 'NO' to force the eating sound to be used, regardless of the {WaterKey}.",
+            $"            Set to 'YES' to force the drinking sound to be used, regardless of the {FoodKey}.",
+            $"            If not set, then the drinking sound will be used if {WaterKey} is 5 times greater than {FoodKey}",
         };
 
         // We may need this later.
@@ -99,13 +101,14 @@
         protected const string FoodKey = "FoodValue";
         protected const string WaterKey = "WaterValue";
         protected const string DecayRateKey = "DecayRateMod";
-        protected const string OverfillKey = "AllowOverfill";
+        protected const string UseDrinkSoundKey = "UseDrinkSound";
 
         protected readonly EmProperty<FoodModel> foodModel;
         protected readonly EmProperty<short> foodValue;
         protected readonly EmProperty<short> waterValue;
         protected readonly EmProperty<float> decayrate;
         protected readonly EmYesNo allowOverfill;
+        protected readonly EmYesNo useDrinkSound;
 
         public FoodModel FoodType
         {
@@ -131,10 +134,16 @@
             set => decayrate.Value = value;
         }
 
-        public bool AllowOverfill
+        public bool UseDrinkSound
         {
-            get => allowOverfill.Value;
-            set => allowOverfill.Value = value;
+            get
+            {
+                if (useDrinkSound.HasValue)
+                    return useDrinkSound.Value;
+                else
+                    return this.FoodValue * 5f <= this.WaterValue;
+            }
+            set => useDrinkSound.Value = value;
         }
 
         internal bool Decomposes => this.DecayRateMod > 0f;
@@ -146,7 +155,7 @@
             new EmProperty<short>(FoodKey, 0) { Optional = false },
             new EmProperty<short>(WaterKey, 0) { Optional = false },
             new EmProperty<float>(DecayRateKey, 0) { Optional = true },
-            new EmYesNo(OverfillKey, true) { Optional = true },
+            new EmYesNo(UseDrinkSoundKey, false) { Optional = true },
         };
 
         internal TechType FoodPrefab
@@ -202,11 +211,13 @@
             foodValue = (EmProperty<short>)Properties[FoodKey];
             waterValue = (EmProperty<short>)Properties[WaterKey];
             decayrate = (EmProperty<float>)Properties[DecayRateKey];
-            allowOverfill = (EmYesNo)Properties[OverfillKey];
+            useDrinkSound = (EmYesNo)Properties[UseDrinkSoundKey];
 
             techGroup.Value = TechGroup.Survival;
             techCategory.DefaultValue = TechCategory.CookedFood;
             foodModel = (EmProperty<FoodModel>)Properties[FoodModelKey];
+
+            amountCrafted.DefaultValue = 1;
         }
 
         internal override EmProperty Copy()
@@ -291,6 +302,11 @@
                 throw new InvalidOperationException("TechTypeHandler.AddTechType must be called before PrefabHandler.RegisterPrefab.");
 
             PrefabHandler.RegisterPrefab(new CustomFoodPrefab(this));
+
+            if (this.UseDrinkSound)
+            {
+                CraftDataHandler.SetEatingSound(this.TechType, "event:/player/drink");
+            }
         }
     }
 }
