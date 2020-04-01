@@ -56,7 +56,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Utilities\Utilities.projitems*{0845ceea-976e-4d0b-ae5d-7dbba6fe1476}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{0ba0c9f3-9288-4d34-bff8-3f402ef5e3a7}*SharedItemsImports = 4
-		Utilities\Utilities.projitems*{0fdbc24d-27cf-435f-b49c-d0a8a580971a}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{405a8ab5-3671-4bc7-9fcb-b8a2f6a456f1}*SharedItemsImports = 4
 		Utilities\Utilities.projitems*{4186cf53-c9f3-4635-a108-84cf60a2ed0e}*SharedItemsImports = 4
 		FCStudioHelpers\FCStudioHelpers.projitems*{55314209-de35-4a05-a188-ea01fc1dca95}*SharedItemsImports = 4
