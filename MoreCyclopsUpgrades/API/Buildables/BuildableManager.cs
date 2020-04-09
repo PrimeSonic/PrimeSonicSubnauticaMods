@@ -17,6 +17,12 @@
         /// The list of tracked buildables.
         /// </summary>
         protected readonly List<BuildableMono> TrackedBuildables = new List<BuildableMono>();
+
+        /// <summary>
+        /// The list of buildables that have gone through <see cref="RemoveBuildable(BuildableMono)"/>.
+        /// </summary>
+        protected readonly List<BuildableMono> RemovedBuildables = new List<BuildableMono>();
+
         private readonly List<BuildableMono> tempBuildables = new List<BuildableMono>();
 
         /// <summary>
@@ -103,6 +109,7 @@
         public void RemoveBuildable(BuildableMono buildable)
         {
             TrackedBuildables.Remove(buildable);
+            RemovedBuildables.Add(buildable);
         }
 
         /// <summary>

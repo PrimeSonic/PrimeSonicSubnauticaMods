@@ -7,6 +7,7 @@
     using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
     using ProtoBuf;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -44,7 +45,6 @@
 
             if (this.Modules == null)
                 InitializeModules();
-
         }
 
         private string prefabId = null;
@@ -127,12 +127,12 @@
 
             var rotation = Quaternion.Euler(60f, 180, 0);
 
-            Module1 = CreateModuleDisplay(new Vector3(rightColX, botRowY, botRowZ), rotation);
-            Module2 = CreateModuleDisplay(new Vector3(middColX, botRowY, botRowZ), rotation);
-            Module3 = CreateModuleDisplay(new Vector3(leftColX, botRowY, botRowZ), rotation);
-            Module4 = CreateModuleDisplay(new Vector3(rightColX, topRowY, topRowZ), rotation);
-            Module5 = CreateModuleDisplay(new Vector3(middColX, topRowY, topRowZ), rotation);
-            Module6 = CreateModuleDisplay(new Vector3(leftColX, topRowY, topRowZ), rotation);
+            ModuleDisplay1 = CreateModuleDisplay(new Vector3(rightColX, botRowY, botRowZ), rotation);
+            ModuleDisplay2 = CreateModuleDisplay(new Vector3(middColX, botRowY, botRowZ), rotation);
+            ModuleDisplay3 = CreateModuleDisplay(new Vector3(leftColX, botRowY, botRowZ), rotation);
+            ModuleDisplay4 = CreateModuleDisplay(new Vector3(rightColX, topRowY, topRowZ), rotation);
+            ModuleDisplay5 = CreateModuleDisplay(new Vector3(middColX, topRowY, topRowZ), rotation);
+            ModuleDisplay6 = CreateModuleDisplay(new Vector3(leftColX, topRowY, topRowZ), rotation);
         }
 
         private GameObject CreateModuleDisplay(Vector3 position, Quaternion rotation)
@@ -246,15 +246,15 @@
 
         private void UpdateVisuals()
         {
-            if (Module1 == null)
+            if (ModuleDisplay1 == null)
                 AddModuleSpriteHandlers();
 
-            SetModuleVisibility("Module1", Module1);
-            SetModuleVisibility("Module2", Module2);
-            SetModuleVisibility("Module3", Module3);
-            SetModuleVisibility("Module4", Module4);
-            SetModuleVisibility("Module5", Module5);
-            SetModuleVisibility("Module6", Module6);
+            SetModuleVisibility("Module1", ModuleDisplay1);
+            SetModuleVisibility("Module2", ModuleDisplay2);
+            SetModuleVisibility("Module3", ModuleDisplay3);
+            SetModuleVisibility("Module4", ModuleDisplay4);
+            SetModuleVisibility("Module5", ModuleDisplay5);
+            SetModuleVisibility("Module6", ModuleDisplay6);
         }
 
         private void SetModuleVisibility(string slot, GameObject canvasObject)
@@ -382,23 +382,33 @@
             }
         }
 
-        public GameObject Module1;
+        public GameObject ModuleDisplay1;
 
-        public GameObject Module2;
+        public GameObject ModuleDisplay2;
 
-        public GameObject Module3;
+        public GameObject ModuleDisplay3;
 
-        public GameObject Module4;
+        public GameObject ModuleDisplay4;
 
-        public GameObject Module5;
+        public GameObject ModuleDisplay5;
 
-        public GameObject Module6;
+        public GameObject ModuleDisplay6;
 
         public ChildObjectIdentifier ModulesRoot;
 
         [ProtoMember(3, OverwriteList = true)]
         [NonSerialized]
         public AuxCyUpgradeConsoleSaveData _saveData;
+
+        private void OnDestroy()
+        {
+            if (UpgradeManager != null)
+                UpgradeManager.RemoveBuildable(this);
+
+            ParentCyclops = null;
+            UpgradeManager = null;
+        }
+
         //#if DEBUG
         //        // Also shamelessly copied from RandyKnapp
         //        // https://github.com/RandyKnapp/SubnauticaModSystem/blob/master/SubnauticaModSystem/HabitatControlPanel/HabitatControlPanel.cs#L711

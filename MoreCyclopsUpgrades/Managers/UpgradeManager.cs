@@ -5,6 +5,7 @@
     using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.AuxConsole;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     /// <summary>
@@ -197,6 +198,8 @@
 
             AttachEquipmentEvents(ref engineRoomUpgradeConsole);
 
+            IngameMenuHandler.Main.RegisterOnSaveEvent(DeleteOldSaveData);
+
             initialized = true;
             TooLateToRegister = true;
         }
@@ -299,6 +302,17 @@
         protected override void ConnectWithManager(AuxCyUpgradeConsoleMono buildable)
         {
             buildable.ConnectToCyclops(base.Cyclops, this);
+        }
+
+        private void DeleteOldSaveData()
+        {
+            for (int i = 0; i < RemovedBuildables.Count; i++)
+            {
+                AuxCyUpgradeConsoleMono removedConsole = base.RemovedBuildables[i];
+                removedConsole._saveData?.Delete();
+            }
+
+            base.RemovedBuildables.Clear();
         }
     }
 }

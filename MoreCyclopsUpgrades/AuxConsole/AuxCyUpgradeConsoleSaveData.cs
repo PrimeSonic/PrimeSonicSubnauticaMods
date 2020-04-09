@@ -86,6 +86,12 @@
             }
         }
 
+        public void Delete()
+        {
+            if (File.Exists(this.SaveFile))
+                File.Delete(this.SaveFile);
+        }
+
         internal override EmProperty Copy()
         {
             return new AuxCyUpgradeConsoleSaveData(ID, this.CopyDefinitions);
