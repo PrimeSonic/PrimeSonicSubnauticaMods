@@ -5,60 +5,50 @@
 
     internal static class QuickLogger
     {
+        private static readonly AssemblyName ModName = Assembly.GetCallingAssembly().GetName();
+
         internal static bool DebugLogsEnabled = false;
 
-        public static void Info(string msg, bool showOnScreen = false, Assembly callingAssembly = null)
+        public static void Info(string msg, bool showOnScreen = false, AssemblyName callingAssembly = null)
         {
-            string name = (callingAssembly ?? Assembly.GetCallingAssembly()).GetName().Name;
-
-            Console.WriteLine($"[{name}:INFO] {msg}");
+            Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:INFO] {msg}");
 
             if (showOnScreen)
                 ErrorMessage.AddMessage(msg);
         }
 
-        public static void Debug(string msg, bool showOnScreen = false, Assembly callingAssembly = null)
+        public static void Debug(string msg, bool showOnScreen = false, AssemblyName callingAssembly = null)
         {
             if (!DebugLogsEnabled)
                 return;
 
-            string name = (callingAssembly ?? Assembly.GetCallingAssembly()).GetName().Name;
-
-            Console.WriteLine($"[{name}:DEBUG] {msg}");
+            Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:DEBUG] {msg}");
 
             if (showOnScreen)
                 ErrorMessage.AddDebug(msg);
         }
 
-        public static void Error(string msg, bool showOnScreen = false, Assembly callingAssembly = null)
+        public static void Error(string msg, bool showOnScreen = false, AssemblyName callingAssembly = null)
         {
-            string name = (callingAssembly ?? Assembly.GetCallingAssembly()).GetName().Name;
-
-            Console.WriteLine($"[{name}:ERROR] {msg}");
+            Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:ERROR] {msg}");
 
             if (showOnScreen)
                 ErrorMessage.AddError(msg);
         }
 
-        public static void Error(string msg, Exception ex, Assembly callingAssembly = null)
+        public static void Error(string msg, Exception ex, AssemblyName callingAssembly = null)
         {
-            string name = Assembly.GetCallingAssembly().GetName().Name;
-
-            Console.WriteLine($"[{name}:ERROR] {msg}{Environment.NewLine}{ex.ToString()}");
+            Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:ERROR] {msg}{Environment.NewLine}{ex.ToString()}");
         }
 
-        public static void Error(Exception ex, Assembly callingAssembly = null)
+        public static void Error(Exception ex, AssemblyName callingAssembly = null)
         {
-            string name = (callingAssembly ?? Assembly.GetCallingAssembly()).GetName().Name;
-
-            Console.WriteLine($"[{name}:ERROR] {ex.ToString()}");
+            Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:ERROR] {ex.ToString()}");
         }
 
-        public static void Warning(string msg, bool showOnScreen = false, Assembly callingAssembly = null)
+        public static void Warning(string msg, bool showOnScreen = false, AssemblyName callingAssembly = null)
         {
-            string name = (callingAssembly ?? Assembly.GetCallingAssembly()).GetName().Name;
-
-            Console.WriteLine($"[{name}:WARN] {msg}");
+            Console.WriteLine($"[{(callingAssembly ?? ModName).Name}:WARN] {msg}");
 
             if (showOnScreen)
                 ErrorMessage.AddWarning(msg);
@@ -66,12 +56,7 @@
 
         public static string GetAssemblyVersion()
         {
-            return GetAssemblyVersion(Assembly.GetExecutingAssembly());
-        }
-
-        public static string GetAssemblyVersion(Assembly assembly)
-        {
-            Version version = assembly.GetName().Version;
+            Version version = ModName.Version;
 
             //      Major Version
             //      Minor Version
@@ -80,7 +65,7 @@
 
             if (version.Revision > 0)
             {
-                return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+                return $"{version.Major}.{version.Minor}.{version.Build} rev:{version.Revision}";
             }
 
             if (version.Build > 0)
@@ -90,10 +75,10 @@
 
             if (version.Minor > 0)
             {
-                return $"{version.Major}.{version.Minor}";
+                return $"{version.Major}.{version.Minor}.0";
             }
 
-            return $"{version.Major}";
+            return $"{version.Major}.0.0";
         }
     }
 }
