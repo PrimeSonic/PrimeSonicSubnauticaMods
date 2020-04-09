@@ -58,8 +58,8 @@
         /// <summary>
         /// Get the value assigned to the specified tier techtype.
         /// </summary>
-        /// <param name="techType">The TechTech to check.</param>
-        /// <returns>The <see cref="{T}"/> value associated to the tier if found; Otherwise returns <see cref="DefaultValue"/>.</returns>
+        /// <param name="tierId">The TechTech to check.</param>
+        /// <returns>The value associated to the tier if found; Otherwise returns <see cref="DefaultValue"/>.</returns>
         public T TierValue(TechType tierId)
         {
             TieredUpgradeHandler<T> tier = collection.Find(t => t.TechType == tierId);

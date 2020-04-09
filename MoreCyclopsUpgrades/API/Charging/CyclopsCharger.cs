@@ -12,15 +12,43 @@
     {
         private bool gettingEnergy;
 
+        /// <summary>
+        /// A reference to the the cyclops <see cref="SubRoot"/> instance.
+        /// </summary>
         public readonly SubRoot Cyclops;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CyclopsCharger"/> class.
+        /// </summary>
+        /// <param name="cyclops">The cyclops.</param>
         protected CyclopsCharger(SubRoot cyclops)
         {
             Cyclops = cyclops;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the charger icon allowed to be visible in the Cyclops displays.<br/>
+        /// Depends on either <see cref="ProvidingPower"/> or <see cref="HasReservePower"/> returning <c>true</c>.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if can be visible in the Cyclops displays; otherwise, <c>false</c>.
+        /// </value>
         public bool ShowStatusIcon => this.ProvidingPower || this.HasReservePower;
+
+        /// <summary>
+        /// Gets a value indicating whether this charger is currently providing power.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if currently providing power; otherwise, <c>false</c>.
+        /// </value>
         public bool ProvidingPower { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this charger has reserve power.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance has reserve power; otherwise, <c>false</c>.
+        /// </value>
         public bool HasReservePower { get; private set; }
 
         internal float Generate(float requestedPower)
@@ -73,19 +101,19 @@
         protected abstract float DrainReserveEnergy(float requestedPower);
 
         /// <summary>
-        /// Gets the sprite to use for the power indicator. This will only be called when <see cref="HasPowerIndicatorInfo"/> returns <c>true</c>.
+        /// Gets the sprite to use for the power indicator. This will only be called when <see cref="ShowStatusIcon"/> returns <c>true</c>.
         /// </summary>
         /// <returns>A new <see cref="Atlas.Sprite"/> to be used in the Cyclops Helm and Holographic HUDs.</returns>
         public abstract Atlas.Sprite StatusSprite();
 
         /// <summary>
-        /// Gets the text to use under the power indicator icon. This will only be called when <see cref="HasPowerIndicatorInfo"/> returns <c>true</c>.
+        /// Gets the text to use under the power indicator icon. This will only be called when <see cref="ShowStatusIcon"/> returns <c>true</c>.
         /// </summary>
         /// <returns>A <see cref="string"/>, ready to use for in-game text. Should be limited to numeric values if possible.</returns>
         public abstract string StatusText();
 
         /// <summary>
-        /// Gets the color of the text used under the power indicator icon. This will only be called when <see cref="HasPowerIndicatorInfo"/> returns <c>true</c>.
+        /// Gets the color of the text used under the power indicator icon. This will only be called when <see cref="ShowStatusIcon"/> returns <c>true</c>.
         /// </summary>
         /// <returns>A Unity <see cref="Color"/> value for the text. When in doubt, just set this to white.</returns>
         public abstract Color StatusTextColor();
