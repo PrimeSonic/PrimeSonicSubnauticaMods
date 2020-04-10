@@ -7,7 +7,6 @@
     using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
     using ProtoBuf;
-    using SMLHelper.V2.Handlers;
     using UnityEngine;
     using UnityEngine.UI;
 

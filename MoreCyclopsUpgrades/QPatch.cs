@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System;
     using System.Reflection;
     using Common;
     using Harmony;
@@ -33,6 +32,7 @@
             {
                 QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
+                // If enabled, patch the Auxiliary Upgrade Console as a new buildable.
                 var console = new AuxCyUpgradeConsole();
                 console.Patch(ModConfig.Main.AuxConsoleEnabled);
 
@@ -41,7 +41,7 @@
 
                 QuickLogger.Info("Finished Patching");
             }
-            catch (Exception ex)
+            catch
             {
                 QuickLogger.Error($"Critical error in patching");
                 throw; // Rethrow for QModManager to catch and report

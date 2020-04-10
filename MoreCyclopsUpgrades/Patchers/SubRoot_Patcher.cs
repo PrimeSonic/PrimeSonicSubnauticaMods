@@ -55,9 +55,9 @@
             yield return new CodeInstruction(OpCodes.Ret);
         }
 
-        public static void PowerRatingUpdate(SubRoot __instance)
+        public static void PowerRatingUpdate(SubRoot cyclops)
         {
-            CyclopsManager.GetManager(ref __instance)?.Engine?.UpdatePowerRating();
+            CyclopsManager.GetManager(ref cyclops)?.Engine?.UpdatePowerRating();
         }
     }
 

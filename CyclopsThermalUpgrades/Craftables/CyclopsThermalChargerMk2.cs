@@ -22,6 +22,7 @@
         public override string AssetsFolder { get; } = "CyclopsThermalUpgrades/Assets";
         public override TechType RequiredForUnlock { get; } = TechType.CyclopsThermalReactorModule;
         public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
+        public override TechType SortAfter { get; } = TechType.CyclopsThermalReactorModule;
 
         public CyclopsThermalChargerMk2()
             : base("CyclopsThermalChargerMk2",

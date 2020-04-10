@@ -111,11 +111,11 @@
             }
         }
 
-        public static void UpdatePowerDisplays(CyclopsUpgradeConsoleHUDManager __instance)
+        public static void UpdatePowerDisplays(CyclopsUpgradeConsoleHUDManager consoleHUDManager)
         {
             PdaOverlayManager.UpdateIconOverlays();
 
-            CyclopsManager.GetManager(ref __instance.subRoot)?.HUD?.SlowUpdate(__instance);
+            CyclopsManager.GetManager(ref consoleHUDManager.subRoot)?.HUD?.SlowUpdate(consoleHUDManager);
         }
     }
 }
