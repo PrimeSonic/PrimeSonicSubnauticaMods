@@ -53,16 +53,13 @@
         private HelmEnergyDisplay lastDisplay = HelmEnergyDisplay.PowerCellPercentage;
 
         internal CyclopsHUDManager(SubRoot cyclops, int totalIcons)
-        {            
+        {
             Cyclops = cyclops;
             totalPowerInfoIcons = totalIcons;
         }
 
-        internal void FastUpdate(CyclopsHelmHUDManager cyclopsHelmHUD, int lastPowerInt)
+        internal void FastUpdate(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
-            if (!cyclopsHelmHUD.LOD.IsFull() || Player.main.currentSub != Cyclops)
-                return; // Same early exit
-
             if (totalPowerInfoIcons > 0)
             {
                 if (!powerIconsInitialized)
@@ -70,9 +67,6 @@
                 else
                     UpdatePowerIcons();
             }
-
-            if (lastPowerInt < 0f)
-                return;
 
             PowerRelay powerRelay = Cyclops.powerRelay;
 
@@ -101,19 +95,6 @@
         /// <param name="hudManager">The console HUD manager.</param>
         internal void SlowUpdate(CyclopsUpgradeConsoleHUDManager hudManager)
         {
-            if (!Cyclops.LOD.IsFull() || Player.main.currentSub != Cyclops || !Cyclops.live.IsAlive())
-            {
-                return; // Same early exit
-            }
-
-            hudManager.healthCur.text = IntStringCache.GetStringForInt(Mathf.FloorToInt(hudManager.liveMixin.health));
-            int maxHealth = Mathf.CeilToInt(hudManager.liveMixin.health);
-            if (hudManager.lastHealthMaxDisplayed != maxHealth)
-            {
-                hudManager.healthMax.text = "/" + IntStringCache.GetStringForInt(maxHealth);
-                hudManager.lastHealthMaxDisplayed = maxHealth;
-            }
-
             int currentReservePower = this.ChargeManager.GetTotalReservePower();
             float currentBatteryPower = Cyclops.powerRelay.GetPower();
 

@@ -43,7 +43,7 @@
             }
             catch (Exception ex)
             {
-                QuickLogger.Error(ex);
+                QuickLogger.Error($"Critical error in patching");
                 throw; // Rethrow for QModManager to catch and report
             }
         }
