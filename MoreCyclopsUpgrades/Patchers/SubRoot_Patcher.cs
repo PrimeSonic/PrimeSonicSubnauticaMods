@@ -26,12 +26,16 @@
         public static bool Prefix(ref SubRoot __instance)
         {
             var mgr = CyclopsManager.GetManager(ref __instance);
+
             if (mgr == null)
                 return true; // Safety Check
 
             // If there is no mod taking over how thermal charging is done on the Cyclops,
             // then we will allow the original method to run so it provides the vanilla thermal charging.            
-            return mgr.Charge.RechargeCyclops(); // Returns True if vanilla charging should proceed; Otherwise False.
+
+            // The return value of RechargeCyclops will be True if vanilla charging should proceed;
+            // Otherwise it returns False and the original code won't be run.
+            return mgr.Charge.RechargeCyclops(); 
         }
     }
 
@@ -60,23 +64,27 @@
     [HarmonyPatch(typeof(SubRoot), nameof(SubRoot.SetCyclopsUpgrades))]
     internal class SubRoot_SetCyclopsUpgrades_Patcher
     {
-        [HarmonyPrefix]
-        public static bool Prefix(ref SubRoot __instance)
+        [HarmonyTranspiler]
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            LiveMixin cyclopsLife = __instance.live;
+            // This replaces the entire contents of the original method with a simple call to SetUpgrades.
+            // No need to execute original method anymore as it wouldn't handle the AuxUpgradeConsole.
 
-            if (cyclopsLife == null || !cyclopsLife.IsAlive())
-                return true; // safety check
+            MethodInfo setUpgradesMethod = typeof(SubRoot_SetCyclopsUpgrades_Patcher).GetMethod(nameof(SubRoot_SetCyclopsUpgrades_Patcher.SetUpgrades));
 
-            var mgr = CyclopsManager.GetManager(ref __instance);
+            // This is handled as a simple method call to avoid replicating the many checks of the SetUpgrades method.
+            yield return new CodeInstruction(OpCodes.Ldarg_0);
+            yield return new CodeInstruction(OpCodes.Call, setUpgradesMethod);
+            yield return new CodeInstruction(OpCodes.Ret);
+        }
 
-            if (mgr != null)
+        public static void SetUpgrades(SubRoot cyclops)
+        {
+            if (cyclops.live?.IsAlive() == true)
             {
-                mgr.Upgrade.HandleUpgrades();
+                // If the Cyclops is alive, we can handle upgrades.
+                CyclopsManager.GetManager(ref cyclops)?.Upgrade?.HandleUpgrades();
             }
-
-            // No need to execute original method anymore
-            return false; // Completely override the method and do not continue with original execution
         }
     }
 

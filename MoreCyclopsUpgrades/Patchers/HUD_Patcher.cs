@@ -71,7 +71,7 @@
     }
 
     [HarmonyPatch(typeof(CyclopsHolographicHUD), nameof(CyclopsHolographicHUD.RefreshUpgradeConsoleIcons))]
-    internal class CyclopsHolographicHUD_Patcher
+    internal class CyclopsHolographicHUD_RefreshUpgradeConsoleIcons_Patcher
     {
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> inputs)
