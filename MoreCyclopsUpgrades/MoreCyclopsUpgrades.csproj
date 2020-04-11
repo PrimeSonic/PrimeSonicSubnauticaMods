@@ -94,6 +94,7 @@
     <Compile Include="API\AmbientEnergy\AmbientEnergyIconOverlay.cs" />
     <Compile Include="API\AmbientEnergy\AmbientEnergyUpgradeHandler.cs" />
     <Compile Include="API\AmbientEnergy\BatteryDetails.cs" />
+    <Compile Include="API\Buildables\AuxiliaryUpgradeConsole.cs" />
     <Compile Include="API\Buildables\BuildableManager.cs" />
     <Compile Include="API\Buildables\ICyclopsBuildable.cs" />
     <Compile Include="API\Charging\CyclopsCharger.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="API\PDA\IconOverlayText.cs" />
     <Compile Include="API\PDA\IIconOverlayText.cs" />
     <Compile Include="API\PDA\IconOverlayCreator.cs" />
+    <Compile Include="AuxConsole\UpgradeSlot.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
     <Compile Include="Config\ChoiceEnums\ConfigExtensions.cs" />
     <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />

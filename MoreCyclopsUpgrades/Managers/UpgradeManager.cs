@@ -11,7 +11,7 @@
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
     /// </summary>
-    internal class UpgradeManager : BuildableManager<AuxCyUpgradeConsoleMono>
+    internal class UpgradeManager : BuildableManager<AuxiliaryUpgradeConsole>
     {
         internal static bool TooLateToRegister { get; private set; }
 
@@ -29,31 +29,21 @@
             HandlerCreators.Add(createEvent, assemblyName);
         }
 
-        private class UpgradeSlot
-        {
-            internal Equipment Modules;
-            internal string Slot;
-
-            public UpgradeSlot(Equipment modules, string slot)
-            {
-                Modules = modules;
-                Slot = slot;
-            }
-        }
+        private UpgradeSlot[] engineRoomUpgradeSlots;
 
         private IEnumerable<UpgradeSlot> UpgradeSlots
         {
             get
             {
-                for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
-                    yield return new UpgradeSlot(engineRoomUpgradeConsole, SlotHelper.SlotNames[s]);
+                for (int s = 0; s < engineRoomUpgradeSlots.Length; s++)
+                    yield return engineRoomUpgradeSlots[s];
 
                 for (int a = 0; a < base.TrackedBuildables.Count; a++)
                 {
-                    AuxCyUpgradeConsoleMono aux = base.TrackedBuildables[a];
+                    UpgradeSlot[] auxSlots = base.TrackedBuildables[a].UpgradeSlots;
 
-                    for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
-                        yield return new UpgradeSlot(aux.Modules, SlotHelper.SlotNames[s]);
+                    for (int s = 0; s < auxSlots.Length; s++)
+                        yield return auxSlots[s];
                 }
             }
         }
@@ -198,6 +188,8 @@
 
             AttachEquipmentEvents(ref engineRoomUpgradeConsole);
 
+            SetEngineRoomUpgradeSlots();
+
             IngameMenuHandler.Main.RegisterOnSaveEvent(DeleteOldSaveData);
 
             initialized = true;
@@ -233,6 +225,16 @@
             };
         }
 
+        private void SetEngineRoomUpgradeSlots()
+        {
+            engineRoomUpgradeSlots = new UpgradeSlot[SlotHelper.SlotNames.Length];
+
+            for (int i = 0; i < SlotHelper.SlotNames.Length; i++)
+            {
+                engineRoomUpgradeSlots[i] = new UpgradeSlot(engineRoomUpgradeConsole, SlotHelper.SlotNames[i]);
+            }
+        }
+
         public void HandleUpgrades()
         {
             if (!initialized)
@@ -257,10 +259,7 @@
             QuickLogger.Debug($"UpgradeManager checking upgrade slots");
             foreach (UpgradeSlot upgradeSlot in this.UpgradeSlots)
             {
-                Equipment modules = upgradeSlot.Modules;
-                string slot = upgradeSlot.Slot;
-
-                TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);
+                TechType techTypeInSlot = upgradeSlot.GetTechTypeInSlot();
 
                 if (techTypeInSlot == TechType.None)
                     continue;
@@ -270,7 +269,7 @@
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
                     QuickLogger.Debug($"UpgradeManager counting cyclops upgrade '{techTypeInSlot.AsString()}'");
-                    handler.UpgradeCounted(modules, slot); // UpgradeHandler event
+                    handler.UpgradeCounted(upgradeSlot); // UpgradeHandler event
                 }
                 else
                 {
@@ -299,7 +298,7 @@
             return cyclops == Cyclops;
         }
 
-        protected override void ConnectWithManager(AuxCyUpgradeConsoleMono buildable)
+        protected override void ConnectWithManager(AuxiliaryUpgradeConsole buildable)
         {
             buildable.ConnectToCyclops(base.Cyclops, this);
         }
@@ -308,8 +307,8 @@
         {
             for (int i = 0; i < RemovedBuildables.Count; i++)
             {
-                AuxCyUpgradeConsoleMono removedConsole = base.RemovedBuildables[i];
-                removedConsole._saveData?.Delete();
+                AuxiliaryUpgradeConsole removedConsole = base.RemovedBuildables[i];
+                removedConsole?.DeleteSaveData();
             }
 
             base.RemovedBuildables.Clear();

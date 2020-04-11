@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Common;
+    using MoreCyclopsUpgrades.AuxConsole;
 
     /// <summary>
     /// Represents all the behaviors for a cyclops upgrade module at the time of the module being installed and counted.
@@ -150,13 +151,13 @@
             trackedItems.Clear();
         }
 
-        internal virtual void UpgradeCounted(Equipment modules, string slot)
+        internal virtual void UpgradeCounted(UpgradeSlot upgradeSlot)
         {
             count++;
-            InventoryItem trackedItem = modules.equipment[slot];
+            InventoryItem trackedItem = upgradeSlot.GetItemInSlot();
             trackedItems.Add(trackedItem);
             OnUpgradeCounted?.Invoke();
-            OnUpgradeCountedDetailed?.Invoke(modules, slot, trackedItem);
+            OnUpgradeCountedDetailed?.Invoke(upgradeSlot.Modules, upgradeSlot.Slot, trackedItem);
         }
 
         internal virtual void UpgradesFinished()
