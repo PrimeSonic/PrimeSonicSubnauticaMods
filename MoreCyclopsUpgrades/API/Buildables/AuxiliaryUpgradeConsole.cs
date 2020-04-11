@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.AuxConsole;
+    using MoreCyclopsUpgrades.Managers;
 
     // This partial class file contains all members of AuxiliaryUpgradeConsole intended for public/external use
 
@@ -13,7 +14,7 @@
     /// <seealso cref="IHandTarget" />
     /// <seealso cref="IProtoEventListener" />
     /// <seealso cref="ICyclopsBuildable" /> 
-    public abstract partial class AuxiliaryUpgradeConsole : HandTarget, ICyclopsBuildable, IUpgradeSlots
+    public abstract partial class AuxiliaryUpgradeConsole : HandTarget, IHandTarget, ICyclopsBuildable, IUpgradeSlots
     {
         /// <summary>
         /// The total number of upgrade slots. This value is constant.
@@ -77,5 +78,47 @@
         /// </summary>
         /// <remarks>Value not initialized until after <see cref="Awake"/> is run.</remarks>
         public IEnumerable<UpgradeSlot> UpgradeSlots => UpgradeSlotArray;
+
+        /// <summary>
+        /// Called when the player hovers over the upgrade console.
+        /// </summary>
+        /// <param name="guiHand">The GUI hand.</param>
+        /// <see cref="IHandTarget"/>
+        public virtual void OnHandHover(GUIHand guiHand)
+        {
+            if (!this.Buildable.constructed)
+                return;
+
+            HandReticle main = HandReticle.main;
+            main.SetInteractText(this.OnHoverText);
+            main.SetIcon(HandReticle.IconType.Hand, 1f);
+        }
+
+        /// <summary>
+        /// Called when the player clicks the upgrade console.
+        /// </summary>
+        /// <param name="guiHand">The GUI hand.</param>
+        /// <see cref="IHandTarget"/>
+        public virtual void OnHandClick(GUIHand guiHand)
+        {
+            OpenEquipmentScreen();
+        }
+
+        /// <summary>
+        /// Opens the player's PDA and displays the equipment module slots.<para/>
+        /// Upgrade Console must be fully constructed to access the equipment slots.
+        /// </summary>
+        protected void OpenEquipmentScreen()
+        {
+            if (!this.Buildable.constructed)
+                return;
+
+            PdaOverlayManager.StartConnectingToPda(this.Modules);
+
+            Player main = Player.main;
+            global::PDA pda = main.GetPDA();
+            Inventory.main.SetUsedStorage(this.Modules, false);
+            pda.Open(PDATab.Inventory, null, new global::PDA.OnClose((closingPdaEvent) => PdaOverlayManager.DisconnectFromPda()), -1f);
+        }
     }
 }

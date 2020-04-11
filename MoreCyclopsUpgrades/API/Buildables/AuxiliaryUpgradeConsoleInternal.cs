@@ -11,7 +11,7 @@
 
     // This partial class file contains all members of AuxiliaryUpgradeConsole intended for internal use only
     [ProtoContract]
-    public abstract partial class AuxiliaryUpgradeConsole : IHandTarget, IProtoEventListener
+    public abstract partial class AuxiliaryUpgradeConsole : IProtoEventListener
     {
         #region // Private/Internal members
 
@@ -116,39 +116,6 @@
         #endregion
 
         #region // Player Interaction (for internal use only)
-
-        /// <summary>
-        /// Called when the player hovers over the upgrade console.
-        /// </summary>
-        /// <param name="guiHand">The GUI hand.</param>
-        /// <see cref="IHandTarget"/>
-        void IHandTarget.OnHandHover(GUIHand guiHand)
-        {
-            if (!this.Buildable.constructed)
-                return;
-
-            HandReticle main = HandReticle.main;
-            main.SetInteractText(this.OnHoverText);
-            main.SetIcon(HandReticle.IconType.Hand, 1f);
-        }
-
-        /// <summary>
-        /// Called when the player clicks the upgrade console.
-        /// </summary>
-        /// <param name="guiHand">The GUI hand.</param>
-        /// <see cref="IHandTarget"/>
-        void IHandTarget.OnHandClick(GUIHand guiHand)
-        {
-            if (!this.Buildable.constructed)
-                return;
-
-            PdaOverlayManager.StartConnectingToPda(this.Modules);
-
-            Player main = Player.main;
-            global::PDA pda = main.GetPDA();
-            Inventory.main.SetUsedStorage(this.Modules, false);
-            pda.Open(PDATab.Inventory, null, new global::PDA.OnClose((closingPdaEvent) => PdaOverlayManager.DisconnectFromPda()), -1f);
-        }
 
         private void OnEquip(string slot, InventoryItem item)
         {
