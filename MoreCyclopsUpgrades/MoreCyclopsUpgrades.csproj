@@ -95,6 +95,7 @@
     <Compile Include="API\AmbientEnergy\AmbientEnergyUpgradeHandler.cs" />
     <Compile Include="API\AmbientEnergy\BatteryDetails.cs" />
     <Compile Include="API\Buildables\AuxiliaryUpgradeConsole.cs" />
+    <Compile Include="API\Buildables\AuxiliaryUpgradeConsoleInternal.cs" />
     <Compile Include="API\Buildables\BuildableManager.cs" />
     <Compile Include="API\Buildables\ICyclopsBuildable.cs" />
     <Compile Include="API\Buildables\IUpgradeSlots.cs" />

@@ -2,11 +2,9 @@
 {
     using Common;
     using MoreCyclopsUpgrades.API.Buildables;
-    using ProtoBuf;
     using UnityEngine;
     using UnityEngine.UI;
 
-    [ProtoContract]
     internal class AuxCyUpgradeConsoleMono : AuxiliaryUpgradeConsole
     {
         public override void OnSlotEquipped(string slot, InventoryItem item)
@@ -121,7 +119,7 @@
                 Atlas.Sprite atlasSprite = SpriteManager.Get(techType);
 
                 if (atlasSprite == null)
-                    QuickLogger.Debug($"sprite for {canvasObject.name} was null when it should not have been", true);
+                    QuickLogger.Warning($"sprite for {canvasObject.name} was null when it should not have been", true);
 
                 icon.sprite = atlasSprite;
             }
