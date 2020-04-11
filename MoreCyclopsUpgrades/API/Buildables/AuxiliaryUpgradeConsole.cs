@@ -20,8 +20,6 @@
     [ProtoContract]
     public abstract class AuxiliaryUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable
     {
-        [ProtoMember(3, OverwriteList = true)]
-        [NonSerialized]
         private AuxCyUpgradeConsoleSaveData saveData;
         
         private string prefabId = null;
@@ -144,8 +142,12 @@
         #region // Player Interaction
 
         /// <summary>
-        /// Gets the text to display when the player's cursor hovers over this upgrade console.
+        /// Gets the text to display when the player's cursor hovers over this upgrade console.<para/>
+        /// By default, this will display the same text as the original AuxUpgradeConsole.
         /// </summary>
+        /// <value>
+        /// The on hover text to display.
+        /// </value>
         protected virtual string OnHoverText => AuxCyUpgradeConsole.OnHoverText;
 
         /// <summary>
