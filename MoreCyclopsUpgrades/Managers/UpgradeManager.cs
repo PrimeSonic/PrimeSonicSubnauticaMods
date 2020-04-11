@@ -4,7 +4,6 @@
     using Common;
     using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using MoreCyclopsUpgrades.AuxConsole;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
 
@@ -35,14 +34,14 @@
         {
             get
             {
-                for (int s = 0; s < engineRoomUpgradeSlots.Length; s++)
+                for (int s = 0; s < AuxiliaryUpgradeConsole.TotalSlots; s++)
                     yield return engineRoomUpgradeSlots[s];
 
                 for (int a = 0; a < base.TrackedBuildables.Count; a++)
                 {
-                    UpgradeSlot[] auxSlots = base.TrackedBuildables[a].UpgradeSlots;
+                    UpgradeSlot[] auxSlots = base.TrackedBuildables[a].UpgradeSlotArray;
 
-                    for (int s = 0; s < auxSlots.Length; s++)
+                    for (int s = 0; s < AuxiliaryUpgradeConsole.TotalSlots; s++)
                         yield return auxSlots[s];
                 }
             }
@@ -188,7 +187,15 @@
 
             AttachEquipmentEvents(ref engineRoomUpgradeConsole);
 
-            SetEngineRoomUpgradeSlots();
+            engineRoomUpgradeSlots = new UpgradeSlot[AuxiliaryUpgradeConsole.TotalSlots]
+            {
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module1"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module2"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module3"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module4"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module5"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module6")
+            };
 
             IngameMenuHandler.Main.RegisterOnSaveEvent(DeleteOldSaveData);
 
@@ -223,16 +230,6 @@
 
                 return true;
             };
-        }
-
-        private void SetEngineRoomUpgradeSlots()
-        {
-            engineRoomUpgradeSlots = new UpgradeSlot[SlotHelper.SlotNames.Length];
-
-            for (int i = 0; i < SlotHelper.SlotNames.Length; i++)
-            {
-                engineRoomUpgradeSlots[i] = new UpgradeSlot(engineRoomUpgradeConsole, SlotHelper.SlotNames[i]);
-            }
         }
 
         public void HandleUpgrades()

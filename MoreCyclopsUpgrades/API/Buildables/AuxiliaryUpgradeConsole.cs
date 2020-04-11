@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.API.Buildables
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using Common;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -18,10 +19,37 @@
     /// <seealso cref="IProtoEventListener" />
     /// <seealso cref="ICyclopsBuildable" />
     [ProtoContract]
-    public abstract class AuxiliaryUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable
+    public abstract class AuxiliaryUpgradeConsole : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable, IUpgradeSlots
     {
+        /// <summary>
+        /// The total number of upgrade slots. This value is constant.
+        /// </summary>
+        public const int TotalSlots = 6;
+
+        /// <summary>
+        /// A read-only collection of the upgrade slot names. These will be used to up upgrade slots in <see cref="Modules"/>.
+        /// </summary>
+        public static readonly IEnumerable<string> SlotNames = new string[TotalSlots]
+        {
+            "Module1",
+            "Module2",
+            "Module3",
+            "Module4",
+            "Module5",
+            "Module6"
+        };
+
+        /// <summary>
+        /// Invoked after <see cref="OnEquip(string, InventoryItem)"/> has finished handling the added item.
+        /// </summary>
+        public virtual void OnSlotEquipped(string slot, InventoryItem item) { }
+
+        /// <summary>
+        /// Invoked after <see cref="OnUnequip(string, InventoryItem)"/> has finished handling the removed item.
+        /// </summary>
+        public virtual void OnSlotUnequipped(string slot, InventoryItem item) { }
+
         private AuxCyUpgradeConsoleSaveData saveData;
-        
         private string prefabId = null;
         private SubRoot ParentCyclops;
         private UpgradeManager UpgradeManager;
@@ -46,10 +74,16 @@
         /// <seealso cref="BuildableManager{BuildableMono}.ConnectWithManager(BuildableMono)" />
         public bool IsConnectedToCyclops => ParentCyclops != null && UpgradeManager != null;
 
+        internal UpgradeSlot[] UpgradeSlotArray;
+
+        /// <summary>
+        /// Gets the upgrade slots for this upgrade console.
+        /// </summary>
+        /// <remarks>Value not initialized until after <see cref="Awake"/> is run.</remarks>
+        public IEnumerable<UpgradeSlot> UpgradeSlots => UpgradeSlotArray;
+
         private Constructable _buildable = null;
         internal Constructable Buildable => _buildable ?? (_buildable = GetComponentInParent<Constructable>() ?? GetComponent<Constructable>());
-
-        internal UpgradeSlot[] UpgradeSlots;
 
         #region // Initialization
 
@@ -113,8 +147,6 @@
             this.Modules = new Equipment(base.gameObject, ModulesRoot.transform);
             this.Modules.SetLabel("CyclopsUpgradesStorageLabel");
 
-            UpdateVisuals();
-
             EventInfo onEquipInfo = typeof(Equipment).GetEvent("onEquip", BindingFlags.Public | BindingFlags.Instance);
             EventInfo onUnequipInfo = typeof(Equipment).GetEvent("onUnequip", BindingFlags.Public | BindingFlags.Instance);
 
@@ -127,14 +159,17 @@
             onEquipInfo.AddEventHandler(this.Modules, onEquipDelegate);
             onUnequipInfo.AddEventHandler(this.Modules, onUnequipDelegate);
 
-            this.Modules.AddSlots(SlotHelper.SlotNames);
+            this.Modules.AddSlots(SlotNames);
 
-            UpgradeSlots = new UpgradeSlot[SlotHelper.SlotNames.Length];
-
-            for (int i = 0; i < SlotHelper.SlotNames.Length; i++)
+            UpgradeSlotArray = new UpgradeSlot[TotalSlots]
             {
-                UpgradeSlots[i] = new UpgradeSlot(this.Modules, SlotHelper.SlotNames[i]);
-            }
+                new UpgradeSlot(this.Modules, "Module1"),
+                new UpgradeSlot(this.Modules, "Module2"),
+                new UpgradeSlot(this.Modules, "Module3"),
+                new UpgradeSlot(this.Modules, "Module4"),
+                new UpgradeSlot(this.Modules, "Module5"),
+                new UpgradeSlot(this.Modules, "Module6")
+            };
         }
 
         #endregion
@@ -186,33 +221,35 @@
         private void OnEquip(string slot, InventoryItem item)
         {
             CyclopsUpgradeChange();
-            UpdateVisuals();
 
             // Disallow deconstruction while there are modules in here
             if (this.Buildable != null)
                 this.Buildable.deconstructionAllowed = false;
+
+            OnSlotEquipped(slot, item);
         }
 
         private void OnUnequip(string slot, InventoryItem item)
         {
             CyclopsUpgradeChange();
-            UpdateVisuals();
 
             bool allEmpty = true;
 
-            for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
-                allEmpty &= this.Modules.GetTechTypeInSlot(SlotHelper.SlotNames[s]) == TechType.None;
+            for (int s = 0; s < TotalSlots; s++)
+            {
+                if (UpgradeSlotArray[s].HasItemInSlot())
+                {
+                    allEmpty = false;
+                    break;
+                }
+            }
 
             // Deconstruction only allowed if all slots are empty
             if (this.Buildable != null)
                 this.Buildable.deconstructionAllowed = allEmpty;
-        }
 
-        /// <summary>
-        /// Updates the visuals of the upgarde console.<para/>
-        /// This is invoked during <see cref="Awake"/> and every time the player adds or removes an upgrade module.
-        /// </summary>
-        protected abstract void UpdateVisuals();
+            OnSlotUnequipped(slot, item);
+        }
 
         private void CyclopsUpgradeChange()
         {
@@ -245,11 +282,11 @@
             if (saveData == null)
                 PrepareSaveData();
 
-            for (int s = 0; s < UpgradeSlots.Length; s++)
+            for (int s = 0; s < TotalSlots; s++)
             {
-                UpgradeSlot upgradeSlot = UpgradeSlots[s];
+                UpgradeSlot upgradeSlot = UpgradeSlotArray[s];
 
-                EmModuleSaveData savedModule = saveData.GetModuleInSlot(upgradeSlot.Slot);
+                EmModuleSaveData savedModule = saveData.GetModuleInSlot(upgradeSlot.slotName);
                 InventoryItem item = upgradeSlot.GetItemInSlot();
 
                 if (item == null)
@@ -302,9 +339,9 @@
 
                 QuickLogger.Debug("Loading save data");
                 // The following is a recreation of the essential parts of the Equipment.ResponseEquipment method.
-                for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
+                for (int s = 0; s < TotalSlots; s++)
                 {
-                    string slot = SlotHelper.SlotNames[s];
+                    string slot = UpgradeSlotArray[s].slotName;
                     // These slots need to be added before we can add items to them
                     this.Modules.AddSlot(slot);
 
@@ -331,12 +368,13 @@
                         spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;
 
                     this.Modules.AddItem(slot, spanwedItem, true);
+                    OnSlotEquipped(slot, spanwedItem);
                 }
             }
             else
             {
                 QuickLogger.Debug("No save data found.");
-                this.Modules.AddSlots(SlotHelper.SlotNames);
+                this.Modules.AddSlots(SlotNames);
             }
         }
 

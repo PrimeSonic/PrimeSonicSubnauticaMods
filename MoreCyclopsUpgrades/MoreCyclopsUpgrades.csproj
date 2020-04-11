@@ -97,6 +97,7 @@
     <Compile Include="API\Buildables\AuxiliaryUpgradeConsole.cs" />
     <Compile Include="API\Buildables\BuildableManager.cs" />
     <Compile Include="API\Buildables\ICyclopsBuildable.cs" />
+    <Compile Include="API\Buildables\IUpgradeSlots.cs" />
     <Compile Include="API\Charging\CyclopsCharger.cs" />
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
     <Compile Include="API\IMCUCrossMod.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="API\PDA\IconOverlayText.cs" />
     <Compile Include="API\PDA\IIconOverlayText.cs" />
     <Compile Include="API\PDA\IconOverlayCreator.cs" />
-    <Compile Include="AuxConsole\UpgradeSlot.cs" />
+    <Compile Include="API\Buildables\UpgradeSlot.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
     <Compile Include="Config\ChoiceEnums\ConfigExtensions.cs" />
     <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />
@@ -151,7 +152,6 @@
     <Compile Include="Patchers\UpgradeConsole_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
-    <Compile Include="SlotHelper.cs" />
     <Compile Include="VanillaUpgrades.cs" />
   </ItemGroup>
   <ItemGroup>

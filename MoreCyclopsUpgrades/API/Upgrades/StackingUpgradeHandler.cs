@@ -1,4 +1,4 @@
-﻿using MoreCyclopsUpgrades.AuxConsole;
+﻿using MoreCyclopsUpgrades.API.Buildables;
 
 namespace MoreCyclopsUpgrades.API.Upgrades
 {
@@ -34,7 +34,7 @@ namespace MoreCyclopsUpgrades.API.Upgrades
         internal override void UpgradeCounted(UpgradeSlot upgradeSlot)
         {
             this.Count++;
-            ParentCollection.TierCounted(TechType, upgradeSlot.Modules, upgradeSlot.Slot, upgradeSlot.GetItemInSlot());
+            ParentCollection.TierCounted(TechType, upgradeSlot.equipment, upgradeSlot.slotName, upgradeSlot.GetItemInSlot());
         }
 
         internal override void UpgradesFinished()

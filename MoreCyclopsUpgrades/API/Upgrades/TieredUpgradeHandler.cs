@@ -1,7 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
     using System;
-    using MoreCyclopsUpgrades.AuxConsole;
+    using MoreCyclopsUpgrades.API.Buildables;
 
     /// <summary>
     /// Represents a specialized type of upgrade module that is intended to be non-stacking, where only the best version applies.<para/>
@@ -41,7 +41,7 @@
         internal override void UpgradeCounted(UpgradeSlot upgradeSlot)
         {
             this.Count++;
-            ParentCollection.TierCounted(TieredValue, upgradeSlot.Modules, upgradeSlot.Slot, upgradeSlot.GetItemInSlot());
+            ParentCollection.TierCounted(TieredValue, upgradeSlot.equipment, upgradeSlot.slotName, upgradeSlot.GetItemInSlot());
         }
 
         internal override void UpgradesFinished()

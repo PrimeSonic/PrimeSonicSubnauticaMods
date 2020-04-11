@@ -9,17 +9,20 @@
     [ProtoContract]
     internal class AuxCyUpgradeConsoleMono : AuxiliaryUpgradeConsole
     {
-        protected override void UpdateVisuals()
+        public override void OnSlotEquipped(string slot, InventoryItem item)
         {
             if (ModuleDisplay1 == null)
                 AddModuleSpriteHandlers();
 
-            SetModuleVisibility("Module1", ModuleDisplay1);
-            SetModuleVisibility("Module2", ModuleDisplay2);
-            SetModuleVisibility("Module3", ModuleDisplay3);
-            SetModuleVisibility("Module4", ModuleDisplay4);
-            SetModuleVisibility("Module5", ModuleDisplay5);
-            SetModuleVisibility("Module6", ModuleDisplay6);
+            SetModuleVisibility(slot);
+        }
+
+        public override void OnSlotUnequipped(string slot, InventoryItem item)
+        {
+            if (ModuleDisplay1 == null)
+                AddModuleSpriteHandlers();
+
+            SetModuleVisibility(slot);
         }
 
         private void AddModuleSpriteHandlers()
@@ -75,8 +78,33 @@
             return canvas.gameObject;
         }
 
-        private void SetModuleVisibility(string slot, GameObject canvasObject)
+        private void SetModuleVisibility(string slot)
         {
+            GameObject canvasObject;
+            switch (slot)
+            {
+                case "Module1":
+                    canvasObject = ModuleDisplay1;
+                    break;
+                case "Module2":
+                    canvasObject = ModuleDisplay2;
+                    break;
+                case "Module3":
+                    canvasObject = ModuleDisplay3;
+                    break;
+                case "Module4":
+                    canvasObject = ModuleDisplay4;
+                    break;
+                case "Module5":
+                    canvasObject = ModuleDisplay5;
+                    break;
+                case "Module6":
+                    canvasObject = ModuleDisplay6;
+                    break;
+                default:
+                    return;
+            }
+
             if (canvasObject == null)
                 return;
 
@@ -107,16 +135,10 @@
         }
 
         public GameObject ModuleDisplay1;
-
         public GameObject ModuleDisplay2;
-
         public GameObject ModuleDisplay3;
-
         public GameObject ModuleDisplay4;
-
         public GameObject ModuleDisplay5;
-
         public GameObject ModuleDisplay6;
     }
 }
-
