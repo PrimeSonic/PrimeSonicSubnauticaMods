@@ -285,11 +285,6 @@
             }
         }
 
-        internal void DeleteSaveData()
-        {
-            saveData?.Delete();
-        }
-
         private void PrepareSaveData()
         {
             if (prefabId == null)

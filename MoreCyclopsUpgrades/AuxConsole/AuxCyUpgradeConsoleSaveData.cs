@@ -5,7 +5,6 @@
     using System.IO;
     using Common;
     using Common.EasyMarkup;
-    using SMLHelper.V2.Utility;
 
     internal class AuxCyUpgradeConsoleSaveData : EmPropertyCollection
     {
@@ -65,7 +64,7 @@
         {
         }
 
-        private string SaveDirectory => Path.Combine(SaveUtils.GetCurrentSaveDataDir(), "AuxUpgradeConsole");
+        private string SaveDirectory => Path.Combine(SaveLoadManager.GetTemporarySavePath(), "AuxUpgradeConsole");
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
         public void Save()
@@ -84,12 +83,6 @@
                 QuickLogger.Error("Error when attempting to load AuxCyUpgradeConsoleSaveData", ex);
                 return false;
             }
-        }
-
-        public void Delete()
-        {
-            if (File.Exists(this.SaveFile))
-                File.Delete(this.SaveFile);
         }
 
         internal override EmProperty Copy()
