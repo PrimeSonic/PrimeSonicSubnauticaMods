@@ -44,13 +44,17 @@
 
         private void Start()
         {
-            SubRoot cyclops = base.GetComponentInParent<SubRoot>();
+            SubRoot cyclops = base.GetComponentInParent<SubRoot>();            
 
             if (cyclops == null)
             {
                 QuickLogger.Debug("CyUpgradeConsoleMono: Could not find Cyclops during Start. Attempting external syncronize.");
                 for (int i = 0; i < CyclopsManager.Managers.Count; i++)
                     CyclopsManager.Managers[i].Upgrade.SyncBuildables();
+            }
+            else if (!cyclops.isCyclops)
+            {
+                QuickLogger.Error("DEVELOPER WARNING: The AuxiliaryUpgradeConsole is inside a base and not a Cyclops sub. This should NOT be allowed.");
             }
             else
             {
@@ -63,7 +67,7 @@
         {
             ParentCyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
-            UpgradeManager = manager ?? CyclopsManager.GetManager(ref parentCyclops).Upgrade;
+            UpgradeManager = manager ?? CyclopsManager.GetManager(ref parentCyclops)?.Upgrade;
 
             if (UpgradeManager != null)
             {
@@ -72,6 +76,10 @@
                 Equipment console = this.Modules;
                 UpgradeManager.AttachEquipmentEvents(ref console);
                 QuickLogger.Debug("Auxiliary Upgrade Console has been connected", true);
+            }
+            else
+            {
+                QuickLogger.Error("There was a problem connecting with the parent cyclops.");
             }
         }
 
