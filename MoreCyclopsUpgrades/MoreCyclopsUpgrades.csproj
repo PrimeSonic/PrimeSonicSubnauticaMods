@@ -128,7 +128,9 @@
     <Compile Include="Config\Options\OptionTypes.cs" />
     <Compile Include="Config\Options\SliderOption.cs" />
     <Compile Include="Config\Options\ToggleOption.cs" />
+    <Compile Include="IconCreator.cs" />
     <Compile Include="Managers\PdaOverlayManager.cs" />
+    <Compile Include="Managers\PowerIndicatorIcon.cs" />
     <Compile Include="Managers\PowerRatingManager.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />

@@ -5,33 +5,13 @@
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;
     using UnityEngine;
-    using UnityEngine.UI;
 
     internal class CyclopsHUDManager
     {
-        private class Indicator
-        {
-            internal uGUI_Icon Icon;
-            internal Text Text;
-
-            internal Indicator(uGUI_Icon icon, Text text)
-            {
-                Icon = icon;
-                Text = text;
-                SetEnabled(false);
-            }
-
-            internal void SetEnabled(bool value)
-            {
-                Icon.enabled = value;
-                Text.enabled = value;
-            }
-        }
-
-        private Indicator[] HelmIndicatorsOdd;
-        private Indicator[] HelmIndicatorsEven;
-        private Indicator[] HealthBarIndicatorsOdd;
-        private Indicator[] HealthBarIndicatorsEven;
+        private PowerIndicatorIcon[] HelmIndicatorsOdd;
+        private PowerIndicatorIcon[] HelmIndicatorsEven;
+        private PowerIndicatorIcon[] HealthBarIndicatorsOdd;
+        private PowerIndicatorIcon[] HealthBarIndicatorsEven;
 
         private bool lastKnownTextVisibility = false;
         private bool powerIconTextVisibility = false;
@@ -159,13 +139,13 @@
 
             if (totalPowerInfoIcons == 1)
             {
-                HelmIndicatorsOdd = new Indicator[1];
-                HelmIndicatorsEven = new Indicator[0];
-                HealthBarIndicatorsOdd = new Indicator[1];
-                HealthBarIndicatorsEven = new Indicator[0];
+                HelmIndicatorsOdd = new PowerIndicatorIcon[1];
+                HelmIndicatorsEven = new PowerIndicatorIcon[0];
+                HealthBarIndicatorsOdd = new PowerIndicatorIcon[1];
+                HealthBarIndicatorsEven = new PowerIndicatorIcon[0];
 
-                HelmIndicatorsOdd[0] = CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
-                HealthBarIndicatorsOdd[0] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
+                HelmIndicatorsOdd[0] = IconCreator.CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
+                HealthBarIndicatorsOdd[0] = IconCreator.CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
             }
             else
             {
@@ -174,13 +154,13 @@
                 if (totalIcons % 2 != 0)
                     totalIcons--;
 
-                HelmIndicatorsOdd = new Indicator[totalIcons + 1];
-                HelmIndicatorsEven = new Indicator[totalIcons];
-                HealthBarIndicatorsOdd = new Indicator[totalIcons + 1];
-                HealthBarIndicatorsEven = new Indicator[totalIcons];
+                HelmIndicatorsOdd = new PowerIndicatorIcon[totalIcons + 1];
+                HelmIndicatorsEven = new PowerIndicatorIcon[totalIcons];
+                HealthBarIndicatorsOdd = new PowerIndicatorIcon[totalIcons + 1];
+                HealthBarIndicatorsEven = new PowerIndicatorIcon[totalIcons];
 
-                HelmIndicatorsOdd[0] = CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
-                HealthBarIndicatorsOdd[0] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
+                HelmIndicatorsOdd[0] = IconCreator.CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
+                HealthBarIndicatorsOdd[0] = IconCreator.CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
 
                 int index = 0;
                 float healtBarSpacing = 0f;
@@ -191,21 +171,21 @@
                     helmSpacing += spacingUnit * 2f;
 
                     // Add even icons first
-                    HelmIndicatorsEven[index + 0] = CreatePowerIndicatorIcon(pilotingCanvas, -helmSpacing, helmyoffset, helmzoffset, helmscale);
-                    HelmIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(pilotingCanvas, helmSpacing, helmyoffset, helmzoffset, helmscale);
+                    HelmIndicatorsEven[index + 0] = IconCreator.CreatePowerIndicatorIcon(pilotingCanvas, -helmSpacing, helmyoffset, helmzoffset, helmscale);
+                    HelmIndicatorsEven[index + 1] = IconCreator.CreatePowerIndicatorIcon(pilotingCanvas, helmSpacing, helmyoffset, helmzoffset, helmscale);
 
-                    HealthBarIndicatorsEven[index + 0] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + -healtBarSpacing, healthbaryoffset, healthbarzoffset, healthbarscale);
-                    HealthBarIndicatorsEven[index + 1] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + healtBarSpacing, healthbaryoffset, healthbarzoffset, healthbarscale);
+                    HealthBarIndicatorsEven[index + 0] = IconCreator.CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + -healtBarSpacing, healthbaryoffset, healthbarzoffset, healthbarscale);
+                    HealthBarIndicatorsEven[index + 1] = IconCreator.CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + healtBarSpacing, healthbaryoffset, healthbarzoffset, healthbarscale);
 
                     healtBarSpacing += spacingUnit;
                     helmSpacing += spacingUnit * 2f;
 
                     // Add odd icons next
-                    HelmIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(pilotingCanvas, -helmSpacing, helmyoffset, helmzoffset, helmscale);
-                    HelmIndicatorsOdd[index + 2] = CreatePowerIndicatorIcon(pilotingCanvas, helmSpacing, helmyoffset, helmzoffset, helmscale);
+                    HelmIndicatorsOdd[index + 1] = IconCreator.CreatePowerIndicatorIcon(pilotingCanvas, -helmSpacing, helmyoffset, helmzoffset, helmscale);
+                    HelmIndicatorsOdd[index + 2] = IconCreator.CreatePowerIndicatorIcon(pilotingCanvas, helmSpacing, helmyoffset, helmzoffset, helmscale);
 
-                    HealthBarIndicatorsOdd[index + 1] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + -healtBarSpacing, healthbaryoffset, healthbarzoffset, healthbarscale);
-                    HealthBarIndicatorsOdd[index + 2] = CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + healtBarSpacing, healthbaryoffset, healthbarzoffset, healthbarscale);
+                    HealthBarIndicatorsOdd[index + 1] = IconCreator.CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + -healtBarSpacing, healthbaryoffset, healthbarzoffset, healthbarscale);
+                    HealthBarIndicatorsOdd[index + 2] = IconCreator.CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + healtBarSpacing, healthbaryoffset, healthbarzoffset, healthbarscale);
 
                     index += 2;
 
@@ -217,37 +197,7 @@
             QuickLogger.Debug("Linked CyclopsHUDManager to HelmHUD");
         }
 
-        private static Indicator CreatePowerIndicatorIcon(Canvas canvas, float xoffset, float yoffset, float zoffset, float scale)
-        {
-            var iconGo = new GameObject("IconGo", typeof(RectTransform));
-            iconGo.transform.SetParent(canvas.transform, false);
-            iconGo.transform.localPosition = new Vector3(xoffset, yoffset, zoffset);
-            iconGo.transform.localScale = new Vector3(scale, scale, scale);
 
-            uGUI_Icon icon = iconGo.AddComponent<uGUI_Icon>();
-
-            var arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
-            var textGO = new GameObject("TextGo");
-
-            textGO.transform.SetParent(iconGo.transform, false);
-
-            Text text = textGO.AddComponent<Text>();
-            text.font = arial;
-            text.material = arial.material;
-            text.text = "??";
-            text.fontSize = 22;
-            text.alignment = TextAnchor.LowerCenter;
-            text.color = Color.white;
-
-            Outline outline = textGO.AddComponent<Outline>();
-            outline.effectColor = Color.black;
-
-            RectTransform rectTransform = text.GetComponent<RectTransform>();
-            rectTransform.localScale = Vector3.one;
-            rectTransform.anchoredPosition3D = Vector3.zero;
-            rectTransform.anchoredPosition += new Vector2(0f, -15f);
-            return new Indicator(icon, text);
-        }
 
         private void UpdatePowerIcons()
         {
@@ -273,8 +223,8 @@
                     isEven = !isEven;
             }
 
-            Indicator[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
-            Indicator[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
+            PowerIndicatorIcon[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
+            PowerIndicatorIcon[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
 
             bool showIconsOnHoloDisplay = settings.ShowIconsOnHoloDisplay;
             bool showIconsWhilePiloting = settings.ShowIconsWhilePiloting;
@@ -287,8 +237,8 @@
                 if (!charger.ShowStatusIcon)
                     continue;
 
-                Indicator helmIcon = helmRow[iconIndex];
-                Indicator hpIcon = healthBarRow[iconIndex++];
+                PowerIndicatorIcon helmIcon = helmRow[iconIndex];
+                PowerIndicatorIcon hpIcon = healthBarRow[iconIndex++];
 
                 hpIcon.SetEnabled(showIconsOnHoloDisplay);
                 helmIcon.SetEnabled(showIconsWhilePiloting);
