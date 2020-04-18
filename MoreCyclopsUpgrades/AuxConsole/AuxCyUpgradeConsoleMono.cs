@@ -12,7 +12,7 @@
             if (ModuleDisplay1 == null)
                 AddModuleSpriteHandlers();
 
-            SetModuleVisibility(slot);
+            SetModuleVisibility(slot, true);
         }
 
         public override void OnSlotUnequipped(string slot, InventoryItem item)
@@ -20,7 +20,7 @@
             if (ModuleDisplay1 == null)
                 AddModuleSpriteHandlers();
 
-            SetModuleVisibility(slot);
+            SetModuleVisibility(slot, false);
         }
 
         private void AddModuleSpriteHandlers()
@@ -76,7 +76,7 @@
             return canvas.gameObject;
         }
 
-        private void SetModuleVisibility(string slot)
+        private void SetModuleVisibility(string slot, bool visible)
         {
             GameObject canvasObject;
             switch (slot)
@@ -109,27 +109,24 @@
             uGUI_Icon icon = canvasObject.GetComponent<uGUI_Icon>();
 
             if (icon == null)
-                return;
+                return; // Safety exit
 
-            TechType techType = this.Modules.GetTechTypeInSlot(slot);
-            bool hasItem = techType != TechType.None;
-
-            if (hasItem)
+            if (visible)
             {
-                Atlas.Sprite atlasSprite = SpriteManager.Get(techType);
+                TechType techType = this.Modules.GetTechTypeInSlot(slot);
 
-                if (atlasSprite == null)
-                    QuickLogger.Warning($"sprite for {canvasObject.name} was null when it should not have been", true);
+                if (techType == TechType.None)
+                    return; // Safety exit
 
-                icon.sprite = atlasSprite;
+                icon.sprite = SpriteManager.Get(techType);
             }
             else
             {
                 icon.sprite = null; // Clear the sprite when empty
             }
 
-            canvasObject.SetActive(hasItem);
-            icon.enabled = hasItem;
+            canvasObject.SetActive(visible);
+            icon.enabled = visible;
         }
 
         public GameObject ModuleDisplay1;
