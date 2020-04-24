@@ -5,6 +5,7 @@
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;
     using UnityEngine;
+    using UnityEngine.UI;
 
     internal class CyclopsHUDManager
     {
@@ -20,11 +21,13 @@
         private float iconUpdateDelay = Time.deltaTime;
 
         private SubRoot Cyclops;
+        private Text upgradesText;
 
         private ChargeManager chargeManager;
         private ChargeManager ChargeManager => chargeManager ?? (chargeManager = CyclopsManager.GetManager(ref Cyclops).Charge);
 
         private bool powerIconsInitialized = false;
+        private bool consoleIconsRemoved = false;
 
         private CyclopsHolographicHUD holographicHUD;
         private readonly IModConfig settings = ModConfig.Main;
@@ -75,6 +78,21 @@
         /// <param name="hudManager">The console HUD manager.</param>
         internal void SlowUpdate(CyclopsUpgradeConsoleHUDManager hudManager)
         {
+            if (!consoleIconsRemoved)
+            {
+                hudManager.ToggleAllIconsOff();
+                consoleIconsRemoved = true;
+            }
+
+            if (upgradesText == null)            
+                upgradesText = hudManager.subRoot.transform.Find("UpgradeConsoleHUD")?.Find("Canvas_Main")?.Find("Text")?.GetComponent<Text>();
+            
+            if (upgradesText != null)
+            {
+                upgradesText.fontSize = 70;
+                upgradesText.text = hudManager.subRoot.GetSubName();
+            }
+
             int currentReservePower = this.ChargeManager.GetTotalReservePower();
             float currentBatteryPower = Cyclops.powerRelay.GetPower();
 

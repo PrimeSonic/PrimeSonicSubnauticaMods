@@ -247,7 +247,7 @@
                 upgradeType.UpgradesCleared(); // UpgradeHandler event
             }
 
-            var foundUpgrades = new List<TechType>();
+            bool foundUpgrades = false;
 
             // Go through all slots and check what upgrades are available
             QuickLogger.Debug($"UpgradeManager checking upgrade slots");
@@ -258,7 +258,7 @@
                 if (techTypeInSlot == TechType.None)
                     continue;
 
-                foundUpgrades.Add(techTypeInSlot);
+                foundUpgrades = true;
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
@@ -275,14 +275,11 @@
                 upgradeHandlers[i].UpgradesFinished(); // UpgradeHandler event            
 
             // If any upgrades were found, play the sound to alert the player
-            if (foundUpgrades.Count > 0)
+            if (foundUpgrades)
             {
                 Cyclops.slotModSFX?.Play();
                 PdaOverlayManager.RemapItems();
-            }
-
-            //Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
-            Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", new TechType[0], SendMessageOptions.RequireReceiver);
+            }            
         }
 
         public override bool Initialize(SubRoot cyclops)
