@@ -75,6 +75,9 @@
       <HintPath>..\DependenciesSubnautica\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>..\DependenciesSubnautica\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
@@ -111,6 +114,7 @@
     <Compile Include="API\PDA\IIconOverlayText.cs" />
     <Compile Include="API\PDA\IconOverlayCreator.cs" />
     <Compile Include="API\Buildables\UpgradeSlot.cs" />
+    <Compile Include="AuxConsole\ModuleIconDisplay.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
     <Compile Include="Config\ChoiceEnums\ConfigExtensions.cs" />
     <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />

@@ -281,7 +281,8 @@
                 PdaOverlayManager.RemapItems();
             }
 
-            Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
+            //Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
+            Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", new TechType[0], SendMessageOptions.RequireReceiver);
         }
 
         public override bool Initialize(SubRoot cyclops)

@@ -1,21 +1,18 @@
 ﻿namespace MoreCyclopsUpgrades
 {
-    using System;
-    using System.Collections.Generic;
-    using MoreCyclopsUpgrades.AuxConsole;
     using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
     using UnityEngine.UI;
 
     internal class IconCreator
     {
-        internal static GameObject CreateModuleDisplay(AuxCyUpgradeConsoleMono upgradeConsole, Vector3 position, Quaternion rotation)
+        internal static Canvas CreateModuleDisplay(GameObject archor, Vector3 position, Quaternion rotation)
         {
             const float scale = 0.215f;
 
             Canvas canvas = new GameObject("Canvas", typeof(RectTransform)).AddComponent<Canvas>();
             Transform t = canvas.transform;
-            t.SetParent(upgradeConsole.transform, false);
+            t.SetParent(archor.transform, false);
             canvas.sortingLayerID = 1;
 
             uGUI_GraphicRaycaster raycaster = canvas.gameObject.AddComponent<uGUI_GraphicRaycaster>();
@@ -37,7 +34,7 @@
 
             uGUI_Icon icon = canvas.gameObject.AddComponent<uGUI_Icon>();
             icon.enabled = false;
-            return canvas.gameObject;
+            return canvas;
         }
 
         internal static PowerIndicatorIcon CreatePowerIndicatorIcon(Canvas canvas, float xoffset, float yoffset, float zoffset, float scale)

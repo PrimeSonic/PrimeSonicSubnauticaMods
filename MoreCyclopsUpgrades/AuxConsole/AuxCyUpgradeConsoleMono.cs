@@ -5,20 +5,22 @@
 
     internal class AuxCyUpgradeConsoleMono : AuxiliaryUpgradeConsole
     {
+        private ModuleIconDisplay IconDisplay;
+
         public override void OnSlotEquipped(string slot, InventoryItem item)
         {
-            if (ModuleDisplay1 == null)
+            if (IconDisplay == null)
                 AddModuleSpriteHandlers();
 
-            SetModuleVisibility(slot, true);
+            IconDisplay.EnableIcon(slot, this.Modules.GetTechTypeInSlot(slot));
         }
 
         public override void OnSlotUnequipped(string slot, InventoryItem item)
         {
-            if (ModuleDisplay1 == null)
+            if (IconDisplay == null)
                 AddModuleSpriteHandlers();
 
-            SetModuleVisibility(slot, false);
+            IconDisplay.DisableIcon(slot);
         }
 
         private void AddModuleSpriteHandlers()
@@ -35,72 +37,14 @@
 
             var rotation = Quaternion.Euler(60f, 180, 0);
 
-            ModuleDisplay1 = IconCreator.CreateModuleDisplay(this, new Vector3(rightColX, botRowY, botRowZ), rotation);
-            ModuleDisplay2 = IconCreator.CreateModuleDisplay(this, new Vector3(middColX, botRowY, botRowZ), rotation);
-            ModuleDisplay3 = IconCreator.CreateModuleDisplay(this, new Vector3(leftColX, botRowY, botRowZ), rotation);
-            ModuleDisplay4 = IconCreator.CreateModuleDisplay(this, new Vector3(rightColX, topRowY, topRowZ), rotation);
-            ModuleDisplay5 = IconCreator.CreateModuleDisplay(this, new Vector3(middColX, topRowY, topRowZ), rotation);
-            ModuleDisplay6 = IconCreator.CreateModuleDisplay(this, new Vector3(leftColX, topRowY, topRowZ), rotation);
+            Canvas display1 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(rightColX, botRowY, botRowZ), rotation);
+            Canvas display2 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(middColX, botRowY, botRowZ), rotation);
+            Canvas display3 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(leftColX, botRowY, botRowZ), rotation);
+            Canvas display4 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(rightColX, topRowY, topRowZ), rotation);
+            Canvas display5 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(middColX, topRowY, topRowZ), rotation);
+            Canvas display6 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(leftColX, topRowY, topRowZ), rotation);
+
+            IconDisplay = new ModuleIconDisplay(display1, display2, display3, display4, display5, display6);
         }
-
-        private void SetModuleVisibility(string slot, bool visible)
-        {
-            GameObject canvasObject;
-            switch (slot)
-            {
-                case "Module1":
-                    canvasObject = ModuleDisplay1;
-                    break;
-                case "Module2":
-                    canvasObject = ModuleDisplay2;
-                    break;
-                case "Module3":
-                    canvasObject = ModuleDisplay3;
-                    break;
-                case "Module4":
-                    canvasObject = ModuleDisplay4;
-                    break;
-                case "Module5":
-                    canvasObject = ModuleDisplay5;
-                    break;
-                case "Module6":
-                    canvasObject = ModuleDisplay6;
-                    break;
-                default:
-                    return;
-            }
-
-            if (canvasObject == null)
-                return;
-
-            uGUI_Icon icon = canvasObject.GetComponent<uGUI_Icon>();
-
-            if (icon == null)
-                return; // Safety exit
-
-            if (visible)
-            {
-                TechType techType = this.Modules.GetTechTypeInSlot(slot);
-
-                if (techType == TechType.None)
-                    return; // Safety exit
-
-                icon.sprite = SpriteManager.Get(techType);
-            }
-            else
-            {
-                icon.sprite = null; // Clear the sprite when empty
-            }
-
-            canvasObject.SetActive(visible);
-            icon.enabled = visible;
-        }
-
-        public GameObject ModuleDisplay1;
-        public GameObject ModuleDisplay2;
-        public GameObject ModuleDisplay3;
-        public GameObject ModuleDisplay4;
-        public GameObject ModuleDisplay5;
-        public GameObject ModuleDisplay6;
     }
 }

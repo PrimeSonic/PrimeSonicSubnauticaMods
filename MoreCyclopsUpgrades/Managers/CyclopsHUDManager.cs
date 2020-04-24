@@ -197,8 +197,6 @@
             QuickLogger.Debug("Linked CyclopsHUDManager to HelmHUD");
         }
 
-
-
         private void UpdatePowerIcons()
         {
             if (!powerIconsInitialized)
