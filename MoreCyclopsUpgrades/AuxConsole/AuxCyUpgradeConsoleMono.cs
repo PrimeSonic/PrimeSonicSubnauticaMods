@@ -30,19 +30,19 @@
 
             const float leftColX = 0.15f;//0.159f;
             const float middColX = 0f;//0f;
-            const float rightColX = -0.15f;//-0.152f;
+            const float rigtColX = -0.15f;//-0.152f;
 
             const float topRowZ = 0.12f;// 1.146f;
             const float botRowZ = 0.270f;//1.06f;
 
-            var rotation = Quaternion.Euler(60f, 180, 0);
+            var rotation = Quaternion.Euler(62.5f, 180, 0);
 
-            Canvas display1 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(rightColX, botRowY, botRowZ), rotation);
-            Canvas display2 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(middColX, botRowY, botRowZ), rotation);
-            Canvas display3 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(leftColX, botRowY, botRowZ), rotation);
-            Canvas display4 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(rightColX, topRowY, topRowZ), rotation);
-            Canvas display5 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(middColX, topRowY, topRowZ), rotation);
-            Canvas display6 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(leftColX, topRowY, topRowZ), rotation);
+            Canvas display1 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(rigtColX, botRowY, botRowZ), rotation, UpgradeSlotArray[0].GetTechTypeInSlot());
+            Canvas display2 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(middColX, botRowY, botRowZ), rotation, UpgradeSlotArray[1].GetTechTypeInSlot());
+            Canvas display3 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(leftColX, botRowY, botRowZ), rotation, UpgradeSlotArray[2].GetTechTypeInSlot());
+            Canvas display4 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(rigtColX, topRowY, topRowZ), rotation, UpgradeSlotArray[3].GetTechTypeInSlot());
+            Canvas display5 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(middColX, topRowY, topRowZ), rotation, UpgradeSlotArray[4].GetTechTypeInSlot());
+            Canvas display6 = IconCreator.CreateModuleDisplay(this.gameObject, new Vector3(leftColX, topRowY, topRowZ), rotation, UpgradeSlotArray[5].GetTechTypeInSlot());
 
             IconDisplay = new ModuleIconDisplay(display1, display2, display3, display4, display5, display6);
         }

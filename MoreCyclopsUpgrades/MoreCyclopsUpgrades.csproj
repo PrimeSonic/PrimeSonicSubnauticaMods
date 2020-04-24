@@ -114,6 +114,7 @@
     <Compile Include="API\PDA\IIconOverlayText.cs" />
     <Compile Include="API\PDA\IconOverlayCreator.cs" />
     <Compile Include="API\Buildables\UpgradeSlot.cs" />
+    <Compile Include="AuxConsole\ModuleDisplayIconCollection.cs" />
     <Compile Include="AuxConsole\ModuleIconDisplay.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
     <Compile Include="Config\ChoiceEnums\ConfigExtensions.cs" />

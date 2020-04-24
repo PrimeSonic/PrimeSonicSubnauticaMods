@@ -6,13 +6,13 @@
 
     internal class IconCreator
     {
-        internal static Canvas CreateModuleDisplay(GameObject archor, Vector3 position, Quaternion rotation)
+        internal static Canvas CreateModuleDisplay(GameObject anchor, Vector3 position, Quaternion rotation, TechType startingState)
         {
             const float scale = 0.215f;
 
             Canvas canvas = new GameObject("Canvas", typeof(RectTransform)).AddComponent<Canvas>();
             Transform t = canvas.transform;
-            t.SetParent(archor.transform, false);
+            t.SetParent(anchor.transform, false);
             canvas.sortingLayerID = 1;
 
             uGUI_GraphicRaycaster raycaster = canvas.gameObject.AddComponent<uGUI_GraphicRaycaster>();
@@ -33,7 +33,19 @@
             scaler.dynamicPixelsPerUnit = 20;
 
             uGUI_Icon icon = canvas.gameObject.AddComponent<uGUI_Icon>();
-            icon.enabled = false;
+
+            if (startingState > TechType.None)
+            {
+                icon.sprite = SpriteManager.Get(startingState);
+                icon.enabled = true;
+                canvas.gameObject.SetActive(true);
+            }
+            else
+            {
+                canvas.gameObject.SetActive(false);
+                icon.enabled = false;
+            }
+            
             return canvas;
         }
 

@@ -23,8 +23,6 @@
 
         public Canvas this[string slot] => IconDisplays[slot];
 
-
-
         public void EnableIcon(string slot, TechType techType)
         {
             GameObject canvasObject = this[slot].gameObject;
