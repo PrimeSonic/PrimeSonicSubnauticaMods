@@ -97,7 +97,7 @@
             return new AliasRecipe(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
             return ItemIDisUnique() & // Confirm that no other item is currently using this ID.                                 
                 InnerItemsAreValid() &

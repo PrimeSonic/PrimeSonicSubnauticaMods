@@ -5,6 +5,12 @@
     using MoreCyclopsUpgrades.API.PDA;
     using UnityEngine;
 
+    /// <summary>
+    /// A standarized <see cref="IconOverlay"/> implementation for <see cref="AmbientEnergyCharger{T}"/>s.
+    /// </summary>
+    /// <typeparam name="HandlerType">The type of the andler type.</typeparam>
+    /// <typeparam name="ChargerType">The type of the harger type.</typeparam>
+    /// <seealso cref="IconOverlay" />
     public class AmbientEnergyIconOverlay<HandlerType, ChargerType> : IconOverlay
         where HandlerType : AmbientEnergyUpgradeHandler
         where ChargerType : AmbientEnergyCharger<HandlerType>
@@ -13,6 +19,11 @@
         private readonly ChargerType charger;
         private readonly Battery battery;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AmbientEnergyIconOverlay{HandlerType, ChargerType}"/> class.
+        /// </summary>
+        /// <param name="icon">The PDA icon.</param>
+        /// <param name="upgradeModule">The upgrade module item.</param>
         public AmbientEnergyIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
         {
@@ -21,6 +32,9 @@
             battery = base.Item.item.GetComponent<Battery>();
         }
 
+        /// <summary>
+        /// Update the values in <see cref="IconOverlay.UpperText" />, <see cref="IconOverlay.MiddleText" />, and <see cref="IconOverlay.LowerText" /> in this method.
+        /// </summary>
         public override void UpdateText()
         {
             int count = upgradeHandler.Count;

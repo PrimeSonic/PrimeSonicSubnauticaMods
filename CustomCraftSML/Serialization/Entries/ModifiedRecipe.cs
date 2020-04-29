@@ -99,6 +99,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation { get; internal set; } = true;
+
         internal ModifiedRecipe(TechType origTechType) : this()
         {
             ITechData origRecipe = CraftData.Get(origTechType);
@@ -149,9 +151,9 @@
             return new ModifiedRecipe(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
-            return base.PassesPreValidation() & InnerItemsAreValid();
+            return base.PassesPreValidation(originFile) & InnerItemsAreValid();
         }
 
         protected bool InnerItemsAreValid()
@@ -233,7 +235,7 @@
 
             foreach (EmIngredient ingredient in this.Ingredients)
             {
-                if (ingredient.PassesPreValidation())
+                if (ingredient.PassesPreValidation(this.Origin))
                     this.SMLHelperIngredients.Add(ingredient.ToSMLHelperIngredient());
                 else
                     ingredientsValid = false;

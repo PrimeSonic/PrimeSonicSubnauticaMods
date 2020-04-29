@@ -64,6 +64,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation => true;
+
         public CustomSize() : this("CustomSize", SizeProperties)
         {
         }
@@ -79,9 +81,9 @@
             return new CustomSize(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
-            return base.PassesPreValidation() & ValidateSizes();
+            return base.PassesPreValidation(originFile) & ValidateSizes();
         }
 
         private bool ValidateSizes()

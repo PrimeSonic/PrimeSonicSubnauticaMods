@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.AuxConsole
 {
     using System.Collections.Generic;
+    using Common;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -31,10 +32,11 @@
         {
             if (!auxConsolesEnabled) // Even if the options have this be disabled,
             {
+                QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
                 this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, false);
                 return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
             }
-
+            QuickLogger.Debug("Patching Auxiliary Upgrade Console");
             base.Patch();
         }
 

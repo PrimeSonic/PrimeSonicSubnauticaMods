@@ -29,20 +29,20 @@
         void AuxCyclopsManager<T>(IAuxCyclopsManagerCreator managerCreator) where T : IAuxCyclopsManager;
 
         /// <summary>
-        /// Registers a <see cref="CreateCyclopsCharger" /> method that creates a new <see cref="CyclopsCharger" /> on demand.<para />
+        /// Registers a <see cref="CreateCyclopsCharger" /> method that creates a new <see cref="Charging.CyclopsCharger" /> on demand.<para />
         /// This method will be invoked only once for each Cyclops sub in the game world.<para />
         /// Use this for rechargable batteries and energy drawn from the environment.
         /// </summary>
-        /// <typeparam name="T">Your class that implements <see cref="CyclopsCharger" />.</typeparam>
+        /// <typeparam name="T">Your class that implements <see cref="Charging.CyclopsCharger" />.</typeparam>
         /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="CreateCyclopsCharger" />.</param>
         void CyclopsCharger<T>(CreateCyclopsCharger createEvent) where T : CyclopsCharger;
 
         /// <summary>
-        /// Registers a <see cref="ICyclopsChargerCreator" /> class that can create a new <see cref="CyclopsCharger" /> on demand.<para />
+        /// Registers a <see cref="ICyclopsChargerCreator" /> class that can create a new <see cref="Charging.CyclopsCharger" /> on demand.<para />
         /// This method will be invoked only once for each Cyclops sub in the game world.<para />
         /// Use this for rechargable batteries and energy drawn from the environment.
         /// </summary>
-        /// <typeparam name="T">Your class that implements <see cref="CyclopsCharger" />.</typeparam>
+        /// <typeparam name="T">Your class that implements <see cref="Charging.CyclopsCharger" />.</typeparam>
         /// <param name="chargerCreator">A class that implements the <see cref="ICyclopsChargerCreator.CreateCyclopsCharger(SubRoot)" /> method.</param>
         void CyclopsCharger<T>(ICyclopsChargerCreator chargerCreator) where T : CyclopsCharger;
 

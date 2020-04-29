@@ -17,6 +17,7 @@
         /// The list of tracked buildables.
         /// </summary>
         protected readonly List<BuildableMono> TrackedBuildables = new List<BuildableMono>();
+
         private readonly List<BuildableMono> tempBuildables = new List<BuildableMono>();
 
         /// <summary>

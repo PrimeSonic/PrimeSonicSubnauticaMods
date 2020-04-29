@@ -24,10 +24,10 @@
         private static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCountParser = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
         private static readonly ParsingPackage<CustomFood, CustomFoodList> CustomFoods = new ParsingPackage<CustomFood, CustomFoodList>(CustomFoodList.ListKey);
 
-        internal static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(8)
+        internal static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(10)
         {
             CustomFabricatorParser,
-            CustomTabs,            
+            CustomTabs,
             AddedRecipes,
             AliasRecipes,
             ModifiedRecipeParser,
@@ -38,7 +38,7 @@
             CustomBioFuelParser,
         };
 
-        private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(9);
+        private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(10);
 
         internal static void HandleWorkingFiles()
         {
@@ -57,7 +57,7 @@
 
             int rollingCount = 0;
             foreach (string file in workingFiles)
-                rollingCount+= DeserializeFile(file);
+                rollingCount += DeserializeFile(file);
 
             QuickLogger.Info($"{rollingCount} total entries discovered across all files.");
 
@@ -116,7 +116,7 @@
             }
             else
             {
-                QuickLogger.Warning($"Could not identify primary key in file '{fileName}'");                
+                QuickLogger.Warning($"Could not identify primary key in file '{fileName}'");
             }
 
             return 0;
@@ -131,23 +131,38 @@
             var allFoods = new HashSet<string>(CustomFoods.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
 
             foreach (IFabricatorEntries entries in CustomFabricatorParser.UniqueEntries.Values)
-            {                
+            {
+                QuickLogger.Debug("Checking uniqueness of CustomFabricator TabIDs");
                 ValidateSets(allTabs, entries.CustomTabIDs, entries.DuplicateCustomTabDiscovered);
+
+                QuickLogger.Debug("Checking uniqueness of CustomFabricator MovedRecipeIDs");
                 ValidateSets(allMoves, entries.MovedRecipeIDs, entries.DuplicateMovedRecipeDiscovered);
+
+                QuickLogger.Debug("Checking uniqueness of CustomFabricator AddedRecipeIDs");
                 ValidateSets(allAdded, entries.AddedRecipeIDs, entries.DuplicateAddedRecipeDiscovered);
-                ValidateSets(allAlias, entries.AliasRecipesIDs, entries.DuplicateAliasRecipesDiscovered);                                
-                ValidateSets(allFoods, entries.CustomFoodIDs, entries.DuplicateCustomFoodsDiscovered);                                
+
+                QuickLogger.Debug("Checking uniqueness of CustomFabricator AliasRecipesIDs");
+                ValidateSets(allAlias, entries.AliasRecipesIDs, entries.DuplicateAliasRecipesDiscovered);
+
+                QuickLogger.Debug("Checking uniqueness of CustomFabricator CustomFoodIDs");
+                ValidateSets(allFoods, entries.CustomFoodIDs, entries.DuplicateCustomFoodsDiscovered);
             }
         }
 
         private static void ValidateSets(HashSet<string> masterSet, ICollection<string> setToCheck, Action<string> informDuplicate)
         {
+            var dups = new List<string>();
             foreach (string id in setToCheck)
             {
                 if (masterSet.Contains(id))
-                    informDuplicate.Invoke(id);
+                    dups.Add(id);
                 else
                     masterSet.Add(id);
+            }
+
+            foreach (string dupId in dups)
+            {
+                informDuplicate.Invoke(dupId);
             }
         }
     }

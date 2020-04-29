@@ -11,7 +11,7 @@
     public interface IMCUSearch
     {
         /// <summary>
-        /// Gets the typed <see cref="IAuxCyclopsManager"/> at the specified Cyclops sub with the given <seealso cref="IAuxCyclopsManager.Name"/>.
+        /// Gets the typed <see cref="IAuxCyclopsManager"/> for the specified Cyclops sub.
         /// </summary>
         /// <typeparam name="T">The class you created that implements <see cref="IAuxCyclopsManager"/>.</typeparam>
         /// <param name="cyclops">The cyclops to search in.</param>
@@ -20,14 +20,14 @@
         T AuxCyclopsManager<T>(SubRoot cyclops) where T : class, IAuxCyclopsManager;
 
         /// <summary>
-        /// Gets all typed <see cref="IAuxCyclopsManager"/>s across all Cyclops subs with the given <seealso cref="IAuxCyclopsManager.Name"/>.
+        /// Gets all typed <see cref="IAuxCyclopsManager"/>s across all Cyclops subs.
         /// </summary>
         /// <typeparam name="T">The class you created that implements <see cref="IAuxCyclopsManager"/>.</typeparam>
         /// <returns>A type casted enumeration of all <see cref="IAuxCyclopsManager"/>s found across all Cyclops subs, identified by name.</returns>
         IEnumerable<T> AllAuxCyclopsManagers<T>() where T : class, IAuxCyclopsManager;
 
         /// <summary>
-        /// Gets the typed <see cref="CyclopsCharger"/> at the specified Cyclops sub for the provided <seealso cref="CyclopsCharger.Name"/> string.<para/>
+        /// Gets the typed <see cref="CyclopsCharger"/> at the specified Cyclops sub.<para/>
         /// Use this if you need to obtain a reference to your <seealso cref="CyclopsCharger"/> for something else in your mod.
         /// </summary>
         /// <typeparam name="T">The class created by the <seealso cref="CreateCyclopsCharger"/> you passed into <seealso cref="IMCURegistration.CyclopsCharger(CreateCyclopsCharger)"/>.</typeparam>

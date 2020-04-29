@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Common;
+    using MoreCyclopsUpgrades.API.Buildables;
 
     /// <summary>
     /// Represents all the behaviors for a cyclops upgrade module at the time of the module being installed and counted.
@@ -10,7 +11,7 @@
     public class UpgradeHandler
     {
         /// <summary>
-        /// Defines a method to invoke that takes a cyclops reference as its only parameter. Used for <seealso cref="OnClearUpgrades"/> and <see cref="OnFinishedUpgrades"/>.
+        /// Defines a method to invoke with no paramters. Used for <seealso cref="OnClearUpgrades"/> and <see cref="OnFinishedUpgrades"/>.
         /// </summary>
         public delegate void UpgradeEvent();
 
@@ -150,13 +151,13 @@
             trackedItems.Clear();
         }
 
-        internal virtual void UpgradeCounted(Equipment modules, string slot)
+        internal virtual void UpgradeCounted(UpgradeSlot upgradeSlot)
         {
             count++;
-            InventoryItem trackedItem = modules.equipment[slot];
+            InventoryItem trackedItem = upgradeSlot.GetItemInSlot();
             trackedItems.Add(trackedItem);
             OnUpgradeCounted?.Invoke();
-            OnUpgradeCountedDetailed?.Invoke(modules, slot, trackedItem);
+            OnUpgradeCountedDetailed?.Invoke(upgradeSlot.equipment, upgradeSlot.slotName, trackedItem);
         }
 
         internal virtual void UpgradesFinished()
