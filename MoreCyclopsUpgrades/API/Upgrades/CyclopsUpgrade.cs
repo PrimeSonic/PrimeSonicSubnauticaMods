@@ -8,7 +8,7 @@
     /// Extends the <see cref="Craftable"/> class with handling and defaults specific for Cyclops upgrade modules.
     /// </summary>
     /// <seealso cref="Craftable" />
-    public abstract class CyclopsUpgrade : Craftable
+    public abstract class CyclopsUpgrade : Equipable
     {
         /// <summary>
         /// Initializes a new instance of the <seealso cref="Craftable"/> <see cref="CyclopsUpgrade"/> class.<para/>
@@ -20,8 +20,19 @@
         protected CyclopsUpgrade(string classId, string friendlyName, string description)
             : base(classId, friendlyName, description)
         {
-            base.OnFinishedPatching += MakeEquipable;
+            base.OnFinishedPatching += () =>
+            {
+                if (this.SortAfter == TechType.None)
+                    CraftDataHandler.AddToGroup(this.GroupForPDA, this.CategoryForPDA, this.TechType);
+                else
+                    CraftDataHandler.AddToGroup(this.GroupForPDA, this.CategoryForPDA, this.TechType, this.SortAfter);
+            };
         }
+
+        /// <summary>
+        /// Gets the type of equipment slot this item can fit into.
+        /// </summary>
+        public sealed override EquipmentType EquipmentType => EquipmentType.CyclopsModule;
 
         /// <summary>
         /// Overriden to ensure this item appearas within the <see cref="TechGroup.Cyclops"/> group in the PDA blurprints menu.
@@ -49,6 +60,11 @@
         public override TechType RequiredForUnlock => TechType.Cyclops; // Default can be overridden by child classes
 
         /// <summary>
+        /// Override this to set which other module in the PDA this upgrade module should be sorted after.
+        /// </summary>
+        public virtual TechType SortAfter => TechType.None;
+
+        /// <summary>
         /// Gets the prefab game object. Set up your prefab components here.<para/>
         /// A default implementation is already provided which creates the new item by modifying a clone of the item defined in <see cref="PrefabTemplate"/>.
         /// </summary>
@@ -61,12 +77,6 @@
             var obj = GameObject.Instantiate(prefab);
 
             return obj;
-        }
-
-        private void MakeEquipable()
-        {
-            CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.CyclopsModule);
-            CraftDataHandler.AddToGroup(TechGroup.Cyclops, TechCategory.CyclopsUpgrades, this.TechType);
         }
 
         /// <summary>

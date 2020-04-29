@@ -51,7 +51,5 @@ namespace MoreCyclopsUpgrades.API
         /// <param name="logmessage">The log message to write.</param>
         /// <param name="showOnScreen">if set to <c>true</c> the log message will show on screen.</param>
         void Debug(string logmessage, bool showOnScreen = false);
-
-
     }
 }

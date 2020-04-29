@@ -11,7 +11,6 @@
         public static void Postfix(uGUI_InventoryTab __instance)
         {
             // This event happens whenever the player opens their PDA.
-            // We will make a series of checks to see if what they have opened is the Base BioReactor item container.
 
             if (__instance == null)
                 return;
