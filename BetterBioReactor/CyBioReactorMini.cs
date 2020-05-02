@@ -1,11 +1,16 @@
 ﻿namespace BetterBioReactor
 {
-    using System.Collections.Generic;
     using BetterBioReactor.SaveData;
+
     using Common;
+
     using ProtoBuf;
+
+    using System.Collections.Generic;
+
+    using TMPro;
+
     using UnityEngine;
-    using UnityEngine.UI;
 
     // The immediate access to the internals of the BaseBioReactor (without the use of Reflection) was made possible thanks to the AssemblyPublicizer
     // https://github.com/CabbageCrow/AssemblyPublicizer
@@ -84,7 +89,7 @@
         internal void OnHover()
         {
             HandReticle main = HandReticle.main;
-  
+
             main.SetText(HandReticle.TextType.Hand, Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText), false, GameInput.Button.LeftHand);
             main.SetText(HandReticle.TextType.HandSubscript, "Tooltip_UseBaseBioReactor", true, GameInput.Button.None);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
@@ -202,7 +207,7 @@
 
             if (MaterialsProcessing.Count > 0 || this.CurrentPower > 0)
             {
-                Text displayText = (BioReactor.GetModel() ?? fallbackGeometry)?.text;
+                TextMeshProUGUI displayText = (BioReactor.GetModel() ?? fallbackGeometry)?.text;
                 if (displayText != null)
                 {
                     string maxPowerText = this.MaxPowerText;

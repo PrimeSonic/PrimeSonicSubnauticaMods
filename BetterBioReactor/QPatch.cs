@@ -1,9 +1,10 @@
 ﻿namespace BetterBioReactor
 {
-    using System;
-    using System.Reflection;
     using Common;
+
     using Harmony;
+
+    using System.Reflection;
 
     public static class QPatch
     {
@@ -15,17 +16,9 @@
             QuickLogger.DebugLogsEnabled = true;
             QuickLogger.Debug("Debug logs enabled");
 #endif
-
-            try
-            {
-                var harmony = HarmonyInstance.Create("com.betterbioreactor.psmod");
-                harmony.PatchAll(Assembly.GetExecutingAssembly());
-                QuickLogger.Info("Finished patching");
-            }
-            catch (Exception ex)
-            {
-                QuickLogger.Error(ex);
-            }
+            var harmony = HarmonyInstance.Create("com.betterbioreactor.psmod");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            QuickLogger.Info("Finished patching");
         }
     }
 }

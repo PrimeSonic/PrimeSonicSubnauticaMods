@@ -1,6 +1,7 @@
 ﻿namespace BetterBioReactor.Patchers
 {
     using Common;
+
     using Harmony;
 
     [HarmonyPatch(typeof(BaseBioReactor))]
