@@ -1,15 +1,12 @@
 ﻿namespace BetterBioReactor
 {
-    using BetterBioReactor.SaveData;
-
-    using Common;
-
-    using ProtoBuf;
-
     using System.Collections.Generic;
-
+    using BetterBioReactor.SaveData;
+    using Common;
+    using ProtoBuf;
+#if BELOWZERO
     using TMPro;
-
+#endif
     using UnityEngine;
 
     // The immediate access to the internals of the BaseBioReactor (without the use of Reflection) was made possible thanks to the AssemblyPublicizer

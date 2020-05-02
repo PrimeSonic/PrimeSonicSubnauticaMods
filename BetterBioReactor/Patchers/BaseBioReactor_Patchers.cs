@@ -42,7 +42,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("Update")]
+    [HarmonyPatch(nameof(BaseBioReactor.Update))]
     internal class Update_Patcher
     {
         [HarmonyPostfix]
