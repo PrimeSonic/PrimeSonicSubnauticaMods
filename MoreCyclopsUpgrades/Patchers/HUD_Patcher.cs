@@ -18,15 +18,22 @@
 
             // Prevent the powerText from being updated as part of the normal Update method            
 
+            bool passedNoiseBar = false;
             bool startPatching = false;
             bool donePatching = false;
             short injected = 0;
+            FieldInfo noiseBarField = typeof(CyclopsHelmHUDManager).GetField(nameof(CyclopsHelmHUDManager.noiseBar));
             MethodInfo fillAmount = typeof(Image).GetProperty(nameof(Image.fillAmount)).GetSetMethod();
             MethodInfo quickUpdateMethod = typeof(CyclopsHelmHUDManager_Update_Patcher).GetMethod(nameof(CyclopsHelmHUDManager_Update_Patcher.QuickUpdate));
 
             foreach (CodeInstruction instruction in instructions)
             {
-                if (!startPatching)
+                if (!passedNoiseBar)
+                {
+                    passedNoiseBar = instruction.opcode == OpCodes.Ldfld && instruction.operand.Equals(noiseBarField);
+                    yield return instruction;
+                }
+                else if (!startPatching)
                 {
                     startPatching = instruction.opcode == OpCodes.Callvirt && instruction.operand.Equals(fillAmount);
 
