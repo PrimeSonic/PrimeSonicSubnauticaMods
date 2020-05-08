@@ -7,7 +7,6 @@
 
     internal class BioChargeHandler : CyclopsCharger
     {
-        private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private const float BatteryDrainRate = 1.90f;
 
         private BioAuxCyclopsManager manager;
