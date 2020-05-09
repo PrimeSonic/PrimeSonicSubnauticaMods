@@ -7,9 +7,12 @@
     using CyclopsBioReactor.Management;
     using Harmony;
     using MoreCyclopsUpgrades.API;
+    using QModManager.API.ModLoading;
 
+    [QModCore]
     public static class QPatch
     {
+        [QModPatch]
         public static void Patch()
         {
             try
