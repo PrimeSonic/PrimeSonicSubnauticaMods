@@ -9,13 +9,18 @@
     {
         internal const float NuclearEnergyPotential = 6000f; // Less than the normal 20k for balance
 
-        public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
-        public override string AssetsFolder { get; } = "CyclopsNuclearUpgrades/Assets";
-        public override TechType RequiredForUnlock { get; } = TechType.BaseNuclearReactor;
-        public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
-
         private const string MaxNuclearReachedKey = "MaxNuclearMsg";
         internal static string MaxNuclearReachedMsg => Language.main.Get(MaxNuclearReachedKey);
+
+        public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
+
+        public override string AssetsFolder { get; } = "CyclopsNuclearUpgrades/Assets";
+
+        public override TechType RequiredForUnlock { get; } = TechType.BaseNuclearReactor;
+
+        public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
+
+        public override float CraftingTime => 12f;
 
         internal CyclopsNuclearModule()
             : base("CyclopsNuclearModule",
@@ -25,7 +30,6 @@
         {
             OnFinishedPatching += () =>
             {
-                CraftDataHandler.SetCraftingTime(this.TechType, 12f);
                 LanguageHandler.SetLanguageLine(MaxNuclearReachedKey, "Max number of nuclear chargers.");
             };
         }

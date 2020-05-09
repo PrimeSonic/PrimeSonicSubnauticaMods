@@ -1,36 +1,41 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
-    using System;
     using Common;
     using CyclopsNuclearUpgrades.Management;
     using MoreCyclopsUpgrades.API;
+    using QModManager.API.ModLoading;
 
+    [QModCore]
     public static class QPatch
     {
 
+        [QModPatch]
         public static void Patch()
         {
-            try
-            {
-                var nuclearModule = new CyclopsNuclearModule();
-                var depletedModule = new DepletedNuclearModule(nuclearModule);
-                var nuclearFabricator = new NuclearFabricator(nuclearModule);
+            QuickLogger.Info("Started patching v" + QuickLogger.GetAssemblyVersion());
 
-                nuclearModule.Patch();
-                depletedModule.Patch();
-                nuclearFabricator.Patch();
+            var nuclearModule = new CyclopsNuclearModule();
+            var depletedModule = new DepletedNuclearModule(nuclearModule);
+            var nuclearFabricator = new NuclearFabricator(nuclearModule);
 
-                MCUServices.Register.CyclopsUpgradeHandler(depletedModule);
-                MCUServices.Register.CyclopsCharger<NuclearChargeHandler>(depletedModule);
-                MCUServices.Register.PdaIconOverlay(nuclearModule.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
-                {
-                    return new NuclearIconOverlay(icon, upgradeModule);
-                });
-            }
-            catch(Exception ex)
+            nuclearModule.Patch();
+            depletedModule.Patch();
+            nuclearFabricator.Patch();
+
+            MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                QuickLogger.Error(ex);
-            }
+                return new NuclearUpgradeHandler(nuclearModule.TechType, cyclops);
+            });
+            MCUServices.Register.CyclopsCharger<NuclearChargeHandler>((SubRoot cyclops) =>
+            {
+                return new NuclearChargeHandler(cyclops, nuclearModule.TechType);
+            });
+            MCUServices.Register.PdaIconOverlay(nuclearModule.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+            {
+                return new NuclearIconOverlay(icon, upgradeModule);
+            });
+
+            QuickLogger.Info("Finished patching");
         }
     }
 }

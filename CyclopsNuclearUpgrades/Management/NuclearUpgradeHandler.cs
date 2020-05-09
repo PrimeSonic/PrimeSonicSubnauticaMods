@@ -5,18 +5,12 @@
     using MoreCyclopsUpgrades.API.Upgrades;
     using UnityEngine;
 
-    internal interface INuclearModuleDepleter
-    {
-        void DepleteNuclearModule(Equipment modules, string slotName);
-    }
-
     internal class NuclearUpgradeHandler : UpgradeHandler
     {
         internal delegate void DepleteModule(Equipment modules, string slotName);
 
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
         private readonly IList<BatteryDetails> batteries = new List<BatteryDetails>();
-        private readonly INuclearModuleDepleter moduleDepleter;
         private bool updating = false;
         private float totalBatteryCharge = 0f;
         internal float TotalBatteryCharge
@@ -35,11 +29,9 @@
         }
         internal bool TooHotToHandle { get; set; } = false;
 
-        public NuclearUpgradeHandler(TechType nuclearModule, INuclearModuleDepleter depleter, SubRoot cyclops)
+        public NuclearUpgradeHandler(TechType nuclearModule, SubRoot cyclops)
             : base(nuclearModule, cyclops)
         {
-            moduleDepleter = depleter;
-
             this.MaxCount = 3;
 
             OnClearUpgrades += () =>
@@ -98,7 +90,7 @@
                 {
                     amtToDrain = battery._charge; // Take what's left
                     battery._charge = 0f; // Set battery to empty
-                    moduleDepleter.DepleteNuclearModule(details.ParentEquipment, details.SlotName);
+                    DepleteNuclearModule(details.ParentEquipment, details.SlotName);
                 }
 
                 totalBatteryCharge -= amtToDrain;
@@ -108,6 +100,14 @@
             }
 
             return totalDrainedAmt;
+        }
+
+        private void DepleteNuclearModule(Equipment modules, string slotName)
+        {
+            InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
+            GameObject.Destroy(inventoryItem.item.gameObject);
+            modules.AddItem(slotName, CyclopsUpgrade.SpawnCyclopsModule(TechType), true);
+            ErrorMessage.AddMessage(DepletedNuclearModule.DepletedEventMsg);
         }
     }
 }
