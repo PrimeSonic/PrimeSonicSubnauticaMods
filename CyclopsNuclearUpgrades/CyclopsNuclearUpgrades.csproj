@@ -47,6 +47,7 @@
     </Reference>
     <Reference Include="QModInstaller">
       <HintPath>..\DependenciesSubnautica\QModInstaller.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -83,6 +84,7 @@
     <ProjectReference Include="..\MoreCyclopsUpgrades\MoreCyclopsUpgrades.csproj">
       <Project>{fc87af94-413d-482e-ab0d-501e120e6e2d}</Project>
       <Name>MoreCyclopsUpgrades</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
