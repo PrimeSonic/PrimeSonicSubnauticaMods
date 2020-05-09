@@ -12,6 +12,12 @@
         private const string MaxNuclearReachedKey = "MaxNuclearMsg";
         internal static string MaxNuclearReachedMsg => Language.main.Get(MaxNuclearReachedKey);
 
+        private const string OverheatKey = "CyNukOverheat";
+        internal static string OverheatMsg => Language.main.Get(OverheatKey);
+
+        private const string DepletedEventKey = "CyNukeDepleted";
+        internal static string DepletedEventMsg => Language.main.Get(DepletedEventKey);
+
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
 
         public override string AssetsFolder { get; } = "CyclopsNuclearUpgrades/Assets";
@@ -31,6 +37,8 @@
             OnFinishedPatching += () =>
             {
                 LanguageHandler.SetLanguageLine(MaxNuclearReachedKey, "Max number of nuclear chargers.");
+                LanguageHandler.SetLanguageLine(OverheatKey, "SHUTDOWN");
+                LanguageHandler.SetLanguageLine(DepletedEventKey, "Nuclear Reactor Module depleted");
             };
         }
 

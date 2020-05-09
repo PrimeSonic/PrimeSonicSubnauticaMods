@@ -3,7 +3,7 @@
     /// <summary>
     /// A simple class for <see cref="Equipment"/> modules that contain a <see cref="Battery"/> component
     /// </summary>
-    internal class BatteryDetails
+    internal struct BatteryDetails
     {
         public readonly Equipment ParentEquipment;
         public readonly string SlotName;

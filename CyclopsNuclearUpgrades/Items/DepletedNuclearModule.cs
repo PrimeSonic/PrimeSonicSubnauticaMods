@@ -1,15 +1,11 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
     using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Handlers;
     using UnityEngine;
 
     internal class DepletedNuclearModule : Spawnable
     {
         private readonly CyclopsNuclearModule nuclearModule;
-
-        private const string DepletedEventKey = "CyNukeDepleted";
-        internal static string DepletedEventMsg => Language.main.Get(DepletedEventKey);
 
         public override string AssetsFolder { get; } = "CyclopsNuclearUpgrades/Assets";
 
@@ -24,11 +20,6 @@
             {
                 if (!nuclearModule.IsPatched)
                     nuclearModule.Patch();
-            };
-
-            OnFinishedPatching += () =>
-            {
-                LanguageHandler.SetLanguageLine(DepletedEventKey, "Nuclear Reactor Module depleted");
             };
         }
 

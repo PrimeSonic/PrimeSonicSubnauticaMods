@@ -7,11 +7,12 @@
 
     internal class NuclearUpgradeHandler : UpgradeHandler
     {
-        internal delegate void DepleteModule(Equipment modules, string slotName);
-
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        private readonly IList<BatteryDetails> batteries = new List<BatteryDetails>();
+
+        private readonly List<BatteryDetails> batteries = new List<BatteryDetails>();
+
         private bool updating = false;
+
         private float totalBatteryCharge = 0f;
         internal float TotalBatteryCharge
         {
@@ -27,12 +28,13 @@
                 return totalBatteryCharge;
             }
         }
+
         internal bool TooHotToHandle { get; set; } = false;
 
         public NuclearUpgradeHandler(TechType nuclearModule, SubRoot cyclops)
             : base(nuclearModule, cyclops)
         {
-            this.MaxCount = 3;
+            this.MaxCount = 4;
 
             OnClearUpgrades += () =>
             {
@@ -69,10 +71,12 @@
                 return 0f; // Exit
 
             float totalDrainedAmt = 0f;
-            foreach (BatteryDetails details in batteries)
+            for (int i = 0; i < batteries.Count; i++)
             {
                 if (requestedPower <= 0f)
                     continue; // No more power requested
+
+                BatteryDetails details = batteries[i];
 
                 Battery battery = details.BatteryRef;
 
@@ -95,7 +99,6 @@
 
                 totalBatteryCharge -= amtToDrain;
                 requestedPower -= amtToDrain; // This is to prevent draining more than needed if the power cells were topped up mid-loop
-
                 totalDrainedAmt += amtToDrain;
             }
 
@@ -104,10 +107,15 @@
 
         private void DepleteNuclearModule(Equipment modules, string slotName)
         {
+            MCUServices.Logger.Debug("Nuclear module depleting");
+
             InventoryItem inventoryItem = modules.RemoveItem(slotName, true, false);
-            GameObject.Destroy(inventoryItem.item.gameObject);
-            modules.AddItem(slotName, CyclopsUpgrade.SpawnCyclopsModule(TechType), true);
-            ErrorMessage.AddMessage(DepletedNuclearModule.DepletedEventMsg);
+
+            if (inventoryItem != null)
+                GameObject.Destroy(inventoryItem.item.gameObject);
+
+            if (modules.AddItem(slotName, CyclopsUpgrade.SpawnCyclopsModule(TechType), true))
+                ErrorMessage.AddMessage(CyclopsNuclearModule.DepletedEventMsg);
         }
     }
 }
