@@ -249,6 +249,14 @@
             The type of the equipment slot compatible with this item.
             </value>
         </member>
+        <member name="P:SMLHelper.V2.Assets.Equipable.QuickSlotType">
+            <summary>
+            Gets the type of equipment slot this item can fit into.
+            </summary>
+            <value>
+            The type of the equipment slot compatible with this item.
+            </value>
+        </member>
         <member name="M:SMLHelper.V2.Assets.Equipable.#ctor(System.String,System.String,System.String)">
             <summary>
             Initializes a new instance of the <see cref="T:SMLHelper.V2.Assets.Equipable"/> class.
@@ -482,6 +490,38 @@
             If not overriden, it this item will be unlocked from the start of the game.
             </summary>
         </member>
+        <member name="P:SMLHelper.V2.Assets.PdaItem.AddScannerEntry">
+            <summary>
+            Override to add a scanner entry to the <see cref="P:SMLHelper.V2.Assets.PdaItem.RequiredForUnlock"/> TechType if it does not have one.
+            WARNING. You cannot add a scanner entry for a techtype that can already be scanned! 
+            Default is <see langword="false"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.PdaItem.FragmentsToScan">
+            <summary>
+            Override to set the number of <see cref="P:SMLHelper.V2.Assets.PdaItem.RequiredForUnlock"/> that must be scanned to unlock;
+            If not overriden, Default value is <see langword="1 fragment"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.PdaItem.TimeToScanFragment">
+            <summary>
+            Override to set the speed that the <see cref="P:SMLHelper.V2.Assets.PdaItem.RequiredForUnlock"/> fragments are scanned;
+            If not overriden, Default value is <see langword="2 seconds"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.PdaItem.DestroyFragmentOnScan">
+            <summary>
+            Override to allow fragments to be scanned for materials after the relavent TechType is already Unlocked.
+            Default is <see langword="false"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.PdaItem.EncyclopediaEntryData">
+            <summary>
+            Override to add a <see cref="T:PDAEncyclopedia.EntryData"/> into the PDA's Encyclopedia for this object.
+            WARNING. You cannot overwrite an existing entry with this. It must have a unique key! 
+            Default is <see langword="Null"/>.
+            </summary>
+        </member>
         <member name="P:SMLHelper.V2.Assets.PdaItem.GroupForPDA">
             <summary>
             Override with the main group in the PDA blueprints where this item appears.
@@ -565,6 +605,18 @@
             <summary>
             Returns the size that this entity will occupy inside the player inventory.<br/>
             By default this will be 1x1. Override to change the size.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.Spawnable.BiomesToSpawnIn">
+            <summary>
+            Returns the List of BiomeData that handles what Biomes this prefab will spawn, how probable it is to spawn there and how many per spawn.
+            By default this will be null. Override to change this.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Assets.Spawnable.EntityInfo">
+            <summary>
+            Returns the <see cref="T:UWE.WorldEntityInfo"/> of this object if it has one.
+            By default this will be null. Override to change this.
             </summary>
         </member>
         <member name="M:SMLHelper.V2.Assets.Spawnable.#ctor(System.String,System.String,System.String)">
@@ -889,6 +941,206 @@
             <param name="techType">The item ID.</param>
             <param name="amount">The number of instances of this item required for the recipe.</param>
         </member>
+        <member name="T:SMLHelper.V2.Json.Converters.FloatConverter">
+            <summary>
+            A <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/> for rounding floats or doubles to a given number of decimal places,
+            trimming trailing 0s.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.Int32,System.MidpointRounding)">
+            <summary>
+            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            </summary>
+            <param name="decimalPlaces">The number of decimal places to round to, where -1 disables rounding.</param>
+            <param name="mode">The rounding mode to use when rounding.</param>
+            <seealso cref="T:System.MidpointRounding"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            </summary>
+            <param name="decimalPlaces">The number of decimal places to round to, where -1 disables rounding.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.MidpointRounding)">
+            <summary>
+            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            </summary>
+            <param name="mode">The rounding mode to use when rounding.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor">
+            <summary>
+            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.WriteJson(Oculus.Newtonsoft.Json.JsonWriter,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            The method for writing the <paramref name="value"/> data to the <paramref name="writer"/>.
+            </summary>
+            <param name="writer"></param>
+            <param name="value"></param>
+            <param name="serializer"></param>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.ReadJson(Oculus.Newtonsoft.Json.JsonReader,System.Type,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            The method for reading the <see cref="T:System.Single"/> or <see cref="T:System.Double"/> data from the <paramref name="reader"/>.
+            </summary>
+            <param name="reader"></param>
+            <param name="objectType"></param>
+            <param name="existingValue"></param>
+            <param name="serializer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.CanConvert(System.Type)">
+            <summary>
+            The method for determining whether the current <paramref name="objectType"/> can be processed byt this
+            <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>
+            </summary>
+            <param name="objectType"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SMLHelper.V2.Json.Converters.KeyCodeConverter">
+            <summary>
+            A <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/> for handling <see cref="T:UnityEngine.KeyCode"/>s.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.WriteJson(Oculus.Newtonsoft.Json.JsonWriter,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            The method for writing the <paramref name="value"/> data to the <paramref name="writer"/>.
+            </summary>
+            <param name="writer"></param>
+            <param name="value"></param>
+            <param name="serializer"></param>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.ReadJson(Oculus.Newtonsoft.Json.JsonReader,System.Type,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            The method for reading the <see cref="T:UnityEngine.KeyCode"/> data from the <paramref name="reader"/>.
+            </summary>
+            <param name="reader"></param>
+            <param name="objectType"></param>
+            <param name="existingValue"></param>
+            <param name="serializer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.CanConvert(System.Type)">
+            <summary>
+            The method for determining whether the current <paramref name="objectType"/> can be processed by this
+            <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>.
+            </summary>
+            <param name="objectType"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions">
+            <summary>
+            Extension methods for parsing objects as JSON data.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.LoadJson``1(``0,System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Loads the JSON properties from a file on disk into the <paramref name="jsonObject"/>.
+            </summary>
+            <typeparam name="T">The type of the <paramref name="jsonObject"/>.</typeparam>
+            <param name="jsonObject">The object instance to load the properties into.</param>
+            <param name="path">The file path to the JSON file to parse.</param>
+            <param name="createIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <param name="jsonConverters">The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for deserialization.</param>
+            <seealso cref="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.SaveJson``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.SaveJson``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Saves the fields and properties of the <paramref name="jsonObject"/> as JSON properties to the file on disk.
+            </summary>
+            <typeparam name="T">The type of the <paramref name="jsonObject"/>.</typeparam>
+            <param name="jsonObject">The object instance to save the fields and properties from.</param>
+            <param name="path">The file path at which to save the JSON file.</param>
+            <param name="jsonConverters">The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Json.Interfaces.IJsonFile">
+            <summary>
+            A simple interface for a JSON file framework.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Json.Interfaces.IJsonFile.JsonFilePath">
+            <summary>
+            The file path at which the JSON file is accessible for reading and writing.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Json.Interfaces.IJsonFile.AlwaysIncludedJsonConverters">
+            <summary>
+            The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s that should always be used when reading/writing JSON data.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Load(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            A method for loading the JSON properties from disk.
+            </summary>
+            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for
+            deserialization.</param>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Save(Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Save(Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            A method for saving the JSON properties to disk.
+            </summary>
+            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.</param>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Load(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="T:SMLHelper.V2.Json.ConfigFile">
+            <summary>
+            A simple implementation of <see cref="T:SMLHelper.V2.Json.Interfaces.IJsonFile"/> for use with config files.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Json.ConfigFile.JsonFilePath">
+            <summary>
+            The file path at which the JSON file is accessible for reading and writing.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters">
+            <summary>
+            The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s that should always be used when reading/writing JSON data.
+            </summary>
+            <seealso cref="F:SMLHelper.V2.Json.ConfigFile.alwaysIncludedJsonConverters"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ConfigFile.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new instance of <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.
+            </summary>
+            <param name="fileName">The name of the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>, "config" by default.</param>
+            <param name="subfolder">Optional subfolder for the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.</param>
+            <example>
+            <code>
+            using SMLHelper.V2.Options;
+            using UnityEngine;
+            
+            public static class MyConfig : ConfigFile
+            {
+                public KeyCode ActivationKey { get; set; } = KeyCode.Escape;
+                public MyConfig() : base("options", "Config Files") { }
+                // The config file will be stored at the path "QMods\YourModName\Config Files\options.json"
+            }
+            </code>
+            </example>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ConfigFile.Load(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Loads the JSON properties from the file on disk into the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.
+            </summary>
+            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.
+            The <see cref="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters"/> will always be used, regardless of whether you pass them.</param>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.Save(Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ConfigFile.Save(Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Saves the current fields and properties of the <see cref="T:SMLHelper.V2.Json.ConfigFile"/> as JSON properties to the file on disk.
+            </summary>
+            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for deserialization.
+            The <see cref="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters"/> will always be used, regardless of whether you pass them.</param>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.Load(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
         <member name="T:SMLHelper.V2.Handler">
             <summary>
             A simple location where every SMLHelper handler class can be accessed.
@@ -969,6 +1221,11 @@
             A handler for adding custom entries to the PDA Encyclopedia.
             </summary>
         </member>
+        <member name="P:SMLHelper.V2.Handler.PrefabHandler">
+            <summary>
+            A handler for registering Unity prefabs associated to a <see cref="T:TechType"/>.
+            </summary>
+        </member>
         <member name="T:SMLHelper.V2.Handlers.BioReactorHandler">
             <summary>
             A handler with common methods for updating BioReactor values.
@@ -1018,8 +1275,8 @@
         </member>
         <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SetQuickSlotType(TechType,QuickSlotType)">
             <summary>
-            <para>Allows you to edit QuickSlotType for TechTypes.</para>
-            <para>Can be used for existing TechTypes too.</para>
+            <para>Allows you to edit QuickSlotType for TechTypes. Can be used for existing TechTypes too.</para>
+            <para>Careful: This has to be called after <see cref="M:SMLHelper.V2.Handlers.CraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)"/> and <see cref="M:SMLHelper.V2.Handlers.CraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)"/>.</para>
             </summary>
             <param name="techType">The TechType whose QuickSlotType you want to edit.</param>
             <param name="slotType">The QuickSlotType for that TechType.</param>
@@ -1229,8 +1486,8 @@
         </member>
         <member name="M:SMLHelper.V2.Handlers.CraftDataHandler.SMLHelper#V2#Interfaces#ICraftDataHandler#SetQuickSlotType(TechType,QuickSlotType)">
             <summary>
-            <para>Allows you to edit QuickSlotType for TechTypes.</para>
-            <para>Can be used for existing TechTypes too.</para>
+            <para>Allows you to edit QuickSlotType for TechTypes. Can be used for existing TechTypes too.</para>
+            <para>Careful: This has to be called after <see cref="M:SMLHelper.V2.Handlers.CraftDataHandler.SetTechData(TechType,ITechData)"/> and <see cref="M:SMLHelper.V2.Handlers.CraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)"/>.</para>
             </summary>
             <param name="techType">The TechType whose QuickSlotType you want to edit.</param>
             <param name="slotType">The QuickSlotType for that TechType.</param>
@@ -1975,7 +2232,6 @@
         <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.SMLHelper#V2#Interfaces#ILootDistributionHandler#AddLootDistributionData(System.String,System.String,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData},UWE.WorldEntityInfo)">
             <summary>
             Adds in a custom entry into the Loot Distribution of the game.
-            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
             </summary>
             <param name="classId">The classId of the prefab.</param>
             <param name="prefabPath">The prefab path of the prefab.</param>
@@ -1985,7 +2241,6 @@
         <member name="M:SMLHelper.V2.Handlers.LootDistributionHandler.SMLHelper#V2#Interfaces#ILootDistributionHandler#AddLootDistributionData(SMLHelper.V2.Assets.ModPrefab,System.Collections.Generic.IEnumerable{LootDistributionData.BiomeData},UWE.WorldEntityInfo)">
             <summary>
             Adds in a custom entry into the Loot Distribution of the game.
-            You must also add the <see cref="T:UWE.WorldEntityInfo"/> into the <see cref="T:UWE.WorldEntityDatabase"/> using <see cref="T:SMLHelper.V2.Handlers.WorldEntityDatabaseHandler"/>.
             </summary>
             <param name="prefab">The custom prefab which you want to spawn naturally in the game.</param>
             <param name="biomeDistribution">The <see cref="T:LootDistributionData.BiomeData"/> dictating how the prefab should spawn in the world.</param>
@@ -2533,8 +2788,8 @@
         </member>
         <member name="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetQuickSlotType(TechType,QuickSlotType)">
             <summary>
-            <para>Allows you to edit QuickSlotType for TechTypes.</para>
-            <para>Can be used for existing TechTypes too.</para>
+            <para>Allows you to edit QuickSlotType for TechTypes. Can be used for existing TechTypes too.</para>
+            <para>Careful: This has to be called after <see cref="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)"/> and <see cref="M:SMLHelper.V2.Interfaces.ICraftDataHandler.SetTechData(TechType,SMLHelper.V2.Crafting.TechData)"/>.</para>
             </summary>
             <param name="techType">The TechType whose QuickSlotType you want to edit.</param>
             <param name="slotType">The QuickSlotType for that TechType.</param>
@@ -3602,6 +3857,52 @@
             <returns>
             The collection of techtypes allowed in the container.
             </returns>
+        </member>
+        <member name="T:SMLHelper.V2.Utility.JsonUtils">
+            <summary>
+            A collection of utilities for interacting with JSON files.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.JsonUtils.Load``1(System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Create an instance of <typeparamref name="T"/>, populated with data from the JSON file at the given 
+            <paramref name="path"/>.
+            </summary>
+            <typeparam name="T">The type of object to initialise and populate with JSON data.</typeparam>
+            <param name="path">The path on disk at which the JSON file can be found.</param>
+            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not 
+            already exist.</param>
+            <param name="jsonConverters">An array of <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for deserialization.</param>
+            <returns>The <typeparamref name="T"/> instance populated with data from the JSON file at
+            <paramref name="path"/>, or default values if it cannot be found or an error is encountered while parsing the
+            file.</returns>
+            <seealso cref="M:SMLHelper.V2.Utility.JsonUtils.Load``1(``0,System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+            <seealso cref="M:SMLHelper.V2.Utility.JsonUtils.Save``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.JsonUtils.Load``1(``0,System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Loads data from the JSON file at <paramref name="path"/> into the <paramref name="jsonObject"/>.
+            </summary>
+            <typeparam name="T">The type of <paramref name="jsonObject"/> to populate with JSON data.</typeparam>
+            <param name="jsonObject">The <typeparamref name="T"/> instance to popular with JSON data.</param>
+            <param name="path">The path on disk at which the JSON file can be found.</param>
+            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <param name="jsonConverters">An array of <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for deserialization.</param>
+            <seealso cref="M:SMLHelper.V2.Utility.JsonUtils.Load``1(System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+            <seealso cref="M:SMLHelper.V2.Utility.JsonUtils.Save``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.JsonUtils.Save``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Saves the <paramref name="jsonObject"/> parsed as JSON data to the JSON file at <paramref name="path"/>,
+            creating it if it does not exist.
+            </summary>
+            <typeparam name="T">The type of <paramref name="jsonObject"/> to parse into JSON data.</typeparam>
+            <param name="jsonObject">The <typeparamref name="T"/> instance to parse into JSON data.</param>
+            <param name="path">The path on disk at which to store the JSON file.</param>
+            <param name="jsonConverters">An array of <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.</param>
+            <seealso cref="M:SMLHelper.V2.Utility.JsonUtils.Load``1(``0,System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+            <seealso cref="M:SMLHelper.V2.Utility.JsonUtils.Load``1(System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
         </member>
         <member name="T:SMLHelper.V2.Utility.KeyCodeUtils">
             <summary>
