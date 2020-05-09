@@ -15,8 +15,6 @@
 
         public override TechCategory CategoryForPDA => TechCategory.InteriorModule;
 
-        public override string AssetsFolder => "CyclopsNuclearUpgrades/Assets";
-
         public override TechType RequiredForUnlock => TechType.BaseNuclearReactor;
 
         public override Models Model => Models.Custom; // Using Custom so the texture can be altered
@@ -35,10 +33,7 @@
             {
                 if (!nuclearModule.IsPatched)
                     nuclearModule.Patch();
-            };
 
-            OnFinishedPatching += () =>
-            {
                 // Load the custom texture
                 string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 string folderPath = Path.Combine(executingLocation, "Assets");
@@ -49,12 +44,6 @@
                 string spriteLocation = Path.Combine(folderPath, "NuclearFabricator.png");
                 sprite = ImageUtils.LoadSpriteFromFile(spriteLocation) ?? SpriteManager.Get(TechType.Fabricator);
             };
-
-            AddCraftNode(TechType.ReactorRod);
-            AddCraftNode(nuclearModule.TechType);
-            AddCraftNode("RReactorRodDUMMY"); // Optional - Refill nuclear reactor rod
-            AddCraftNode("CyNukeUpgrade1"); // Optional - Cyclops Nuclear Reactor Enhancer Mk1
-            AddCraftNode("CyNukeUpgrade2"); // Optional - Cyclops Nuclear Reactor Enhancer Mk2
         }
 
         protected override GameObject GetCustomCrafterPreFab()

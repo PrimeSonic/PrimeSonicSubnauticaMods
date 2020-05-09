@@ -15,10 +15,17 @@
 
             var nuclearModule = new CyclopsNuclearModule();
             var depletedModule = new DepletedNuclearModule(nuclearModule);
-            var nuclearFabricator = new NuclearFabricator(nuclearModule);
 
             nuclearModule.Patch();
             depletedModule.Patch();
+
+            var nuclearFabricator = new NuclearFabricator(nuclearModule);
+            nuclearFabricator.AddCraftNode(TechType.ReactorRod);
+            nuclearFabricator.AddCraftNode(nuclearModule.TechType);
+            nuclearFabricator.AddCraftNode("RReactorRodDUMMY"); // Optional - Refill nuclear reactor rod (old)
+            nuclearFabricator.AddCraftNode("ReplenishReactorRod"); // Optional - Refill nuclear reactor rod (new)
+            nuclearFabricator.AddCraftNode("CyNukeUpgrade1"); // Optional - Cyclops Nuclear Reactor Enhancer Mk1
+            nuclearFabricator.AddCraftNode("CyNukeUpgrade2"); // Optional - Cyclops Nuclear Reactor Enhancer Mk2
             nuclearFabricator.Patch();
 
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
