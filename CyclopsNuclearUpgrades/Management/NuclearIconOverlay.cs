@@ -7,14 +7,12 @@
 
     internal class NuclearIconOverlay : IconOverlay
     {
-        private readonly NuclearUpgradeHandler upgradeHandler;
         private readonly NuclearChargeHandler chargeHandler;
         private readonly Battery battery;
 
         public NuclearIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
             : base(icon, upgradeModule)
         {
-            upgradeHandler = MCUServices.Find.CyclopsUpgradeHandler<NuclearUpgradeHandler>(base.Cyclops, base.TechType);
             chargeHandler = MCUServices.Find.CyclopsCharger<NuclearChargeHandler>(base.Cyclops);
             battery = base.Item.item.GetComponent<Battery>();
         }
@@ -25,7 +23,7 @@
 
             if (chargeHandler.IsOverheated)
             {
-                base.UpperText.TextString = "SHUTDOWN";
+                base.UpperText.TextString = CyclopsNuclearModule.OverheatMsg;
                 base.UpperText.FontSize = 14;
             }
             else

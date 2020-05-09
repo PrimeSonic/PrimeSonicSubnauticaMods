@@ -54,6 +54,9 @@
                 ErrorMessage.AddWarning(msg);
         }
 
+        /// <summary>
+        /// Creates the version string in format "#.#.#" or "#.#.# rev:#"
+        /// </summary>
         public static string GetAssemblyVersion()
         {
             Version version = ModName.Version;
