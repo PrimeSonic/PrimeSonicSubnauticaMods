@@ -1,10 +1,10 @@
 ﻿namespace CustomCraft2SML.Serialization
 {
-    using Common;
-    using Common.EasyMarkup;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using Common;
+    using EasyMarkup;
 
     internal class CustomCraft2Config : EmPropertyCollection
     {

@@ -1,7 +1,7 @@
 ﻿namespace CyclopsBioReactor.SaveData
 {
     using System.Collections.Generic;
-    using Common.EasyMarkup;
+    using EasyMarkup;
 
     internal class EmModuleSaveData : EmPropertyCollection
     {
@@ -44,6 +44,9 @@
             _remainingCharge = (EmProperty<float>)Properties[RemainingChargeKey];
         }
 
-        internal override EmProperty Copy() => new EmModuleSaveData(this.Key, CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new EmModuleSaveData(this.Key, this.CopyDefinitions);
+        }
     }
 }

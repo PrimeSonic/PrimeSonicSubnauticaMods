@@ -1,15 +1,15 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
+    using System.Collections.Generic;
     using Common;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
+    using EasyMarkup;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
-    using System;
-    using System.Collections.Generic;
 
     internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     {
@@ -308,10 +308,12 @@
             {
                 // Copy original ingredients
                 for (int i = 0; i < original.ingredientCount; i++)
+                {
                     replacement.Ingredients.Add(
                         new Ingredient(
                         original.GetIngredient(i).techType,
                         original.GetIngredient(i).amount));
+                }
             }
 
             // Linked Items

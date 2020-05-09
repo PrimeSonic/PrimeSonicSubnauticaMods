@@ -1,7 +1,7 @@
 ﻿namespace CustomCraft2SML.Serialization.Lists
 {
-    using Common.EasyMarkup;
     using CustomCraft2SML.Serialization.Entries;
+    using EasyMarkup;
 
     internal class CustomCraftingTabList : EmPropertyCollectionList<CustomCraftingTab>
     {

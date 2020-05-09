@@ -1,7 +1,7 @@
 ﻿namespace CustomCraftSMLTests
 {
+    using EasyMarkup;
     using NUnit.Framework;
-    using Common;
 
     [TestFixture]
     public class StringBufferTests

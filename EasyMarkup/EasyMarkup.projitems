@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>7b713bfd-3d84-44cf-bf86-35b1812646cb</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>EasyMarkup</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Deque.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmPropertyCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmPropertyCollectionList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmPropertyListT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmPropertyT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmYesNo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ISerialConfirmation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveDataExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)TestDoc.txt" />
+  </ItemGroup>
+</Project>

@@ -1,9 +1,8 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using Common;
 
     internal class EmPropertyList<T> : EmProperty, IEnumerable<T> where T : IConvertible
     {

@@ -1,7 +1,7 @@
 ﻿namespace CustomCraftSMLTests
 {
     using System.Collections.Generic;
-    using Common.EasyMarkup;
+    using EasyMarkup;
     using NUnit.Framework;
 
     [TestFixture]

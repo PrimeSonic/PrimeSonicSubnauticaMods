@@ -1,4 +1,4 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
     internal interface IValueConfirmation
     {

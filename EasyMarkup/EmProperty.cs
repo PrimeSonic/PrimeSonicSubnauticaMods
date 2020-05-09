@@ -1,4 +1,4 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
     using System;
     using System.Collections.Generic;

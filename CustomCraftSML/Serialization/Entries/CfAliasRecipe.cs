@@ -1,9 +1,9 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
     using System.Collections.Generic;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization;
+    using EasyMarkup;
 
     internal class CfAliasRecipe : AliasRecipe, ICustomFabricatorEntry
     {
@@ -26,9 +26,15 @@
             return new CraftTreePath(this.Path, this.ItemID);
         }
 
-        protected override void HandleCraftTreeAddition() => this.ParentFabricator.HandleCraftTreeAddition(this);
+        protected override void HandleCraftTreeAddition()
+        {
+            this.ParentFabricator.HandleCraftTreeAddition(this);
+        }
 
-        internal override EmProperty Copy() => new CfAliasRecipe(this.Key, this.CopyDefinitions);
+        internal override EmProperty Copy()
+        {
+            return new CfAliasRecipe(this.Key, this.CopyDefinitions);
+        }
     }
 }
 

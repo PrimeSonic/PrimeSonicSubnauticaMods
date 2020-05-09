@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Config.Options
 {
-    using Common.EasyMarkup;
+    using EasyMarkup;
 
     internal class ToggleOption : ConfigOption
     {

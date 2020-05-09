@@ -1,6 +1,5 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
-    using Common;
     using System;
     using System.Globalization;
 

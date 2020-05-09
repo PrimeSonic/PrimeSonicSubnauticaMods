@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
-    using Common.EasyMarkup;
+    using EasyMarkup;
     using SMLHelper.V2.Crafting;
 
     internal class EmIngredient : EmTechTyped
@@ -49,9 +49,15 @@
             required = (EmProperty<short>)Properties[RequiredKey];
         }
 
-        internal override EmProperty Copy() => new EmIngredient(this.ItemID, this.Required);
+        internal override EmProperty Copy()
+        {
+            return new EmIngredient(this.ItemID, this.Required);
+        }
 
-        public override bool PassesPreValidation(OriginFile originFile) => base.PassesPreValidation(originFile) && RequireValueInRange();
+        public override bool PassesPreValidation(OriginFile originFile)
+        {
+            return base.PassesPreValidation(originFile) && RequireValueInRange();
+        }
 
         private bool RequireValueInRange()
         {
@@ -64,6 +70,9 @@
             return true;
         }
 
-        public Ingredient ToSMLHelperIngredient() => new Ingredient(this.TechType, this.Required);
+        public Ingredient ToSMLHelperIngredient()
+        {
+            return new Ingredient(this.TechType, this.Required);
+        }
     }
 }

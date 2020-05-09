@@ -1,8 +1,7 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
     using System;
     using System.Collections.Generic;
-    using Common;
 
     internal abstract class EmPropertyCollection : EmProperty
     {

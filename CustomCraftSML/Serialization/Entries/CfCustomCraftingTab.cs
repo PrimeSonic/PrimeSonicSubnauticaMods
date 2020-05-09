@@ -1,12 +1,12 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using Common;
-    using Common.EasyMarkup;
-    using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.Serialization;
-    using SMLHelper.V2.Crafting;
     using System;
     using System.Collections.Generic;
+    using Common;
+    using CustomCraft2SML.Interfaces.InternalUse;
+    using CustomCraft2SML.Serialization;
+    using EasyMarkup;
+    using SMLHelper.V2.Crafting;
 
     internal class CfCustomCraftingTab : CustomCraftingTab, ICustomFabricatorEntry
     {

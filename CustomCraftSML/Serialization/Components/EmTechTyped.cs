@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
     using Common;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization;
+    using EasyMarkup;
     using SMLHelper.V2.Handlers;
 
     internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped

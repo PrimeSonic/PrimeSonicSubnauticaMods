@@ -1,9 +1,9 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using Common.EasyMarkup;
+    using System.Collections.Generic;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization;
-    using System.Collections.Generic;
+    using EasyMarkup;
 
     internal class CfCustomFood : CustomFood, ICustomFabricatorEntry
     {

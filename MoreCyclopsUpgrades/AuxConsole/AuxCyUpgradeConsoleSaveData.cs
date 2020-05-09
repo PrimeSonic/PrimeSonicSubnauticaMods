@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using Common;
-    using Common.EasyMarkup;
+    using EasyMarkup;
 
     internal class AuxCyUpgradeConsoleSaveData : EmPropertyCollection
     {
