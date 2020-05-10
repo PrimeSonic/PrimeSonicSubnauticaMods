@@ -13,12 +13,12 @@
 
         private static readonly float[] EnginePowerRatings = new float[PowerIndexCount]
         {
-            1f, 3f, 4f, 5f
+            1f, 3f, 4.5f, 6f
         };
 
         private static readonly float[] SilentRunningPowerCosts = new float[PowerIndexCount]
         {
-            5f, 4.5f, 4f, 3.5f
+            5f, 4.6f, 4.2f, 3.8f
         };
 
         private static readonly float[] SonarPowerCosts = new float[PowerIndexCount]
@@ -28,7 +28,7 @@
 
         private static readonly float[] ShieldPowerCosts = new float[PowerIndexCount]
         {
-            50f, 45f, 40f, 35f
+            50f, 46f, 42f, 38f
         };
 
         private int lastKnownPowerIndex = -1;

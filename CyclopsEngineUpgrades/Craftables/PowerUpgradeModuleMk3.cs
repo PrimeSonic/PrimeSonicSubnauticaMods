@@ -1,6 +1,5 @@
 ﻿namespace CyclopsEngineUpgrades.Craftables
 {
-    using CyclopsEngineUpgrades.Handlers;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
 
@@ -39,16 +38,6 @@
                     new Ingredient(TechType.Nickel, 1),
                 }
             };
-        }
-
-        internal EngineHandler CreateEngineHandler(SubRoot cyclops)
-        {
-            return new EngineHandler(previousTier, this, cyclops);
-        }
-
-        internal EngineOverlay CreateEngineOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
-        {
-            return new EngineOverlay(icon, upgradeModule);
         }
     }
 }
