@@ -5,9 +5,13 @@
     using CyclopsSolarUpgrades.Craftables;
     using CyclopsSolarUpgrades.Management;
     using MoreCyclopsUpgrades.API;
+    using MoreCyclopsUpgrades.API.PDA;
+    using QModManager.API.ModLoading;
 
+    [QModCore]
     public static class QPatch
     {
+        [QModPatch]
         public static void Patch()
         {
             try
@@ -20,10 +24,19 @@
                 solar1.Patch();
                 solar2.Patch();
 
-                MCUServices.Register.CyclopsCharger<SolarCharger>(solar2);
-                MCUServices.Register.CyclopsUpgradeHandler(solar2);
-                MCUServices.Register.PdaIconOverlay(solar1.TechType, solar2);
-                MCUServices.Register.PdaIconOverlay(solar2.TechType, solar2);
+                MCUServices.Register.CyclopsCharger<SolarCharger>((SubRoot cyclops) =>
+                {
+                    return new SolarCharger(solar1.TechType, solar2.TechType, cyclops);
+                });
+
+                MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
+                {
+                    return new SolarUpgradeHandler(solar1.TechType, solar2.TechType, cyclops);
+                });
+
+                MCUServices.Register.PdaIconOverlay(solar1.TechType, CreateIconOverlay);
+
+                MCUServices.Register.PdaIconOverlay(solar2.TechType, CreateIconOverlay);
 
                 QuickLogger.Info($"Finished patching.");
             }
@@ -31,6 +44,11 @@
             {
                 QuickLogger.Error(ex);
             }
+        }
+
+        internal static IconOverlay CreateIconOverlay(uGUI_ItemIcon icon, InventoryItem upgradeModule)
+        {
+            return new SolarIconOverlay(icon, upgradeModule);
         }
     }
 }

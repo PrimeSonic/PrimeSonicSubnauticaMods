@@ -37,8 +37,8 @@
                 Ingredients =
                 {
                     new Ingredient(TechType.AdvancedWiringKit, 1),
-                    new Ingredient(TechType.Glass, 2),
-                    new Ingredient(TechType.EnameledGlass, 2),
+                    new Ingredient(TechType.Glass, 1),
+                    new Ingredient(TechType.EnameledGlass, 1),
                     new Ingredient(TechType.Titanium, 1),
                 }
             };
