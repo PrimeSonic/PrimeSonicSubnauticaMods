@@ -16,8 +16,9 @@
 
         public CySolarModule()
             : base("CySimpSolarCharger",
-                  "Cyclops Solar Charger", "Recharges the Cyclops power cells while in sunlight.\n" +
-                  "Does not stack with other solar chargers.")
+                   "Cyclops Solar Charging Module",
+                   "Recharges the Cyclops power cells while in sunlight.\n" +
+                   "DOES NOT STACK with other solar chargers.")
         {
             OnStartedPatching += () =>
             {

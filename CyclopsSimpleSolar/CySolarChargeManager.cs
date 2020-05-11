@@ -17,6 +17,10 @@
 
         public bool SolarEnergyAvailable { get; private set; }
 
+        public TechType CrossModSolarCharger1;
+        public TechType CrossModSolarCharger2;
+        public bool OtherCySolarModsPresent = false;
+
         private const float MaxSolarDepth = 200f;
         private const float PercentageMaker = 100f;
         private const float SolarChargingFactor = 1.46f;
@@ -54,6 +58,13 @@
 
         protected override float GenerateNewEnergy(float requestedPower)
         {
+            if (OtherCySolarModsPresent && this.OtherSolarChargerModsEquipped)
+            {
+                // Does not stack with other solar charging mods
+                this.SolarEnergyAvailable = false;
+                return 0f;
+            }
+
             if (this.SolarChargerUpgrade != null && this.SolarChargerUpgrade.HasUpgrade)
             {
                 this.SolarEnergyAvailable = HasAmbientEnergy();
@@ -64,6 +75,15 @@
 
             this.SolarEnergyAvailable = false;
             return 0f;
+        }
+
+        public bool OtherSolarChargerModsEquipped
+        {
+            get
+            {
+                return MCUServices.CrossMod.HasUpgradeInstalled(base.Cyclops, CrossModSolarCharger1) ||
+                       MCUServices.CrossMod.HasUpgradeInstalled(base.Cyclops, CrossModSolarCharger2);
+            }
         }
 
         private bool HasAmbientEnergy()
