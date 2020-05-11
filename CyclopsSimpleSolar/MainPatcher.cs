@@ -1,5 +1,6 @@
 ﻿namespace CyclopsSimpleSolar
 {
+    using Common;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using QModManager.API.ModLoading;
@@ -10,6 +11,8 @@
         [QModPatch]
         public static void Patch()
         {
+            MCUServices.Logger.Info("Started patching v" + QuickLogger.GetAssemblyVersion());
+
             var solarChargerItem = new CySolarModule();
             solarChargerItem.Patch();
 
@@ -25,6 +28,13 @@
             {
                 return new CySolarChargeManager(solarChargerItem, cyclops);
             });
+
+            MCUServices.Register.PdaIconOverlay(solarChargerItem.TechType, (uGUI_ItemIcon icon, InventoryItem upgradeModule) =>
+            {
+                return new SolarPdaOverlay(icon, upgradeModule);
+            });
+
+            MCUServices.Logger.Info("Finished patching");
         }
     }
 }
