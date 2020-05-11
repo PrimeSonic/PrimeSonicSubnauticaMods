@@ -12,7 +12,7 @@
     {
         private static TechType solarChargerMk1 = TechType.None;
         private static TechType solarChargerMk2 = TechType.None;
-        public const string CrossModKey = "CySolCross";
+        internal const string CrossModKey = "CySolCross";
 
         [QModPrePatch]
         public static void PrePatch()

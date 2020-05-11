@@ -1,6 +1,6 @@
 {
   "Id": "CyclopsSimpleSolar",
-  "DisplayName": "Cyclops Simple Solar Charging",
+  "DisplayName": "Simple Cyclops Solar Charger",
   "Author": "PrimeSonic",
   "Version": "1.0.0",
   "Enable": true,
