@@ -16,6 +16,7 @@ CustomFabricators:
     Model: Workbench; # This defines the model your fabricator will use. You can choose Workbench, Fabricator or MoonPool. #
     AllowedInBase: YES; # This sets if your fabricator can be built inside a base. # 
     AllowedInCyclops: YES; # This sets if your fabricator can be built inside a Cyclops. # 
+    ColorTint: 1.0, 0.64, 0.0; # This is if you want to set a custom color tint on your fabricator in RGB values. #
     CustomCraftingTabs: # Custom crafting tabs that go insie your fabricator start here. #
     (
         TabID: ScienceTab; # This is the ID of the tab that you will use to create your custom tab. #

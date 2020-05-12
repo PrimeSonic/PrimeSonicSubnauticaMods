@@ -204,11 +204,11 @@
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            AddChangeLog(tutorialLines);
+            AddWorkingFileTypes(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            AddWorkingFileTypes(tutorialLines);
+            AddChangeLog(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             return tutorialLines.ToArray();
