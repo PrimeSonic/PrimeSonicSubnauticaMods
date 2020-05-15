@@ -6,6 +6,7 @@
     using Common;
     using Harmony;
     using Managers;
+    using UnityEngine;
 
     [HarmonyPatch(typeof(SubRoot), nameof(SubRoot.Awake))]
     internal class SubRoot_Awake_Patcher
@@ -14,8 +15,20 @@
         public static void Prefix(ref SubRoot __instance)
         {
             if (__instance.isCyclops)
-                CyclopsManager.GetManager(ref __instance);
-            // Set up a CyclopsManager early if possible
+            {
+                // Set up a CyclopsManager early if possible
+                var mgr = CyclopsManager.GetManager(ref __instance);
+
+                // Big thanks to Waisie Milliams Hah for helping to fix the upgrade console lighting bug
+                Transform consoleMesh = mgr.Cyclops.transform.Find("CyclopsMeshStatic/undamaged/cyclops_LOD0/cyclops_engine_room/cyclops_engine_console/Submarine_engine_GEO/submarine_engine_console_01_wide");
+
+                foreach (Renderer mesh in consoleMesh.GetComponentsInChildren<Renderer>())
+                {
+                    SkyApplier skyApplier = mesh.gameObject.EnsureComponent<SkyApplier>();
+                    skyApplier.renderers = mesh.GetComponentsInChildren<MeshRenderer>();
+                    skyApplier.anchorSky = Skies.Auto;
+                }
+            }
         }
     }
 
@@ -30,12 +43,11 @@
             if (mgr == null)
                 return true; // Safety Check
 
-            // If there is no mod taking over how thermal charging is done on the Cyclops,
-            // then we will allow the original method to run so it provides the vanilla thermal charging.            
+            // All charging handled here.
+            // Even vanill thermal charging was replicated to allow enable it's own Power Indicator Icon.
+            mgr.Charge.RechargeCyclops();
 
-            // The return value of RechargeCyclops will be True if vanilla charging should proceed;
-            // Otherwise it returns False and the original code won't be run.
-            return mgr.Charge.RechargeCyclops(); 
+            return false;
         }
     }
 
