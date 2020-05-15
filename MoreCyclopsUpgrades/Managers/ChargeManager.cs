@@ -59,14 +59,8 @@
 
         private readonly IModConfig config = ModConfig.Main;
 
-        // Check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
-        // If not, then the original thermal charging code will be allowed to run.
-        // This is to allow players to choose whether or not they want the newer form of charging.
-        private bool requiresVanillaCharging;
-
         private float producedPower = 0f;
         private float powerDeficit = 0f;
-        private int totalChargers = -1;
 
         public CyclopsCharger[] Chargers { get; private set; }
 
@@ -114,24 +108,25 @@
                 }
             }
 
+            // Check if an external mod has a different upgrade handler for the original CyclopsThermalReactorModule.
+            bool requiresVanillaCharging = CyclopsManager.GetManager(ref Cyclops).Upgrade.VanillaUpgrades.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
+
+            if (requiresVanillaCharging)
+            {
+                QuickLogger.Debug("Vanilla thermal reactor charging handled internally");
+                KnownChargers.Add(nameof(VanillaThermalChargeManager), new VanillaThermalChargeManager(Cyclops));
+                MCUServices.Register.PdaIconOverlay(TechType.CyclopsThermalReactorModule,
+                    (uGUI_ItemIcon icon, InventoryItem upgradeModule) => new VanillaThermalPdaOverlay(icon, upgradeModule));
+            }
+
             this.Chargers = new CyclopsCharger[KnownChargers.Count];
 
             int c = 0;
             foreach (CyclopsCharger charger in KnownChargers.Values)
                 this.Chargers[c++] = charger;
 
-            totalChargers = c;
-            QuickLogger.Debug($"ChargeManager has '{totalChargers}' CyclopsChargers from external mods");
-
             initialized = true;
             TooLateToRegister = true;
-
-            requiresVanillaCharging = totalChargers == 0 || CyclopsManager.GetManager(ref Cyclops).Upgrade.VanillaUpgrades.IsUsingVanillaUpgrade(TechType.CyclopsThermalReactorModule);
-
-            if (requiresVanillaCharging)
-                QuickLogger.Info("Vanilla thermal reactor charging enabled");
-            else
-                QuickLogger.Info("Vanilla thermal reactor charging overridden by mod");
         }
 
         /// <summary>
@@ -142,9 +137,6 @@
         {
             if (!initialized)
                 InitializeChargers();
-
-            if (totalChargers < 0)
-                return 0;
 
             float availableReservePower = 0f;
 
@@ -158,16 +150,13 @@
         /// Recharges the cyclops' power cells using all charging modules across all upgrade consoles.
         /// </summary>
         /// <returns><c>True</c> if the original code for the vanilla Cyclops Thermal Reactor Module is required; Otherwise <c>false</c>.</returns>
-        public bool RechargeCyclops()
+        public void RechargeCyclops()
         {
             if (!initialized)
                 InitializeChargers();
 
             if (Time.timeScale == 0f) // Is the game paused?
-                return false;
-
-            if (totalChargers < 0)
-                return true;
+                return;
 
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
@@ -197,8 +186,6 @@
             // Last, inform the chargers to update their display status
             for (int i = 0; i < this.Chargers.Length; i++)
                 this.Chargers[i].UpdateStatus();
-
-            return requiresVanillaCharging;
         }
     }
 }
