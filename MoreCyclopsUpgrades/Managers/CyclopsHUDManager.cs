@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
+    using System;
     using Common;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.Config;
@@ -33,27 +34,22 @@
         private readonly IModConfig settings = ModConfig.Main;
         private readonly int totalPowerInfoIcons;
 
-        private HelmEnergyDisplay lastDisplay = HelmEnergyDisplay.PowerCellPercentage;
-
         internal CyclopsHUDManager(SubRoot cyclops, int totalIcons)
         {
             Cyclops = cyclops;
-            totalPowerInfoIcons = totalIcons;
+            totalPowerInfoIcons = Math.Max(totalIcons, 1); // Include a minimum of 1 for the vanilla thermal charger
         }
 
         internal void FastUpdate(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
-            if (totalPowerInfoIcons > 0)
-            {
-                if (!powerIconsInitialized)
-                    AddPowerIcons(cyclopsHelmHUD);
-                else
-                    UpdatePowerIcons();
-            }
+            if (!powerIconsInitialized)
+                AddPowerIcons(cyclopsHelmHUD);
+            else
+                UpdatePowerIcons();
 
             PowerRelay powerRelay = Cyclops.powerRelay;
 
-            switch (lastDisplay = settings.EnergyDisplay)
+            switch (settings.EnergyDisplay)
             {
                 case HelmEnergyDisplay.PowerCellAmount:
                     cyclopsHelmHUD.powerText.text = NumberFormatter.FormatValue(powerRelay.GetPower());
@@ -84,9 +80,9 @@
                 consoleIconsRemoved = true;
             }
 
-            if (upgradesText == null)            
+            if (upgradesText == null)
                 upgradesText = hudManager.subRoot.transform.Find("UpgradeConsoleHUD")?.Find("Canvas_Main")?.Find("Text")?.GetComponent<Text>();
-            
+
             if (upgradesText != null)
             {
                 upgradesText.fontSize = 70;
@@ -111,30 +107,21 @@
 
             settings.UpdateCyclopsMaxPower(normalMaxPower);
 
-            if (totalPowerInfoIcons > 0)
-            {
-                powerIconTextVisibility =
+            powerIconTextVisibility =
                     Player.main.currentSub == Cyclops &&
                     holographicHUD != null &&
                     Mathf.Abs(Vector3.Distance(holographicHUD.transform.position, Player.main.transform.position)) <= 4f;
 
-                if (lastKnownTextVisibility != powerIconTextVisibility)
-                {
-                    UpdatePowerIcons();
-                    lastKnownTextVisibility = powerIconTextVisibility;
-                }
+            if (lastKnownTextVisibility != powerIconTextVisibility)
+            {
+                UpdatePowerIcons();
+                lastKnownTextVisibility = powerIconTextVisibility;
             }
         }
 
         private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
             cyclopsHelmHUD.powerText.resizeTextForBestFit = true;
-
-            if (totalPowerInfoIcons == 0)
-            {
-                QuickLogger.Debug($"CyclopsHUDManager 0 Power Info Icons required");
-                return;
-            }
 
             QuickLogger.Debug($"CyclopsHUDManager Adding Power Info Icons for '{totalPowerInfoIcons}' CyclopsChargers");
             holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
