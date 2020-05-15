@@ -18,6 +18,7 @@
 
         private const float ThermalChargingFactor = 1.5f;
         private const float MinTemperatureForCharge = 35f;
+        private const float MaxTemperatureForColor = 75f;
 
         public VanillaThermalChargeManager(SubRoot cyclops) : base(cyclops)
         {
@@ -35,7 +36,7 @@
 
         public override Color StatusTextColor()
         {
-            return this.ThermalEnergyAvailable ? NumberFormatter.GetNumberColor(this.Temperature, 90f, MinTemperatureForCharge) : Color.white;
+            return this.ThermalEnergyAvailable ? NumberFormatter.GetNumberColor(this.Temperature, MaxTemperatureForColor, MinTemperatureForCharge) : Color.white;
         }
 
         protected override float DrainReserveEnergy(float requestedPower)
