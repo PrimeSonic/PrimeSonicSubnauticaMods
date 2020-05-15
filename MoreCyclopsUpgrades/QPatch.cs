@@ -28,24 +28,24 @@
         [QModPatch]
         public static void Patch()
         {
-            try
-            {
-                QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
+            QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
 
-                // If enabled, patch the Auxiliary Upgrade Console as a new buildable.
+            // If enabled, patch the Auxiliary Upgrade Console as a new buildable.
+            if (ModConfig.Main.AuxConsoleEnabled)
+            {
                 var console = new AuxCyUpgradeConsole();
-                console.Patch(ModConfig.Main.AuxConsoleEnabled);
-
-                var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
-                harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-                QuickLogger.Info("Finished Patching");
+                console.Patch();
             }
-            catch
+            else
             {
-                QuickLogger.Error($"Critical error in patching");
-                throw; // Rethrow for QModManager to catch and report
+                // SMLHelper now handles previously used but now disabled TechTypes
+                QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
             }
+
+            var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            QuickLogger.Info("Finished Patching");
         }
     }
 }

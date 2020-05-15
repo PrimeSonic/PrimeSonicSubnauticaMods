@@ -15,7 +15,7 @@
             t.SetParent(anchor.transform, false);
             canvas.sortingLayerID = 1;
 
-            uGUI_GraphicRaycaster raycaster = canvas.gameObject.AddComponent<uGUI_GraphicRaycaster>();
+            canvas.gameObject.AddComponent<uGUI_GraphicRaycaster>();
 
             var rt = t as RectTransform;
             RectTransformExtensions.SetParams(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f));
@@ -45,7 +45,7 @@
                 canvas.gameObject.SetActive(false);
                 icon.enabled = false;
             }
-            
+
             return canvas;
         }
 
