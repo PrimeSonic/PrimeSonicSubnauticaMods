@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.VanillaModules
 {
     using Common;
     using MoreCyclopsUpgrades.API;

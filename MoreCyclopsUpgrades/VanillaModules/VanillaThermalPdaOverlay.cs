@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.VanillaModules
 {
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.PDA;

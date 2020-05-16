@@ -161,9 +161,9 @@
     <Compile Include="Patchers\UpgradeConsole_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
-    <Compile Include="VanillaThermalChargeManager.cs" />
-    <Compile Include="VanillaThermalPdaOverlay.cs" />
-    <Compile Include="VanillaUpgrades.cs" />
+    <Compile Include="VanillaModules\VanillaThermalChargeManager.cs" />
+    <Compile Include="VanillaModules\VanillaThermalPdaOverlay.cs" />
+    <Compile Include="VanillaModules\VanillaUpgrades.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AuxCyUpgradeConsole.png">

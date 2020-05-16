@@ -5,6 +5,7 @@
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.Config;
+    using MoreCyclopsUpgrades.VanillaModules;
     using UnityEngine;
 
     internal class ChargeManager
