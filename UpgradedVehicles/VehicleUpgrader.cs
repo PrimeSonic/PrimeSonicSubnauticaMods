@@ -56,8 +56,9 @@
         }
 
         // Original values from the Vehicle class
-        private float BaseForwardForce = -1f;
-        private float BaseOnGroundForceMultiplier = -1f;
+        private const float BaseSeamothSpeed = 11.5f;
+        private const float BaseExosuitSwimSpeed = 6f;
+        private const float BaseExosuitWalkSpeed = 4f;
 
         private Vehicle ParentVehicle = null;
         private Equipment UpgradeModules => ParentVehicle.modules;
@@ -202,9 +203,6 @@
             IsSeamoth = vehicle is SeaMoth;
             IsExosuit = vehicle is Exosuit;
 
-            BaseForwardForce = vehicle.forwardForce;
-            BaseOnGroundForceMultiplier = vehicle.onGroundForceMultiplier;
-
             if (this.UpgradeModules == null)
             {
                 QuickLogger.Warning("Initialize Vehicle - UpgradeModules missing", true);
@@ -326,10 +324,19 @@
         {
             this.SpeedMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
 
-            ParentVehicle.forwardForce = this.SpeedMultiplier * BaseForwardForce;
-            ParentVehicle.onGroundForceMultiplier = this.SpeedMultiplier * BaseOnGroundForceMultiplier;
+            if (this.IsSeamoth)
+            {
+                ParentVehicle.forwardForce = this.SpeedMultiplier * BaseSeamothSpeed;
+                ErrorMessage.AddMessage($"Seamoth Speed: {ParentVehicle.forwardForce}m/s ({this.SpeedMultiplier * 100f:00}%)");
+            }
+            else if (this.IsExosuit)
+            {
+                ParentVehicle.forwardForce = this.SpeedMultiplier * BaseExosuitSwimSpeed;
+                ErrorMessage.AddMessage($"Prawn Suit Water Speed: {ParentVehicle.forwardForce}m/s ({this.SpeedMultiplier * 100f:00}%)");
+                ParentVehicle.onGroundForceMultiplier = this.SpeedMultiplier * BaseExosuitWalkSpeed;
+                ErrorMessage.AddMessage($"Prawn Suit Land Speed: {ParentVehicle.onGroundForceMultiplier}m/s ({this.SpeedMultiplier * 100f:00}%)");
 
-            ErrorMessage.AddMessage($"Now running at {this.SpeedMultiplier * 100f:00}% speed");
+            }
         }
 
         private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)

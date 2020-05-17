@@ -5,7 +5,7 @@
 
     internal static class QuickLogger
     {
-        private static readonly AssemblyName ModName = Assembly.GetCallingAssembly().GetName();
+        private static readonly AssemblyName ModName = Assembly.GetExecutingAssembly().GetName();
 
         internal static bool DebugLogsEnabled = false;
 
