@@ -23,13 +23,13 @@
                 switch (item.OptionType)
                 {
                     case OptionTypes.Slider when item is SliderOption slider:
-                        properties.Add(new EmProperty<float>(slider.Id, slider.Value));
+                        properties.Add(new EmProperty<float>(slider.Id, slider.Value) { Optional = true });
                         break;
                     case OptionTypes.Choice when item is ChoiceOption choice:
-                        properties.Add(new EmProperty<int>(choice.Id, choice.Index));
+                        properties.Add(new EmProperty<int>(choice.Id, choice.Index) { Optional = true });
                         break;
                     case OptionTypes.Toggle when item is ToggleOption toggle:
-                        properties.Add(new EmProperty<bool>(toggle.Id, toggle.State));
+                        properties.Add(new EmProperty<bool>(toggle.Id, toggle.State) { Optional = true });
                         break;
                 }
             }
@@ -69,19 +69,19 @@
             };
         }
 
-        public EmProperty<float> GetFloatProperty(string id)
+        public EmProperty<float> GetFloatProperty(SliderOption option)
         {
-            return (EmProperty<float>)this[id];
+            return (EmProperty<float>)this[option.Id];
         }
 
-        public EmProperty<int> GetIntProperty(string id)
+        public EmProperty<int> GetIntProperty(ChoiceOption option)
         {
-            return (EmProperty<int>)this[id];
+            return (EmProperty<int>)this[option.Id];
         }
 
-        public EmProperty<bool> GetBoolProperty(string id)
+        public EmProperty<bool> GetBoolProperty(ToggleOption option)
         {
-            return (EmProperty<bool>)this[id];
+            return (EmProperty<bool>)this[option.Id];
         }
 
         internal override EmProperty Copy()

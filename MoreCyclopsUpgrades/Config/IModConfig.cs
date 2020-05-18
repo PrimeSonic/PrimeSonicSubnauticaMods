@@ -7,7 +7,7 @@
         bool AuxConsoleEnabled { get; }
         ChallengeMode ChallengeMode { get; }
         ShowChargerIcons ChargerIcons { get; }
-        bool DebugLogsEnabled { get; }
+        bool EnableDebugLogs { get; }
         HelmEnergyDisplay EnergyDisplay { get; }
         float DeficitThreshold { get; }
         float RechargePenalty { get; }
@@ -17,5 +17,6 @@
         float MinimumEnergyDeficit { get; }
         float EmergencyEnergyDeficit { get; }
         void UpdateCyclopsMaxPower(float maxPower);
+        bool ShowThermometer { get; }
     }
 }
