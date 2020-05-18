@@ -10,6 +10,9 @@
 
     internal class CyclopsHUDManager
     {
+        internal static Atlas.Sprite CyclopsThermometer;
+
+        private PowerIndicatorIcon TemperatureReadout;
         private PowerIndicatorIcon[] HelmIndicatorsOdd;
         private PowerIndicatorIcon[] HelmIndicatorsEven;
         private PowerIndicatorIcon[] HealthBarIndicatorsOdd;
@@ -197,6 +200,9 @@
                 } while (totalIcons > index);
             }
 
+            TemperatureReadout = IconCreator.CreatePowerIndicatorIcon(holoCanvas, 1.95f * healthbarxoffset, -2f, healthbarzoffset, healthbarscale * 1.2f);
+            TemperatureReadout.Icon.sprite = CyclopsThermometer ?? SpriteManager.Get(TechType.CyclopsThermalReactorModule);
+
             powerIconsInitialized = true;
 
             QuickLogger.Debug("Linked CyclopsHUDManager to HelmHUD");
@@ -245,6 +251,7 @@
 
                 hpIcon.SetEnabled(showIconsOnHoloDisplay);
                 helmIcon.SetEnabled(showIconsWhilePiloting);
+                TemperatureReadout.SetEnabled(showIconsOnHoloDisplay);
 
                 hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.StatusSprite();
 
@@ -255,6 +262,13 @@
                     hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
                 else
                     hpIcon.Text.color = helmIcon.Text.color = Color.white;
+            }
+
+            if (showIconsOnHoloDisplay)
+            {
+                float temperature = Cyclops.GetTemperature();
+                TemperatureReadout.Text.text = NumberFormatter.FormatValue(temperature) + "°C";
+                TemperatureReadout.Text.color = GetHeatColor(temperature);
             }
         }
 
@@ -271,6 +285,32 @@
                 HelmIndicatorsEven[i].SetEnabled(false);
                 HealthBarIndicatorsEven[i].SetEnabled(false);
             }
+        }
+
+        private Color GetHeatColor(float temperatureValue)
+        {
+            const float maxBlue = 35f;
+            const float maxGreen = 50f;
+            const float maxYellow = 65f;
+            const float maxRed = 70f;
+
+            const float whiteToBlue = maxBlue;
+            const float blueToGreen = (maxGreen - maxBlue);
+            const float greenToYellow = (maxYellow - maxGreen);
+            const float yellowToRed = (maxRed - maxYellow);
+
+            if (temperatureValue < 0f)
+                return Color.white;
+            else if (temperatureValue < maxBlue)
+                return Color.Lerp(Color.white, Color.blue, temperatureValue / whiteToBlue);
+            else if (temperatureValue < maxGreen)
+                return Color.Lerp(Color.blue, Color.green, (temperatureValue - maxBlue) / blueToGreen);
+            else if (temperatureValue < maxYellow)
+                return Color.Lerp(Color.green, Color.yellow, (temperatureValue - maxGreen) / greenToYellow);
+            else if (temperatureValue < maxRed)
+                return Color.Lerp(Color.yellow, Color.red, (temperatureValue - maxYellow) / yellowToRed);
+            else
+                return Color.red;
         }
     }
 }
