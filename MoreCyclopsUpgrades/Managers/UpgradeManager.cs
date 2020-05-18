@@ -4,7 +4,7 @@
     using Common;
     using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using UnityEngine;
+    using MoreCyclopsUpgrades.VanillaModules;
 
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
@@ -279,7 +279,7 @@
             {
                 Cyclops.slotModSFX?.Play();
                 PdaOverlayManager.RemapItems();
-            }            
+            }
         }
 
         public override bool Initialize(SubRoot cyclops)
