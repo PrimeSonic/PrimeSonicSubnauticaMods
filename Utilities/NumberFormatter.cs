@@ -10,14 +10,7 @@
         internal static string FormatValue(float value)
         {
             int intCastValue = Mathf.CeilToInt(value);
-
-            if (!_formattedValueCache.TryGetValue(intCastValue, out string amountString))
-            {
-                amountString = $"{HandleLargeNumbers(value)}";
-                _formattedValueCache.Add(intCastValue, amountString);
-            }
-
-            return amountString;
+            return FormatValue(intCastValue);
         }
 
         internal static string FormatValue(int value)
@@ -46,7 +39,7 @@
         }
 
         /// <summary>
-        /// Goes from Red at 0% to Green at 100%.
+        /// Goes from Red at 0% to Green at 100%, passing through Yellow at 50%.
         /// </summary>
         /// <param name="value">The current value</param>
         /// <param name="max">The 100% value.</param>
@@ -54,19 +47,18 @@
         /// <returns>The calculated color.</returns>
         internal static Color GetNumberColor(float value, float max, float min)
         {
-            if (value > max)
+            float mid = (min + max) / 2;
+
+            if (value < min)
                 return Color.white;
 
-            if (value <= min)
-                return Color.red;
-
-            const float greenHue = 120f / 360f;
-            float percentOfMax = (value - min) / (max - min);
-
-            const float saturation = 1f;
-            const float lightness = 0.8f;
-
-            return Color.HSVToRGB(percentOfMax * greenHue, saturation, lightness);
+            if (value <= mid)
+                return Color.Lerp(Color.red, Color.yellow, (value - min) / (mid - min));            
+            
+            if (value <= max)
+                return Color.Lerp(Color.yellow, Color.green, (value - mid) / (max - mid));
+            
+            return Color.white;
         }
     }
 }
