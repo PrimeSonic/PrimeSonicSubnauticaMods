@@ -1,11 +1,11 @@
-﻿namespace Common
+﻿namespace EasyMarkup
 {
     using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Text;
     using System.Threading;
-    using Common.EasyMarkup;
+    using Common;
 
     internal static class SaveDataExtensions
     {

@@ -30,8 +30,7 @@
             eatable.waterValue = FoodEntry.WaterValue;
             eatable.decomposes = FoodEntry.Decomposes;
             eatable.kDecayRate = FoodEntry.DecayRateMod * StandardDecayRate;
-            eatable.allowOverfill = FoodEntry.AllowOverfill;
-            
+
             return obj;
         }
 

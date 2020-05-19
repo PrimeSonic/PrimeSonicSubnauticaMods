@@ -82,6 +82,7 @@
     </Reference>
     <Reference Include="QModInstaller">
       <HintPath>..\DependenciesSubnautica\QModInstaller.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -96,6 +97,10 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\DependenciesSubnautica\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\..\..\SteamApps\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
@@ -117,8 +122,11 @@
     <Compile Include="API\AmbientEnergy\AmbientEnergyIconOverlay.cs" />
     <Compile Include="API\AmbientEnergy\AmbientEnergyUpgradeHandler.cs" />
     <Compile Include="API\AmbientEnergy\BatteryDetails.cs" />
+    <Compile Include="API\Buildables\AuxiliaryUpgradeConsole.cs" />
+    <Compile Include="API\Buildables\AuxiliaryUpgradeConsoleInternal.cs" />
     <Compile Include="API\Buildables\BuildableManager.cs" />
     <Compile Include="API\Buildables\ICyclopsBuildable.cs" />
+    <Compile Include="API\Buildables\IUpgradeSlots.cs" />
     <Compile Include="API\Charging\CyclopsCharger.cs" />
     <Compile Include="API\Charging\CyclopsChargerCreator.cs" />
     <Compile Include="API\IMCUCrossMod.cs" />
@@ -130,6 +138,9 @@
     <Compile Include="API\PDA\IconOverlayText.cs" />
     <Compile Include="API\PDA\IIconOverlayText.cs" />
     <Compile Include="API\PDA\IconOverlayCreator.cs" />
+    <Compile Include="API\Buildables\UpgradeSlot.cs" />
+    <Compile Include="AuxConsole\ModuleDisplayIconCollection.cs" />
+    <Compile Include="AuxConsole\ModuleIconDisplay.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
     <Compile Include="Config\ChoiceEnums\ConfigExtensions.cs" />
     <Compile Include="Config\ChoiceEnums\HelmEnergyDisplay.cs" />
@@ -147,7 +158,9 @@
     <Compile Include="Config\Options\OptionTypes.cs" />
     <Compile Include="Config\Options\SliderOption.cs" />
     <Compile Include="Config\Options\ToggleOption.cs" />
+    <Compile Include="IconCreator.cs" />
     <Compile Include="Managers\PdaOverlayManager.cs" />
+    <Compile Include="Managers\PowerIndicatorIcon.cs" />
     <Compile Include="Managers\PowerRatingManager.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />
@@ -172,11 +185,15 @@
     <Compile Include="Patchers\UpgradeConsole_Patcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
-    <Compile Include="SlotHelper.cs" />
-    <Compile Include="VanillaUpgrades.cs" />
+    <Compile Include="VanillaModules\VanillaThermalChargeManager.cs" />
+    <Compile Include="VanillaModules\VanillaThermalPdaOverlay.cs" />
+    <Compile Include="VanillaModules\VanillaUpgrades.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AuxCyUpgradeConsole.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CyclopsThermometer.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -188,6 +205,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

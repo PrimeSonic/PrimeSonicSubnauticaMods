@@ -1,7 +1,7 @@
 ﻿namespace CustomCraft2SML.Serialization.Components
 {
-    using Common.EasyMarkup;
     using System.Collections.Generic;
+    using EasyMarkup;
     using UnityEngine;
 
     internal class EmColorRGB : EmPropertyList<float>

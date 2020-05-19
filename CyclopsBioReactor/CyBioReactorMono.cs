@@ -61,6 +61,7 @@
         private string prefabId;
         private float textDelay = TextDelayInterval;
         private bool isLoadingSaveData = false;
+        private bool isDrainingEnergy = false;
         private CyBioReactorSaveData _saveData;
         private SubRoot Cyclops;
         private int lastKnownBioBooster = 0;
@@ -279,18 +280,18 @@
                 return;
 
             if (this.ProducingPower)
-                displayHandler.SetActive(Mathf.RoundToInt(this.Charge), Mathf.CeilToInt(this.Capacity));
+                displayHandler.SetActive(Mathf.RoundToInt(this.Charge), Mathf.CeilToInt(this.Capacity), isDrainingEnergy);
             else if (this.HasPower)
-                displayHandler.SetInActivating(Mathf.RoundToInt(this.Charge), Mathf.CeilToInt(this.Capacity));
+                displayHandler.SetInActivating(Mathf.RoundToInt(this.Charge), Mathf.CeilToInt(this.Capacity), isDrainingEnergy);
             else
                 displayHandler.SetInactive();
 
+            isDrainingEnergy = false; // Reset this after using it
+
             bool isOperating = this.ProducingPower && this.HasPower;
 
-            if (this.AnimationHandler.GetBoolHash(this.MixingStateHash) == isOperating)
-                return;
-
-            this.AnimationHandler.SetBoolHash(this.MixingStateHash, isOperating);
+            if (this.AnimationHandler.GetBoolHash(this.MixingStateHash) != isOperating)
+                this.AnimationHandler.SetBoolHash(this.MixingStateHash, isOperating);
         }
 
         #region Player interaction
@@ -362,7 +363,7 @@
             {
                 int currentProcessingCapacity = this.ProcessingCapacity;
                 int m = 0;
-                while (m < bioMaterialsProcessing.Count && currentProcessingCapacity > 0)                
+                while (m < bioMaterialsProcessing.Count && currentProcessingCapacity > 0)
                 {
                     BioEnergy material = bioMaterialsProcessing[m];
                     m++;
@@ -404,6 +405,7 @@
                 this.Charge = 0f; // Set battery to empty
             }
 
+            isDrainingEnergy = true;
             return amtToDrain;
         }
 
@@ -488,15 +490,14 @@
             Cyclops = parentCyclops;
             this.transform.SetParent(parentCyclops.transform);
 
+            if (this.Manager == null && manager != null)
+                this.Manager = manager;
+
             if (this.Manager != null)
-            {
                 this.Manager.AddBuildable(this);
-            }
 
             if (this.UpgradeHandler != null)
-            {
                 UpdateBoosterCount(this.UpgradeHandler.Count);
-            }
         }
 
         public void ConnectToContainer(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
@@ -525,13 +526,13 @@
             }
         }
 
-        public bool UpdateBoosterCount(int boosterCount)
+        public void UpdateBoosterCount(int boosterCount)
         {
             if (boosterCount > MaxBoosters)
-                return false;
+                return;
 
             if (lastKnownBioBooster == boosterCount)
-                return false;
+                return;
 
             var nextStats = ReactorStats.GetStatsForBoosterCount(boosterCount);
 
@@ -541,8 +542,6 @@
             chargeRate = baselineChargeRate / nextStats.ProcessingCapacity * 2f;
 
             lastKnownBioBooster = boosterCount;
-
-            return true;
         }
 
         private void OnDestroy()

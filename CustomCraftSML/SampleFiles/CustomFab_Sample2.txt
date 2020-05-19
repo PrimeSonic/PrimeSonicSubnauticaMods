@@ -13,7 +13,7 @@ CustomFabricators:
     DisplayName:" Flint Lockwood Diatonic Super Mutating Dynamic Food Replicator or FLDSMDFR";
     Tooltip:"takes water and turns it to fooood.";
     Model:MoonPool;
-    ColorRGB: 1.0, 0.64, 0.0 ;
+    ColorTint: 1.0, 0.64, 0.0, 0.8;
     AllowedInBase:YES;
     AllowedInCyclops:YES;
     CustomCraftingTabs:

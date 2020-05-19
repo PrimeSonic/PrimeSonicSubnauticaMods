@@ -2,8 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
-    using Common;
-    using Common.EasyMarkup;
+    using EasyMarkup;
     using SMLHelper.V2.Utility;
 
     internal class CyNukeReactorSaveData : EmPropertyCollectionList<CyNukeRodSaveData>

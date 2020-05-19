@@ -1,13 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
+    using System.Collections.Generic;
     using Common;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Components;
+    using CustomCraft2SML.Serialization.Lists;
+    using EasyMarkup;
     using SMLHelper.V2.Handlers;
-    using System;
-    using System.Collections.Generic;
 
     internal class CustomBioFuel : EmTechTyped, ICustomBioFuel, ICustomCraft
     {
@@ -17,7 +18,7 @@
 
         internal static readonly string[] CustomBioFuelTutorial = new[]
         {
-            "CustomBioFuel: Customize the energy values of items in the BioReactor. ",
+           $"{CustomBioFuelList.ListKey}: Customize the energy values of items in the BioReactor. ",
            $"    {EnergyKey}: Set this to the amount of energy the item provides via the BioReactor",
             "    This can also be used to make items compatible with the BioReactor that originally weren't."
         };
@@ -39,6 +40,8 @@
         }
 
         public OriginFile Origin { get; set; }
+
+        public bool PassedSecondValidation => true;
 
         public string ID => this.ItemID;
 

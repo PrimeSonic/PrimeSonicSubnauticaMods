@@ -21,21 +21,10 @@
                    friendlyName: "Auxiliary Upgrade Console",
                    description: "A secondary upgrade console to connect a greater number of upgrades to your Cyclops.")
         {
-            OnFinishedPatching += ()=>
+            OnFinishedPatching += () =>
             {
                 LanguageHandler.SetLanguageLine(OnHoverKey, "Use Auxiliary Cyclop Upgrade Console");
             };
-        }
-
-        internal void Patch(bool auxConsolesEnabled)
-        {
-            if (!auxConsolesEnabled) // Even if the options have this be disabled,
-            {
-                this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, false);
-                return; // we still want to run through the AddTechType methods to prevent mismatched TechTypeIDs as these settings are switched
-            }
-
-            base.Patch();
         }
 
         protected override TechData GetBlueprintRecipe()

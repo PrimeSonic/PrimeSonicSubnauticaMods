@@ -1,4 +1,6 @@
-﻿namespace MoreCyclopsUpgrades.API.Upgrades
+﻿using MoreCyclopsUpgrades.API.Buildables;
+
+namespace MoreCyclopsUpgrades.API.Upgrades
 {
     /// <summary>
     /// Represents a specialized type of upgrade module that is intended to stack its effect with other similar upgrades.<para/>
@@ -29,10 +31,10 @@
             ParentCollection.UpgradesCleared();
         }
 
-        internal override void UpgradeCounted(Equipment modules, string slot)
+        internal override void UpgradeCounted(UpgradeSlot upgradeSlot)
         {
             this.Count++;
-            ParentCollection.TierCounted(TechType, modules, slot, modules.equipment[slot]);
+            ParentCollection.TierCounted(TechType, upgradeSlot.equipment, upgradeSlot.slotName, upgradeSlot.GetItemInSlot());
         }
 
         internal override void UpgradesFinished()

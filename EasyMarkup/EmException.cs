@@ -1,4 +1,4 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
     using System;
 
@@ -28,8 +28,8 @@
         {
             if (!(this.CurrentBuffer is null) && !this.CurrentBuffer.IsEmpty)
             {
-               return $"Error reported: {this.Message}{Environment.NewLine}" +
-                      $"Current text in buffer: {this.CurrentBuffer.ToString()}";
+                return $"Error reported: {this.Message}{Environment.NewLine}" +
+                       $"Current text in buffer: {this.CurrentBuffer.ToString()}";
             }
 
             return base.ToString();

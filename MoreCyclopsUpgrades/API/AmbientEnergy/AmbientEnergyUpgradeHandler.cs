@@ -5,10 +5,22 @@
     using MoreCyclopsUpgrades.API.Upgrades;
     using UnityEngine;
 
+    /// <summary>
+    /// A standardized <see cref="StackingGroupHandler"/> implementation for <see cref="AmbientEnergyCharger{T}"/>s.
+    /// </summary>
+    /// <seealso cref="StackingGroupHandler" />
     public class AmbientEnergyUpgradeHandler : StackingGroupHandler
     {
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
-        public const int MaxChargers = 6;
+
+        /// <summary>
+        /// Gets the maximum number of chargers that can work together to increase the charging rate.<para/>
+        /// Defaults to <c>6</c>.
+        /// </summary>
+        /// <value>
+        /// The maximum number of same-type chargers that can provide power together.
+        /// </value>
+        public virtual int MaxChargers => 6;
 
         private readonly IList<BatteryDetails> batteries = new List<BatteryDetails>();
         private float totalBatteryCharge = 0f;
@@ -16,6 +28,14 @@
         private bool updating = false;
         private float totalDrainedAmt = 0f;
 
+        /// <summary>
+        /// Gets the total battery capacity.
+        /// </summary>
+        /// <value>
+        /// The total battery capacity.
+        /// </value>
+        /// <seealso cref="AmbientEnergyCharger{T}.TotalReserveEnergy"/>
+        /// <seealso cref="AmbientEnergyCharger{T}.StatusTextColor"/>
         public float TotalBatteryCapacity
         {
             get
@@ -31,6 +51,14 @@
             }
         }
 
+        /// <summary>
+        /// Gets the total battery charge.
+        /// </summary>
+        /// <value>
+        /// The total battery charge.
+        /// </value>
+        /// <seealso cref="AmbientEnergyCharger{T}.TotalReserveEnergy"/>
+        /// <seealso cref="AmbientEnergyCharger{T}.StatusTextColor"/>
         public float TotalBatteryCharge
         {
             get
@@ -46,16 +74,29 @@
             }
         }
 
+        /// <summary>
+        /// Gets the charge multiplier. This updates depending on how many instances of this upgrade module (and at what tier) are currently installed in the Cyclops.
+        /// </summary>
+        /// <value>
+        /// The charge multiplier.
+        /// </value>
         public float ChargeMultiplier { get; private set; } = 1f;
 
         private readonly StackingUpgradeHandler tier1;
         private readonly StackingUpgradeHandler tier2;
         private readonly string maxCountReachedMsg;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AmbientEnergyUpgradeHandler"/> class.
+        /// </summary>
+        /// <param name="tier1Id">The tier1 identifier.</param>
+        /// <param name="tier2Id">The tier2 identifier.</param>
+        /// <param name="maxedOutMsg">The maxed out MSG.</param>
+        /// <param name="cyclops">The cyclops.</param>
         public AmbientEnergyUpgradeHandler(TechType tier1Id, TechType tier2Id, string maxedOutMsg, SubRoot cyclops)
             : base(cyclops)
         {
-            this.MaxCount = MaxChargers;
+            this.MaxCount = this.MaxChargers;
             maxCountReachedMsg = maxedOutMsg;
 
             OnClearUpgrades = () =>
@@ -67,8 +108,8 @@
             tier1 = CreateStackingTier(tier1Id);
             tier2 = CreateStackingTier(tier2Id);
 
-            tier1.MaxCount = MaxChargers;
-            tier2.MaxCount = MaxChargers;
+            tier1.MaxCount = this.MaxChargers;
+            tier2.MaxCount = this.MaxChargers;
 
             tier1.IsAllowedToAdd += CheckCombinedTotal;
             tier2.IsAllowedToAdd += CheckCombinedTotal;
@@ -106,7 +147,7 @@
 
         private bool CheckCombinedTotal(Pickupable item, bool verbose)
         {
-            return this.Count < MaxChargers;
+            return this.Count < this.MaxChargers;
         }
 
         private void AddBatteryDetails(Equipment modules, string slot, InventoryItem inventoryItem)
@@ -118,6 +159,12 @@
             }
         }
 
+        /// <summary>
+        /// Gets power from the reserve battery.
+        /// </summary>
+        /// <param name="drainingRate">The rate at which power can be pulled from the battery.</param>
+        /// <param name="requestedPower">The amonut of requested power.</param>
+        /// <returns></returns>
         public float GetBatteryPower(float drainingRate, float requestedPower)
         {
             totalDrainedAmt = 0f;
@@ -146,6 +193,10 @@
             return totalDrainedAmt;
         }
 
+        /// <summary>
+        /// Recharges the reserve batteries with the provided surplus power.
+        /// </summary>
+        /// <param name="surplusPower">The surplus power.</param>
         public void RechargeBatteries(float surplusPower)
         {
             for (int i = 0; i < batteries.Count; i++)

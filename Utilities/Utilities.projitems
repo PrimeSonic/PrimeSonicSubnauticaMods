@@ -9,19 +9,7 @@
     <Import_RootNamespace>Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Deque.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmProperty.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyCollectionList.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyListT.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmPropertyT.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\EmYesNo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EasyMarkup\ISerialConfirmation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NumberFormatter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QuickLogger.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SaveDataExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)StringBuffer.cs" />
   </ItemGroup>
 </Project>

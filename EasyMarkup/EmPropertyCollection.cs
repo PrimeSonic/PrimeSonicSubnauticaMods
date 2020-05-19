@@ -1,6 +1,5 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
-    using Common;
     using System;
     using System.Collections.Generic;
 
@@ -102,6 +101,17 @@
                         if (openParens < 0)
                             throw new EmException(UnbalancedContainersError, buffer);
                         goto default;
+                    case SpChar_LiteralStringBlock:
+                        buffer.PushToEnd(fullString.PopFromStart()); // add first "
+
+                        char popped;
+                        do
+                        {
+                            popped = fullString.PopFromStart();
+                            buffer.PushToEnd(popped); // until the last "
+                        } while (popped != SpChar_LiteralStringBlock && fullString.Count > 0);
+
+                        break;
                     default:
                         buffer.PushToEnd(fullString.PopFromStart());
                         break;

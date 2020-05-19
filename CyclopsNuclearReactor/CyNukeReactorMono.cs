@@ -139,6 +139,9 @@
 
         public float GetPower(ref float powerDeficit)
         {
+            if (isDepletingRod)
+                return 0f;
+
             if (powerDeficit <= MCUServices.MinimalPowerValue)
                 return 0f;
 
@@ -147,7 +150,6 @@
 
             float totalPowerProduced = 0f;
 
-            SlotData depletedRod = null;
             int max = Math.Min(this.MaxActiveSlots, this.TotalItemCount);
             for (int i = 0; i < max; i++)
             {
@@ -166,23 +168,7 @@
                 totalPowerProduced += powerProduced;
                 powerDeficit -= powerProduced;
 
-                if (slotData.Charge <= MCUServices.MinimalPowerValue)
-                    depletedRod = slotData;
-
                 UpdateGraphicalRod(slotData);
-            }
-
-            if (depletedRod != null)
-            {
-                isDepletingRod = true;
-
-                container.RemoveItem(depletedRod.Item, true);
-                GameObject.Destroy(depletedRod.Item.gameObject);
-                container.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
-
-                ErrorMessage.AddMessage(CyNukReactorBuildable.DepletedMessage());
-
-                isDepletingRod = false;
             }
 
             return totalPowerProduced;
@@ -341,7 +327,29 @@
         private void Update() // The all important Update method
         {
             if (PdaIsOpen)
+            {
                 UpdateDisplayText();
+                int max = Math.Min(this.MaxActiveSlots, this.TotalItemCount);
+                for (int i = 0; i < max; i++)
+                {
+                    SlotData slotData = reactorRodData[i];
+
+                    if (slotData.TechTypeID == TechType.DepletedReactorRod || slotData.HasPower())
+                        continue;
+
+                    isDepletingRod = true;
+
+                    SlotData depletedRod = slotData;
+                    container.RemoveItem(depletedRod.Item, true);
+                    GameObject.Destroy(depletedRod.Item.gameObject);
+                    container.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
+
+                    ErrorMessage.AddMessage(CyNukReactorBuildable.DepletedMessage());
+
+                    isDepletingRod = false;
+                    break;
+                }
+            }
         }
 
         #region Save Data

@@ -2,14 +2,12 @@
 {
     using System.Collections.Generic;
     using System.IO;
-    using Common;
-    using Common.EasyMarkup;
+    using EasyMarkup;
     using SMLHelper.V2.Utility;
     using UnityEngine;
 
     internal class CyBioReactorSaveData : EmPropertyCollection
     {
-        private const string KeyName = "CBR";
         private const string ReactorBatterChargeKey = "BRP";
         private const string MaterialsKey = "MAT";
         private const string BoostCountKey = "BC";
@@ -17,7 +15,7 @@
 
         private readonly EmProperty<float> _batteryCharge;
         private readonly EmProperty<int> _boosterCount;
-        private EmPropertyCollectionList<EmModuleSaveData> _materials;
+        private readonly EmPropertyCollectionList<EmModuleSaveData> _materials;
 
         private static ICollection<EmProperty> GetDefinitions => new List<EmProperty>()
         {
@@ -60,10 +58,26 @@
             for (int m = 0; m < _materials.Values.Count; m++)
             {
                 EmModuleSaveData savedItem = _materials.Values[m];
-                var techTypeID = (TechType)savedItem.ItemID;
-                var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 
-                Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
+                if (savedItem.ItemID <= 0)
+                    continue;
+
+                GameObject prefab = CraftData.GetPrefabForTechType((TechType)savedItem.ItemID);
+
+                if (prefab == null)
+                    continue;
+
+                var gameObject = GameObject.Instantiate(prefab);
+
+                if (gameObject == null)
+                    continue;
+
+                Pickupable pickupable = gameObject.GetComponent<Pickupable>();
+
+                if (pickupable == null)
+                    continue;
+
+                pickupable.Pickup(false);
 
                 list.Add(new BioEnergy(pickupable, savedItem.RemainingCharge));
             }

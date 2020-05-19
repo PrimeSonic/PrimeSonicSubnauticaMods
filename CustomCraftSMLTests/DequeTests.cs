@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections;
-    using Common;
+    using EasyMarkup;
     using NUnit.Framework;
 
     [TestFixture]
@@ -381,7 +381,7 @@
 
             Assert.IsTrue(dq.Capacity >= dq.Count);
 
-            var ar1 = new int[dataSetSize];
+            int[] ar1 = new int[dataSetSize];
             Array ar2 = new int[dataSetSize];
             int[] ar3 = dq.ToArray();
 
@@ -389,7 +389,7 @@
             dq.CopyTo(ar2, 0);
 
 
-            for (var i = 0; i < dq.Count; i++)
+            for (int i = 0; i < dq.Count; i++)
             {
                 Assert.AreEqual(dq[i], ar1[i]);
                 Assert.AreEqual(dq[i], ar2.GetValue(i));
@@ -547,7 +547,7 @@
 
             deque.CopyTo(array, 0);
 
-            var dqMover = deque.GetEnumerator();
+            System.Collections.Generic.IEnumerator<char> dqMover = deque.GetEnumerator();
             IEnumerator arMover = array.GetEnumerator();
 
             dqMover.MoveNext();
@@ -570,7 +570,7 @@
             deque.PushTail('B');
             deque.PushTail('C');
 
-            var dqMover = deque.GetEnumerator();
+            System.Collections.Generic.IEnumerator<char> dqMover = deque.GetEnumerator();
             dqMover.MoveNext();
             Assert.AreEqual('A', dqMover.Current);
             dqMover.MoveNext();
@@ -660,7 +660,7 @@
         public void CopyTo_TargetArrayTooSmall_Throws(int startingIndex)
         {
             var deque = new Deque<char>(new[] { 'A', 'B', 'C' });
-            var smallArray = new char[1];
+            char[] smallArray = new char[1];
 
             Assert.Throws<ArgumentException>(() =>
             {
@@ -672,7 +672,7 @@
         public void CopyTo_IndexBeyondTargetArray_Throws()
         {
             var deque = new Deque<char>(new[] { 'A', 'B' });
-            var smallArray = new char[2];
+            char[] smallArray = new char[2];
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -756,12 +756,12 @@
             deque.PushTail('B');
             deque.PushTail('C');
 
-            var dqMover = deque.GetEnumerator();
+            System.Collections.Generic.IEnumerator<char> dqMover = deque.GetEnumerator();
 
             Assert.Throws<InvalidOperationException>(() =>
             {
                 // ReSharper disable once UnusedVariable
-                var c = dqMover.Current;
+                char c = dqMover.Current;
             });
 
             dqMover.Dispose();
@@ -775,7 +775,7 @@
             deque.PushTail('B');
             deque.PushTail('C');
 
-            var dqMover = deque.GetEnumerator();
+            System.Collections.Generic.IEnumerator<char> dqMover = deque.GetEnumerator();
             dqMover.MoveNext();
 
             Assert.AreEqual('A', dqMover.Current);
@@ -797,7 +797,7 @@
             deque.PushTail('A');
             deque.PushTail('B');
 
-            var dqMover = deque.GetEnumerator();
+            System.Collections.Generic.IEnumerator<char> dqMover = deque.GetEnumerator();
             Assert.IsTrue(dqMover.MoveNext());
             Assert.IsTrue(dqMover.MoveNext());
             Assert.IsFalse(dqMover.MoveNext());
@@ -806,7 +806,7 @@
             Assert.Throws<InvalidOperationException>(() =>
             {
                 // ReSharper disable once UnusedVariable
-                var c = dqMover.Current;
+                char c = dqMover.Current;
             });
 
             dqMover.Dispose();
@@ -820,7 +820,7 @@
             deque.PushTail('B');
             deque.PushTail('C');
 
-            var dqMover = deque.GetEnumerator();
+            System.Collections.Generic.IEnumerator<char> dqMover = deque.GetEnumerator();
             dqMover.MoveNext();
 
             Assert.AreEqual('A', dqMover.Current);

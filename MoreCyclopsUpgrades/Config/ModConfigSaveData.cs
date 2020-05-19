@@ -5,7 +5,7 @@
     using System.IO;
     using System.Text;
     using Common;
-    using Common.EasyMarkup;
+    using EasyMarkup;
     using MoreCyclopsUpgrades.Config.Options;
 
     internal class ModConfigSaveData : EmPropertyCollection

@@ -1,7 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.AuxConsole
 {
     using System.Collections.Generic;
-    using Common.EasyMarkup;
+    using EasyMarkup;
 
     internal class EmModuleSaveData : EmPropertyCollection
     {

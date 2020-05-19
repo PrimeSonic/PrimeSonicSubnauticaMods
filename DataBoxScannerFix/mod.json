@@ -1,10 +1,10 @@
 {
   "Id": "DataBoxScannerFix",
-  "DisplayName": "DataBoxScannerFix",
+  "DisplayName": "DataBoxc Scanner Fix",
   "Author": "PrimeSonic",
-  "Version": "1.0.0",
+  "Version": "1.1.0",
   "Enable": true,
   "Game": "BelowZero",
   "AssemblyName": "DataBoxScannerFix.dll",
-  "EntryMethod": "DataBoxScannerFix.QPatch.Patch"
+  "Game": "Both"
 }

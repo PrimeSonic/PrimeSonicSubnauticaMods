@@ -6,7 +6,7 @@
     using System.Reflection;
     using System.Text;
     using Common;
-    using Common.EasyMarkup;
+    using EasyMarkup;
 
     internal class ConfigSaveData : EmPropertyCollection
     {

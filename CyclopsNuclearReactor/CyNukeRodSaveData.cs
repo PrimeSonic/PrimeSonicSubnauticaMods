@@ -1,7 +1,7 @@
 ﻿namespace CyclopsNuclearReactor
 {
-    using Common.EasyMarkup;
     using System.Collections.Generic;
+    using EasyMarkup;
 
     internal class CyNukeRodSaveData : EmPropertyCollection
     {

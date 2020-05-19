@@ -1,14 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System.Collections.Generic;
     using Common;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
+    using EasyMarkup;
     using SMLHelper.V2.Handlers;
-    using System.Collections.Generic;
 
     internal class MovedRecipe : EmTechTyped, IMovedRecipe, ICustomCraft
     {
@@ -60,6 +60,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation { get; set; } = true;
+
         public MovedRecipe() : this(TypeName, MovedRecipeProperties)
         {
         }
@@ -103,9 +105,9 @@
             return new MovedRecipe(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
-            return base.PassesPreValidation() & IsValidState();
+            return base.PassesPreValidation(originFile) & IsValidState();
         }
 
         private bool IsValidState()

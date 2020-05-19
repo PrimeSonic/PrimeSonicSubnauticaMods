@@ -1,14 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
-    using Common;
-    using Common.EasyMarkup;
-    using CustomCraft2SML.Interfaces;
-    using CustomCraft2SML.Serialization.Lists;
-    using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Utility;
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using Common;
+    using CustomCraft2SML.Interfaces;
+    using CustomCraft2SML.Serialization.Lists;
+    using EasyMarkup;
+    using SMLHelper.V2.Handlers;
+    using SMLHelper.V2.Utility;
     using IOPath = System.IO.Path;
 
     internal class AliasRecipe : AddedRecipe, IAliasRecipe
@@ -97,7 +97,7 @@
             return new AliasRecipe(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
             return ItemIDisUnique() & // Confirm that no other item is currently using this ID.                                 
                 InnerItemsAreValid() &

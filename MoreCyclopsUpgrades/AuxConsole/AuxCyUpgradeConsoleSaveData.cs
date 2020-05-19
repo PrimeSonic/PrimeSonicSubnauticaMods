@@ -4,8 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using Common;
-    using Common.EasyMarkup;
-    using SMLHelper.V2.Utility;
+    using EasyMarkup;
 
     internal class AuxCyUpgradeConsoleSaveData : EmPropertyCollection
     {
@@ -65,7 +64,7 @@
         {
         }
 
-        private string SaveDirectory => Path.Combine(SaveUtils.GetCurrentSaveDataDir(), "AuxUpgradeConsole");
+        private string SaveDirectory => Path.Combine(SaveLoadManager.GetTemporarySavePath(), "AuxUpgradeConsole");
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
         public void Save()

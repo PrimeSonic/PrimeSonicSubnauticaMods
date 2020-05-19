@@ -45,6 +45,13 @@
             return $"{possiblyLargeValue:F0}";
         }
 
+        /// <summary>
+        /// Goes from Red at 0% to Green at 100%.
+        /// </summary>
+        /// <param name="value">The current value</param>
+        /// <param name="max">The 100% value.</param>
+        /// <param name="min">The 0% value.</param>
+        /// <returns>The calculated color.</returns>
         internal static Color GetNumberColor(float value, float max, float min)
         {
             if (value > max)

@@ -74,6 +74,7 @@
     </Reference>
     <Reference Include="QModInstaller">
       <HintPath>..\DependenciesSubnautica\QModInstaller.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -99,6 +100,7 @@
     <Compile Include="HullArmorMk2.cs" />
     <Compile Include="HullArmorMk3.cs" />
     <Compile Include="HullArmorMk4.cs" />
+    <Compile Include="SaveData\IUpgradeOptions.cs" />
     <Compile Include="VehicleUpgradeModule.cs" />
     <Compile Include="SpeedBooster.cs" />
     <Compile Include="Patchers.cs" />
@@ -129,5 +131,6 @@
     </Content>
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
+  <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

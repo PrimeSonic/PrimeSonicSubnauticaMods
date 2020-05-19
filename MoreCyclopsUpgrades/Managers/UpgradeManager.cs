@@ -4,13 +4,12 @@
     using Common;
     using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
-    using MoreCyclopsUpgrades.AuxConsole;
-    using UnityEngine;
+    using MoreCyclopsUpgrades.VanillaModules;
 
     /// <summary>
     /// The manager class that handles all upgrade events for a given Cyclops <see cref="SubRoot"/> instance.
     /// </summary>
-    internal class UpgradeManager : BuildableManager<AuxCyUpgradeConsoleMono>
+    internal class UpgradeManager : BuildableManager<AuxiliaryUpgradeConsole>
     {
         internal static bool TooLateToRegister { get; private set; }
 
@@ -28,31 +27,21 @@
             HandlerCreators.Add(createEvent, assemblyName);
         }
 
-        private class UpgradeSlot
-        {
-            internal Equipment Modules;
-            internal string Slot;
-
-            public UpgradeSlot(Equipment modules, string slot)
-            {
-                Modules = modules;
-                Slot = slot;
-            }
-        }
+        private UpgradeSlot[] engineRoomUpgradeSlots;
 
         private IEnumerable<UpgradeSlot> UpgradeSlots
         {
             get
             {
-                for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
-                    yield return new UpgradeSlot(engineRoomUpgradeConsole, SlotHelper.SlotNames[s]);
+                for (int s = 0; s < AuxiliaryUpgradeConsole.TotalSlots; s++)
+                    yield return engineRoomUpgradeSlots[s];
 
                 for (int a = 0; a < base.TrackedBuildables.Count; a++)
                 {
-                    AuxCyUpgradeConsoleMono aux = base.TrackedBuildables[a];
+                    UpgradeSlot[] auxSlots = base.TrackedBuildables[a].UpgradeSlotArray;
 
-                    for (int s = 0; s < SlotHelper.SlotNames.Length; s++)
-                        yield return new UpgradeSlot(aux.Modules, SlotHelper.SlotNames[s]);
+                    for (int s = 0; s < AuxiliaryUpgradeConsole.TotalSlots; s++)
+                        yield return auxSlots[s];
                 }
             }
         }
@@ -197,6 +186,16 @@
 
             AttachEquipmentEvents(ref engineRoomUpgradeConsole);
 
+            engineRoomUpgradeSlots = new UpgradeSlot[AuxiliaryUpgradeConsole.TotalSlots]
+            {
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module1"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module2"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module3"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module4"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module5"),
+                new UpgradeSlot(engineRoomUpgradeConsole, "Module6")
+            };
+
             initialized = true;
             TooLateToRegister = true;
         }
@@ -248,26 +247,23 @@
                 upgradeType.UpgradesCleared(); // UpgradeHandler event
             }
 
-            var foundUpgrades = new List<TechType>();
+            bool foundUpgrades = false;
 
             // Go through all slots and check what upgrades are available
             QuickLogger.Debug($"UpgradeManager checking upgrade slots");
             foreach (UpgradeSlot upgradeSlot in this.UpgradeSlots)
             {
-                Equipment modules = upgradeSlot.Modules;
-                string slot = upgradeSlot.Slot;
-
-                TechType techTypeInSlot = modules.GetTechTypeInSlot(slot);
+                TechType techTypeInSlot = upgradeSlot.GetTechTypeInSlot();
 
                 if (techTypeInSlot == TechType.None)
                     continue;
 
-                foundUpgrades.Add(techTypeInSlot);
+                foundUpgrades = true;
 
                 if (KnownsUpgradeModules.TryGetValue(techTypeInSlot, out UpgradeHandler handler))
                 {
                     QuickLogger.Debug($"UpgradeManager counting cyclops upgrade '{techTypeInSlot.AsString()}'");
-                    handler.UpgradeCounted(modules, slot); // UpgradeHandler event
+                    handler.UpgradeCounted(upgradeSlot); // UpgradeHandler event
                 }
                 else
                 {
@@ -279,13 +275,11 @@
                 upgradeHandlers[i].UpgradesFinished(); // UpgradeHandler event            
 
             // If any upgrades were found, play the sound to alert the player
-            if (foundUpgrades.Count > 0)
+            if (foundUpgrades)
             {
                 Cyclops.slotModSFX?.Play();
                 PdaOverlayManager.RemapItems();
             }
-
-            Cyclops.BroadcastMessage("RefreshUpgradeConsoleIcons", foundUpgrades.ToArray(), SendMessageOptions.RequireReceiver);
         }
 
         public override bool Initialize(SubRoot cyclops)
@@ -296,7 +290,7 @@
             return cyclops == Cyclops;
         }
 
-        protected override void ConnectWithManager(AuxCyUpgradeConsoleMono buildable)
+        protected override void ConnectWithManager(AuxiliaryUpgradeConsole buildable)
         {
             buildable.ConnectToCyclops(base.Cyclops, this);
         }

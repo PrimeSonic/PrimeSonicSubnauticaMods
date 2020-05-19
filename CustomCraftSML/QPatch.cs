@@ -1,13 +1,12 @@
 ﻿namespace CustomCraft2SML
 {
-    using Common;
-    using CustomCraft2SML.Serialization;
-    using QModManager.API.ModLoading;
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using Common;
+    using CustomCraft2SML.Serialization;
+    using QModManager.API.ModLoading;
 
     [QModCore]
     public static class QPatch
@@ -19,7 +18,7 @@
         {
             QuickLogger.Info($"Setting up logging. Version {version}");
 
-            CustomCraft2Config.CheckLogLevel();            
+            CustomCraft2Config.CheckLogLevel();
         }
 
         [QModPatch]
@@ -32,9 +31,10 @@
                 RestoreAssets();
                 HelpFilesWriter.HandleHelpFiles();
             }
-            catch (Exception ex)
+            catch
             {
-                QuickLogger.Error($"Critical error during file restoration", ex);
+                QuickLogger.Error($"Critical error during file restoration");
+                throw;
             }
         }
 
@@ -50,9 +50,10 @@
 
                 QuickLogger.Info("Finished patching.");
             }
-            catch (Exception ex)
+            catch
             {
-                QuickLogger.Error($"Critical error during file patching", ex);
+                QuickLogger.Error($"Critical error during file patching");
+                throw;
             }
         }
 
@@ -65,7 +66,7 @@
 
             foreach (string resource in resources)
             {
-                string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);                
+                string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);
                 string outFile = Path.Combine(FileLocations.AssetsFolder, file);
                 if (!File.Exists(outFile))
                 {

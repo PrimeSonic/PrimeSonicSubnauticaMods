@@ -1,15 +1,14 @@
 ﻿namespace CustomCraft2SML
 {
-    using Common;
-    using Common.EasyMarkup;
-    using CustomCraft2SML.Interfaces.InternalUse;
-    using CustomCraft2SML.Serialization;
-    using CustomCraft2SML.Serialization.Entries;
-    using CustomCraft2SML.Serialization.Lists;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using Common;
+    using CustomCraft2SML.Interfaces.InternalUse;
+    using CustomCraft2SML.Serialization.Entries;
+    using CustomCraft2SML.Serialization.Lists;
+    using EasyMarkup;
 
     internal static partial class HelpFilesWriter
     {
@@ -52,6 +51,8 @@
             GenerateOriginalBioFuels();
 
             GenerateOriginalCraftingPaths();
+
+            GenerateValidFoodModels();
         }
 
         private static void GenerateOriginalBioFuels()
@@ -152,14 +153,14 @@
 
             var models = (FoodModel[])Enum.GetValues(typeof(FoodModel));
 
-            var strings = new string[models.Length];
+            string[] strings = new string[models.Length];
 
             for (int i = 0; i < models.Length; i++)
             {
                 strings[i] = models[i].ToString();
             }
 
-            File.WriteAllLines(Path, strings,Encoding.UTF8);
+            File.WriteAllLines(Path, strings, Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -203,11 +204,11 @@
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            AddChangeLog(tutorialLines);
+            AddWorkingFileTypes(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             tutorialLines.Add(HorizontalLine);
-            AddWorkingFileTypes(tutorialLines);
+            AddChangeLog(tutorialLines);
             tutorialLines.Add(Environment.NewLine);
 
             return tutorialLines.ToArray();
@@ -262,6 +263,13 @@
             tutorialLines.Add(HorizontalLine);
             tutorialLines.Add("--- Change Log ---");
             tutorialLines.Add(Environment.NewLine);
+
+            tutorialLines.Add(HorizontalLine);
+            tutorialLines.Add(Environment.NewLine);
+            tutorialLines.Add("Version 1.9 makes changes to CustomFoods");
+            tutorialLines.Add("AllowOverfill has been removed from CustomFoods as it is no longer enabled by the game");
+            tutorialLines.Add("Added UseDrinkSound as a YES/NO entry so that the drinking sound effect is used over the eat sound effect");
+            tutorialLines.Add("Corrections made to the documentation of Custom tabs and BioFuel");
 
             tutorialLines.Add(HorizontalLine);
             tutorialLines.Add("Version 1.8 adds the long awaited custom foods");

@@ -1,15 +1,15 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
+    using System.Collections.Generic;
     using Common;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
+    using EasyMarkup;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
-    using System;
-    using System.Collections.Generic;
 
     internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     {
@@ -99,6 +99,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation { get; internal set; } = true;
+
         internal ModifiedRecipe(TechType origTechType) : this()
         {
             ITechData origRecipe = CraftData.Get(origTechType);
@@ -149,9 +151,9 @@
             return new ModifiedRecipe(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
-            return base.PassesPreValidation() & InnerItemsAreValid();
+            return base.PassesPreValidation(originFile) & InnerItemsAreValid();
         }
 
         protected bool InnerItemsAreValid()
@@ -233,7 +235,7 @@
 
             foreach (EmIngredient ingredient in this.Ingredients)
             {
-                if (ingredient.PassesPreValidation())
+                if (ingredient.PassesPreValidation(this.Origin))
                     this.SMLHelperIngredients.Add(ingredient.ToSMLHelperIngredient());
                 else
                     ingredientsValid = false;
@@ -306,10 +308,12 @@
             {
                 // Copy original ingredients
                 for (int i = 0; i < original.ingredientCount; i++)
+                {
                     replacement.Ingredients.Add(
                         new Ingredient(
                         original.GetIngredient(i).techType,
                         original.GetIngredient(i).amount));
+                }
             }
 
             // Linked Items

@@ -157,5 +157,6 @@
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\FCStudioHelpers\FCStudioHelpers.projitems" Label="Shared" />
+  <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,8 +1,8 @@
 {
   "Id": "CustomCraft2SML",
-  "DisplayName": "CustomCraft2SML",
+  "DisplayName": "Custom Craft 2",
   "Author": "PrimeSonic & contributors",
-  "Version": "1.8.3",
+  "Version": "1.9.2",
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
   "Game": "Subnautica",

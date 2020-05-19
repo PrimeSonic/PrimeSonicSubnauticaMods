@@ -1,9 +1,8 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using Common;
 
     internal class EmPropertyCollectionList<ListedType> : EmProperty, IEnumerable<ListedType>, IValueConfirmation
         where ListedType : EmPropertyCollection, new()

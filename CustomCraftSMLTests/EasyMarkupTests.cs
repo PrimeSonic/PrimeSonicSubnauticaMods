@@ -1,7 +1,7 @@
 ﻿namespace CustomCraftSMLTests
 {
     using System.Collections.Generic;
-    using Common.EasyMarkup;
+    using EasyMarkup;
     using NUnit.Framework;
 
     [TestFixture]
@@ -62,7 +62,7 @@
             public static string DefaultKey = "NestedComplexList";
 
 
-            public TestSimpleCollection() :this(DefaultKey, DefaultComplexStructure)
+            public TestSimpleCollection() : this(DefaultKey, DefaultComplexStructure)
             {
             }
 
@@ -70,7 +70,10 @@
             {
             }
 
-            internal override EmProperty Copy() => new TestSimpleCollection(this.Key, this.CopyDefinitions);
+            internal override EmProperty Copy()
+            {
+                return new TestSimpleCollection(this.Key, this.CopyDefinitions);
+            }
         }
 
         [Test]
@@ -88,6 +91,7 @@
         [TestCase("TestKey : \"Test,Value\"; ", "Test,Value")]
         [TestCase(" TestKey : \"Test;Value\" ;", "Test;Value")]
         [TestCase(" TestKey: \"Test:Value\";", "Test:Value")]
+        [TestCase(" TestKey: \"Test:  Value\";", "Test:  Value")]
         [TestCase(@"TestKey : Test\,Value; ", "Test,Value")]
         [TestCase(@" TestKey : Test\;Value ;", "Test;Value")]
         [TestCase(@" TestKey: Test\:Value;", "Test:Value")]
@@ -266,6 +270,7 @@
         [TestCase("Val,", @"Val\,")]
         [TestCase("Val;", @"Val\;")]
         [TestCase("Val#", @"Val\#")]
+        [TestCase("Val:01", "\"Val:01\"")]
         public void EmPropertyCollection_FromString_GoodString_GetExpected(string stValue, string escapedValue)
         {
             string testValue = "TestKey:" +
@@ -382,11 +387,16 @@
                 new EmProperty<int>("Nint", 10),
             });
 
+            const string text = "Val : has ; special";
+            const int number = 12;
+
+            var list = new List<float> { 1.0f, 2.1f, 3.2f };
+
             var propertiesOrig = new List<EmProperty>
             {
-                new EmProperty<string>("String", "Val"),
-                new EmProperty<int>("Int", 12),
-                new EmPropertyList<float>("FloatList", new List<float>{ 1.0f, 2.1f, 3.2f }),
+                new EmProperty<string>("String", text),
+                new EmProperty<int>("Int", number),
+                new EmPropertyList<float>("FloatList", list),
                 nestedComplexOrig
             };
 
@@ -415,13 +425,13 @@
 
             Assert.AreEqual(originalSerialized, serialized);
 
-            Assert.AreEqual("Val", ((EmProperty<string>)deserialized["String"]).Value);
-            Assert.AreEqual(12, ((EmProperty<int>)deserialized["Int"]).Value);
+            Assert.AreEqual(text, ((EmProperty<string>)deserialized["String"]).Value);
+            Assert.AreEqual(number, ((EmProperty<int>)deserialized["Int"]).Value);
 
-            Assert.AreEqual(3, ((EmPropertyList<float>)deserialized["FloatList"]).Count);
-            Assert.AreEqual(1.0f, ((EmPropertyList<float>)deserialized["FloatList"])[0]);
-            Assert.AreEqual(2.1f, ((EmPropertyList<float>)deserialized["FloatList"])[1]);
-            Assert.AreEqual(3.2f, ((EmPropertyList<float>)deserialized["FloatList"])[2]);
+            Assert.AreEqual(list.Count, ((EmPropertyList<float>)deserialized["FloatList"]).Count);
+            Assert.AreEqual(list[0], ((EmPropertyList<float>)deserialized["FloatList"])[0]);
+            Assert.AreEqual(list[1], ((EmPropertyList<float>)deserialized["FloatList"])[1]);
+            Assert.AreEqual(list[2], ((EmPropertyList<float>)deserialized["FloatList"])[2]);
 
             Assert.AreEqual("Nval", ((EmProperty<string>)((EmPropertyCollection)deserialized["Nested"])["Nstring"]).Value);
             Assert.AreEqual(10, ((EmProperty<int>)((EmPropertyCollection)deserialized["Nested"])["Nint"]).Value);
@@ -439,7 +449,7 @@
                                             "Nstring:Val3;," +
                                             "Nint:4;" +
                                         ");";
-            
+
 
             var compList = new EmPropertyCollectionList<TestSimpleCollection>("NestedComplexList");
 

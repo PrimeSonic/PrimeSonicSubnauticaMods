@@ -29,13 +29,14 @@
             QuickLogger.Debug("PdaOverlayManager started connecting upgrade console to PDA overlay");
             upgradeModules = modules;
         }
+
         internal static void FinishingConnectingToPda(uGUI_Equipment uGUI_Equipment)
         {
             equipmentUI = uGUI_Equipment;
 
             if (upgradeModules != null && equipmentUI != null && upgradeModules == uGUI_Equipment.equipment)
             {
-                QuickLogger.Debug("PdaOverlayManager continued connecting upgrade console to PDA overlay");                
+                QuickLogger.Debug("PdaOverlayManager continued connecting upgrade console to PDA overlay");
                 ConnectToInventory(uGUI_Equipment);
                 ActiveOverlays.UpdateText();
             }

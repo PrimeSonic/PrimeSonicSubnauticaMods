@@ -4,10 +4,11 @@
     using System.Collections.Generic;
     using System.IO;
     using Common;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization;
+    using CustomCraft2SML.Serialization.Lists;
+    using EasyMarkup;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
     using IOPath = System.IO.Path;
@@ -18,7 +19,7 @@
 
         internal static readonly string[] CustomCraftingTabTutorial = new[]
         {
-            "CustomCraftingTab: Add your own custom tabs into the fabricator crafting trees. ",
+           $"{CustomCraftingTabList.ListKey}: Add your own custom tabs into the fabricator crafting trees. ",
             "    An absolute must for organizing large numbers of crafts.",
            $"    {TabIdKey}: This uniquely identifies the tab.",
            $"        If you want to use a custom sprite for your tab, the file must be named exactly as the {TabIdKey}",
@@ -110,12 +111,14 @@
 
         public string FullPath => $"{this.ParentTabPath}{"/"}{this.TabID}";
 
+        public bool PassedSecondValidation { get; set; } = true;
+
         internal override EmProperty Copy()
         {
             return new CustomCraftingTab(this.Key, this.CopyDefinitions);
         }
 
-        public bool PassesPreValidation()
+        public bool PassesPreValidation(OriginFile originFile)
         {
             return this.CraftingPath != null & ValidFabricator();
         }

@@ -11,13 +11,13 @@
     internal class CyBioReactor : Buildable
     {
         private const string OverLimitKey = "CyBioOverLimit";
-        public static string OverLimitString()
-        {
-            return Language.main.Get(OverLimitKey);
-        }
+        public static string OverLimitString => Language.main.Get(OverLimitKey);
 
         private const string StorageLabelKey = "CyBioReactorLabel";
         public static string StorageLabel => Language.main.Get(StorageLabelKey);
+
+        private const string ChargingKey = "CyBioCharging";
+        public static string ChargingCyclopsText => Language.main.Get(ChargingKey);
 
 
         private GameObject _prefab;
@@ -46,6 +46,7 @@
             {
                 LanguageHandler.SetLanguageLine(StorageLabelKey, "Cyclops Bioreactor Materials");
                 LanguageHandler.SetLanguageLine(OverLimitKey, "Too many active Bioreactors.");
+                LanguageHandler.SetLanguageLine(ChargingKey, "Charging Sub");
             };
 
         }
@@ -64,7 +65,7 @@
 
                 if (mgr != null && mgr.TrackedBuildablesCount >= BioChargeHandler.MaxBioReactors)
                 {
-                    ErrorMessage.AddMessage(OverLimitString());
+                    ErrorMessage.AddMessage(OverLimitString);
                     return null;
                 }
             }
@@ -105,7 +106,7 @@
 
             prefab.AddComponent<PrefabIdentifier>().ClassId = this.ClassID;
 
-            CyBioReactorMono bioReactorComponent = prefab.AddComponent<CyBioReactorMono>(); // The component that makes the magic happen
+            prefab.AddComponent<CyBioReactorMono>(); // The component that makes the magic happen
 
             return prefab;
         }

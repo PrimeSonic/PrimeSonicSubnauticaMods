@@ -1,14 +1,14 @@
 ﻿namespace CustomCraft2SML.Serialization.Entries
 {
+    using System;
+    using System.Collections.Generic;
     using Common;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Interfaces.InternalUse;
     using CustomCraft2SML.Serialization.Components;
     using CustomCraft2SML.Serialization.Lists;
+    using EasyMarkup;
     using SMLHelper.V2.Handlers;
-    using System;
-    using System.Collections.Generic;
 
     internal class CustomSize : EmTechTyped, ICustomSize, ICustomCraft
     {
@@ -64,6 +64,8 @@
 
         public OriginFile Origin { get; set; }
 
+        public bool PassedSecondValidation => true;
+
         public CustomSize() : this("CustomSize", SizeProperties)
         {
         }
@@ -79,9 +81,9 @@
             return new CustomSize(this.Key, this.CopyDefinitions);
         }
 
-        public override bool PassesPreValidation()
+        public override bool PassesPreValidation(OriginFile originFile)
         {
-            return base.PassesPreValidation() & ValidateSizes();
+            return base.PassesPreValidation(originFile) & ValidateSizes();
         }
 
         private bool ValidateSizes()

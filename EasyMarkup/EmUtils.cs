@@ -1,8 +1,9 @@
-﻿namespace Common.EasyMarkup
+﻿namespace EasyMarkup
 {
     using System;
     using System.Globalization;
     using System.Threading;
+    using Common;
 
     internal static class EmUtils
     {

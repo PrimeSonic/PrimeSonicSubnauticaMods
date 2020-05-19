@@ -19,7 +19,7 @@
         private const float MaxNuclearChargeRate = 20.0f;
         private const float MinNuclearChargeRate = 0.12f;
         private const float CooldownRate = 5.0f;
-        private const float HeatModifier = 2.0f;
+        private const float HeatModifier = 2.05f;
         internal const float MaxHeatLoad = 300f;
 
         private readonly TechType nuclearModuleID;

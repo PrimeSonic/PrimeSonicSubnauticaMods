@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
     using Common;
-    using Common.EasyMarkup;
     using CustomCraft2SML.Interfaces;
     using CustomCraft2SML.Serialization;
+    using EasyMarkup;
     using SMLHelper.V2.Handlers;
 
     internal abstract class EmTechTyped : EmPropertyCollection, ITechTyped
@@ -39,14 +39,14 @@
 
         public TechType TechType { get; set; } = TechType.None;
 
-        public virtual bool PassesPreValidation()
+        public virtual bool PassesPreValidation(OriginFile originFile)
         {
             // Now we can safely do the prepass check in case we need to create a new modded TechType
             this.TechType = GetTechType(this.ItemID);
 
             if (this.TechType == TechType.None)
             {
-                QuickLogger.Warning($"Could not resolve {ItemIdKey} value of '{this.ItemID}' for {this.Key}. Discarded entry.");
+                QuickLogger.Warning($"Could not resolve {ItemIdKey} value of '{this.ItemID}' for '{this.Key}' from file '{originFile}'. Discarded entry.");
                 return false;
             }
 

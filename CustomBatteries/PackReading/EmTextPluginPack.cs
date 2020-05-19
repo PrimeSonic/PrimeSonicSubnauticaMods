@@ -1,8 +1,8 @@
 ﻿namespace CustomBatteries.PackReading
 {
     using System.Collections.Generic;
-    using Common.EasyMarkup;
     using CustomBatteries.API;
+    using EasyMarkup;
 
     internal class EmTextPluginPack : EmPropertyCollection, IParsedPluginPack
     {

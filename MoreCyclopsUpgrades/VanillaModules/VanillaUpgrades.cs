@@ -1,4 +1,4 @@
-﻿namespace MoreCyclopsUpgrades
+﻿namespace MoreCyclopsUpgrades.VanillaModules
 {
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
