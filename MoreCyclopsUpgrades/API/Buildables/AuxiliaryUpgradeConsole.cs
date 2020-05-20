@@ -118,7 +118,7 @@
             Player main = Player.main;
             global::PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(this.Modules, false);
-            pda.Open(PDATab.Inventory, null, new global::PDA.OnClose((closingPdaEvent) => PdaOverlayManager.DisconnectFromPda()), -1f);
+            _ = pda.Open(PDATab.Inventory, null, new global::PDA.OnClose((closingPdaEvent) => PdaOverlayManager.DisconnectFromPda()), -1f);
         }
     }
 }

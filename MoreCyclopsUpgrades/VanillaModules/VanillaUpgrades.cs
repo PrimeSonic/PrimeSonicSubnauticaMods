@@ -22,7 +22,7 @@
         }
 
         public UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops)
-        {
+        {            
             if (!originalUpgradesInUse.Contains(upgradeID))
                 originalUpgradesInUse.Add(upgradeID);
 
@@ -47,9 +47,9 @@
                     {
                         cyclops.gameObject.GetComponent<CrushDamage>().SetExtraCrushDepth(chm.HighestValue);
                     };
-                    chm.CreateTier(TechType.CyclopsHullModule1, 400f);
-                    chm.CreateTier(TechType.CyclopsHullModule2, 800f);
-                    chm.CreateTier(TechType.CyclopsHullModule3, 1200f);
+                    _ = chm.CreateTier(TechType.CyclopsHullModule1, 400f);
+                    _ = chm.CreateTier(TechType.CyclopsHullModule2, 800f);
+                    _ = chm.CreateTier(TechType.CyclopsHullModule3, 1200f);
 
                     return chm;
                 }

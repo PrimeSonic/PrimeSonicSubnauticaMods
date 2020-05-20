@@ -109,6 +109,7 @@
     <Compile Include="API\IMCULogger.cs" />
     <Compile Include="API\IMCURegistration.cs" />
     <Compile Include="API\IMCUSearch.cs" />
+    <Compile Include="API\IMCUUpgradeCollection.cs" />
     <Compile Include="API\PDA\IconOverlay.cs" />
     <Compile Include="API\PDA\IconOverlayCollection.cs" />
     <Compile Include="API\PDA\IconOverlayText.cs" />

@@ -144,6 +144,16 @@
 
         private readonly List<InventoryItem> trackedItems = new List<InventoryItem>();
 
+        /// <summary>
+        /// The collection of upgrade module <see cref="InventoryItem"/>s that are tracked by this upgrade handler.
+        /// </summary>
+        public IEnumerable<InventoryItem> TrackedItems => trackedItems;
+
+        /// <summary>
+        /// Gets the assembly name of the source mod that created this UpgradeHandler.
+        /// </summary>
+        public string SourceMod { get; internal set; }
+
         internal virtual void UpgradesCleared()
         {
             OnClearUpgrades?.Invoke();

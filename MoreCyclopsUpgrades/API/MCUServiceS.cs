@@ -5,6 +5,7 @@
     using System.IO;
     using System.Reflection;
     using Common;
+    using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.PDA;
@@ -114,6 +115,34 @@
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Gets an enumeration of all <see cref="UpgradeSlot"/>s in this Cyclops across all upgrade consoles.
+        /// </summary>
+        /// <param name="cyclops">The cyclops to search.</param>
+        /// <returns>An iterator of <see cref="IEnumerable{UpgradeSlot}"/> the covers all upgrade slots in the Cyclops.</returns>
+        public IEnumerable<UpgradeSlot> GetAllUpgradeSlots(SubRoot cyclops)
+        {
+            var mgr = CyclopsManager.GetManager(ref cyclops);
+
+            if (mgr?.Upgrade?.Initialized == true)
+            {
+                foreach (var slot in mgr.Upgrade.UpgradeSlots)
+                    yield return slot;
+            }
+        }
+
+        public IMCUUpgradeCollection GetAllUpgradeHandlers(SubRoot cyclops)
+        {
+            var mgr = CyclopsManager.GetManager(ref cyclops);
+
+            if (mgr?.Upgrade?.Initialized == true)
+            {
+                return mgr.Upgrade.KnownsUpgradeModules;
+            }
+
+            return null;
         }
 
         #endregion
@@ -405,6 +434,8 @@
         {
             QuickLogger.Debug(logmessage, showOnScreen, Assembly.GetCallingAssembly().GetName());
         }
+
+
 
         #endregion
     }

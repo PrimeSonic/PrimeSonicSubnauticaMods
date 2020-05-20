@@ -1,5 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.API
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.General;
 
     /// <summary>
@@ -53,5 +56,15 @@
         /// <param name="techType">The upgrade module's techtype ID.</param>
         /// <returns>The number of upgrade modules of this techtype ID currently in the Cyclops.</returns>
         int GetUpgradeCount(SubRoot cyclops, TechType techType);
+
+        /// <summary>
+        /// Gets an enumeration of all <see cref="UpgradeSlot"/>s in this Cyclops across all upgrade consoles.
+        /// </summary>
+        /// <param name="cyclops">The cyclops to search.</param>
+        /// <returns>An iterator of <see cref="IEnumerable{UpgradeSlot}"/> the covers all upgrade slots in the Cyclops.</returns>
+        IEnumerable<UpgradeSlot> GetAllUpgradeSlots(SubRoot cyclops);
+
+
+        IMCUUpgradeCollection GetAllUpgradeHandlers(SubRoot cyclops);
     }
 }
