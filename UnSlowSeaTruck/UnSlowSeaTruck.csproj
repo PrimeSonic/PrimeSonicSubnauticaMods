@@ -58,14 +58,14 @@
     <Reference Include="0Harmony-1.2.0.1">
       <HintPath>..\DependenciesUnity2018\0Harmony-1.2.0.1.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass_publicized">
-      <HintPath>..\DependenciesBelowZero\Assembly-CSharp-firstpass_publicized.dll</HintPath>
-    </Reference>
     <Reference Include="Assembly-CSharp_publicized">
       <HintPath>..\DependenciesBelowZero\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\DependenciesBelowZero\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="QModInstaller">
+      <HintPath>..\DependenciesBelowZero\QModInstaller.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

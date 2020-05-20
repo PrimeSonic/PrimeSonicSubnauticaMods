@@ -7,38 +7,45 @@
 
     internal class ConfigMgr
     {
-        private static SeaTruckConfig _config;
-        internal static SeaTruckConfig Config => _config ?? (_config = new SeaTruckConfig());
-
-        internal void LoadConfig()
+        internal static TConfig LoadConfig<TConfig>(string fileName = null) where TConfig : class, new()
         {
-            string modDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string configFilePath = Path.Combine(modDirectory, $"{nameof(SeaTruckConfig)}.json");
+            var assembly = Assembly.GetCallingAssembly();
+
+            string modDirectory = Path.GetDirectoryName(assembly.Location);
+            string configFilePath = Path.Combine(modDirectory, fileName ?? $"{typeof(TConfig).Name}.json");
 
             if (File.Exists(configFilePath))
             {
                 try
-                {
+                {                    
                     string serialilzedConfig = File.ReadAllText(configFilePath);
-                    SeaTruckConfig loadedConfig = JsonConvert.DeserializeObject<SeaTruckConfig>(serialilzedConfig);
-                    Console.WriteLine("[UnSlowSeaTruck] Existing config file loaded.");
-                    _config = loadedConfig;
+
+                    if (string.IsNullOrEmpty(serialilzedConfig))
+                    {
+                        Console.WriteLine($"[{assembly.GetName().Name}] Config file was empty. Overwriting with default values.");
+                        return WriteDefaultConfig<TConfig>(configFilePath);
+                    }
+
+                    TConfig loadedConfig = JsonConvert.DeserializeObject<TConfig>(serialilzedConfig);
+                    Console.WriteLine($"[{assembly.GetName().Name}] Existing config file loaded.");
+                    return loadedConfig;
                 }
                 catch
                 {
-                    Console.WriteLine("[UnSlowSeaTruck] Failed to load config. Fallback to default values.");
-                    _config = WriteDefaultConfig(configFilePath);
+                    Console.WriteLine($"[{assembly.GetName().Name}] Failed to read config file. Overwriting with default values.");
+                    return WriteDefaultConfig<TConfig>(configFilePath);
                 }
             }
             else // Write default file
             {
-                _config = WriteDefaultConfig(configFilePath);
+                Console.WriteLine($"[{assembly.GetName().Name}] No config file found. Writing default config file.");
+                return WriteDefaultConfig<TConfig>(configFilePath);
             }
         }
 
-        private SeaTruckConfig WriteDefaultConfig(string configFilePath)
+        private static TConfig WriteDefaultConfig<TConfig>(string configFilePath) where TConfig : class, new()
         {
-            var defaultConfig = new SeaTruckConfig();
+            var defaultConfig = new TConfig();
             string serialilzedConfig = JsonConvert.SerializeObject(defaultConfig, Formatting.Indented);
             File.WriteAllText(configFilePath, serialilzedConfig);
             return defaultConfig;
