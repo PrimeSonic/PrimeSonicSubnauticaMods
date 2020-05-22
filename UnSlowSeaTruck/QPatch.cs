@@ -32,12 +32,10 @@
     [HarmonyPatch(typeof(SeaTruckSegment), nameof(SeaTruckSegment.GetAttachedWeight))]
     internal static class SeaTruckSegment_GetAttachedWeight_Override
     {
-        [HarmonyPrefix]
-        internal static bool Prefix(ref float __result)
+        [HarmonyPostfix]
+        internal static void Postfix(ref float __result)
         {
-            __result = QPatch.Config.WeightOverride; // Override attached module weight
-
-            return false;
+            __result *= QPatch.Config.WeightOverride; // Override attached module weight
         }
     }
 
