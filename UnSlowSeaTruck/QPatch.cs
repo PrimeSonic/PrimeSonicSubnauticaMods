@@ -1,7 +1,9 @@
 ﻿namespace UnSlowSeaTruck
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
+    using System.Reflection.Emit;
     using Harmony;
     using QModManager.API.ModLoading;
 
@@ -22,6 +24,8 @@
 
             var harmony = HarmonyInstance.Create($"com.{assembly.GetName().Name}.psmod");
             harmony.PatchAll(assembly);
+
+            ConfigMgr.SaveConfig(Config);
         }
     }
 
@@ -51,8 +55,37 @@
             __instance.steeringMultiplier *= config.SteeringMultiplier; // better steering
             __instance.acceleration *= config.AccelerationMultiplier; // better acceleration
 
-            Console.WriteLine($"[UnSlowSeaTruck] Modified steeringMultiplier: {__instance.steeringMultiplier} (x{config.SteeringMultiplier})");
-            Console.WriteLine($"[UnSlowSeaTruck] Modified acceleration: {__instance.acceleration} (x{config.AccelerationMultiplier})");
+            Console.WriteLine($"[UnSlowSeaTruck] Modified steeringMultiplier: {__instance.steeringMultiplier} [Config:{config.SteeringMultiplier}] (More is faster)");
+            Console.WriteLine($"[UnSlowSeaTruck] Modified acceleration: {__instance.acceleration} [Config:{config.AccelerationMultiplier}] (More is faster)");
+        }
+    }
+
+    [HarmonyPatch(typeof(SeaTruckMotor), nameof(SeaTruckMotor.GetWeight))]
+    internal static class SeatruckMotor_GetWeight_Transpiler
+    {
+        [HarmonyTranspiler]
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var allCodes = new List<CodeInstruction>(instructions);
+            CodeInstruction instructionToAlter = null;
+
+            foreach (var item in allCodes)
+            {
+                if (item.opcode == OpCodes.Ldc_R4)
+                {
+                    // Just in case they ever change the values or change the order of the operation
+                    if ((instructionToAlter == null || (float)instructionToAlter.operand > (float)item.operand))
+                    {
+                        instructionToAlter = item;
+                    }
+                }
+            }
+
+            Console.WriteLine($"[UnSlowSeaTruck] Original HorsePowerModifier: {instructionToAlter.operand}");
+            instructionToAlter.operand = QPatch.Config.HorsePowerModifier;
+            Console.WriteLine($"[UnSlowSeaTruck] Modified HorsePowerModifier: {instructionToAlter.operand} (Less is faster)");
+
+            return allCodes;
         }
     }
 }

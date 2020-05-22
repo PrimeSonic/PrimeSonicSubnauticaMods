@@ -2,7 +2,7 @@
   "Id": "UnSlowSeaTruck",
   "DisplayName": "UnSlowSeaTruck",
   "Author": "PrimeSonic",
-  "Version": "1.1.1",
+  "Version": "1.2.0",
   "Enable": true,
   "Game": "BelowZero",
   "AssemblyName": "UnSlowSeaTruck.dll"

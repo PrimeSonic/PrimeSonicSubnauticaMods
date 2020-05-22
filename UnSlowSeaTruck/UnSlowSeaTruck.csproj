@@ -57,24 +57,30 @@
   <ItemGroup>
     <Reference Include="0Harmony-1.2.0.1">
       <HintPath>..\DependenciesUnity2018\0Harmony-1.2.0.1.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp_publicized">
       <HintPath>..\DependenciesBelowZero\Assembly-CSharp_publicized.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\DependenciesBelowZero\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="QModInstaller">
       <HintPath>..\DependenciesBelowZero\QModInstaller.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
       <HintPath>..\DependenciesUnity2018\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DependenciesBelowZero\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
