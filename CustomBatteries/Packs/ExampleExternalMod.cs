@@ -1,7 +1,7 @@
-﻿#if DEBUG
+﻿#if DEBUG // EXAMPLE MOD
 namespace CustomBatteries.Packs
 {
-    // EXAMPLE MOD - Using CustomBatteries from an external mod
+    // You will need to include these namespaces to use the API classes and interfaces
     using System.Collections.Generic;
     using CustomBatteries.API;
 
@@ -9,11 +9,11 @@ namespace CustomBatteries.Packs
     // It can be as simple as this example right here.
     internal class MyPlugin : IModPluginPack
     {
-        // ProTip: You can load your own sprites duringly from PNG files using SMLHelper's ImageUtils class.
+        // ProTip: You can load your own sprites directly from PNG files using SMLHelper's ImageUtils class.
         public Atlas.Sprite BatteryIcon => SpriteManager.Get(TechType.Battery);
-        public Atlas.Sprite PowerCellIcon => SpriteManager.Get(TechType.PowerCell);        
+        public Atlas.Sprite PowerCellIcon => SpriteManager.Get(TechType.PowerCell);
         public string PluginPackName => "Example Plugin";
-        public int BatteryCapacity => 120;
+        public int BatteryCapacity => 120; // Power cells are always twice the capacity of the battery
         public TechType UnlocksWith => TechType.Shocker;
         public string BatteryID => "AmpBattery";
         public string BatteryName => "Ampeel Battery";
@@ -39,7 +39,7 @@ namespace CustomBatteries.Packs
             CustomPack myPack = cbService.AddPluginPackFromMod(myPlugin);
 
             // It will return a CustomPack that has everything you might need to continue patching.
-            // The ModPrefabs CustomBattery and CustomPowerCell are already patched for you.
+            // The ModPrefabs CustomBattery and CustomPowerCell are already patched.
             TechType myBattery = myPack.CustomBattery.TechType;
             TechType myPowercell = myPack.CustomPowerCell.TechType;
 
