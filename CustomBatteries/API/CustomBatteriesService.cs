@@ -50,5 +50,22 @@
 
             return pack;
         }
+
+        /// <summary>
+        /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded items returned.
+        /// </summary>
+        /// <param name="modPluginPack">The mod plugin pack.</param>
+        /// <returns>
+        /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
+        /// </returns>
+        public CustomPack AddPluginPackFromModV2(IModPluginPackV2 modPluginPack)
+        {
+            QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}' from '{Assembly.GetCallingAssembly().GetName().Name}'");
+
+            var pack = new ModPluginPack(modPluginPack);
+            pack.Patch();
+
+            return pack;
+        }
     }
 }

@@ -45,11 +45,14 @@
         /// </value>
         public bool IsPatched => _customBattery.IsPatched && _customPowerCell.IsPatched;
 
-        internal CustomPack(IPluginPack pluginPack)
+        public bool UsingIonCellSkins { get; }
+
+        internal CustomPack(IPluginPack pluginPack, bool ionCellSkins)
         {
             this.OriginalPlugInPack = pluginPack;
+            this.UsingIonCellSkins = ionCellSkins;
 
-            _customBattery = new CustomBattery(pluginPack.BatteryID)
+            _customBattery = new CustomBattery(pluginPack.BatteryID, ionCellSkins)
             {
                 PluginPackName = pluginPack.PluginPackName,
                 FriendlyName = pluginPack.BatteryName,
@@ -60,7 +63,7 @@
                 Parts = pluginPack.BatteryParts
             };
 
-            _customPowerCell = new CustomPowerCell(pluginPack.PowerCellID, _customBattery)
+            _customPowerCell = new CustomPowerCell(pluginPack.PowerCellID, ionCellSkins, _customBattery)
             {
                 PluginPackName = pluginPack.PluginPackName,
                 FriendlyName = pluginPack.PowerCellName,

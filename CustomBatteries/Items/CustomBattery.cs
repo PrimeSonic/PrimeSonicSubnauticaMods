@@ -8,11 +8,11 @@
 
     internal class CustomBattery : CbCore
     {
-        public CustomBattery(string classId) : base(classId)
+        public CustomBattery(string classId, bool ionCellSkins) : base(classId, ionCellSkins)
         {
         }
 
-        protected override TechType PrefabType => TechType.Battery;
+        protected override TechType PrefabType => this.UsingIonCellSkins ? TechType.PrecursorIonBattery : TechType.Battery;
         protected override EquipmentType ChargerType => EquipmentType.BatteryCharger;
         protected override string[] StepsToFabricatorTab => CbCore.BatteryCraftPath;
 

@@ -59,13 +59,9 @@
 
                 QuickLogger.Info($"Reading plugin pack '{plugingFolderName}'");
 
-                string text = File.ReadAllText(pluginDataFilePath, Encoding.UTF8);
+                EmTextPluginPack plugin = LoadFromFile(pluginDataFilePath);
 
-                var plugin = new EmTextPluginPack();
-
-                bool readCorrectly = plugin.FromString(text);
-
-                if (!readCorrectly)
+                if (plugin == null)
                 {
                     QuickLogger.Warning($"Pack file in '{pluginFolder}' contained errors and could not be read");
                     continue;

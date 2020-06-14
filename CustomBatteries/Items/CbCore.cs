@@ -16,10 +16,10 @@
 
     internal abstract class CbCore : ModPrefab
     {
-        private const string BatteryCraftTab = "BatteryTab";
-        private const string PowCellCraftTab = "PowCellTab";
-        private const string ElecCraftTab = "Electronics";
-        private const string ResCraftTab = "Resources";
+        protected const string BatteryCraftTab = "BatteryTab";
+        protected const string PowCellCraftTab = "PowCellTab";
+        protected const string ElecCraftTab = "Electronics";
+        protected const string ResCraftTab = "Resources";
         protected static readonly string[] BatteryCraftPath = new[] { ResCraftTab, ElecCraftTab, BatteryCraftTab };
         protected static readonly string[] PowCellCraftPath = new[] { ResCraftTab, ElecCraftTab, PowCellCraftTab };
 
@@ -59,9 +59,12 @@
 
         public bool IsPatched { get; private set; }
 
-        protected CbCore(string classId)
+        public bool UsingIonCellSkins { get; }
+
+        protected CbCore(string classId, bool ionCellSkins)
             : base(classId, $"{classId}PreFab", TechType.None)
         {
+            this.UsingIonCellSkins = ionCellSkins;
         }
 
         public override GameObject GetGameObject()
