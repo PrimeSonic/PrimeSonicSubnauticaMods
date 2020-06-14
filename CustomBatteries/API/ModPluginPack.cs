@@ -2,21 +2,21 @@
 {
     internal class ModPluginPack : CustomPack
     {
-        private ModPluginPack(IModPluginPack pluginPack, bool ionCellSkin)
-            : base(pluginPack, ionCellSkin)
+        internal ModPluginPack(IModPluginPack pluginPack, bool ionCellSkin)
+            : base(pluginPack, ionCellSkin, false)
         {
             _customBattery.Sprite = pluginPack.BatteryIcon;
             _customPowerCell.Sprite = pluginPack.PowerCellIcon;
         }
 
-        internal ModPluginPack(IModPluginPack pluginPack)
-            : this(pluginPack, false)
+        internal ModPluginPack(IModPluginPackCustomSkin pluginPack)
+            : base(pluginPack, false, true)
         {
-        }
+            _customBattery.Sprite = pluginPack.BatteryIcon;
+            _customPowerCell.Sprite = pluginPack.PowerCellIcon;
 
-        internal ModPluginPack(IModPluginPackV2 pluginPack)
-            : this(pluginPack, pluginPack.UseIonCellSkins)
-        {
+            _customBattery.CustomSkin = pluginPack.BatterySkin;
+            _customPowerCell.CustomSkin = pluginPack.PowerCellSkin;
         }
     }
 }

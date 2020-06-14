@@ -45,7 +45,7 @@
         {
             QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}' from '{Assembly.GetCallingAssembly().GetName().Name}'");
 
-            var pack = new ModPluginPack(modPluginPack);
+            var pack = new ModPluginPack(modPluginPack, false);
             pack.Patch();
 
             return pack;
@@ -55,12 +55,23 @@
         /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded items returned.
         /// </summary>
         /// <param name="modPluginPack">The mod plugin pack.</param>
+        /// <param name="useIonCellSkins">If these batteries should use the ion cell textures.</param>
         /// <returns>
         /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
         /// </returns>
-        public CustomPack AddPluginPackFromModV2(IModPluginPackV2 modPluginPack)
+        public CustomPack AddPluginPackFromMod(IModPluginPack modPluginPack, bool useIonCellSkins)
         {
-            QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}' from '{Assembly.GetCallingAssembly().GetName().Name}'");
+            QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}', from '{Assembly.GetCallingAssembly().GetName().Name}'");
+
+            var pack = new ModPluginPack(modPluginPack, useIonCellSkins);
+            pack.Patch();
+
+            return pack;
+        }
+
+        public CustomPack AddSkinedPluginPackFromMod(IModPluginPackCustomSkin modPluginPack)
+        {
+            QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}', from '{Assembly.GetCallingAssembly().GetName().Name}'");
 
             var pack = new ModPluginPack(modPluginPack);
             pack.Patch();

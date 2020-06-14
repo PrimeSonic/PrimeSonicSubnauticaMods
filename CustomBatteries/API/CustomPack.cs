@@ -45,12 +45,23 @@
         /// </value>
         public bool IsPatched => _customBattery.IsPatched && _customPowerCell.IsPatched;
 
-        public bool UsingIonCellSkins { get; }
+        /// <summary>
+        /// Gets a value indicating whether the ion cell textures are being used.
+        /// </summary>
+        /// <value><c>True</c> if using the ion battery and ion power cell skins; Otherwise <c>false</c>.</value>
+        public bool UsingIonCellSkins { get; protected set; }
 
-        internal CustomPack(IPluginPack pluginPack, bool ionCellSkins)
+        /// <summary>
+        /// Gets a value indicating whether custom textures are being used.
+        /// </summary>
+        /// <value><c>True</c> if using mod provided custom textures; Otherwise <c>false</c>.</value>
+        public bool UsingCustomTextures { get; protected set; }
+
+        internal CustomPack(IPluginPack pluginPack, bool ionCellSkins, bool customSkin)
         {
             this.OriginalPlugInPack = pluginPack;
             this.UsingIonCellSkins = ionCellSkins;
+            this.UsingCustomTextures = customSkin;
 
             _customBattery = new CustomBattery(pluginPack.BatteryID, ionCellSkins)
             {

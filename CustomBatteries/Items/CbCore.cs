@@ -61,6 +61,8 @@
 
         public bool UsingIonCellSkins { get; }
 
+        public Texture2D CustomSkin { get; set; }
+
         protected CbCore(string classId, bool ionCellSkins)
             : base(classId, $"{classId}PreFab", TechType.None)
         {
@@ -75,6 +77,12 @@
             Battery battery = obj.GetComponent<Battery>();
             battery._capacity = this.PowerCapacity;
             battery.name = $"{this.ClassID}BatteryCell";
+
+            if (this.CustomSkin != null)
+            {
+                SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponentInChildren<SkinnedMeshRenderer>();
+                skinnedMeshRenderer.material.mainTexture = this.CustomSkin;
+            }
 
             return obj;
         }
