@@ -44,7 +44,11 @@
         public override GameObject GetGameObject()
         {
             // We'll use this for the actual model
+#if BELOWZERO
+            var consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Alterra/Base/submarine_engine_console_01_wide");
+#else
             var consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide"));
+#endif
             GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
             GameObject consoleModel = consoleWide.FindChild("console");
 
@@ -67,6 +71,10 @@
             consoleModel.transform.rotation *= Quaternion.Euler(180f, 180f, 180f);
 
             // Update sky applier
+#if BELOWZERO
+            if (prefab.GetComponent<BaseModuleLighting>() == null)
+                prefab.AddComponent<BaseModuleLighting>();
+#endif
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
             skyApplier.renderers = consoleModel.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
@@ -76,6 +84,9 @@
             constructible.allowedInBase = false;
             constructible.allowedInSub = true; // Only allowed in Cyclops
             constructible.allowedOutside = false;
+#if BELOWZERO
+            constructible.allowedUnderwater = false;
+#endif
             constructible.allowedOnCeiling = false;
             constructible.allowedOnGround = true; // Only on ground
             constructible.allowedOnWall = false;
