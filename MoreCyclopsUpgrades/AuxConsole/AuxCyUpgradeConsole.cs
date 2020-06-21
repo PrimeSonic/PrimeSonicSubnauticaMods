@@ -67,6 +67,9 @@
             consoleModel.transform.rotation *= Quaternion.Euler(180f, 180f, 180f);
 
             // Update sky applier
+#if BELOWZERO
+            this.GameObject.AddComponent<BaseModuleLighting>();
+#endif
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
             skyApplier.renderers = consoleModel.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
@@ -76,6 +79,9 @@
             constructible.allowedInBase = false;
             constructible.allowedInSub = true; // Only allowed in Cyclops
             constructible.allowedOutside = false;
+#if BELOWZERO
+            constructible.allowedUnderwater = false;
+#endif
             constructible.allowedOnCeiling = false;
             constructible.allowedOnGround = true; // Only on ground
             constructible.allowedOnWall = false;
