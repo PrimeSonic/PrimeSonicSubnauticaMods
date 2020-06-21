@@ -39,15 +39,15 @@
       <HintPath>..\DependenciesSubnautica\0Harmony-1.2.0.1.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesSubnautica\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>G:\C# Applications\SubNauticaMods\Master\FCStudios_SubnauticaMods\Dependancies\Subnautica\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>G:\C# Applications\SubNauticaMods\Master\FCStudios_SubnauticaMods\Dependancies\Subnautica\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DependenciesSubnautica\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>G:\C# Applications\SubNauticaMods\Master\FCStudios_SubnauticaMods\Dependancies\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -92,6 +92,8 @@
     <Compile Include="Buildable\CubeGeneratorAuxPatcher.cs" />
     <Compile Include="Buildable\CubeGeneratorModelPrefab.cs" />
     <Compile Include="Buildable\CubeGeneratorPatcher.cs" />
+    <Compile Include="Configuration\ModConfiguration.cs" />
+    <Compile Include="Configuration\MenuConfiguration.cs" />
     <Compile Include="Craftables\AlienElectronicsCasePrefab.cs" />
     <Compile Include="Craftables\AlienEletronicsCase.cs" />
     <Compile Include="Craftables\AlienIngot.cs" />

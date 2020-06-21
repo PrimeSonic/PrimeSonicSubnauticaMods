@@ -1,4 +1,5 @@
 using IonCubeGenerator.Configuration;
+using IonCubeGenerator.Enums;
 
 namespace IonCubeGenerator.Mono
 {
@@ -69,14 +70,7 @@ namespace IonCubeGenerator.Mono
         {
             if (!_mono.IsConstructed || _audioHandler == null) return;
 
-            if (!ModConfiguration.Singleton.AllowSFX)
-            {
-                _audioHandler.StopFilterMachineAudio();
-                return;
-            }
-
-
-            if (_mono.GenerationPercent > 0.01 && _mono.GenerationPercent < 1)
+            if (_mono.GenerationPercent > 0.01 && _mono.GenerationPercent < 1 && _mono.GetCurrentSpeedMode() != SpeedModes.Off && ModConfiguration.Singleton.AllowSFX)
             {
                 _audioHandler.PlayFilterMachineAudio();
             }
