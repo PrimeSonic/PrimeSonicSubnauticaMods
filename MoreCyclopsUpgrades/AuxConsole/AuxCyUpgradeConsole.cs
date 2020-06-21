@@ -44,7 +44,11 @@
         public override GameObject GetGameObject()
         {
             // We'll use this for the actual model
+#if BELOWZERO
+            var consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Alterra/Base/submarine_engine_console_01_wide");
+#else
             var consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide"));
+#endif
             GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
             GameObject consoleModel = consoleWide.FindChild("console");
 
@@ -68,7 +72,8 @@
 
             // Update sky applier
 #if BELOWZERO
-            prefab.AddComponent<BaseModuleLighting>();
+            if (prefab.GetComponent<BaseModuleLighting>() == null)
+                prefab.AddComponent<BaseModuleLighting>();
 #endif
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
             skyApplier.renderers = consoleModel.GetComponentsInChildren<MeshRenderer>();
