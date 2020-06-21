@@ -68,7 +68,7 @@
 
             // Update sky applier
 #if BELOWZERO
-            this.GameObject.AddComponent<BaseModuleLighting>();
+            prefab.AddComponent<BaseModuleLighting>();
 #endif
             SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
             skyApplier.renderers = consoleModel.GetComponentsInChildren<MeshRenderer>();
