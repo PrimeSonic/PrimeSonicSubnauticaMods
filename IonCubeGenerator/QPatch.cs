@@ -1,4 +1,6 @@
-﻿namespace IonCubeGenerator
+﻿using IonCubeGenerator.Configuration;
+
+namespace IonCubeGenerator
 {
     using Common;
     using Harmony;
@@ -19,6 +21,7 @@
 
             try
             {
+                ModConfiguration.Initialize();
 
                 CubeGeneratorBuildable.PatchSMLHelper();
 

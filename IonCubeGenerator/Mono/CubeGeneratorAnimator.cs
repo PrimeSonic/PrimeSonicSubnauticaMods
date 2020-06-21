@@ -1,3 +1,5 @@
+using IonCubeGenerator.Configuration;
+
 namespace IonCubeGenerator.Mono
 {
     using Common;
@@ -29,7 +31,7 @@ namespace IonCubeGenerator.Mono
             this.Animator = this.transform.GetComponent<Animator>();
 
             _audioHandler = new CubeGeneratorAudioHandler(gameObject.GetComponent<FMOD_CustomLoopingEmitter>());
-
+            
             if (this.Animator == null)
             {
                 QuickLogger.Error("Animator component not found on the GameObject.");
@@ -65,7 +67,14 @@ namespace IonCubeGenerator.Mono
 
         private void UpdateAudioState()
         {
-            if (!_mono.IsConstructed) return;
+            if (!_mono.IsConstructed || _audioHandler == null) return;
+
+            if (!ModConfiguration.Singleton.AllowSFX)
+            {
+                _audioHandler.StopFilterMachineAudio();
+                return;
+            }
+
 
             if (_mono.GenerationPercent > 0.01 && _mono.GenerationPercent < 1)
             {
