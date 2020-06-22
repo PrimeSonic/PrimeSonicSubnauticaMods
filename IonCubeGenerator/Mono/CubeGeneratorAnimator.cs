@@ -2,6 +2,8 @@ namespace IonCubeGenerator.Mono
 {
     using Common;
     using UnityEngine;
+    using IonCubeGenerator.Configuration;
+    using IonCubeGenerator.Enums;
 
     internal class CubeGeneratorAnimator : MonoBehaviour
     {
@@ -24,6 +26,7 @@ namespace IonCubeGenerator.Mono
         #endregion
 
         #region Unity Methods
+
         private void Start()
         {
             this.Animator = this.transform.GetComponent<Animator>();
@@ -65,9 +68,13 @@ namespace IonCubeGenerator.Mono
 
         private void UpdateAudioState()
         {
-            if (!_mono.IsConstructed) return;
+            if (!_mono.IsConstructed || _audioHandler == null)
+                return;
 
-            if (_mono.GenerationPercent > 0.01 && _mono.GenerationPercent < 1)
+            if (_mono.GenerationPercent > 0.01 &&
+                _mono.GenerationPercent < 1 &&
+                _mono.CurrentSpeedMode != SpeedModes.Off &&
+                ModConfiguration.Singleton.AllowSFX)
             {
                 _audioHandler.PlayFilterMachineAudio();
             }
@@ -105,9 +112,11 @@ namespace IonCubeGenerator.Mono
         {
             this.Animator.Play("Main_BK", MAIN_ANIMATION_LAYER, percent);
         }
+
         #endregion
 
         #region Internal Methods
+
         /// <summary>
         /// Sets the an animator float to a certain value (For use with setting the page on the screen)
         /// </summary>
@@ -117,6 +126,7 @@ namespace IonCubeGenerator.Mono
         {
             this.Animator.SetFloat(stateHash, value);
         }
+
         #endregion
     }
 }
