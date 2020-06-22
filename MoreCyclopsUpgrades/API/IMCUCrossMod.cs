@@ -64,7 +64,11 @@
         /// <returns>An iterator of <see cref="IEnumerable{UpgradeSlot}"/> the covers all upgrade slots in the Cyclops.</returns>
         IEnumerable<UpgradeSlot> GetAllUpgradeSlots(SubRoot cyclops);
 
-
+        /// <summary>
+        /// Returns a collection of all upgrade handlers for the Cyclops sub.
+        /// </summary>
+        /// <param name="cyclops">The cyclops sub being accessed.</param>
+        /// <returns>A read-only collection of all upgrade handlers managing this sub.</returns>
         IMCUUpgradeCollection GetAllUpgradeHandlers(SubRoot cyclops);
     }
 }

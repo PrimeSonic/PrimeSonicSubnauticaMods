@@ -133,6 +133,11 @@
             }
         }
 
+        /// <summary>
+        /// Returns a collection of all upgrade handlers for the Cyclops sub.
+        /// </summary>
+        /// <param name="cyclops">The cyclops sub being accessed.</param>
+        /// <returns>A read-only collection of all upgrade handlers managing this sub.</returns>
         public IMCUUpgradeCollection GetAllUpgradeHandlers(SubRoot cyclops)
         {
             var mgr = CyclopsManager.GetManager(ref cyclops);
