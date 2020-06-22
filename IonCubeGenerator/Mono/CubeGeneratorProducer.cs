@@ -256,11 +256,6 @@
             TryStartingNextCube();
         }
 
-        internal SpeedModes GetCurrentSpeedMode()
-        {
-            return _currentMode;
-        }
-
         #region ProtoTree methods
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)

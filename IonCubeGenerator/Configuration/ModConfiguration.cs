@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Common;
-using Oculus.Newtonsoft.Json;
-using SMLHelper.V2.Handlers;
-
-namespace IonCubeGenerator.Configuration
+﻿namespace IonCubeGenerator.Configuration
 {
+    using System;
+    using System.IO;
+    using Common;
+    using Oculus.Newtonsoft.Json;
+    using SMLHelper.V2.Handlers;
+
     internal class ModConfiguration
     {
         private static bool _isInitialized;
@@ -16,7 +13,7 @@ namespace IonCubeGenerator.Configuration
         /// <summary>
         /// A singleton of the class <see cref="ModConfiguration"/>
         /// </summary>
-        internal static ModConfiguration Singleton = new ModConfiguration();
+        internal static readonly ModConfiguration Singleton = new ModConfiguration();
         
         /// <summary>
         /// The configuration file path.
