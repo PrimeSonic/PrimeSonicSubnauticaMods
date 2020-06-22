@@ -2,10 +2,8 @@
   "Id": "IonCubeGenerator",
   "DisplayName": "IonCubeGenerator",
   "Author": "PrimeSonic|FCStudios",
-  "Version": "1.1.1",
-  "Requires": [ "SMLHelper" ],
+  "Version": "1.2.0",
   "Enable": true,
   "AssemblyName": "IonCubeGenerator.dll",
-  "Dependencies": [ "SMLHelper" ],
-  "EntryMethod": "IonCubeGenerator.QPatch.Patch"
+  "Dependencies": [ "SMLHelper" ]
 }
