@@ -33,6 +33,10 @@
 
         public override EquipmentType EquipmentType => EquipmentType.CyclopsModule;
 
+        public override TechGroup GroupForPDA =>  TechGroup.Cyclops;
+
+        public override TechCategory CategoryForPDA => TechCategory.CyclopsUpgrades;
+
         public override CraftTree.Type FabricatorType => CraftTree.Type.CyclopsFabricator;
 
         public override string[] StepsToFabricatorTab => MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
