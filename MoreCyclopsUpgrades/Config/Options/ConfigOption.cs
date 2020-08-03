@@ -1,8 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Config.Options
 {
-    using System;
     using System.Reflection;
-    using EasyMarkup;
 
     internal abstract class ConfigOption
     {

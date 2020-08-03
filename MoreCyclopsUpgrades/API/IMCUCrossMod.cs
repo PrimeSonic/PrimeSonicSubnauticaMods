@@ -1,6 +1,5 @@
 ﻿namespace MoreCyclopsUpgrades.API
 {
-    using System.Collections;
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.General;

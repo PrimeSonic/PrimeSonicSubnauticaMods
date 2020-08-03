@@ -36,6 +36,7 @@
             State = true,
             OptionToggled = (bool value, ModConfig config) => { config.AuxConsoleEnabled = value; },
         };
+
         private readonly ChoiceOption challengeMode = new ChoiceOption(nameof(ChallengeMode), "Challenge (Engine Penalty)")
         {
             Choices = new string[3]
@@ -47,6 +48,7 @@
             Index = (int)ChallengeMode.Easy,
             ChoiceChanged = (int index, ModConfig config) => { config.ChallengeMode = (ChallengeMode)index; }
         };
+
         private readonly SliderOption deficitThreshHold = new SliderOption(nameof(DeficitThreshold), "Conserve chargers when over %")
         {
             MinValue = 10f,
@@ -54,7 +56,8 @@
             Value = 95f,
             ValueChanged = (float value, ModConfig config) => { config.DeficitThreshold = value; }
         };
-        private readonly ChoiceOption showIcons = new ChoiceOption(nameof(ShowChargerIcons), "Charging Status Icons")
+
+        private readonly ChoiceOption showIcons = new ChoiceOption(nameof(ChargerIcons), "Charging Status Icons")
         {
             Choices = new string[4]
             {
@@ -66,12 +69,14 @@
             Index = (int)ShowChargerIcons.Everywhere,
             ChoiceChanged = (int index, ModConfig config) => { config.ChargerIcons = (ShowChargerIcons)index; }
         };
+
         private readonly ToggleOption debugLogs = new ToggleOption(nameof(EnableDebugLogs), "Enable Debug Logs")
         {
             State = false,
             OptionToggled = (bool value, ModConfig config) => { config.EnableDebugLogs = value; }
         };
-        private readonly ChoiceOption energyDisplay = new ChoiceOption(nameof(HelmEnergyDisplay), "Helm HUD Energy Display")
+
+        private readonly ChoiceOption energyDisplay = new ChoiceOption(nameof(EnergyDisplay), "Helm HUD Energy Display")
         {
             Choices = new string[4]
             {
@@ -83,6 +88,7 @@
             Index = (int)HelmEnergyDisplay.PowerCellPercentage,
             ChoiceChanged = (int index, ModConfig config) => { config.EnergyDisplay = (HelmEnergyDisplay)index; }
         };
+
         private readonly ToggleOption showThermometer = new ToggleOption(nameof(ShowThermometer), "Show Thermometer")
         {
             State = true,
@@ -218,7 +224,7 @@
                 QuickLogger.Info($"Default config save data file created");
             }
 
-            
+
             foreach (var option in configOptions)
             {
                 // Load values from Save Data
@@ -226,7 +232,7 @@
 
                 // Update current settings to match save data
                 option.UpdateProperty(this);
-            }            
+            }
 
             // Link event handlers to accept changes from in-game menu
             menuOptions.RegisterEvents(this);
