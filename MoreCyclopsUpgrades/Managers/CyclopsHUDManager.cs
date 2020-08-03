@@ -308,19 +308,19 @@
 
             if (temperatureValue < white)
                 return Color.white;
-            
+
             if (temperatureValue < blue)
                 return Color.Lerp(Color.white, Color.blue, (temperatureValue - white) / blue_white);
-            
+
             if (temperatureValue < green)
                 return Color.Lerp(Color.blue, Color.green, (temperatureValue - blue) / green_blue);
-            
+
             if (temperatureValue < yellow)
                 return Color.Lerp(Color.green, Color.yellow, (temperatureValue - green) / yellow_green);
-            
+
             if (temperatureValue < red)
                 return Color.Lerp(Color.yellow, Color.red, (temperatureValue - yellow) / red_yellow);
-            
+
             return Color.red;
         }
     }

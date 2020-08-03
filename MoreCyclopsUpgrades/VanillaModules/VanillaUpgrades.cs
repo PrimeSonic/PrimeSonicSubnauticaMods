@@ -22,7 +22,7 @@
         }
 
         public UpgradeHandler CreateUpgradeHandler(TechType upgradeID, SubRoot cyclops)
-        {            
+        {
             if (!originalUpgradesInUse.Contains(upgradeID))
                 originalUpgradesInUse.Add(upgradeID);
 
