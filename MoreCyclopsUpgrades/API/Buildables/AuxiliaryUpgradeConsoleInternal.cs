@@ -250,7 +250,7 @@
                 {
                     string slot = UpgradeSlotArray[s].slotName;
                     // These slots need to be added before we can add items to them
-                    _ = this.Modules.AddSlot(slot);
+                    this.Modules.AddSlot(slot);
 
                     EmModuleSaveData savedModule = saveData.GetModuleInSlot(slot);
 
@@ -274,7 +274,7 @@
                     if (savedModule.RemainingCharge > 0f) // Modules without batteries are stored with a -1 value for charge
                         spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;
 
-                    _ = this.Modules.AddItem(slot, spanwedItem, true);
+                    this.Modules.AddItem(slot, spanwedItem, true);
                     OnSlotEquipped(slot, spanwedItem);
                 }
             }

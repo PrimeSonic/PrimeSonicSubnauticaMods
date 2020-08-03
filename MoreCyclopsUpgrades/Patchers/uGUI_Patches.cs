@@ -1,6 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
-    using Harmony;
+    using HarmonyLib;
     using MoreCyclopsUpgrades.Managers;
 
     [HarmonyPatch(typeof(uGUI_InventoryTab))]

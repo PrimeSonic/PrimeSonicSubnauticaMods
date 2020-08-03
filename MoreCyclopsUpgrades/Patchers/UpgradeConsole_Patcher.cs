@@ -1,7 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.Patchers
 {
     using Common;
-    using Harmony;
+    using HarmonyLib;
     using MoreCyclopsUpgrades.AuxConsole;
     using MoreCyclopsUpgrades.Managers;
     using UnityEngine;
