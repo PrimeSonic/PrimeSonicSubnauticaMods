@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Common;
+    using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Buildables;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.VanillaModules;
@@ -11,6 +12,10 @@
     /// </summary>
     internal class UpgradeManager : BuildableManager<AuxiliaryUpgradeConsole>
     {
+        internal class UpgradeCollection : Dictionary<TechType, UpgradeHandler>, IMCUUpgradeCollection
+        {
+        }
+
         internal static bool TooLateToRegister { get; private set; }
 
         private static readonly IDictionary<CreateUpgradeHandler, string> HandlerCreators = new Dictionary<CreateUpgradeHandler, string>();
@@ -29,7 +34,7 @@
 
         private UpgradeSlot[] engineRoomUpgradeSlots;
 
-        private IEnumerable<UpgradeSlot> UpgradeSlots
+        internal IEnumerable<UpgradeSlot> UpgradeSlots
         {
             get
             {
@@ -46,7 +51,8 @@
             }
         }
 
-        private bool initialized = false;
+        public bool Initialized { get; private set; } = false;
+
         private Equipment engineRoomUpgradeConsole;
 
         private readonly IVanillaUpgrades vanillaUpgrades = new VanillaUpgrades();
@@ -56,18 +62,18 @@
         {
             get
             {
-                if (!initialized)
+                if (!Initialized)
                     InitializeUpgradeHandlers();
 
                 return vanillaUpgrades;
             }
         }
 
-        internal readonly Dictionary<TechType, UpgradeHandler> KnownsUpgradeModules = new Dictionary<TechType, UpgradeHandler>();
+        internal readonly UpgradeCollection KnownsUpgradeModules = new UpgradeCollection();
 
         internal T GetUpgradeHandler<T>(TechType upgradeId) where T : UpgradeHandler
         {
-            if (!initialized)
+            if (!Initialized)
                 InitializeUpgradeHandlers();
 
             if (KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
@@ -83,7 +89,7 @@
 
         internal UpgradeHandler GetUpgradeHandler(TechType upgradeId)
         {
-            if (!initialized)
+            if (!Initialized)
                 InitializeUpgradeHandlers();
 
             if (KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
@@ -99,7 +105,7 @@
 
         internal T GetGroupHandler<T>(TechType upgradeId, params TechType[] additionalIds) where T : UpgradeHandler, IGroupHandler
         {
-            if (!initialized)
+            if (!Initialized)
                 InitializeUpgradeHandlers();
 
             if (!KnownsUpgradeModules.TryGetValue(upgradeId, out UpgradeHandler upgradeHandler))
@@ -133,7 +139,7 @@
 
         private void InitializeUpgradeHandlers()
         {
-            if (initialized)
+            if (Initialized)
                 return;
 
             QuickLogger.Debug($"UpgradeManager adding new UpgradeHandlers from external mods");
@@ -151,6 +157,7 @@
                 else if (!KnownsUpgradeModules.ContainsKey(upgrade.TechType))
                 {
                     upgrade.RegisterSelf(KnownsUpgradeModules);
+                    upgrade.SourceMod = assemblyName;
                 }
                 else
                 {
@@ -163,6 +170,7 @@
 
             QuickLogger.Debug($"UpgradeManager adding default UpgradeHandlers for unmanaged vanilla upgrades");
 
+            string mcuAssemblyName = QuickLogger.GetAssemblyName();
             for (int i = 0; i < vanillaUpgrades.OriginalUpgradeIDs.Count; i++)
             {
                 TechType upgradeID = vanillaUpgrades.OriginalUpgradeIDs[i];
@@ -170,6 +178,7 @@
                 {
                     UpgradeHandler vanillaUpgrade = vanillaUpgrades.CreateUpgradeHandler(upgradeID, Cyclops);
                     vanillaUpgrade.RegisterSelf(KnownsUpgradeModules);
+                    vanillaUpgrade.SourceMod = mcuAssemblyName;
                 }
             }
 
@@ -196,7 +205,7 @@
                 new UpgradeSlot(engineRoomUpgradeConsole, "Module6")
             };
 
-            initialized = true;
+            Initialized = true;
             TooLateToRegister = true;
         }
 
@@ -231,7 +240,7 @@
 
         public void HandleUpgrades()
         {
-            if (!initialized)
+            if (!Initialized)
                 InitializeUpgradeHandlers();
 
             QuickLogger.Debug($"UpgradeManager clearing cyclops upgrades");
@@ -284,7 +293,7 @@
 
         public override bool Initialize(SubRoot cyclops)
         {
-            if (!initialized)
+            if (!Initialized)
                 InitializeUpgradeHandlers();
 
             return cyclops == Cyclops;

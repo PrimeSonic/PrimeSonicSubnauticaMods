@@ -941,290 +941,47 @@
             <param name="techType">The item ID.</param>
             <param name="amount">The number of instances of this item required for the recipe.</param>
         </member>
-        <member name="T:SMLHelper.V2.Json.Converters.FloatConverter">
+        <member name="T:SMLHelper.V2.Handlers.PingHandler">
             <summary>
-            A <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/> for rounding floats or doubles to a given number of decimal places,
-            trimming trailing 0s.
+            A handler related to PingTypes
             </summary>
         </member>
-        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.Int32,System.MidpointRounding)">
+        <member name="P:SMLHelper.V2.Handlers.PingHandler.Main">
             <summary>
-            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
-            </summary>
-            <param name="decimalPlaces">The number of decimal places to round to, where -1 disables rounding.</param>
-            <param name="mode">The rounding mode to use when rounding.</param>
-            <seealso cref="T:System.MidpointRounding"/>
-        </member>
-        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.Int32)">
-            <summary>
-            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
-            </summary>
-            <param name="decimalPlaces">The number of decimal places to round to, where -1 disables rounding.</param>
-        </member>
-        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.MidpointRounding)">
-            <summary>
-            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
-            </summary>
-            <param name="mode">The rounding mode to use when rounding.</param>
-        </member>
-        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor">
-            <summary>
-            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            Main entry point for all calls to this handler.
             </summary>
         </member>
-        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.WriteJson(Oculus.Newtonsoft.Json.JsonWriter,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+        <member name="M:SMLHelper.V2.Handlers.PingHandler.RegisterNewPingType(System.String,Atlas.Sprite)">
             <summary>
-            The method for writing the <paramref name="value"/> data to the <paramref name="writer"/>.
+            Registers a ping type for use when creating a beacon
             </summary>
-            <param name="writer"></param>
-            <param name="value"></param>
-            <param name="serializer"></param>
+            <param name="pingName">The name of the new ping type</param>
+            <param name="sprite">The sprite that is associated with the ping</param>
+            <returns>The newly registered PingType</returns>
         </member>
-        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.ReadJson(Oculus.Newtonsoft.Json.JsonReader,System.Type,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+        <member name="M:SMLHelper.V2.Handlers.PingHandler.TryGetModdedPingType(System.String,PingType@)">
             <summary>
-            The method for reading the <see cref="T:System.Single"/> or <see cref="T:System.Double"/> data from the <paramref name="reader"/>.
+            Safely looks for a modded ping type in the SMLHelper PingTypeCache and outputs its <see cref="T:PingType"/> value when found.
             </summary>
-            <param name="reader"></param>
-            <param name="objectType"></param>
-            <param name="existingValue"></param>
-            <param name="serializer"></param>
-            <returns></returns>
+            <param name="pingTypeString">The string used to define the modded PingType</param>
+            <param name="moddedPingType">The PingType enum value. Defaults to <see cref="F:PingType.None"/> when the PingType was not found.</param>
+            <returns><c>True</c> if the PingType was found; Otherwise <c>false</c></returns>
         </member>
-        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.CanConvert(System.Type)">
+        <member name="M:SMLHelper.V2.Handlers.PingHandler.SMLHelper#V2#Interfaces#IPingHandler#RegisterNewPingType(System.String,Atlas.Sprite)">
             <summary>
-            The method for determining whether the current <paramref name="objectType"/> can be processed byt this
-            <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>
+            Registers a ping type for use when creating a beacon
             </summary>
-            <param name="objectType"></param>
-            <returns></returns>
+            <param name="pingName">The name of the new ping type</param>
+            <param name="sprite">The sprite that is associated with the ping</param>
+            <returns>The newly registered PingType</returns>
         </member>
-        <member name="T:SMLHelper.V2.Json.Converters.KeyCodeConverter">
+        <member name="M:SMLHelper.V2.Handlers.PingHandler.SMLHelper#V2#Interfaces#IPingHandler#TryGetModdedPingType(System.String,PingType@)">
             <summary>
-            A <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/> for handling <see cref="T:UnityEngine.KeyCode"/>s.
+            Safely looks for a modded ping type in the SMLHelper PingTypeCache and outputs its <see cref="T:PingType"/> value when found.
             </summary>
-        </member>
-        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.WriteJson(Oculus.Newtonsoft.Json.JsonWriter,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
-            <summary>
-            The method for writing the <paramref name="value"/> data to the <paramref name="writer"/>.
-            </summary>
-            <param name="writer"></param>
-            <param name="value"></param>
-            <param name="serializer"></param>
-        </member>
-        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.ReadJson(Oculus.Newtonsoft.Json.JsonReader,System.Type,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
-            <summary>
-            The method for reading the <see cref="T:UnityEngine.KeyCode"/> data from the <paramref name="reader"/>.
-            </summary>
-            <param name="reader"></param>
-            <param name="objectType"></param>
-            <param name="existingValue"></param>
-            <param name="serializer"></param>
-            <returns></returns>
-        </member>
-        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.CanConvert(System.Type)">
-            <summary>
-            The method for determining whether the current <paramref name="objectType"/> can be processed by this
-            <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>.
-            </summary>
-            <param name="objectType"></param>
-            <returns></returns>
-        </member>
-        <member name="T:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions">
-            <summary>
-            Extension methods for parsing objects as JSON data.
-            </summary>
-        </member>
-        <member name="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.LoadJson``1(``0,System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
-            <summary>
-            Loads the JSON properties from a file on disk into the <paramref name="jsonObject"/>.
-            </summary>
-            <typeparam name="T">The type of the <paramref name="jsonObject"/>.</typeparam>
-            <param name="jsonObject">The object instance to load the properties into.</param>
-            <param name="path">The file path to the JSON file to parse.</param>
-            <param name="createIfNotExist">Whether a new JSON file should be created with default values if it does not
-            already exist.</param>
-            <param name="jsonConverters">The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for deserialization.</param>
-            <seealso cref="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.SaveJson``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])"/>
-        </member>
-        <member name="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.SaveJson``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])">
-            <summary>
-            Saves the fields and properties of the <paramref name="jsonObject"/> as JSON properties to the file on disk.
-            </summary>
-            <typeparam name="T">The type of the <paramref name="jsonObject"/>.</typeparam>
-            <param name="jsonObject">The object instance to save the fields and properties from.</param>
-            <param name="path">The file path at which to save the JSON file.</param>
-            <param name="jsonConverters">The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.</param>
-        </member>
-        <member name="T:SMLHelper.V2.Json.Interfaces.IJsonFile">
-            <summary>
-            A simple interface for a JSON file framework.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Json.Interfaces.IJsonFile.JsonFilePath">
-            <summary>
-            The file path at which the JSON file is accessible for reading and writing.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Json.Interfaces.IJsonFile.AlwaysIncludedJsonConverters">
-            <summary>
-            The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s that should always be used when reading/writing JSON data.
-            </summary>
-        </member>
-        <member name="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Load(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
-            <summary>
-            A method for loading the JSON properties from disk.
-            </summary>
-            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
-            already exist.</param>
-            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for
-            deserialization.</param>
-            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Save(Oculus.Newtonsoft.Json.JsonConverter[])"/>
-        </member>
-        <member name="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Save(Oculus.Newtonsoft.Json.JsonConverter[])">
-            <summary>
-            A method for saving the JSON properties to disk.
-            </summary>
-            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.</param>
-            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Load(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
-        </member>
-        <member name="T:SMLHelper.V2.Json.ConfigFile">
-            <summary>
-            A simple implementation of <see cref="T:SMLHelper.V2.Json.Interfaces.IJsonFile"/> for use with config files.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Json.ConfigFile.JsonFilePath">
-            <summary>
-            The file path at which the JSON file is accessible for reading and writing.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters">
-            <summary>
-            The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s that should always be used when reading/writing JSON data.
-            </summary>
-            <seealso cref="F:SMLHelper.V2.Json.ConfigFile.alwaysIncludedJsonConverters"/>
-        </member>
-        <member name="M:SMLHelper.V2.Json.ConfigFile.#ctor(System.String,System.String)">
-            <summary>
-            Creates a new instance of <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.
-            </summary>
-            <param name="fileName">The name of the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>, "config" by default.</param>
-            <param name="subfolder">Optional subfolder for the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.</param>
-            <example>
-            <code>
-            using SMLHelper.V2.Options;
-            using UnityEngine;
-            
-            public static class MyConfig : ConfigFile
-            {
-                public KeyCode ActivationKey { get; set; } = KeyCode.Escape;
-                public MyConfig() : base("options", "Config Files") { }
-                // The config file will be stored at the path "QMods\YourModName\Config Files\options.json"
-            }
-            </code>
-            </example>
-        </member>
-        <member name="M:SMLHelper.V2.Json.ConfigFile.Load(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
-            <summary>
-            Loads the JSON properties from the file on disk into the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.
-            </summary>
-            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
-            already exist.</param>
-            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.
-            The <see cref="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters"/> will always be used, regardless of whether you pass them.</param>
-            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.Save(Oculus.Newtonsoft.Json.JsonConverter[])"/>
-        </member>
-        <member name="M:SMLHelper.V2.Json.ConfigFile.Save(Oculus.Newtonsoft.Json.JsonConverter[])">
-            <summary>
-            Saves the current fields and properties of the <see cref="T:SMLHelper.V2.Json.ConfigFile"/> as JSON properties to the file on disk.
-            </summary>
-            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for deserialization.
-            The <see cref="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters"/> will always be used, regardless of whether you pass them.</param>
-            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.Load(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
-        </member>
-        <member name="T:SMLHelper.V2.Handler">
-            <summary>
-            A simple location where every SMLHelper handler class can be accessed.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.BioReactorHandler">
-            <summary>
-            A handler with common methods for updating BioReactor values.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.CraftDataHandler">
-            <summary>
-            A handler class for adding and editing crafted items.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.CraftTreeHandler">
-            <summary>
-            A handler class for creating and editing of crafting trees.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.IngameMenuHandler">
-            <summary>
-            A handler class that offers simple ways to tap into functionality of the in game menu.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.FishHandler">
-            <summary>
-            Class to manage registering of fish into the game
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.ItemActionHandler">
-            <summary>
-            A handler class for registering your custom middle click actions for items
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.KnownTechHandler">
-            <summary>
-            A handler class for configuring custom unlocking conditions for item blueprints.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.LanguageHandler">
-            <summary>
-            A handler for adding language lines.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.OptionsPanelHandler">
-            <summary>
-            A handler class for registering your custom in-game mod options.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.PDAHandler">
-            <summary>
-            A handler class for various scanner related data.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.SpriteHandler">
-            <summary>
-            A handler class for adding custom sprites into the game.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.TechTypeHandler">
-            <summary>
-            A handler class for everything related to creating new TechTypes.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.LootDistributionHandler">
-            <summary>
-            A handler class for adding and editing resource spawns.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.WorldEntityDatabaseHandler">
-            <summary>
-            A handler for adding custom entries to the world entity database.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.PDAEncyclopediaHandler">
-            <summary>
-            A handler for adding custom entries to the PDA Encyclopedia.
-            </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Handler.PrefabHandler">
-            <summary>
-            A handler for registering Unity prefabs associated to a <see cref="T:TechType"/>.
-            </summary>
+            <param name="pingTypeString">The string used to define the modded PingType</param>
+            <param name="moddedPingType">The PingType enum value. Defaults to <see cref="F:PingType.None"/> when the PingType was not found.</param>
+            <returns><c>True</c> if the PingType was found; Otherwise <c>false</c></returns>
         </member>
         <member name="T:SMLHelper.V2.Handlers.BioReactorHandler">
             <summary>
@@ -2319,7 +2076,7 @@
         </member>
         <member name="M:SMLHelper.V2.Handlers.PDAHandler.SMLHelper#V2#Interfaces#IPDAHandler#AddCustomScannerEntry(PDAScanner.EntryData)">
             <summary>
-            Adds in a custom <see cref="T:PDAScanner.EntryData"/>.
+            Adds in a custom <see cref="T:PDAScanner.EntryData"/>. ***Cannot be used to Change the values of a techtype that has data already!***
             </summary>
             <param name="entryData">The <see cref="T:PDAScanner.EntryData"/> of the entry. Must be populated when passed in.</param>
         </member>
@@ -2745,20 +2502,26 @@
             <param name="slotType">The <see cref="T:EntitySlot.Type"/> of the entity. Dictates which "slots" are suitable for this entity to spawn in. For e.g., most in-crate fragments have a <see cref="F:EntitySlot.Type.Small"/> slot type.</param>
             <param name="localScale">The scale that the entity's local scale is set to when spawned.</param>
         </member>
-        <member name="T:SMLHelper.V2.Initializer">
+        <member name="T:SMLHelper.V2.Interfaces.IPingHandler">
             <summary>
-            WARNING: This class is for use only by QModManager.
+            A handler related to PingTypes
             </summary>
         </member>
-        <member name="M:SMLHelper.V2.Initializer.PrePatch">
+        <member name="M:SMLHelper.V2.Interfaces.IPingHandler.RegisterNewPingType(System.String,Atlas.Sprite)">
             <summary>
-            WARNING: This method is for use only by QModManager.
+            Registers a ping type for use when creating a beacon
             </summary>
+            <param name="pingName">The name of the new ping type</param>
+            <param name="sprite">The sprite that is associated with the ping</param>
+            <returns>The newly registered PingType</returns>
         </member>
-        <member name="M:SMLHelper.V2.Initializer.PostPatch">
+        <member name="M:SMLHelper.V2.Interfaces.IPingHandler.TryGetModdedPingType(System.String,PingType@)">
             <summary>
-            WARNING: This method is for use only by QModManager.
+            Safely looks for a modded ping type in the SMLHelper PingTypeCache and outputs its <see cref="T:PingType"/> value when found.
             </summary>
+            <param name="pingTypeString">The string used to define the modded PingType</param>
+            <param name="moddedPingType">The PingType enum value. Defaults to <see cref="F:PingType.None"/> when the PingType was not found.</param>
+            <returns><c>True</c> if the PingType was found; Otherwise <c>false</c></returns>
         </member>
         <member name="T:SMLHelper.V2.Interfaces.IBioReactorHandler">
             <summary>
@@ -3547,6 +3310,342 @@
             <param name="classId"></param>
             <param name="data"></param>
         </member>
+        <member name="T:SMLHelper.V2.Json.Converters.FloatConverter">
+            <summary>
+            A <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/> for rounding floats or doubles to a given number of decimal places,
+            trimming trailing 0s.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.Int32,System.MidpointRounding)">
+            <summary>
+            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            </summary>
+            <param name="decimalPlaces">The number of decimal places to round to, where -1 disables rounding.</param>
+            <param name="mode">The rounding mode to use when rounding.</param>
+            <seealso cref="T:System.MidpointRounding"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.Int32)">
+            <summary>
+            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            </summary>
+            <param name="decimalPlaces">The number of decimal places to round to, where -1 disables rounding.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor(System.MidpointRounding)">
+            <summary>
+            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            </summary>
+            <param name="mode">The rounding mode to use when rounding.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.#ctor">
+            <summary>
+            Creates a new <see cref="T:SMLHelper.V2.Json.Converters.FloatConverter"/>.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.WriteJson(Oculus.Newtonsoft.Json.JsonWriter,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            The method for writing the <paramref name="value"/> data to the <paramref name="writer"/>.
+            </summary>
+            <param name="writer"></param>
+            <param name="value"></param>
+            <param name="serializer"></param>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.ReadJson(Oculus.Newtonsoft.Json.JsonReader,System.Type,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            The method for reading the <see cref="T:System.Single"/> or <see cref="T:System.Double"/> data from the <paramref name="reader"/>.
+            </summary>
+            <param name="reader"></param>
+            <param name="objectType"></param>
+            <param name="existingValue"></param>
+            <param name="serializer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.FloatConverter.CanConvert(System.Type)">
+            <summary>
+            The method for determining whether the current <paramref name="objectType"/> can be processed byt this
+            <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>
+            </summary>
+            <param name="objectType"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SMLHelper.V2.Json.Converters.KeyCodeConverter">
+            <summary>
+            A <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/> for handling <see cref="T:UnityEngine.KeyCode"/>s.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.WriteJson(Oculus.Newtonsoft.Json.JsonWriter,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            The method for writing the <paramref name="value"/> data to the <paramref name="writer"/>.
+            </summary>
+            <param name="writer"></param>
+            <param name="value"></param>
+            <param name="serializer"></param>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.ReadJson(Oculus.Newtonsoft.Json.JsonReader,System.Type,System.Object,Oculus.Newtonsoft.Json.JsonSerializer)">
+            <summary>
+            The method for reading the <see cref="T:UnityEngine.KeyCode"/> data from the <paramref name="reader"/>.
+            </summary>
+            <param name="reader"></param>
+            <param name="objectType"></param>
+            <param name="existingValue"></param>
+            <param name="serializer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Converters.KeyCodeConverter.CanConvert(System.Type)">
+            <summary>
+            The method for determining whether the current <paramref name="objectType"/> can be processed by this
+            <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>.
+            </summary>
+            <param name="objectType"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions">
+            <summary>
+            Extension methods for parsing objects as JSON data.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.LoadJson``1(``0,System.String,System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Loads the JSON properties from a file on disk into the <paramref name="jsonObject"/>.
+            </summary>
+            <typeparam name="T">The type of the <paramref name="jsonObject"/>.</typeparam>
+            <param name="jsonObject">The object instance to load the properties into.</param>
+            <param name="path">The file path to the JSON file to parse.</param>
+            <param name="createIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <param name="jsonConverters">The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for deserialization.</param>
+            <seealso cref="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.SaveJson``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ExtensionMethods.JsonExtensions.SaveJson``1(``0,System.String,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Saves the fields and properties of the <paramref name="jsonObject"/> as JSON properties to the file on disk.
+            </summary>
+            <typeparam name="T">The type of the <paramref name="jsonObject"/>.</typeparam>
+            <param name="jsonObject">The object instance to save the fields and properties from.</param>
+            <param name="path">The file path at which to save the JSON file.</param>
+            <param name="jsonConverters">The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Json.Interfaces.IJsonFile">
+            <summary>
+            A simple interface for a JSON file framework.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Json.Interfaces.IJsonFile.JsonFilePath">
+            <summary>
+            The file path at which the JSON file is accessible for reading and writing.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Json.Interfaces.IJsonFile.AlwaysIncludedJsonConverters">
+            <summary>
+            The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s that should always be used when reading/writing JSON data.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Load(System.Boolean)">
+            <summary>
+            A method for loading the JSON properties from disk.
+            </summary>
+            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Save"/>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.LoadWithConverters(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Save">
+            <summary>
+            A method for saving the JSON properties to disk.
+            </summary>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Load(System.Boolean)"/>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.SaveWithConverters(Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Interfaces.IJsonFile.LoadWithConverters(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            A method for loading the JSON properties from disk.
+            </summary>
+            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for
+            deserialization.</param>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.SaveWithConverters(Oculus.Newtonsoft.Json.JsonConverter[])"/>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Load(System.Boolean)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.Interfaces.IJsonFile.SaveWithConverters(Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            A method for saving the JSON properties to disk.
+            </summary>
+            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.</param>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.LoadWithConverters(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+            <seealso cref="M:SMLHelper.V2.Json.Interfaces.IJsonFile.Save"/>
+        </member>
+        <member name="T:SMLHelper.V2.Json.ConfigFile">
+            <summary>
+            A simple implementation of <see cref="T:SMLHelper.V2.Json.Interfaces.IJsonFile"/> for use with config files.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Json.ConfigFile.JsonFilePath">
+            <summary>
+            The file path at which the JSON file is accessible for reading and writing.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters">
+            <summary>
+            The <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s that should always be used when reading/writing JSON data.
+            </summary>
+            <seealso cref="F:SMLHelper.V2.Json.ConfigFile.alwaysIncludedJsonConverters"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ConfigFile.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new instance of <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.
+            </summary>
+            <param name="fileName">The name of the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>, "config" by default.</param>
+            <param name="subfolder">Optional subfolder for the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.</param>
+            <example>
+            <code>
+            using SMLHelper.V2.Options;
+            using UnityEngine;
+            
+            public class MyConfig : ConfigFile
+            {
+                public KeyCode ActivationKey { get; set; } = KeyCode.Escape;
+                public MyConfig() : base("options", "Config Files") { }
+                // The config file will be stored at the path "QMods\YourModName\Config Files\options.json"
+            }
+            </code>
+            </example>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ConfigFile.Load(System.Boolean)">
+            <summary>
+            Loads the JSON properties from the file on disk into the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.
+            </summary>
+            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.Save"/>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.LoadWithConverters(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ConfigFile.Save">
+            <summary>
+            Saves the current fields and properties of the <see cref="T:SMLHelper.V2.Json.ConfigFile"/> as JSON properties to the file on disk.
+            </summary>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.Load(System.Boolean)"/>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.SaveWithConverters(Oculus.Newtonsoft.Json.JsonConverter[])"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ConfigFile.LoadWithConverters(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Loads the JSON properties from the file on disk into the <see cref="T:SMLHelper.V2.Json.ConfigFile"/>.
+            </summary>
+            <param name="createFileIfNotExist">Whether a new JSON file should be created with default values if it does not
+            already exist.</param>
+            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for serialization.
+            The <see cref="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters"/> will always be used, regardless of whether you pass them.</param>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.SaveWithConverters(Oculus.Newtonsoft.Json.JsonConverter[])"/>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.Load(System.Boolean)"/>
+        </member>
+        <member name="M:SMLHelper.V2.Json.ConfigFile.SaveWithConverters(Oculus.Newtonsoft.Json.JsonConverter[])">
+            <summary>
+            Saves the current fields and properties of the <see cref="T:SMLHelper.V2.Json.ConfigFile"/> as JSON properties to the file on disk.
+            </summary>
+            <param name="jsonConverters">Optional <see cref="T:Oculus.Newtonsoft.Json.JsonConverter"/>s to be used for deserialization.
+            The <see cref="P:SMLHelper.V2.Json.ConfigFile.AlwaysIncludedJsonConverters"/> will always be used, regardless of whether you pass them.</param>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.LoadWithConverters(System.Boolean,Oculus.Newtonsoft.Json.JsonConverter[])"/>
+            <seealso cref="M:SMLHelper.V2.Json.ConfigFile.Save"/>
+        </member>
+        <member name="T:SMLHelper.V2.Handler">
+            <summary>
+            A simple location where every SMLHelper handler class can be accessed.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.BioReactorHandler">
+            <summary>
+            A handler with common methods for updating BioReactor values.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.CraftDataHandler">
+            <summary>
+            A handler class for adding and editing crafted items.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.CraftTreeHandler">
+            <summary>
+            A handler class for creating and editing of crafting trees.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.IngameMenuHandler">
+            <summary>
+            A handler class that offers simple ways to tap into functionality of the in game menu.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.FishHandler">
+            <summary>
+            Class to manage registering of fish into the game
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.ItemActionHandler">
+            <summary>
+            A handler class for registering your custom middle click actions for items
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.KnownTechHandler">
+            <summary>
+            A handler class for configuring custom unlocking conditions for item blueprints.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.LanguageHandler">
+            <summary>
+            A handler for adding language lines.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.OptionsPanelHandler">
+            <summary>
+            A handler class for registering your custom in-game mod options.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.PDAHandler">
+            <summary>
+            A handler class for various scanner related data.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.SpriteHandler">
+            <summary>
+            A handler class for adding custom sprites into the game.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.TechTypeHandler">
+            <summary>
+            A handler class for everything related to creating new TechTypes.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.LootDistributionHandler">
+            <summary>
+            A handler class for adding and editing resource spawns.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.WorldEntityDatabaseHandler">
+            <summary>
+            A handler for adding custom entries to the world entity database.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.PDAEncyclopediaHandler">
+            <summary>
+            A handler for adding custom entries to the PDA Encyclopedia.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Handler.PrefabHandler">
+            <summary>
+            A handler for registering Unity prefabs associated to a <see cref="T:TechType"/>.
+            </summary>
+        </member>
+        <member name="T:SMLHelper.V2.Initializer">
+            <summary>
+            WARNING: This class is for use only by QModManager.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Initializer.PrePatch">
+            <summary>
+            WARNING: This method is for use only by QModManager.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Initializer.PostPatch">
+            <summary>
+            WARNING: This method is for use only by QModManager.
+            </summary>
+        </member>
         <member name="T:SMLHelper.V2.Utility.IStorageHelper">
             <summary>
             A utility class that offers additional info about <see cref="T:ItemsContainer"/> instances.
@@ -3635,11 +3734,28 @@
             <param name="mode"></param>
             <returns>The channel on which the sound was created</returns>
         </member>
+        <member name="M:SMLHelper.V2.Utility.AudioUtils.PlaySound(System.String,SMLHelper.V2.Utility.SoundChannel,FMOD.MODE)">
+            <summary>
+            Plays a <see cref="T:FMOD.Sound"/> globally from a path. Must be a .wav file. Has overload for controlling volume
+            </summary>
+            <param name="path">The path of the sound. Relative to the base game folder.</param>
+            <param name="mode"></param>
+            <param name="volumeControl">Which volume control to adjust sound levels by. How loud sound is.</param>
+            <returns>The channel on which the sound was created</returns>
+        </member>
         <member name="M:SMLHelper.V2.Utility.AudioUtils.PlaySound(FMOD.Sound)">
             <summary>
             Plays a <see cref="T:FMOD.Sound"/> globally
             </summary>
             <param name="sound">The sound which should be played</param>
+            <returns>The channel on which the sound was created</returns>
+        </member>
+        <member name="M:SMLHelper.V2.Utility.AudioUtils.PlaySound(FMOD.Sound,SMLHelper.V2.Utility.SoundChannel)">
+            <summary>
+            Plays a <see cref="T:FMOD.Sound"/> globally at specified volume
+            </summary>
+            <param name="sound">The sound which should be played</param>
+            <param name="volumeControl">Which volume control to adjust sound levels by. How loud sound is.</param>
             <returns>The channel on which the sound was created</returns>
         </member>
         <member name="T:SMLHelper.V2.Utility.ExtBannedIdManager">
@@ -4346,6 +4462,23 @@
             Returns the path to the current save slot's directory.
             </summary>
         </member>
+        <member name="T:SMLHelper.V2.Utility.SoundChannel">
+            <summary>
+            The a list the different volume controls in the game
+            </summary>
+        </member>
+        <member name="F:SMLHelper.V2.Utility.SoundChannel.Master">
+            <summary>Master volume control</summary>
+        </member>
+        <member name="F:SMLHelper.V2.Utility.SoundChannel.Music">
+            <summary>Music volume control</summary>
+        </member>
+        <member name="F:SMLHelper.V2.Utility.SoundChannel.Voice">
+            <summary>Voice volume control</summary>
+        </member>
+        <member name="F:SMLHelper.V2.Utility.SoundChannel.Ambient">
+            <summary>Ambient volume control</summary>
+        </member>
         <member name="T:SMLHelper.V2.Utility.StorageHelperExtensions">
             <summary>
             Extension methods to provide static calls for <see cref="T:ItemsContainer"/> into <see cref="T:SMLHelper.V2.Utility.ItemStorageHelper"/> methods.
@@ -4421,45 +4554,44 @@
             This <see cref="T:UnityEngine.MonoBehaviour"/> is <c>automatically</c> added to any <see cref="T:UnityEngine.GameObject"/> created through <see cref="M:SMLHelper.V2.Assets.ModPrefab.GetGameObject"/>.
             </summary>
         </member>
-        <member name="T:SMLHelper.V2.Options.ChoiceChangedEventArgs">
+        <member name="T:SMLHelper.V2.Options.ButtonClickedEventArgs">
             <summary>
-            Contains all the information about a choice changed event.
+            Contains all the information about a button click event.
             </summary>
         </member>
-        <member name="P:SMLHelper.V2.Options.ChoiceChangedEventArgs.Id">
+        <member name="P:SMLHelper.V2.Options.ButtonClickedEventArgs.Id">
             <summary>
-            The ID of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> that was changed.
+            The ID of the <see cref="T:SMLHelper.V2.Options.ModButtonOption"/> that was clicked.
             </summary>
         </member>
-        <member name="P:SMLHelper.V2.Options.ChoiceChangedEventArgs.Index">
+        <member name="M:SMLHelper.V2.Options.ButtonClickedEventArgs.#ctor(System.String)">
             <summary>
-            The new index for the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.
+            Constructs a new <see cref="T:SMLHelper.V2.Options.ButtonClickedEventArgs"/>.
             </summary>
-        </member>
-        <member name="P:SMLHelper.V2.Options.ChoiceChangedEventArgs.Value">
-            <summary>
-            The value of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> as a string.
-            </summary>
-        </member>
-        <member name="M:SMLHelper.V2.Options.ChoiceChangedEventArgs.#ctor(System.String,System.Int32)">
-            <summary>
-            Constructs a new <see cref="T:SMLHelper.V2.Options.ChoiceChangedEventArgs"/>.
-            </summary>
-            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> that was changed.</param>
-            <param name="index">The new index for the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.</param>
-        </member>
-        <member name="M:SMLHelper.V2.Options.ChoiceChangedEventArgs.#ctor(System.String,System.Int32,System.String)">
-            <summary>
-            Constructs a new <see cref="T:SMLHelper.V2.Options.ChoiceChangedEventArgs"/>.
-            </summary>
-            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> that was changed.</param>
-            <param name="index">The new index for the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.</param>
-            <param name="value">The value of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> as a string.</param>
+            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModButtonOption"/> that was clicked.</param>
         </member>
         <member name="T:SMLHelper.V2.Options.ModOptions">
             <summary>
             Abstract class that provides the framework for your mod's in-game configuration options.
             </summary>
+        </member>
+        <member name="E:SMLHelper.V2.Options.ModOptions.ButtonClicked">
+            <summary>
+            The event that is called whenever a button is clicked. Subscribe to this in the constructor.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModOptions.OnButtonClicked(System.String)">
+            <summary>
+            Notifies button click to all subscribed event handlers.
+            </summary>
+            <param name="id">The internal ID for the button option.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModOptions.AddButtonOption(System.String,System.String)">
+            <summary>
+            Adds a new <see cref="T:SMLHelper.V2.Options.ModButtonOption"/> to this instance.
+            </summary>
+            <param name="id">The internal ID for the button option.</param>
+            <param name="label">The display text to use in the in-game menu.</param>
         </member>
         <member name="E:SMLHelper.V2.Options.ModOptions.ChoiceChanged">
             <summary>
@@ -4638,6 +4770,53 @@
             <param name="id">The internal ID for the toggle option.</param>
             <param name="label">The display text to use in the in-game menu.</param>
             <param name="value">The starting value.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Options.ModButtonOption">
+            <summary>
+            A mod option class for handling a button that can be clicked.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ModButtonOption.#ctor(System.String,System.String)">
+            <summary>
+            Instantiates a new <see cref="T:SMLHelper.V2.Options.ModButtonOption"/> for handling a button that can be clicked.
+            </summary>
+            <param name="id">The internal ID of this option.</param>
+            <param name="label">The display text to show on the in-game menus.</param>
+        </member>
+        <member name="T:SMLHelper.V2.Options.ChoiceChangedEventArgs">
+            <summary>
+            Contains all the information about a choice changed event.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ChoiceChangedEventArgs.Id">
+            <summary>
+            The ID of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> that was changed.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ChoiceChangedEventArgs.Index">
+            <summary>
+            The new index for the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.
+            </summary>
+        </member>
+        <member name="P:SMLHelper.V2.Options.ChoiceChangedEventArgs.Value">
+            <summary>
+            The value of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> as a string.
+            </summary>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ChoiceChangedEventArgs.#ctor(System.String,System.Int32)">
+            <summary>
+            Constructs a new <see cref="T:SMLHelper.V2.Options.ChoiceChangedEventArgs"/>.
+            </summary>
+            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> that was changed.</param>
+            <param name="index">The new index for the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.</param>
+        </member>
+        <member name="M:SMLHelper.V2.Options.ChoiceChangedEventArgs.#ctor(System.String,System.Int32,System.String)">
+            <summary>
+            Constructs a new <see cref="T:SMLHelper.V2.Options.ChoiceChangedEventArgs"/>.
+            </summary>
+            <param name="id">The ID of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> that was changed.</param>
+            <param name="index">The new index for the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/>.</param>
+            <param name="value">The value of the <see cref="T:SMLHelper.V2.Options.ModChoiceOption"/> as a string.</param>
         </member>
         <member name="T:SMLHelper.V2.Options.ModChoiceOption">
             <summary>

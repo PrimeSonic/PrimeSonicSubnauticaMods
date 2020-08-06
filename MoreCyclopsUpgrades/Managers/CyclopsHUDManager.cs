@@ -138,9 +138,11 @@
             const float helmscale = 1.35f;
 
             const float healthbarxoffset = 120f;
+            const float thermometerxoffset = healthbarxoffset * 1.96f;
             const float healthbarzoffset = 0.05f;
             const float healthbaryoffset = -300f;
             const float healthbarscale = 0.65f;
+            const float thermometerscale = healthbarscale * 1.25f;
 
             /* --- 3-1-2 --- */
             /* ---- 1-2 ---- */
@@ -200,7 +202,7 @@
                 } while (totalIcons > index);
             }
 
-            TemperatureReadout = IconCreator.CreatePowerIndicatorIcon(holoCanvas, 1.95f * healthbarxoffset, -2f, healthbarzoffset, healthbarscale * 1.2f);
+            TemperatureReadout = IconCreator.CreatePowerIndicatorIcon(holoCanvas, thermometerxoffset, -2.5f, healthbarzoffset, thermometerscale);
             TemperatureReadout.Icon.sprite = CyclopsThermometer ?? SpriteManager.Get(TechType.CyclopsThermalReactorModule);
 
             powerIconsInitialized = true;
@@ -218,57 +220,61 @@
 
             iconUpdateDelay = Time.time + delayInterval;
 
-            HidePowerIcons();
-
-            if (settings.HidePowerIcons)
-                return;
-
-            CyclopsCharger[] cyclopsChargers = this.ChargeManager.Chargers;
-
-            bool isEven = true;
-            for (int i = 0; i < cyclopsChargers.Length; i++)
-            {
-                if (cyclopsChargers[i].ShowStatusIcon)
-                    isEven = !isEven;
-            }
-
-            PowerIndicatorIcon[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
-            PowerIndicatorIcon[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
-
-            bool showIconsOnHoloDisplay = settings.ShowIconsOnHoloDisplay;
-            bool showIconsWhilePiloting = settings.ShowIconsWhilePiloting;
-
-            int iconIndex = 0;
-            for (int c = 0; c < cyclopsChargers.Length; c++)
-            {
-                CyclopsCharger charger = cyclopsChargers[c];
-
-                if (!charger.ShowStatusIcon)
-                    continue;
-
-                PowerIndicatorIcon helmIcon = helmRow[iconIndex];
-                PowerIndicatorIcon hpIcon = healthBarRow[iconIndex++];
-
-                hpIcon.SetEnabled(showIconsOnHoloDisplay);
-                helmIcon.SetEnabled(showIconsWhilePiloting);
-                TemperatureReadout.SetEnabled(showIconsOnHoloDisplay);
-
-                hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.StatusSprite();
-
-                hpIcon.Text.enabled = powerIconTextVisibility;
-                hpIcon.Text.text = helmIcon.Text.text = charger.StatusText();
-
-                if (charger.ProvidingPower)
-                    hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
-                else
-                    hpIcon.Text.color = helmIcon.Text.color = Color.white;
-            }
-
-            if (showIconsOnHoloDisplay)
+            if (settings.ShowThermometer)
             {
                 float temperature = Cyclops.GetTemperature();
                 TemperatureReadout.Text.text = NumberFormatter.FormatValue(temperature) + "°C";
                 TemperatureReadout.Text.color = GetHeatColor(temperature);
+                TemperatureReadout.SetEnabled(true);
+            }
+            else
+            {
+                TemperatureReadout.SetEnabled(false);
+            }
+
+            if (settings.HidePowerIcons)
+                HidePowerIcons();
+            else
+            {
+                CyclopsCharger[] cyclopsChargers = this.ChargeManager.Chargers;
+
+                bool isEven = true;
+                for (int i = 0; i < cyclopsChargers.Length; i++)
+                {
+                    if (cyclopsChargers[i].ShowStatusIcon)
+                        isEven = !isEven;
+                }
+
+                PowerIndicatorIcon[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
+                PowerIndicatorIcon[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
+
+                bool showIconsOnHoloDisplay = settings.ShowIconsOnHoloDisplay;
+                bool showIconsWhilePiloting = settings.ShowIconsWhilePiloting;
+
+                int iconIndex = 0;
+                for (int c = 0; c < cyclopsChargers.Length; c++)
+                {
+                    CyclopsCharger charger = cyclopsChargers[c];
+
+                    if (!charger.ShowStatusIcon)
+                        continue;
+
+                    PowerIndicatorIcon helmIcon = helmRow[iconIndex];
+                    PowerIndicatorIcon hpIcon = healthBarRow[iconIndex++];
+
+                    hpIcon.SetEnabled(showIconsOnHoloDisplay);
+                    helmIcon.SetEnabled(showIconsWhilePiloting);
+
+                    hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.StatusSprite();
+
+                    hpIcon.Text.enabled = powerIconTextVisibility;
+                    hpIcon.Text.text = helmIcon.Text.text = charger.StatusText();
+
+                    if (charger.ProvidingPower)
+                        hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
+                    else
+                        hpIcon.Text.color = helmIcon.Text.color = Color.white;
+                }
             }
         }
 
@@ -289,28 +295,33 @@
 
         private Color GetHeatColor(float temperatureValue)
         {
-            const float maxBlue = 35f;
-            const float maxGreen = 50f;
-            const float maxYellow = 65f;
-            const float maxRed = 70f;
+            const float white = 0f; // Invalid or freezing
+            const float blue = 10f; // Cool water, doesn't thermal charge
+            const float green = 35f; // Able to thermal charge, comfortable for player
+            const float yellow = 50f; // Better thermal charging, damages player without protection
+            const float red = 70f; // Best thermal charging, can damage player even with protection
 
-            const float whiteToBlue = maxBlue;
-            const float blueToGreen = (maxGreen - maxBlue);
-            const float greenToYellow = (maxYellow - maxGreen);
-            const float yellowToRed = (maxRed - maxYellow);
+            const float blue_white = blue - white;
+            const float green_blue = green - blue;
+            const float yellow_green = yellow - green;
+            const float red_yellow = red - yellow;
 
-            if (temperatureValue < 0f)
+            if (temperatureValue < white)
                 return Color.white;
-            else if (temperatureValue < maxBlue)
-                return Color.Lerp(Color.white, Color.blue, temperatureValue / whiteToBlue);
-            else if (temperatureValue < maxGreen)
-                return Color.Lerp(Color.blue, Color.green, (temperatureValue - maxBlue) / blueToGreen);
-            else if (temperatureValue < maxYellow)
-                return Color.Lerp(Color.green, Color.yellow, (temperatureValue - maxGreen) / greenToYellow);
-            else if (temperatureValue < maxRed)
-                return Color.Lerp(Color.yellow, Color.red, (temperatureValue - maxYellow) / yellowToRed);
-            else
-                return Color.red;
+
+            if (temperatureValue < blue)
+                return Color.Lerp(Color.white, Color.blue, (temperatureValue - white) / blue_white);
+
+            if (temperatureValue < green)
+                return Color.Lerp(Color.blue, Color.green, (temperatureValue - blue) / green_blue);
+
+            if (temperatureValue < yellow)
+                return Color.Lerp(Color.green, Color.yellow, (temperatureValue - green) / yellow_green);
+
+            if (temperatureValue < red)
+                return Color.Lerp(Color.yellow, Color.red, (temperatureValue - yellow) / red_yellow);
+
+            return Color.red;
         }
     }
 }

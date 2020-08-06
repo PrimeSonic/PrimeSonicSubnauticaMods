@@ -3,12 +3,12 @@
     using System.IO;
     using System.Reflection;
     using Common;
-    using Harmony;
     using MoreCyclopsUpgrades.AuxConsole;
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Managers;
     using QModManager.API.ModLoading;
     using SMLHelper.V2.Utility;
+    using HarmonyLib;
 
     /// <summary>
     /// Entry point class for patching.For use by QModManager only.
@@ -47,8 +47,7 @@
                 QuickLogger.Info("Auxiliary Upgrade Console disabled by config settings");
             }
 
-            var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "com.morecyclopsupgrades.psmod");
 
             QuickLogger.Info("Finished Patching");
         }

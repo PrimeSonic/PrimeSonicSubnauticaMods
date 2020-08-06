@@ -31,18 +31,13 @@
 
         private bool initialized = false;
 
-        private const string AuxConsoleEnabledKey = "AuxConsoleEnabled";
-        private const string ChallengeModeKey = "ChallengeMode";
-        private const string DeficitThresholdKey = "DeficitThreshold";
-        private const string ChargerIconsKey = "ShowChargerIcons";
-        private const string DebugLogsEnabledKey = "EnableDebugLogs";
-        private const string HelmEnergyDisplayKey = "HelmEnergyDisplay";
-
-        private readonly ToggleOption auxConsoleEnabled = new ToggleOption(AuxConsoleEnabledKey, "Enable AuxUpgradeConsole (Restart game)")
+        private readonly ToggleOption auxConsoleEnabled = new ToggleOption(nameof(AuxConsoleEnabled), "Enable AuxUpgradeConsole (Restart game)")
         {
-            State = true
+            State = true,
+            OptionToggled = (bool value, ModConfig config) => { config.AuxConsoleEnabled = value; },
         };
-        private readonly ChoiceOption challengeMode = new ChoiceOption(ChallengeModeKey, "Challenge (Engine Penalty)")
+
+        private readonly ChoiceOption challengeMode = new ChoiceOption(nameof(ChallengeMode), "Challenge (Engine Penalty)")
         {
             Choices = new string[3]
             {
@@ -50,15 +45,19 @@
                 $"{ChallengeMode.Medium.AsDisplay()}",
                 $"{ChallengeMode.Hard.AsDisplay()}"
             },
-            Index = (int)ChallengeMode.Easy
+            Index = (int)ChallengeMode.Easy,
+            ChoiceChanged = (int index, ModConfig config) => { config.ChallengeMode = (ChallengeMode)index; }
         };
-        private readonly SliderOption deficitThreshHold = new SliderOption(DeficitThresholdKey, "Conserve chargers when over %")
+
+        private readonly SliderOption deficitThreshHold = new SliderOption(nameof(DeficitThreshold), "Conserve chargers when over %")
         {
             MinValue = 10f,
             MaxValue = 100f,
-            Value = 95f
+            Value = 95f,
+            ValueChanged = (float value, ModConfig config) => { config.DeficitThreshold = value; }
         };
-        private readonly ChoiceOption showIcons = new ChoiceOption(ChargerIconsKey, "Charging Status Icons")
+
+        private readonly ChoiceOption showIcons = new ChoiceOption(nameof(ChargerIcons), "Charging Status Icons")
         {
             Choices = new string[4]
             {
@@ -67,17 +66,17 @@
                 $"{ShowChargerIcons.OnHoloDisplay.AsDisplay()}",
                 $"{ShowChargerIcons.Everywhere.AsDisplay()}",
             },
-            Index = (int)ShowChargerIcons.Everywhere
+            Index = (int)ShowChargerIcons.Everywhere,
+            ChoiceChanged = (int index, ModConfig config) => { config.ChargerIcons = (ShowChargerIcons)index; }
         };
-        private readonly ToggleOption debugLogs = new ToggleOption(DebugLogsEnabledKey, "Enable Debug Logs")
+
+        private readonly ToggleOption debugLogs = new ToggleOption(nameof(EnableDebugLogs), "Enable Debug Logs")
         {
-#if DEBUG
-            State = true // Default debug logs to true for Debug builds
-#else
-            State = false // Default debug logs to false for Release builds
-#endif
+            State = false,
+            OptionToggled = (bool value, ModConfig config) => { config.EnableDebugLogs = value; }
         };
-        private readonly ChoiceOption energyDisplay = new ChoiceOption(HelmEnergyDisplayKey, "Helm HUD Energy Display")
+
+        private readonly ChoiceOption energyDisplay = new ChoiceOption(nameof(EnergyDisplay), "Helm HUD Energy Display")
         {
             Choices = new string[4]
             {
@@ -86,17 +85,25 @@
                 $"{HelmEnergyDisplay.PercentageOverPowerCells.AsDisplay()}",
                 $"{HelmEnergyDisplay.CombinedAmount.AsDisplay()}"
             },
-            Index = (int)HelmEnergyDisplay.PowerCellPercentage
+            Index = (int)HelmEnergyDisplay.PowerCellPercentage,
+            ChoiceChanged = (int index, ModConfig config) => { config.EnergyDisplay = (HelmEnergyDisplay)index; }
+        };
+
+        private readonly ToggleOption showThermometer = new ToggleOption(nameof(ShowThermometer), "Show Thermometer")
+        {
+            State = true,
+            OptionToggled = (bool value, ModConfig config) => { config.ShowThermometer = value; }
         };
 
         private readonly ModConfigSaveData saveData;
         private readonly ModConfigMenuOptions menuOptions;
+        private readonly List<ConfigOption> configOptions;
 
         private ModConfig()
         {
-            var configOptions = new List<ConfigOption>(6)
+            configOptions = new List<ConfigOption>(7)
             {
-                auxConsoleEnabled, challengeMode, deficitThreshHold, showIcons, debugLogs, energyDisplay
+                auxConsoleEnabled, challengeMode, deficitThreshHold, showIcons, debugLogs, energyDisplay, showThermometer
             };
 
             saveData = new ModConfigSaveData(configOptions);
@@ -110,7 +117,7 @@
             {
                 auxConsoleEnabled.SaveData.Value = value;
                 auxConsoleEnabled.State = value;
-                SaveData();
+                saveData.SaveToFile();
             }
         }
 
@@ -121,7 +128,7 @@
             {
                 challengeMode.SaveData.Value = (int)value;
                 challengeMode.Index = (int)value;
-                SaveData();
+                saveData.SaveToFile();
 
                 float rechargePenalty = 1f - value.ChallengePenalty();
                 this.RechargePenalty = rechargePenalty;
@@ -143,7 +150,7 @@
                 float roundedValue = Mathf.Round(value);
                 deficitThreshHold.SaveData.Value = roundedValue;
                 deficitThreshHold.Value = roundedValue;
-                SaveData();
+                saveData.SaveToFile();
             }
         }
 
@@ -157,11 +164,11 @@
                 this.ShowIconsOnHoloDisplay = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnHoloDisplay;
                 this.ShowIconsWhilePiloting = value == ShowChargerIcons.Everywhere || value == ShowChargerIcons.OnPilotingHUD;
                 this.HidePowerIcons = value == ShowChargerIcons.Never;
-                SaveData();
+                saveData.SaveToFile();
             }
         }
 
-        public bool DebugLogsEnabled
+        public bool EnableDebugLogs
         {
             get => debugLogs.SaveData.Value;
             set
@@ -169,7 +176,7 @@
                 debugLogs.SaveData.Value = value;
                 debugLogs.State = value;
                 QuickLogger.DebugLogsEnabled = value;
-                SaveData();
+                saveData.SaveToFile();
             }
         }
 
@@ -180,13 +187,24 @@
             {
                 energyDisplay.SaveData.Value = (int)value;
                 energyDisplay.Index = (int)value;
-                SaveData();
+                saveData.SaveToFile();
             }
         }
 
         public bool HidePowerIcons { get; private set; } = false;
 
         public bool ShowIconsWhilePiloting { get; private set; } = true;
+
+        public bool ShowThermometer
+        {
+            get => showThermometer.SaveData.Value;
+            set
+            {
+                showThermometer.SaveData.Value = value;
+                showThermometer.State = value;
+                saveData.SaveToFile();
+            }
+        }
 
         public bool ShowIconsOnHoloDisplay { get; private set; } = true;
 
@@ -206,46 +224,29 @@
                 QuickLogger.Info($"Default config save data file created");
             }
 
-            // Load values from Save Data
-            auxConsoleEnabled.SaveData = saveData.GetBoolProperty(auxConsoleEnabled.Id);
-            challengeMode.SaveData = saveData.GetIntProperty(challengeMode.Id);
-            deficitThreshHold.SaveData = saveData.GetFloatProperty(deficitThreshHold.Id);
-            showIcons.SaveData = saveData.GetIntProperty(showIcons.Id);
-            debugLogs.SaveData = saveData.GetBoolProperty(debugLogs.Id);
-            energyDisplay.SaveData = saveData.GetIntProperty(energyDisplay.Id);
 
-            // Update current settings to match save data
-            this.AuxConsoleEnabled = auxConsoleEnabled.SaveData.Value;
-            this.ChallengeMode = (ChallengeMode)challengeMode.SaveData.Value;
-            this.DeficitThreshold = deficitThreshHold.SaveData.Value;
-            this.ChargerIcons = (ShowChargerIcons)showIcons.SaveData.Value;
-            this.DebugLogsEnabled = debugLogs.SaveData.Value;
-            this.EnergyDisplay = (HelmEnergyDisplay)energyDisplay.SaveData.Value;
+            foreach (var option in configOptions)
+            {
+                // Load values from Save Data
+                option.LoadFromSaveData(saveData);
+
+                // Update current settings to match save data
+                option.UpdateProperty(this);
+            }
 
             // Link event handlers to accept changes from in-game menu
-            auxConsoleEnabled.OptionToggled = (bool value) => { this.AuxConsoleEnabled = value; };
-            challengeMode.ChoiceChanged = (int index) => { this.ChallengeMode = (ChallengeMode)index; };
-            deficitThreshHold.ValueChanged = (float value) => { this.DeficitThreshold = value; };
-            showIcons.ChoiceChanged = (int index) => { this.ChargerIcons = (ShowChargerIcons)index; };
-            debugLogs.OptionToggled = (bool value) => { this.DebugLogsEnabled = value; };
-            energyDisplay.ChoiceChanged = (int index) => { this.EnergyDisplay = (HelmEnergyDisplay)index; };
+            menuOptions.RegisterEvents(this);
 
-            menuOptions.Register();
-
-            QuickLogger.DebugLogsEnabled = this.DebugLogsEnabled;
-            QuickLogger.Info($"Debug logging is {(this.DebugLogsEnabled ? "en" : "dis")}abled");
+            QuickLogger.DebugLogsEnabled = this.EnableDebugLogs;
+            QuickLogger.Info($"Debug logging is {(this.EnableDebugLogs ? "en" : "dis")}abled");
 
             initialized = true;
-        }
-
-        private void SaveData()
-        {
-            saveData.SaveToFile();
         }
 
         private float CyclopsMaxPower = 1f;
 
         public float MinimumEnergyDeficit { get; private set; } = 60f;
+
         public float EmergencyEnergyDeficit { get; private set; } = 6f;
 
         public void UpdateCyclopsMaxPower(float maxPower)

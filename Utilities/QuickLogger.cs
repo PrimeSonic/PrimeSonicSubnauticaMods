@@ -83,5 +83,10 @@
 
             return $"{version.Major}.0.0";
         }
+
+        public static string GetAssemblyName()
+        {
+            return ModName.Name;
+        }
     }
 }

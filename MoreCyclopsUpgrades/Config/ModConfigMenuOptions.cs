@@ -14,13 +14,13 @@
             configOptions = options;
         }
 
-        internal void Register()
+        public void RegisterEvents(ModConfig config)
         {
-            SetUpEvents();
+            SetUpEvents(config);
             OptionsPanelHandler.RegisterModOptions(this);
         }
 
-        private void SetUpEvents()
+        private void SetUpEvents(ModConfig config)
         {
             foreach (ConfigOption item in configOptions)
             {
@@ -30,21 +30,21 @@
                         base.SliderChanged += (object sender, SliderChangedEventArgs e) =>
                         {
                             if (e.Id == slider.Id)
-                                slider?.ValueChanged(e.Value);
+                                slider?.ValueChanged(e.Value, config);
                         };
                         break;
                     case OptionTypes.Choice when item is ChoiceOption choice:
                         base.ChoiceChanged += (object sender, ChoiceChangedEventArgs e) =>
                         {
                             if (e.Id == choice.Id)
-                                choice?.ChoiceChanged(e.Index);
+                                choice?.ChoiceChanged(e.Index, config);
                         };
                         break;
                     case OptionTypes.Toggle when item is ToggleOption toggle:
                         base.ToggleChanged += (object sender, ToggleChangedEventArgs e) =>
                         {
                             if (e.Id == toggle.Id)
-                                toggle?.OptionToggled(e.Value);
+                                toggle?.OptionToggled(e.Value, config);
                         };
                         break;
                 }
