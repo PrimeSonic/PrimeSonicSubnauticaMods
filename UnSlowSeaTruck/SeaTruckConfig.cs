@@ -1,6 +1,6 @@
 ﻿namespace UnSlowSeaTruck
 {
-    using Oculus.Newtonsoft.Json;
+    using Newtonsoft.Json;
 
     [JsonObject]
     public class SeaTruckConfig

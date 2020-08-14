@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Reflection;
     using System.Reflection.Emit;
-    using Harmony;
+    using HarmonyLib;
     using QModManager.API.ModLoading;
 
     [QModCore]
@@ -22,8 +22,7 @@
             Config = ConfigMgr.LoadConfig<SeaTruckConfig>();
             Console.WriteLine($"[UnSlowSeaTruck] Configured WeightOverride: {Config.WeightOverride}");
 
-            var harmony = HarmonyInstance.Create($"com.{assembly.GetName().Name}.psmod");
-            harmony.PatchAll(assembly);
+            Harmony.CreateAndPatchAll(assembly, $"com.{assembly.GetName().Name}.psmod");
 
             ConfigMgr.SaveConfig(Config);
         }

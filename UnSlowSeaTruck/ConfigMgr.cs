@@ -3,11 +3,11 @@
     using System;
     using System.IO;
     using System.Reflection;
-    using Oculus.Newtonsoft.Json;
+    using Newtonsoft.Json;
 
     internal class ConfigMgr
     {
-        private static string ModName = Assembly.GetExecutingAssembly().GetName().Name;
+        private static readonly string ModName = Assembly.GetExecutingAssembly().GetName().Name;
         private static readonly string ModDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         internal static TConfig LoadConfig<TConfig>() where TConfig : class, new()
