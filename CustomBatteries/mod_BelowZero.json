@@ -2,8 +2,9 @@
   "Id": "CustomBatteries",
   "DisplayName": "CustomBatteries",
   "Author": "PrimeSonic|Seraphim",
-  "Version": "1.0.1",
+  "Version": "1.0.2",
   "Enable": true,
+  "Game": "BelowZero",
   "AssemblyName": "CustomBatteries.dll",
   "Dependencies": [ "SMLHelper" ]
 }

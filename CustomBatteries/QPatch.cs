@@ -5,7 +5,7 @@
     using Common;
     using CustomBatteries.Items;
     using CustomBatteries.PackReading;
-    using Harmony;
+    using HarmonyLib;
     using MidGameBatteries.Patchers;
     using QModManager.API.ModLoading;
 
@@ -25,7 +25,7 @@
                 // Packs from external mods are patched as they arrive.
                 // They can still be patched in even after the harmony patches have completed.
 
-                var harmony = HarmonyInstance.Create("com.custombatteries.mod");
+                var harmony = new Harmony("com.custombatteries.mod");
                 EnergyMixinPatcher.Patch(harmony);
 
                 QuickLogger.Info("Finished patching");

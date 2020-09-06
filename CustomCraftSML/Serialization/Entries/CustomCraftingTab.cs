@@ -11,7 +11,11 @@
     using EasyMarkup;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
+    using UnityEngine;
     using IOPath = System.IO.Path;
+#if SUBNAUTICA
+    using Sprite = Atlas.Sprite;
+#endif
 
     internal class CustomCraftingTab : EmPropertyCollection, ICraftingTab, ICustomCraft
     {
@@ -163,7 +167,7 @@
                 return;
             }
 
-            Atlas.Sprite sprite = GetCraftingTabSprite();
+            Sprite sprite = GetCraftingTabSprite();
 
             if (this.CraftingPath.IsAtRoot)
             {
@@ -175,7 +179,7 @@
             }
         }
 
-        protected Atlas.Sprite GetCraftingTabSprite()
+        protected Sprite GetCraftingTabSprite()
         {
             string imagePath = IOPath.Combine(FileLocations.AssetsFolder, this.TabID + @".png");
 

@@ -2,7 +2,7 @@
 {
     using System.Reflection;
     using Common;
-    using Harmony;
+    using HarmonyLib;
     using MoreCyclopsUpgrades.API;
     using QModManager.API.ModLoading;
 
@@ -35,7 +35,7 @@
                 return new CyNukeManager(cyclops);
             });
 
-            var harmony = HarmonyInstance.Create("com.cyclopsnuclearreactor.psmod");
+            var harmony = new Harmony("com.cyclopsnuclearreactor.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             MCUServices.Logger.Info("Finished patching");

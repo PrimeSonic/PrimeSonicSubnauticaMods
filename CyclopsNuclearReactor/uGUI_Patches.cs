@@ -1,6 +1,6 @@
 ﻿namespace CyclopsNuclearReactor
 {
-    using Harmony;
+    using HarmonyLib;
 
     // The immediate access to the private members (without the use of Reflection) was made possible thanks to the AssemblyPublicizer
     // https://github.com/CabbageCrow/AssemblyPublicizer

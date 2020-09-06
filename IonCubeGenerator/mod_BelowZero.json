@@ -2,8 +2,9 @@
   "Id": "IonCubeGenerator",
   "DisplayName": "IonCubeGenerator",
   "Author": "PrimeSonic|FCStudios",
-  "Version": "1.2.0",
+  "Version": "1.2.1",
   "Enable": true,
+  "Game": "BelowZero",
   "AssemblyName": "IonCubeGenerator.dll",
   "Dependencies": [ "SMLHelper" ]
 }

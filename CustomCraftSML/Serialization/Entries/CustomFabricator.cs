@@ -15,6 +15,9 @@
     using SMLHelper.V2.Utility;
     using UnityEngine;
     using IOPath = System.IO.Path;
+#if SUBNAUTICA
+    using Sprite = Atlas.Sprite;
+#endif
 
     public enum ModelTypes
     {
@@ -295,7 +298,7 @@
 
         protected override void HandleCustomSprite()
         {
-            Atlas.Sprite sprite;
+            Sprite sprite;
 
             string imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"{this.ItemID}.png");
             if (File.Exists(imagePath))

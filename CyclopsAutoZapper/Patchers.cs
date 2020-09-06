@@ -2,7 +2,7 @@
 {
     using Common;
     using CyclopsAutoZapper.Managers;
-    using Harmony;
+    using HarmonyLib;
     using MoreCyclopsUpgrades.API;
 
     [HarmonyPatch(typeof(CyclopsSonarDisplay))]

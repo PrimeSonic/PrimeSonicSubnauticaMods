@@ -2,7 +2,7 @@
 {
     using System.Reflection;
     using Common;
-    using Harmony;
+    using HarmonyLib;
 
     public static class QPatch
     {
@@ -19,7 +19,7 @@
             var defenseSystemMk2 = new CyclopsAutoDefenseMk2(defenseSystem);
             defenseSystemMk2.Patch();
 
-            var harmony = HarmonyInstance.Create("com.cyclopsautozapper.psmod");
+            var harmony = new Harmony("com.cyclopsautozapper.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             QuickLogger.Info("Finished Patching");

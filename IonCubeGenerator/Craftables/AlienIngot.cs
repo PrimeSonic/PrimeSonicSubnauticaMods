@@ -5,6 +5,9 @@ namespace IonCubeGenerator.Craftables
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using UnityEngine;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+#endif
 
     internal partial class AlienIngot : Craftable
     {
@@ -59,9 +62,9 @@ namespace IonCubeGenerator.Craftables
             return prefab;
         }
 
-        protected override TechData GetBlueprintRecipe()
+        protected override RecipeData GetBlueprintRecipe()
         {
-            return new TechData
+            return new RecipeData
             {
                 craftAmount = 1,
                 Ingredients =

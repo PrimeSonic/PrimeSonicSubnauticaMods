@@ -4,11 +4,11 @@
     using System.Reflection;
     using Common;
     using CustomBatteries.Items;
-    using Harmony;
+    using HarmonyLib;
 
     internal static class EnergyMixinPatcher
     {
-        internal static void Patch(HarmonyInstance harmony)
+        internal static void Patch(Harmony harmony)
         {
             QuickLogger.Debug($"{nameof(EnergyMixinPatcher)} Applying Harmony Patches");
 

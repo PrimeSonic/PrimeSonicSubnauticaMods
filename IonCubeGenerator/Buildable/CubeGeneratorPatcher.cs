@@ -9,6 +9,9 @@
     using SMLHelper.V2.Crafting;
     using System.IO;
     using UnityEngine;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+#endif
 
     internal partial class CubeGeneratorBuildable : Buildable
     {
@@ -98,9 +101,9 @@
             return prefab;
         }
 
-        protected override TechData GetBlueprintRecipe()
+        protected override RecipeData GetBlueprintRecipe()
         {
-            return new TechData
+            return new RecipeData
             {
                 Ingredients =
                 {

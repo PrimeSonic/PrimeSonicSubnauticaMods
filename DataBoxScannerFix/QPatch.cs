@@ -2,7 +2,7 @@
 {
     using System;
     using System.Reflection;
-    using Harmony;
+    using HarmonyLib;
     using QModManager.API.ModLoading;
     using UnityEngine;
 
@@ -16,7 +16,7 @@
             {
                 var dbScannerFixAssembly = Assembly.GetExecutingAssembly();
 
-                var harmony = HarmonyInstance.Create("com.dataBoxscannerfix.psmod");
+                var harmony = new Harmony("com.dataBoxscannerfix.psmod");
                 
                 harmony.PatchAll(dbScannerFixAssembly);
 

@@ -9,6 +9,10 @@
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
     using UnityEngine;
+#if SUBNAUTICA
+    using Sprite = Atlas.Sprite;
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+#endif
 
     internal class AiOFab : CustomFabricator
     {
@@ -20,11 +24,15 @@
         private const string WorkBenchScheme = "Workbench";
         private const string SeamothUpgradesScheme = "SeamothUpgrades";
         private const string MapRoomScheme = "MapRoom";
+#if SUBNAUTICA
         private const string CyclopsFabScheme = "CyclopsFabricator";
+#elif BELOWZERO
+        private const string SeaTruckFabScheme = "SeaTruckFabricator";
+#endif
 
         private static CraftTree craftTree;
         private static Texture2D texture;
-        private static Atlas.Sprite sprite;
+        private static Sprite sprite;
 
         public AiOFab()
             : base(AioFabScheme,
@@ -59,7 +67,11 @@
             RegisterTopLevelVanillaTab(WorkBenchScheme, "Modification Station", TechType.Workbench);
             RegisterTopLevelVanillaTab(SeamothUpgradesScheme, "Vehicle Upgrades", TechType.BaseUpgradeConsole);
             RegisterTopLevelVanillaTab(MapRoomScheme, "Scanner Room", TechType.BaseMapRoom);
+#if SUBNAUTICA
             RegisterTopLevelVanillaTab(CyclopsFabScheme, "Cyclops Upgrades", TechType.Cyclops);
+#elif BELOWZERO
+            RegisterTopLevelVanillaTab(SeaTruckFabScheme, "SeaTruck Fabricator", TechType.SeaTruck);
+#endif
 
             this.Root.CraftTreeCreation = CreateCraftingTree;
         }
@@ -69,25 +81,41 @@
             if (craftTree == null)
             {
                 Dictionary<string, string> langLines = Language.main.strings;
-                Dictionary<string, Atlas.Sprite> group = SpriteManager.groups[SpriteManager.Group.Category];
-                Dictionary<string, Atlas.Sprite> atlas = Atlas.GetAtlas("Categories").nameToSprite;
+
+                var atlasName = SpriteManager.mapping[SpriteManager.Group.Category];
+#if SUBNAUTICA
+                var group = Atlas.GetAtlas(atlasName).nameToSprite;
+#elif BELOWZERO
+                var group = SpriteManager.atlases[atlasName];
+#endif
+                List<CraftNode> craftNodes = new List<CraftNode>();
 
                 CraftNode fab = CraftTree.FabricatorScheme();
-                CloneTabDetails(FabricatorScheme, fab, ref langLines, ref group, ref atlas);
+                CloneTabDetails(FabricatorScheme, fab, ref langLines, ref group);
+                craftNodes.Add(fab);
 
                 CraftNode wb = CraftTree.WorkbenchScheme();
-                CloneTabDetails(WorkBenchScheme, wb, ref langLines, ref group, ref atlas);
+                CloneTabDetails(WorkBenchScheme, wb, ref langLines, ref group);
+                craftNodes.Add(wb);
 
                 CraftNode su = CraftTree.SeamothUpgradesScheme();
-                CloneTabDetails(SeamothUpgradesScheme, su, ref langLines, ref group, ref atlas);
+                CloneTabDetails(SeamothUpgradesScheme, su, ref langLines, ref group);
+                craftNodes.Add(su);
 
                 CraftNode map = CraftTree.MapRoomSheme();
-                CloneTabDetails(MapRoomScheme, map, ref langLines, ref group, ref atlas);
-
+                CloneTabDetails(MapRoomScheme, map, ref langLines, ref group);
+                craftNodes.Add(map);
+#if SUBNAUTICA
                 CraftNode cy = CraftTree.CyclopsFabricatorScheme();
-                CloneTabDetails(CyclopsFabScheme, cy, ref langLines, ref group, ref atlas);
+                CloneTabDetails(CyclopsFabScheme, cy, ref langLines, ref group);
+                craftNodes.Add(cy);
+#elif BELOWZERO
+                CraftNode st = CraftTree.SeaTruckFabricatorScheme();
+                CloneTabDetails(SeaTruckFabScheme, st, ref langLines, ref group);
+                craftNodes.Add(st);
+#endif
 
-                CraftNode aioRoot = new CraftNode("Root").AddNode(fab, wb, su, map, cy);
+                CraftNode aioRoot = new CraftNode("Root").AddNode(craftNodes.ToArray());
 
                 Type smlCTPatcher = typeof(CraftTreeHandler).Assembly.GetType("SMLHelper.V2.Patchers.CraftTreePatcher");
                 var customTrees = (Dictionary<CraftTree.Type, ModCraftTreeRoot>)smlCTPatcher.GetField("CustomTrees", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
@@ -100,7 +128,7 @@
                     CraftNode root = tree.nodes;
                     string scheme = entry.Key.ToString();
 
-                    CloneTabDetails(scheme, root, ref langLines, ref group, ref atlas);
+                    CloneTabDetails(scheme, root, ref langLines, ref group);
                     CloneTopLevelModTab(scheme, ref langLines, ref group);
                     aioRoot.AddNode(root);
                 }
@@ -111,7 +139,7 @@
             return craftTree;
         }
 
-        protected override Atlas.Sprite GetItemSprite()
+        protected override Sprite GetItemSprite()
         {
             return sprite;
         }
@@ -137,9 +165,9 @@
 
         public override Models Model => Models.Fabricator;
 
-        protected override TechData GetBlueprintRecipe()
+        protected override RecipeData GetBlueprintRecipe()
         {
-            return new TechData
+            return new RecipeData
             {
                 craftAmount = 1,
                 Ingredients =
@@ -160,7 +188,7 @@
             LanguageHandler.SetLanguageLine(string.Format(DisplayNameFormat, AioFabScheme, scheme), tabDisplayName);
         }
 
-        private void CloneTopLevelModTab(string scheme, ref Dictionary<string, string> languageLines, ref Dictionary<string, Atlas.Sprite> group)
+        private void CloneTopLevelModTab(string scheme, ref Dictionary<string, string> languageLines, ref Dictionary<string, Sprite> group)
         {
             string clonedLangKey = string.Format(DisplayNameFormat, AioFabScheme, scheme);
 
@@ -177,7 +205,7 @@
             }
         }
 
-        private void CloneTabDetails(string scheme, CraftNode node, ref Dictionary<string, string> languageLines, ref Dictionary<string, Atlas.Sprite> group, ref Dictionary<string, Atlas.Sprite> atlas)
+        private void CloneTabDetails(string scheme, CraftNode node, ref Dictionary<string, string> languageLines, ref Dictionary<string, Sprite> group)
         {
             if (node == null)
                 return;
@@ -216,13 +244,9 @@
                     string clonedSpriteKey = string.Format(TabSpriteFormat, AioFabScheme, node.id);
                     try
                     {
-                        if (group != null && group.TryGetValue(origSpriteKey, out Atlas.Sprite groupSprite))
+                        if (group != null && group.TryGetValue(origSpriteKey, out Sprite groupSprite))
                         {
                             group[clonedSpriteKey] = groupSprite;
-                        }
-                        else if (atlas != null && atlas.TryGetValue(origSpriteKey, out Atlas.Sprite resourceSprite))
-                        {
-                            atlas[clonedSpriteKey] = resourceSprite;
                         }
                         else
                         {
@@ -238,7 +262,7 @@
             }
 
             foreach (CraftNode innerNode in node)
-                CloneTabDetails(scheme, innerNode, ref languageLines, ref group, ref atlas);
+                CloneTabDetails(scheme, innerNode, ref languageLines, ref group);
         }
     }
 }

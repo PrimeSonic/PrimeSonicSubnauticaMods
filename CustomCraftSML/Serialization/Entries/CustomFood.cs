@@ -302,11 +302,12 @@
                 throw new InvalidOperationException("TechTypeHandler.AddTechType must be called before PrefabHandler.RegisterPrefab.");
 
             PrefabHandler.RegisterPrefab(new CustomFoodPrefab(this));
-
+#if SUBNAUTICA
             if (this.UseDrinkSound)
             {
                 CraftDataHandler.SetEatingSound(this.TechType, "event:/player/drink");
             }
+#endif
         }
     }
 }

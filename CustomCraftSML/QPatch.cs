@@ -67,6 +67,10 @@
             foreach (string resource in resources)
             {
                 string file = resource.Substring(resource.Substring(0, resource.LastIndexOf(".")).LastIndexOf(".") + 1);
+
+                if (!Directory.Exists(FileLocations.AssetsFolder))
+                    Directory.CreateDirectory(FileLocations.AssetsFolder);
+
                 string outFile = Path.Combine(FileLocations.AssetsFolder, file);
                 if (!File.Exists(outFile))
                 {

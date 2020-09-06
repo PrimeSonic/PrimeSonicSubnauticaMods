@@ -2,12 +2,15 @@
 {
     using System.Collections.Generic;
     using Common;
+    using QModManager.API.ModLoading;
     using SMLHelper.V2.Handlers;
 
+    [QModCore]
     public class QPatch
     {
         // This mod is intended to be replaced by the VModFabricator
         // But since some people still want it, it's kept up and maintained.
+        [QModPatch]
         public static void Patch()
         {
             QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());

@@ -2,9 +2,8 @@
   "Id": "BetterBioReactor",
   "DisplayName": "BetterBioReactor",
   "Author": "PrimeSonic",
-  "Version": "1.2.2",
+  "Version": "1.2.3",
   "Enable": true,
   "Game": "Subnautica", 
-  "AssemblyName": "BetterBioReactor.dll",
-  "EntryMethod": "BetterBioReactor.QPatch.Patch"
+  "AssemblyName": "BetterBioReactor.dll"
 }

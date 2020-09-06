@@ -3,10 +3,13 @@
     using System;
     using System.Reflection;
     using Common;
-    using Harmony;
+    using HarmonyLib;
+    using QModManager.API.ModLoading;
 
+    [QModCore]
     public static class QPatch
     {
+        [QModPatch]
         public static void Patch()
         {
             QuickLogger.Info("Start patching. Version: " + QuickLogger.GetAssemblyVersion());
@@ -18,7 +21,7 @@
 
             try
             {
-                var harmony = HarmonyInstance.Create("com.betterbioreactor.psmod");
+                var harmony = new Harmony("com.betterbioreactor.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
                 QuickLogger.Info("Finished patching");
             }
