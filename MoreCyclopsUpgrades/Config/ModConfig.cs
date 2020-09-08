@@ -53,7 +53,7 @@
         {
             MinValue = 10f,
             MaxValue = 100f,
-            Value = 95f,
+            Value = 100f, // Default to 100% instead of 95%
             ValueChanged = (float value, ModConfig config) => { config.DeficitThreshold = value; }
         };
 
