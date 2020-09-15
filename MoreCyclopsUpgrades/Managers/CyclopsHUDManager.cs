@@ -220,6 +220,7 @@
 
             iconUpdateDelay = Time.time + delayInterval;
 
+            HidePowerIcons();
             if (settings.ShowThermometer)
             {
                 float temperature = Cyclops.GetTemperature();
@@ -233,48 +234,46 @@
             }
 
             if (settings.HidePowerIcons)
-                HidePowerIcons();
-            else
+                return;
+
+            CyclopsCharger[] cyclopsChargers = this.ChargeManager.Chargers;
+
+            bool isEven = true;
+            for (int i = 0; i < cyclopsChargers.Length; i++)
             {
-                CyclopsCharger[] cyclopsChargers = this.ChargeManager.Chargers;
+                if (cyclopsChargers[i].ShowStatusIcon)
+                    isEven = !isEven;
+            }
 
-                bool isEven = true;
-                for (int i = 0; i < cyclopsChargers.Length; i++)
-                {
-                    if (cyclopsChargers[i].ShowStatusIcon)
-                        isEven = !isEven;
-                }
+            PowerIndicatorIcon[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
+            PowerIndicatorIcon[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
 
-                PowerIndicatorIcon[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
-                PowerIndicatorIcon[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
+            bool showIconsOnHoloDisplay = settings.ShowIconsOnHoloDisplay;
+            bool showIconsWhilePiloting = settings.ShowIconsWhilePiloting;
 
-                bool showIconsOnHoloDisplay = settings.ShowIconsOnHoloDisplay;
-                bool showIconsWhilePiloting = settings.ShowIconsWhilePiloting;
+            int iconIndex = 0;
+            for (int c = 0; c < cyclopsChargers.Length; c++)
+            {
+                CyclopsCharger charger = cyclopsChargers[c];
 
-                int iconIndex = 0;
-                for (int c = 0; c < cyclopsChargers.Length; c++)
-                {
-                    CyclopsCharger charger = cyclopsChargers[c];
+                if (!charger.ShowStatusIcon)
+                    continue;
 
-                    if (!charger.ShowStatusIcon)
-                        continue;
+                PowerIndicatorIcon helmIcon = helmRow[iconIndex];
+                PowerIndicatorIcon hpIcon = healthBarRow[iconIndex++];
 
-                    PowerIndicatorIcon helmIcon = helmRow[iconIndex];
-                    PowerIndicatorIcon hpIcon = healthBarRow[iconIndex++];
+                hpIcon.SetEnabled(showIconsOnHoloDisplay);
+                helmIcon.SetEnabled(showIconsWhilePiloting);
 
-                    hpIcon.SetEnabled(showIconsOnHoloDisplay);
-                    helmIcon.SetEnabled(showIconsWhilePiloting);
+                hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.StatusSprite();
 
-                    hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.StatusSprite();
+                hpIcon.Text.enabled = powerIconTextVisibility;
+                hpIcon.Text.text = helmIcon.Text.text = charger.StatusText();
 
-                    hpIcon.Text.enabled = powerIconTextVisibility;
-                    hpIcon.Text.text = helmIcon.Text.text = charger.StatusText();
-
-                    if (charger.ProvidingPower)
-                        hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
-                    else
-                        hpIcon.Text.color = helmIcon.Text.color = Color.white;
-                }
+                if (charger.ProvidingPower)
+                    hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
+                else
+                    hpIcon.Text.color = helmIcon.Text.color = Color.white;
             }
         }
 

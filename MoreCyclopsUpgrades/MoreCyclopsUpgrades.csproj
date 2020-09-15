@@ -30,12 +30,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Subnautica|AnyCPU'">
     <DefineConstants>TRACE;SUBNAUTICA</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>..\..\Qmods\Subnautica\MoreCyclopsUpgrades\MoreCyclopsUpgrades.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <GameDir>$(SubnauticaDir)</GameDir>
     <DataFolder>Subnautica_Data</DataFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>7.1</LangVersion>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
