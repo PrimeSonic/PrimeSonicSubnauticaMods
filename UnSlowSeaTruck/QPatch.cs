@@ -1,4 +1,5 @@
-﻿namespace UnSlowSeaTruck
+﻿#if BELOWZERO
+namespace UnSlowSeaTruck
 {
     using System;
     using System.Collections.Generic;
@@ -86,3 +87,4 @@
         }
     }
 }
+#endif

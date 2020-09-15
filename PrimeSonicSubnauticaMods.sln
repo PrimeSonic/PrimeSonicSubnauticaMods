@@ -166,10 +166,10 @@ Global
 		{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}.BelowZero|Any CPU.ActiveCfg = BelowZero|Any CPU
 		{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}.Subnautica|Any CPU.ActiveCfg = Subnautica|Any CPU
 		{3A198D4A-D4C0-4E4B-836D-A1E3A3530782}.Subnautica|Any CPU.Build.0 = Subnautica|Any CPU
-		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.BelowZero|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.BelowZero|Any CPU.Build.0 = Debug|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Subnautica|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA71197-1B18-4AC2-8FDE-4554BAACA24B}.Subnautica|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

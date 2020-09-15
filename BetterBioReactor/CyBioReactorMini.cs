@@ -1,16 +1,11 @@
 ﻿namespace BetterBioReactor
 {
     using BetterBioReactor.SaveData;
-
     using Common;
-
     using ProtoBuf;
-
     using System.Collections.Generic;
-
-    using TMPro;
-
     using UnityEngine;
+    using UnityEngine.UI;
 
     // The immediate access to the internals of the BaseBioReactor (without the use of Reflection) was made possible thanks to the AssemblyPublicizer
     // https://github.com/CabbageCrow/AssemblyPublicizer
@@ -90,7 +85,6 @@
         {
             HandReticle main = HandReticle.main;
 
-            main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
             string text1 = Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText);
 #if SUBNAUTICA
             main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
