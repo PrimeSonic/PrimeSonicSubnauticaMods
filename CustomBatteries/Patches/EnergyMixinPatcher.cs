@@ -1,6 +1,8 @@
 ﻿namespace MidGameBatteries.Patchers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using Common;
     using CustomBatteries.Items;
@@ -37,7 +39,13 @@
             TechType? itemInSlot = item?.item?.GetTechType();
 
             if (itemInSlot.HasValue && CbCore.PowerCellTechTypes.Contains(itemInSlot.Value))
-                __instance.batteryModels[0].model.SetActive(true);
+            {
+                IEnumerable<EnergyMixin.BatteryModels> batteryModels = __instance.batteryModels.Where((x) => x.techType == itemInSlot.Value);
+                if (batteryModels.Any())
+                    batteryModels.First().model.SetActive(true);
+                else
+                    __instance.batteryModels[0].model.SetActive(true);
+            }
 
             // Perhaps later a more suiteable model could be added with a more appropriate skin.
             // This is functional for now.
