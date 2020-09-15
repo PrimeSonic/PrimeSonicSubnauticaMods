@@ -9,6 +9,10 @@
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
     using UnityEngine;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+    using Sprite = Atlas.Sprite;
+#endif
 
     internal abstract class CbCore : ModPrefab
     {
@@ -35,7 +39,7 @@
         public TechType RequiredForUnlock { get; set; } = TechType.None;
         public bool UnlocksAtStart => this.RequiredForUnlock == TechType.None;
 
-        public abstract TechData GetBlueprintRecipe();
+        public abstract RecipeData GetBlueprintRecipe();
 
         public float PowerCapacity { get; set; }
 
@@ -49,7 +53,7 @@
 
         public string PluginFolder { get; set; }
 
-        public Atlas.Sprite Sprite { get; set; }
+        public Sprite Sprite { get; set; }
 
         public IList<TechType> Parts { get; set; }
 
@@ -88,7 +92,11 @@
                 Ingredient priorIngredient = partsList.Find(i => i.techType == part);
 
                 if (priorIngredient != null)
+#if SUBNAUTICA
                     priorIngredient.amount++;
+#elif BELOWZERO
+                    priorIngredient._amount++;
+#endif
                 else
                     partsList.Add(new Ingredient(part, 1));
             }

@@ -2,6 +2,9 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+#endif
 
     internal class CustomPowerCell : CbCore
     {
@@ -16,7 +19,7 @@
         protected override EquipmentType ChargerType => EquipmentType.PowerCellCharger;
         protected override string[] StepsToFabricatorTab => CbCore.PowCellCraftPath;
 
-        public override TechData GetBlueprintRecipe()
+        public override RecipeData GetBlueprintRecipe()
         {
             var partsList = new List<Ingredient>()
             {
@@ -26,7 +29,7 @@
 
             CreateIngredients(this.Parts, partsList);
 
-            var batteryBlueprint = new TechData
+            var batteryBlueprint = new RecipeData
             {
                 craftAmount = 1,
                 Ingredients = partsList

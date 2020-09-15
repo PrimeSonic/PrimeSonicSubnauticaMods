@@ -9,7 +9,11 @@
     using EasyMarkup;
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
+    using UnityEngine;
     using IOPath = System.IO.Path;
+#if SUBNAUTICA
+    using Sprite = Atlas.Sprite;
+#endif
 
     internal class AliasRecipe : AddedRecipe, IAliasRecipe
     {
@@ -168,7 +172,7 @@
             if (File.Exists(imagePath))
             {
                 QuickLogger.Debug($"Custom sprite found in Assets folder for {this.Key} '{this.ItemID}' from {this.Origin}");
-                Atlas.Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+                Sprite sprite = ImageUtils.LoadSpriteFromFile(imagePath);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
             }
@@ -176,7 +180,7 @@
             if (this.SpriteItemID > TechType.None && this.SpriteItemID < TechType.Databox)
             {
                 QuickLogger.Debug($"{SpriteItemIdKey} '{this.SpriteItemID}' used for {this.Key} '{this.ItemID}' from {this.Origin}");
-                Atlas.Sprite sprite = SpriteManager.Get(this.SpriteItemID);
+                Sprite sprite = SpriteManager.Get(this.SpriteItemID);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
             }
@@ -184,7 +188,7 @@
             if (this.LinkedItems.Count > 0)
             {
                 QuickLogger.Debug($"First entry in {LinkedItemsIdsKey} used for icon of {this.Key} '{this.ItemID}' from {this.Origin}");
-                Atlas.Sprite sprite = SpriteManager.Get(this.LinkedItems[0]);
+                Sprite sprite = SpriteManager.Get(this.LinkedItems[0]);
                 SpriteHandler.RegisterSprite(this.TechType, sprite);
                 return;
             }

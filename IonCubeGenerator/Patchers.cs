@@ -1,6 +1,6 @@
 ﻿namespace IonCubeGenerator
 {
-    using Harmony;
+    using HarmonyLib;
     using IonCubeGenerator.Buildable;
     using IonCubeGenerator.Craftables;
 

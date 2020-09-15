@@ -1,0 +1,9 @@
+{
+  "Id": "BetterBioReactor",
+  "DisplayName": "BetterBioReactor",
+  "Author": "PrimeSonic",
+  "Version": "1.2.3",
+  "Enable": true,
+  "Game": "BelowZero", 
+  "AssemblyName": "BetterBioReactor.dll"
+}

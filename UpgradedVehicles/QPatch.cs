@@ -3,7 +3,7 @@
     using System;
     using System.Reflection;
     using Common;
-    using Harmony;
+    using HarmonyLib;
     using QModManager.API;
     using QModManager.API.ModLoading;
     using SMLHelper.V2.Handlers;
@@ -48,7 +48,7 @@
 
                 VehicleUpgrader.SetBonusSpeedMultipliers(configOptions);
 
-                var harmony = HarmonyInstance.Create("com.upgradedvehicles.psmod");
+                var harmony = new Harmony("com.upgradedvehicles.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
                 QuickLogger.Info("Finished patching");

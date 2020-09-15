@@ -10,6 +10,9 @@
     using EasyMarkup;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+#endif
 
     internal class AddedRecipe : ModifiedRecipe, IAddedRecipe
     {
@@ -105,7 +108,7 @@
 
         protected void HandleAddedRecipe(short defaultCraftAmount = 1)
         {
-            TechData replacement = CreateRecipeTechData(defaultCraftAmount);
+            RecipeData replacement = CreateRecipeTechData(defaultCraftAmount);
 
             CraftDataHandler.SetTechData(this.TechType, replacement);
             QuickLogger.Debug($"Adding new recipe for '{this.ItemID}'");
@@ -117,9 +120,9 @@
             }
         }
 
-        internal TechData CreateRecipeTechData(short defaultCraftAmount = 1)
+        internal RecipeData CreateRecipeTechData(short defaultCraftAmount = 1)
         {
-            var replacement = new TechData
+            var replacement = new RecipeData
             {
                 craftAmount = this.AmountCrafted ?? defaultCraftAmount
             };

@@ -10,6 +10,9 @@
     using EasyMarkup;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+#endif
 
     internal class ModifiedRecipe : EmTechTyped, IModifiedRecipe, ICustomCraft
     {
@@ -103,13 +106,17 @@
 
         internal ModifiedRecipe(TechType origTechType) : this()
         {
-            ITechData origRecipe = CraftData.Get(origTechType);
+#if SUBNAUTICA
+            TechData origRecipe = CraftDataHandler.GetTechData(origTechType);
+#elif BELOWZERO
+            RecipeData origRecipe = CraftDataHandler.GetRecipeData(origTechType);
+#endif
             this.ItemID = origTechType.ToString();
             this.AmountCrafted = (short)origRecipe.craftAmount;
 
             for (int i = 0; i < origRecipe.ingredientCount; i++)
             {
-                IIngredient origIngredient = origRecipe.GetIngredient(i);
+                Ingredient origIngredient = (Ingredient)origRecipe.GetIngredient(i);
                 this.Ingredients.Add(new EmIngredient(origIngredient.techType, (short)origIngredient.amount));
             }
 
@@ -261,19 +268,11 @@
 
         protected bool HandleModifiedRecipe()
         {
-            ITechData original = CraftData.Get(this.TechType, skipWarnings: true);
-
-            try
-            {
-                if (original == null) // Possibly a mod recipe
-                    original = CraftDataHandler.GetModdedTechData(this.TechType);
-            }
-            catch (MissingMethodException mme)
-            {
-                QuickLogger.Error($"Error while trying to access new SMLHelper method for {this.Key} entry '{this.ItemID}' from {this.Origin}.{Environment.NewLine}" +
-                                  $"    Please update your copy of Modding Helper (SMLHelper).{Environment.NewLine}", mme);
-                return false;
-            }
+#if SUBNAUTICA
+            RecipeData original = CraftDataHandler.GetTechData(this.TechType);
+#elif BELOWZERO
+            RecipeData original = CraftDataHandler.GetRecipeData(this.TechType);
+#endif
 
             if (original == null)
             {
@@ -281,7 +280,7 @@
                 return false;  // Unknown recipe
             }
 
-            var replacement = new TechData();
+            var replacement = new RecipeData();
 
             bool overrideRecipe = false;
             string changes = "";

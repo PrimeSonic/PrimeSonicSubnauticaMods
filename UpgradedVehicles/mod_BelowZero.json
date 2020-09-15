@@ -1,0 +1,11 @@
+{
+  "Id": "UpgradedVehicles",
+  "DisplayName": "UpgradedVehicles",
+  "Author": "PrimeSonic",
+  "Version": "3.4.4",
+  "Enable": true,
+  "AssemblyName": "UpgradedVehicles.dll",
+  "Game": "BelowZero",
+  "Dependencies": [ "SMLHelper" ],
+  "LoadAfter": [ "SeaTruckDepthUpgrades" ]
+}
