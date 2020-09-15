@@ -40,15 +40,18 @@
 
             if (itemInSlot.HasValue && CbCore.PowerCellTechTypes.Contains(itemInSlot.Value))
             {
-                IEnumerable<EnergyMixin.BatteryModels> batteryModels = __instance.batteryModels.Where((x) => x.techType == itemInSlot.Value);
-                if (batteryModels.Any())
-                    batteryModels.First().model.SetActive(true);
-                else
-                    __instance.batteryModels[0].model.SetActive(true);
-            }
+                int modelToDisplay = 0; // If a matching model cannot be found, the standard PowerCell model will be used instead.
+                for (int b = 0; b < __instance.batteryModels.Length; b++)
+                {
+                    if (__instance.batteryModels[b].techType == itemInSlot.Value)
+                    {
+                        modelToDisplay = b;
+                        break;
+                    }
+                }
 
-            // Perhaps later a more suiteable model could be added with a more appropriate skin.
-            // This is functional for now.
+                __instance.batteryModels[modelToDisplay].model.SetActive(true);
+            }
         }
 
         public static void StartPostfix(ref EnergyMixin __instance)
