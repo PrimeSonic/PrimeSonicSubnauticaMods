@@ -1,9 +1,9 @@
 ﻿namespace BetterBioReactor
 {
-    using System.Collections.Generic;
     using BetterBioReactor.SaveData;
     using Common;
     using ProtoBuf;
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -85,7 +85,6 @@
         {
             HandReticle main = HandReticle.main;
 
-            // All this is getting updated in Unity 2018
             string text1 = Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText);
 #if SUBNAUTICA
             main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
@@ -161,7 +160,7 @@
             }
         }
 
-#endregion
+        #endregion
 
         // This method completely replaces the original ProducePower method in the BaseBioReactor
         internal float ProducePower(float chargePerSecond)
@@ -229,7 +228,7 @@
                 material.UpdateInventoryText();
         }
 
-#region Save data handling
+        #region Save data handling
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
         {
@@ -275,7 +274,7 @@
             isLoadingSaveData = false;
         }
 
-#endregion
+        #endregion
 
         public void ConnectToInventory(Dictionary<InventoryItem, uGUI_ItemIcon> lookup)
         {

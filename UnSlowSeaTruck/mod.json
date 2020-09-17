@@ -1,0 +1,9 @@
+{
+  "Id": "UnSlowSeaTruck",
+  "DisplayName": "UnSlowSeaTruck",
+  "Author": "PrimeSonic",
+  "Version": "1.2.1",
+  "Enable": true,
+  "Game": "BelowZero",
+  "AssemblyName": "UnSlowSeaTruck.dll"
+}

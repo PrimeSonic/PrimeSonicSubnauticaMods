@@ -1,6 +1,5 @@
 ﻿namespace BetterBioReactor
 {
-    using System;
     using System.Reflection;
     using Common;
     using HarmonyLib;
@@ -18,17 +17,9 @@
             QuickLogger.DebugLogsEnabled = true;
             QuickLogger.Debug("Debug logs enabled");
 #endif
-
-            try
-            {
-                var harmony = new Harmony("com.betterbioreactor.psmod");
-                harmony.PatchAll(Assembly.GetExecutingAssembly());
-                QuickLogger.Info("Finished patching");
-            }
-            catch (Exception ex)
-            {
-                QuickLogger.Error(ex);
-            }
+            var harmony = new Harmony("com.betterbioreactor.psmod");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            QuickLogger.Info("Finished patching");
         }
     }
 }

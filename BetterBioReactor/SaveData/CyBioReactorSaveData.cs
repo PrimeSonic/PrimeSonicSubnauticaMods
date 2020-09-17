@@ -61,7 +61,7 @@
             }
         }
 
-        private string SaveDirectory => Path.Combine(SaveLoadManager.temporarySavePath, MainKey);
+        private string SaveDirectory => Path.Combine(SaveLoadManager.GetTemporarySavePath(), MainKey);
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
         public bool LoadSaveFile()
