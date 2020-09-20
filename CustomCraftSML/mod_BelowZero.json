@@ -6,5 +6,6 @@
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
   "Game": "BelowZero",
-  "Dependencies": [ "SMLHelper" ]
+  "Dependencies": [ "SMLHelper" ],
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CustomCraft2SML/mod_BelowZero.json" }
 }

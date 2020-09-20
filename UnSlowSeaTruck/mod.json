@@ -5,5 +5,7 @@
   "Version": "1.2.1",
   "Enable": true,
   "Game": "BelowZero",
-  "AssemblyName": "UnSlowSeaTruck.dll"
+  "AssemblyName": "UnSlowSeaTruck.dll",
+  "NexusId": { "BelowZero": "25" },
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/UnSlowSeaTruck/mod.json" }
 }

@@ -8,5 +8,7 @@
   "AssemblyName": "CyclopsSpeedUpgrades.dll",
   "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
   "LoadBefore": [ "MoreCyclopsUpgrades" ],
-  "EntryMethod": "CyclopsSpeedUpgrades.QPatch.Patch"
+  "EntryMethod": "CyclopsSpeedUpgrades.QPatch.Patch",
+  "NexusId": { "Subnautica": "272" },
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CyclopsSpeedUpgrades/mod.json" }
 }

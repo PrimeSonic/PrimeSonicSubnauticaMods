@@ -1,9 +1,11 @@
 {
   "Id": "IonCubeGenerator",
-  "DisplayName": "IonCubeGenerator",
+  "DisplayName": "Ion Cube Generator",
   "Author": "PrimeSonic|FCStudios",
   "Version": "1.2.1",
   "Enable": true,
   "AssemblyName": "IonCubeGenerator.dll",
-  "Dependencies": [ "SMLHelper" ]
+  "Dependencies": [ "SMLHelper" ],
+  "NexusId": { "Subnautica": "242" },
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/IonCubeGenerator/mod_Subnautica.json" }
 }

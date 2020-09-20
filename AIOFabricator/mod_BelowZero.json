@@ -4,7 +4,8 @@
   "Author": "PrimeSonic",
   "Version": "1.1.2",
   "Enable": true,
-  "Game": "BelowZero", 
+  "Game": "BelowZero",
   "AssemblyName": "AIOFabricator.dll",
-  "VersionDependencies": { "SMLHelper": "2.6.0" }
+  "VersionDependencies": { "SMLHelper": "2.6.0" },
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/AIOFabricator/mod_BelowZero.json" }
 }

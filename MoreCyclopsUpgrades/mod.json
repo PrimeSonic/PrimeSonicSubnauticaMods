@@ -6,5 +6,7 @@
   "Enable": true,
   "Game": "Subnautica",
   "Dependencies": [ "SMLHelper" ],
-  "AssemblyName": "MoreCyclopsUpgrades.dll"
+  "AssemblyName": "MoreCyclopsUpgrades.dll",
+  "NexusId": { "Subnautica": "101" },
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/MoreCyclopsUpgrades/mod.json" }
 }
