@@ -1,6 +1,7 @@
 ﻿namespace CyclopsAutoZapper
 {
     using System.IO;
+    using System.Reflection;
     using CyclopsAutoZapper.Managers;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -27,7 +28,7 @@
         }
 
         public override CraftTree.Type FabricatorType => CraftTree.Type.CyclopsFabricator;
-        public override string AssetsFolder => Path.Combine("CyclopsAutoZapper", "Assets");
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock => TechType.CyclopsShieldModule;
         public override string[] StepsToFabricatorTab => MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
         public override string IconFileName => "CyclopsAntiParasite.png";
