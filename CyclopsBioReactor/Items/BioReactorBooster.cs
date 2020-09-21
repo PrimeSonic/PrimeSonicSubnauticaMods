@@ -1,5 +1,7 @@
 ﻿namespace CyclopsBioReactor.Items
 {
+    using System.IO;
+    using System.Reflection;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
@@ -17,7 +19,7 @@
 
         public override TechType RequiredForUnlock { get; } = TechType.BaseBioReactor;
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
-        public override string AssetsFolder { get; } = "CyclopsBioReactor/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override string[] StepsToFabricatorTab { get; } = MCUServices.CrossMod.StepsToCyclopsModulesTabInCyclopsFabricator;
 
         public BioReactorBooster()

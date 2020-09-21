@@ -4,6 +4,7 @@
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using System.IO;
+    using System.Reflection;
     using UnityEngine;
 
     internal class CyNukeEnhancerMk1 : Craftable
@@ -21,7 +22,7 @@
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.CyclopsFabricator;
         public override TechGroup GroupForPDA { get; } = TechGroup.Cyclops;
         public override TechCategory CategoryForPDA { get; } = TechCategory.CyclopsUpgrades;
-        public override string AssetsFolder { get; } = "CyclopsNuclearReactor/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.Cyclops;
         public override string[] StepsToFabricatorTab
         {

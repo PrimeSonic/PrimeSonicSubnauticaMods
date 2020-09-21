@@ -1,5 +1,7 @@
 ﻿namespace IonCubeGenerator.Buildable
 {
+    using System.IO;
+    using System.Reflection;
     using Common;
     using IonCubeGenerator.Craftables;
     using IonCubeGenerator.Display;
@@ -55,7 +57,7 @@
 
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorPieces;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorPiece;
-        public override string AssetsFolder { get; } = "IonCubeGenerator/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.PrecursorPrisonIonGenerator;
 
         public override GameObject GetGameObject()

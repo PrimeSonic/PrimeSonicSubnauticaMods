@@ -1,7 +1,8 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using System.IO;
+    using System.Reflection;
     using System;
-    using Common;
     using FCStudioHelpers;
     using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Assets;
@@ -92,7 +93,7 @@
 
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
-        public override string AssetsFolder { get; } = "CyclopsNuclearReactor/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.BaseNuclearReactor;
 
         public override GameObject GetGameObject()

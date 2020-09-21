@@ -1,5 +1,7 @@
 namespace UpgradedVehicles
 {
+    using System.IO;
+    using System.Reflection;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -18,7 +20,7 @@ namespace UpgradedVehicles
         public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
         public override CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
         public override string[] StepsToFabricatorTab => new[] { "CommonModules" };
-        public override string AssetsFolder => "UpgradedVehicles/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
         public override GameObject GetGameObject()
         {

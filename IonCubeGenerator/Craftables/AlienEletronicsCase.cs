@@ -1,7 +1,8 @@
-﻿using Common;
-
-namespace IonCubeGenerator.Craftables
+﻿namespace IonCubeGenerator.Craftables
 {
+    using System.IO;
+    using System.Reflection;
+    using Common;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using UnityEngine;
@@ -21,7 +22,7 @@ namespace IonCubeGenerator.Craftables
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Fabricator;
         public override TechGroup GroupForPDA { get; } = TechGroup.Resources;
         public override TechCategory CategoryForPDA { get; } = TechCategory.Electronics;
-        public override string AssetsFolder { get; } = "IonCubeGenerator/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override string[] StepsToFabricatorTab { get; } = new[] { "Resources", "Electronics" };
         public override TechType RequiredForUnlock { get; } = TechType.PrecursorPrisonIonGenerator;
 

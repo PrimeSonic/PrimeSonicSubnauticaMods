@@ -58,7 +58,7 @@
         private static void GenerateOriginalBioFuels()
         {
             const string fileName = "BioReactor_Values.txt";
-            const string Path = FileLocations.OriginalsFolder + fileName;
+            string Path = FileLocations.OriginalsFolder + fileName;
 
             if (File.Exists(Path))
                 return;
@@ -87,7 +87,7 @@
         private static void GenerateOriginalCraftingPaths()
         {
             const string fileName = "CraftingPaths.txt";
-            const string Path = FileLocations.OriginalsFolder + fileName;
+            string Path = FileLocations.OriginalsFolder + fileName;
 
             if (File.Exists(Path))
                 return;
@@ -146,7 +146,7 @@
         private static void GenerateValidFoodModels()
         {
             const string fileName = "FoodModels.txt";
-            const string Path = FileLocations.OriginalsFolder + fileName;
+            string Path = FileLocations.OriginalsFolder + fileName;
 
             if (File.Exists(Path))
                 return;

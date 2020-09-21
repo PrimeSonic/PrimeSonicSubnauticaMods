@@ -1,5 +1,7 @@
 ﻿namespace CyclopsBioReactor.Items
 {
+    using System.IO;
+    using System.Reflection;
     using CyclopsBioReactor.Management;
     using FCStudioHelpers;
     using MoreCyclopsUpgrades.API;
@@ -53,7 +55,7 @@
 
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
-        public override string AssetsFolder { get; } = "CyclopsBioReactor/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.BaseBioReactor;
 
         public override GameObject GetGameObject()
