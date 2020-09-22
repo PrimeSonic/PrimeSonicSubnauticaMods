@@ -176,8 +176,11 @@
         public bool GetPrefabs()
         {
             // == Get the prefab == //
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string folderPath = Path.Combine(executingLocation, "Assets");
+            string bundlePath = Path.Combine(folderPath, "CyNukReactorbundle");
 
-            AssetBundle assetBundle = AssetHelper.Asset("CyclopsNuclearReactor", "CyNukReactorbundle");
+            AssetBundle assetBundle = AssetBundle.LoadFromFile(bundlePath);
 
             //If the result is null return false.
             if (assetBundle == null)
@@ -229,7 +232,12 @@
             LanguageHandler.SetLanguageLine(UpgradedMsgKey, "Cyclops nuclear reactor has been enhanced");
             LanguageHandler.SetLanguageLine(CannotRemoveKey, "Too many active rods in nuclear reactor to remove enhancement");
             LanguageHandler.SetLanguageLine(InactiveRodKey, "Inactive");
-            SpriteHandler.RegisterSprite(SpriteManager.Group.Category, PowerIndicatorIconID, DirectoryHelper.GrabFromAssetsDirectory("CyclopsNuclearReactor", "CyNukReactorHUD.png"));
+
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string assetsFolder = Path.Combine(executingLocation, "Assets");
+            string filePath = Path.Combine(assetsFolder, "CyNukReactorHUD.png");
+
+            SpriteHandler.RegisterSprite(SpriteManager.Group.Category, PowerIndicatorIconID, filePath);
         }
     }
 }

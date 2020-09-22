@@ -129,7 +129,12 @@
         public bool GetPrefabs()
         {
             MCUServices.Logger.Debug("GetPrefabs");
-            AssetBundle assetBundle = AssetHelper.Asset("CyclopsBioReactor", "cyclopsbioreactormodbundle");
+
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string folderPath = Path.Combine(executingLocation, "Assets");
+            string bundlePath = Path.Combine(folderPath, "cyclopsbioreactormodbundle");
+
+            AssetBundle assetBundle = AssetBundle.LoadFromFile(bundlePath);
 
             //If the result is null return false.
             if (assetBundle == null)

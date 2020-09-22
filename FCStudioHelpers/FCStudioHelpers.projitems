@@ -9,8 +9,6 @@
     <Import_RootNamespace>CommonHelpers</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AssetHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DirectoryHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MaterialHelpers.cs" />
   </ItemGroup>
 </Project>
