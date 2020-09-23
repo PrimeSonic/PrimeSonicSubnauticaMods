@@ -161,9 +161,7 @@
 
             // When in Creative mode or using the NoPower cheat, inform the chargers that there is no power deficit.
             // This is so that each charger can decide what to do individually rather than skip the entire charging cycle all together.
-            powerDeficit = GameModeUtils.RequiresPower()
-                            ? Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower()
-                            : 0f;
+            powerDeficit = Cyclops.powerRelay.GetMaxPower() - Cyclops.powerRelay.GetPower();
 
             producedPower = 0f;
 
@@ -171,7 +169,7 @@
             for (int i = 0; i < this.Chargers.Length; i++)
                 producedPower += this.Chargers[i].Generate(powerDeficit);
 
-            if (powerDeficit > producedPower)
+            if (GameModeUtils.RequiresPower() && powerDeficit > producedPower)
             {
                 // Second, get non-renewable energy if there isn't enough renewable energy
                 for (int i = 0; i < this.Chargers.Length; i++)
