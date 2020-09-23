@@ -49,14 +49,6 @@
             ChoiceChanged = (int index, ModConfig config) => { config.ChallengeMode = (ChallengeMode)index; }
         };
 
-        private readonly SliderOption deficitThreshHold = new SliderOption(nameof(DeficitThreshold), "Conserve chargers when over %")
-        {
-            MinValue = 10f,
-            MaxValue = 100f,
-            Value = 100f, // Default to 100% instead of 95%
-            ValueChanged = (float value, ModConfig config) => { config.DeficitThreshold = value; }
-        };
-
         private readonly ChoiceOption showIcons = new ChoiceOption(nameof(ChargerIcons), "Charging Status Icons")
         {
             Choices = new string[4]
@@ -101,9 +93,9 @@
 
         private ModConfig()
         {
-            configOptions = new List<ConfigOption>(7)
+            configOptions = new List<ConfigOption>(6)
             {
-                auxConsoleEnabled, challengeMode, deficitThreshHold, showIcons, debugLogs, energyDisplay, showThermometer
+                auxConsoleEnabled, challengeMode, showIcons, debugLogs, energyDisplay, showThermometer
             };
 
             saveData = new ModConfigSaveData(configOptions);
@@ -139,18 +131,6 @@
                     mgr.Charge.RechargePenalty = rechargePenalty;
                     mgr.Cyclops.UpdatePowerRating();
                 }
-            }
-        }
-
-        public float DeficitThreshold
-        {
-            get => deficitThreshHold.SaveData.Value;
-            set
-            {
-                float roundedValue = Mathf.Round(value);
-                deficitThreshHold.SaveData.Value = roundedValue;
-                deficitThreshHold.Value = roundedValue;
-                saveData.SaveToFile();
             }
         }
 
@@ -242,24 +222,5 @@
 
             initialized = true;
         }
-
-        private float CyclopsMaxPower = 1f;
-
-        public float MinimumEnergyDeficit { get; private set; } = 60f;
-
-        public float EmergencyEnergyDeficit { get; private set; } = 6f;
-
-        public void UpdateCyclopsMaxPower(float maxPower)
-        {
-            if (CyclopsMaxPower == maxPower)
-                return;
-
-            CyclopsMaxPower = maxPower;
-            float ratio = this.DeficitThreshold / 100f;
-            this.MinimumEnergyDeficit = Mathf.Round(CyclopsMaxPower - CyclopsMaxPower * ratio);
-
-            this.EmergencyEnergyDeficit = Mathf.Round(CyclopsMaxPower / 2f);
-        }
-
     }
 }

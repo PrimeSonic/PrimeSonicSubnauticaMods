@@ -171,10 +171,7 @@
             for (int i = 0; i < this.Chargers.Length; i++)
                 producedPower += this.Chargers[i].Generate(powerDeficit);
 
-            if (powerDeficit > config.EmergencyEnergyDeficit ||
-                // Did the renewable energy sources not produce any power?                                                                
-                (powerDeficit > config.MinimumEnergyDeficit && producedPower < MinimalPowerValue))
-            // Is the power deficit over the threshhold to start consuming non-renewable energy?
+            if (powerDeficit > producedPower)
             {
                 // Second, get non-renewable energy if there isn't enough renewable energy
                 for (int i = 0; i < this.Chargers.Length; i++)

@@ -9,14 +9,10 @@
         ShowChargerIcons ChargerIcons { get; }
         bool EnableDebugLogs { get; }
         HelmEnergyDisplay EnergyDisplay { get; }
-        float DeficitThreshold { get; }
         float RechargePenalty { get; }
         bool HidePowerIcons { get; }
         bool ShowIconsOnHoloDisplay { get; }
         bool ShowIconsWhilePiloting { get; }
-        float MinimumEnergyDeficit { get; }
-        float EmergencyEnergyDeficit { get; }
-        void UpdateCyclopsMaxPower(float maxPower);
         bool ShowThermometer { get; }
     }
 }

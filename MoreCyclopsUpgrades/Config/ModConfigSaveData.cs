@@ -101,7 +101,7 @@
             string fileLocation = this.DefaultFileLocation();
             if (!File.Exists(fileLocation))
             {
-                QuickLogger.Debug("Mod config file not found. Writing default file.");
+                QuickLogger.Warning("Mod config file not found. Writing default file.");
                 SaveToFile();
                 return;
             }
@@ -110,7 +110,7 @@
 
             if (!text.StartsWith(versionLine))
             {
-                QuickLogger.Debug("Mod config file was out of date. Writing default file.");
+                QuickLogger.Warning("Mod config file was out of date. Writing default file.");
                 SaveToFile();
                 return;
             }
@@ -119,7 +119,7 @@
 
             if (!readCorrectly || !hasValidData)
             {
-                QuickLogger.Debug("Mod config file contained error. Writing default file.");
+                QuickLogger.Warning("Mod config file contained error. Writing default file.");
                 SaveToFile();
                 return;
             }
