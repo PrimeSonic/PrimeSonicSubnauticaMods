@@ -1,0 +1,11 @@
+{
+  "Id": "CustomBatteries",
+  "DisplayName": "Custom Batteries",
+  "Author": "PrimeSonic|Seraphim",
+  "Version": "1.0.2",
+  "Enable": true,
+  "Game": "BelowZero",
+  "AssemblyName": "CustomBatteries.dll",
+  "Dependencies": [ "SMLHelper" ],
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CustomBatteries/mod_BelowZero.json" }
+}

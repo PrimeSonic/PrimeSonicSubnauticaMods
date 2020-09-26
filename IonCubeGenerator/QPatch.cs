@@ -1,7 +1,7 @@
 ﻿namespace IonCubeGenerator
 {
     using Common;
-    using Harmony;
+    using HarmonyLib;
     using IonCubeGenerator.Buildable;
     using IonCubeGenerator.Configuration;
     using QModManager.API.ModLoading;
@@ -24,7 +24,7 @@
 
             CubeGeneratorBuildable.PatchSMLHelper();
 
-            var harmony = HarmonyInstance.Create("com.ioncubegenerator.psmod");
+            var harmony = new Harmony("com.ioncubegenerator.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             QuickLogger.Info("Finished patching");

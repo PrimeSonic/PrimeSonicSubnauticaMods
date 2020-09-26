@@ -1,5 +1,9 @@
 ﻿namespace CustomBatteries.API
 {
+    using UnityEngine;
+#if SUBNAUTICA
+    using Sprite = Atlas.Sprite;
+#endif
     /// <summary>
     /// An interface that defines all the necessary elements of a CustomBatteries mod plugin pack.
     /// </summary>
@@ -12,7 +16,7 @@
         /// <value>
         /// The battery icon.
         /// </value>
-        Atlas.Sprite BatteryIcon { get; }
+        Sprite BatteryIcon { get; }
 
         /// <summary>
         /// Gets the power cell icon sprite.
@@ -20,6 +24,6 @@
         /// <value>
         /// The power cell icon.
         /// </value>
-        Atlas.Sprite PowerCellIcon { get; }
+        Sprite PowerCellIcon { get; }
     }
 }

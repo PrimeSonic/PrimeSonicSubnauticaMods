@@ -1,5 +1,7 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
+    using System.IO;
+    using System.Reflection;
     using MoreCyclopsUpgrades.API.Upgrades;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -20,7 +22,7 @@
 
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
 
-        public override string AssetsFolder { get; } = "CyclopsNuclearUpgrades/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
         public override TechType RequiredForUnlock { get; } = TechType.BaseNuclearReactor;
 

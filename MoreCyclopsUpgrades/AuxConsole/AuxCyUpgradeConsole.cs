@@ -1,6 +1,8 @@
 ﻿namespace MoreCyclopsUpgrades.AuxConsole
 {
     using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -10,7 +12,7 @@
     {
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
-        public override string AssetsFolder { get; } = "MoreCyclopsUpgrades/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.CyclopsHullModule1;
 
         private const string OnHoverKey = "CyUpgradeOnHover";

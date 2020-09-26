@@ -2,6 +2,9 @@ namespace UpgradedVehicles
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+#endif
 
     internal class HullArmorMk4 : VehicleUpgradeModule
     {
@@ -23,9 +26,9 @@ namespace UpgradedVehicles
         public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
         public override string[] StepsToFabricatorTab => new[] { QPatch.WorkBenchTab };
 
-        protected override TechData GetBlueprintRecipe()
+        protected override RecipeData GetBlueprintRecipe()
         {
-            return new TechData()
+            return new RecipeData()
             {
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>

@@ -1,10 +1,12 @@
 {
   "Id": "CyclopsNuclearReactor",
-  "DisplayName": "CyclopsNuclearReactor",
+  "DisplayName": "Cyclops Nuclear Reactor",
   "Author": "PrimeSonic|FCStudios",
-  "Version": "4.2.2",
+  "Version": "4.2.3",
   "Enable": true,
   "Game": "Subnautica",
   "AssemblyName": "CyclopsNuclearReactor.dll",
-  "Dependencies": [ "MoreCyclopsUpgrades" ]
+  "Dependencies": [ "MoreCyclopsUpgrades" ],
+  "NexusId": { "Subnautica": "241" },
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CyclopsNuclearReactor/mod.json" }
 }

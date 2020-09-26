@@ -2,7 +2,7 @@
 {
     using System;
     using Common;
-    using Harmony;
+    using HarmonyLib;
     using MoreCyclopsUpgrades.API;
     using SMLHelper.V2.Handlers;
 
@@ -14,7 +14,7 @@
 
             try
             {
-                var harmony = HarmonyInstance.Create("com.CyclopsEnhancedSonar.psmod");
+                var harmony = new Harmony("com.CyclopsEnhancedSonar.psmod");
                 harmony.Patch( // Create a postfix patch on the SubControl Start method to add the CySonarComponent
                     original: AccessTools.Method(typeof(SubControl), nameof(SubControl.Start)), 
                     postfix: new HarmonyMethod(typeof(QPatch), nameof(QPatch.SubControlStartPostfix)));

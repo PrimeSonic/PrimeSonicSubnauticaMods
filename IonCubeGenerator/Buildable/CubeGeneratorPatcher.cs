@@ -1,5 +1,7 @@
 ﻿namespace IonCubeGenerator.Buildable
 {
+    using System.IO;
+    using System.Reflection;
     using Common;
     using IonCubeGenerator.Craftables;
     using IonCubeGenerator.Display;
@@ -9,6 +11,9 @@
     using SMLHelper.V2.Crafting;
     using System.IO;
     using UnityEngine;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+#endif
 
     internal partial class CubeGeneratorBuildable : Buildable
     {
@@ -52,7 +57,7 @@
 
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorPieces;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorPiece;
-        public override string AssetsFolder { get; } = "IonCubeGenerator/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.PrecursorPrisonIonGenerator;
 
         public override GameObject GetGameObject()
@@ -98,9 +103,9 @@
             return prefab;
         }
 
-        protected override TechData GetBlueprintRecipe()
+        protected override RecipeData GetBlueprintRecipe()
         {
-            return new TechData
+            return new RecipeData
             {
                 Ingredients =
                 {

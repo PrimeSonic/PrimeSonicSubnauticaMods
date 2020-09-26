@@ -1,9 +1,9 @@
 ﻿namespace BetterBioReactor
 {
-    using System.Collections.Generic;
     using BetterBioReactor.SaveData;
     using Common;
     using ProtoBuf;
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -85,9 +85,14 @@
         {
             HandReticle main = HandReticle.main;
 
-            // All this is getting updated in Unity 2018
             string text1 = Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText);
+#if SUBNAUTICA
             main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
+#elif BELOWZERO
+            main.SetText(HandReticle.TextType.Hand, text1, false, GameInput.Button.LeftHand);
+            main.SetText(HandReticle.TextType.HandSubscript, "Tooltip_UseBaseBioReactor", true);
+            
+#endif
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -203,7 +208,11 @@
 
             if (MaterialsProcessing.Count > 0 || this.CurrentPower > 0)
             {
+#if SUBNAUTICA
                 Text displayText = (BioReactor.GetModel() ?? fallbackGeometry)?.text;
+#elif BELOWZERO
+                TMPro.TextMeshProUGUI displayText = (BioReactor.GetModel() ?? fallbackGeometry)?.text;
+#endif
                 if (displayText != null)
                 {
                     string maxPowerText = this.MaxPowerText;

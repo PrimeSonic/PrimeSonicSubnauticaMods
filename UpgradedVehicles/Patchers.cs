@@ -1,7 +1,7 @@
 ﻿namespace UpgradedVehicles
 {
     using Common;
-    using Harmony;
+    using HarmonyLib;
     using UnityEngine;
 
     [HarmonyPatch(typeof(DamageSystem))]

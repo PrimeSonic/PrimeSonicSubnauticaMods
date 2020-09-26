@@ -2,6 +2,10 @@
 {
     using System.Collections.Generic;
     using SMLHelper.V2.Crafting;
+#if SUBNAUTICA
+    using RecipeData = SMLHelper.V2.Crafting.TechData;
+    using Sprite = Atlas.Sprite;
+#endif
 
     internal class SpeedBooster : VehicleUpgradeModule
     {
@@ -17,9 +21,9 @@
             };
         }
 
-        protected override TechData GetBlueprintRecipe()
+        protected override RecipeData GetBlueprintRecipe()
         {
-            return new TechData()
+            return new RecipeData()
             {
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>

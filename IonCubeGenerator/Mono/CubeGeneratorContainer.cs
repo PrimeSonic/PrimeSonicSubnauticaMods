@@ -9,7 +9,11 @@
 
     internal class CubeGeneratorContainer : ICubeContainer
     {
+#if SUBNAUTICA
         private static readonly Vector2int CubeSize = CraftData.GetItemSize(TechType.PrecursorIonCrystal);
+#elif BELOWZERO
+        private static readonly Vector2int CubeSize = TechData.GetItemSize(TechType.PrecursorIonCrystal);
+#endif
         internal static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
         private const int ContainerHeight = 2;
@@ -107,7 +111,8 @@
 
             var gameObject = GameObject.Instantiate<GameObject>(CubePrefab);
 
-            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
+            Pickupable pickupable = gameObject.GetComponent<Pickupable>();
+            pickupable.Pickup(false);
             var item = new InventoryItem(pickupable);
 
             _cubeContainer.UnsafeAdd(item);

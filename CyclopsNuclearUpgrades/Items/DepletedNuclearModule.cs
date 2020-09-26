@@ -1,5 +1,7 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
+    using System.IO;
+    using System.Reflection;
     using SMLHelper.V2.Assets;
     using UnityEngine;
 
@@ -7,7 +9,7 @@
     {
         private readonly CyclopsNuclearModule nuclearModule;
 
-        public override string AssetsFolder { get; } = "CyclopsNuclearUpgrades/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
         public DepletedNuclearModule(CyclopsNuclearModule module)
             : base("DepletedCyclopsNuclearModule",

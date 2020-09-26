@@ -2,7 +2,7 @@
 {
     using System.Reflection;
     using Common;
-    using Harmony;
+    using HarmonyLib;
     using MoreCyclopsUpgrades.API;
 
     public static class QPatch
@@ -17,7 +17,7 @@
             MCUServices.Register.CyclopsUpgradeHandler(speedUpgrade.CreateSpeedUpgradeHandler);
             MCUServices.Register.PdaIconOverlay(speedUpgrade.TechType, speedUpgrade.CreateSpeedIconOverlay);
 
-            var harmony = HarmonyInstance.Create("com.cyclopsspeedupgrades.psmod");
+            var harmony = new Harmony("com.cyclopsspeedupgrades.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             QuickLogger.Info($"Finished patching.");

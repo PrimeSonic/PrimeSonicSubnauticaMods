@@ -5,7 +5,7 @@
     using Common;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
-    using Harmony;
+    using HarmonyLib;
     using MoreCyclopsUpgrades.API;
     using QModManager.API.ModLoading;
 
@@ -25,7 +25,7 @@
                 var reactor = new CyBioReactor(booster);
                 reactor.Patch();
 
-                var harmony = HarmonyInstance.Create("com.morecyclopsupgrades.psmod");
+                var harmony = new Harmony("com.morecyclopsupgrades.psmod");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
 
                 MCUServices.Register.AuxCyclopsManager<BioAuxCyclopsManager>((SubRoot cyclops) =>

@@ -1,6 +1,6 @@
 ﻿namespace BetterBioReactor.Patchers
 {
-    using Harmony;
+    using HarmonyLib;
 
     // The immediate access to the internals of the BaseBioReactor (without the use of Reflection) was made possible thanks to the AssemblyPublicizer
     // https://github.com/CabbageCrow/AssemblyPublicizer

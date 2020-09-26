@@ -1,5 +1,7 @@
 ﻿namespace CyclopsBioReactor.Items
 {
+    using System.IO;
+    using System.Reflection;
     using CyclopsBioReactor.Management;
     using FCStudioHelpers;
     using MoreCyclopsUpgrades.API;
@@ -53,7 +55,7 @@
 
         public override TechGroup GroupForPDA { get; } = TechGroup.InteriorModules;
         public override TechCategory CategoryForPDA { get; } = TechCategory.InteriorModule;
-        public override string AssetsFolder { get; } = "CyclopsBioReactor/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.BaseBioReactor;
 
         public override GameObject GetGameObject()
@@ -127,7 +129,12 @@
         public bool GetPrefabs()
         {
             MCUServices.Logger.Debug("GetPrefabs");
-            AssetBundle assetBundle = AssetHelper.Asset("CyclopsBioReactor", "cyclopsbioreactormodbundle");
+
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string folderPath = Path.Combine(executingLocation, "Assets");
+            string bundlePath = Path.Combine(folderPath, "cyclopsbioreactormodbundle");
+
+            AssetBundle assetBundle = AssetBundle.LoadFromFile(bundlePath);
 
             //If the result is null return false.
             if (assetBundle == null)

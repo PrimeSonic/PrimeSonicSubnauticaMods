@@ -108,8 +108,6 @@
                 hudManager.lastMaxSubPowerDisplayed = normalMaxPowerInt;
             }
 
-            settings.UpdateCyclopsMaxPower(normalMaxPower);
-
             powerIconTextVisibility =
                     Player.main.currentSub == Cyclops &&
                     holographicHUD != null &&

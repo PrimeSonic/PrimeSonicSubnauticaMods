@@ -2,11 +2,13 @@
   "Id": "CyclopsEnhancedSonar",
   "DisplayName": "CyclopsEnhancedSonar",
   "Author": "PrimeSonic & frigidpenguin",
-  "Version": "1.0.1",
+  "Version": "1.0.2",
   "Enable": true,
   "Game": "Subnautica",
   "AssemblyName": "CyclopsEnhancedSonar.dll",
   "Dependencies": [ "SMLHelper", "MoreCyclopsUpgrades" ],
   "LoadBefore": [ "MoreCyclopsUpgrades" ],
-  "EntryMethod": "CyclopsEnhancedSonar.QPatch.Patch"
+  "EntryMethod": "CyclopsEnhancedSonar.QPatch.Patch",
+  "NexusId": { "Subnautica": "370" },
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CyclopsEnhancedSonar/mod.json" }
 }

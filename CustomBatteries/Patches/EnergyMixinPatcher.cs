@@ -1,14 +1,16 @@
 ﻿namespace MidGameBatteries.Patchers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using Common;
     using CustomBatteries.Items;
-    using Harmony;
+    using HarmonyLib;
 
     internal static class EnergyMixinPatcher
     {
-        internal static void Patch(HarmonyInstance harmony)
+        internal static void Patch(Harmony harmony)
         {
             QuickLogger.Debug($"{nameof(EnergyMixinPatcher)} Applying Harmony Patches");
 
@@ -37,10 +39,19 @@
             TechType? itemInSlot = item?.item?.GetTechType();
 
             if (itemInSlot.HasValue && CbCore.PowerCellTechTypes.Contains(itemInSlot.Value))
-                __instance.batteryModels[0].model.SetActive(true);
+            {
+                int modelToDisplay = 0; // If a matching model cannot be found, the standard PowerCell model will be used instead.
+                for (int b = 0; b < __instance.batteryModels.Length; b++)
+                {
+                    if (__instance.batteryModels[b].techType == itemInSlot.Value)
+                    {
+                        modelToDisplay = b;
+                        break;
+                    }
+                }
 
-            // Perhaps later a more suiteable model could be added with a more appropriate skin.
-            // This is functional for now.
+                __instance.batteryModels[modelToDisplay].model.SetActive(true);
+            }
         }
 
         public static void StartPostfix(ref EnergyMixin __instance)

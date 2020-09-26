@@ -1,5 +1,7 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using System.IO;
+    using System.Reflection;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -20,7 +22,7 @@
         public override CraftTree.Type FabricatorType { get; } = CraftTree.Type.Workbench;
         public override TechGroup GroupForPDA { get; } = TechGroup.Cyclops;
         public override TechCategory CategoryForPDA { get; } = TechCategory.CyclopsUpgrades;
-        public override string AssetsFolder { get; } = "CyclopsNuclearReactor/Assets";
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public override TechType RequiredForUnlock { get; } = TechType.Workbench;
         public override string[] StepsToFabricatorTab { get; } = new[] { "CyclopsMenu" };
 

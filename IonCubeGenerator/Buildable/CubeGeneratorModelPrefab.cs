@@ -1,5 +1,7 @@
 ﻿namespace IonCubeGenerator.Buildable
 {
+    using System.IO;
+    using System.Reflection;
     using Common;
     using FCStudioHelpers;
     using UnityEngine;
@@ -12,8 +14,11 @@
         private bool GetPrefabs()
         {
             // == Get the prefab == //
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string folderPath = Path.Combine(executingLocation, "Assets");
+            string bundlePath = Path.Combine(folderPath, "ioncubegeneratorbundle");
 
-            AssetBundle assetBundle = AssetHelper.Asset("IonCubeGenerator", "ioncubegeneratorbundle");
+            AssetBundle assetBundle = AssetBundle.LoadFromFile(bundlePath);
 
             //If the result is null return false.
             if (assetBundle == null)

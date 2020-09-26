@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using Common;
     using EasyMarkup;
     using UnityEngine;
 
@@ -52,15 +53,32 @@
             foreach (EmModuleSaveData savedItem in _materials.Values)
             {
                 var techTypeID = (TechType)savedItem.ItemID;
-                var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
 
-                Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
+                GameObject prefab = CraftData.GetPrefabForTechType(techTypeID);
+
+                if (prefab == null)
+                {
+                    QuickLogger.Warning($"Unable to find prefab for TechType '{techTypeID}'");
+                    continue;
+                }
+
+                var gameObject = GameObject.Instantiate(prefab);
+
+                Pickupable pickupable = gameObject.GetComponent<Pickupable>();
+
+                if (pickupable == null)
+                {
+                    QuickLogger.Warning($"Unable to find Pickupable component for item '{techTypeID.AsString()}'");
+                    continue;
+                }
+
+                pickupable.Pickup(false);
 
                 yield return new BioEnergy(pickupable, savedItem.RemainingCharge);
             }
         }
 
-        private string SaveDirectory => Path.Combine(SaveLoadManager.temporarySavePath, MainKey);
+        private string SaveDirectory => Path.Combine(SaveLoadManager.GetTemporarySavePath(), MainKey);
         private string SaveFile => Path.Combine(this.SaveDirectory, ID + ".txt");
 
         public bool LoadSaveFile()
