@@ -8,5 +8,5 @@
   "Game": "Subnautica",
   "Dependencies": [ "SMLHelper" ],
   "NexusId": { "Subnautica": "114" },
-  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CustomCraft2SML/mod_Subnautica.json" }
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CustomCraftSML/mod_Subnautica.json" }
 }
