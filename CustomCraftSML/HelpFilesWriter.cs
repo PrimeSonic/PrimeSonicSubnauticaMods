@@ -37,7 +37,7 @@
 
                 foreach (TechCategory category in groupCategories.Keys)
                 {
-                    string buildablesFile = $"{group}_{category}.txt";
+                    string buildablesFile = $"/{group}_{category}.txt";
 
                     if (File.Exists(FileLocations.OriginalsFolder + buildablesFile))
                         continue;
@@ -57,7 +57,7 @@
 
         private static void GenerateOriginalBioFuels()
         {
-            const string fileName = "BioReactor_Values.txt";
+            const string fileName = "/BioReactor_Values.txt";
             string Path = FileLocations.OriginalsFolder + fileName;
 
             if (File.Exists(Path))
@@ -86,7 +86,7 @@
 
         private static void GenerateOriginalCraftingPaths()
         {
-            const string fileName = "CraftingPaths.txt";
+            const string fileName = "/CraftingPaths.txt";
             string Path = FileLocations.OriginalsFolder + fileName;
 
             if (File.Exists(Path))
@@ -145,7 +145,7 @@
 
         private static void GenerateValidFoodModels()
         {
-            const string fileName = "FoodModels.txt";
+            const string fileName = "/FoodModels.txt";
             string Path = FileLocations.OriginalsFolder + fileName;
 
             if (File.Exists(Path))
