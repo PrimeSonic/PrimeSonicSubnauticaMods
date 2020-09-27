@@ -58,9 +58,9 @@
         private static void GenerateOriginalBioFuels()
         {
             const string fileName = "BioReactor_Values.txt";
-            string Path = FileLocations.OriginalsFolder + fileName;
+            string path = Path.Combine(FileLocations.OriginalsFolder, fileName);
 
-            if (File.Exists(Path))
+            if (File.Exists(path))
                 return;
 
             Dictionary<TechType, float> allBioFuels = ValidBioFuels.charge;
@@ -79,7 +79,7 @@
 
             printyPrints.Add(bioFuelList.PrettyPrint());
 
-            File.WriteAllLines(Path, printyPrints.ToArray(), Encoding.UTF8);
+            File.WriteAllLines(path, printyPrints.ToArray(), Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -87,9 +87,9 @@
         private static void GenerateOriginalCraftingPaths()
         {
             const string fileName = "CraftingPaths.txt";
-            string Path = FileLocations.OriginalsFolder + fileName;
+            string path = Path.Combine(FileLocations.OriginalsFolder, fileName);
 
-            if (File.Exists(Path))
+            if (File.Exists(path))
                 return;
 
             string[] originalPaths =
@@ -138,7 +138,7 @@
                 "Workbench/ExosuitMenu"
             };
 
-            File.WriteAllLines(Path, originalPaths, Encoding.UTF8);
+            File.WriteAllLines(path, originalPaths, Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -146,9 +146,9 @@
         private static void GenerateValidFoodModels()
         {
             const string fileName = "FoodModels.txt";
-            string Path = FileLocations.OriginalsFolder + fileName;
+            string path = Path.Combine(FileLocations.OriginalsFolder, fileName);
 
-            if (File.Exists(Path))
+            if (File.Exists(path))
                 return;
 
             var models = (FoodModel[])Enum.GetValues(typeof(FoodModel));
@@ -160,7 +160,7 @@
                 strings[i] = models[i].ToString();
             }
 
-            File.WriteAllLines(Path, strings, Encoding.UTF8);
+            File.WriteAllLines(path, strings, Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }
@@ -329,7 +329,7 @@
 
             printyPrints.Add(originals.PrettyPrint());
 
-            File.WriteAllLines(FileLocations.OriginalsFolder + fileName, printyPrints.ToArray(), Encoding.UTF8);
+            File.WriteAllLines(Path.Combine(FileLocations.OriginalsFolder, fileName), printyPrints.ToArray(), Encoding.UTF8);
 
             QuickLogger.Debug($"{fileName} file not found. File generated.");
         }

@@ -2,7 +2,7 @@
   "Id": "CustomCraft2SML",
   "DisplayName": "Custom Craft 2",
   "Author": "PrimeSonic & contributors",
-  "Version": "1.9.4",
+  "Version": "1.9.5",
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
   "Game": "BelowZero",
