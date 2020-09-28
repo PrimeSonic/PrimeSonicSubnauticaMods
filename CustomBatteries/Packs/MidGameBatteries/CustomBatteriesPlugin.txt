@@ -2,7 +2,7 @@
 (
     # Originally created by PrimeSonic #
     PluginPackName:MidGameBatteries;
-    BatteryCapacity:100;
+    BatteryCapacity:250;
     UnlocksWith:WhiteMushroom;
     BatteryID:DeepBattery;
     BatteryName:"Deep Battery";
