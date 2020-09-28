@@ -1,9 +1,11 @@
 ﻿namespace CustomBatteries.Items
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
     using Common;
+    using CustomBatteries.API;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -16,14 +18,12 @@
 
     internal abstract class CbCore : ModPrefab
     {
-        protected const string BatteryCraftTab = "BatteryTab";
-        protected const string PowCellCraftTab = "PowCellTab";
-        protected const string ElecCraftTab = "Electronics";
-        protected const string ResCraftTab = "Resources";
-        protected static readonly string[] BatteryCraftPath = new[] { ResCraftTab, ElecCraftTab, BatteryCraftTab };
-        protected static readonly string[] PowCellCraftPath = new[] { ResCraftTab, ElecCraftTab, PowCellCraftTab };
-
-        private static bool CraftingTabsPatched = false;
+        internal const string BatteryCraftTab = "BatteryTab";
+        internal const string PowCellCraftTab = "PowCellTab";
+        internal const string ElecCraftTab = "Electronics";
+        internal const string ResCraftTab = "Resources";
+        internal static readonly string[] BatteryCraftPath = new[] { ResCraftTab, ElecCraftTab, BatteryCraftTab };
+        internal static readonly string[] PowCellCraftPath = new[] { ResCraftTab, ElecCraftTab, PowCellCraftTab };
 
         public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -39,7 +39,23 @@
         public TechType RequiredForUnlock { get; set; } = TechType.None;
         public bool UnlocksAtStart => this.RequiredForUnlock == TechType.None;
 
-        public abstract RecipeData GetBlueprintRecipe();
+        public virtual RecipeData GetBlueprintRecipe()
+        {
+            var partsList = new List<Ingredient>();
+
+            CreateIngredients(this.Parts, partsList);
+
+            if (partsList.Count == 0)
+                partsList.Add(new Ingredient(TechType.Titanium, 1));
+
+            var batteryBlueprint = new RecipeData
+            {
+                craftAmount = 1,
+                Ingredients = partsList
+            };
+
+            return batteryBlueprint;
+        }
 
         public float PowerCapacity { get; set; }
 
@@ -67,6 +83,12 @@
             : base(classId, $"{classId}PreFab", TechType.None)
         {
             this.UsingIonCellSkins = ionCellSkins;
+        }
+
+        protected CbCore(IPackItem packItem)
+            : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
+        {
+            this.UsingIonCellSkins = packItem.CustomSkin == null;
         }
 
         public override GameObject GetGameObject()
@@ -128,7 +150,17 @@
                 KnownTechHandler.SetAnalysisTechEntry(this.RequiredForUnlock, new TechType[] { this.TechType });
 
             if (this.Sprite == null)
-                this.Sprite = ImageUtils.LoadSpriteFromFile(IOUtilities.Combine(ExecutingFolder, this.PluginFolder, this.IconFileName));
+            {
+                string imageFilePath = IOUtilities.Combine(ExecutingFolder, this.PluginFolder, this.IconFileName);
+
+                if (File.Exists(imageFilePath))
+                    this.Sprite = ImageUtils.LoadSpriteFromFile(imageFilePath);
+                else
+                {
+                    QuickLogger.Warning($"Did not find a matching image file at {imageFilePath}.{Environment.NewLine}Using default sprite instead.");
+                    this.Sprite = SpriteManager.Get(this.PrefabType);
+                }
+            }
 
             SpriteHandler.RegisterSprite(this.TechType, this.Sprite);
 
@@ -145,32 +177,6 @@
             AddToList();
 
             this.IsPatched = true;
-        }
-
-        internal static void PatchCraftingTabs()
-        {
-            if (CraftingTabsPatched)
-                return; // Just a safety
-
-            QuickLogger.Info("Separating batteries and power cells into their own fabricator crafting tabs");
-
-            // Remove original crafting nodes
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.Battery.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.PrecursorIonBattery.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.PowerCell.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.PrecursorIonPowerCell.ToString());
-
-            // Add a new set of tab nodes for batteries and power cells
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), ResCraftTab, ElecCraftTab);
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, PowCellCraftTab, "Power Cells", SpriteManager.Get(TechType.PowerCell), ResCraftTab, ElecCraftTab);
-
-            // Move the original batteries and power cells into these new tabs
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, BatteryCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, BatteryCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, PowCellCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, PowCellCraftPath);
-
-            CraftingTabsPatched = true;
         }
     }
 }

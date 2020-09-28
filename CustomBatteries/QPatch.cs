@@ -8,6 +8,7 @@
     using HarmonyLib;
     using MidGameBatteries.Patchers;
     using QModManager.API.ModLoading;
+    using SMLHelper.V2.Handlers;
 
     [QModCore]
     public static class QPatch
@@ -19,7 +20,7 @@
 
             try
             {
-                CbCore.PatchCraftingTabs();
+                PatchCraftingTabs();
                 PackReader.PatchTextPacks();
 
                 // Packs from external mods are patched as they arrive.
@@ -34,6 +35,27 @@
             {
                 QuickLogger.Error(ex);
             }
+        }
+
+        internal static void PatchCraftingTabs()
+        {
+            QuickLogger.Info("Separating batteries and power cells into their own fabricator crafting tabs");
+
+            // Remove original crafting nodes
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.Battery.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.PrecursorIonBattery.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.PowerCell.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.PrecursorIonPowerCell.ToString());
+
+            // Add a new set of tab nodes for batteries and power cells
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbCore.BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), CbCore.ResCraftTab, CbCore.ElecCraftTab);
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbCore.PowCellCraftTab, "Power Cells", SpriteManager.Get(TechType.PowerCell), CbCore.ResCraftTab, CbCore.ElecCraftTab);
+
+            // Move the original batteries and power cells into these new tabs
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, CbCore.BatteryCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, CbCore.BatteryCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, CbCore.PowCellCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, CbCore.PowCellCraftPath);
         }
 
         [QModPostPatch]

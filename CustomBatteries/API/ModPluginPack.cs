@@ -8,15 +8,5 @@
             _customBattery.Sprite = pluginPack.BatteryIcon;
             _customPowerCell.Sprite = pluginPack.PowerCellIcon;
         }
-
-        internal ModPluginPack(IModPluginPackCustomSkin pluginPack)
-            : base(pluginPack, false, true)
-        {
-            _customBattery.Sprite = pluginPack.BatteryIcon;
-            _customPowerCell.Sprite = pluginPack.PowerCellIcon;
-
-            _customBattery.CustomSkin = pluginPack.BatterySkin;
-            _customPowerCell.CustomSkin = pluginPack.PowerCellSkin;
-        }
     }
 }

@@ -44,14 +44,5 @@
         /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
         /// </returns>
         CustomPack AddPluginPackFromMod(IModPluginPack modPluginPack, bool useIonCellSkins);
-
-        /// <summary>
-        /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded items returned.
-        /// </summary>
-        /// <param name="modPluginPack">The mod plugin pack.</param>
-        /// <returns>
-        /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
-        /// </returns>
-        CustomPack AddSkinedPluginPackFromMod(IModPluginPackCustomSkin modPluginPack);
     }
 }
