@@ -94,24 +94,12 @@
     <None Include="mod_Subnautica.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Packs\EnzymeChargedBatteries\EnzymeBattery.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Packs\EnzymeChargedBatteries\CustomBatteriesPlugin.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Packs\EnzymeChargedBatteries\EnzymePowerCell.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Packs\MidGameBatteries\DeepBattery.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Packs\MidGameBatteries\DeepPowerCell.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Packs\MidGameBatteries\CustomBatteriesPlugin.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Packs\EnzymeChargedBatteries\EnzymeBattery.png" />
+    <Content Include="Packs\EnzymeChargedBatteries\CustomBatteriesPlugin.txt" />
+    <Content Include="Packs\EnzymeChargedBatteries\EnzymePowerCell.png" />
+    <Content Include="Packs\MidGameBatteries\DeepBattery.png" />
+    <Content Include="Packs\MidGameBatteries\DeepPowerCell.png" />
+    <Content Include="Packs\MidGameBatteries\CustomBatteriesPlugin.txt" />
   </ItemGroup>
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
