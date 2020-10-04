@@ -107,5 +107,24 @@
 
             return pack;
         }
+
+        /// <summary>
+        /// Allows mods to adds their own custom power cells directly. The plugin pack will be patched and the modded power cell data returned.
+        /// </summary>
+        /// <param name="packItem">The power cell data.</param>
+        /// <returns>
+        /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the power cell requested.
+        /// </returns>
+        public CbItemPack AddCustomPowerCell(ICbItem packItem)
+        {
+            string name = Assembly.GetCallingAssembly().GetName().Name;
+            QuickLogger.Info($"Received Custom Power Cell pack from '{name}'");
+
+            var pack = new CbItemPack(name, packItem, ItemTypes.PowerCell);
+
+            pack.Patch();
+
+            return pack;
+        }
     }
 }
