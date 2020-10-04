@@ -77,7 +77,7 @@
         /// <returns>
         /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the battery requested.
         /// </returns>
-        public CbItemPack AddCustomBattery(IPackItem packItem)
+        public CbItemPack AddCustomBattery(ICbItem packItem)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
             QuickLogger.Info($"Received Custom Battery pack from '{name}'");
@@ -96,7 +96,7 @@
         /// <returns>
         /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the power cell requested.
         /// </returns>
-        public CbItemPack AddCustomPowerCell(IPackItem packItem)
+        public CbItemPack AddCustomPowerCell(ICbItem packItem)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
             QuickLogger.Info($"Received Custom Power Cell pack from '{name}'");

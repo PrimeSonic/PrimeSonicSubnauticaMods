@@ -85,7 +85,7 @@
             this.UsingIonCellSkins = ionCellSkins;
         }
 
-        protected CbCore(IPackItem packItem)
+        protected CbCore(ICbItem packItem)
             : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
         {
             this.UsingIonCellSkins = packItem.CustomSkin == null;

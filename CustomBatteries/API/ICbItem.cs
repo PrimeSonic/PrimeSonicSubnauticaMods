@@ -6,16 +6,10 @@
     using Sprite = Atlas.Sprite;
 #endif
 
-    internal enum ItemTypes
-    {
-        Battery,
-        PowerCell
-    }
-
     /// <summary>
     /// An interface that defines all the necessary elements of a CustomBatteries plugin pack.
     /// </summary>
-    public interface IPackItem
+    public interface ICbItem
     {
         /// <summary>
         /// The full capacity of energy of the item.
