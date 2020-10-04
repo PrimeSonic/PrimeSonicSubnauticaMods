@@ -2,11 +2,11 @@
   "Id": "CustomCraft2SML",
   "DisplayName": "CustomCraft2",
   "Author": "PrimeSonic & contributors",
-  "Version": "1.9.5",
+  "Version": "1.9.6",
   "Enable": true,
   "AssemblyName": "CustomCraft2SML.dll",
   "Game": "Subnautica",
   "Dependencies": [ "SMLHelper" ],
   "NexusId": { "Subnautica": "114" },
-  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CustomCraft2SML/mod_Subnautica.json" }
+  "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/CustomCraftSML/mod_Subnautica.json" }
 }
