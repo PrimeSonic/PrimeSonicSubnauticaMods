@@ -79,9 +79,10 @@
             bool isStasisRifle = __instance.gameObject.name.Contains("StasisRifle");
             bool isPropCannon = __instance.gameObject.name.Contains("PropulsionCannon");
             bool isRepCannon = __instance.gameObject.name.Contains("RepulsionCannon");
+            bool isBuilder = __instance.gameObject.name.Contains("Builder");
 
             //if no models found but has controlled object move object to models
-            if ((Models.Count == 0 && __instance.controlledObjects.Length == 1) || isStasisRifle || isPropCannon || isRepCannon)
+            if ((Models.Count == 0 && __instance.controlledObjects.Length == 1 && !isBuilder) || isStasisRifle || isPropCannon || isRepCannon)
             {
 
                 if (isStasisRifle)
