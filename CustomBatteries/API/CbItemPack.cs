@@ -13,13 +13,13 @@
 
         internal CbCore CbCoreItem { get; }
 
-        public ICbItem OriginalItemData { get; internal set; }
+        public CbItem OriginalItemData { get; internal set; }
 
         public ModPrefab ItemPrefab => CbCoreItem;
 
         public bool IsPatched => CbCoreItem.IsPatched == true;
 
-        internal CbItemPack(string pluginPackName, ICbItem originalItemData, ItemTypes itemType)
+        internal CbItemPack(string pluginPackName, CbItem originalItemData, ItemTypes itemType)
         {
             this.Name = pluginPackName;
             this.CbCoreItem = new CustomItem(originalItemData, itemType)

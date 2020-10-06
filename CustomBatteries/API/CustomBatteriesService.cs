@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
-    using CustomBatteries.Items;
 
     /// <summary>
     /// An API service class that handles requests for CustomBatteries from external mods.
@@ -77,7 +76,7 @@
         /// <returns>
         /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the battery requested.
         /// </returns>
-        public CbItemPack AddCustomBattery(ICbItem packItem)
+        public CbItemPack AddCustomBattery(CbItem packItem)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
             QuickLogger.Info($"Received Custom Battery pack from '{name}'");
@@ -96,7 +95,7 @@
         /// <returns>
         /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the power cell requested.
         /// </returns>
-        public CbItemPack AddCustomPowerCell(ICbItem packItem)
+        public CbItemPack AddCustomPowerCell(CbItem packItem)
         {
             string name = Assembly.GetCallingAssembly().GetName().Name;
             QuickLogger.Info($"Received Custom Power Cell pack from '{name}'");

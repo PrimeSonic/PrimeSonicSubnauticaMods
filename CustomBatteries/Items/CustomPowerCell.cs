@@ -40,7 +40,7 @@
 
         protected override void AddToList()
         {
-            PowerCellTechTypes.Add(this.TechType);
+            PowerCellItems.Add(this);
         }
     }
 }

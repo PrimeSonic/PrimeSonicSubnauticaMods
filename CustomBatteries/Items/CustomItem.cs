@@ -4,7 +4,7 @@
 
     internal class CustomItem : CbCore
     {
-        public CustomItem(ICbItem packItem, ItemTypes itemType) : base(packItem)
+        public CustomItem(CbItem packItem, ItemTypes itemType) : base(packItem)
         {
             this.PackItem = packItem;
             this.ItemType = itemType;
@@ -12,7 +12,7 @@
 
         public ItemTypes ItemType { get; }
 
-        public ICbItem PackItem { get; }
+        public CbItem PackItem { get; }
 
         protected override TechType PrefabType => ItemType == ItemTypes.Battery ? TechType.Battery : TechType.PowerCell;
 
@@ -23,9 +23,9 @@
         protected override void AddToList()
         {
             if (ItemType == ItemTypes.Battery)
-                BatteryTechTypes.Add(this.TechType);
+                BatteryItems.Add(this);
             else
-                PowerCellTechTypes.Add(this.TechType);
+                PowerCellItems.Add(this);
         }
     }
 }

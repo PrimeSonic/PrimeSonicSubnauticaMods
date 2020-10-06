@@ -9,51 +9,54 @@
     /// <summary>
     /// An interface that defines all the necessary elements of a CustomBatteries plugin pack.
     /// </summary>
-    public interface ICbItem
+    public abstract class CbItem
     {
         /// <summary>
         /// The full capacity of energy of the item.
         /// </summary>
-        int Capacity { get; }
+        public abstract int Capacity { get; }
 
         /// <summary>
         /// The internal ID for the custom item.
         /// </summary>
-        string ID { get; }
+        public abstract string ID { get; }
 
         /// <summary>
         /// The display name of the custom item shown in-game.
         /// </summary>
-        string Name { get; }
+        public abstract string Name { get; }
 
         /// <summary>
         /// The flavor text for the custom item shown in-game when viewing it from a PDA screen.
         /// </summary>
-        string FlavorText { get; }
+        public abstract string FlavorText { get; }
 
         /// <summary>
         /// The materials required to craft the item.<para/>
         /// If you want multiple copies of the same material, include multiple entries of that <see cref="TechType"/>.<para/>
         /// If this list is empty, a default recipe of a single <see cref="TechType.Titanium"/> will be applied instead.
         /// </summary>
-        IList<TechType> CraftingMaterials { get; }
+        public abstract IList<TechType> CraftingMaterials { get; }
 
         /// <summary>
         /// What item must be obtained, scanned, or built to unlock the battery and power cell.<para/>
-        /// If you want them unlocked at the start of the game, set this to <see cref="TechType.None"/>.
+        /// This property is optional. By default, the item will be unlocked at the start of the game.
         /// </summary>
-        TechType UnlocksWith { get; }
+        public virtual TechType UnlocksWith => TechType.None;
 
         /// <summary>
         /// The custom sprite for the item's icon.<br/>
-        /// Return <see langword="null"/> to use a default icon.
+        /// This property is optional.
         /// </summary>
-        Sprite CustomIcon { get; }
+        public virtual Sprite CustomIcon => null;
 
         /// <summary>
         /// The custom skin for the item.<br/>
-        /// Return <see langword="null"/> to use a default skin.
+        /// This property is optional.
         /// </summary>
-        Texture2D CustomSkin { get; }
+        public virtual Texture2D CustomSkin => null;
+
+
+        public virtual bool ExcludeFromChargers => false;
     }
 }

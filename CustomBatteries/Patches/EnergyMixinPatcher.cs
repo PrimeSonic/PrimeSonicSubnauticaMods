@@ -29,7 +29,7 @@
 
         public static void NotifyHasBatteryPostfix(ref EnergyMixin __instance, InventoryItem item)
         {
-            if (CbCore.PowerCellTechTypes.Count == 0)
+            if (CbCore.PowerCellItems.Count == 0)
                 return;
 
             // For vehicles that show a battery model when one is equipped,
@@ -38,12 +38,18 @@
             // Null checks added on every step of the way
             TechType? itemInSlot = item?.item?.GetTechType();
 
-            if (itemInSlot.HasValue && CbCore.PowerCellTechTypes.Contains(itemInSlot.Value))
+            if (!itemInSlot.HasValue || itemInSlot.Value == TechType.None)
+                return; // Nothing here
+
+            TechType powerCellTechType = itemInSlot.Value;
+            bool isKnownModdedPowerCell = CbCore.PowerCellItems.Find(pc => pc.TechType == powerCellTechType) != null;
+
+            if (isKnownModdedPowerCell)
             {
                 int modelToDisplay = 0; // If a matching model cannot be found, the standard PowerCell model will be used instead.
                 for (int b = 0; b < __instance.batteryModels.Length; b++)
                 {
-                    if (__instance.batteryModels[b].techType == itemInSlot.Value)
+                    if (__instance.batteryModels[b].techType == powerCellTechType)
                     {
                         modelToDisplay = b;
                         break;
@@ -61,7 +67,7 @@
             if (!__instance.allowBatteryReplacement)
                 return; // Battery replacement not allowed - No need to make changes
 
-            if (CbCore.BatteryTechTypes.Count == 0)
+            if (CbCore.BatteryItems.Count == 0)
                 return;
 
             List<TechType> compatibleBatteries = __instance.compatibleBatteries;
@@ -161,7 +167,7 @@
             if (compatibleBatteries.Contains(TechType.Battery))
             {
                 // If the regular Battery is compatible with this item, then modded batteries should also be compatible
-                AddMissingTechTypesToList(compatibleBatteries, CbCore.BatteryTechTypes);
+                AddMissingTechTypesToList(compatibleBatteries, CbCore.BatteryItems);
                 if (batteryModel != null)
                 {
                     AddCustomModels(batteryModel, ref Models, CbCore.BatteryModels);
@@ -171,7 +177,7 @@
             if (compatibleBatteries.Contains(TechType.PowerCell))
             {
                 // If the regular Power Cell is compatible with this item, then modded power cells should also be compatible
-                AddMissingTechTypesToList(compatibleBatteries, CbCore.PowerCellTechTypes);
+                AddMissingTechTypesToList(compatibleBatteries, CbCore.PowerCellItems);
                 if (powerCellModel != null)
                 {
                     AddCustomModels(powerCellModel, ref Models, CbCore.PowerCellModels);
@@ -200,11 +206,11 @@
             }
         }
 
-        private static void AddMissingTechTypesToList(List<TechType> compatibleTechTypes, List<TechType> toBeAdded)
+        private static void AddMissingTechTypesToList(List<TechType> compatibleTechTypes, List<CbCore> toBeAdded)
         {
             for (int i = toBeAdded.Count - 1; i >= 0; i--)
             {
-                TechType entry = toBeAdded[i];
+                TechType entry = toBeAdded[i].TechType;
 
                 if (compatibleTechTypes.Contains(entry))
                     return;

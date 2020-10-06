@@ -73,7 +73,7 @@
     <Compile Include="API\CbItemPack.cs" />
     <Compile Include="API\CustomBatteriesService.cs" />
     <Compile Include="API\ICustomBatteriesService.cs" />
-    <Compile Include="API\ICbItem.cs" />
+    <Compile Include="API\CbItem.cs" />
     <Compile Include="API\IModPluginPack.cs" />
     <Compile Include="API\ItemTypes.cs" />
     <Compile Include="API\ITextPluginPack.cs" />

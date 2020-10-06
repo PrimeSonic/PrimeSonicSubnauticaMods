@@ -52,7 +52,7 @@
         /// <returns>
         /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the battery requested.
         /// </returns>
-        CbItemPack AddCustomBattery(ICbItem packItem);
+        CbItemPack AddCustomBattery(CbItem packItem);
 
         /// <summary>
         /// Allows mods to adds their own custom power cells directly. The plugin pack will be patched and the modded power cell data returned.
@@ -61,6 +61,6 @@
         /// <returns>
         /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the power cell requested.
         /// </returns>
-        CbItemPack AddCustomPowerCell(ICbItem packItem);
+        CbItemPack AddCustomPowerCell(CbItem packItem);
     }
 }

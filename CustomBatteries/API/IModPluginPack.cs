@@ -1,6 +1,5 @@
 ﻿namespace CustomBatteries.API
 {
-    using UnityEngine;
 #if SUBNAUTICA
     using Sprite = Atlas.Sprite;
 #endif

@@ -30,13 +30,11 @@
 
         public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        public static List<TechType> BatteryTechTypes { get; } = new List<TechType>();
-        public static TechType LastModdedBattery => BatteryTechTypes[BatteryTechTypes.Count - 1];
+        public static List<CbCore> BatteryItems { get; } = new List<CbCore>();
 
         internal static Dictionary<TechType, Texture2D> BatteryModels { get; } = new Dictionary<TechType, Texture2D>();
 
-        public static List<TechType> PowerCellTechTypes { get; } = new List<TechType>();
-        public static TechType LastModdedPowerCell => PowerCellTechTypes[PowerCellTechTypes.Count - 1];
+        public static List<CbCore> PowerCellItems { get; } = new List<CbCore>();
 
         internal static Dictionary<TechType, Texture2D> PowerCellModels { get; } = new Dictionary<TechType, Texture2D>();
 
@@ -86,13 +84,15 @@
 
         public Texture2D CustomSkin { get; set; }
 
+        public bool ExcludeFromChargers { get; set; }
+
         protected CbCore(string classId, bool ionCellSkins)
             : base(classId, $"{classId}PreFab", TechType.None)
         {
             this.UsingIonCellSkins = ionCellSkins;
         }
 
-        protected CbCore(ICbItem packItem)
+        protected CbCore(CbItem packItem)
             : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
         {
             this.UsingIonCellSkins = packItem.CustomSkin == null;
@@ -102,6 +102,8 @@
 
             if (packItem.CustomSkin != null)
                 this.CustomSkin = packItem.CustomSkin;
+
+            this.ExcludeFromChargers = packItem.ExcludeFromChargers;
         }
 
         public override GameObject GetGameObject()

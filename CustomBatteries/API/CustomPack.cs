@@ -2,7 +2,6 @@
 {
     using Common;
     using CustomBatteries.Items;
-    using CustomBatteries.PackReading;
     using SMLHelper.V2.Assets;
 
     /// <summary>
