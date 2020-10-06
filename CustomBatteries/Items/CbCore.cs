@@ -30,8 +30,12 @@
         public static List<TechType> BatteryTechTypes { get; } = new List<TechType>();
         public static TechType LastModdedBattery => BatteryTechTypes[BatteryTechTypes.Count - 1];
 
+        internal static Dictionary<TechType, Texture2D> BatteryModels { get; } = new Dictionary<TechType, Texture2D>();
+
         public static List<TechType> PowerCellTechTypes { get; } = new List<TechType>();
         public static TechType LastModdedPowerCell => PowerCellTechTypes[PowerCellTechTypes.Count - 1];
+
+        internal static Dictionary<TechType, Texture2D> PowerCellModels { get; } = new Dictionary<TechType, Texture2D>();
 
         protected abstract TechType PrefabType { get; } // Should only ever be Battery or PowerCell
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
@@ -89,6 +93,12 @@
             : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
         {
             this.UsingIonCellSkins = packItem.CustomSkin == null;
+            
+            if(packItem.CustomIcon != null)
+                this.Sprite = packItem.CustomIcon;
+
+            if (packItem.CustomSkin != null)
+                this.CustomSkin = packItem.CustomSkin;
         }
 
         public override GameObject GetGameObject()
@@ -100,12 +110,18 @@
             battery._capacity = this.PowerCapacity;
             battery.name = $"{this.ClassID}BatteryCell";
 
+            
             if (this.CustomSkin != null)
             {
-                SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponentInChildren<SkinnedMeshRenderer>();
-                skinnedMeshRenderer.material.mainTexture = this.CustomSkin;
-            }
+                MeshRenderer meshRenderer = obj.GetComponentInChildren<MeshRenderer>();
+                if (meshRenderer != null)
+                    meshRenderer.material.mainTexture = this.CustomSkin;
 
+                SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponentInChildren<SkinnedMeshRenderer>();
+                if (skinnedMeshRenderer != null)
+                    skinnedMeshRenderer.material.mainTexture = this.CustomSkin;
+            }
+            
             return obj;
         }
 
@@ -145,6 +161,63 @@
                 return;
 
             this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, this.UnlocksAtStart);
+
+            if (this.CustomSkin != null)
+            {
+                if (this.ChargerType == EquipmentType.BatteryCharger && !BatteryModels.ContainsKey(this.TechType))
+                {
+                    BatteryModels.Add(this.TechType, this.CustomSkin);
+                }
+                else if (this.ChargerType == EquipmentType.PowerCellCharger && !PowerCellModels.ContainsKey(this.TechType))
+                {
+                    PowerCellModels.Add(this.TechType, this.CustomSkin);
+                }
+            }
+            else
+            {
+                if (this.UsingIonCellSkins)
+                {
+                    if (this.ChargerType == EquipmentType.BatteryCharger)
+                    {
+                        GameObject battery = Resources.Load<GameObject>("worldentities/tools/precursorionbattery");
+                        Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                        if (texture != null)
+                        {
+                            BatteryModels.Add(this.TechType, texture);
+                        }
+                    }
+                    else if (this.ChargerType == EquipmentType.PowerCellCharger)
+                    {
+                        GameObject battery = Resources.Load<GameObject>("worldentities/tools/precursorionpowercell");
+                        Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                        if (texture != null)
+                        {
+                            BatteryModels.Add(this.TechType, texture);
+                        }
+                    }
+                }
+                else
+                {
+                    if (this.ChargerType == EquipmentType.BatteryCharger)
+                    {
+                        GameObject battery = Resources.Load<GameObject>("worldentities/tools/battery");
+                        Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                        if (texture != null)
+                        {
+                            BatteryModels.Add(this.TechType, texture);
+                        }
+                    }
+                    else if (this.ChargerType == EquipmentType.PowerCellCharger)
+                    {
+                        GameObject battery = Resources.Load<GameObject>("worldentities/tools/powercell");
+                        Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                        if (texture != null)
+                        {
+                            BatteryModels.Add(this.TechType, texture);
+                        }
+                    }
+                }
+            }
 
             if (!this.UnlocksAtStart)
                 KnownTechHandler.SetAnalysisTechEntry(this.RequiredForUnlock, new TechType[] { this.TechType });
