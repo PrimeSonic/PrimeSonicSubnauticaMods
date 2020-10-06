@@ -22,6 +22,9 @@
         internal const string PowCellCraftTab = "PowCellTab";
         internal const string ElecCraftTab = "Electronics";
         internal const string ResCraftTab = "Resources";
+
+        private static readonly WorldEntitiesCache worldEntities = new WorldEntitiesCache();
+
         internal static readonly string[] BatteryCraftPath = new[] { ResCraftTab, ElecCraftTab, BatteryCraftTab };
         internal static readonly string[] PowCellCraftPath = new[] { ResCraftTab, ElecCraftTab, PowCellCraftTab };
 
@@ -173,48 +176,45 @@
                     PowerCellModels.Add(this.TechType, this.CustomSkin);
                 }
             }
-            else
+            else if (this.UsingIonCellSkins)
             {
-                if (this.UsingIonCellSkins)
+                if (this.ChargerType == EquipmentType.BatteryCharger)
                 {
-                    if (this.ChargerType == EquipmentType.BatteryCharger)
+                    GameObject battery = worldEntities.IonBattery();
+                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    if (texture != null)
                     {
-                        GameObject battery = Resources.Load<GameObject>("worldentities/tools/precursorionbattery");
-                        Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                        if (texture != null)
-                        {
-                            BatteryModels.Add(this.TechType, texture);
-                        }
-                    }
-                    else if (this.ChargerType == EquipmentType.PowerCellCharger)
-                    {
-                        GameObject battery = Resources.Load<GameObject>("worldentities/tools/precursorionpowercell");
-                        Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                        if (texture != null)
-                        {
-                            BatteryModels.Add(this.TechType, texture);
-                        }
+                        BatteryModels.Add(this.TechType, texture);
                     }
                 }
-                else
+                else if (this.ChargerType == EquipmentType.PowerCellCharger)
                 {
-                    if (this.ChargerType == EquipmentType.BatteryCharger)
+                    GameObject battery = worldEntities.IonPowerCell();
+                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    if (texture != null)
                     {
-                        GameObject battery = Resources.Load<GameObject>("worldentities/tools/battery");
-                        Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                        if (texture != null)
-                        {
-                            BatteryModels.Add(this.TechType, texture);
-                        }
+                        BatteryModels.Add(this.TechType, texture);
                     }
-                    else if (this.ChargerType == EquipmentType.PowerCellCharger)
+                }
+            }
+            else
+            {
+                if (this.ChargerType == EquipmentType.BatteryCharger)
+                {
+                    GameObject battery = worldEntities.Battery();
+                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    if (texture != null)
                     {
-                        GameObject battery = Resources.Load<GameObject>("worldentities/tools/powercell");
-                        Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                        if (texture != null)
-                        {
-                            BatteryModels.Add(this.TechType, texture);
-                        }
+                        BatteryModels.Add(this.TechType, texture);
+                    }
+                }
+                else if (this.ChargerType == EquipmentType.PowerCellCharger)
+                {
+                    GameObject battery = worldEntities.PowerCell();
+                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    if (texture != null)
+                    {
+                        BatteryModels.Add(this.TechType, texture);
                     }
                 }
             }

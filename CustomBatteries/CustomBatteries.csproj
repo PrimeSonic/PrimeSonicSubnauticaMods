@@ -85,6 +85,7 @@
     <Compile Include="API\CustomPack.cs" />
     <Compile Include="Items\CustomItem.cs" />
     <Compile Include="Items\CustomPowerCell.cs" />
+    <Compile Include="Items\WorldEntitiesCache.cs" />
     <Compile Include="PackReading\EmTextPluginPack.cs" />
     <Compile Include="PackReading\IParsedPluginPack.cs" />
     <Compile Include="PackReading\PackReader.cs" />
