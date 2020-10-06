@@ -1,12 +1,9 @@
 ﻿namespace MidGameBatteries.Patchers
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
     using Common;
     using CustomBatteries.Items;
-    using FMOD;
     using HarmonyLib;
     using UnityEngine;
     using static EnergyMixin;
@@ -61,10 +58,10 @@
         {
             // This is necessary to allow the new batteries to be compatible with tools and vehicles
 
-            if(!__instance.allowBatteryReplacement)
+            if (!__instance.allowBatteryReplacement)
                 return; // Battery replacement not allowed - No need to make changes
 
-            if(CbCore.BatteryTechTypes.Count == 0)
+            if (CbCore.BatteryTechTypes.Count == 0)
                 return;
 
             List<TechType> compatibleBatteries = __instance.compatibleBatteries;
@@ -140,11 +137,11 @@
                     Models.Add(new BatteryModels() { model = GameObject.Instantiate(model4, batteryModel.transform.parent), techType = TechType.PrecursorIonPowerCell });
                 }
 
-                 __instance.controlledObjects = new GameObject[0];
+                __instance.controlledObjects = new GameObject[0];
 
             }
 
-            if(batteryModel is null && powerCellModel is null)
+            if (batteryModel is null && powerCellModel is null)
             {
                 for (int b = 0; b < Models.Count; b++)
                 {
@@ -165,13 +162,13 @@
             {
                 // If the regular Battery is compatible with this item, then modded batteries should also be compatible
                 AddMissingTechTypesToList(compatibleBatteries, CbCore.BatteryTechTypes);
-                if(batteryModel != null)
+                if (batteryModel != null)
                 {
                     AddCustomModels(batteryModel, ref Models, CbCore.BatteryModels);
                 }
             }
 
-            if(compatibleBatteries.Contains(TechType.PowerCell))
+            if (compatibleBatteries.Contains(TechType.PowerCell))
             {
                 // If the regular Power Cell is compatible with this item, then modded power cells should also be compatible
                 AddMissingTechTypesToList(compatibleBatteries, CbCore.PowerCellTechTypes);
@@ -186,7 +183,7 @@
 
         private static void AddCustomModels(GameObject originalModel, ref List<BatteryModels> Models, Dictionary<TechType, Texture2D> customModels)
         {
-            foreach(KeyValuePair<TechType, Texture2D> pair in customModels)
+            foreach (KeyValuePair<TechType, Texture2D> pair in customModels)
             {
                 GameObject obj = GameObject.Instantiate(originalModel, originalModel.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";

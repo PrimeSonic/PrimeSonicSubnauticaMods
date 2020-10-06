@@ -13,7 +13,7 @@
 
         internal CbCore CbCoreItem { get; }
 
-        public ICbItem OriginalItemData { get; set; }
+        public ICbItem OriginalItemData { get; internal set; }
 
         public ModPrefab ItemPrefab => CbCoreItem;
 

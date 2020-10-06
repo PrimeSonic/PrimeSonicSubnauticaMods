@@ -93,8 +93,8 @@
             : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
         {
             this.UsingIonCellSkins = packItem.CustomSkin == null;
-            
-            if(packItem.CustomIcon != null)
+
+            if (packItem.CustomIcon != null)
                 this.Sprite = packItem.CustomIcon;
 
             if (packItem.CustomSkin != null)
@@ -110,7 +110,7 @@
             battery._capacity = this.PowerCapacity;
             battery.name = $"{this.ClassID}BatteryCell";
 
-            
+
             if (this.CustomSkin != null)
             {
                 MeshRenderer meshRenderer = obj.GetComponentInChildren<MeshRenderer>();
@@ -121,7 +121,7 @@
                 if (skinnedMeshRenderer != null)
                     skinnedMeshRenderer.material.mainTexture = this.CustomSkin;
             }
-            
+
             return obj;
         }
 
