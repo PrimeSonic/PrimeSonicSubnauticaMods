@@ -44,23 +44,5 @@
         /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
         /// </returns>
         CustomPack AddPluginPackFromMod(IModPluginPack modPluginPack, bool useIonCellSkins);
-
-        /// <summary>
-        /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded battery data returned.
-        /// </summary>
-        /// <param name="packItem">The battery data.</param>
-        /// <returns>
-        /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the battery requested.
-        /// </returns>
-        CbItemPack AddCustomBattery(CbItem packItem);
-
-        /// <summary>
-        /// Allows mods to adds their own custom power cells directly. The plugin pack will be patched and the modded power cell data returned.
-        /// </summary>
-        /// <param name="packItem">The power cell data.</param>
-        /// <returns>
-        /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the power cell requested.
-        /// </returns>
-        CbItemPack AddCustomPowerCell(CbItem packItem);
     }
 }

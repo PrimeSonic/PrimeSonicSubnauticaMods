@@ -1,5 +1,6 @@
 ﻿namespace CustomBatteries.API
 {
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
@@ -8,6 +9,7 @@
     /// An API service class that handles requests for CustomBatteries from external mods.
     /// </summary>
     /// <seealso cref="ICustomBatteriesService" />
+    [Obsolete("This is now an old API. Use the CbItem class instead.", false)]
     public class CustomBatteriesService : ICustomBatteriesService
     {
         /// <summary>
@@ -64,44 +66,6 @@
             QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}', from '{Assembly.GetCallingAssembly().GetName().Name}'");
 
             var pack = new ModPluginPack(modPluginPack, useIonCellSkins);
-            pack.Patch();
-
-            return pack;
-        }
-
-        /// <summary>
-        /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded battery data returned.
-        /// </summary>
-        /// <param name="packItem">The battery data.</param>
-        /// <returns>
-        /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the battery requested.
-        /// </returns>
-        public CbItemPack AddCustomBattery(CbItem packItem)
-        {
-            string name = Assembly.GetCallingAssembly().GetName().Name;
-            QuickLogger.Info($"Received Custom Battery pack from '{name}'");
-            
-            var pack = new CbItemPack(name, packItem, ItemTypes.Battery);
-
-            pack.Patch();
-
-            return pack;
-        }
-
-        /// <summary>
-        /// Allows mods to adds their own custom power cells directly. The plugin pack will be patched and the modded power cell data returned.
-        /// </summary>
-        /// <param name="packItem">The power cell data.</param>
-        /// <returns>
-        /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the power cell requested.
-        /// </returns>
-        public CbItemPack AddCustomPowerCell(CbItem packItem)
-        {
-            string name = Assembly.GetCallingAssembly().GetName().Name;
-            QuickLogger.Info($"Received Custom Power Cell pack from '{name}'");
-
-            var pack = new CbItemPack(name, packItem, ItemTypes.PowerCell);
-
             pack.Patch();
 
             return pack;

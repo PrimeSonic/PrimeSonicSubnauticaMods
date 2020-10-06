@@ -86,6 +86,8 @@
 
         public bool ExcludeFromChargers { get; set; }
 
+        protected Action<GameObject> EnhanceGameObject { get; set; }
+
         protected CbCore(string classId, bool ionCellSkins)
             : base(classId, $"{classId}PreFab", TechType.None)
         {
@@ -104,6 +106,8 @@
                 this.CustomSkin = packItem.CustomSkin;
 
             this.ExcludeFromChargers = packItem.ExcludeFromChargers;
+
+            this.EnhanceGameObject = packItem.EnhanceGameObject;
         }
 
         public override GameObject GetGameObject()
@@ -115,7 +119,6 @@
             battery._capacity = this.PowerCapacity;
             battery.name = $"{this.ClassID}BatteryCell";
 
-
             if (this.CustomSkin != null)
             {
                 MeshRenderer meshRenderer = obj.GetComponentInChildren<MeshRenderer>();
@@ -126,6 +129,8 @@
                 if (skinnedMeshRenderer != null)
                     skinnedMeshRenderer.material.mainTexture = this.CustomSkin;
             }
+
+            this.EnhanceGameObject?.Invoke(obj);
 
             return obj;
         }
