@@ -27,7 +27,7 @@
                 PluginPackName = pluginPackName,
                 FriendlyName = originalItemData.Name,
                 Description = originalItemData.FlavorText,
-                PowerCapacity = originalItemData.Capacity,
+                PowerCapacity = originalItemData.EnergyCapacity,
                 RequiredForUnlock = originalItemData.UnlocksWith,
                 Parts = originalItemData.CraftingMaterials
             };
