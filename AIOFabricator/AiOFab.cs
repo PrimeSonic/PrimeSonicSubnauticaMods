@@ -194,14 +194,25 @@
 
             if (!languageLines.ContainsKey(clonedLangKey) && languageLines.TryGetValue(scheme, out string origString))
             {
+                LanguageHandler.SetLanguageLine(clonedLangKey, origString);
                 languageLines[clonedLangKey] = origString;
+            }
+            else
+            {
+                Console.WriteLine($"[AIOFabricator][WARN] Problem cloning language line for '{scheme}:root'{Environment.NewLine}Language resource not found");
             }
 
             string clonedSpriteKey = string.Format(TabSpriteFormat, AioFabScheme, scheme);
 
             if (TechTypeExtensions.FromString(scheme, out TechType techType, true))
             {
-                group[clonedSpriteKey] = SpriteManager.Get(techType);
+                var rootSprite = SpriteManager.Get(techType);
+                SpriteHandler.RegisterSprite(SpriteManager.Group.Category, clonedSpriteKey, rootSprite);
+                group[clonedSpriteKey] = rootSprite;
+            }
+            else
+            {
+                Console.WriteLine($"[AIOFabricator][WARN] Problem cloning sprite for '{scheme}:root'{Environment.NewLine}Sprite resource not found");
             }
         }
 
@@ -228,6 +239,7 @@
                     {
                         if (languageLines != null && !languageLines.ContainsKey(clonedLangKey) && languageLines.TryGetValue(origLangKey, out string origString))
                         {
+                            LanguageHandler.SetLanguageLine(clonedLangKey, origString);
                             languageLines[clonedLangKey] = origString;
                         }
                         else
@@ -246,6 +258,7 @@
                     {
                         if (group != null && group.TryGetValue(origSpriteKey, out Sprite groupSprite))
                         {
+                            SpriteHandler.RegisterSprite(SpriteManager.Group.Category, clonedSpriteKey, groupSprite);
                             group[clonedSpriteKey] = groupSprite;
                         }
                         else
