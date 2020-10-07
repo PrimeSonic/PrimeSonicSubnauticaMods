@@ -76,15 +76,20 @@
             GameObject batteryModel = null;
             GameObject powerCellModel = null;
 
-            bool isStasisRifle = __instance.gameObject.name.Contains("StasisRifle");
-            bool isPropCannon = __instance.gameObject.name.Contains("PropulsionCannon");
-            bool isRepCannon = __instance.gameObject.name.Contains("RepulsionCannon");
-            bool isBuilder = __instance.gameObject.name.Contains("Builder");
+            TechType techType = CraftData.GetTechType(__instance.gameObject);
+
+            bool isStasisRifle = techType == TechType.StasisRifle;
+            bool isPropCannon = techType == TechType.PropulsionCannon;
+            bool isRepCannon = techType == TechType.RepulsionCannon;
+#if SUBNAUTICA
+            bool isBlacklisted = techType == TechType.Builder;
+#elif BELOWZERO
+            bool isBlacklisted = techType == TechType.MetalDetector || techType == TechType.Builder;
+#endif
 
             //if no models found but has controlled object move object to models
-            if ((Models.Count == 0 && __instance.controlledObjects.Length == 1 && !isBuilder) || isStasisRifle || isPropCannon || isRepCannon)
+            if ((Models.Count == 0 && __instance.controlledObjects.Length == 1 && !isBlacklisted) || isStasisRifle || isPropCannon || isRepCannon)
             {
-
                 if (isStasisRifle)
                 {
                     batteryModel = __instance.gameObject.transform.Find("stasis_rifle/battery_01").gameObject;
