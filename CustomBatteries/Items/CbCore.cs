@@ -25,8 +25,8 @@
 
         private static readonly WorldEntitiesCache worldEntities = new WorldEntitiesCache();
 
-        internal static readonly string[] BatteryCraftPath = new[] { ResCraftTab, ElecCraftTab, BatteryCraftTab };
-        internal static readonly string[] PowCellCraftPath = new[] { ResCraftTab, ElecCraftTab, PowCellCraftTab };
+        internal static readonly string[] BatteryCraftPath = new[] { ResCraftTab, BatteryCraftTab };
+        internal static readonly string[] PowCellCraftPath = new[] { ResCraftTab, PowCellCraftTab };
 
         public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 

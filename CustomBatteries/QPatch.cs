@@ -48,8 +48,8 @@
             CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.PrecursorIonPowerCell.ToString());
 
             // Add a new set of tab nodes for batteries and power cells
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbCore.BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), CbCore.ResCraftTab, CbCore.ElecCraftTab);
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbCore.PowCellCraftTab, "Power Cells", SpriteManager.Get(TechType.PowerCell), CbCore.ResCraftTab, CbCore.ElecCraftTab);
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbCore.BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), CbCore.ResCraftTab);
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbCore.PowCellCraftTab, "Power Cells", SpriteManager.Get(TechType.PowerCell), CbCore.ResCraftTab);
 
             // Move the original batteries and power cells into these new tabs
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, CbCore.BatteryCraftPath);
