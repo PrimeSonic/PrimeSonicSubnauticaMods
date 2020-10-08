@@ -23,7 +23,7 @@
     <GameDir>$(BelowZeroDir)</GameDir>
     <DataFolder>SubnauticaZero_Data</DataFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Subnautica|AnyCPU'">
@@ -33,7 +33,7 @@
     <GameDir>$(SubnauticaDir)</GameDir>
     <DataFolder>Subnautica_Data</DataFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
@@ -70,6 +70,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisplayTexts.cs" />
     <Compile Include="Items\CyclopsAutoDefenseMk2.cs" />
     <Compile Include="Items\CyclopsParasiteRemover.cs" />
     <Compile Include="Items\CyclopsAutoDefense.cs" />

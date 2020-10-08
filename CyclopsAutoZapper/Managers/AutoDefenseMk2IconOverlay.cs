@@ -17,17 +17,12 @@
         {
             if (GameModeUtils.RequiresPower() && base.Cyclops.powerRelay.GetPower() < Zapper.EnergyRequiredToZap)
             {
-                base.UpperText.FontSize = 20;
                 base.MiddleText.FontSize = 20;
-                base.LowerText.FontSize = 20;
-
-                base.UpperText.TextString = "CYCLOPS";
-                base.MiddleText.TextString = "POWER";
-                base.LowerText.TextString = "LOW";
-
-                base.UpperText.TextColor = Color.red;
+                base.MiddleText.TextString = DisplayTexts.Main.CyclopsPowerLow;
                 base.MiddleText.TextColor = Color.red;
-                base.LowerText.TextColor = Color.red;
+
+                base.UpperText.TextString = string.Empty;
+                base.LowerText.TextString = string.Empty;
             }
             else
             {
@@ -36,12 +31,12 @@
 
                 if (zapper.IsOnCooldown)
                 {
-                    base.LowerText.TextString = "Defense System\n[Cooldown]";
+                    base.LowerText.TextString = DisplayTexts.Main.DefenseCooldown;
                     base.LowerText.TextColor = Color.yellow;
                 }
                 else
                 {
-                    base.LowerText.TextString = "Defense System\n[Charged]";
+                    base.LowerText.TextString = DisplayTexts.Main.DefenseCharged;
                     base.LowerText.TextColor = Color.white;
                 }
             }

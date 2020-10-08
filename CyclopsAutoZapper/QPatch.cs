@@ -19,6 +19,8 @@
             var defenseSystemMk2 = new CyclopsAutoDefenseMk2(defenseSystem);
             defenseSystemMk2.Patch();
 
+            DisplayTexts.Main.Patch();
+
             var harmony = new Harmony("com.cyclopsautozapper.psmod");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
