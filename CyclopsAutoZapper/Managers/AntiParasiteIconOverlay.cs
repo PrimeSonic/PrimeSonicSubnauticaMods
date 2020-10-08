@@ -15,33 +15,45 @@
 
         public override void UpdateText()
         {
-            base.UpperText.FontSize = 12;
-            base.MiddleText.FontSize = 12;
-            base.LowerText.FontSize = 12;
-
-            if (shieldPulser.HasShieldModule)
+            if (GameModeUtils.RequiresPower() && base.Cyclops.powerRelay.GetPower() < Zapper.EnergyRequiredToZap)
             {
-                base.UpperText.TextString = "Shield\n[Connected]";
-                base.UpperText.TextColor = Color.green;
+                base.MiddleText.FontSize = 20;
+                base.MiddleText.TextString = DisplayTexts.Main.CyclopsPowerLow;
+                base.MiddleText.TextColor = Color.red;
 
-                if (shieldPulser.IsOnCooldown)
-                {
-                    base.LowerText.TextString = "Defense System\n[Cooldown]";
-                    base.LowerText.TextColor = Color.yellow;
-                }
-                else
-                {
-                    base.LowerText.TextString = "Defense System\n[Charged]";
-                    base.LowerText.TextColor = Color.white;
-                }
+                base.UpperText.TextString = string.Empty;
+                base.LowerText.TextString = string.Empty;
             }
             else
             {
-                base.UpperText.TextString = "Shield\n[Not Connected]";
-                base.UpperText.TextColor = Color.red;
+                base.UpperText.FontSize = 12;
+                base.MiddleText.FontSize = 12;
+                base.LowerText.FontSize = 12;
 
-                base.MiddleText.TextString = string.Empty;
-                base.LowerText.TextString = string.Empty;
+                if (shieldPulser.HasShieldModule)
+                {
+                    base.UpperText.TextString = DisplayTexts.Main.ShieldConnected;
+                    base.UpperText.TextColor = Color.green;
+
+                    if (shieldPulser.IsOnCooldown)
+                    {
+                        base.LowerText.TextString = DisplayTexts.Main.DefenseCooldown;
+                        base.LowerText.TextColor = Color.yellow;
+                    }
+                    else
+                    {
+                        base.LowerText.TextString = DisplayTexts.Main.DefenseCharged;
+                        base.LowerText.TextColor = Color.white;
+                    }
+                }
+                else
+                {
+                    base.UpperText.TextString = DisplayTexts.Main.ShieldNotConnected;
+                    base.UpperText.TextColor = Color.red;
+
+                    base.MiddleText.TextString = string.Empty;
+                    base.LowerText.TextString = string.Empty;
+                }
             }
         }
     }
