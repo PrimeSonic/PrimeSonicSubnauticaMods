@@ -297,31 +297,5 @@
             // Associate pickupable
             placeTool.pickupable = customBattery.GetComponent<Pickupable>();
         }
-
-        internal static void PatchCraftingTabs()
-        {
-            if (CraftingTabsPatched)
-                return; // Just a safety
-
-            QuickLogger.Info("Separating batteries and power cells into their own fabricator crafting tabs");
-
-            // Remove original crafting nodes
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.Battery.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.PrecursorIonBattery.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.PowerCell.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, ResCraftTab, ElecCraftTab, TechType.PrecursorIonPowerCell.ToString());
-
-            // Add a new set of tab nodes for batteries and power cells
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), ResCraftTab, ElecCraftTab);
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, PowCellCraftTab, "Power Cells", SpriteManager.Get(TechType.PowerCell), ResCraftTab, ElecCraftTab);
-
-            // Move the original batteries and power cells into these new tabs
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, BatteryCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, BatteryCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, PowCellCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, PowCellCraftPath);
-
-            CraftingTabsPatched = true;
-        }
     }
 }
