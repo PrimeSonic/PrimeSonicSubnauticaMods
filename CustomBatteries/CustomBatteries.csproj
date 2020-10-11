@@ -64,6 +64,10 @@
       <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
@@ -78,6 +82,7 @@
     <Compile Include="API\ModPluginPack.cs" />
     <Compile Include="API\TextPluginPack.cs" />
     <Compile Include="Items\CbCore.cs" />
+    <Compile Include="Items\CbPlaceTool.cs" />
     <Compile Include="Items\CustomBattery.cs" />
     <Compile Include="API\CustomPack.cs" />
     <Compile Include="Items\CustomPowerCell.cs" />
