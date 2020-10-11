@@ -1,9 +1,11 @@
 ﻿namespace CustomBatteries.Items
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
     using Common;
+    using CustomBatteries.API;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
@@ -16,22 +18,25 @@
 
     internal abstract class CbCore : ModPrefab
     {
-        private const string BatteryCraftTab = "BatteryTab";
-        private const string PowCellCraftTab = "PowCellTab";
-        private const string ElecCraftTab = "Electronics";
-        private const string ResCraftTab = "Resources";
-        protected static readonly string[] BatteryCraftPath = new[] { ResCraftTab, ElecCraftTab, BatteryCraftTab };
-        protected static readonly string[] PowCellCraftPath = new[] { ResCraftTab, ElecCraftTab, PowCellCraftTab };
+        internal const string BatteryCraftTab = "BatteryTab";
+        internal const string PowCellCraftTab = "PowCellTab";
+        internal const string ElecCraftTab = "Electronics";
+        internal const string ResCraftTab = "Resources";
 
-        private static bool CraftingTabsPatched = false;
+        private static readonly WorldEntitiesCache worldEntities = new WorldEntitiesCache();
+
+        internal static readonly string[] BatteryCraftPath = new[] { ResCraftTab, BatteryCraftTab };
+        internal static readonly string[] PowCellCraftPath = new[] { ResCraftTab, PowCellCraftTab };
 
         public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        public static List<TechType> BatteryTechTypes { get; } = new List<TechType>();
-        public static TechType LastModdedBattery => BatteryTechTypes[BatteryTechTypes.Count - 1];
+        public static List<CbCore> BatteryItems { get; } = new List<CbCore>();
 
-        public static List<TechType> PowerCellTechTypes { get; } = new List<TechType>();
-        public static TechType LastModdedPowerCell => PowerCellTechTypes[PowerCellTechTypes.Count - 1];
+        internal static Dictionary<TechType, Texture2D> BatteryModels { get; } = new Dictionary<TechType, Texture2D>();
+
+        public static List<CbCore> PowerCellItems { get; } = new List<CbCore>();
+
+        internal static Dictionary<TechType, Texture2D> PowerCellModels { get; } = new Dictionary<TechType, Texture2D>();
 
         protected abstract TechType PrefabType { get; } // Should only ever be Battery or PowerCell
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
@@ -39,7 +44,23 @@
         public TechType RequiredForUnlock { get; set; } = TechType.None;
         public bool UnlocksAtStart => this.RequiredForUnlock == TechType.None;
 
-        public abstract RecipeData GetBlueprintRecipe();
+        public virtual RecipeData GetBlueprintRecipe()
+        {
+            var partsList = new List<Ingredient>();
+
+            CreateIngredients(this.Parts, partsList);
+
+            if (partsList.Count == 0)
+                partsList.Add(new Ingredient(TechType.Titanium, 1));
+
+            var batteryBlueprint = new RecipeData
+            {
+                craftAmount = 1,
+                Ingredients = partsList
+            };
+
+            return batteryBlueprint;
+        }
 
         public float PowerCapacity { get; set; }
 
@@ -59,9 +80,34 @@
 
         public bool IsPatched { get; private set; }
 
-        protected CbCore(string classId)
+        public bool UsingIonCellSkins { get; }
+
+        public Texture2D CustomSkin { get; set; }
+
+        public bool ExcludeFromChargers { get; set; }
+
+        protected Action<GameObject> EnhanceGameObject { get; set; }
+
+        protected CbCore(string classId, bool ionCellSkins)
             : base(classId, $"{classId}PreFab", TechType.None)
         {
+            this.UsingIonCellSkins = ionCellSkins;
+        }
+
+        protected CbCore(CbItem packItem)
+            : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
+        {
+            this.UsingIonCellSkins = packItem.CustomSkin == null;
+
+            if (packItem.CustomIcon != null)
+                this.Sprite = packItem.CustomIcon;
+
+            if (packItem.CustomSkin != null)
+                this.CustomSkin = packItem.CustomSkin;
+
+            this.ExcludeFromChargers = packItem.ExcludeFromChargers;
+
+            this.EnhanceGameObject = packItem.EnhanceGameObject;
         }
 
         public override GameObject GetGameObject()
@@ -80,6 +126,19 @@
                 obj.AddComponent<CustomBatteryPlaceTool>();
             // Make item placeable.
             AddPlaceTool(obj);
+
+            if (this.CustomSkin != null)
+            {
+                MeshRenderer meshRenderer = obj.GetComponentInChildren<MeshRenderer>();
+                if (meshRenderer != null)
+                    meshRenderer.material.mainTexture = this.CustomSkin;
+
+                SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponentInChildren<SkinnedMeshRenderer>();
+                if (skinnedMeshRenderer != null)
+                    skinnedMeshRenderer.material.mainTexture = this.CustomSkin;
+            }
+
+            this.EnhanceGameObject?.Invoke(obj);
 
             return obj;
         }
@@ -121,11 +180,75 @@
 
             this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, this.UnlocksAtStart);
 
+            if (this.CustomSkin != null)
+            {
+                if (this.ChargerType == EquipmentType.BatteryCharger && !BatteryModels.ContainsKey(this.TechType))
+                {
+                    BatteryModels.Add(this.TechType, this.CustomSkin);
+                }
+                else if (this.ChargerType == EquipmentType.PowerCellCharger && !PowerCellModels.ContainsKey(this.TechType))
+                {
+                    PowerCellModels.Add(this.TechType, this.CustomSkin);
+                }
+            }
+            else if (this.UsingIonCellSkins)
+            {
+                if (this.ChargerType == EquipmentType.BatteryCharger)
+                {
+                    GameObject battery = worldEntities.IonBattery();
+                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    if (texture != null)
+                    {
+                        BatteryModels.Add(this.TechType, texture);
+                    }
+                }
+                else if (this.ChargerType == EquipmentType.PowerCellCharger)
+                {
+                    GameObject battery = worldEntities.IonPowerCell();
+                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    if (texture != null)
+                    {
+                        BatteryModels.Add(this.TechType, texture);
+                    }
+                }
+            }
+            else
+            {
+                if (this.ChargerType == EquipmentType.BatteryCharger)
+                {
+                    GameObject battery = worldEntities.Battery();
+                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    if (texture != null)
+                    {
+                        BatteryModels.Add(this.TechType, texture);
+                    }
+                }
+                else if (this.ChargerType == EquipmentType.PowerCellCharger)
+                {
+                    GameObject battery = worldEntities.PowerCell();
+                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    if (texture != null)
+                    {
+                        BatteryModels.Add(this.TechType, texture);
+                    }
+                }
+            }
+
             if (!this.UnlocksAtStart)
                 KnownTechHandler.SetAnalysisTechEntry(this.RequiredForUnlock, new TechType[] { this.TechType });
 
             if (this.Sprite == null)
-                this.Sprite = ImageUtils.LoadSpriteFromFile(IOUtilities.Combine(ExecutingFolder, this.PluginFolder, this.IconFileName));
+            {
+                string imageFilePath = IOUtilities.Combine(ExecutingFolder, this.PluginFolder, this.IconFileName);
+
+                if (File.Exists(imageFilePath))
+                    this.Sprite = ImageUtils.LoadSpriteFromFile(imageFilePath);
+                else
+                {
+                    QuickLogger.Warning($"Did not find a matching image file at {imageFilePath}.{Environment.NewLine}Using default sprite instead.");
+                    this.Sprite = SpriteManager.Get(this.PrefabType);
+                }
+            }
 
             SpriteHandler.RegisterSprite(this.TechType, this.Sprite);
 

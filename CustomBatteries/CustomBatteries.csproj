@@ -23,7 +23,7 @@
     <GameDir>$(BelowZeroDir)</GameDir>
     <DataFolder>SubnauticaZero_Data</DataFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Subnautica|AnyCPU'">
@@ -33,7 +33,7 @@
     <GameDir>$(SubnauticaDir)</GameDir>
     <DataFolder>Subnautica_Data</DataFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
@@ -74,9 +74,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\CbItemPack.cs" />
     <Compile Include="API\CustomBatteriesService.cs" />
     <Compile Include="API\ICustomBatteriesService.cs" />
+    <Compile Include="API\CbItem.cs" />
     <Compile Include="API\IModPluginPack.cs" />
+    <Compile Include="API\ItemTypes.cs" />
     <Compile Include="API\ITextPluginPack.cs" />
     <Compile Include="API\IPluginPack.cs" />
     <Compile Include="API\ModPluginPack.cs" />
@@ -85,7 +88,9 @@
     <Compile Include="Items\CbPlaceTool.cs" />
     <Compile Include="Items\CustomBattery.cs" />
     <Compile Include="API\CustomPack.cs" />
+    <Compile Include="Items\CustomItem.cs" />
     <Compile Include="Items\CustomPowerCell.cs" />
+    <Compile Include="Items\WorldEntitiesCache.cs" />
     <Compile Include="PackReading\EmTextPluginPack.cs" />
     <Compile Include="PackReading\IParsedPluginPack.cs" />
     <Compile Include="PackReading\PackReader.cs" />

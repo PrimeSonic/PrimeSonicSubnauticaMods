@@ -1,5 +1,6 @@
 ﻿namespace CustomBatteries.API
 {
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
@@ -8,6 +9,7 @@
     /// An API service class that handles requests for CustomBatteries from external mods.
     /// </summary>
     /// <seealso cref="ICustomBatteriesService" />
+    [Obsolete("This is now an old API. Use the CbItem class instead.", false)]
     public class CustomBatteriesService : ICustomBatteriesService
     {
         /// <summary>
@@ -45,7 +47,25 @@
         {
             QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}' from '{Assembly.GetCallingAssembly().GetName().Name}'");
 
-            var pack = new ModPluginPack(modPluginPack);
+            var pack = new ModPluginPack(modPluginPack, false);
+            pack.Patch();
+
+            return pack;
+        }
+
+        /// <summary>
+        /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded items returned.
+        /// </summary>
+        /// <param name="modPluginPack">The mod plugin pack.</param>
+        /// <param name="useIonCellSkins">If these batteries should use the ion cell textures.</param>
+        /// <returns>
+        /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
+        /// </returns>
+        public CustomPack AddPluginPackFromMod(IModPluginPack modPluginPack, bool useIonCellSkins)
+        {
+            QuickLogger.Info($"Received PluginPack '{modPluginPack.PluginPackName}', from '{Assembly.GetCallingAssembly().GetName().Name}'");
+
+            var pack = new ModPluginPack(modPluginPack, useIonCellSkins);
             pack.Patch();
 
             return pack;

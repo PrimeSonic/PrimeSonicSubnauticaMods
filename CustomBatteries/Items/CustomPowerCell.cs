@@ -10,12 +10,12 @@
     {
         private readonly CustomBattery baseBattery;
 
-        public CustomPowerCell(string classId, CustomBattery customBattery) : base(classId)
+        public CustomPowerCell(string classId, bool ionCellSkins, CustomBattery customBattery) : base(classId, ionCellSkins)
         {
             baseBattery = customBattery;
         }
 
-        protected override TechType PrefabType => TechType.PowerCell;
+        protected override TechType PrefabType => this.UsingIonCellSkins ? TechType.PrecursorIonPowerCell : TechType.PowerCell;
         protected override EquipmentType ChargerType => EquipmentType.PowerCellCharger;
         protected override string[] StepsToFabricatorTab => CbCore.PowCellCraftPath;
 
@@ -40,7 +40,7 @@
 
         protected override void AddToList()
         {
-            PowerCellTechTypes.Add(this.TechType);
+            PowerCellItems.Add(this);
         }
     }
 }

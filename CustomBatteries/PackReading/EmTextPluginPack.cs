@@ -22,7 +22,8 @@
             new EmProperty<string>(nameof(IPluginPack.PowerCellName)),
             new EmProperty<string>(nameof(IPluginPack.PowerCellFlavorText)),
             new EmPropertyList<TechType>(nameof(IPluginPack.PowerCellAdditionalParts)){ Optional = true },
-            new EmProperty<string>(nameof(ITextPluginPack.PowerCellIconFile))
+            new EmProperty<string>(nameof(ITextPluginPack.PowerCellIconFile)),
+            new EmProperty<bool>(nameof(ITextPluginPack.UseIonCellSkins)){ Optional = true, DefaultValue = false }
         };
 
         private readonly EmProperty<string> pluginPackName;
@@ -38,6 +39,7 @@
         private readonly EmProperty<string> powerCellFlavorText;
         private readonly EmPropertyList<TechType> powerCellAdditionalParts;
         private readonly EmProperty<string> powerCellIconFile;
+        private readonly EmProperty<bool> useIonCellSkins;
 
         public EmTextPluginPack()
             : base(MainKey, PluginDefinitions)
@@ -55,6 +57,7 @@
             powerCellFlavorText = (EmProperty<string>)Properties[nameof(IPluginPack.PowerCellFlavorText)];
             powerCellAdditionalParts = (EmPropertyList<TechType>)Properties[nameof(IPluginPack.PowerCellAdditionalParts)];
             powerCellIconFile = (EmProperty<string>)Properties[nameof(ITextPluginPack.PowerCellIconFile)];
+            useIonCellSkins = (EmProperty<bool>)Properties[nameof(ITextPluginPack.UseIonCellSkins)];
         }
 
         private EmTextPluginPack(ITextPluginPack pluginPack)
@@ -73,6 +76,7 @@
             this.PowerCellFlavorText = pluginPack.PowerCellFlavorText;
             this.PowerCellAdditionalParts = pluginPack.PowerCellAdditionalParts;
             this.PowerCellIconFile = pluginPack.PowerCellIconFile;
+            this.UseIonCellSkins = pluginPack.UseIonCellSkins;
         }
 
         public string PluginPackName
@@ -149,6 +153,12 @@
         {
             get => powerCellIconFile.Value;
             private set => powerCellIconFile.Value = value;
+        }
+
+        public bool UseIonCellSkins
+        {
+            get => useIonCellSkins.Value;
+            private set => useIonCellSkins.Value = value;
         }
 
         public string PluginPackFolder { get; set; }
