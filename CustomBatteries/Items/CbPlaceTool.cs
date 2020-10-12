@@ -37,7 +37,7 @@
                     sa.renderers = rends;
                     sa.anchorSky = Skies.Auto;
                     sa.dynamic = true;
-                    sa.updaterIndex = 0;
+                    sa.updaterIndex = 0; // Updater index set to 0 for quick visual refresh of the model, but this line could be removed safely (last updater index is used by default).
                     sa.enabled = true;
                     sa.RefreshDirtySky();
                 }
