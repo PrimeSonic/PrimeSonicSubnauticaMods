@@ -129,13 +129,12 @@
 
             if (this.CustomSkin != null)
             {
-                MeshRenderer meshRenderer = obj.GetComponentInChildren<MeshRenderer>();
-                if (meshRenderer != null)
-                    meshRenderer.material.mainTexture = this.CustomSkin;
+                Renderer renderer = obj.GetComponentInChildren<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.mainTexture = this.CustomSkin;
+                }
 
-                SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponentInChildren<SkinnedMeshRenderer>();
-                if (skinnedMeshRenderer != null)
-                    skinnedMeshRenderer.material.mainTexture = this.CustomSkin;
             }
 
             this.EnhanceGameObject?.Invoke(obj);
