@@ -256,8 +256,22 @@
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
 
-            CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
-            //CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand);
+            bool enablePlaceBatteriesFeature = false;
+            QModManager.API.IQMod decorationsMod = QModManager.API.QModServices.Main.FindModById("DecorationsMod");
+            if (decorationsMod != null && decorationsMod.Enable && decorationsMod.LoadedAssembly != null)
+            {
+                Type decorationsModConfig = decorationsMod.LoadedAssembly.GetType("DecorationsMod.ConfigSwitcher", false);
+                if (decorationsModConfig != null)
+                {
+                    FieldInfo enablePlaceBatteriesField = decorationsModConfig.GetField("EnablePlaceBatteries", BindingFlags.Public | BindingFlags.Static);
+                    if (enablePlaceBatteriesField != null)
+                        enablePlaceBatteriesFeature = (bool)enablePlaceBatteriesField.GetValue(null);
+                }
+            }
+            if (enablePlaceBatteriesFeature)
+                CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand);
+            else
+                CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
             
             CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
 
