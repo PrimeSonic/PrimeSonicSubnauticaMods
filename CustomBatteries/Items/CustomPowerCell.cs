@@ -41,6 +41,7 @@
         protected override void AddToList()
         {
             PowerCellItems.Add(this);
+            TrackItems.Add(this.TechType);
         }
     }
 }

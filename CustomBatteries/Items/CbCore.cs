@@ -31,12 +31,12 @@
         public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static List<CbCore> BatteryItems { get; } = new List<CbCore>();
-
         internal static Dictionary<TechType, Texture2D> BatteryModels { get; } = new Dictionary<TechType, Texture2D>();
 
         public static List<CbCore> PowerCellItems { get; } = new List<CbCore>();
-
         internal static Dictionary<TechType, Texture2D> PowerCellModels { get; } = new Dictionary<TechType, Texture2D>();
+
+        public static HashSet<TechType> TrackItems { get; } = new HashSet<TechType>();
 
         protected abstract TechType PrefabType { get; } // Should only ever be Battery or PowerCell
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger

@@ -26,6 +26,8 @@
                 BatteryItems.Add(this);
             else
                 PowerCellItems.Add(this);
+
+            TrackItems.Add(this.TechType);
         }
     }
 }

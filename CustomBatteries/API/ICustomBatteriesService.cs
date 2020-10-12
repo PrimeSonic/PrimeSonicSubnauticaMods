@@ -1,5 +1,6 @@
 ﻿namespace CustomBatteries.API
 {
+    using System;
     using System.Collections.Generic;
     using SMLHelper.V2.Assets;
 
@@ -33,6 +34,7 @@
         /// <returns>
         /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
         /// </returns>
+        [Obsolete("This is now an old API. Use the CbItem class instead.", false)]
         CustomPack AddPluginPackFromMod(IModPluginPack modPluginPack);
 
         /// <summary>
@@ -43,6 +45,19 @@
         /// <returns>
         /// A <see cref="CustomPack" /> containing the patched <see cref="ModPrefab" /> intances for both the <see cref="CustomPack.CustomBattery" /> and <see cref="CustomPack.CustomPowerCell" />.
         /// </returns>
+        [Obsolete("This is now an old API. Use the CbItem class instead.", false)]
         CustomPack AddPluginPackFromMod(IModPluginPack modPluginPack, bool useIonCellSkins);
+
+        /// <summary>
+        /// Returns the <see cref="EquipmentType"/> associated to the provided <see cref="TechType"/>.<br/>
+        /// This is intended to identify if a given <see cref="TechType"/> is a Battery, Power Cell, or something else.
+        /// </summary>
+        /// <param name="techType">The item techtype to check</param>
+        /// <returns>
+        /// <see cref="EquipmentType.BatteryCharger"/> if the TechType is a Battery,
+        /// <see cref="EquipmentType.PowerCellCharger"/> if the TechType is a Power Cell,
+        /// or the resulting value from <see cref="CraftData.GetEquipmentType(TechType)"/>.
+        /// </returns>
+        EquipmentType GetEquipmentType(TechType techType);
     }
 }

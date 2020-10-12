@@ -37,6 +37,7 @@
         protected override void AddToList()
         {
             BatteryItems.Add(this);
+            TrackItems.Add(this.TechType);
         }
     }
 }
