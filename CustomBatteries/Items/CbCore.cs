@@ -119,6 +119,14 @@
             battery._capacity = this.PowerCapacity;
             battery.name = $"{this.ClassID}BatteryCell";
 
+            // Add the component that will readjust position.
+            if (ChargerType == EquipmentType.PowerCellCharger)
+                obj.AddComponent<CustomPowerCellPlaceTool>();
+            else
+                obj.AddComponent<CustomBatteryPlaceTool>();
+            // Make item placeable.
+            AddPlaceTool(obj);
+
             if (this.CustomSkin != null)
             {
                 MeshRenderer meshRenderer = obj.GetComponentInChildren<MeshRenderer>();
@@ -248,7 +256,24 @@
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
 
-            CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
+            bool enablePlaceBatteriesFeature = false;
+            QModManager.API.IQMod decorationsMod = QModManager.API.QModServices.Main.FindModById("DecorationsMod");
+            if (decorationsMod != null && decorationsMod.Enable && decorationsMod.LoadedAssembly != null)
+            {
+                Type decorationsModConfig = decorationsMod.LoadedAssembly.GetType("DecorationsMod.ConfigSwitcher", false);
+                if (decorationsModConfig != null)
+                {
+                    FieldInfo enablePlaceBatteriesField = decorationsModConfig.GetField("EnablePlaceBatteries", BindingFlags.Public | BindingFlags.Static);
+                    if (enablePlaceBatteriesField != null)
+                        enablePlaceBatteriesFeature = (bool)enablePlaceBatteriesField.GetValue(null);
+                }
+            }
+            if (enablePlaceBatteriesFeature)
+                CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand);
+            else
+                CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
+            
+            CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
 
@@ -257,6 +282,34 @@
             AddToList();
 
             this.IsPatched = true;
+        }
+
+        private static void AddPlaceTool(GameObject customBattery)
+        {
+            PlaceTool placeTool = customBattery.AddComponent<PlaceTool>();
+            placeTool.allowedInBase = true;
+            placeTool.allowedOnBase = true;
+            placeTool.allowedOnConstructable = true;
+            placeTool.allowedOnGround = true;
+            placeTool.allowedOnRigidBody = true;
+            placeTool.allowedOutside = true;
+#if BELOWZERO
+            placeTool.allowedUnderwater = true;
+#endif
+            placeTool.allowedOnCeiling = false;
+            placeTool.allowedOnWalls = false;
+            placeTool.reloadMode = PlayerTool.ReloadMode.None;
+            placeTool.socket = PlayerTool.Socket.RightHand;
+            placeTool.rotationEnabled = true;
+            placeTool.drawTime = 0.5f;
+            placeTool.dropTime = 1f;
+            placeTool.holsterTime = 0.35f;
+            // Associate collider
+            Collider mainCollider = customBattery.GetComponent<Collider>() ?? customBattery.GetComponentInChildren<Collider>();
+            if (mainCollider != null)
+                placeTool.mainCollider = mainCollider;
+            // Associate pickupable
+            placeTool.pickupable = customBattery.GetComponent<Pickupable>();
         }
     }
 }
