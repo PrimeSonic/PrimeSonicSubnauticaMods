@@ -82,7 +82,7 @@
         /// <returns>
         /// <see cref="EquipmentType.BatteryCharger"/> if the TechType is a Battery,
         /// <see cref="EquipmentType.PowerCellCharger"/> if the TechType is a Power Cell,
-        /// or the resulting value from <see cref="CraftData.GetEquipmentType(TechType)"/>.
+        /// or the resulting value from the game's GetEquipmentType method.
         /// </returns>
         public EquipmentType GetEquipmentType(TechType techType)
         {
@@ -102,7 +102,11 @@
                     return EquipmentType.PowerCellCharger; // Power cells that do not go into chargers
             }
 
+#if SUBNAUTICA
             return CraftData.GetEquipmentType(techType);
+#elif BELOWZERO
+            return TechData.GetEquipmentType(techType);
+#endif
         }
     }
 }

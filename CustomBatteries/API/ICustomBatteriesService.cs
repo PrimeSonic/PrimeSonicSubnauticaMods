@@ -56,7 +56,7 @@
         /// <returns>
         /// <see cref="EquipmentType.BatteryCharger"/> if the TechType is a Battery,
         /// <see cref="EquipmentType.PowerCellCharger"/> if the TechType is a Power Cell,
-        /// or the resulting value from <see cref="CraftData.GetEquipmentType(TechType)"/>.
+        /// or the resulting value from the game's GetEquipmentType method.
         /// </returns>
         EquipmentType GetEquipmentType(TechType techType);
     }
