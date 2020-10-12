@@ -34,15 +34,12 @@
                         Object.DestroyImmediate(sa);
                     // Add the new SkyApplier with dynamic "true" and anchor sky "auto" that will ensure proper rendering (because item can be placed anywhere).
                     sa = model.AddComponent<SkyApplier>();
-                    if (sa != null)
-                    {
-                        sa.renderers = rends;
-                        sa.anchorSky = Skies.Auto;
-                        sa.dynamic = true;
-                        sa.updaterIndex = 0;
-                        sa.enabled = true;
-                        sa.RefreshDirtySky();
-                    }
+                    sa.renderers = rends;
+                    sa.anchorSky = Skies.Auto;
+                    sa.dynamic = true;
+                    sa.updaterIndex = 0;
+                    sa.enabled = true;
+                    sa.RefreshDirtySky();
                 }
             }
         }
