@@ -202,7 +202,7 @@
 
                 Renderer renderer = obj.GetComponentInChildren<Renderer>();
                 if (renderer != null)
-                    meshRenderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value);
+                    renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value);
 
                 Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
             }
