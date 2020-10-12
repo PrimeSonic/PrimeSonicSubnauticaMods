@@ -200,13 +200,9 @@
                 GameObject obj = GameObject.Instantiate(originalModel, originalModel.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";
 
-                MeshRenderer meshRenderer = obj.GetComponentInChildren<MeshRenderer>();
-                if (meshRenderer != null)
+                Renderer renderer = obj.GetComponentInChildren<Renderer>();
+                if (renderer != null)
                     meshRenderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value);
-
-                SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponentInChildren<SkinnedMeshRenderer>();
-                if (skinnedMeshRenderer != null)
-                    skinnedMeshRenderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value);
 
                 Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
             }
