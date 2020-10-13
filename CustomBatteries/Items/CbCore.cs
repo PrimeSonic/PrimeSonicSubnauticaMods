@@ -97,7 +97,7 @@
         protected CbCore(CbItem packItem)
             : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
         {
-            if(packItem.CBModelData != null)
+            if (packItem.CBModelData != null)
             {
                 this.CustomModelData = packItem.CBModelData;
             }
@@ -137,8 +137,8 @@
                 Renderer renderer = obj.GetComponentInChildren<Renderer>();
                 if (renderer != null)
                 {
-                    if(CustomModelData.CustomTexture != null)
-                    renderer.material.SetTexture(ShaderPropertyID._MainTex, this.CustomModelData.CustomTexture);
+                    if (CustomModelData.CustomTexture != null)
+                        renderer.material.SetTexture(ShaderPropertyID._MainTex, this.CustomModelData.CustomTexture);
 
                     if (CustomModelData.CustomNormalMap != null)
                         renderer.material.SetTexture(ShaderPropertyID._BumpMap, this.CustomModelData.CustomNormalMap);
@@ -216,7 +216,7 @@
                 return;
 
             this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, this.UnlocksAtStart);
-            
+
             ProcessBatterySkins();
 
             if (!this.UnlocksAtStart)
@@ -240,7 +240,7 @@
             CraftDataHandler.SetTechData(this.TechType, GetBlueprintRecipe());
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
-            
+
             if (PlaceBatteriesFeatureEnabled())
             {
                 CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand); // Set equipment type to Hand.

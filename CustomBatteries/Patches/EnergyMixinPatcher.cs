@@ -1,12 +1,10 @@
 ﻿namespace MidGameBatteries.Patchers
 {
-    using System;
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
     using CustomBatteries.API;
     using CustomBatteries.Items;
-    using FMOD;
     using HarmonyLib;
     using UnityEngine;
     using static EnergyMixin;
@@ -218,7 +216,7 @@
                 GameObject obj = GameObject.Instantiate(modelBase, modelBase.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";
 
-                if(pair.Value != null)
+                if (pair.Value != null)
                 {
                     Renderer renderer = obj.GetComponentInChildren<Renderer>();
                     if (renderer != null)
@@ -240,7 +238,7 @@
                         }
                     }
                 }
-                
+
                 Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
             }
         }
