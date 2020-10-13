@@ -14,7 +14,7 @@
 
         public CbItem PackItem { get; }
 
-        protected override TechType PrefabType => ItemType == ItemTypes.Battery ? TechType.Battery : TechType.PowerCell;
+        protected override TechType PrefabType => ItemType == ItemTypes.Battery ? this.UsingIonCellSkins ? TechType.PrecursorIonBattery : TechType.Battery : this.UsingIonCellSkins ? TechType.PrecursorIonPowerCell : TechType.PowerCell;
 
         protected override EquipmentType ChargerType => ItemType == ItemTypes.Battery ? EquipmentType.BatteryCharger : EquipmentType.PowerCellCharger;
 

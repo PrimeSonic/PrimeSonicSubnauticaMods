@@ -31,10 +31,10 @@
         public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static List<CbCore> BatteryItems { get; } = new List<CbCore>();
-        internal static Dictionary<TechType, Texture2D> BatteryModels { get; } = new Dictionary<TechType, Texture2D>();
+        internal static Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>> BatteryModels { get; } = new Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>>();
 
         public static List<CbCore> PowerCellItems { get; } = new List<CbCore>();
-        internal static Dictionary<TechType, Texture2D> PowerCellModels { get; } = new Dictionary<TechType, Texture2D>();
+        internal static Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>> PowerCellModels { get; } = new Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>>();
 
         public static HashSet<TechType> TrackItems { get; } = new HashSet<TechType>();
 
@@ -84,6 +84,14 @@
 
         public Texture2D CustomSkin { get; set; }
 
+        public Texture2D CustomNormal { get; set; }
+
+        public Texture2D CustomIllumMap { get; set; }
+
+        public float CustomIllumStrength { get; set; }
+
+        public Texture2D CustomSpec { get; set; }
+
         public bool ExcludeFromChargers { get; set; }
 
         protected Action<GameObject> EnhanceGameObject { get; set; }
@@ -97,13 +105,14 @@
         protected CbCore(CbItem packItem)
             : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
         {
-            this.UsingIonCellSkins = packItem.CustomSkin == null;
+            this.UsingIonCellSkins = packItem.UseIonModels;
 
-            if (packItem.CustomIcon != null)
-                this.Sprite = packItem.CustomIcon;
-
-            if (packItem.CustomSkin != null)
-                this.CustomSkin = packItem.CustomSkin;
+            this.Sprite = packItem.CustomIcon;
+            this.CustomSkin = packItem.CustomTexture;
+            this.CustomNormal = packItem.CustomNormalMap;
+            this.CustomSpec = packItem.CustomSpecMap;
+            this.CustomIllumMap = packItem.CustomIllumMap;
+            this.CustomIllumStrength = packItem.CustomIllumStrength;
 
             this.ExcludeFromChargers = packItem.ExcludeFromChargers;
 
@@ -132,9 +141,23 @@
                 Renderer renderer = obj.GetComponentInChildren<Renderer>();
                 if (renderer != null)
                 {
-                    renderer.material.mainTexture = this.CustomSkin;
-                }
+                    renderer.material.SetTexture(ShaderPropertyID._MainTex, this.CustomSkin);
 
+                    if (this.CustomNormal != null)
+                        renderer.material.SetTexture(ShaderPropertyID._BumpMap, this.CustomNormal);
+
+                    if (this.CustomSpec != null)
+                        renderer.material.SetTexture(ShaderPropertyID._SpecTex, this.CustomSpec);
+
+                    if (this.CustomIllumMap != null)
+                    {
+                        renderer.material.EnableKeyword("_EnableGlow");
+                        renderer.material.SetColor("_GlowColor", Color.white);
+                        renderer.material.SetTexture(ShaderPropertyID._Illum, this.CustomIllumMap);
+                        renderer.material.SetFloat(ShaderPropertyID._GlowStrength, this.CustomIllumStrength);
+                        renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, this.CustomIllumStrength);
+                    }
+                }
             }
 
             this.EnhanceGameObject?.Invoke(obj);
@@ -178,60 +201,8 @@
                 return;
 
             this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, this.UnlocksAtStart);
-
-            if (this.CustomSkin != null)
-            {
-                if (this.ChargerType == EquipmentType.BatteryCharger && !BatteryModels.ContainsKey(this.TechType))
-                {
-                    BatteryModels.Add(this.TechType, this.CustomSkin);
-                }
-                else if (this.ChargerType == EquipmentType.PowerCellCharger && !PowerCellModels.ContainsKey(this.TechType))
-                {
-                    PowerCellModels.Add(this.TechType, this.CustomSkin);
-                }
-            }
-            else if (this.UsingIonCellSkins)
-            {
-                if (this.ChargerType == EquipmentType.BatteryCharger)
-                {
-                    GameObject battery = worldEntities.IonBattery();
-                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                    if (texture != null)
-                    {
-                        BatteryModels.Add(this.TechType, texture);
-                    }
-                }
-                else if (this.ChargerType == EquipmentType.PowerCellCharger)
-                {
-                    GameObject battery = worldEntities.IonPowerCell();
-                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                    if (texture != null)
-                    {
-                        BatteryModels.Add(this.TechType, texture);
-                    }
-                }
-            }
-            else
-            {
-                if (this.ChargerType == EquipmentType.BatteryCharger)
-                {
-                    GameObject battery = worldEntities.Battery();
-                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                    if (texture != null)
-                    {
-                        BatteryModels.Add(this.TechType, texture);
-                    }
-                }
-                else if (this.ChargerType == EquipmentType.PowerCellCharger)
-                {
-                    GameObject battery = worldEntities.PowerCell();
-                    Texture2D texture = battery?.GetComponentInChildren<MeshRenderer>()?.material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                    if (texture != null)
-                    {
-                        BatteryModels.Add(this.TechType, texture);
-                    }
-                }
-            }
+            
+            ProcessBatterySkins();
 
             if (!this.UnlocksAtStart)
                 KnownTechHandler.SetAnalysisTechEntry(this.RequiredForUnlock, new TechType[] { this.TechType });
@@ -271,7 +242,7 @@
                 CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand);
             else
                 CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
-            
+
             CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
@@ -281,6 +252,79 @@
             AddToList();
 
             this.IsPatched = true;
+        }
+
+        private void ProcessBatterySkins()
+        {
+            if (this.CustomSkin != null)
+            {
+                if (this.ChargerType == EquipmentType.BatteryCharger && !BatteryModels.ContainsKey(this.TechType))
+                {
+                    BatteryModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(this.CustomSkin, this.CustomNormal, this.CustomSpec, this.CustomIllumMap, this.CustomIllumStrength));
+                }
+                else if (this.ChargerType == EquipmentType.PowerCellCharger && !PowerCellModels.ContainsKey(this.TechType))
+                {
+                    PowerCellModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(this.CustomSkin, this.CustomNormal, this.CustomSpec, this.CustomIllumMap, this.CustomIllumStrength));
+                }
+            }
+            else if (this.UsingIonCellSkins)
+            {
+                if (this.ChargerType == EquipmentType.BatteryCharger)
+                {
+                    GameObject battery = worldEntities.IonBattery();
+                    Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
+
+                    Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
+                    Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
+                    Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
+                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
+
+                    BatteryModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(texture, bumpmap, spec, illum, illumStrength));
+                }
+                else if (this.ChargerType == EquipmentType.PowerCellCharger)
+                {
+                    GameObject battery = worldEntities.IonPowerCell();
+                    Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
+
+                    Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
+                    Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
+                    Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
+                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
+
+                    PowerCellModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(texture, bumpmap, spec, illum, illumStrength));
+                }
+            }
+            else
+            {
+                if (this.ChargerType == EquipmentType.BatteryCharger)
+                {
+                    GameObject battery = worldEntities.Battery();
+                    Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
+
+                    Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
+                    Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
+                    Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
+                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
+
+                    BatteryModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(texture, bumpmap, spec, illum, illumStrength));
+                }
+                else if (this.ChargerType == EquipmentType.PowerCellCharger)
+                {
+                    GameObject battery = worldEntities.PowerCell();
+                    Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
+
+                    Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
+                    Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
+                    Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
+                    Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
+                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
+
+                    PowerCellModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(texture, bumpmap, spec, illum, illumStrength));
+                }
+            }
         }
 
         private static void AddPlaceTool(GameObject customBattery)

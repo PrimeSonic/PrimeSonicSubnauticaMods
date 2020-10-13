@@ -1,5 +1,6 @@
 ﻿namespace MidGameBatteries.Patchers
 {
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
@@ -87,7 +88,7 @@
             bool isBlacklisted = techType == TechType.MetalDetector || techType == TechType.Builder;
 #endif
 
-            //if no models found but has controlled object move object to models
+            //if no models found but has controlled object that is a battery move object to models
             if ((Models.Count == 0 && __instance.controlledObjects.Length == 1 && !isBlacklisted) || isStasisRifle || isPropCannon || isRepCannon)
             {
                 if (isStasisRifle)
@@ -117,7 +118,7 @@
                     Material ionBatteryMaterial = ionbattery?.GetComponentInChildren<MeshRenderer>()?.material;
                     if (ionBatteryMaterial != null)
                     {
-                        model2.GetComponentInChildren<SkinnedMeshRenderer>().material = new Material(ionBatteryMaterial);
+                        model2.GetComponentInChildren<Renderer>().material = new Material(ionBatteryMaterial);
                     }
 
                     Models.Add(new BatteryModels() { model = model2, techType = TechType.PrecursorIonBattery });
@@ -133,7 +134,7 @@
                     Material powercellMaterial = powerCellModel?.GetComponentInChildren<MeshRenderer>()?.material;
                     if (powercellMaterial != null)
                     {
-                        model3.GetComponentInChildren<SkinnedMeshRenderer>().material = new Material(powercellMaterial);
+                        model3.GetComponentInChildren<Renderer>().material = new Material(powercellMaterial);
                     }
                     Models.Add(new BatteryModels() { model = GameObject.Instantiate(model3, batteryModel.transform.parent), techType = TechType.PowerCell });
 
@@ -144,7 +145,7 @@
                     Material precursorIonPowerCellMaterial = precursorIonPowerCell?.GetComponentInChildren<MeshRenderer>()?.material;
                     if (precursorIonPowerCellMaterial != null)
                     {
-                        model4.GetComponentInChildren<SkinnedMeshRenderer>().material = new Material(precursorIonPowerCellMaterial);
+                        model4.GetComponentInChildren<Renderer>().material = new Material(precursorIonPowerCellMaterial);
                     }
                     Models.Add(new BatteryModels() { model = GameObject.Instantiate(model4, batteryModel.transform.parent), techType = TechType.PrecursorIonPowerCell });
                 }
@@ -193,16 +194,33 @@
             __instance.batteryModels = Models.ToArray();
         }
 
-        private static void AddCustomModels(GameObject originalModel, ref List<BatteryModels> Models, Dictionary<TechType, Texture2D> customModels)
+        private static void AddCustomModels(GameObject originalModel, ref List<BatteryModels> Models, Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>> customModels)
         {
-            foreach (KeyValuePair<TechType, Texture2D> pair in customModels)
+            foreach (KeyValuePair<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>> pair in customModels)
             {
                 GameObject obj = GameObject.Instantiate(originalModel, originalModel.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";
 
                 Renderer renderer = obj.GetComponentInChildren<Renderer>();
                 if (renderer != null)
-                    renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value);
+                {
+                    renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value.Item1);
+
+                    if (pair.Value.Item2 != null)
+                        renderer.material.SetTexture(ShaderPropertyID._BumpMap, pair.Value.Item2);
+
+                    if (pair.Value.Item3 != null)
+                        renderer.material.SetTexture(ShaderPropertyID._SpecTex, pair.Value.Item3);
+
+                    if (pair.Value.Item4 != null)
+                    {
+                        renderer.material.EnableKeyword("_EnableGlow");
+                        renderer.material.SetColor("_GlowColor", Color.white);
+                        renderer.material.SetTexture(ShaderPropertyID._Illum, pair.Value.Item4);
+                        renderer.material.SetFloat(ShaderPropertyID._GlowStrength, pair.Value.Item5);
+                        renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, pair.Value.Item5);
+                    }
+                }
 
                 Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
             }
