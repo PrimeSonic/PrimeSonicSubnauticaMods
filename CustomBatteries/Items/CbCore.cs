@@ -120,13 +120,17 @@
             battery._capacity = this.PowerCapacity;
             battery.name = $"{this.ClassID}BatteryCell";
 
-            // Add the component that will readjust position.
-            if (ChargerType == EquipmentType.PowerCellCharger)
-                obj.AddComponent<CustomPowerCellPlaceTool>();
-            else
-                obj.AddComponent<CustomBatteryPlaceTool>();
-            // Make item placeable.
-            AddPlaceTool(obj);
+            // If "Enable batteries/powercells placement" feature from Decorations mod is ON.
+            if (PlaceBatteriesFeatureEnabled())
+            {
+                // Add the component that will readjust position.
+                if (ChargerType == EquipmentType.PowerCellCharger)
+                    obj.AddComponent<CustomPowerCellPlaceTool>();
+                else
+                    obj.AddComponent<CustomBatteryPlaceTool>();
+                // Make item placeable.
+                AddPlaceTool(obj);
+            }
 
             if (CustomModelData != null)
             {
