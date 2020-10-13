@@ -240,10 +240,7 @@
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
             
-            if (this.PlaceBatteriesFeatureEnabled)
-                CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand);
-            else
-                CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
+            CraftDataHandler.SetEquipmentType(this.TechType, this.PlaceBatteriesFeatureEnabled ? EquipmentType.Hand : this.ChargerType);
 
             CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
 
