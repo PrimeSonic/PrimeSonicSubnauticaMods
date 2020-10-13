@@ -214,8 +214,6 @@
 
                     if (pair.Value.Item4 != null)
                     {
-                        renderer.material.EnableKeyword("_EnableGlow");
-                        renderer.material.SetColor("_GlowColor", Color.white);
                         renderer.material.SetTexture(ShaderPropertyID._Illum, pair.Value.Item4);
                         renderer.material.SetFloat(ShaderPropertyID._GlowStrength, pair.Value.Item5);
                         renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, pair.Value.Item5);

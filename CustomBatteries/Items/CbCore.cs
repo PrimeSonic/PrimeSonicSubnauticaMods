@@ -151,8 +151,6 @@
 
                     if (this.CustomIllumMap != null)
                     {
-                        renderer.material.EnableKeyword("_EnableGlow");
-                        renderer.material.SetColor("_GlowColor", Color.white);
                         renderer.material.SetTexture(ShaderPropertyID._Illum, this.CustomIllumMap);
                         renderer.material.SetFloat(ShaderPropertyID._GlowStrength, this.CustomIllumStrength);
                         renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, this.CustomIllumStrength);
