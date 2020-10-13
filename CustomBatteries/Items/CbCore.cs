@@ -241,10 +241,13 @@
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
             
-            CraftDataHandler.SetEquipmentType(this.TechType, PlaceBatteriesFeatureEnabled() ? EquipmentType.Hand : this.ChargerType);
-
             if (PlaceBatteriesFeatureEnabled())
+            {
+                CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand); // Set equipment type to Hand.
                 CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
+            }
+            else
+                CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
 
