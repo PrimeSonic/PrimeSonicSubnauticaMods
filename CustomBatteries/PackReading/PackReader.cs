@@ -14,7 +14,7 @@
 
         public static void PatchTextPacks()
         {
-            string pluginPacksFolder = Path.Combine(CbCore.ExecutingFolder, "Packs");
+            string pluginPacksFolder = Path.Combine(CbDatabase.ExecutingFolder, "Packs");
 
             if (!Directory.Exists(pluginPacksFolder))
             {

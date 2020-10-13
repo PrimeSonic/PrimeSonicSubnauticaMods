@@ -18,26 +18,6 @@
 
     internal abstract class CbCore : ModPrefab
     {
-        internal const string BatteryCraftTab = "BatteryTab";
-        internal const string PowCellCraftTab = "PowCellTab";
-        internal const string ElecCraftTab = "Electronics";
-        internal const string ResCraftTab = "Resources";
-
-        private static readonly WorldEntitiesCache worldEntities = new WorldEntitiesCache();
-
-        internal static readonly string[] BatteryCraftPath = new[] { ResCraftTab, BatteryCraftTab };
-        internal static readonly string[] PowCellCraftPath = new[] { ResCraftTab, PowCellCraftTab };
-
-        public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        public static List<CbCore> BatteryItems { get; } = new List<CbCore>();
-        internal static Dictionary<TechType, CBModelData> BatteryModels { get; } = new Dictionary<TechType, CBModelData>();
-
-        public static List<CbCore> PowerCellItems { get; } = new List<CbCore>();
-        internal static Dictionary<TechType, CBModelData> PowerCellModels { get; } = new Dictionary<TechType, CBModelData>();
-
-        public static HashSet<TechType> TrackItems { get; } = new HashSet<TechType>();
-
         protected abstract TechType PrefabType { get; } // Should only ever be Battery, IonBattery, PowerCell or IonPowerCell
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
 
@@ -121,7 +101,7 @@
             battery.name = $"{this.ClassID}BatteryCell";
 
             // If "Enable batteries/powercells placement" feature from Decorations mod is ON.
-            if (PlaceBatteriesFeatureEnabled())
+            if (CbDatabase.PlaceBatteriesFeatureEnabled)
             {
                 // Add the component that will readjust position.
                 if (ChargerType == EquipmentType.PowerCellCharger)
@@ -190,25 +170,7 @@
 
         protected abstract string[] StepsToFabricatorTab { get; }
 
-        private static bool? _placeBatteriesFeatureEnabled = null;
-        internal static bool PlaceBatteriesFeatureEnabled()
-        {
-            if (_placeBatteriesFeatureEnabled == null || !_placeBatteriesFeatureEnabled.HasValue)
-            {
-                QModManager.API.IQMod decorationsMod = QModManager.API.QModServices.Main.FindModById("DecorationsMod");
-                if (decorationsMod != null && decorationsMod.Enable && decorationsMod.LoadedAssembly != null)
-                {
-                    Type decorationsModConfig = decorationsMod.LoadedAssembly.GetType("DecorationsMod.ConfigSwitcher", false);
-                    if (decorationsModConfig != null)
-                    {
-                        FieldInfo enablePlaceBatteriesField = decorationsModConfig.GetField("EnablePlaceBatteries", BindingFlags.Public | BindingFlags.Static);
-                        if (enablePlaceBatteriesField != null)
-                            _placeBatteriesFeatureEnabled = (bool)enablePlaceBatteriesField.GetValue(null);
-                    }
-                }
-            }
-            return _placeBatteriesFeatureEnabled != null && _placeBatteriesFeatureEnabled.Value;
-        }
+        
 
         public void Patch()
         {
@@ -224,7 +186,7 @@
 
             if (this.Sprite == null)
             {
-                string imageFilePath = IOUtilities.Combine(ExecutingFolder, this.PluginFolder, this.IconFileName);
+                string imageFilePath = IOUtilities.Combine(CbDatabase.ExecutingFolder, this.PluginFolder, this.IconFileName);
 
                 if (File.Exists(imageFilePath))
                     this.Sprite = ImageUtils.LoadSpriteFromFile(imageFilePath);
@@ -241,7 +203,7 @@
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
 
-            if (PlaceBatteriesFeatureEnabled())
+            if (CbDatabase.PlaceBatteriesFeatureEnabled)
             {
                 CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand); // Set equipment type to Hand.
                 CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
@@ -262,20 +224,20 @@
         {
             if (this.CustomModelData != null)
             {
-                if (this.ChargerType == EquipmentType.BatteryCharger && !BatteryModels.ContainsKey(this.TechType))
+                if (this.ChargerType == EquipmentType.BatteryCharger && !CbDatabase.BatteryModels.ContainsKey(this.TechType))
                 {
-                    BatteryModels.Add(this.TechType, this.CustomModelData);
+                    CbDatabase.BatteryModels.Add(this.TechType, this.CustomModelData);
                 }
-                else if (this.ChargerType == EquipmentType.PowerCellCharger && !PowerCellModels.ContainsKey(this.TechType))
+                else if (this.ChargerType == EquipmentType.PowerCellCharger && !CbDatabase.PowerCellModels.ContainsKey(this.TechType))
                 {
-                    PowerCellModels.Add(this.TechType, this.CustomModelData);
+                    CbDatabase.PowerCellModels.Add(this.TechType, this.CustomModelData);
                 }
             }
             else
             {
                 if (this.ChargerType == EquipmentType.BatteryCharger)
                 {
-                    GameObject battery = worldEntities.Battery();
+                    GameObject battery = CbDatabase.WorldEntities.Battery();
                     Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
 
                     Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
@@ -284,11 +246,11 @@
                     Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
                     float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
 
-                    BatteryModels.Add(this.TechType, this.CustomModelData);
+                    CbDatabase.BatteryModels.Add(this.TechType, this.CustomModelData);
                 }
                 else if (this.ChargerType == EquipmentType.PowerCellCharger)
                 {
-                    GameObject battery = worldEntities.PowerCell();
+                    GameObject battery = CbDatabase.WorldEntities.PowerCell();
                     Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
 
                     Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
@@ -297,7 +259,7 @@
                     Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
                     float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
 
-                    PowerCellModels.Add(this.TechType, this.CustomModelData);
+                    CbDatabase.PowerCellModels.Add(this.TechType, this.CustomModelData);
                 }
             }
         }

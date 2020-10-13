@@ -94,11 +94,11 @@
             {
                 return EquipmentType.PowerCellCharger;
             }
-            else if (CbCore.TrackItems.Contains(techType))
+            else if (CbDatabase.TrackItems.Contains(techType))
             {
-                if (CbCore.BatteryItems.FindIndex(cb => cb.TechType == techType) > -1)
+                if (CbDatabase.BatteryItems.FindIndex(cb => cb.TechType == techType) > -1)
                     return EquipmentType.BatteryCharger; // Batteries that do not go into chargers
-                else if (CbCore.PowerCellItems.FindIndex(cb => cb.TechType == techType) > -1)
+                else if (CbDatabase.PowerCellItems.FindIndex(cb => cb.TechType == techType) > -1)
                     return EquipmentType.PowerCellCharger; // Power cells that do not go into chargers
             }
 

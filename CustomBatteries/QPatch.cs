@@ -42,27 +42,27 @@
             QuickLogger.Info("Separating batteries and power cells into their own fabricator crafting tabs");
 
             // Remove original crafting nodes
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.Battery.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.PrecursorIonBattery.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.PowerCell.ToString());
-            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbCore.ResCraftTab, CbCore.ElecCraftTab, TechType.PrecursorIonPowerCell.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.Battery.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PrecursorIonBattery.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PowerCell.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PrecursorIonPowerCell.ToString());
 
             // Add a new set of tab nodes for batteries and power cells
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbCore.BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), CbCore.ResCraftTab);
-            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbCore.PowCellCraftTab, "Power Cells", SpriteManager.Get(TechType.PowerCell), CbCore.ResCraftTab);
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbDatabase.BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), CbDatabase.ResCraftTab);
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbDatabase.PowCellCraftTab, "Power Cells", SpriteManager.Get(TechType.PowerCell), CbDatabase.ResCraftTab);
 
             // Move the original batteries and power cells into these new tabs
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, CbCore.BatteryCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, CbCore.BatteryCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, CbCore.PowCellCraftPath);
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, CbCore.PowCellCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, CbDatabase.BatteryCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, CbDatabase.BatteryCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, CbDatabase.PowCellCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, CbDatabase.PowCellCraftPath);
         }
 
         [QModPostPatch]
         public static void UpdateStaticCollections()
         {
-            UpdateCollection(BatteryCharger.compatibleTech, CbCore.BatteryItems);
-            UpdateCollection(PowerCellCharger.compatibleTech, CbCore.PowerCellItems);
+            UpdateCollection(BatteryCharger.compatibleTech, CbDatabase.BatteryItems);
+            UpdateCollection(PowerCellCharger.compatibleTech, CbDatabase.PowerCellItems);
         }
 
         private static void UpdateCollection(HashSet<TechType> compatibleTech, List<CbCore> toBeAdded)

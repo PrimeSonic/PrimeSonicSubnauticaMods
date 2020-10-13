@@ -18,16 +18,16 @@
 
         protected override EquipmentType ChargerType => ItemType == ItemTypes.Battery ? EquipmentType.BatteryCharger : EquipmentType.PowerCellCharger;
 
-        protected override string[] StepsToFabricatorTab => ItemType == ItemTypes.Battery ? BatteryCraftPath : PowCellCraftPath;
+        protected override string[] StepsToFabricatorTab => ItemType == ItemTypes.Battery ? CbDatabase.BatteryCraftPath : CbDatabase.PowCellCraftPath;
 
         protected override void AddToList()
         {
             if (ItemType == ItemTypes.Battery)
-                BatteryItems.Add(this);
+                CbDatabase.BatteryItems.Add(this);
             else
-                PowerCellItems.Add(this);
+                CbDatabase.PowerCellItems.Add(this);
 
-            TrackItems.Add(this.TechType);
+            CbDatabase.TrackItems.Add(this.TechType);
         }
     }
 }

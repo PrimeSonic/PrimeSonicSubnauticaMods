@@ -30,7 +30,7 @@
 
         public static void NotifyHasBatteryPostfix(ref EnergyMixin __instance, InventoryItem item)
         {
-            if (CbCore.PowerCellItems.Count == 0)
+            if (CbDatabase.PowerCellItems.Count == 0)
                 return;
 
             // For vehicles that show a battery model when one is equipped,
@@ -43,7 +43,7 @@
                 return; // Nothing here
 
             TechType powerCellTechType = itemInSlot.Value;
-            bool isKnownModdedPowerCell = CbCore.PowerCellItems.Find(pc => pc.TechType == powerCellTechType) != null;
+            bool isKnownModdedPowerCell = CbDatabase.PowerCellItems.Find(pc => pc.TechType == powerCellTechType) != null;
 
             if (isKnownModdedPowerCell)
             {
@@ -68,7 +68,7 @@
             if (!__instance.allowBatteryReplacement)
                 return; // Battery replacement not allowed - No need to make changes
 
-            if (CbCore.BatteryItems.Count == 0)
+            if (CbDatabase.BatteryItems.Count == 0)
                 return;
 
             List<TechType> compatibleBatteries = __instance.compatibleBatteries;
@@ -184,20 +184,20 @@
             if (compatibleBatteries.Contains(TechType.Battery) || compatibleBatteries.Contains(TechType.PrecursorIonBattery))
             {
                 // If the regular Battery is compatible with this item, then modded batteries should also be compatible
-                AddMissingTechTypesToList(compatibleBatteries, CbCore.BatteryItems);
+                AddMissingTechTypesToList(compatibleBatteries, CbDatabase.BatteryItems);
                 if (batteryModel != null && ionBatteryModel != null)
                 {
-                    AddCustomModels(batteryModel, ionBatteryModel, ref Models, CbCore.BatteryModels, existingModels);
+                    AddCustomModels(batteryModel, ionBatteryModel, ref Models, CbDatabase.BatteryModels, existingModels);
                 }
             }
 
             if (compatibleBatteries.Contains(TechType.PowerCell) || compatibleBatteries.Contains(TechType.PrecursorIonPowerCell))
             {
                 // If the regular Power Cell is compatible with this item, then modded power cells should also be compatible
-                AddMissingTechTypesToList(compatibleBatteries, CbCore.PowerCellItems);
+                AddMissingTechTypesToList(compatibleBatteries, CbDatabase.PowerCellItems);
                 if (powerCellModel != null && ionPowerCellModel != null)
                 {
-                    AddCustomModels(powerCellModel, ionPowerCellModel, ref Models, CbCore.PowerCellModels, existingModels);
+                    AddCustomModels(powerCellModel, ionPowerCellModel, ref Models, CbDatabase.PowerCellModels, existingModels);
                 }
             }
 

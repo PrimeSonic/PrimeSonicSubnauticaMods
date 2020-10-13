@@ -17,7 +17,7 @@
 
         protected override TechType PrefabType => this.UsingIonCellSkins ? TechType.PrecursorIonPowerCell : TechType.PowerCell;
         protected override EquipmentType ChargerType => EquipmentType.PowerCellCharger;
-        protected override string[] StepsToFabricatorTab => CbCore.PowCellCraftPath;
+        protected override string[] StepsToFabricatorTab => CbDatabase.PowCellCraftPath;
 
         public override RecipeData GetBlueprintRecipe()
         {
@@ -40,8 +40,8 @@
 
         protected override void AddToList()
         {
-            PowerCellItems.Add(this);
-            TrackItems.Add(this.TechType);
+            CbDatabase.PowerCellItems.Add(this);
+            CbDatabase.TrackItems.Add(this.TechType);
         }
     }
 }
