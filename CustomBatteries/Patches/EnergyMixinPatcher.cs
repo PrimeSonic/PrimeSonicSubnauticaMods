@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
+    using CustomBatteries.API;
     using CustomBatteries.Items;
+    using FMOD;
     using HarmonyLib;
     using UnityEngine;
     using static EnergyMixin;
@@ -76,6 +78,8 @@
             List<BatteryModels> Models = new List<BatteryModels>(__instance.batteryModels);
             GameObject batteryModel = null;
             GameObject powerCellModel = null;
+            GameObject ionBatteryModel = null;
+            GameObject ionPowerCellModel = null;
 
             TechType techType = CraftData.GetTechType(__instance.gameObject);
 
@@ -87,6 +91,8 @@
 #elif BELOWZERO
             bool isBlacklisted = techType == TechType.MetalDetector || techType == TechType.Builder;
 #endif
+
+            ErrorMessage.AddMessage($"({Models.Count == 0} && {__instance.controlledObjects.Length == 1} && {!isBlacklisted}) || {isStasisRifle} || {isPropCannon} || {isRepCannon}");
 
             //if no models found but has controlled object that is a battery move object to models
             if ((Models.Count == 0 && __instance.controlledObjects.Length == 1 && !isBlacklisted) || isStasisRifle || isPropCannon || isRepCannon)
@@ -163,60 +169,71 @@
                         batteryModel = Models[b].model;
                     }
 
+                    if (Models[b].techType == TechType.PrecursorIonBattery)
+                    {
+                        ionBatteryModel = Models[b].model;
+                    }
+
                     if (Models[b].techType == TechType.PowerCell)
                     {
                         powerCellModel = Models[b].model;
                     }
+
+                    if (Models[b].techType == TechType.PrecursorIonPowerCell)
+                    {
+                        ionPowerCellModel = Models[b].model;
+                    }
                 }
             }
 
-
-            if (compatibleBatteries.Contains(TechType.Battery))
+            if (compatibleBatteries.Contains(TechType.Battery) || compatibleBatteries.Contains(TechType.PrecursorIonBattery))
             {
                 // If the regular Battery is compatible with this item, then modded batteries should also be compatible
                 AddMissingTechTypesToList(compatibleBatteries, CbCore.BatteryItems);
-                if (batteryModel != null)
+                if (batteryModel != null && ionBatteryModel != null)
                 {
-                    AddCustomModels(batteryModel, ref Models, CbCore.BatteryModels);
+                    AddCustomModels(batteryModel, ionBatteryModel, ref Models, CbCore.BatteryModels);
                 }
             }
 
-            if (compatibleBatteries.Contains(TechType.PowerCell))
+            if (compatibleBatteries.Contains(TechType.PowerCell) || compatibleBatteries.Contains(TechType.PrecursorIonPowerCell))
             {
                 // If the regular Power Cell is compatible with this item, then modded power cells should also be compatible
                 AddMissingTechTypesToList(compatibleBatteries, CbCore.PowerCellItems);
-                if (powerCellModel != null)
+                if (powerCellModel != null && ionPowerCellModel != null)
                 {
-                    AddCustomModels(powerCellModel, ref Models, CbCore.PowerCellModels);
+                    AddCustomModels(powerCellModel, ionPowerCellModel, ref Models, CbCore.PowerCellModels);
                 }
             }
 
             __instance.batteryModels = Models.ToArray();
         }
 
-        private static void AddCustomModels(GameObject originalModel, ref List<BatteryModels> Models, Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>> customModels)
+        private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels)
         {
-            foreach (KeyValuePair<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>> pair in customModels)
+            foreach (KeyValuePair<TechType, CBModelData> pair in customModels)
             {
-                GameObject obj = GameObject.Instantiate(originalModel, originalModel.transform.parent);
+                GameObject modelBase = pair.Value?.UseIonModelsAsBase ?? false ? ionModel : originalModel;
+                GameObject obj = GameObject.Instantiate(modelBase, modelBase.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";
 
                 Renderer renderer = obj.GetComponentInChildren<Renderer>();
                 if (renderer != null)
                 {
-                    renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value.Item1);
+                    if(pair.Value.CustomTexture != null)
+                        renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value.CustomTexture);
 
-                    if (pair.Value.Item2 != null)
-                        renderer.material.SetTexture(ShaderPropertyID._BumpMap, pair.Value.Item2);
+                    if (pair.Value.CustomNormalMap != null)
+                        renderer.material.SetTexture(ShaderPropertyID._BumpMap, pair.Value.CustomNormalMap);
 
-                    if (pair.Value.Item3 != null)
-                        renderer.material.SetTexture(ShaderPropertyID._SpecTex, pair.Value.Item3);
+                    if (pair.Value.CustomSpecMap != null)
+                        renderer.material.SetTexture(ShaderPropertyID._SpecTex, pair.Value.CustomSpecMap);
 
-                    if (pair.Value.Item4 != null)
+                    if (pair.Value.CustomIllumMap != null)
                     {
-                        renderer.material.SetTexture(ShaderPropertyID._Illum, pair.Value.Item4);
-                        renderer.material.SetFloat(ShaderPropertyID._GlowStrength, pair.Value.Item5);
-                        renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, pair.Value.Item5);
+                        renderer.material.SetTexture(ShaderPropertyID._Illum, pair.Value.CustomIllumMap);
+                        renderer.material.SetFloat(ShaderPropertyID._GlowStrength, pair.Value.CustomIllumStrength);
+                        renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, pair.Value.CustomIllumStrength);
                     }
                 }
 
