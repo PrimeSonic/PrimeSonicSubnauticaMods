@@ -237,7 +237,7 @@
             {
                 if (this.ChargerType == EquipmentType.BatteryCharger)
                 {
-                    GameObject battery = CbDatabase.WorldEntities.Battery();
+                    GameObject battery = CbDatabase.Battery();
                     Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
 
                     Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
@@ -250,7 +250,7 @@
                 }
                 else if (this.ChargerType == EquipmentType.PowerCellCharger)
                 {
-                    GameObject battery = CbDatabase.WorldEntities.PowerCell();
+                    GameObject battery = CbDatabase.PowerCell();
                     Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
 
                     Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;

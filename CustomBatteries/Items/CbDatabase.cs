@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using CustomBatteries.API;
+using UnityEngine;
 
 namespace CustomBatteries.Items
 {
@@ -26,8 +27,6 @@ namespace CustomBatteries.Items
 
         public static HashSet<TechType> TrackItems { get; } = new HashSet<TechType>();
 
-        public static WorldEntitiesCache WorldEntities { get; } = new WorldEntitiesCache();
-
         private static bool? _placeBatteriesFeatureEnabled = null;
 
         public static bool PlaceBatteriesFeatureEnabled
@@ -50,6 +49,31 @@ namespace CustomBatteries.Items
                 }
                 return _placeBatteriesFeatureEnabled != null && _placeBatteriesFeatureEnabled.Value;
             }
+        }
+
+        private static GameObject _precursorionbattery;
+        private static GameObject _precursorionpowercell;
+        private static GameObject _battery;
+        private static GameObject _powercell;
+
+        public static GameObject IonBattery()
+        {
+            return _precursorionbattery ??= Resources.Load<GameObject>("worldentities/tools/precursorionbattery");
+        }
+
+        public static GameObject IonPowerCell()
+        {
+            return _precursorionpowercell ??= Resources.Load<GameObject>("worldentities/tools/precursorionpowercell");
+        }
+
+        public static GameObject Battery()
+        {
+            return _battery ??= Resources.Load<GameObject>("worldentities/tools/battery");
+        }
+
+        public static GameObject PowerCell()
+        {
+            return _powercell ??= Resources.Load<GameObject>("worldentities/tools/powercell");
         }
     }
 }
