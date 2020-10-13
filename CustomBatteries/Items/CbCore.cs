@@ -31,14 +31,14 @@
         public static string ExecutingFolder { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static List<CbCore> BatteryItems { get; } = new List<CbCore>();
-        internal static Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>> BatteryModels { get; } = new Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>>();
+        internal static Dictionary<TechType, CBModelData> BatteryModels { get; } = new Dictionary<TechType, CBModelData>();
 
         public static List<CbCore> PowerCellItems { get; } = new List<CbCore>();
-        internal static Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>> PowerCellModels { get; } = new Dictionary<TechType, Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>>();
+        internal static Dictionary<TechType, CBModelData> PowerCellModels { get; } = new Dictionary<TechType, CBModelData>();
 
         public static HashSet<TechType> TrackItems { get; } = new HashSet<TechType>();
 
-        protected abstract TechType PrefabType { get; } // Should only ever be Battery or PowerCell
+        protected abstract TechType PrefabType { get; } // Should only ever be Battery, IonBattery, PowerCell or IonPowerCell
         protected abstract EquipmentType ChargerType { get; } // Should only ever be BatteryCharger or PowerCellCharger
 
         public TechType RequiredForUnlock { get; set; } = TechType.None;
@@ -82,15 +82,7 @@
 
         public bool UsingIonCellSkins { get; }
 
-        public Texture2D CustomSkin { get; set; }
-
-        public Texture2D CustomNormal { get; set; }
-
-        public Texture2D CustomIllumMap { get; set; }
-
-        public float CustomIllumStrength { get; set; }
-
-        public Texture2D CustomSpec { get; set; }
+        public CBModelData CustomModelData { get; set; }
 
         public bool ExcludeFromChargers { get; set; }
 
@@ -105,14 +97,14 @@
         protected CbCore(CbItem packItem)
             : base(packItem.ID, $"{packItem.ID}PreFab", TechType.None)
         {
-            this.UsingIonCellSkins = packItem.UseIonModels;
+            if(packItem.CBModelData != null)
+            {
+                this.CustomModelData = packItem.CBModelData;
+            }
+
+            this.UsingIonCellSkins = packItem.CBModelData?.UseIonModelsAsBase ?? false;
 
             this.Sprite = packItem.CustomIcon;
-            this.CustomSkin = packItem.CustomTexture;
-            this.CustomNormal = packItem.CustomNormalMap;
-            this.CustomSpec = packItem.CustomSpecMap;
-            this.CustomIllumMap = packItem.CustomIllumMap;
-            this.CustomIllumStrength = packItem.CustomIllumStrength;
 
             this.ExcludeFromChargers = packItem.ExcludeFromChargers;
 
@@ -136,24 +128,25 @@
             // Make item placeable.
             AddPlaceTool(obj);
 
-            if (this.CustomSkin != null)
+            if (CustomModelData != null)
             {
                 Renderer renderer = obj.GetComponentInChildren<Renderer>();
                 if (renderer != null)
                 {
-                    renderer.material.SetTexture(ShaderPropertyID._MainTex, this.CustomSkin);
+                    if(CustomModelData.CustomTexture != null)
+                    renderer.material.SetTexture(ShaderPropertyID._MainTex, this.CustomModelData.CustomTexture);
 
-                    if (this.CustomNormal != null)
-                        renderer.material.SetTexture(ShaderPropertyID._BumpMap, this.CustomNormal);
+                    if (CustomModelData.CustomNormalMap != null)
+                        renderer.material.SetTexture(ShaderPropertyID._BumpMap, this.CustomModelData.CustomNormalMap);
 
-                    if (this.CustomSpec != null)
-                        renderer.material.SetTexture(ShaderPropertyID._SpecTex, this.CustomSpec);
+                    if (CustomModelData.CustomSpecMap != null)
+                        renderer.material.SetTexture(ShaderPropertyID._SpecTex, this.CustomModelData.CustomSpecMap);
 
-                    if (this.CustomIllumMap != null)
+                    if (CustomModelData.CustomIllumMap != null)
                     {
-                        renderer.material.SetTexture(ShaderPropertyID._Illum, this.CustomIllumMap);
-                        renderer.material.SetFloat(ShaderPropertyID._GlowStrength, this.CustomIllumStrength);
-                        renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, this.CustomIllumStrength);
+                        renderer.material.SetTexture(ShaderPropertyID._Illum, this.CustomModelData.CustomIllumMap);
+                        renderer.material.SetFloat(ShaderPropertyID._GlowStrength, this.CustomModelData.CustomIllumStrength);
+                        renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, this.CustomModelData.CustomIllumStrength);
                     }
                 }
             }
@@ -254,44 +247,15 @@
 
         private void ProcessBatterySkins()
         {
-            if (this.CustomSkin != null)
+            if (this.CustomModelData != null)
             {
                 if (this.ChargerType == EquipmentType.BatteryCharger && !BatteryModels.ContainsKey(this.TechType))
                 {
-                    BatteryModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(this.CustomSkin, this.CustomNormal, this.CustomSpec, this.CustomIllumMap, this.CustomIllumStrength));
+                    BatteryModels.Add(this.TechType, this.CustomModelData);
                 }
                 else if (this.ChargerType == EquipmentType.PowerCellCharger && !PowerCellModels.ContainsKey(this.TechType))
                 {
-                    PowerCellModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(this.CustomSkin, this.CustomNormal, this.CustomSpec, this.CustomIllumMap, this.CustomIllumStrength));
-                }
-            }
-            else if (this.UsingIonCellSkins)
-            {
-                if (this.ChargerType == EquipmentType.BatteryCharger)
-                {
-                    GameObject battery = worldEntities.IonBattery();
-                    Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
-
-                    Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                    Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
-                    Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
-                    Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
-                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
-
-                    BatteryModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(texture, bumpmap, spec, illum, illumStrength));
-                }
-                else if (this.ChargerType == EquipmentType.PowerCellCharger)
-                {
-                    GameObject battery = worldEntities.IonPowerCell();
-                    Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
-
-                    Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                    Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
-                    Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
-                    Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
-                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
-
-                    PowerCellModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(texture, bumpmap, spec, illum, illumStrength));
+                    PowerCellModels.Add(this.TechType, this.CustomModelData);
                 }
             }
             else
@@ -307,7 +271,7 @@
                     Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
                     float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
 
-                    BatteryModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(texture, bumpmap, spec, illum, illumStrength));
+                    BatteryModels.Add(this.TechType, this.CustomModelData);
                 }
                 else if (this.ChargerType == EquipmentType.PowerCellCharger)
                 {
@@ -320,7 +284,7 @@
                     Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
                     float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
 
-                    PowerCellModels.Add(this.TechType, new Tuple<Texture2D, Texture2D, Texture2D, Texture2D, float>(texture, bumpmap, spec, illum, illumStrength));
+                    PowerCellModels.Add(this.TechType, this.CustomModelData);
                 }
             }
         }
