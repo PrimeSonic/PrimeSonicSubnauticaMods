@@ -92,8 +92,6 @@
             bool isBlacklisted = techType == TechType.MetalDetector || techType == TechType.Builder;
 #endif
 
-            ErrorMessage.AddMessage($"({Models.Count == 0} && {__instance.controlledObjects.Length == 1} && {!isBlacklisted}) || {isStasisRifle} || {isPropCannon} || {isRepCannon}");
-
             //if no models found but has controlled object that is a battery move object to models
             if ((Models.Count == 0 && __instance.controlledObjects.Length == 1 && !isBlacklisted) || isStasisRifle || isPropCannon || isRepCannon)
             {
@@ -128,7 +126,6 @@
                     }
 
                     Models.Add(new BatteryModels() { model = model2, techType = TechType.PrecursorIonBattery });
-
                 }
 
                 if (compatibleBatteries.Contains(TechType.PowerCell))
@@ -160,30 +157,30 @@
 
             }
 
-            if (batteryModel is null && powerCellModel is null)
+            List<TechType> existingModels = new List<TechType>();
+
+            for (int b = 0; b < Models.Count; b++)
             {
-                for (int b = 0; b < Models.Count; b++)
+                if (Models[b].techType == TechType.Battery)
                 {
-                    if (Models[b].techType == TechType.Battery)
-                    {
-                        batteryModel = Models[b].model;
-                    }
-
-                    if (Models[b].techType == TechType.PrecursorIonBattery)
-                    {
-                        ionBatteryModel = Models[b].model;
-                    }
-
-                    if (Models[b].techType == TechType.PowerCell)
-                    {
-                        powerCellModel = Models[b].model;
-                    }
-
-                    if (Models[b].techType == TechType.PrecursorIonPowerCell)
-                    {
-                        ionPowerCellModel = Models[b].model;
-                    }
+                    batteryModel = Models[b].model;
                 }
+
+                if (Models[b].techType == TechType.PrecursorIonBattery)
+                {
+                    ionBatteryModel = Models[b].model;
+                }
+
+                if (Models[b].techType == TechType.PowerCell)
+                {
+                    powerCellModel = Models[b].model;
+                }
+
+                if (Models[b].techType == TechType.PrecursorIonPowerCell)
+                {
+                    ionPowerCellModel = Models[b].model;
+                }
+                existingModels.Add(Models[b].techType);
             }
 
             if (compatibleBatteries.Contains(TechType.Battery) || compatibleBatteries.Contains(TechType.PrecursorIonBattery))
@@ -192,7 +189,7 @@
                 AddMissingTechTypesToList(compatibleBatteries, CbCore.BatteryItems);
                 if (batteryModel != null && ionBatteryModel != null)
                 {
-                    AddCustomModels(batteryModel, ionBatteryModel, ref Models, CbCore.BatteryModels);
+                    AddCustomModels(batteryModel, ionBatteryModel, ref Models, CbCore.BatteryModels, existingModels);
                 }
             }
 
@@ -202,41 +199,48 @@
                 AddMissingTechTypesToList(compatibleBatteries, CbCore.PowerCellItems);
                 if (powerCellModel != null && ionPowerCellModel != null)
                 {
-                    AddCustomModels(powerCellModel, ionPowerCellModel, ref Models, CbCore.PowerCellModels);
+                    AddCustomModels(powerCellModel, ionPowerCellModel, ref Models, CbCore.PowerCellModels, existingModels);
                 }
             }
 
             __instance.batteryModels = Models.ToArray();
         }
 
-        private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels)
+        private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingModels)
         {
             foreach (KeyValuePair<TechType, CBModelData> pair in customModels)
             {
-                GameObject modelBase = pair.Value?.UseIonModelsAsBase ?? false ? ionModel : originalModel;
+                //dont add models that already exist.
+                if (existingModels.Contains(pair.Key))
+                    continue;
+
+                GameObject modelBase = (pair.Value?.UseIonModelsAsBase ?? false) ? ionModel : originalModel;
                 GameObject obj = GameObject.Instantiate(modelBase, modelBase.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";
 
-                Renderer renderer = obj.GetComponentInChildren<Renderer>();
-                if (renderer != null)
+                if(pair.Value != null)
                 {
-                    if(pair.Value.CustomTexture != null)
-                        renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value.CustomTexture);
-
-                    if (pair.Value.CustomNormalMap != null)
-                        renderer.material.SetTexture(ShaderPropertyID._BumpMap, pair.Value.CustomNormalMap);
-
-                    if (pair.Value.CustomSpecMap != null)
-                        renderer.material.SetTexture(ShaderPropertyID._SpecTex, pair.Value.CustomSpecMap);
-
-                    if (pair.Value.CustomIllumMap != null)
+                    Renderer renderer = obj.GetComponentInChildren<Renderer>();
+                    if (renderer != null)
                     {
-                        renderer.material.SetTexture(ShaderPropertyID._Illum, pair.Value.CustomIllumMap);
-                        renderer.material.SetFloat(ShaderPropertyID._GlowStrength, pair.Value.CustomIllumStrength);
-                        renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, pair.Value.CustomIllumStrength);
+                        if (pair.Value.CustomTexture != null)
+                            renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value.CustomTexture);
+
+                        if (pair.Value.CustomNormalMap != null)
+                            renderer.material.SetTexture(ShaderPropertyID._BumpMap, pair.Value.CustomNormalMap);
+
+                        if (pair.Value.CustomSpecMap != null)
+                            renderer.material.SetTexture(ShaderPropertyID._SpecTex, pair.Value.CustomSpecMap);
+
+                        if (pair.Value.CustomIllumMap != null)
+                        {
+                            renderer.material.SetTexture(ShaderPropertyID._Illum, pair.Value.CustomIllumMap);
+                            renderer.material.SetFloat(ShaderPropertyID._GlowStrength, pair.Value.CustomIllumStrength);
+                            renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, pair.Value.CustomIllumStrength);
+                        }
                     }
                 }
-
+                
                 Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
             }
         }
