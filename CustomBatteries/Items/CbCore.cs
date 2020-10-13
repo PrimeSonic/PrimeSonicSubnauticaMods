@@ -186,27 +186,24 @@
 
         protected abstract string[] StepsToFabricatorTab { get; }
 
-        private bool? _placeBatteriesFeatureEnabled = null;
-        protected bool PlaceBatteriesFeatureEnabled
+        private static bool? _placeBatteriesFeatureEnabled = null;
+        internal static bool PlaceBatteriesFeatureEnabled()
         {
-            get
+            if (_placeBatteriesFeatureEnabled == null || !_placeBatteriesFeatureEnabled.HasValue)
             {
-                if (_placeBatteriesFeatureEnabled == null || !_placeBatteriesFeatureEnabled.HasValue)
+                QModManager.API.IQMod decorationsMod = QModManager.API.QModServices.Main.FindModById("DecorationsMod");
+                if (decorationsMod != null && decorationsMod.Enable && decorationsMod.LoadedAssembly != null)
                 {
-                    QModManager.API.IQMod decorationsMod = QModManager.API.QModServices.Main.FindModById("DecorationsMod");
-                    if (decorationsMod != null && decorationsMod.Enable && decorationsMod.LoadedAssembly != null)
+                    Type decorationsModConfig = decorationsMod.LoadedAssembly.GetType("DecorationsMod.ConfigSwitcher", false);
+                    if (decorationsModConfig != null)
                     {
-                        Type decorationsModConfig = decorationsMod.LoadedAssembly.GetType("DecorationsMod.ConfigSwitcher", false);
-                        if (decorationsModConfig != null)
-                        {
-                            FieldInfo enablePlaceBatteriesField = decorationsModConfig.GetField("EnablePlaceBatteries", BindingFlags.Public | BindingFlags.Static);
-                            if (enablePlaceBatteriesField != null)
-                                _placeBatteriesFeatureEnabled = (bool)enablePlaceBatteriesField.GetValue(null);
-                        }
+                        FieldInfo enablePlaceBatteriesField = decorationsModConfig.GetField("EnablePlaceBatteries", BindingFlags.Public | BindingFlags.Static);
+                        if (enablePlaceBatteriesField != null)
+                            _placeBatteriesFeatureEnabled = (bool)enablePlaceBatteriesField.GetValue(null);
                     }
                 }
-                return _placeBatteriesFeatureEnabled != null && _placeBatteriesFeatureEnabled.Value;
             }
+            return _placeBatteriesFeatureEnabled != null && _placeBatteriesFeatureEnabled.Value;
         }
 
         public void Patch()
@@ -240,7 +237,7 @@
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
             
-            CraftDataHandler.SetEquipmentType(this.TechType, this.PlaceBatteriesFeatureEnabled ? EquipmentType.Hand : this.ChargerType);
+            CraftDataHandler.SetEquipmentType(this.TechType, PlaceBatteriesFeatureEnabled() ? EquipmentType.Hand : this.ChargerType);
 
             CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
 
