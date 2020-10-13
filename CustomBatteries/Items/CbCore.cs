@@ -243,7 +243,8 @@
             
             CraftDataHandler.SetEquipmentType(this.TechType, PlaceBatteriesFeatureEnabled() ? EquipmentType.Hand : this.ChargerType);
 
-            CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
+            if (PlaceBatteriesFeatureEnabled())
+                CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
 
             CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
 
