@@ -78,7 +78,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>F:\Program Files\Epic Games\Subnautica\Subnautica_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
