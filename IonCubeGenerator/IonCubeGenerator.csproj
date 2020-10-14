@@ -79,6 +79,7 @@
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.TextRenderingModule.dll</HintPath>

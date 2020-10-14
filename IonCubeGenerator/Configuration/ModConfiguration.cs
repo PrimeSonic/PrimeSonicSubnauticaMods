@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Reflection;
     using Common;
 #if SUBNAUTICA
     using Oculus.Newtonsoft.Json;
@@ -66,15 +67,7 @@
             File.WriteAllText(configurationFilePath, saveDataJson);
         }
 
-        private static string GetModPath()
-        {
-            return Path.Combine(GetQModsPath(), "IonCubeGenerator");
-        }
-
-        private static string GetQModsPath()
-        {
-            return Path.Combine(Environment.CurrentDirectory, "QMods");
-        }
+        private static string ModPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         /// <summary>
         /// Saves the mod configuration file in the mod directory
@@ -104,7 +97,7 @@
             if (!_isInitialized)
             {
                 OptionsPanelHandler.RegisterModOptions(new MenuConfiguration());
-                Singleton.ConfigurationFilePath =  Path.Combine(GetModPath(), "config.json");
+                Singleton.ConfigurationFilePath =  Path.Combine(ModPath, "config.json");
                 Singleton.LoadConfigurationFromFile();
                 _isInitialized = true;
             }
