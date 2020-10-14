@@ -5,8 +5,7 @@
     using IonCubeGenerator.Craftables;
 
     // Adapted from https://github.com/kylinator25/SubnauticaMods/blob/master/AlienRifle/PDAScannerUnlockPatch.cs
-    [HarmonyPatch(typeof(PDAScanner))]
-    [HarmonyPatch("Unlock")]
+    [HarmonyPatch(typeof(PDAScanner), "Unlock")]
     public static class PDAScannerUnlockPatch
     {
         [HarmonyPrefix]
