@@ -109,7 +109,7 @@
             }
 
             // Prepare
-            var item = new CustomItem(this, ItemTypes.PowerCell)
+            var item = new CustomItem(this, itemType)
             {
                 PluginPackName = name,
                 FriendlyName = this.Name,
