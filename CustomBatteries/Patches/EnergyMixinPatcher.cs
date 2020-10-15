@@ -21,8 +21,8 @@
             var harmonyNotifyPostfix = new HarmonyMethod(notifyHasBatteryPostfixMethod);
             harmony.Patch(energyMixinNotifyHasBattery, postfix: harmonyNotifyPostfix); // Patches the EnergyMixin NotifyHasBattery method
 
-            MethodInfo energyMixStartMethod = AccessTools.Method(typeof(EnergyMixin), nameof(EnergyMixin.Start));
-            MethodInfo startPrefixMethod = AccessTools.Method(typeof(EnergyMixinPatcher), nameof(EnergyMixinPatcher.StartPrefix));
+            MethodInfo energyMixStartMethod = AccessTools.Method(typeof(EnergyMixin), nameof(EnergyMixin.Awake));
+            MethodInfo startPrefixMethod = AccessTools.Method(typeof(EnergyMixinPatcher), nameof(EnergyMixinPatcher.AwakePrefix));
 
             var harmonyStartPrefix = new HarmonyMethod(startPrefixMethod);
             harmony.Patch(energyMixStartMethod, prefix: harmonyStartPrefix); // Patches the EnergyMixin Start method
@@ -61,7 +61,7 @@
             }
         }
 
-        public static void StartPrefix(ref EnergyMixin __instance)
+        public static void AwakePrefix(ref EnergyMixin __instance)
         {
             // This is necessary to allow the new batteries to be compatible with tools and vehicles
 
