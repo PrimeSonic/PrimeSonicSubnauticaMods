@@ -1,4 +1,4 @@
-﻿#if DEBUG // EXAMPLE MOD
+﻿#if EXAMPLE // EXAMPLE MOD
 namespace CustomBatteries.Packs
 {
     // You will need to include these namespaces to use the API classes and interfaces

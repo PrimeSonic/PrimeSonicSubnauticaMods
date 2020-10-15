@@ -96,6 +96,7 @@
     <Compile Include="PackReading\EmTextPluginPack.cs" />
     <Compile Include="PackReading\IParsedPluginPack.cs" />
     <Compile Include="PackReading\PackReader.cs" />
+    <Compile Include="Packs\ExampleCbItemMod.cs" />
     <Compile Include="Packs\ExampleExternalMod.cs" />
     <Compile Include="Patches\EnergyMixinPatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
