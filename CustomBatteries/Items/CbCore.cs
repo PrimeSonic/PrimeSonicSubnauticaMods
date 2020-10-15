@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Reflection;
     using Common;
     using CustomBatteries.API;
     using SMLHelper.V2.Assets;
@@ -64,8 +63,6 @@
 
         public CBModelData CustomModelData { get; set; }
 
-        public bool ExcludeFromChargers { get; set; }
-
         protected Action<GameObject> EnhanceGameObject { get; set; }
 
         protected CbCore(string classId, bool ionCellSkins)
@@ -85,8 +82,6 @@
             this.UsingIonCellSkins = packItem.CBModelData?.UseIonModelsAsBase ?? false;
 
             this.Sprite = packItem.CustomIcon;
-
-            this.ExcludeFromChargers = packItem.ExcludeFromChargers;
 
             this.EnhanceGameObject = packItem.EnhanceGameObject;
         }

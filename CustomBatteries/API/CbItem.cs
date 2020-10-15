@@ -1,6 +1,9 @@
 ﻿namespace CustomBatteries.API
 {
+    using System;
     using System.Collections.Generic;
+    using Common;
+    using CustomBatteries.Items;
     using UnityEngine;
     using Logger = QModManager.Utility.Logger;
 #if SUBNAUTICA
@@ -8,106 +11,118 @@
 #endif
 
     /// <summary>
-    /// An interface that defines all the necessary elements of a CustomBatteries plugin pack.
+    /// A class that holds all the necessary elements of a custom battery or power cell.
     /// </summary>
     public abstract class CbItem
     {
         /// <summary>
         /// The full capacity of energy of the item.
         /// </summary>
-        public abstract int EnergyCapacity { get; }
+        public int EnergyCapacity { get; set; } = -1;
 
         /// <summary>
         /// The internal ID for the custom item.
         /// </summary>
-        public abstract string ID { get; }
+        public string ID { get; set; }
 
         /// <summary>
         /// The display name of the custom item shown in-game.
         /// </summary>
-        public abstract string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
         /// The flavor text for the custom item shown in-game when viewing it from a PDA screen.
         /// </summary>
-        public abstract string FlavorText { get; }
+        public string FlavorText { get; set; }
 
         /// <summary>
         /// The materials required to craft the item.<para/>
         /// If you want multiple copies of the same material, include multiple entries of that <see cref="TechType"/>.<para/>
         /// If this list is empty, a default recipe of a single <see cref="TechType.Titanium"/> will be applied instead.
         /// </summary>
-        public abstract IList<TechType> CraftingMaterials { get; }
+        public List<TechType> CraftingMaterials { get; set; } = new List<TechType>();
 
         /// <summary>
         /// What item must be obtained, scanned, or built to unlock the battery and power cell.<para/>
-        /// This property is optional. By default, the item will be unlocked at the start of the game.
+        /// By default, the item will be unlocked at the start of the game.
         /// </summary>
-        public virtual TechType UnlocksWith => TechType.None;
+        public TechType UnlocksWith { get; set; } = TechType.None;
 
         /// <summary>
         /// The custom sprite for the item's icon.<br/>
-        /// This property is optional and will default to the standard icon for batteries or power cells.
+        /// This value is optional and will default to the standard icon for batteries or power cells.
         /// </summary>
-        public virtual Sprite CustomIcon => null;
-
+        public Sprite CustomIcon { get; set; }
 
         /// <summary>
         /// The custom data that will make up your batteries model.<br/>
-        /// This property is optional and will default to the standard model for batteries or power cells if left as null.
+        /// This value is optional and will default to the standard model for batteries or power cells if left as null.
         /// </summary>
-        public virtual CBModelData CBModelData => null;
-
-        /// <summary>
-        /// Override this value if you want your item to not be allowed in Battery and Power Cell chargers.
-        /// </summary>
-        public virtual bool ExcludeFromChargers => false;
+        public CBModelData CBModelData { get; set; }
 
         /// <summary>
         /// Override this optional method if you want to make changes to the your item's <see cref="GameObject"/> as it is being spawned from prefab.<br/>
         /// Use this if you want to add or modify components of your item.
         /// </summary>
         /// <param name="gameObject">The item's gameobject.</param>
-        public virtual void EnhanceGameObject(GameObject gameObject)
+        public Action<GameObject> EnhanceGameObject { get; set; }
+
+        private TechType _techType = TechType.None;
+        public TechType TechType
         {
-        }
+            get
+            {
+                if (_techType == TechType.None)
+                {
+                    throw new InvalidOperationException("The Patch method must be called before you can access the TechType value.");
+                }
 
-        /// <summary>
-        /// Allows mods to adds their own custom batteries directly. The plugin pack will be patched and the modded battery data returned.
-        /// </summary>
-        /// <param name="packItem">The battery data.</param>
-        /// <returns>
-        /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the battery requested.
-        /// </returns>
-        public CbItemPack PatchAsBattery()
-        {
-            string name = this.GetType().Assembly.GetName().Name;
-            Logger.Log(Logger.Level.Info, $"Received Custom Battery pack from '{name}'");
+                return _techType;
+            }
+        }            
 
-            var pack = new CbItemPack(name, this, ItemTypes.Battery);
-
-            pack.Patch();
-
-            return pack;
-        }
-
-        /// <summary>
-        /// Allows mods to adds their own custom power cells directly. The plugin pack will be patched and the modded power cell data returned.
-        /// </summary>
-        /// <param name="packItem">The power cell data.</param>
-        /// <returns>
-        /// A <see cref="CbItemPack" /> containing the patched <see cref="SMLHelper.V2.Assets.ModPrefab" /> intance for the power cell requested.
-        /// </returns>
-        public CbItemPack PatchAsPowerCell()
+        internal void Patch(ItemTypes itemType)
         {
             string name = this.GetType().Assembly.GetName().Name;
-            Logger.Log(Logger.Level.Info, $"Received Custom Power Cell pack from '{name}'");
+            Logger.Log(Logger.Level.Info, $"Received Custom {itemType} pack from '{name}'");
 
-            var pack = new CbItemPack(name, this, ItemTypes.PowerCell);
+            // Check for required data
+            string errors = string.Empty;
 
-            pack.Patch();
+            if (this.EnergyCapacity <= 0)
+                errors += "Missing required data 'EnergyCapacity" + Environment.NewLine;
 
-            return pack;
+            if (string.IsNullOrEmpty(this.ID))
+                errors += "Missing required data 'ID'" + Environment.NewLine;
+
+            if (string.IsNullOrEmpty(this.Name))
+                errors += "Missing required data 'Name'" + Environment.NewLine;
+
+            if (string.IsNullOrEmpty(this.FlavorText))
+                errors += "Missing required data 'FlavorText'";
+
+            if (!string.IsNullOrEmpty(errors))
+            {
+                string msg = "Unable to patch:" + Environment.NewLine + errors;
+                Logger.Log(Logger.Level.Error, msg);
+                throw new InvalidOperationException(msg);
+            }
+
+            // Prepare
+            var item = new CustomItem(this, ItemTypes.PowerCell)
+            {
+                PluginPackName = name,
+                FriendlyName = this.Name,
+                Description = this.FlavorText,
+                PowerCapacity = this.EnergyCapacity,
+                RequiredForUnlock = this.UnlocksWith,
+                Parts = this.CraftingMaterials
+            };
+
+            // Patch
+            item.Patch();
+            
+            _techType = item.TechType;
         }
     }
 }

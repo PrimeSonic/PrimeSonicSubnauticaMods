@@ -74,8 +74,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\CbItemPack.cs" />
+    <Compile Include="API\CbBattery.cs" />
     <Compile Include="API\CBModelData.cs" />
+    <Compile Include="API\CbPowerCell.cs" />
     <Compile Include="API\CustomBatteriesService.cs" />
     <Compile Include="API\ICustomBatteriesService.cs" />
     <Compile Include="API\CbItem.cs" />

@@ -75,9 +75,6 @@
             {
                 CbCore cbCoreItem = toBeAdded[i];
 
-                if (cbCoreItem.ExcludeFromChargers)
-                    continue;
-
                 TechType entry = cbCoreItem.TechType;
                 
                 if (compatibleTech.Contains(entry))
