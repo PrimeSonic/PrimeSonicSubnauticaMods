@@ -15,7 +15,7 @@
             {
                 // If model is correct, apply translation.
                 if (model != null)
-                    model.transform.localPosition += GetTranslate();
+                    model.transform.localPosition -= GetTranslate();
                 HasBeenPlaced = true;
             }
 
@@ -26,6 +26,7 @@
                 Renderer[] rends = model.GetComponentsInChildren<Renderer>();
                 if (rends == null || rends.Length <= 0)
                     rends = model.GetComponents<Renderer>();
+
                 // If model has renderers.
                 if (rends != null && rends.Length > 0)
                 {
@@ -52,7 +53,7 @@
                 GameObject model = GetModel();
                 // If model is correct, apply translation.
                 if (model != null)
-                    model.transform.localPosition += GetTranslate();
+                    model.transform.localPosition -= GetTranslate();
                 HasBeenPlaced = true;
             }
         }
@@ -65,7 +66,7 @@
 
     internal class CustomBatteryPlaceTool : CbPlaceTool
     {
-        internal override GameObject GetModel() => this.gameObject.FindChild("model");
+        internal override GameObject GetModel() => this.gameObject.FindChild("battery_01") ?? this.gameObject.FindChild("battery_ion");
 
         internal override Vector3 GetTranslate() => new Vector3(0.0f, 0.069f, 0.0f);
     }
@@ -74,6 +75,6 @@
     {
         internal override GameObject GetModel() => this.gameObject.FindChild("engine_power_cell_01") ?? this.gameObject.FindChild("engine_power_cell_ion");
 
-        internal override Vector3 GetTranslate() => new Vector3(0.0f, 0.138f, 0.0f);
+        internal override Vector3 GetTranslate() => new Vector3(0.0f, 0.0f, 0.0f);
     }
 }
