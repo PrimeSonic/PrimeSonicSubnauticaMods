@@ -73,154 +73,192 @@
 
             List<TechType> compatibleBatteries = __instance.compatibleBatteries;
 
-            List<BatteryModels> Models = new List<BatteryModels>(__instance.batteryModels);
+            List<BatteryModels> Models = new List<BatteryModels>(__instance.batteryModels ?? new BatteryModels[0]);
+
             GameObject batteryModel = null;
             GameObject powerCellModel = null;
             GameObject ionBatteryModel = null;
             GameObject ionPowerCellModel = null;
 
-            TechType techType = CraftData.GetTechType(__instance.gameObject);
+            List<TechType> existingTechtypes = new List<TechType>();
+            List<GameObject> existingModels = new List<GameObject>();
 
-            bool isStasisRifle = techType == TechType.StasisRifle;
-            bool isPropCannon = techType == TechType.PropulsionCannon;
-            bool isRepCannon = techType == TechType.RepulsionCannon;
-#if SUBNAUTICA
-            bool isBlacklisted = techType == TechType.Builder;
-#elif BELOWZERO
-            bool isBlacklisted = techType == TechType.MetalDetector || techType == TechType.Builder;
-#endif
 
-            //if no models found but has controlled object that is a battery move object to models
-            if ((Models.Count == 0 && __instance.controlledObjects.Length == 1 && !isBlacklisted) || isStasisRifle || isPropCannon || isRepCannon)
-            {
-                if (isStasisRifle)
-                {
-                    batteryModel = __instance.gameObject.transform.Find("stasis_rifle/battery_01").gameObject;
-                }
-                else if (isPropCannon || isRepCannon)
-                {
-                    GameObject batteryGeo = __instance.gameObject.transform.Find("1st person model/Propulsion_Cannon_anim/battery_geo").gameObject;
-                    batteryModel = GameObject.Instantiate(batteryGeo, batteryGeo.transform.parent);
-
-                    batteryGeo.SetActive(false);
-                }
-                else
-                {
-                    batteryModel = __instance.controlledObjects[0];
-                }
-
-                if (compatibleBatteries.Contains(TechType.Battery))
-                {
-                    Models.Add(new BatteryModels() { model = batteryModel, techType = TechType.Battery });
-
-                    GameObject ionbattery = Resources.Load<GameObject>("worldentities/tools/precursorionbattery");
-                    GameObject model2 = GameObject.Instantiate(batteryModel, batteryModel.transform.parent);
-                    model2.name = "precursorIonBatteryModel";
-
-                    Material ionBatteryMaterial = ionbattery?.GetComponentInChildren<MeshRenderer>()?.material;
-                    if (ionBatteryMaterial != null)
-                    {
-                        model2.GetComponentInChildren<Renderer>().material = new Material(ionBatteryMaterial);
-                    }
-
-                    Models.Add(new BatteryModels() { model = model2, techType = TechType.PrecursorIonBattery });
-                }
-
-                if (compatibleBatteries.Contains(TechType.PowerCell))
-                {
-                    powerCellModel = Resources.Load<GameObject>("worldentities/tools/powercell");
-                    GameObject model3 = GameObject.Instantiate(batteryModel, batteryModel.transform.parent);
-                    model3.name = "PowerCellModel";
-
-                    Material powercellMaterial = powerCellModel?.GetComponentInChildren<MeshRenderer>()?.material;
-                    if (powercellMaterial != null)
-                    {
-                        model3.GetComponentInChildren<Renderer>().material = new Material(powercellMaterial);
-                    }
-                    Models.Add(new BatteryModels() { model = GameObject.Instantiate(model3, batteryModel.transform.parent), techType = TechType.PowerCell });
-
-                    GameObject precursorIonPowerCell = Resources.Load<GameObject>("worldentities/tools/precursorionpowercell");
-                    GameObject model4 = GameObject.Instantiate(batteryModel, batteryModel.transform.parent);
-                    model4.name = "PrecursorIonPowerCellModel";
-
-                    Material precursorIonPowerCellMaterial = precursorIonPowerCell?.GetComponentInChildren<MeshRenderer>()?.material;
-                    if (precursorIonPowerCellMaterial != null)
-                    {
-                        model4.GetComponentInChildren<Renderer>().material = new Material(precursorIonPowerCellMaterial);
-                    }
-                    Models.Add(new BatteryModels() { model = GameObject.Instantiate(model4, batteryModel.transform.parent), techType = TechType.PrecursorIonPowerCell });
-                }
-
-                __instance.controlledObjects = new GameObject[0];
-
-            }
-
-            List<TechType> existingModels = new List<TechType>();
-
+            //First check for models already setup
             for (int b = 0; b < Models.Count; b++)
             {
-                if (Models[b].techType == TechType.Battery)
+                BatteryModels model = Models[b]; 
+                switch (model.techType)
                 {
-                    batteryModel = Models[b].model;
+                    case TechType.Battery:
+                        batteryModel = model.model;
+                        break;
+                    case TechType.PowerCell:
+                        powerCellModel = model.model;
+                        break;
+                    case TechType.PrecursorIonBattery:
+                        ionBatteryModel = model.model;
+                        break;
+                    case TechType.PrecursorIonPowerCell:
+                        ionPowerCellModel = model.model;
+                        break;
                 }
-
-                if (Models[b].techType == TechType.PrecursorIonBattery)
-                {
-                    ionBatteryModel = Models[b].model;
-                }
-
-                if (Models[b].techType == TechType.PowerCell)
-                {
-                    powerCellModel = Models[b].model;
-                }
-
-                if (Models[b].techType == TechType.PrecursorIonPowerCell)
-                {
-                    ionPowerCellModel = Models[b].model;
-                }
-                existingModels.Add(Models[b].techType);
+                existingTechtypes.Add(Models[b].techType);
+                existingModels.Add(Models[b].model);
             }
+
+            //Then check for models not already setup.
+            foreach (Renderer renderer in __instance.gameObject.GetComponentsInChildren<Renderer>(true))
+            {
+                switch (renderer?.material?.mainTexture?.name)
+                {
+                    case "battery_01":
+                        batteryModel = batteryModel ??= renderer.gameObject;
+                        break;
+                    case "battery_ion":
+                        ionBatteryModel = ionBatteryModel ??= renderer.gameObject;
+                        break;
+                    case "power_cell_01":
+                        powerCellModel = powerCellModel ??= renderer.gameObject;
+                        break;
+                    case "engine_power_cell_ion":
+                        ionPowerCellModel = ionPowerCellModel ??= renderer.gameObject;
+                        break;
+                }
+            }
+
+            //Add missing models that were found or create new ones if possible.
+            if (batteryModel != null && !existingTechtypes.Contains(TechType.Battery))
+            {
+                Models.Add(new BatteryModels() { model = batteryModel, techType = TechType.Battery });
+                existingTechtypes.Add(TechType.Battery);
+                existingModels.Add(batteryModel);
+            }
+
+            //Add missing models that were found or create new ones if possible.
+            if (!existingTechtypes.Contains(TechType.PrecursorIonBattery))
+            {
+                if (ionBatteryModel != null)
+                {
+                    Models.Add(new BatteryModels() { model = ionBatteryModel, techType = TechType.PrecursorIonBattery });
+                    existingTechtypes.Add(TechType.PrecursorIonBattery);
+                    existingModels.Add(ionBatteryModel);
+                }
+                else if (batteryModel != null)
+                {
+
+                    GameObject ionBatteryPrefab = Resources.Load<GameObject>("worldentities/tools/precursorionbattery");
+                    ionBatteryModel = GameObject.Instantiate(batteryModel, batteryModel.transform.parent);
+                    ionBatteryModel.name = "precursorIonBatteryModel";
+
+
+                    Material ionBatteryMaterial = ionBatteryPrefab?.GetComponentInChildren<Renderer>()?.material;
+                    if (ionBatteryMaterial != null)
+                    {
+                        ionBatteryModel.GetComponentInChildren<Renderer>().material = new Material(ionBatteryMaterial);
+                        Models.Add(new BatteryModels() { model = ionBatteryModel, techType = TechType.PrecursorIonBattery });
+                        existingTechtypes.Add(TechType.PrecursorIonBattery);
+                        existingModels.Add(ionBatteryModel);
+                    }
+                }
+            }
+
+            //Add missing models that were found or create new ones if possible.
+            if (powerCellModel != null && !existingTechtypes.Contains(TechType.PowerCell))
+            {
+                Models.Add(new BatteryModels() { model = powerCellModel, techType = TechType.PowerCell });
+                existingTechtypes.Add(TechType.PowerCell);
+                existingModels.Add(powerCellModel);
+            }
+
+            //Add missing models that were found or create new ones if possible.
+            if (!existingTechtypes.Contains(TechType.PrecursorIonPowerCell))
+            {
+                if (ionPowerCellModel != null)
+                {
+                    Models.Add(new BatteryModels() { model = ionPowerCellModel, techType = TechType.PrecursorIonPowerCell });
+                    existingTechtypes.Add(TechType.PrecursorIonPowerCell);
+                    existingModels.Add(ionPowerCellModel);
+                }
+                else if (powerCellModel != null)
+                {
+
+                    GameObject ionPowerCellPrefab = Resources.Load<GameObject>("worldentities/tools/precursorionpowercell");
+                    ionPowerCellModel = GameObject.Instantiate(powerCellModel, powerCellModel.transform.parent);
+                    ionPowerCellModel.name = "PrecursorIonPowerCellModel";
+
+
+                    Material precursorIonPowerCellMaterial = ionPowerCellPrefab?.GetComponentInChildren<Renderer>()?.material;
+                    if (precursorIonPowerCellMaterial != null)
+                    {
+                        ionPowerCellModel.GetComponentInChildren<Renderer>().material = new Material(precursorIonPowerCellMaterial);
+                        Models.Add(new BatteryModels() { model = ionPowerCellModel, techType = TechType.PrecursorIonPowerCell });
+                        existingTechtypes.Add(TechType.PrecursorIonPowerCell);
+                        existingModels.Add(ionPowerCellModel);
+                    }
+                }
+            }
+
+            //Remove models from the controlled objects list after we have added them as controlled models instead.
+            List<GameObject> controlledObjects = new List<GameObject>(__instance.controlledObjects ?? new GameObject[0]);
+
+            foreach(GameObject gameObject in __instance.controlledObjects ?? new GameObject[0])
+            {
+                if (!existingModels.Contains(gameObject))
+                    controlledObjects.Add(gameObject);
+            }
+            __instance.controlledObjects = controlledObjects.ToArray();
 
             if (compatibleBatteries.Contains(TechType.Battery) || compatibleBatteries.Contains(TechType.PrecursorIonBattery))
             {
-                // If the regular Battery is compatible with this item, then modded batteries should also be compatible
+                // If the regular Battery or Ion Battery is compatible with this item, then modded batteries should also be compatible
                 AddMissingTechTypesToList(compatibleBatteries, CbDatabase.BatteryItems);
+
                 if (batteryModel != null && ionBatteryModel != null)
                 {
-                    AddCustomModels(batteryModel, ionBatteryModel, ref Models, CbDatabase.BatteryModels, existingModels);
+                    //If we have enough information to make custom models for this tool or vehicle then create them.
+                    AddCustomModels(batteryModel, ionBatteryModel, ref Models, CbDatabase.BatteryModels, existingTechtypes);
                 }
             }
 
             if (compatibleBatteries.Contains(TechType.PowerCell) || compatibleBatteries.Contains(TechType.PrecursorIonPowerCell))
             {
-                // If the regular Power Cell is compatible with this item, then modded power cells should also be compatible
+                // If the regular Power Cell or Ion Power Cell is compatible with this item, then modded power cells should also be compatible
                 AddMissingTechTypesToList(compatibleBatteries, CbDatabase.PowerCellItems);
+
                 if (powerCellModel != null && ionPowerCellModel != null)
                 {
-                    AddCustomModels(powerCellModel, ionPowerCellModel, ref Models, CbDatabase.PowerCellModels, existingModels);
+                    //If we have enough information to make custom models for this tool or vehicle then create them.
+                    AddCustomModels(powerCellModel, ionPowerCellModel, ref Models, CbDatabase.PowerCellModels, existingTechtypes);
                 }
             }
 
             __instance.batteryModels = Models.ToArray();
         }
 
-        private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingModels)
+        private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingTechtypes)
         {
             foreach (KeyValuePair<TechType, CBModelData> pair in customModels)
             {
                 //dont add models that already exist.
-                if (existingModels.Contains(pair.Key))
+                if (existingTechtypes.Contains(pair.Key))
                     continue;
 
+                //check which model to base the new model from
                 GameObject modelBase = (pair.Value?.UseIonModelsAsBase ?? false) ? ionModel : originalModel;
+
+                //create the new model and set it to have the same parent as the original
                 GameObject obj = GameObject.Instantiate(modelBase, modelBase.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";
 
+                //If no custom model data then skip this and use the default textures from the selected model.
                 if (pair.Value != null)
                 {
                     Renderer renderer = obj.GetComponentInChildren<Renderer>();
                     if (renderer != null)
                     {
+                        //Set the customized textures for the newly created model to the textures given by the modder.
+
                         if (pair.Value.CustomTexture != null)
                             renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value.CustomTexture);
 
@@ -240,6 +278,7 @@
                 }
 
                 Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
+                existingTechtypes.Add(pair.Key);
             }
         }
 
