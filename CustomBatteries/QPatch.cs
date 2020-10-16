@@ -5,6 +5,7 @@
     using Common;
     using CustomBatteries.Items;
     using CustomBatteries.PackReading;
+    using CustomBatteries.Patches;
     using HarmonyLib;
     using MidGameBatteries.Patchers;
     using QModManager.API.ModLoading;
@@ -28,6 +29,7 @@
 
                 var harmony = new Harmony("com.custombatteries.mod");
                 EnergyMixinPatcher.Patch(harmony);
+                ChargerPatcher.Patch(harmony);
 
                 QuickLogger.Info("Finished patching");
             }

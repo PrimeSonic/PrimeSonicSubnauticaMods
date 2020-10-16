@@ -98,6 +98,7 @@
     <Compile Include="PackReading\PackReader.cs" />
     <Compile Include="Packs\ExampleCbItemMod.cs" />
     <Compile Include="Packs\ExampleExternalMod.cs" />
+    <Compile Include="Patches\ChargerPatcher.cs" />
     <Compile Include="Patches\EnergyMixinPatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QPatch.cs" />
