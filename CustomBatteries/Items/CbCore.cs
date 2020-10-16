@@ -116,8 +116,7 @@
 
             if (CustomModelData != null)
             {
-                Renderer renderer = obj.GetComponentInChildren<Renderer>();
-                if (renderer != null)
+                foreach (Renderer renderer in obj.GetComponentsInChildren<Renderer>(true))
                 {
                     if (CustomModelData.CustomTexture != null)
                         renderer.material.SetTexture(ShaderPropertyID._MainTex, this.CustomModelData.CustomTexture);
