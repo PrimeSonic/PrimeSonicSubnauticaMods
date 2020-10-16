@@ -110,6 +110,10 @@
                 AddPlaceTool(obj);
             }
 
+            SkyApplier skyApplier = obj.EnsureComponent<SkyApplier>();
+            skyApplier.renderers = obj.GetComponentsInChildren<Renderer>(true);
+            skyApplier.anchorSky = Skies.Auto;
+
             if (CustomModelData != null)
             {
                 Renderer renderer = obj.GetComponentInChildren<Renderer>();
