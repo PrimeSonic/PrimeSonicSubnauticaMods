@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Common;
 using HarmonyLib;
-using SMLHelper.V2.Utility;
 using UnityEngine;
 using static Charger;
 
@@ -14,8 +9,6 @@ namespace CustomBatteries.Patches
 {
     internal static class ChargerPatcher
     {
-        public static Dictionary<TechType, GameObject> PowerCellChargerCache = new Dictionary<TechType, GameObject>();
-
         internal static void Patch(Harmony harmony)
         {
             QuickLogger.Debug($"{nameof(ChargerPatcher)} Applying Harmony Patches");
@@ -35,7 +28,7 @@ namespace CustomBatteries.Patches
                 Pickupable pickupable = item.item;
                 if (battery != null && pickupable != null)
                 {
-                    GameObject model = null;
+                    GameObject model;
                     switch (__instance)
                     {
                         case BatteryCharger _:
@@ -56,7 +49,6 @@ namespace CustomBatteries.Patches
                                 chargerMeshFilter.mesh = modelMeshFilter.mesh;
                                 renderer1.material.CopyPropertiesFromMaterial(renderer.material);
                             }
-
                             break;
                     }
                 }
