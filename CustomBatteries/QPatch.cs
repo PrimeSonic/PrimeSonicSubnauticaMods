@@ -5,9 +5,11 @@
     using Common;
     using CustomBatteries.Items;
     using CustomBatteries.PackReading;
+    using CustomBatteries.Patches;
     using HarmonyLib;
     using MidGameBatteries.Patchers;
     using QModManager.API.ModLoading;
+    using SMLHelper.V2.Handlers;
 
     [QModCore]
     public static class QPatch
@@ -19,7 +21,7 @@
 
             try
             {
-                CbCore.PatchCraftingTabs();
+                PatchCraftingTabs();
                 PackReader.PatchTextPacks();
 
                 // Packs from external mods are patched as they arrive.
@@ -27,6 +29,7 @@
 
                 var harmony = new Harmony("com.custombatteries.mod");
                 EnergyMixinPatcher.Patch(harmony);
+                ChargerPatcher.Patch(harmony);
 
                 QuickLogger.Info("Finished patching");
             }
@@ -36,30 +39,50 @@
             }
         }
 
+        internal static void PatchCraftingTabs()
+        {
+            QuickLogger.Info("Separating batteries and power cells into their own fabricator crafting tabs");
+
+            // Remove original crafting nodes
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.Battery.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PrecursorIonBattery.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PowerCell.ToString());
+            CraftTreeHandler.RemoveNode(CraftTree.Type.Fabricator, CbDatabase.ResCraftTab, CbDatabase.ElecCraftTab, TechType.PrecursorIonPowerCell.ToString());
+
+            // Add a new set of tab nodes for batteries and power cells
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbDatabase.BatteryCraftTab, "Batteries", SpriteManager.Get(TechType.Battery), CbDatabase.ResCraftTab);
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Fabricator, CbDatabase.PowCellCraftTab, "Power Cells", SpriteManager.Get(TechType.PowerCell), CbDatabase.ResCraftTab);
+
+            // Move the original batteries and power cells into these new tabs
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.Battery, CbDatabase.BatteryCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonBattery, CbDatabase.BatteryCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PowerCell, CbDatabase.PowCellCraftPath);
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, TechType.PrecursorIonPowerCell, CbDatabase.PowCellCraftPath);
+        }
+
         [QModPostPatch]
         public static void UpdateStaticCollections()
         {
-            UpdateCollection(BatteryCharger.compatibleTech, CbCore.BatteryTechTypes);
-            UpdateCollection(PowerCellCharger.compatibleTech, CbCore.PowerCellTechTypes);
+            UpdateCollection(BatteryCharger.compatibleTech, CbDatabase.BatteryItems);
+            UpdateCollection(PowerCellCharger.compatibleTech, CbDatabase.PowerCellItems);
         }
 
-        private static void UpdateCollection(HashSet<TechType> compatibleTech, List<TechType> toBeAdded)
+        private static void UpdateCollection(HashSet<TechType> compatibleTech, List<CbCore> toBeAdded)
         {
             if (toBeAdded.Count == 0)
                 return;
 
             // Make sure all custom batteries are allowed in the battery charger
-            if (!compatibleTech.Contains(toBeAdded[toBeAdded.Count - 1]))
+            for (int i = toBeAdded.Count - 1; i >= 0; i--)
             {
-                // Checks in reverse order to account for the (unlikely) event that an external mod patches later than expected
-                for (int i = toBeAdded.Count - 1; i >= 0; i--)
-                {
-                    TechType entry = toBeAdded[i];
-                    if (compatibleTech.Contains(entry))
-                        return;
+                CbCore cbCoreItem = toBeAdded[i];
 
-                    compatibleTech.Add(entry);
-                }
+                TechType entry = cbCoreItem.TechType;
+                
+                if (compatibleTech.Contains(entry))
+                    continue;
+
+                compatibleTech.Add(entry);
             }
         }
     }

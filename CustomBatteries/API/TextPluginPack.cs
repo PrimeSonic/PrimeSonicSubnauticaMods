@@ -5,7 +5,7 @@
     internal class TextPluginPack : CustomPack
     {
         internal TextPluginPack(IParsedPluginPack pluginPack)
-            : base(pluginPack)
+            : base(pluginPack, pluginPack.UseIonCellSkins, false)
         {
             _customBattery.PluginFolder = pluginPack.PluginPackFolder;
             _customBattery.IconFileName = pluginPack.BatteryIconFile;

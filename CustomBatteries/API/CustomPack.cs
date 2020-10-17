@@ -2,7 +2,6 @@
 {
     using Common;
     using CustomBatteries.Items;
-    using CustomBatteries.PackReading;
     using SMLHelper.V2.Assets;
 
     /// <summary>
@@ -45,11 +44,25 @@
         /// </value>
         public bool IsPatched => _customBattery.IsPatched && _customPowerCell.IsPatched;
 
-        internal CustomPack(IPluginPack pluginPack)
+        /// <summary>
+        /// Gets a value indicating whether the ion cell textures are being used.
+        /// </summary>
+        /// <value><c>True</c> if using the ion battery and ion power cell skins; Otherwise <c>false</c>.</value>
+        public bool UsingIonCellSkins { get; protected set; }
+
+        /// <summary>
+        /// Gets a value indicating whether custom textures are being used.
+        /// </summary>
+        /// <value><c>True</c> if using mod provided custom textures; Otherwise <c>false</c>.</value>
+        public bool UsingCustomTextures { get; protected set; }
+
+        internal CustomPack(IPluginPack pluginPack, bool ionCellSkins, bool customSkin)
         {
             this.OriginalPlugInPack = pluginPack;
+            this.UsingIonCellSkins = ionCellSkins;
+            this.UsingCustomTextures = customSkin;
 
-            _customBattery = new CustomBattery(pluginPack.BatteryID)
+            _customBattery = new CustomBattery(pluginPack.BatteryID, ionCellSkins)
             {
                 PluginPackName = pluginPack.PluginPackName,
                 FriendlyName = pluginPack.BatteryName,
@@ -60,7 +73,7 @@
                 Parts = pluginPack.BatteryParts
             };
 
-            _customPowerCell = new CustomPowerCell(pluginPack.PowerCellID, _customBattery)
+            _customPowerCell = new CustomPowerCell(pluginPack.PowerCellID, ionCellSkins, _customBattery)
             {
                 PluginPackName = pluginPack.PluginPackName,
                 FriendlyName = pluginPack.PowerCellName,
