@@ -18,32 +18,6 @@
                     model.transform.localPosition -= GetTranslate();
                 HasBeenPlaced = true;
             }
-
-            // If model is correct, refresh its SkyApplier.
-            if (model != null)
-            {
-                // Grab model renderers.
-                Renderer[] rends = model.GetComponentsInChildren<Renderer>();
-                if (rends == null || rends.Length <= 0)
-                    rends = model.GetComponents<Renderer>();
-
-                // If model has renderers.
-                if (rends != null && rends.Length > 0)
-                {
-                    // Remove the original SkyApplier.
-                    SkyApplier sa = model.GetComponent<SkyApplier>() ?? model.GetComponentInParent<SkyApplier>();
-                    if (sa != null)
-                        Object.DestroyImmediate(sa);
-                    // Add the new SkyApplier with dynamic "true" and anchor sky "auto" that will ensure proper rendering (because item can be placed anywhere).
-                    sa = model.AddComponent<SkyApplier>();
-                    sa.renderers = rends;
-                    sa.anchorSky = Skies.Auto;
-                    sa.dynamic = true;
-                    sa.updaterIndex = 0; // Updater index set to 0 for quick visual refresh of the model, but this line could be removed safely (last updater index is used by default).
-                    sa.enabled = true;
-                    sa.RefreshDirtySky();
-                }
-            }
         }
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
