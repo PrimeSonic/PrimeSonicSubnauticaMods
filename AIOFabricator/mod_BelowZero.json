@@ -2,7 +2,7 @@
   "Id": "AIOFabricator",
   "DisplayName": "AIOFabricator",
   "Author": "PrimeSonic",
-  "Version": "1.1.2",
+  "Version": "1.1.3",
   "Enable": true,
   "Game": "BelowZero",
   "AssemblyName": "AIOFabricator.dll",

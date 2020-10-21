@@ -3,24 +3,27 @@
     using Common;
     using HarmonyLib;
     using IonCubeGenerator.Buildable;
-    using IonCubeGenerator.Configuration;
+    using IonCubeGenerator.Configuration;    
     using QModManager.API.ModLoading;
     using System.Reflection;
 
     [QModCore]
     public static class QPatch
     {
+        [QModPrePatch]
+        public static void SetupConfig()
+        {
+            QuickLogger.DebugLogsEnabled = QModManager.Utility.Logger.DebugLogsEnabled;
+            QuickLogger.Debug("Debug logs enabled");
+
+            QuickLogger.Info("Loading config.json settings");
+            ModConfiguration.Initialize();
+        }
+
         [QModPatch]
         public static void Patch()
         {
             QuickLogger.Info("Started patching. Version: " + QuickLogger.GetAssemblyVersion());
-
-#if DEBUG
-            QuickLogger.DebugLogsEnabled = true;
-            QuickLogger.Debug("Debug logs enabled");
-#endif
-
-            ModConfiguration.Initialize();
 
             CubeGeneratorBuildable.PatchSMLHelper();
 

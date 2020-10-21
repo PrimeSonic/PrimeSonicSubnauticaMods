@@ -9,7 +9,6 @@
     using IonCubeGenerator.Mono;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
-    using System.IO;
     using UnityEngine;
 #if SUBNAUTICA
     using RecipeData = SMLHelper.V2.Crafting.TechData;
@@ -132,8 +131,15 @@
                 QuickLogger.Debug("Ion Cube Display Object Created", true);
                 var displayedIonCube = GameObject.Instantiate<GameObject>(CubeGeneratorContainer.CubePrefab);
                 Pickupable pickupable = displayedIonCube.GetComponent<Pickupable>();
-                pickupable.isPickupable = false;
-                pickupable.destroyOnDeath = true;
+                GameObject.Destroy(pickupable);
+                Collider collider = displayedIonCube.GetComponent<Collider>();
+                GameObject.Destroy(collider);
+                Rigidbody rigidbody = displayedIonCube.GetComponent<Rigidbody>();
+                GameObject.Destroy(rigidbody);
+                WorldForces worldForces = displayedIonCube.GetComponent<WorldForces>();
+                GameObject.Destroy(worldForces);
+                TechTag techTag = displayedIonCube.GetComponent<TechTag>();
+                GameObject.Destroy(techTag);
 
                 displayedIonCube.transform.SetParent(ionSlot.transform);
                 displayedIonCube.transform.localPosition =

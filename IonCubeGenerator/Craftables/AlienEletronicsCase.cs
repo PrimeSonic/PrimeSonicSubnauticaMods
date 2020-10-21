@@ -1,4 +1,6 @@
-﻿namespace IonCubeGenerator.Craftables
+﻿using IonCubeGenerator.Mono;
+
+namespace IonCubeGenerator.Craftables
 {
     using System.IO;
     using System.Reflection;
@@ -59,6 +61,8 @@
             //Add the prefabIdentifier
             PrefabIdentifier prefabID = prefab.AddComponent<PrefabIdentifier>();
             prefabID.ClassId = this.ClassID;
+
+            prefab.AddComponent<TriggerFixer>();
 
             return prefab;
         }

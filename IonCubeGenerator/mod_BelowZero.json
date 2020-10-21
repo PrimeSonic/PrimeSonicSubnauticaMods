@@ -2,7 +2,7 @@
   "Id": "IonCubeGenerator",
   "DisplayName": "Ion Cube Generator",
   "Author": "PrimeSonic|FCStudios",
-  "Version": "1.2.1",
+  "Version": "1.2.2",
   "Enable": true,
   "Game": "BelowZero",
   "AssemblyName": "IonCubeGenerator.dll",
