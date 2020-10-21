@@ -238,6 +238,25 @@
 
         private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingTechtypes)
         {
+            Renderer originalRenderer = originalModel.GetComponentInChildren<Renderer>();
+
+            SkyApplier skyApplier = null;
+            List<Renderer> renderers = null;
+            foreach (SkyApplier sa in originalModel.GetComponentsInParent<SkyApplier>())
+            {
+                foreach(Renderer renderer in sa.renderers)
+                {
+                    if (renderer == originalRenderer)
+                    {
+                        skyApplier = sa;
+                        renderers = new List<Renderer>(skyApplier.renderers);
+                        break;
+                    }
+                }
+                if (skyApplier != null)
+                    break;
+            }
+
             foreach (KeyValuePair<TechType, CBModelData> pair in customModels)
             {
                 //dont add models that already exist.
@@ -250,12 +269,13 @@
                 //create the new model and set it to have the same parent as the original
                 GameObject obj = GameObject.Instantiate(modelBase, modelBase.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";
+                obj.SetActive(false);
 
-                //If no custom model data then skip this and use the default textures from the selected model.
-                if (pair.Value != null)
+                Renderer renderer = obj.GetComponentInChildren<Renderer>();
+
+                if (renderer != null)
                 {
-                    Renderer renderer = obj.GetComponentInChildren<Renderer>();
-                    if (renderer != null)
+                    if (pair.Value != null)
                     {
                         //Set the customized textures for the newly created model to the textures given by the modder.
 
@@ -275,11 +295,18 @@
                             renderer.material.SetFloat(ShaderPropertyID._GlowStrengthNight, pair.Value.CustomIllumStrength);
                         }
                     }
+
+                    if(skyApplier != null)
+                    renderers.Add(renderer);
                 }
 
                 Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
                 existingTechtypes.Add(pair.Key);
             }
+
+            if(skyApplier != null)
+                skyApplier.renderers = renderers.ToArray();
+
         }
 
         private static void AddMissingTechTypesToList(List<TechType> compatibleTechTypes, List<CbCore> toBeAdded)

@@ -88,7 +88,6 @@
     <Compile Include="API\TextPluginPack.cs" />
     <Compile Include="Items\CbCore.cs" />
     <Compile Include="Items\CbDatabase.cs" />
-    <Compile Include="Items\CbPlaceTool.cs" />
     <Compile Include="Items\CustomBattery.cs" />
     <Compile Include="API\CustomPack.cs" />
     <Compile Include="Items\CustomItem.cs" />
