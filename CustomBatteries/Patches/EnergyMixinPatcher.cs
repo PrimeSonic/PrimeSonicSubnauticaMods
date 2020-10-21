@@ -304,7 +304,8 @@
                 existingTechtypes.Add(pair.Key);
             }
 
-            skyApplier.renderers = renderers.ToArray();
+            if(skyApplier != null)
+                skyApplier.renderers = renderers.ToArray();
 
         }
 
