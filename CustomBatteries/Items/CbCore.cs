@@ -96,18 +96,10 @@
             battery.name = $"{this.ClassID}BatteryCell";
 
             // If "Enable batteries/powercells placement" feature from Decorations mod is ON.
-            if (CbDatabase.PlaceBatteriesFeatureEnabled)
+            if (CbDatabase.PlaceBatteriesFeatureEnabled && CraftData.GetEquipmentType(this.TechType) != EquipmentType.Hand)
             {
                 CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand); // Set equipment type to Hand.
                 CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.
-
-                // Add the component that will readjust position.
-                if (ChargerType == EquipmentType.PowerCellCharger)
-                    obj.AddComponent<CustomPowerCellPlaceTool>();
-                else
-                    obj.AddComponent<CustomBatteryPlaceTool>();
-                // Make item placeable.
-                AddPlaceTool(obj);
             }
 
             SkyApplier skyApplier = obj.EnsureComponent<SkyApplier>();
@@ -257,34 +249,6 @@
                     CbDatabase.PowerCellModels.Add(this.TechType, this.CustomModelData);
                 }
             }
-        }
-
-        private static void AddPlaceTool(GameObject customBattery)
-        {
-            PlaceTool placeTool = customBattery.AddComponent<PlaceTool>();
-            placeTool.allowedInBase = true;
-            placeTool.allowedOnBase = true;
-            placeTool.allowedOnConstructable = true;
-            placeTool.allowedOnGround = true;
-            placeTool.allowedOnRigidBody = true;
-            placeTool.allowedOutside = true;
-#if BELOWZERO
-            placeTool.allowedUnderwater = true;
-#endif
-            placeTool.allowedOnCeiling = false;
-            placeTool.allowedOnWalls = false;
-            placeTool.reloadMode = PlayerTool.ReloadMode.None;
-            placeTool.socket = PlayerTool.Socket.RightHand;
-            placeTool.rotationEnabled = true;
-            placeTool.drawTime = 0.5f;
-            placeTool.dropTime = 1f;
-            placeTool.holsterTime = 0.35f;
-            // Associate collider
-            Collider mainCollider = customBattery.GetComponent<Collider>() ?? customBattery.GetComponentInChildren<Collider>();
-            if (mainCollider != null)
-                placeTool.mainCollider = mainCollider;
-            // Associate pickupable
-            placeTool.pickupable = customBattery.GetComponent<Pickupable>();
         }
     }
 }
