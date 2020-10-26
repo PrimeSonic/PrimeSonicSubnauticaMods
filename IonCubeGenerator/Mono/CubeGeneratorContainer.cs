@@ -1,6 +1,6 @@
 ﻿namespace IonCubeGenerator.Mono
 {
-    using Common;
+    using Logger = QModManager.Utility.Logger;
     using IonCubeGenerator.Buildable;
     using IonCubeGenerator.Interfaces;
     using System;
@@ -62,7 +62,7 @@
 
             if (_containerRoot == null)
             {
-                QuickLogger.Debug("Initializing StorageRoot");
+                Logger.Log(Logger.Level.Debug, "Initializing StorageRoot");
                 var storageRoot = new GameObject("StorageRoot");
                 storageRoot.transform.SetParent(cubeGenerator.transform, false);
                 _containerRoot = storageRoot.AddComponent<ChildObjectIdentifier>();
@@ -70,7 +70,7 @@
 
             if (_cubeContainer == null)
             {
-                QuickLogger.Debug("Initializing Container");
+                Logger.Log(Logger.Level.Debug, "Initializing Container");
                 _cubeContainer = new ItemsContainer(ContainerWidth, ContainerHeight, _containerRoot.transform, CubeGeneratorBuildable.StorageLabel(), null);
 
                 _cubeContainer.isAllowedToAdd += IsAllowedToAdd;
@@ -93,7 +93,7 @@
 
         public void OpenStorage()
         {
-            QuickLogger.Debug($"Storage Button Clicked", true);
+            Logger.Log(Logger.Level.Debug, $"Storage Button Clicked", showOnScreen: true);
 
             if (!isContstructed.Invoke())
                 return;

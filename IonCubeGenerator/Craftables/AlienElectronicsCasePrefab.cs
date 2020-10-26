@@ -3,6 +3,7 @@
     using Common;
     using FCStudioHelpers;
     using UnityEngine;
+    using Logger = QModManager.Utility.Logger;
 
     internal partial class AlienEletronicsCase
     {
@@ -19,7 +20,7 @@
             }
 
             _assetBundle = assetBundle;
-            QuickLogger.Debug($"AssetBundle Set");
+            Logger.Log(Logger.Level.Debug, $"AssetBundle Set");
             //We have found the asset bundle and now we are going to continue by looking for the model.
             GameObject alienElectronicsCasePrefab = assetBundle.LoadAsset<GameObject>("Precursor_WireKit");
 
@@ -31,7 +32,7 @@
                 //Lets apply the material shader
                 ApplyShaders(alienElectronicsCasePrefab);
 
-                QuickLogger.Debug($"Alien Electronics Case Prefab Found!");
+                Logger.Log(Logger.Level.Debug, $"Alien Electronics Case Prefab Found!");
             }
             else
             {

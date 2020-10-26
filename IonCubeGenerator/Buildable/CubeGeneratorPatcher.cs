@@ -3,6 +3,7 @@
     using System.IO;
     using System.Reflection;
     using Common;
+    using Logger = QModManager.Utility.Logger;
     using IonCubeGenerator.Craftables;
     using IonCubeGenerator.Display;
     using IonCubeGenerator.Display.Patching;
@@ -128,8 +129,9 @@
 
             if (ionSlot != null)
             {
-                QuickLogger.Debug("Ion Cube Display Object Created", true);
+                Logger.Log(Logger.Level.Debug, "Ion Cube Display Object Created", showOnScreen: true);
                 var displayedIonCube = GameObject.Instantiate<GameObject>(CubeGeneratorContainer.CubePrefab);
+
                 Pickupable pickupable = displayedIonCube.GetComponent<Pickupable>();
                 GameObject.Destroy(pickupable);
                 Collider collider = displayedIonCube.GetComponent<Collider>();
