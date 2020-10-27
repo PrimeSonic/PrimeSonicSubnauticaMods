@@ -1,11 +1,11 @@
 ﻿namespace IonCubeGenerator.Display
 {
-    using Common;
     using IonCubeGenerator.Enums;
     using System;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
+    // using Logger = QModManager.Utility.Logger;
 
     /// <summary>
     /// This class is a component for all interface buttons except the color picker and the paginator.
@@ -178,7 +178,7 @@
 
             if (this.IsHovered)
             {
-                QuickLogger.Debug($"Clicked Button: {this.BtnName}", true);
+                // Logger.Log(Logger.Level.Debug, $"Clicked Button: {this.BtnName}", showOnScreen: true);
                 OnButtonClick?.Invoke(this.BtnName, this.Tag);
             }
         }

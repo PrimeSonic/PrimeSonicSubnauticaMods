@@ -1,13 +1,13 @@
-﻿using IonCubeGenerator.Mono;
-
-namespace IonCubeGenerator.Craftables
+﻿namespace IonCubeGenerator.Craftables
 {
     using System.IO;
     using System.Reflection;
-    using Common;
+    // using Logger = QModManager.Utility.Logger;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using UnityEngine;
+    using IonCubeGenerator.Mono;
+
 #if SUBNAUTICA
     using RecipeData = SMLHelper.V2.Crafting.TechData;
 #endif
@@ -43,7 +43,7 @@ namespace IonCubeGenerator.Craftables
             var wf = prefab.AddComponent<WorldForces>();
             wf.underwaterGravity = 0;
             wf.underwaterDrag = 20f;
-            QuickLogger.Debug($"Set {ClassID} WaterForces");
+            // Logger.Log(Logger.Level.Debug, $"Set {ClassID} WaterForces");
 
             // We can pick this item
             var pickupable = prefab.AddComponent<Pickupable>();

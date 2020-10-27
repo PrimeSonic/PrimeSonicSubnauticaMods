@@ -1,8 +1,8 @@
-﻿using Common;
-using UnityEngine;
-
-namespace IonCubeGenerator.Mono
+﻿namespace IonCubeGenerator.Mono
 {
+    // using Logger = QModManager.Utility.Logger;
+    using UnityEngine;
+
     internal class CubeGeneratorAudioHandler
     {
         #region Private Members
@@ -35,7 +35,7 @@ namespace IonCubeGenerator.Mono
                 switch (fmod.name.ToLower())
                 {
                     case "water_filter_loop":
-                        QuickLogger.Debug("WATER_FILTER_LOOP found!", true);
+                        // Logger.Log(Logger.Level.Debug, "WATER_FILTER_LOOP found!", showOnScreen: true);
                         this._waterFilterLoop = fmod;
                         break;
                 }
@@ -43,7 +43,7 @@ namespace IonCubeGenerator.Mono
 
             if (_waterFilterLoop == null)
             {
-                QuickLogger.Debug("WATER_FILTER_LOOP not found trying to search again...", true);
+                // Logger.Log(Logger.Level.Debug, "WATER_FILTER_LOOP not found trying to search again...", showOnScreen: true);
                 Resources.Load<GameObject>("Submarine/Build/FiltrationMachine");
                 LoadFModAssets();
             }

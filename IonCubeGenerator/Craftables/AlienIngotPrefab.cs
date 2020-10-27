@@ -3,6 +3,7 @@
     using Common;
     using FCStudioHelpers;
     using UnityEngine;
+    // using Logger = QModManager.Utility.Logger;
 
     internal partial class AlienIngot
     {
@@ -20,7 +21,7 @@
             }
 
             _assetBundle = assetBundle;
-            QuickLogger.Debug($"AssetBundle Set");
+            // Logger.Log(Logger.Level.Debug, $"AssetBundle Set");
             //We have found the asset bundle and now we are going to continue by looking for the model.
             GameObject precursorIngotPrefab = assetBundle.LoadAsset<GameObject>("Precursor_Ingot");
 
@@ -32,7 +33,7 @@
                 //Lets apply the material shader
                 ApplyShaders(_precursorIngotPrefab);
 
-                QuickLogger.Debug($"Precursor Ingot Prefab Found!");
+                // Logger.Log(Logger.Level.Debug, $"Precursor Ingot Prefab Found!");
             }
             else
             {

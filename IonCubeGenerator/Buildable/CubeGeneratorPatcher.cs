@@ -3,6 +3,7 @@
     using System.IO;
     using System.Reflection;
     using Common;
+    // using Logger = QModManager.Utility.Logger;
     using IonCubeGenerator.Craftables;
     using IonCubeGenerator.Display;
     using IonCubeGenerator.Display.Patching;
@@ -71,9 +72,7 @@
 
             //Add the constructible component to the prefab
             Constructable constructible = prefab.AddComponent<Constructable>();
-
-            CreateDisplayedIonCube(prefab);
-
+            
             constructible.allowedInBase = true; // Only allowed in Base
             constructible.allowedInSub = false; // Not allowed in Cyclops
             constructible.allowedOutside = false;
@@ -117,41 +116,5 @@
                 }
             };
         }
-
-        private void CreateDisplayedIonCube(GameObject prefab)
-        {
-            GameObject ionSlot = prefab.FindChild("model")
-                .FindChild("Platform_Lifter")
-                .FindChild("Ion_Lifter")
-                .FindChild("IonCube")
-                .FindChild("precursor_crystal")?.gameObject;
-
-            if (ionSlot != null)
-            {
-                QuickLogger.Debug("Ion Cube Display Object Created", true);
-                var displayedIonCube = GameObject.Instantiate<GameObject>(CubeGeneratorContainer.CubePrefab);
-                Pickupable pickupable = displayedIonCube.GetComponent<Pickupable>();
-                GameObject.Destroy(pickupable);
-                Collider collider = displayedIonCube.GetComponent<Collider>();
-                GameObject.Destroy(collider);
-                Rigidbody rigidbody = displayedIonCube.GetComponent<Rigidbody>();
-                GameObject.Destroy(rigidbody);
-                WorldForces worldForces = displayedIonCube.GetComponent<WorldForces>();
-                GameObject.Destroy(worldForces);
-                TechTag techTag = displayedIonCube.GetComponent<TechTag>();
-                GameObject.Destroy(techTag);
-
-                displayedIonCube.transform.SetParent(ionSlot.transform);
-                displayedIonCube.transform.localPosition =
-                    new Vector3(-0.1152f, 0.05f, 0f); // Is to high maybe the axis is flipped
-                displayedIonCube.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-                displayedIonCube.transform.Rotate(new Vector3(0, 0, 90));
-            }
-            else
-            {
-                QuickLogger.Error("Cannot Find IonCube in the prefab");
-            }
-        }
-
     }
 }
