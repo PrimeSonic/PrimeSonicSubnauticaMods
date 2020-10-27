@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using Logger = QModManager.Utility.Logger;
+    // using Logger = QModManager.Utility.Logger;
     using IonCubeGenerator.Enums;
     using IonCubeGenerator.Interfaces;
     using UnityEngine;
@@ -131,7 +131,7 @@
             PrefabIdentifier prefabIdentifier = GetComponentInParent<PrefabIdentifier>() ?? GetComponent<PrefabIdentifier>();
             string id = prefabIdentifier.Id;
 
-            Logger.Log(Logger.Level.Debug, $"CubeGeneratorMono prefabIdentifier: {id}");
+            // Logger.Log(Logger.Level.Debug, $"CubeGeneratorMono prefabIdentifier: {id}");
             _saveData = new CubeGeneratorSaveData(id);
         }
 
@@ -154,7 +154,7 @@
 
             if (this.CoolDownProgress >= CooldownComplete)
             {
-                Logger.Log(Logger.Level.Debug, "IonCube Generator - Finished Cooldown", showOnScreen: true);
+                // Logger.Log(Logger.Level.Debug, "IonCube Generator - Finished Cooldown", showOnScreen: true);
 
                 this.PauseUpdates = true;
                 _cubeContainer.NumberOfCubes++;
@@ -170,7 +170,7 @@
             }
             else if (this.GenerationProgress >= CubeEnergyCost)
             {
-                Logger.Log(Logger.Level.Debug, "IonCube Generator - Cooldown", showOnScreen: true);
+                // Logger.Log(Logger.Level.Debug, "IonCube Generator - Cooldown", showOnScreen: true);
 
                 // Finished generating cube - Start cool down
                 this.CoolDownProgress = 0f;
@@ -185,7 +185,7 @@
             }
             else if (this.StartUpProgress >= StartUpComplete)
             {
-                Logger.Log(Logger.Level.Debug, "IonCube Generator - Generating", showOnScreen: true);
+                // Logger.Log(Logger.Level.Debug, "IonCube Generator - Generating", showOnScreen: true);
                 // Finished start up - Start generating cube
                 this.GenerationProgress = 0f;
             }
@@ -205,7 +205,7 @@
 
         private void TryStartingNextCube()
         {
-            Logger.Log(Logger.Level.Debug, "Trying to start another cube", showOnScreen: true);
+            // Logger.Log(Logger.Level.Debug, "Trying to start another cube", showOnScreen: true);
 
             if (this.CurrentSpeedMode == SpeedModes.Off)
                 return;// Powered off, can't start a new cube
@@ -215,19 +215,19 @@
             {
                 if (!_cubeContainer.IsFull)
                 {
-                    Logger.Log(Logger.Level.Debug, "IonCube Generator - Start up", showOnScreen: true);
+                    // Logger.Log(Logger.Level.Debug, "IonCube Generator - Start up", showOnScreen: true);
                     this.CoolDownProgress = -1f;
                     this.GenerationProgress = -1f;
                     this.StartUpProgress = 0f;
                 }
                 else
                 {
-                    Logger.Log(Logger.Level.Debug, "Cannot start another cube, container is full", showOnScreen: true);
+                    // Logger.Log(Logger.Level.Debug, "Cannot start another cube, container is full", showOnScreen: true);
                 }
             }
             else
             {
-                Logger.Log(Logger.Level.Debug, "Cannot start another cube, another cube is currently in progress", showOnScreen: true);
+                // Logger.Log(Logger.Level.Debug, "Cannot start another cube, another cube is currently in progress", showOnScreen: true);
             }
         }
 
@@ -237,7 +237,7 @@
             if (relay != null && relay != _connectedRelay)
             {
                 _connectedRelay = relay;
-                Logger.Log(Logger.Level.Debug, "PowerRelay found at last!");
+                // Logger.Log(Logger.Level.Debug, "PowerRelay found at last!");
             }
             else
             {

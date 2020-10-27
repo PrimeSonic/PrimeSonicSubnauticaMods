@@ -4,7 +4,7 @@ namespace IonCubeGenerator.Mono
     using UnityEngine;
     using IonCubeGenerator.Configuration;
     using IonCubeGenerator.Enums;
-    using Logger = QModManager.Utility.Logger;
+    // using Logger = QModManager.Utility.Logger;
 
     internal class CubeGeneratorAnimator : MonoBehaviour
     {
@@ -50,7 +50,7 @@ namespace IonCubeGenerator.Mono
 
             if (this.Animator != null && this.Animator.enabled == false)
             {
-                Logger.Log(Logger.Level.Debug, "Animator was disabled and now has been enabled");
+                // Logger.Log(Logger.Level.Debug, "Animator was disabled and now has been enabled");
                 this.Animator.enabled = true;
             }
 

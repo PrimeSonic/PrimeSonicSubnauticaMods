@@ -5,7 +5,7 @@
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
-    using Logger = QModManager.Utility.Logger;
+    // using Logger = QModManager.Utility.Logger;
 
     /// <summary>
     /// This class is a component for all interface buttons except the color picker and the paginator.
@@ -178,7 +178,7 @@
 
             if (this.IsHovered)
             {
-                Logger.Log(Logger.Level.Debug, $"Clicked Button: {this.BtnName}", showOnScreen: true);
+                // Logger.Log(Logger.Level.Debug, $"Clicked Button: {this.BtnName}", showOnScreen: true);
                 OnButtonClick?.Invoke(this.BtnName, this.Tag);
             }
         }

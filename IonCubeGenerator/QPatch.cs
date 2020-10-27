@@ -6,7 +6,7 @@
     using IonCubeGenerator.Configuration;    
     using QModManager.API.ModLoading;
     using System.Reflection;
-    using Logger = QModManager.Utility.Logger;
+    // using Logger = QModManager.Utility.Logger;
 
     [QModCore]
     public static class QPatch
@@ -14,8 +14,8 @@
         [QModPrePatch]
         public static void SetupConfig()
         {
-            QuickLogger.DebugLogsEnabled = QModManager.Utility.Logger.DebugLogsEnabled;
-            Logger.Log(Logger.Level.Debug, "Debug logs enabled");
+            //QuickLogger.DebugLogsEnabled = QModManager.Utility.Logger.DebugLogsEnabled;
+            // Logger.Log(Logger.Level.Debug, "Debug logs enabled");
 
             QuickLogger.Info("Loading config.json settings");
             ModConfiguration.Initialize();

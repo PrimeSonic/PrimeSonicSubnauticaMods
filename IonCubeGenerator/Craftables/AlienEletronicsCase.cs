@@ -2,7 +2,7 @@
 {
     using System.IO;
     using System.Reflection;
-    using Logger = QModManager.Utility.Logger;
+    // using Logger = QModManager.Utility.Logger;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Crafting;
     using UnityEngine;
@@ -43,7 +43,7 @@
             var wf = prefab.AddComponent<WorldForces>();
             wf.underwaterGravity = 0;
             wf.underwaterDrag = 20f;
-            Logger.Log(Logger.Level.Debug, $"Set {ClassID} WaterForces");
+            // Logger.Log(Logger.Level.Debug, $"Set {ClassID} WaterForces");
 
             // We can pick this item
             var pickupable = prefab.AddComponent<Pickupable>();

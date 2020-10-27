@@ -5,7 +5,7 @@
     using Common;
     using FCStudioHelpers;
     using UnityEngine;
-    using Logger = QModManager.Utility.Logger;
+    // using Logger = QModManager.Utility.Logger;
 
     internal partial class CubeGeneratorBuildable
     {
@@ -29,7 +29,7 @@
             }
 
             _assetBundle = assetBundle;
-            Logger.Log(Logger.Level.Debug, $"AssetBundle Set");
+            // Logger.Log(Logger.Level.Debug, $"AssetBundle Set");
             //We have found the asset bundle and now we are going to continue by looking for the model.
             GameObject ionCubeGenPrefab = assetBundle.LoadAsset<GameObject>("IonCubeGenerator");
 
@@ -41,7 +41,7 @@
                 //Lets apply the material shader
                 ApplyShaders(_ionCubeGenPrefab);
 
-                Logger.Log(Logger.Level.Debug, $"IonCubeGen Prefab Found!");
+                // Logger.Log(Logger.Level.Debug, $"IonCubeGen Prefab Found!");
             }
             else
             {

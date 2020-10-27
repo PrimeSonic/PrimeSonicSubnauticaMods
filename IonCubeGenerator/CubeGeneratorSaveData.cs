@@ -8,7 +8,7 @@
     using IonCubeGenerator.Interfaces;
     using IonCubeGenerator.Mono;
     using SMLHelper.V2.Utility;
-    using Logger = QModManager.Utility.Logger;
+    // using Logger = QModManager.Utility.Logger;
 
     internal class CubeGeneratorSaveData : EmPropertyCollection, ICubeGeneratorSaveHandler, ICubeGeneratorSaveData
     {
@@ -83,7 +83,7 @@
 
         public void SaveData(ICubeGeneratorSaveData cubeGenerator)
         {
-            Logger.Log(Logger.Level.Debug, "Saving data");
+            // Logger.Log(Logger.Level.Debug, "Saving data");
 
             this.NumberOfCubes = cubeGenerator.NumberOfCubes;
 
@@ -98,32 +98,32 @@
             this.CurrentSpeedMode = cubeGenerator.CurrentSpeedMode;
 
             this.Save(SaveDirectory, this.SaveFile);
-            Logger.Log(Logger.Level.Debug, "Data saved");
+            // Logger.Log(Logger.Level.Debug, "Data saved");
         }
 
         public void LoadData(ICubeGeneratorSaveData cubeGenerator)
         {
-            Logger.Log(Logger.Level.Debug, "Searching for save data");
+            // Logger.Log(Logger.Level.Debug, "Searching for save data");
             if (this.Load(SaveDirectory, this.SaveFile))
             {
-                Logger.Log(Logger.Level.Debug, "Save data found");
+                // Logger.Log(Logger.Level.Debug, "Save data found");
 
                 cubeGenerator.NumberOfCubes = this.NumberOfCubes;
-                Logger.Log(Logger.Level.Debug, $"NumberOfCubes {cubeGenerator.NumberOfCubes} <-- {this.NumberOfCubes}");
+                // Logger.Log(Logger.Level.Debug, $"NumberOfCubes {cubeGenerator.NumberOfCubes} <-- {this.NumberOfCubes}");
 
                 cubeGenerator.StartUpProgress = this.StartUpProgress;
-                Logger.Log(Logger.Level.Debug, $"StartUpProgress {cubeGenerator.StartUpProgress} <-- {this.StartUpProgress}");
+                // Logger.Log(Logger.Level.Debug, $"StartUpProgress {cubeGenerator.StartUpProgress} <-- {this.StartUpProgress}");
 
                 cubeGenerator.GenerationProgress = this.GenerationProgress;
-                Logger.Log(Logger.Level.Debug, $"GenerationProgress {cubeGenerator.GenerationProgress} <-- {this.GenerationProgress}");
+                // Logger.Log(Logger.Level.Debug, $"GenerationProgress {cubeGenerator.GenerationProgress} <-- {this.GenerationProgress}");
 
                 cubeGenerator.CoolDownProgress = this.CoolDownProgress;
-                Logger.Log(Logger.Level.Debug, $"CoolDownProgress {cubeGenerator.CoolDownProgress} <-- {this.CoolDownProgress}");
+                // Logger.Log(Logger.Level.Debug, $"CoolDownProgress {cubeGenerator.CoolDownProgress} <-- {this.CoolDownProgress}");
 
                 cubeGenerator.CurrentSpeedMode = this.CurrentSpeedMode;
-                Logger.Log(Logger.Level.Debug, $"CoolDownProgress {cubeGenerator.CurrentSpeedMode} <-- {this.CurrentSpeedMode}");
+                // Logger.Log(Logger.Level.Debug, $"CoolDownProgress {cubeGenerator.CurrentSpeedMode} <-- {this.CurrentSpeedMode}");
 
-                Logger.Log(Logger.Level.Debug, "Save data loaded");
+                // Logger.Log(Logger.Level.Debug, "Save data loaded");
             }
         }
     }
