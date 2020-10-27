@@ -110,6 +110,8 @@
                 return false;
 
             var gameObject = GameObject.Instantiate<GameObject>(CubePrefab);
+            CubePrefab.SetActive(false);
+            gameObject.SetActive(true);
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>();
             pickupable.Pickup(false);

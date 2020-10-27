@@ -131,6 +131,8 @@
             {
                 Logger.Log(Logger.Level.Debug, "Ion Cube Display Object Created", showOnScreen: true);
                 var displayedIonCube = GameObject.Instantiate<GameObject>(CubeGeneratorContainer.CubePrefab);
+                CubeGeneratorContainer.CubePrefab.SetActive(false);
+                displayedIonCube.SetActive(true);
 
                 Pickupable pickupable = displayedIonCube.GetComponent<Pickupable>();
                 GameObject.Destroy(pickupable);
