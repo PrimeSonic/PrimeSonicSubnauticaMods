@@ -234,7 +234,7 @@
         {
             var shader = Shader.Find("UWE/Marmoset/IonCrystal");
 
-            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>(true);
 
             foreach (Renderer renderer in renderers)
             {
