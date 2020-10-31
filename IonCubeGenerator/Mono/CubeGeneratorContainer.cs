@@ -101,7 +101,12 @@
             Player main = Player.main;
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(_cubeContainer, false);
+#if SUBNAUTICA
             pda.Open(PDATab.Inventory, null, null, 4f);
+#elif BELOWZERO
+            pda.Open(PDATab.Inventory, null, null);
+#endif
+
         }
 
         internal bool SpawnCube()

@@ -96,7 +96,11 @@
             battery.name = $"{this.ClassID}BatteryCell";
 
             // If "Enable batteries/powercells placement" feature from Decorations mod is ON.
+#if SUBNAUTICA
             if (CbDatabase.PlaceBatteriesFeatureEnabled && CraftData.GetEquipmentType(this.TechType) != EquipmentType.Hand)
+#elif BELOWZERO
+            if (CbDatabase.PlaceBatteriesFeatureEnabled && TechData.GetEquipmentType(this.TechType) != EquipmentType.Hand)
+#endif
             {
                 CraftDataHandler.SetEquipmentType(this.TechType, EquipmentType.Hand); // Set equipment type to Hand.
                 CraftDataHandler.SetQuickSlotType(this.TechType, QuickSlotType.Selectable); // We can select the item.

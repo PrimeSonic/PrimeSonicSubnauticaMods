@@ -214,7 +214,11 @@
             useDrinkSound = (EmYesNo)Properties[UseDrinkSoundKey];
 
             techGroup.Value = TechGroup.Survival;
+#if SUBNAUTICA
             techCategory.DefaultValue = TechCategory.CookedFood;
+#elif BELOWZERO
+            techCategory.DefaultValue = TechCategory.FoodAndDrinks;
+#endif
             foodModel = (EmProperty<FoodModel>)Properties[FoodModelKey];
 
             amountCrafted.DefaultValue = 1;
