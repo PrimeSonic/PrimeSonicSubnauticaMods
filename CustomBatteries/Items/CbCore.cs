@@ -65,6 +65,8 @@
 
         protected Action<GameObject> EnhanceGameObject { get; set; }
 
+        public bool AddToFabricator { get; set; } = true;
+
         protected CbCore(string classId, bool ionCellSkins)
             : base(classId, $"{classId}PreFab", TechType.None)
         {
@@ -84,6 +86,8 @@
             this.Sprite = packItem.CustomIcon;
 
             this.EnhanceGameObject = packItem.EnhanceGameObject;
+
+            this.AddToFabricator = packItem.AddToFabricator;
         }
 
         public override GameObject GetGameObject()
@@ -198,7 +202,8 @@
             
             CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
 
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
+            if (this.AddToFabricator)
+                CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
 
             PrefabHandler.RegisterPrefab(this);
 
