@@ -106,7 +106,11 @@
 
             PDA pda = Player.main.GetPDA();
             Inventory.main.SetUsedStorage(BioReactor.container, false);
+#if SUBNAUTICA
             pda.Open(PDATab.Inventory, model.storagePivot, new PDA.OnClose(OnPdaClose), 4f);
+#elif BELOWZERO
+            pda.Open(PDATab.Inventory, model.storagePivot, new PDA.OnClose(OnPdaClose));
+#endif
         }
 
         internal void OnPdaClose(PDA pda)
