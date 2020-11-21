@@ -65,6 +65,8 @@
 
         protected Action<GameObject> EnhanceGameObject { get; set; }
 
+        public bool AddToFabricator { get; set; } = true;
+
         protected CbCore(string classId, bool ionCellSkins)
             : base(classId, $"{classId}PreFab", TechType.None)
         {
@@ -84,6 +86,8 @@
             this.Sprite = packItem.CustomIcon;
 
             this.EnhanceGameObject = packItem.EnhanceGameObject;
+
+            this.AddToFabricator = packItem.AddToFabricator;
         }
 
         public override GameObject GetGameObject()
@@ -167,8 +171,6 @@
 
         protected abstract string[] StepsToFabricatorTab { get; }
 
-        
-
         public void Patch()
         {
             if (this.IsPatched)
@@ -183,13 +185,16 @@
 
             if (this.Sprite == null)
             {
-                string imageFilePath = IOUtilities.Combine(CbDatabase.ExecutingFolder, this.PluginFolder, this.IconFileName);
+                string imageFilePath = null;
 
-                if (File.Exists(imageFilePath))
+                if (this.PluginFolder != null && this.IconFileName != null)
+                    imageFilePath = IOUtilities.Combine(CbDatabase.ExecutingFolder, this.PluginFolder, this.IconFileName);
+
+                if (imageFilePath != null && File.Exists(imageFilePath))
                     this.Sprite = ImageUtils.LoadSpriteFromFile(imageFilePath);
                 else
                 {
-                    QuickLogger.Warning($"Did not find a matching image file at {imageFilePath}.{Environment.NewLine}Using default sprite instead.");
+                    QuickLogger.Warning($"Did not find a matching image file at {imageFilePath} or in {nameof(CbBattery.CustomIcon)}.{Environment.NewLine}Using default sprite instead.");
                     this.Sprite = SpriteManager.Get(this.PrefabType);
                 }
             }
@@ -199,10 +204,11 @@
             CraftDataHandler.SetTechData(this.TechType, GetBlueprintRecipe());
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
-            
+
             CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
 
-            CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
+            if (this.AddToFabricator)
+                CraftTreeHandler.AddCraftingNode(CraftTree.Type.Fabricator, this.TechType, this.StepsToFabricatorTab);
 
             PrefabHandler.RegisterPrefab(this);
 

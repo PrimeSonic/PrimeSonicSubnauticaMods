@@ -61,13 +61,23 @@
         public CBModelData CBModelData { get; set; }
 
         /// <summary>
-        /// Override this optional method if you want to make changes to the your item's <see cref="GameObject"/> as it is being spawned from prefab.<br/>
+        /// Override this optional value if you want to make changes to the your item's <see cref="GameObject"/> as it is being spawned from prefab.<br/>
         /// Use this if you want to add or modify components of your item.
         /// </summary>
         /// <param name="gameObject">The item's gameobject.</param>
         public Action<GameObject> EnhanceGameObject { get; set; }
 
+        /// <summary>
+        /// Override this to <c>false</c> if you do not want CustomBatteries to manage addeding of this item to the Fabricator crafting tree.<br/>
+        /// This property is <c>true</c> by default.
+        /// </summary>
+        public bool AddToFabricator { get; set; } = true;
+
         private TechType _techType = TechType.None;
+
+        /// <summary>
+        /// After <see cref="CbBattery.Patch"/> method is invoked, this property will contain the <see cref="TechType"/> value for this item.
+        /// </summary>
         public TechType TechType
         {
             get
