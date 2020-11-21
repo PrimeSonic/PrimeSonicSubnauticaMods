@@ -167,8 +167,6 @@
 
         protected abstract string[] StepsToFabricatorTab { get; }
 
-        
-
         public void Patch()
         {
             if (this.IsPatched)
@@ -183,13 +181,16 @@
 
             if (this.Sprite == null)
             {
-                string imageFilePath = IOUtilities.Combine(CbDatabase.ExecutingFolder, this.PluginFolder, this.IconFileName);
+                string imageFilePath = null;
 
-                if (File.Exists(imageFilePath))
+                if (this.PluginFolder != null && this.IconFileName != null)
+                    imageFilePath = IOUtilities.Combine(CbDatabase.ExecutingFolder, this.PluginFolder, this.IconFileName);
+
+                if (imageFilePath != null && File.Exists(imageFilePath))
                     this.Sprite = ImageUtils.LoadSpriteFromFile(imageFilePath);
                 else
                 {
-                    QuickLogger.Warning($"Did not find a matching image file at {imageFilePath}.{Environment.NewLine}Using default sprite instead.");
+                    QuickLogger.Warning($"Did not find a matching image file at {imageFilePath} or in {nameof(CbBattery.CustomIcon)}.{Environment.NewLine}Using default sprite instead.");
                     this.Sprite = SpriteManager.Get(this.PrefabType);
                 }
             }
@@ -199,7 +200,7 @@
             CraftDataHandler.SetTechData(this.TechType, GetBlueprintRecipe());
 
             CraftDataHandler.AddToGroup(TechGroup.Resources, TechCategory.Electronics, this.TechType);
-            
+
             CraftDataHandler.SetEquipmentType(this.TechType, this.ChargerType);
 
             if (this.AddToFabricator)
