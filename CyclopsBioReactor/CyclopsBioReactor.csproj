@@ -94,6 +94,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CyBioConfig.cs" />
     <Compile Include="CyBioreactorTrigger.cs" />
     <Compile Include="Management\CyBioReactorAudioHandler.cs" />
     <Compile Include="Management\CyBioReactorAnimationHandler.cs" />

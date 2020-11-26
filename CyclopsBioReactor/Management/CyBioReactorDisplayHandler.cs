@@ -7,6 +7,8 @@
 
     internal class CyBioReactorDisplayHandler
     {
+        internal static CyBioConfig Config;
+
         private readonly CyBioReactorMono _mono;
         private readonly GameObject _gameobject;
         private Text _status;
@@ -50,7 +52,11 @@
 
         public void SetActive(int charge, int capacity, bool draining)
         {
-            if (draining)
+            if (Config?.EnergyOnDisplay == false)
+            {
+                _status.text = Language.main.Get("BaseBioReactorActive");
+            }
+            else if (draining)
             {
                 if (charge == 0)
                 {
@@ -71,7 +77,11 @@
 
         public void SetInActivating(int charge, int capacity, bool draining)
         {
-            if (draining)
+            if (Config?.EnergyOnDisplay == false)
+            {
+                _status.text = Language.main.Get("BaseBioReactorInactive");
+            }
+            else if (draining)
             {
                 _status.text = $"{Language.main.Get("BaseBioReactorInactive")}\n{charge}/{capacity}\n{CyBioReactor.ChargingCyclopsText}";
             }
