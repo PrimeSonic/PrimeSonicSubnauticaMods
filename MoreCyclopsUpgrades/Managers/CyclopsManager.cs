@@ -122,7 +122,7 @@
 
             Upgrade = new UpgradeManager(cyclops);
             Charge = new ChargeManager(cyclops);
-            HUD = new CyclopsHUDManager(cyclops, ChargeManager.TotalRegisteredChargers);
+            HUD = new CyclopsHUDManager(cyclops);
             Engine = new PowerRatingManager(cyclops);
         }
 

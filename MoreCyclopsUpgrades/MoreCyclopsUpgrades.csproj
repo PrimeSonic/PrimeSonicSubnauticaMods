@@ -106,6 +106,8 @@
     <Compile Include="API\PDA\IIconOverlayText.cs" />
     <Compile Include="API\PDA\IconOverlayCreator.cs" />
     <Compile Include="API\Buildables\UpgradeSlot.cs" />
+    <Compile Include="API\StatusIcons\CyclopsStatusIcon.cs" />
+    <Compile Include="API\StatusIcons\CyclopsStatusIconCreator.cs" />
     <Compile Include="AuxConsole\ModuleDisplayIconCollection.cs" />
     <Compile Include="AuxConsole\ModuleIconDisplay.cs" />
     <Compile Include="Config\ChoiceEnums\ChallengeMode.cs" />
@@ -127,7 +129,7 @@
     <Compile Include="Config\Options\ToggleOption.cs" />
     <Compile Include="IconCreator.cs" />
     <Compile Include="Managers\PdaOverlayManager.cs" />
-    <Compile Include="Managers\PowerIndicatorIcon.cs" />
+    <Compile Include="Managers\IndicatorIcon.cs" />
     <Compile Include="Managers\PowerRatingManager.cs" />
     <Compile Include="Managers\CyclopsManager.cs" />
     <Compile Include="API\General\AuxCyclopsManagerCreator.cs" />

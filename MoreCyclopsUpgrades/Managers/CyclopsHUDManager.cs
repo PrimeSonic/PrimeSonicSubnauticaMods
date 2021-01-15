@@ -1,8 +1,10 @@
 ﻿namespace MoreCyclopsUpgrades.Managers
 {
     using System;
+    using System.Collections.Generic;
     using Common;
     using MoreCyclopsUpgrades.API.Charging;
+    using MoreCyclopsUpgrades.API.StatusIcons;
     using MoreCyclopsUpgrades.Config;
     using MoreCyclopsUpgrades.Config.ChoiceEnums;
     using UnityEngine;
@@ -10,13 +12,42 @@
 
     internal class CyclopsHUDManager
     {
+        private class StatusIconCreator
+        {
+            public readonly CyclopsStatusIconCreator Creator;
+            public readonly string StatusIconName;
+
+            public StatusIconCreator(CyclopsStatusIconCreator creator, string stutusIconName)
+            {
+                Creator = creator;
+                StatusIconName = stutusIconName;
+            }
+        }
+
+        internal static bool TooLateToRegister { get; private set; }
+
+        private static readonly List<StatusIconCreator> StatusIconCreators = new List<StatusIconCreator>();
+        internal static readonly List<CyclopsStatusIcon> StatusIcons = new List<CyclopsStatusIcon>();
+
+        internal static void RegisterStatusIconCreator(CyclopsStatusIconCreator creatorEvent, string name)
+        {
+            if (StatusIconCreators.Find(s => s.Creator == creatorEvent || s.StatusIconName == name) != null)
+            {
+                QuickLogger.Warning($"Duplicate CyclopsStatusIconCreator '{name}' was blocked");
+                return;
+            }
+
+            QuickLogger.Info($"Received CyclopsStatusIconCreator '{name}'");
+            StatusIconCreators.Add(new StatusIconCreator(creatorEvent, name));
+        }
+
         internal static Atlas.Sprite CyclopsThermometer;
 
-        private PowerIndicatorIcon TemperatureReadout;
-        private PowerIndicatorIcon[] HelmIndicatorsOdd;
-        private PowerIndicatorIcon[] HelmIndicatorsEven;
-        private PowerIndicatorIcon[] HealthBarIndicatorsOdd;
-        private PowerIndicatorIcon[] HealthBarIndicatorsEven;
+        private IndicatorIcon TemperatureReadout;
+        private IndicatorIcon[] HelmIndicatorsOdd;
+        private IndicatorIcon[] HelmIndicatorsEven;
+        private IndicatorIcon[] HealthBarIndicatorsOdd;
+        private IndicatorIcon[] HealthBarIndicatorsEven;
 
         private bool lastKnownTextVisibility = false;
         private bool powerIconTextVisibility = false;
@@ -35,20 +66,18 @@
 
         private CyclopsHolographicHUD holographicHUD;
         private readonly IModConfig settings = ModConfig.Main;
-        private readonly int totalPowerInfoIcons;
 
-        internal CyclopsHUDManager(SubRoot cyclops, int totalIcons)
+        internal CyclopsHUDManager(SubRoot cyclops)
         {
-            Cyclops = cyclops;
-            totalPowerInfoIcons = Math.Max(totalIcons, 1); // Include a minimum of 1 for the vanilla thermal charger
+            Cyclops = cyclops;            
         }
 
         internal void FastUpdate(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
             if (!powerIconsInitialized)
-                AddPowerIcons(cyclopsHelmHUD);
+                AddStatusIcons(cyclopsHelmHUD);
             else
-                UpdatePowerIcons();
+                UpdateStatusIcons();
 
             PowerRelay powerRelay = Cyclops.powerRelay;
 
@@ -115,16 +144,36 @@
 
             if (lastKnownTextVisibility != powerIconTextVisibility)
             {
-                UpdatePowerIcons();
+                UpdateStatusIcons();
                 lastKnownTextVisibility = powerIconTextVisibility;
             }
         }
 
-        private void AddPowerIcons(CyclopsHelmHUDManager cyclopsHelmHUD)
+        private void AddStatusIcons(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
+            TooLateToRegister = true;
+            for (int i = 0; i < StatusIconCreators.Count; i++)
+            {
+                StatusIconCreator creator = StatusIconCreators[i];
+
+                QuickLogger.Debug($"CyclopsHUDManager creating standalone status icon '{creator.StatusIconName}'");
+                CyclopsStatusIcon statusIcon = creator.Creator.Invoke(Cyclops);
+
+                if (statusIcon == null)
+                {
+                    QuickLogger.Warning($"CyclopsHUDManager '{creator.StatusIconName}' was null");
+                }
+                else
+                {
+                    StatusIcons.Add(statusIcon);
+                    QuickLogger.Debug($"Created CyclopsStatusIcon '{creator.StatusIconName}'");
+                }
+            }
+
+            int totalPowerInfoIcons = Math.Max(StatusIcons.Count, 1); // Include a minimum of 1 for the vanilla thermal charger
             cyclopsHelmHUD.powerText.resizeTextForBestFit = true;
 
-            QuickLogger.Debug($"CyclopsHUDManager Adding Power Info Icons for '{totalPowerInfoIcons}' CyclopsChargers");
+            QuickLogger.Debug($"CyclopsHUDManager Adding '{totalPowerInfoIcons}' Status Info Icons");
             holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
 
             Canvas pilotingCanvas = cyclopsHelmHUD.powerText.canvas;
@@ -147,10 +196,10 @@
 
             if (totalPowerInfoIcons == 1)
             {
-                HelmIndicatorsOdd = new PowerIndicatorIcon[1];
-                HelmIndicatorsEven = new PowerIndicatorIcon[0];
-                HealthBarIndicatorsOdd = new PowerIndicatorIcon[1];
-                HealthBarIndicatorsEven = new PowerIndicatorIcon[0];
+                HelmIndicatorsOdd = new IndicatorIcon[1];
+                HelmIndicatorsEven = new IndicatorIcon[0];
+                HealthBarIndicatorsOdd = new IndicatorIcon[1];
+                HealthBarIndicatorsEven = new IndicatorIcon[0];
 
                 HelmIndicatorsOdd[0] = IconCreator.CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
                 HealthBarIndicatorsOdd[0] = IconCreator.CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
@@ -162,10 +211,10 @@
                 if (totalIcons % 2 != 0)
                     totalIcons--;
 
-                HelmIndicatorsOdd = new PowerIndicatorIcon[totalIcons + 1];
-                HelmIndicatorsEven = new PowerIndicatorIcon[totalIcons];
-                HealthBarIndicatorsOdd = new PowerIndicatorIcon[totalIcons + 1];
-                HealthBarIndicatorsEven = new PowerIndicatorIcon[totalIcons];
+                HelmIndicatorsOdd = new IndicatorIcon[totalIcons + 1];
+                HelmIndicatorsEven = new IndicatorIcon[totalIcons];
+                HealthBarIndicatorsOdd = new IndicatorIcon[totalIcons + 1];
+                HealthBarIndicatorsEven = new IndicatorIcon[totalIcons];
 
                 HelmIndicatorsOdd[0] = IconCreator.CreatePowerIndicatorIcon(pilotingCanvas, 0, helmyoffset, helmzoffset, helmscale);
                 HealthBarIndicatorsOdd[0] = IconCreator.CreatePowerIndicatorIcon(holoCanvas, healthbarxoffset + 0, healthbaryoffset, healthbarzoffset, healthbarscale);
@@ -208,7 +257,7 @@
             QuickLogger.Debug("Linked CyclopsHUDManager to HelmHUD");
         }
 
-        private void UpdatePowerIcons()
+        private void UpdateStatusIcons()
         {
             if (!powerIconsInitialized)
                 return;
@@ -232,46 +281,41 @@
             }
 
             if (settings.HidePowerIcons)
-                return;
-
-            CyclopsCharger[] cyclopsChargers = this.ChargeManager.Chargers;
+                return;            
 
             bool isEven = true;
-            for (int i = 0; i < cyclopsChargers.Length; i++)
+            for (int i = 0; i < StatusIcons.Count; i++)
             {
-                if (cyclopsChargers[i].ShowStatusIcon)
+                if (StatusIcons[i].ShowStatusIcon)
                     isEven = !isEven;
             }
 
-            PowerIndicatorIcon[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
-            PowerIndicatorIcon[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
+            IndicatorIcon[] helmRow = isEven ? HelmIndicatorsEven : HelmIndicatorsOdd;
+            IndicatorIcon[] healthBarRow = isEven ? HealthBarIndicatorsEven : HealthBarIndicatorsOdd;
 
             bool showIconsOnHoloDisplay = settings.ShowIconsOnHoloDisplay;
             bool showIconsWhilePiloting = settings.ShowIconsWhilePiloting;
 
             int iconIndex = 0;
-            for (int c = 0; c < cyclopsChargers.Length; c++)
+            for (int c = 0; c < StatusIcons.Count; c++)
             {
-                CyclopsCharger charger = cyclopsChargers[c];
+                CyclopsStatusIcon statusIcon = StatusIcons[c];
 
-                if (!charger.ShowStatusIcon)
+                if (!statusIcon.ShowStatusIcon)
                     continue;
 
-                PowerIndicatorIcon helmIcon = helmRow[iconIndex];
-                PowerIndicatorIcon hpIcon = healthBarRow[iconIndex++];
+                IndicatorIcon helmIcon = helmRow[iconIndex];
+                IndicatorIcon hpIcon = healthBarRow[iconIndex++];
 
                 hpIcon.SetEnabled(showIconsOnHoloDisplay);
                 helmIcon.SetEnabled(showIconsWhilePiloting);
 
-                hpIcon.Icon.sprite = helmIcon.Icon.sprite = charger.StatusSprite();
+                hpIcon.Icon.sprite = helmIcon.Icon.sprite = statusIcon.StatusSprite();
 
                 hpIcon.Text.enabled = powerIconTextVisibility;
-                hpIcon.Text.text = helmIcon.Text.text = charger.StatusText();
-
-                if (charger.ProvidingPower)
-                    hpIcon.Text.color = helmIcon.Text.color = charger.StatusTextColor();
-                else
-                    hpIcon.Text.color = helmIcon.Text.color = Color.white;
+                hpIcon.Text.text = helmIcon.Text.text = statusIcon.StatusText();
+                
+                hpIcon.Text.color = helmIcon.Text.color = statusIcon.StatusTextColor();                
             }
         }
 

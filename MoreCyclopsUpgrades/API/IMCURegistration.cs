@@ -3,6 +3,7 @@
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.PDA;
+    using MoreCyclopsUpgrades.API.StatusIcons;
     using MoreCyclopsUpgrades.API.Upgrades;
 
     /// <summary>
@@ -75,5 +76,20 @@
         /// <param name="techType">The upgrade module's techtype.</param>
         /// <param name="createEvent">A method that takes in a <see cref="uGUI_ItemIcon"/> and <see cref="InventoryItem"/> and returns a new <see cref="IconOverlay"/>.</param>
         void PdaIconOverlay(TechType techType, CreateIconOverlay createEvent);
+
+        /// <summary>
+        /// Registers a <see cref="CyclopsStatusIconCreator"/> method that creates a new <see cref="StatusIcons.CyclopsStatusIcon"/> on demand.<para/>
+        /// This method will be invoked only once for each Cyclops sub in the game world.
+        /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="StatusIcons.CyclopsStatusIcon"/>.</typeparam>
+        /// <param name="createEvent">A method that takes a <see cref="SubRoot"/> parameter a returns a new instance of <see langword="abstract"/><see cref="StatusIcons.CyclopsStatusIcon"/>.</param>
+        void CyclopsStatusIcon<T>(CyclopsStatusIconCreator createEvent) where T : CyclopsStatusIcon;
+
+        /// <summary>
+        /// Registers a <see cref="ICyclopsStatusIconCreator"/> class that creates a new <see cref="StatusIcons.CyclopsStatusIcon"/> on demand.<para/>
+        /// This method will be invoked only once for each Cyclops sub in the game world.
+        /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="StatusIcons.CyclopsStatusIcon"/>.</typeparam>
+        void CyclopsStatusIcon<T>(ICyclopsStatusIconCreator statusIconCreator) where T : CyclopsStatusIcon;
     }
 }

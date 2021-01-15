@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API.Charging
 {
+    using MoreCyclopsUpgrades.API.StatusIcons;
     using UnityEngine;
 
     /// <summary>
@@ -8,22 +9,16 @@
     /// Whatever the case, it is up to you to ensure you have all your references set and ready.<para/>
     /// DO NOT recharge the Cyclops PowerRelay yourself from this class!!! The MoreCyclopsUpgrades PowerManager will handle that.<para/>
     /// </summary>
-    public abstract class CyclopsCharger
+    public abstract class CyclopsCharger : CyclopsStatusIcon
     {
         private bool gettingEnergy;
-
-        /// <summary>
-        /// A reference to the the cyclops <see cref="SubRoot"/> instance.
-        /// </summary>
-        public readonly SubRoot Cyclops;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CyclopsCharger"/> class.
         /// </summary>
         /// <param name="cyclops">The cyclops.</param>
-        protected CyclopsCharger(SubRoot cyclops)
+        protected CyclopsCharger(SubRoot cyclops) : base(cyclops)
         {
-            Cyclops = cyclops;
         }
 
         /// <summary>
@@ -33,7 +28,7 @@
         /// <value>
         ///   <c>true</c> if can be visible in the Cyclops displays; otherwise, <c>false</c>.
         /// </value>
-        public bool ShowStatusIcon => this.ProvidingPower || this.HasReservePower;
+        public override bool ShowStatusIcon => this.ProvidingPower || this.HasReservePower;
 
         /// <summary>
         /// Gets a value indicating whether this charger is currently providing power.
@@ -99,23 +94,5 @@
         /// <param name="requestedPower">The amount of power being requested by the cyclops; This is the current Power Deficit of the cyclops.</param>
         /// <returns>The amount of power produced by this cyclops charger.</returns>
         protected abstract float DrainReserveEnergy(float requestedPower);
-
-        /// <summary>
-        /// Gets the sprite to use for the power indicator. This will only be called when <see cref="ShowStatusIcon"/> returns <c>true</c>.
-        /// </summary>
-        /// <returns>A new <see cref="Atlas.Sprite"/> to be used in the Cyclops Helm and Holographic HUDs.</returns>
-        public abstract Atlas.Sprite StatusSprite();
-
-        /// <summary>
-        /// Gets the text to use under the power indicator icon. This will only be called when <see cref="ShowStatusIcon"/> returns <c>true</c>.
-        /// </summary>
-        /// <returns>A <see cref="string"/>, ready to use for in-game text. Should be limited to numeric values if possible.</returns>
-        public abstract string StatusText();
-
-        /// <summary>
-        /// Gets the color of the text used under the power indicator icon. This will only be called when <see cref="ShowStatusIcon"/> returns <c>true</c>.
-        /// </summary>
-        /// <returns>A Unity <see cref="Color"/> value for the text. When in doubt, just set this to white.</returns>
-        public abstract Color StatusTextColor();
     }
 }
