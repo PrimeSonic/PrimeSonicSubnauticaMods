@@ -113,8 +113,8 @@
 
             if (inventoryItem != null)
                 GameObject.Destroy(inventoryItem.item.gameObject);
-
-            if (modules.AddItem(slotName, CyclopsUpgrade.SpawnCyclopsModule(TechType), true))
+            
+            if (modules.AddItem(slotName, CyclopsUpgrade.SpawnCyclopsModule(TechType.DepletedReactorRod), true))
                 ErrorMessage.AddMessage(CyclopsNuclearModule.DepletedEventMsg);
         }
     }
