@@ -110,6 +110,9 @@
             //Then check for models not already setup.
             foreach (Renderer renderer in __instance.gameObject.GetComponentsInChildren<Renderer>(true))
             {
+                if (renderer.gameObject.GetComponentInParent<Battery>(true) != null)
+                    continue;
+
                 switch (renderer?.material?.mainTexture?.name)
                 {
                     case "battery_01":
