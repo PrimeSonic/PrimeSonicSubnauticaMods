@@ -22,7 +22,7 @@
 
             if (cyclops == null)
             {
-                QuickLogger.Error("Unable to find Cyclops SubRoot in CyclopsSonarDisplay parent");
+                QuickLogger.Error("Unable to find Cyclops SubRoot in CyclopsSonarDisplay parent", true);
                 return;
             }
 
@@ -31,8 +31,17 @@
                 return;
 
             // Yes, both auto-defense zappers can be activated at the same time
-            MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap(entityData);
-            MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops)?.Zap(entityData);
+            var defenser = MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops);
+            if (defenser != null)
+                defenser.Zap(entityData);
+            else
+                QuickLogger.Warning("Unable to find AutoDefenser AuxCyclopsManager", true);
+
+            var defenserMk2 = MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops);
+            if (defenserMk2 != null)
+                defenserMk2.Zap(entityData);
+            else
+                QuickLogger.Warning("Unable to find AutoDefenserMk2 AuxCyclopsManager", true);
         }
     }
 
@@ -47,7 +56,7 @@
 
             if (cyclops == null)
             {
-                QuickLogger.Error("Unable to find Cyclops SubRoot in CyclopsSonarDisplay parent");
+                QuickLogger.Error("Unable to find Cyclops SubRoot in CyclopsSonarDisplay parent", true);
                 return;
             }
 
@@ -63,8 +72,17 @@
                     return;
 
                 // Yes, both auto-defense zappers can be activated at the same time
-                MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops)?.Zap();
-                MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops)?.Zap();
+                var defenser = MCUServices.Find.AuxCyclopsManager<AutoDefenser>(cyclops);
+                if (defenser != null)
+                    defenser.Zap();
+                else
+                    QuickLogger.Warning("Unable to find AutoDefenser AuxCyclopsManager", true);
+
+                var defenserMk2 = MCUServices.Find.AuxCyclopsManager<AutoDefenserMk2>(cyclops);
+                if (defenserMk2 != null)
+                    defenserMk2.Zap();
+                else
+                    QuickLogger.Warning("Unable to find AutoDefenserMk2 AuxCyclopsManager", true);
             }
         }
     }
@@ -80,7 +98,12 @@
 
             if (cyclops != null)
             {
-                MCUServices.Find.AuxCyclopsManager<ShieldPulser>(cyclops)?.PulseShield();
+                var shieldPulser = MCUServices.Find.AuxCyclopsManager<ShieldPulser>(cyclops);
+
+                if (shieldPulser != null)
+                    shieldPulser.PulseShield();
+                else
+                    QuickLogger.Error("Unable to find ShieldPulser AuxCyclopsManager", true);
             }
         }
     }

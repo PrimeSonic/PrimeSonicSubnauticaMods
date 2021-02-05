@@ -9,6 +9,7 @@
         public static void Patch()
         {
             QuickLogger.Info("Started patching " + QuickLogger.GetAssemblyVersion());
+            QuickLogger.DebugLogsEnabled = false;
 
             var defenseSystem = new CyclopsAutoDefense();
             defenseSystem.Patch();
