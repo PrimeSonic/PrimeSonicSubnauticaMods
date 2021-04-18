@@ -169,7 +169,7 @@
             float reduction = 0.10f * armorModuleCount;
             float bonus = 0.05f * this.DepthIndex;
 
-            float damageReduction = Mathf.Max(1f - reduction, 0.01f);
+            float damageReduction = Mathf.Max(1f - reduction - bonus, 0.01f);
 
             return this.GeneralArmorFraction = damageReduction;
         }
