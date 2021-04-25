@@ -119,7 +119,6 @@
             gameObject.SetActive(true);
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>();
-            pickupable.isPickupable = false;
             var item = new InventoryItem(pickupable);
 
             _cubeContainer.UnsafeAdd(item);

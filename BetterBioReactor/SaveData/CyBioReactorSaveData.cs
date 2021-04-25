@@ -1,5 +1,6 @@
 ﻿namespace BetterBioReactor.SaveData
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using Common;
@@ -48,13 +49,17 @@
             this.Save(this.SaveDirectory, this.SaveFile);
         }
 
-        public IEnumerable<BioEnergy> GetMaterialsInProcessing()
+        public IEnumerator GetMaterialsInProcessing(IOut<List<BioEnergy>> savedMaterials)
         {
+            var list = new List<BioEnergy>();
             foreach (EmModuleSaveData savedItem in _materials.Values)
             {
                 var techTypeID = (TechType)savedItem.ItemID;
 
-                GameObject prefab = CraftData.GetPrefabForTechType(techTypeID);
+                var task = CraftData.GetPrefabForTechTypeAsync(techTypeID);
+                yield return task;
+
+                var prefab = task.GetResult();
 
                 if (prefab == null)
                 {
@@ -72,8 +77,9 @@
                     continue;
                 }
 
-                yield return new BioEnergy(pickupable, savedItem.RemainingCharge);
+                list.Add(new BioEnergy(pickupable, savedItem.RemainingCharge));
             }
+            savedMaterials.Set(list);
         }
 
         private string SaveDirectory => Path.Combine(SaveLoadManager.GetTemporarySavePath(), MainKey);

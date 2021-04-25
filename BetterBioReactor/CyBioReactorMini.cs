@@ -3,6 +3,7 @@
     using BetterBioReactor.SaveData;
     using Common;
     using ProtoBuf;
+    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
@@ -45,6 +46,8 @@
         public readonly BaseBioReactor BioReactor;
         private BaseBioReactorGeometry fallbackGeometry = null;
 
+        private readonly MonoBehaviour mono = new MonoBehaviour();
+
         // Careful, this map only exists while the PDA screen is open
         public Dictionary<InventoryItem, uGUI_ItemIcon> InventoryMapping { get; private set; }
 
@@ -73,7 +76,7 @@
             int totalContainerSpaces = BioReactor.container.sizeX * BioReactor.container.sizeY;
             numberOfContainerSlots = totalContainerSpaces;
 
-            RestoreItemsFromSaveData();
+            mono.StartCoroutine(RestoreItemsFromSaveData());
 
             QuickLogger.Debug("CyBioReactorMini started");
         }
@@ -257,21 +260,26 @@
             }
         }
 
-        private void RestoreItemsFromSaveData()
+        private IEnumerator RestoreItemsFromSaveData()
         {
-            if (!isLoadingSaveData || SaveData is null)
-                return;
-
-            foreach (BioEnergy material in SaveData.GetMaterialsInProcessing())
+            if (isLoadingSaveData && SaveData != null)
             {
-                InventoryItem inventoryItem = BioReactor.container.AddItem(material.Pickupable);
-                MaterialsProcessing.Add(material);
-                material.Size = inventoryItem.width * inventoryItem.height;
+                var savedMatsTask = new TaskResult<List<BioEnergy>>();
+                yield return SaveData.GetMaterialsInProcessing(savedMatsTask);
+
+                var savedMaterials = savedMatsTask.Get();
+
+                foreach (BioEnergy material in savedMaterials)
+                {
+                    InventoryItem inventoryItem = BioReactor.container.AddItem(material.Pickupable);
+                    MaterialsProcessing.Add(material);
+                    material.Size = inventoryItem.width * inventoryItem.height;
+                }
+
+                QuickLogger.Debug("Original items restored");
+
+                isLoadingSaveData = false;
             }
-
-            QuickLogger.Debug("Original items restored");
-
-            isLoadingSaveData = false;
         }
 
         #endregion
