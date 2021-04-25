@@ -244,10 +244,6 @@
             QuickLogger.Debug("Preventing original RestoreItems call");
         }
 
-        public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
-        {
-        }
-
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
         {
             QuickLogger.Debug("Looking for save data for object tree");

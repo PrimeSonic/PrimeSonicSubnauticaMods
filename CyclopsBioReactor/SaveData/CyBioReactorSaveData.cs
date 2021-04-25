@@ -77,8 +77,6 @@
                 if (pickupable == null)
                     continue;
 
-                pickupable.Pickup(false);
-
                 list.Add(new BioEnergy(pickupable, savedItem.RemainingCharge));
             }
 

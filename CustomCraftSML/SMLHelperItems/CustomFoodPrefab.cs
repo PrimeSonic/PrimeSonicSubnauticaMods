@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML.SMLHelperItems
 {
+    using System.Collections;
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
     using UnityEngine;
@@ -16,24 +17,21 @@
             FoodEntry = customFood;
         }
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(FoodEntry.FoodPrefab);
-            GameObject obj = UnityEngine.Object.Instantiate(prefab);
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(FoodEntry.FoodPrefab);
+            yield return task;
+            GameObject prefab = task.GetResult();
+            GameObject obj = Object.Instantiate(prefab);
 
-            Eatable eatable = obj.GetComponent<Eatable>();
-
-            if (eatable is null)
-                eatable = obj.AddComponent<Eatable>();
+            Eatable eatable = obj.EnsureComponent<Eatable>();
 
             eatable.foodValue = FoodEntry.FoodValue;
             eatable.waterValue = FoodEntry.WaterValue;
             eatable.decomposes = FoodEntry.Decomposes;
             eatable.kDecayRate = FoodEntry.DecayRateMod * StandardDecayRate;
 
-            return obj;
+            gameObject.Set(obj);
         }
-
-
     }
 }

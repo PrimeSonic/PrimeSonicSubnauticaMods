@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
+    using System.Collections;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -71,12 +72,14 @@
         /// <returns>
         /// The game object to be instantiated into a new in-game entity.
         /// </returns>
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabTemplate);
-            var obj = GameObject.Instantiate(prefab);
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(this.PrefabTemplate);
+            yield return task;
+            GameObject prefab = task.GetResult();
+            GameObject obj = Object.Instantiate(prefab);
 
-            return obj;
+            gameObject.Set(obj);
         }
 
         /// <summary>
@@ -95,7 +98,7 @@
 
                 var gameObject = GameObject.Instantiate(prefab);
 
-                Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
+                Pickupable pickupable = gameObject.GetComponent<Pickupable>();
                 return new InventoryItem(pickupable);
             }
             catch

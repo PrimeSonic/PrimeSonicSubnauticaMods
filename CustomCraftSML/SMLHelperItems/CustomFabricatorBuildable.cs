@@ -3,7 +3,9 @@
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
     using System;
+    using System.Collections;
     using UnityEngine;
+    using UWE;
     using CustomFabricator = Serialization.Entries.CustomFabricator;
 
     internal class CustomFabricatorBuildable : ModPrefab
@@ -16,48 +18,65 @@
             FabricatorDetails = customFabricator;
         }
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab;
+            GameObject obj;
             Constructable constructible = null;
-            GhostCrafter crafter;
+            GhostCrafter crafter;            
             switch (FabricatorDetails.Model)
             {
                 case ModelTypes.Fabricator:
-                    prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Fabricator));
-                    crafter = prefab.GetComponent<Fabricator>();
-                    break;
+                {
+                    var task = CraftData.GetPrefabForTechTypeAsync(TechType.Fabricator);
+                    yield return task;
+                    var prefab = task.GetResult();
+                    obj = GameObject.Instantiate(prefab);
+                    crafter = obj.GetComponent<Fabricator>();
+                }
+                break;
                 case ModelTypes.Workbench:
-                    prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Workbench));
-                    crafter = prefab.GetComponent<Workbench>();
-                    break;
+                {
+                    var task = CraftData.GetPrefabForTechTypeAsync(TechType.Workbench);
+                    yield return task;
+                    var prefab = task.GetResult();
+                    obj = GameObject.Instantiate(prefab);
+                    crafter = obj.GetComponent<Workbench>();
+                }
+                break;
                 case ModelTypes.MoonPool:
-                    prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
-                    crafter = prefab.GetComponent<Fabricator>();
+                {
+                    IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync("Submarine/Build/CyclopsFabricator");
+                    yield return request;
+                    request.TryGetPrefab(out GameObject prefab);
+
+                    obj = GameObject.Instantiate(prefab);
+
+                    crafter = obj.GetComponent<Fabricator>();
 
                     // Add prefab ID because CyclopsFabricator normaly doesn't have one
-                    PrefabIdentifier prefabId = prefab.AddComponent<PrefabIdentifier>();
+                    PrefabIdentifier prefabId = obj.AddComponent<PrefabIdentifier>();
                     prefabId.ClassId = FabricatorDetails.ItemID;
                     prefabId.name = FabricatorDetails.DisplayName;
 
                     // Add tech tag because CyclopsFabricator normaly doesn't have one
-                    TechTag techTag = prefab.AddComponent<TechTag>();
+                    TechTag techTag = obj.AddComponent<TechTag>();
                     techTag.type = this.TechType;
 
                     // Retrieve sub game objects
-                    GameObject cyclopsFabLight = prefab.FindChild("fabricatorLight");
-                    GameObject cyclopsFabModel = prefab.FindChild("submarine_fabricator_03");
+                    GameObject cyclopsFabLight = obj.FindChild("fabricatorLight");
+                    GameObject cyclopsFabModel = obj.FindChild("submarine_fabricator_03");
                     // Translate CyclopsFabricator model and light
-                    prefab.transform.localPosition = new Vector3(cyclopsFabModel.transform.localPosition.x, // Same X position
+                    obj.transform.localPosition = new Vector3(cyclopsFabModel.transform.localPosition.x, // Same X position
                                                                  cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
                                                                  cyclopsFabModel.transform.localPosition.z); // Same Z position
-                    prefab.transform.localPosition = new Vector3(cyclopsFabLight.transform.localPosition.x, // Same X position
+                    obj.transform.localPosition = new Vector3(cyclopsFabLight.transform.localPosition.x, // Same X position
                                                                  cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
                                                                  cyclopsFabLight.transform.localPosition.z); // Same Z position
                     // Add constructable - This prefab normally isn't constructed.
-                    constructible = prefab.AddComponent<Constructable>();
+                    constructible = obj.AddComponent<Constructable>();
                     constructible.model = cyclopsFabModel;
-                    break;
+                }
+                break;
                 default:
                     throw new InvalidOperationException("ModelType in CustomFabricator does not correspond to a valid fabricator type");
             }
@@ -65,8 +84,7 @@
             crafter.craftTree = FabricatorDetails.TreeTypeID;
             crafter.handOverText = $"Use {FabricatorDetails.DisplayName}";
 
-            if (constructible is null)
-                constructible = prefab.GetComponent<Constructable>();
+            constructible = constructible ?? obj.GetComponent<Constructable>();
 
             constructible.allowedInBase = FabricatorDetails.AllowedInBase;
             constructible.allowedInSub = FabricatorDetails.AllowedInCyclops;
@@ -79,13 +97,13 @@
             constructible.rotationEnabled = false;
             constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time            
 
-            SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
-            skyApplier.renderers = prefab.GetComponentsInChildren<Renderer>();
+            SkyApplier skyApplier = obj.GetComponent<SkyApplier>();
+            skyApplier.renderers = obj.GetComponentsInChildren<Renderer>();
             skyApplier.anchorSky = Skies.Auto;
 
             if (FabricatorDetails.HasColorValue)
             {
-                SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();             
+                SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponentInChildren<SkinnedMeshRenderer>();
                 skinnedMeshRenderer.material.color = FabricatorDetails.ColorTint; // Tint option available
             }
 
@@ -98,7 +116,7 @@
             // But the parent components are coming up null.
             crafter.powerRelay = powerRelay;
 
-            return prefab;
+            gameObject.Set(obj);
         }
     }
 }

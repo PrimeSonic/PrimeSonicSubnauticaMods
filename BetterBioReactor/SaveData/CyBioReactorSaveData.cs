@@ -72,8 +72,6 @@
                     continue;
                 }
 
-                pickupable.Pickup(false);
-
                 yield return new BioEnergy(pickupable, savedItem.RemainingCharge);
             }
         }

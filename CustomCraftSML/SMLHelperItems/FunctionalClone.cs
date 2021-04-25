@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML
 {
+    using System.Collections;
     using CustomCraft2SML.Interfaces;
     using SMLHelper.V2.Assets;
     using UnityEngine;
@@ -16,10 +17,14 @@
 
         public override string AssetsFolder { get; } = FileLocations.RootModName + "/Assets";
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(BaseItem);
-            return GameObject.Instantiate(prefab);
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(BaseItem);
+            yield return task;
+            GameObject prefab = task.GetResult();
+            GameObject obj = Object.Instantiate(prefab);
+
+            gameObject.Set(obj);
         }
     }
 }

@@ -14,7 +14,7 @@
 #elif BELOWZERO
         private static readonly Vector2int CubeSize = TechData.GetItemSize(TechType.PrecursorIonCrystal);
 #endif
-        internal static readonly GameObject CubePrefab = CraftData.GetPrefabForTechTypeAsync(TechType.PrecursorIonCrystal).GetResult();
+        internal static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
 
         private const int ContainerHeight = 2;
         private const int ContainerWidth = 2;

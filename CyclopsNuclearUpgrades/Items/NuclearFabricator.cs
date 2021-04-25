@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
+    using System.Collections;
     using System.IO;
     using System.Reflection;
     using SMLHelper.V2.Assets;
@@ -46,24 +47,26 @@
             };
         }
 
-        protected override GameObject GetCustomCrafterPreFab()
+        protected override IEnumerator GetCustomCrafterPreFabAsync(IOut<GameObject> gameObject)
         {
-            // Instantiate Fabricator object
-            var gObj = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Fabricator));
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(TechType.Fabricator);
+            yield return task;
+            GameObject prefab = task.GetResult();
+            GameObject obj = Object.Instantiate(prefab);
 
             // Set the custom texture
             if (customTexture != null)
             {
-                SkinnedMeshRenderer skinnedMeshRenderer = gObj.GetComponentInChildren<SkinnedMeshRenderer>();
+                SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponentInChildren<SkinnedMeshRenderer>();
                 skinnedMeshRenderer.material.mainTexture = customTexture;
             }
 
             // Change size
-            Vector3 scale = gObj.transform.localScale;
+            Vector3 scale = obj.transform.localScale;
             const float factor = 0.90f;
-            gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
+            obj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
 
-            return gObj;
+            gameObject.Set(obj);
         }
 
         protected override Atlas.Sprite GetItemSprite()
