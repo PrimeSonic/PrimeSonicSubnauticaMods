@@ -14,7 +14,7 @@
 #elif BELOWZERO
         private static readonly Vector2int CubeSize = TechData.GetItemSize(TechType.PrecursorIonCrystal);
 #endif
-        internal static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
+        internal static readonly GameObject CubePrefab = CraftData.GetPrefabForTechTypeAsync(TechType.PrecursorIonCrystal).GetResult();
 
         private const int ContainerHeight = 2;
         private const int ContainerWidth = 2;
@@ -119,7 +119,7 @@
             gameObject.SetActive(true);
 
             Pickupable pickupable = gameObject.GetComponent<Pickupable>();
-            pickupable.Pickup(false);
+            pickupable.isPickupable = false;
             var item = new InventoryItem(pickupable);
 
             _cubeContainer.UnsafeAdd(item);

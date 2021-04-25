@@ -4,11 +4,7 @@
     using System.IO;
     using System.Reflection;
     using Common;
-#if SUBNAUTICA
-    using Oculus.Newtonsoft.Json;
-#elif BELOWZERO
     using Newtonsoft.Json;
-#endif
     using SMLHelper.V2.Handlers;
 
     internal class ModConfiguration
