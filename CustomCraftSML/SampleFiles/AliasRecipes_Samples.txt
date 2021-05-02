@@ -9,7 +9,7 @@
 #   1.  To create a custom item and produce that item. #
 #       in this case - you want to add a new sprite asset #
 #       set the AmountCrafted >= 1 and fill in the remaining items #
-#   2.  The second common use is to create ano item that already has a recipe in-game #
+#   2.  The second common use is to create an item that already has a recipe in-game #
 #       (see WaterFromGallon below).  The recipe cannot directly output DisinfectedWater #
 #       as there is already a recipe for that (salt + bleach).  However, we can accomplish #
 #       this by making up a new ItemID, then making the recipe produce 0 of these #
@@ -25,7 +25,7 @@ AliasRecipes:
 (
     ItemID: GallonWater;
     DisplayName: "Water Jug - 1 gallon";
-    Tooltip: "Large water jug.  Useful for storing large quantites of water, but not for consumption";
+    Tooltip: "Large water jug.  Useful for storing large quantities of water, but not for consumption";
     AmountCrafted: 1;
     Ingredients: 
     (
