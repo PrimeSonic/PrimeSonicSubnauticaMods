@@ -4,7 +4,7 @@
 CustomFabricators: 
 (
     ItemID: SampleFabricator; # This is the ID of your new Fabricator and its underlying crafting tree. #
-    # Crafting paths to your cusotm fabricator will start with this ID. #
+    # Crafting paths to your custom fabricator will start with this ID. #
     Ingredients: # These are the ingredients needed to build it. #
         ( ItemID: ComputerChip; Required: 1; ),
         ( ItemID: Titanium; Required: 2;); # This semi-colon closes the last Ingredient #
@@ -17,19 +17,19 @@ CustomFabricators:
     AllowedInBase: YES; # This sets if your fabricator can be built inside a base. # 
     AllowedInCyclops: YES; # This sets if your fabricator can be built inside a Cyclops. # 
     ColorTint: 1.0, 0.64, 0.0; # This is if you want to set a custom color tint on your fabricator in RGB values. #
-    CustomCraftingTabs: # Custom crafting tabs that go insie your fabricator start here. #
+    CustomCraftingTabs: # Custom crafting tabs that go inside your fabricator start here. #
     (
         TabID: ScienceTab; # This is the ID of the tab that you will use to create your custom tab. #
         DisplayName: Science!; # This is the in-game name of your tab. # 
         SpriteItemID: LabEquipment3;# This is the item that will be used for the tab icon in-game. #
         ParentTabPath: PlaceablesFabricator; # This is the path in which your tab will be located in your fabricator. #
     ); # This semi-colon closes the last tab. #
-    AddedRecipes: # If you want to include added recipes, they also go inside the custom fabracator entry. #
+    AddedRecipes: # If you want to include added recipes, they also go inside the custom fabricator entry. #
     (
         ItemID: LabEquipment1; AmountCrafted: 1;
         Ingredients:
             ( ItemID: Glass; Required: 1; ),
             ( ItemID: Titanium; Required: 1; ); # This semi-colon closes the last Ingredient #
-        Path: PlaceablesFabricator/ScienceTab; # This path goes to the tab we added earlier to the custom fabracator. #
+        Path: PlaceablesFabricator/ScienceTab; # This path goes to the tab we added earlier to the custom fabricator. #
     ); # This closes the recipes when we are finished. #
 ); # Now this closes the custom fabricator list we had up top #
