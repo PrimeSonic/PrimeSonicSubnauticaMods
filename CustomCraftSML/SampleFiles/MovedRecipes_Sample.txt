@@ -1,4 +1,4 @@
-MovedRecipes help you move, hide, or copy Recipes to a new location CustomTab or Fabricator
+# MovedRecipes help you move, hide, or copy Recipes to a new location CustomTab or Fabricator #
 
 MovedRecipes:
 (
