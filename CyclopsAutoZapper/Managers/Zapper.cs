@@ -1,12 +1,12 @@
 ﻿namespace CyclopsAutoZapper.Managers
 {
     using UnityEngine;
+    using UWE;
 
     internal abstract class Zapper : CooldownManager
     {
         private GameObject seamothElectricalDefensePrefab = null;
-        protected GameObject ElectricalDefensePrefab => seamothElectricalDefensePrefab ??
-            (seamothElectricalDefensePrefab = CraftData.GetPrefabForTechType(TechType.Seamoth).GetComponent<SeaMoth>().seamothElectricalDefensePrefab);
+        protected GameObject ElectricalDefensePrefab => seamothElectricalDefensePrefab;
 
         private class CreatureTarget
         {
@@ -44,6 +44,16 @@
         protected Zapper(TechType upgradeTechType, SubRoot cyclops)
             : base(upgradeTechType, cyclops)
         {
+            string classid = CraftData.GetClassIdForTechType(TechType.Seamoth);
+            if (PrefabDatabase.TryGetPrefabFilename(classid, out string seamothFilename))
+            {
+                AddressablesUtility.LoadAsync<GameObject>(seamothFilename).Completed += (x) =>
+                {
+                    GameObject loadedPrefab = x.Result;
+                    if (loadedPrefab != null)
+                        seamothElectricalDefensePrefab = loadedPrefab.GetComponent<SeaMoth>().seamothElectricalDefensePrefab;
+                };
+            }
         }
 
         protected virtual bool AbleToZap()
@@ -88,7 +98,7 @@
 
         private void ZapRadius()
         {
-            GameObject gameObject = Utils.SpawnZeroedAt(this.ElectricalDefensePrefab, Cyclops.transform, false);
+            GameObject gameObject = global::Utils.SpawnZeroedAt(this.ElectricalDefensePrefab, Cyclops.transform, false);
             ElectricalDefense defenseComponent = gameObject.GetComponent<ElectricalDefense>();
             defenseComponent.charge = ZapPower;
             defenseComponent.chargeScalar = ZapPower;
