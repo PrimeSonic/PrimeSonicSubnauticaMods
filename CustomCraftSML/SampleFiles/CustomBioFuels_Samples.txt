@@ -1,5 +1,5 @@
 # Custom BioFuel values go in this file #
-# Check the OriginalBioFuelValues.txt file in the SampleFiles folder for origina values and samples on how to modify bioreactor fuel values #
+# Check the OriginalBioFuelValues.txt file in the SampleFiles folder for original values and samples on how to modify bioreactor fuel values #
 CustomBioFuels: 
 (
     ItemID: Oculus; # You can change the values of any existing organic material for the BioReactor. #
