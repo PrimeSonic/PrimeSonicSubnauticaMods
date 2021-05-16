@@ -97,11 +97,17 @@
                 "# Mobile Vehicle Bay #",
                 "Constructor",
                 "Constructor/Vehicles",
+#if SUBNAUTICA
                 "Constructor/Rocket",
+#elif BELOWZERO
+                "Constructor/Modules", // seatruck modules
+#endif
                 "",
+#if SUBNAUTICA
                 "# Cyclops Fabricator #",
                 "CyclopsFabricator",
                 "",
+#endif
                 "# Fabricator #",
                 "Fabricator",
                 "Fabricator/Resources",
@@ -116,19 +122,28 @@
                 "Fabricator/Personal/Equipment",
                 "Fabricator/Personal/Tools",
                 "Fabricator/Machines",
+#if BELOWZERO
+                "Fabricator/Upgrades",
+                "Fabricator/Upgrades/ExosuitUpgrades",
+                "Fabricator/Upgrades/SeatruckUpgrades",
+#endif
                 "",
                 "# Scanner Room #",
                 "MapRoom",
                 "",
                 "# Vehicle Upgrade Console #",
                 "SeamothUpgrades",
-                "SeamothUpgrades/CommonModules",
-                "SeamothUpgrades/SeamothModules",
                 "SeamothUpgrades/ExosuitModules",
+#if SUBNAUTICA
+                "SeamothUpgrades/SeamothModules",
                 "SeamothUpgrades/CommonModules",
+#elif BELOWZERO
+                "SeamothUpgrades/SeaTruckUpgrade",
+#endif
                 "",
                 "# Modification Station #",
                 "Workbench",
+#if SUBNAUTICA
                 "Workbench/KnifeMenu",
                 "Workbench/TankMenu",
                 "Workbench/FinsMenu",
@@ -136,6 +151,7 @@
                 "Workbench/CyclopsMenu",
                 "Workbench/SeamothMenu",
                 "Workbench/ExosuitMenu"
+#endif
             };
 
             File.WriteAllLines(path, originalPaths, Encoding.UTF8);
