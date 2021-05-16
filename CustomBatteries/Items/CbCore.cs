@@ -91,13 +91,9 @@
             this.AddToFabricator = packItem.AddToFabricator;
         }
 
-        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
+        private GameObject ModifyPrefab(GameObject prefab)
         {
-            var task = CraftData.GetPrefabForTechTypeAsync(this.PrefabType);
-            yield return task;
-            GameObject prefab = task.GetResult();
-            GameObject obj = GameObject.Instantiate(prefab);
-
+            var obj = GameObject.Instantiate(prefab);
             Battery battery = obj.GetComponent<Battery>();
             battery._capacity = this.PowerCapacity;
             battery.name = $"{this.ClassID}BatteryCell";
@@ -144,6 +140,22 @@
             gameObject.Set(obj);
         }
 
+#if SUBNAUTICA
+        public override GameObject GetGameObject()
+        {
+            GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabType);
+            return ModifyPrefab(prefab);
+        }
+#endif
+
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
+        {
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(this.PrefabType);
+            yield return task;
+
+            gameObject.Set(ModifyPrefab(task.GetResult()));
+        }
+
         protected void CreateIngredients(IEnumerable<TechType> parts, List<Ingredient> partsList)
         {
             if (parts == null)
@@ -180,7 +192,7 @@
                 return;
 
             this.TechType = TechTypeHandler.AddTechType(this.ClassID, this.FriendlyName, this.Description, this.UnlocksAtStart);
-
+            
             ProcessBatterySkins();
 
             if (!this.UnlocksAtStart)
@@ -244,7 +256,7 @@
                     Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
                     Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
                     Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
-                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
+                    float illumStrength = material?.GetFloat(ShaderPropertyID._GlowStrength) ?? 0;
 
                     CbDatabase.BatteryModels.Add(this.TechType, this.CustomModelData);
                 }
@@ -257,7 +269,7 @@
                     Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
                     Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
                     Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
-                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
+                    float illumStrength = material?.GetFloat(ShaderPropertyID._GlowStrength) ?? 0;
 
                     CbDatabase.PowerCellModels.Add(this.TechType, this.CustomModelData);
                 }
