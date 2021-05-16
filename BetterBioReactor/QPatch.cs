@@ -12,7 +12,6 @@
         public static void Patch()
         {
             QuickLogger.Info("Start patching. Version: " + QuickLogger.GetAssemblyVersion());
-
 #if DEBUG
             QuickLogger.DebugLogsEnabled = true;
             QuickLogger.Debug("Debug logs enabled");
