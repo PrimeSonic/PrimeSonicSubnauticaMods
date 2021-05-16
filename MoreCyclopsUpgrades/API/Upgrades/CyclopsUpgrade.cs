@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
+    using System.Collections;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -71,36 +72,45 @@
         /// <returns>
         /// The game object to be instantiated into a new in-game entity.
         /// </returns>
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabTemplate);
-            var obj = GameObject.Instantiate(prefab);
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(this.PrefabTemplate);
+            yield return task;
+            GameObject prefab = task.GetResult();
+            GameObject obj = Object.Instantiate(prefab);
 
-            return obj;
+            gameObject.Set(obj);
         }
 
         /// <summary>
         /// A utility method that spawns a cyclops upgrade module by TechType ID.
         /// </summary>
         /// <param name="techTypeID">The tech type ID.</param>
-        /// <returns>A new <see cref="InventoryItem"/> that wraps up a <see cref="Pickupable"/> game object.</returns>
-        public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
+        /// <param name="cyclopsModule">A new <see cref="InventoryItem"/> that wraps up a <see cref="Pickupable"/> cyclops module.</param>
+        public static IEnumerator SpawnCyclopsModuleAsync(TechType techTypeID, IOut<InventoryItem> cyclopsModule)
         {
-            try
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(techTypeID);
+            yield return task;
+            GameObject prefab = task.GetResult();
+
+            if (prefab == null)
             {
-                GameObject prefab = CraftData.GetPrefabForTechType(techTypeID);
-
-                if (prefab == null)
-                    return null;
-
-                var gameObject = GameObject.Instantiate(prefab);
-
-                Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
-                return new InventoryItem(pickupable);
+                MCUServices.Logger.Warning($"Unable to find prefab for '{techTypeID}'");
+                cyclopsModule.Set(null);
             }
-            catch
+            else
             {
-                return null;
+                GameObject obj = GameObject.Instantiate(prefab);
+
+                var pickupable = obj.GetComponent<Pickupable>();
+                var result = new TaskResult<Pickupable>();
+
+                yield return pickupable.PickupAsync(result, false);
+
+                pickupable = result.Get();
+                var newItem = new InventoryItem(pickupable);
+
+                cyclopsModule.Set(newItem);
             }
         }
     }

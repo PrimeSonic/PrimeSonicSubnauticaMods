@@ -1,5 +1,6 @@
 ﻿namespace CyclopsBioReactor
 {
+    using System.Collections;
     using System.Collections.Generic;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
@@ -460,17 +461,7 @@
                 MCUServices.Logger.Debug($"Restoring {_saveData.ReactorBatterCharge} energy from save data");
                 this.Charge = Mathf.Min(this.Capacity, _saveData.ReactorBatterCharge);
 
-                List<BioEnergy> savedMaterials = _saveData.GetMaterialsInProcessing();
-                MCUServices.Logger.Debug($"Found {savedMaterials.Count} materials in save data");
-
-                for (int i = 0; i < savedMaterials.Count; i++)
-                {
-                    BioEnergy material = savedMaterials[i];
-                    MCUServices.Logger.Debug($"Adding {material.Pickupable.GetTechName()} to container from save data");
-                    bioMaterialsProcessing.Add(material, container);
-                }
-
-                MCUServices.Logger.Debug($"Added {savedMaterials.Count} items from save data");
+                base.StartCoroutine(RestoreMaterialsInProcessing());
             }
             else
             {
@@ -478,6 +469,25 @@
             }
 
             isLoadingSaveData = false;
+        }
+
+        private IEnumerator RestoreMaterialsInProcessing()
+        {
+            var savedMaterialsTask = new TaskResult<List<BioEnergy>>();
+            yield return _saveData.GetMaterialsInProcessing(savedMaterialsTask);
+
+            List<BioEnergy> savedMaterials = savedMaterialsTask.Get();
+
+            MCUServices.Logger.Debug($"Found {savedMaterials.Count} materials in save data");
+
+            for (int i = 0; i < savedMaterials.Count; i++)
+            {
+                BioEnergy material = savedMaterials[i];
+                MCUServices.Logger.Debug($"Adding {material.Pickupable.GetTechName()} to container from save data");
+                bioMaterialsProcessing.Add(material, container);
+            }
+
+            MCUServices.Logger.Debug($"Added {savedMaterials.Count} items from save data");
         }
 
         #endregion 

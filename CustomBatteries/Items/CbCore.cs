@@ -91,7 +91,7 @@
             this.AddToFabricator = packItem.AddToFabricator;
         }
 
-        public GameObject ModifyPrefab(GameObject prefab)
+        private GameObject ModifyPrefab(GameObject prefab)
         {
             var obj = GameObject.Instantiate(prefab);
             Battery battery = obj.GetComponent<Battery>();
@@ -137,7 +137,7 @@
 
             this.EnhanceGameObject?.Invoke(obj);
 
-            return obj;
+            gameObject.Set(obj);
         }
 
 #if SUBNAUTICA

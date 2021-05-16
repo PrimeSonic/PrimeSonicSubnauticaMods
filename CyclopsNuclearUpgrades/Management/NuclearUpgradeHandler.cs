@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearUpgrades.Management
 {
+    using System.Collections;
     using System.Collections.Generic;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -10,6 +11,8 @@
         private const float MinimalPowerValue = MCUServices.MinimalPowerValue;
 
         private readonly List<BatteryDetails> batteries = new List<BatteryDetails>();
+
+        private static readonly MonoBehaviour mono = new MonoBehaviour();
 
         private bool updating = false;
 
@@ -94,7 +97,7 @@
                 {
                     amtToDrain = battery._charge; // Take what's left
                     battery._charge = 0f; // Set battery to empty
-                    DepleteNuclearModule(details.ParentEquipment, details.SlotName);
+                    mono.StartCoroutine(DepleteNuclearModule(details.ParentEquipment, details.SlotName));
                 }
 
                 totalBatteryCharge -= amtToDrain;
@@ -105,7 +108,7 @@
             return totalDrainedAmt;
         }
 
-        private void DepleteNuclearModule(Equipment modules, string slotName)
+        private IEnumerator DepleteNuclearModule(Equipment modules, string slotName)
         {
             MCUServices.Logger.Debug("Nuclear module depleting");
 
@@ -113,8 +116,11 @@
 
             if (inventoryItem != null)
                 GameObject.Destroy(inventoryItem.item.gameObject);
-            
-            if (modules.AddItem(slotName, CyclopsUpgrade.SpawnCyclopsModule(TechType.DepletedReactorRod), true))
+
+            var depletedModule = new TaskResult<InventoryItem>();
+            yield return CyclopsUpgrade.SpawnCyclopsModuleAsync(TechType.DepletedReactorRod, depletedModule);
+
+            if (modules.AddItem(slotName, depletedModule.Get(), true))
                 ErrorMessage.AddMessage(CyclopsNuclearModule.DepletedEventMsg);
         }
     }

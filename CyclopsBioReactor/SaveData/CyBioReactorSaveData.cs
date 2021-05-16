@@ -1,10 +1,12 @@
 ﻿namespace CyclopsBioReactor.SaveData
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using EasyMarkup;
     using SMLHelper.V2.Utility;
     using UnityEngine;
+    using MoreCyclopsUpgrades.API;
 
     internal class CyBioReactorSaveData : EmPropertyCollection
     {
@@ -51,7 +53,7 @@
             }
         }
 
-        public List<BioEnergy> GetMaterialsInProcessing()
+        public IEnumerator GetMaterialsInProcessing(IOut<List<BioEnergy>> savedMaterials)
         {
             var list = new List<BioEnergy>();
 
@@ -62,10 +64,18 @@
                 if (savedItem.ItemID <= 0)
                     continue;
 
-                GameObject prefab = CraftData.GetPrefabForTechType((TechType)savedItem.ItemID);
+                var techTypeID = (TechType)savedItem.ItemID;
+
+                var task = CraftData.GetPrefabForTechTypeAsync(techTypeID);
+                yield return task;
+
+                var prefab = task.GetResult();
 
                 if (prefab == null)
+                {
+                    MCUServices.Logger.Warning($"Unable to prefab for TechType '{techTypeID}'");
                     continue;
+                }
 
                 var gameObject = GameObject.Instantiate(prefab);
 
@@ -77,12 +87,14 @@
                 if (pickupable == null)
                     continue;
 
-                pickupable.Pickup(false);
+                var result = new TaskResult<Pickupable>();
+                yield return pickupable.PickupAsync(result, false);
+                pickupable = result.Get();
 
                 list.Add(new BioEnergy(pickupable, savedItem.RemainingCharge));
             }
 
-            return list;
+            savedMaterials.Set(list);
         }
 
         public float ReactorBatterCharge

@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.AuxConsole
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
@@ -7,6 +8,7 @@
     using SMLHelper.V2.Crafting;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
+    using UWE;
 
     internal class AuxCyUpgradeConsole : Buildable
     {
@@ -43,25 +45,32 @@
             };
         }
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
             // We'll use this for the actual model
-            var consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide"));
+            IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide");
+            yield return request;
+
+            request.TryGetPrefab(out GameObject modelprefab);
+            GameObject consolePrefab = Object.Instantiate(modelprefab);
             GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
             GameObject consoleModel = consoleWide.FindChild("console");
 
             // The LabTrashcan prefab was chosen because it is very similar in size, shape, and collision model to the upgrade console model
-            var prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.LabTrashcan));
+            CoroutineTask<GameObject> trashTask = CraftData.GetPrefabForTechTypeAsync(TechType.LabTrashcan);
+            yield return trashTask;
+            GameObject trashprefab = trashTask.GetResult();            
+            var obj = GameObject.Instantiate(trashprefab);
 
-            prefab.FindChild("discovery_trashcan_01_d").SetActive(false); // Turn off this model
-            GameObject.DestroyImmediate(prefab.GetComponent<Trashcan>()); // Don't need this
-            GameObject.DestroyImmediate(prefab.GetComponent<StorageContainer>()); // Don't need this
+            obj.FindChild("discovery_trashcan_01_d").SetActive(false); // Turn off this model
+            GameObject.DestroyImmediate(obj.GetComponent<Trashcan>()); // Don't need this
+            GameObject.DestroyImmediate(obj.GetComponent<StorageContainer>()); // Don't need this
 
             // Add the custom component
-            AuxCyUpgradeConsoleMono auxConsole = prefab.AddComponent<AuxCyUpgradeConsoleMono>();
+            obj.AddComponent<AuxCyUpgradeConsoleMono>();
 
             // This is to tie the model to the prefab
-            consoleModel.transform.SetParent(prefab.transform);
+            consoleModel.transform.SetParent(obj.transform);
             consoleWide.SetActive(false);
             consolePrefab.SetActive(false);
 
@@ -69,11 +78,11 @@
             consoleModel.transform.rotation *= Quaternion.Euler(180f, 180f, 180f);
 
             // Update sky applier
-            SkyApplier skyApplier = prefab.GetComponent<SkyApplier>();
+            SkyApplier skyApplier = obj.GetComponent<SkyApplier>();
             skyApplier.renderers = consoleModel.GetComponentsInChildren<MeshRenderer>();
             skyApplier.anchorSky = Skies.Auto;
 
-            Constructable constructible = prefab.GetComponent<Constructable>();
+            Constructable constructible = obj.GetComponent<Constructable>();
 
             constructible.allowedInBase = false;
             constructible.allowedInSub = true; // Only allowed in Cyclops
@@ -87,7 +96,7 @@
             constructible.techType = this.TechType;
             constructible.model = consoleModel;
 
-            return prefab;
+            gameObject.Set(obj);
         }
     }
 }

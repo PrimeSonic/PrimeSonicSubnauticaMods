@@ -1,5 +1,6 @@
 namespace UpgradedVehicles
 {
+    using System.Collections;
     using System.IO;
     using System.Reflection;
     using SMLHelper.V2.Assets;
@@ -22,12 +23,14 @@ namespace UpgradedVehicles
         public override string[] StepsToFabricatorTab => new[] { "CommonModules" };
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabTemplate);
-            var obj = GameObject.Instantiate(prefab);
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(TechType.Fabricator);
+            yield return task;
+            GameObject prefab = task.GetResult();
+            GameObject obj = Object.Instantiate(prefab);
 
-            return obj;
+            gameObject.Set(obj);
         }
 
         private void PostPatch()

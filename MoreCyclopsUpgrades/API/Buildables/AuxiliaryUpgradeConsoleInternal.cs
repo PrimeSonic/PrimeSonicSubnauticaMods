@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.API.Buildables
 {
     using System;
+    using System.Collections;
     using System.Reflection;
     using Common;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -44,7 +45,7 @@
 
         private void Start()
         {
-            SubRoot cyclops = base.GetComponentInParent<SubRoot>();            
+            SubRoot cyclops = base.GetComponentInParent<SubRoot>();
 
             if (cyclops == null)
             {
@@ -257,31 +258,40 @@
                     if (savedModule.ItemID == 0) // (int)TechType.None
                         continue; // Nothing here
 
-                    var techtype = (TechType)savedModule.ItemID;
-                    string itemName = techtype.AsString();
-
-                    QuickLogger.Debug($"Spawning '{itemName}' from save data");
-                    InventoryItem spanwedItem = CyclopsUpgrade.SpawnCyclopsModule(techtype);
-
-                    if (spanwedItem == null)
-                    {
-                        QuickLogger.Warning($"Unknown upgrade module '{itemName}' could not be spamned in from save data");
-                        continue;
-                    }
-
-                    QuickLogger.Debug($"Spawned in {itemName} from save data");
-
-                    if (savedModule.RemainingCharge > 0f) // Modules without batteries are stored with a -1 value for charge
-                        spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;
-
-                    this.Modules.AddItem(slot, spanwedItem, true);
-                    OnSlotEquipped(slot, spanwedItem);
+                    base.StartCoroutine(LoadModuleFromSave(savedModule, slot));
                 }
             }
             else
             {
                 QuickLogger.Debug("No save data found.");
                 this.Modules.AddSlots(SlotNames);
+            }
+        }
+
+        private IEnumerator LoadModuleFromSave(EmModuleSaveData savedModule, string slot)
+        {
+            var techtype = (TechType)savedModule.ItemID;
+            string itemName = techtype.AsString();
+
+            QuickLogger.Debug($"Spawning '{itemName}' from save data");
+
+            var spanwedItemOut = new TaskResult<InventoryItem>();
+            yield return CyclopsUpgrade.SpawnCyclopsModuleAsync(techtype, spanwedItemOut);
+
+            var spanwedItem = spanwedItemOut.Get();
+            if (spanwedItem == null)
+            {
+                QuickLogger.Warning($"Unknown upgrade module '{itemName}' could not be spamned in from save data");
+            }
+            else
+            {
+                QuickLogger.Debug($"Spawned in {itemName} from save data");
+
+                if (savedModule.RemainingCharge > 0f) // Modules without batteries are stored with a -1 value for charge
+                    spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;
+
+                this.Modules.AddItem(slot, spanwedItem, true);
+                OnSlotEquipped(slot, spanwedItem);
             }
         }
 
@@ -302,4 +312,6 @@
 
         #endregion
     }
+
+
 }
