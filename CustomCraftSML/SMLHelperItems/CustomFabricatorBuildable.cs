@@ -22,7 +22,7 @@
         {
             GameObject obj;
             Constructable constructible = null;
-            GhostCrafter crafter;            
+            GhostCrafter crafter;
             switch (FabricatorDetails.Model)
             {
                 case ModelTypes.Fabricator:
@@ -43,6 +43,7 @@
                     crafter = obj.GetComponent<Workbench>();
                 }
                 break;
+#if SUBNAUTICA
                 case ModelTypes.MoonPool:
                 {
                     IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync("Submarine/Build/CyclopsFabricator");
@@ -77,6 +78,7 @@
                     constructible.model = cyclopsFabModel;
                 }
                 break;
+#endif
                 default:
                     throw new InvalidOperationException("ModelType in CustomFabricator does not correspond to a valid fabricator type");
             }

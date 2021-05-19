@@ -46,6 +46,7 @@
             switch ((int)techType)
             {
                 case (int)FoodModel.None:
+#if SUBNAUTICA                
                 case (int)FoodModel.BigFilteredWater:
                 case (int)FoodModel.DisinfectedWater:
                 case (int)FoodModel.FilteredWater:
@@ -86,6 +87,47 @@
                 case (int)FoodModel.CuredSpinefish:
                 case (int)FoodModel.CuredLavaEyeye:
                 case (int)FoodModel.CuredLavaBoomerang:
+#elif BELOWZERO
+                case (int)FoodModel.BigFilteredWater:
+                case (int)FoodModel.DisinfectedWater:
+                case (int)FoodModel.FilteredWater:
+                case (int)FoodModel.StillsuitWater:
+                case (int)FoodModel.SpicyFruitSalad:
+                case (int)FoodModel.PurpleVegetable:
+                case (int)FoodModel.CreepvinePiece:
+                case (int)FoodModel.JellyPlant:
+                case (int)FoodModel.WaterPurificationTablet:
+                case (int)FoodModel.HangingFruit:
+                case (int)FoodModel.Melon:
+                case (int)FoodModel.NutrientBlock:
+                case (int)FoodModel.Coffee:
+                case (int)FoodModel.CookedBladderfish:
+                case (int)FoodModel.CookedBoomerang:
+                case (int)FoodModel.CookedHoopfish:
+                case (int)FoodModel.CookedSpinefish:
+                case (int)FoodModel.CookedSpinnerfish:
+                case (int)FoodModel.CookedArcticPeeper:
+                case (int)FoodModel.CookedArrowRay:
+                case (int)FoodModel.CookedSymbiote:
+                case (int)FoodModel.CookedNootFish:
+                case (int)FoodModel.CookedTriops:
+                case (int)FoodModel.CookedFeatherFish:
+                case (int)FoodModel.CookedFeatherFishRed:
+                case (int)FoodModel.CookedDiscusFish:
+                case (int)FoodModel.CuredBladderfish:
+                case (int)FoodModel.CuredBoomerang:
+                case (int)FoodModel.CuredHoopfish:
+                case (int)FoodModel.CuredSpinefish:
+                case (int)FoodModel.CuredSpinnerfish:
+                case (int)FoodModel.CuredArcticPeeper:
+                case (int)FoodModel.CuredArrowRay:
+                case (int)FoodModel.CuredSymbiote:
+                case (int)FoodModel.CuredNootFish:
+                case (int)FoodModel.CuredTriops:
+                case (int)FoodModel.CuredFeatherFish:
+                case (int)FoodModel.CuredFeatherFishRed:
+                case (int)FoodModel.CuredDiscusFish:
+#endif
                     return true;
                 default:
                     return false;

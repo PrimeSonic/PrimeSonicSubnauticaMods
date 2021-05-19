@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML
 {
+#if SUBNAUTICA
     public enum FoodModel
     {
         None = TechType.None,
@@ -44,4 +45,49 @@
         CuredLavaEyeye = TechType.CuredLavaEyeye,
         CuredLavaBoomerang = TechType.CuredLavaBoomerang,
     }
+#elif BELOWZERO
+    public enum FoodModel
+    {
+        None = TechType.None,
+        BigFilteredWater = TechType.BigFilteredWater,
+        DisinfectedWater = TechType.DisinfectedWater,
+        FilteredWater = TechType.FilteredWater,
+        StillsuitWater = TechType.StillsuitWater,
+        SpicyFruitSalad = TechType.SpicyFruitSalad,
+        PurpleVegetable = TechType.PurpleVegetable,
+        CreepvinePiece = TechType.CreepvinePiece,
+        JellyPlant = TechType.JellyPlant,
+        WaterPurificationTablet = TechType.WaterPurificationTablet,
+        HangingFruit = TechType.HangingFruit,
+        Melon = TechType.Melon,
+        NutrientBlock = TechType.NutrientBlock,
+        Coffee = TechType.Coffee,
+        CookedBladderfish = TechType.CookedBladderfish,
+        CookedBoomerang = TechType.CookedBoomerang,
+        CookedHoopfish = TechType.CookedHoopfish,
+        CookedSpinefish = TechType.CookedSpinefish,
+        CookedSpinnerfish = TechType.CookedSpinnerfish,
+        CookedArcticPeeper = TechType.CookedArcticPeeper,
+        CookedArrowRay = TechType.CookedArrowRay,
+        CookedSymbiote = TechType.CookedSymbiote,
+        CookedNootFish = TechType.CookedNootFish,
+        CookedTriops = TechType.CookedTriops,
+        CookedFeatherFish = TechType.CookedFeatherFish,
+        CookedFeatherFishRed = TechType.CookedFeatherFishRed,
+        CookedDiscusFish = TechType.CookedDiscusFish,
+        CuredBladderfish = TechType.CuredBladderfish,
+        CuredBoomerang = TechType.CuredBoomerang,
+        CuredHoopfish = TechType.CuredHoopfish,
+        CuredSpinefish = TechType.CuredSpinefish,
+        CuredSpinnerfish = TechType.CuredSpinnerfish,
+        CuredArcticPeeper = TechType.CuredArcticPeeper,
+        CuredArrowRay = TechType.CuredArrowRay,
+        CuredSymbiote = TechType.CuredSymbiote,
+        CuredNootFish = TechType.CuredNootFish,
+        CuredTriops = TechType.CuredTriops,
+        CuredFeatherFish = TechType.CuredFeatherFish,
+        CuredFeatherFishRed = TechType.CuredFeatherFishRed,
+        CuredDiscusFish = TechType.CuredDiscusFish,
+    }
+#endif
 }
