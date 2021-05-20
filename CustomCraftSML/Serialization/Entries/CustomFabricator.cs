@@ -23,9 +23,7 @@
     {
         Fabricator,
         Workbench,
-#if SUBNAUTICA
         MoonPool,
-#endif
     }
 
     internal class CustomFabricator : AliasRecipe, ICustomFabricator<CfCustomCraftingTab, CfMovedRecipe, CfAddedRecipe, CfAliasRecipe, CfCustomFood>, IFabricatorEntries
@@ -47,11 +45,7 @@
             $"{CustomFabricatorList.ListKey}: Create your own fabricator with your own completely custom crafting tree!",
             $"    Custom fabricators have all the same properties as {AliasRecipeList.ListKey} with the following additions.",
             $"    {ModelKey}: Choose from one of three visual styles for your fabricator.",
-#if SUBNAUTICA
             $"        Valid options are: {ModelTypes.Fabricator}|{ModelTypes.MoonPool}|{ModelTypes.Workbench}",
-#elif BELOWZERO
-            $"        Valid options are: {ModelTypes.Fabricator}|{ModelTypes.Workbench}",
-#endif
             $"        This property is optional. Defaults to {ModelTypes.Fabricator}.",
             $"    {ColorTintKey}: This optional property lets you apply a color tint over your fabricator.",
             $"        This value is a list of floating point numbers.",
@@ -164,7 +158,6 @@
         {
             switch (this.Model)
             {
-#if SUBNAUTICA
                 case ModelTypes.Fabricator:
                 case ModelTypes.Workbench:
                 case ModelTypes.MoonPool:
@@ -172,14 +165,6 @@
                 default:
                     QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}|{ModelTypes.MoonPool}");
                     return false;
-#elif BELOWZERO
-                case ModelTypes.Fabricator:
-                case ModelTypes.Workbench:
-                    break;
-                default:
-                    QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}");
-                    return false;
-#endif
             }
 
             if (!this.AllowedInBase && this.AllowedInCyclops)
@@ -332,12 +317,10 @@
                     case ModelTypes.Workbench:
                         sprite = SpriteManager.Get(TechType.Workbench);
                         break;
-#if SUBNAUTICA
                     case ModelTypes.MoonPool:
                         imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
                         sprite = ImageUtils.LoadSpriteFromFile(imagePath);
                         break;
-#endif
                     default:
                         throw new InvalidOperationException("Invalid ModelType encountered in HandleCustomSprite");
                 }

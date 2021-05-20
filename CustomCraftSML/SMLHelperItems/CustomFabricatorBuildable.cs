@@ -44,10 +44,16 @@
                     crafter = obj.GetComponent<Workbench>();
                 }
                 break;
-#if SUBNAUTICA
                 case ModelTypes.MoonPool:
                 {
+#if SUBNAUTICA
                     IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync("Submarine/Build/CyclopsFabricator");
+#elif BELOWZERO
+                    if (!PrefabDatabase.TryGetPrefabFilename("78e50618d7ceca84ea66559f5165611a", out string prefabFileName))
+                        throw new InvalidOperationException("MoonPool Fabricator prefab not found!");
+
+                    IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync(prefabFileName);
+#endif
                     yield return request;
                     request.TryGetPrefab(out GameObject prefab);
 
@@ -65,21 +71,20 @@
                     techTag.type = this.TechType;
 
                     // Retrieve sub game objects
-                    GameObject cyclopsFabLight = obj.FindChild("fabricatorLight");
-                    GameObject cyclopsFabModel = obj.FindChild("submarine_fabricator_03");
+                    GameObject fabLight = obj.FindChild("fabricatorLight");
+                    GameObject fabModel = obj.FindChild("submarine_fabricator_03");
                     // Translate CyclopsFabricator model and light
-                    obj.transform.localPosition = new Vector3(cyclopsFabModel.transform.localPosition.x, // Same X position
-                                                                 cyclopsFabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
-                                                                 cyclopsFabModel.transform.localPosition.z); // Same Z position
-                    obj.transform.localPosition = new Vector3(cyclopsFabLight.transform.localPosition.x, // Same X position
-                                                                 cyclopsFabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
-                                                                 cyclopsFabLight.transform.localPosition.z); // Same Z position
+                    obj.transform.localPosition = new Vector3(fabModel.transform.localPosition.x, // Same X position
+                                                                 fabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                                 fabModel.transform.localPosition.z); // Same Z position
+                    obj.transform.localPosition = new Vector3(fabLight.transform.localPosition.x, // Same X position
+                                                                 fabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
+                                                                 fabLight.transform.localPosition.z); // Same Z position
                     // Add constructable - This prefab normally isn't constructed.
                     constructible = obj.AddComponent<Constructable>();
-                    constructible.model = cyclopsFabModel;
+                    constructible.model = fabModel;
                 }
                 break;
-#endif
                 default:
                     throw new InvalidOperationException("ModelType in CustomFabricator does not correspond to a valid fabricator type");
             }
@@ -110,7 +115,7 @@
             {
                 QuickLogger.Warning("Unable to locate SkyApplier for custom fabricator", true);
             }
-            
+
 
             if (FabricatorDetails.HasColorValue)
             {
