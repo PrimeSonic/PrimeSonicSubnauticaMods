@@ -1,5 +1,6 @@
 ﻿namespace CustomCraft2SML.Fabricators
 {
+    using Common;
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
     using System;
@@ -99,9 +100,17 @@
             constructible.rotationEnabled = false;
             constructible.techType = this.TechType; // This was necessary to correctly associate the recipe at building time            
 
-            SkyApplier skyApplier = obj.GetComponent<SkyApplier>();
-            skyApplier.renderers = obj.GetComponentsInChildren<Renderer>();
-            skyApplier.anchorSky = Skies.Auto;
+            SkyApplier skyApplier = obj.GetComponentInChildren<SkyApplier>(true);
+            if (skyApplier != null)
+            {
+                skyApplier.renderers = obj.GetComponentsInChildren<Renderer>();
+                skyApplier.anchorSky = Skies.Auto;
+            }
+            else
+            {
+                QuickLogger.Warning("Unable to locate SkyApplier for custom fabricator", true);
+            }
+            
 
             if (FabricatorDetails.HasColorValue)
             {

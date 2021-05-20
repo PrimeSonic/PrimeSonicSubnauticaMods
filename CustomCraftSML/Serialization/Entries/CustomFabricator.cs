@@ -172,13 +172,14 @@
                 default:
                     QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}|{ModelTypes.MoonPool}");
                     return false;
-#endif
+#elif BELOWZERO
                 case ModelTypes.Fabricator:
                 case ModelTypes.Workbench:
                     break;
                 default:
                     QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} contained an invalue {ModelKey} value. Entry will be removed. Accepted values are only: {ModelTypes.Fabricator}|{ModelTypes.Workbench}");
                     return false;
+#endif
             }
 
             if (!this.AllowedInBase && this.AllowedInCyclops)
