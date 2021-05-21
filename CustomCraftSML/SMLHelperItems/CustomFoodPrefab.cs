@@ -30,7 +30,9 @@
             eatable.waterValue = FoodEntry.WaterValue;
             eatable.decomposes = FoodEntry.Decomposes;
             eatable.kDecayRate = FoodEntry.DecayRateMod * StandardDecayRate;
-
+#if BELOWZERO
+            eatable.coldMeterValue = FoodEntry.HeatValue;
+#endif
             gameObject.Set(obj);
         }
     }

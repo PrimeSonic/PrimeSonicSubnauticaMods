@@ -26,6 +26,10 @@
             $"            Must be between {MinValue} and {MaxValue}.",
             $"        {WaterKey}: Defines how much water the user will gain on consumption.",
             $"            Must be between {MinValue} and {MaxValue}.",
+#if BELOWZERO
+            $"        {HeatKey}: Defines how much the cold temperature meter will move on consumption.",
+            $"            Must be between {MinValue} and {MaxValue}.",
+#endif
             $"        {DecayRateKey}: An optional property that defines the speed at which food will decompose.",
             "            If set to 1 it will decompose as fast as any cooked fish." +
             "            If set to 2 it will decay twice as fast.",
@@ -142,12 +146,18 @@
         protected const string FoodModelKey = "FoodType";
         protected const string FoodKey = "FoodValue";
         protected const string WaterKey = "WaterValue";
+#if BELOWZERO
+        protected const string HeatKey = "HeatValue";
+#endif
         protected const string DecayRateKey = "DecayRateMod";
         protected const string UseDrinkSoundKey = "UseDrinkSound";
 
         protected readonly EmProperty<FoodModel> foodModel;
         protected readonly EmProperty<short> foodValue;
         protected readonly EmProperty<short> waterValue;
+#if BELOWZERO
+        protected readonly EmProperty<short> heatValue;
+#endif
         protected readonly EmProperty<float> decayrate;
         protected readonly EmYesNo allowOverfill;
         protected readonly EmYesNo useDrinkSound;
@@ -169,6 +179,14 @@
             get => waterValue.Value;
             set => waterValue.Value = value;
         }
+
+#if BELOWZERO
+        public short HeatValue
+        {
+            get => heatValue.Value;
+            set => heatValue.Value = value;
+        }
+#endif
 
         public float DecayRateMod
         {
@@ -196,6 +214,9 @@
             new EmProperty<TechType>(SpriteItemIdKey, TechType.None) { Optional = true },
             new EmProperty<short>(FoodKey, 0) { Optional = false },
             new EmProperty<short>(WaterKey, 0) { Optional = false },
+#if BELOWZERO
+            new EmProperty<short>(HeatKey, 0) { Optional = false },
+#endif
             new EmProperty<float>(DecayRateKey, 0) { Optional = true },
             new EmYesNo(UseDrinkSoundKey, false) { Optional = true },
         };
@@ -260,6 +281,7 @@
             techCategory.DefaultValue = TechCategory.CookedFood;
 #elif BELOWZERO
             techCategory.DefaultValue = TechCategory.FoodAndDrinks;
+            heatValue = (EmProperty<short>)Properties[HeatKey];
 #endif
             foodModel = (EmProperty<FoodModel>)Properties[FoodModelKey];
 
@@ -295,7 +317,13 @@
                 QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' must have at least one non-zero value for either {FoodKey} or {WaterKey}. Entry will be discarded.");
                 return false;
             }
-
+#if BELOWZERO
+            if (this.HeatValue > MaxValue || this.HeatValue < MinValue)
+            {
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {HeatKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
+                return false;
+            }
+#endif
             return true;
         }
 

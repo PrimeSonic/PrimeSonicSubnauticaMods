@@ -6,6 +6,9 @@
 
         short FoodValue { get; }
         short WaterValue { get; }
+#if BELOWZERO
+        short HeatValue { get; }
+#endif
         float DecayRateMod { get; }
         bool UseDrinkSound { get; }
     }

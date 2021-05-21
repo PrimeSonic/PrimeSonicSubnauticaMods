@@ -65,6 +65,14 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="Unity.Addressables">
+      <HintPath Condition="'$(Configuration)' == 'BelowZero'">$(GameDir)\$(DataFolder)\Managed\Unity.Addressables.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.ResourceManager">
+      <HintPath Condition="'$(Configuration)' == 'BelowZero'">$(GameDir)\$(DataFolder)\Managed\Unity.ResourceManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>

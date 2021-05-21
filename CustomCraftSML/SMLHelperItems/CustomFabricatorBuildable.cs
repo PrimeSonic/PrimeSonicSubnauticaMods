@@ -6,7 +6,6 @@
     using System;
     using System.Collections;
     using UnityEngine;
-    using UWE;
     using CustomFabricator = Serialization.Entries.CustomFabricator;
 
     internal class CustomFabricatorBuildable : ModPrefab
@@ -48,16 +47,19 @@
                 {
 #if SUBNAUTICA
                     IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync("Submarine/Build/CyclopsFabricator");
-#elif BELOWZERO
-                    if (!PrefabDatabase.TryGetPrefabFilename("78e50618d7ceca84ea66559f5165611a", out string prefabFileName))
-                        throw new InvalidOperationException("MoonPool Fabricator prefab not found!");
-
-                    IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync(prefabFileName);
-#endif
                     yield return request;
                     request.TryGetPrefab(out GameObject prefab);
-
                     obj = GameObject.Instantiate(prefab);
+#elif BELOWZERO
+                    var addr = new UnityEngine.AddressableAssets.AssetReferenceGameObject("78e50618d7ceca84ea66559f5165611a");
+                    var instantiator = addr.InstantiateAsync();
+                    yield return instantiator.Task;
+
+                    while (!instantiator.IsDone)
+                        yield break;
+
+                    obj = instantiator.Result;
+#endif
 
                     crafter = obj.GetComponent<Fabricator>();
 
