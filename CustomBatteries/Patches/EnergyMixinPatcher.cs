@@ -113,21 +113,22 @@
                 if (renderer.gameObject.GetComponentInParent<Battery>(true) != null)
                     continue;
 
-                switch (renderer?.material?.mainTexture?.name)
+                switch (renderer.material?.mainTexture?.name)
                 {
-                    case "battery_01":
-                        batteryModel = batteryModel ??= renderer.gameObject;
+                    case "battery_01" when batteryModel is null:
+                        batteryModel = renderer.gameObject;
                         break;
-                    case "battery_ion":
-                        ionBatteryModel = ionBatteryModel ??= renderer.gameObject;
+                    case "battery_ion" when ionBatteryModel is null:
+                        ionBatteryModel = renderer.gameObject;
                         break;
-                    case "power_cell_01":
-                        powerCellModel = powerCellModel ??= renderer.gameObject;
+                    case "power_cell_01" when powerCellModel is null:
+                        powerCellModel = renderer.gameObject;
                         break;
-                    case "engine_power_cell_ion":
-                        ionPowerCellModel = ionPowerCellModel ??= renderer.gameObject;
+                    case "engine_power_cell_ion" when ionPowerCellModel is null:
+                        ionPowerCellModel = renderer.gameObject;
                         break;
                 }
+                if(batteryModel && ionBatteryModel && powerCellModel && ionPowerCellModel) break;
             }
 
             //Add missing models that were found or create new ones if possible.
