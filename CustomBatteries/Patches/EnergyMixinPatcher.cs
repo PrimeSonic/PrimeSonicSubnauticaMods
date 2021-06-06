@@ -237,6 +237,8 @@
             }
 
             __instance.batteryModels = Models.ToArray();
+            
+            __instance.NotifyHasBattery(__instance.batterySlot.storedItem);
         }
 
         private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingTechtypes)
