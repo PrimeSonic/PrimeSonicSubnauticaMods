@@ -244,7 +244,8 @@
         private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingTechtypes)
         {
             Renderer originalRenderer = originalModel.GetComponentInChildren<Renderer>();
-
+            var mainText = originalRenderer.material.GetTexture(ShaderPropertyID._MainTex);
+            
             SkyApplier skyApplier = null;
             List<Renderer> renderers = null;
             foreach (SkyApplier sa in originalModel.GetComponentsInParent<SkyApplier>())
@@ -269,7 +270,7 @@
                     continue;
 
                 //check which model to base the new model from
-                GameObject modelBase = (pair.Value?.UseIonModelsAsBase ?? false) ? ionModel : originalModel;
+                GameObject modelBase = (pair.Value?.UseIonModelsAsBase ?? false) || (pair .Value != null &&mainText.name == "submarine_engine_power_cells_01") ? ionModel : originalModel;
 
                 //create the new model and set it to have the same parent as the original
                 GameObject obj = GameObject.Instantiate(modelBase, modelBase.transform.parent);
