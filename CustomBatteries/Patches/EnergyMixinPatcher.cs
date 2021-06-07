@@ -239,6 +239,8 @@
 
             __instance.batteryModels = Models.ToArray();
             
+            
+            //The following fixes the models textures not being set right after reloading in BZ
             InventoryItem stored = __instance.batterySlot?.storedItem;
             if(stored != null)
                 __instance.NotifyHasBattery(stored);
@@ -247,6 +249,8 @@
         private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingTechtypes)
         {
             Renderer originalRenderer = originalModel.GetComponentInChildren<Renderer>();
+            
+            // get the main texture off the reg battery to check later if its the messed up one from the Exosuit. 
             var mainText = originalRenderer.material.GetTexture(ShaderPropertyID._MainTex);
             
             SkyApplier skyApplier = null;
@@ -272,7 +276,7 @@
                 if (existingTechtypes.Contains(pair.Key))
                     continue;
 
-                //check which model to base the new model from
+                //check which model to base the new model from and check if it is the broken model from the Exosuit cell
                 GameObject modelBase = (pair.Value?.UseIonModelsAsBase ?? false) || (pair .Value != null &&mainText.name == "submarine_engine_power_cells_01") ? ionModel : originalModel;
 
                 //create the new model and set it to have the same parent as the original
@@ -306,7 +310,7 @@
                     }
 
                     if(skyApplier != null)
-                    renderers.Add(renderer);
+                        renderers.Add(renderer);
                 }
 
                 Models.Add(new BatteryModels() { model = obj, techType = pair.Key });
