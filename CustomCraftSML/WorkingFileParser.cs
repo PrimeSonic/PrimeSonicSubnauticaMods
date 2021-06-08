@@ -51,9 +51,13 @@
             if (!Directory.Exists(FileLocations.WorkingFolder))
                 Directory.CreateDirectory(FileLocations.WorkingFolder);
 
-            string[] workingFiles = Directory.GetFiles(FileLocations.WorkingFolder);
+            var workingFiles = new List<string>(Directory.GetFiles(FileLocations.WorkingFolder));
 
-            QuickLogger.Info($"{workingFiles.Length} files found in the WorkingFiles folder");
+            foreach (string subWorkingFolder in Directory.GetDirectories(FileLocations.WorkingFolder))
+                workingFiles.AddRange(Directory.GetFiles(subWorkingFolder));
+
+
+            QuickLogger.Info($"{workingFiles.Count} files found in the WorkingFiles folder");
 
             int rollingCount = 0;
             foreach (string file in workingFiles)
@@ -77,6 +81,12 @@
         {
             string fileName = Path.GetFileName(workingFilePath);
 
+            if (!fileName.EndsWith("txt"))
+            {
+                QuickLogger.Info($"File {fileName} will not be parsed");
+                return 0;
+            }
+
             string serializedData = File.ReadAllText(workingFilePath, Encoding.UTF8);
 
             if (string.IsNullOrEmpty(serializedData))
@@ -87,7 +97,7 @@
 
             if (EmProperty.CheckKey(serializedData, out string key))
             {
-                int check = -2;
+                int check;
                 if (PackagesLookup.TryGetValue(key, out IParsingPackage package))
                 {
                     check = package.ParseEntries(serializedData, OriginFile.GetOriginFile(fileName));

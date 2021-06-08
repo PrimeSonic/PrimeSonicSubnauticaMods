@@ -6,14 +6,14 @@
     using System;
     using System.Collections;
     using UnityEngine;
-    using CustomFabricator = Serialization.Entries.CustomFabricator;
+    using CC2CustomFabricator = Serialization.Entries.CustomFabricator;
 
     internal class CustomFabricatorBuildable : ModPrefab
     {
-        protected readonly CustomFabricator FabricatorDetails;
+        protected readonly CC2CustomFabricator FabricatorDetails;
 
-        public CustomFabricatorBuildable(CustomFabricator customFabricator)
-            : base(customFabricator.ItemID, $"{customFabricator.ItemID}PreFan", customFabricator.TechType)
+        public CustomFabricatorBuildable(CC2CustomFabricator customFabricator)
+            : base(customFabricator.ItemID, $"{customFabricator.ItemID}PreFab", customFabricator.TechType)
         {
             FabricatorDetails = customFabricator;
         }
@@ -46,45 +46,41 @@
                 case ModelTypes.MoonPool:
                 {
 #if SUBNAUTICA
+                    // Fetch MoonPool style fabricator from Cyclops
                     IPrefabRequest request = PrefabDatabase.GetPrefabForFilenameAsync("Submarine/Build/CyclopsFabricator");
                     yield return request;
                     request.TryGetPrefab(out GameObject prefab);
                     obj = GameObject.Instantiate(prefab);
 #elif BELOWZERO
-                    var addr = new UnityEngine.AddressableAssets.AssetReferenceGameObject("78e50618d7ceca84ea66559f5165611a");
-                    var instantiator = addr.InstantiateAsync();
-                    yield return instantiator.Task;
-
-                    while (!instantiator.IsDone)
-                        yield break;
-
-                    obj = instantiator.Result;
+                    // Fetch MoonPool style fabricator from SeaTruck
+                    CoroutineTask<GameObject> task = AddressablesUtility.InstantiateAsync("78e50618d7ceca84ea66559f5165611a");
+                    yield return task;
+                    obj = task.GetResult();
 #endif
-
-                    crafter = obj.GetComponent<Fabricator>();
-
-                    // Add prefab ID because CyclopsFabricator normaly doesn't have one
-                    PrefabIdentifier prefabId = obj.AddComponent<PrefabIdentifier>();
+                    // Add prefab ID - this prefab normaly doesn't have one
+                    PrefabIdentifier prefabId = obj.EnsureComponent<PrefabIdentifier>();
                     prefabId.ClassId = FabricatorDetails.ItemID;
                     prefabId.name = FabricatorDetails.DisplayName;
 
-                    // Add tech tag because CyclopsFabricator normaly doesn't have one
-                    TechTag techTag = obj.AddComponent<TechTag>();
+                    // Add tech tag - this prefab normaly doesn't have one
+                    TechTag techTag = obj.EnsureComponent<TechTag>();
                     techTag.type = this.TechType;
 
                     // Retrieve sub game objects
                     GameObject fabLight = obj.FindChild("fabricatorLight");
                     GameObject fabModel = obj.FindChild("submarine_fabricator_03");
-                    // Translate CyclopsFabricator model and light
+                    // Translate model and light
                     obj.transform.localPosition = new Vector3(fabModel.transform.localPosition.x, // Same X position
                                                                  fabModel.transform.localPosition.y - 0.8f, // Push towards the wall slightly
                                                                  fabModel.transform.localPosition.z); // Same Z position
                     obj.transform.localPosition = new Vector3(fabLight.transform.localPosition.x, // Same X position
                                                                  fabLight.transform.localPosition.y - 0.8f, // Push towards the wall slightly
                                                                  fabLight.transform.localPosition.z); // Same Z position
-                    // Add constructable - This prefab normally isn't constructed.
-                    constructible = obj.AddComponent<Constructable>();
+                    // Add constructable - this prefab normally isn't constructed.
+                    constructible = obj.EnsureComponent<Constructable>();
                     constructible.model = fabModel;
+
+                    crafter = obj.GetComponent<Fabricator>();
                 }
                 break;
                 default:
@@ -117,7 +113,6 @@
             {
                 QuickLogger.Warning("Unable to locate SkyApplier for custom fabricator", true);
             }
-
 
             if (FabricatorDetails.HasColorValue)
             {
