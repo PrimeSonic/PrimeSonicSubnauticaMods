@@ -2,7 +2,7 @@
   "Id": "CustomBatteries",
   "DisplayName": "Custom Batteries",
   "Author": "PrimeSonic|Seraphim|MrPurple|OSubMarin|DaWrecka",
-  "Version": "1.2.2",
+  "Version": "1.2.3",
   "Enable": true,
   "Game": "BelowZero",
   "AssemblyName": "CustomBatteries.dll",

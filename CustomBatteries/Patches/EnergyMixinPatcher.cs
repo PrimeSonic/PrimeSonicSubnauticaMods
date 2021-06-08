@@ -83,11 +83,10 @@
             List<TechType> existingTechtypes = new List<TechType>();
             List<GameObject> existingModels = new List<GameObject>();
 
-
             //First check for models already setup
             for (int b = 0; b < Models.Count; b++)
             {
-                BatteryModels model = Models[b]; 
+                BatteryModels model = Models[b];
                 switch (model.techType)
                 {
                     case TechType.Battery:
@@ -128,7 +127,9 @@
                         ionPowerCellModel = renderer.gameObject;
                         break;
                 }
-                if(batteryModel && ionBatteryModel && powerCellModel && ionPowerCellModel) break;
+
+                if (batteryModel && ionBatteryModel && powerCellModel && ionPowerCellModel)
+                    break;
             }
 
             //Add missing models that were found or create new ones if possible.
@@ -167,7 +168,7 @@
                 }
             }
 
-            //Add missing models that were found or create new ones if possible.
+            // Add missing models that were found or create new ones if possible.
             if (powerCellModel != null && !existingTechtypes.Contains(TechType.PowerCell))
             {
                 Models.Add(new BatteryModels() { model = powerCellModel, techType = TechType.PowerCell });
@@ -175,7 +176,7 @@
                 existingModels.Add(powerCellModel);
             }
 
-            //Add missing models that were found or create new ones if possible.
+            // Add missing models that were found or create new ones if possible.
             if (!existingTechtypes.Contains(TechType.PrecursorIonPowerCell))
             {
                 if (ionPowerCellModel != null)
@@ -203,14 +204,15 @@
                 }
             }
 
-            //Remove models from the controlled objects list after we have added them as controlled models instead.
+            // Remove models from the controlled objects list after we have added them as controlled models instead.
             List<GameObject> controlledObjects = new List<GameObject>(__instance.controlledObjects ?? new GameObject[0]);
 
-            foreach(GameObject gameObject in __instance.controlledObjects ?? new GameObject[0])
+            foreach (GameObject gameObject in __instance.controlledObjects ?? new GameObject[0])
             {
                 if (!existingModels.Contains(gameObject))
                     controlledObjects.Add(gameObject);
             }
+
             __instance.controlledObjects = controlledObjects.ToArray();
 
             if (compatibleBatteries.Contains(TechType.Battery) || compatibleBatteries.Contains(TechType.PrecursorIonBattery))
@@ -220,7 +222,7 @@
 
                 if (batteryModel != null && ionBatteryModel != null)
                 {
-                    //If we have enough information to make custom models for this tool or vehicle then create them.
+                    // If we have enough information to make custom models for this tool or vehicle then create them.
                     AddCustomModels(batteryModel, ionBatteryModel, ref Models, CbDatabase.BatteryModels, existingTechtypes);
                 }
             }
@@ -238,26 +240,25 @@
             }
 
             __instance.batteryModels = Models.ToArray();
-            
-            
-            //The following fixes the models textures not being set right after reloading in BZ
+
+            // The following fixes the models textures not being set right after reloading in BZ
             InventoryItem stored = __instance.batterySlot?.storedItem;
-            if(stored != null)
+            if (stored != null)
                 __instance.NotifyHasBattery(stored);
         }
 
         private static void AddCustomModels(GameObject originalModel, GameObject ionModel, ref List<BatteryModels> Models, Dictionary<TechType, CBModelData> customModels, List<TechType> existingTechtypes)
         {
             Renderer originalRenderer = originalModel.GetComponentInChildren<Renderer>();
-            
+
             // get the main texture off the reg battery to check later if its the messed up one from the Exosuit. 
             var mainText = originalRenderer.material.GetTexture(ShaderPropertyID._MainTex);
-            
+
             SkyApplier skyApplier = null;
             List<Renderer> renderers = null;
             foreach (SkyApplier sa in originalModel.GetComponentsInParent<SkyApplier>())
             {
-                foreach(Renderer renderer in sa.renderers)
+                foreach (Renderer renderer in sa.renderers)
                 {
                     if (renderer == originalRenderer)
                     {
@@ -266,20 +267,21 @@
                         break;
                     }
                 }
+
                 if (skyApplier != null)
                     break;
             }
 
             foreach (KeyValuePair<TechType, CBModelData> pair in customModels)
             {
-                //dont add models that already exist.
+                // dont add models that already exist.
                 if (existingTechtypes.Contains(pair.Key))
                     continue;
 
-                //check which model to base the new model from and check if it is the broken model from the Exosuit cell
-                GameObject modelBase = (pair.Value?.UseIonModelsAsBase ?? false) || (pair .Value != null &&mainText.name == "submarine_engine_power_cells_01") ? ionModel : originalModel;
+                // check which model to base the new model from and check if it is the broken model from the Exosuit cell
+                GameObject modelBase = (pair.Value?.UseIonModelsAsBase ?? false) || (pair.Value != null && mainText.name == "submarine_engine_power_cells_01") ? ionModel : originalModel;
 
-                //create the new model and set it to have the same parent as the original
+                // create the new model and set it to have the same parent as the original
                 GameObject obj = GameObject.Instantiate(modelBase, modelBase.transform.parent);
                 obj.name = pair.Key.AsString() + "_model";
                 obj.SetActive(false);
@@ -290,7 +292,7 @@
                 {
                     if (pair.Value != null)
                     {
-                        //Set the customized textures for the newly created model to the textures given by the modder.
+                        // Set the customized textures for the newly created model to the textures given by the modder.
 
                         if (pair.Value.CustomTexture != null)
                             renderer.material.SetTexture(ShaderPropertyID._MainTex, pair.Value.CustomTexture);
@@ -309,7 +311,7 @@
                         }
                     }
 
-                    if(skyApplier != null)
+                    if (skyApplier != null)
                         renderers.Add(renderer);
                 }
 
@@ -317,9 +319,8 @@
                 existingTechtypes.Add(pair.Key);
             }
 
-            if(skyApplier != null)
+            if (skyApplier != null)
                 skyApplier.renderers = renderers.ToArray();
-
         }
 
         private static void AddMissingTechTypesToList(List<TechType> compatibleTechTypes, List<CbCore> toBeAdded)
