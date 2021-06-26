@@ -38,28 +38,30 @@
             CustomBioFuels,
         };
 
-        private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(10);
+        private static readonly IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(10);
 
         internal static void HandleWorkingFiles()
         {
             foreach (IParsingPackage package in OrderedPackages)
                 PackagesLookup.Add(package.ListKey, package);
 
-            if (!Directory.Exists(FileLocations.AssetsFolder))
-                Directory.CreateDirectory(FileLocations.AssetsFolder);
+            // Handle loose files
+            ParseAndPatchFiles(Directory.GetFiles(FileLocations.WorkingFolder), "WorkingFiles");
 
-            if (!Directory.Exists(FileLocations.WorkingFolder))
-                Directory.CreateDirectory(FileLocations.WorkingFolder);
+            // Handle sub-folders
+            foreach (var workingDirectory in Directory.GetDirectories(FileLocations.WorkingFolder))
+                ParseAndPatchFiles(Directory.GetFiles(workingDirectory), $"WorkingFiles/{Path.GetDirectoryName(workingDirectory)}");
+        }
 
-            string[] workingFiles = Directory.GetFiles(FileLocations.WorkingFolder);
-
-            QuickLogger.Info($"{workingFiles.Length} files found in the WorkingFiles folder");
+        private static void ParseAndPatchFiles(string[] workingFiles, string directory)
+        {
+            QuickLogger.Info($"{workingFiles.Length} files found in the {directory} folder");
 
             int rollingCount = 0;
             foreach (string file in workingFiles)
                 rollingCount += DeserializeFile(file);
 
-            QuickLogger.Info($"{rollingCount} total entries discovered across all files.");
+            QuickLogger.Info($"{rollingCount} entries successfully discovered across files in {directory}");
 
             QuickLogger.Debug($"Validating entries - First Pass");
             foreach (IParsingPackage package in OrderedPackages)
@@ -87,7 +89,7 @@
 
             if (EmProperty.CheckKey(serializedData, out string key))
             {
-                int check = -2;
+                int check;
                 if (PackagesLookup.TryGetValue(key, out IParsingPackage package))
                 {
                     check = package.ParseEntries(serializedData, OriginFile.GetOriginFile(fileName));
@@ -100,9 +102,6 @@
 
                 switch (check)
                 {
-                    case -2:
-                        QuickLogger.Error($"Unexpected error when attempting to parse file '{fileName}'");
-                        break;
                     case -1:
                         QuickLogger.Warning($"Unable to parse file '{fileName}'");
                         break;
@@ -110,7 +109,7 @@
                         QuickLogger.Warning($"File '{fileName}' was parsed but no entries were found");
                         break;
                     default:
-                        QuickLogger.Debug($"{check} entries parsed from file '{fileName}'");
+                        QuickLogger.Info($"{check} entries parsed from file '{fileName}'");
                         return check;
                 }
             }
