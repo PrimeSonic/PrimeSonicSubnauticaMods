@@ -29,7 +29,7 @@
             if (!(this.CurrentBuffer is null) && !this.CurrentBuffer.IsEmpty)
             {
                 return $"Error reported: {this.Message}{Environment.NewLine}" +
-                       $"Current text in buffer: {this.CurrentBuffer.ToString()}";
+                       $"Current text in buffer: {this.CurrentBuffer}";
             }
 
             return base.ToString();

@@ -17,25 +17,25 @@
         private static readonly ParsingPackage<MovedRecipe, MovedRecipeList> MovedRecipes = new ParsingPackage<MovedRecipe, MovedRecipeList>(MovedRecipeList.ListKey);
         private static readonly ParsingPackage<AddedRecipe, AddedRecipeList> AddedRecipes = new ParsingPackage<AddedRecipe, AddedRecipeList>(AddedRecipeList.ListKey);
         private static readonly ParsingPackage<AliasRecipe, AliasRecipeList> AliasRecipes = new ParsingPackage<AliasRecipe, AliasRecipeList>(AliasRecipeList.ListKey);
-        private static readonly ParsingPackage<CustomFabricator, CustomFabricatorList> CustomFabricatorParser = new ParsingPackage<CustomFabricator, CustomFabricatorList>(CustomFabricatorList.ListKey);
-        private static readonly ParsingPackage<ModifiedRecipe, ModifiedRecipeList> ModifiedRecipeParser = new ParsingPackage<ModifiedRecipe, ModifiedRecipeList>(ModifiedRecipeList.ListKey);
-        private static readonly ParsingPackage<CustomSize, CustomSizeList> CustomSizeParser = new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey);
-        private static readonly ParsingPackage<CustomBioFuel, CustomBioFuelList> CustomBioFuelParser = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
-        private static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCountParser = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
+        private static readonly ParsingPackage<CustomFabricator, CustomFabricatorList> CustomFabricators = new ParsingPackage<CustomFabricator, CustomFabricatorList>(CustomFabricatorList.ListKey);
+        private static readonly ParsingPackage<ModifiedRecipe, ModifiedRecipeList> ModifiedRecipes = new ParsingPackage<ModifiedRecipe, ModifiedRecipeList>(ModifiedRecipeList.ListKey);
+        private static readonly ParsingPackage<CustomSize, CustomSizeList> CustomSizes = new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey);
+        private static readonly ParsingPackage<CustomBioFuel, CustomBioFuelList> CustomBioFuels = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
+        private static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCounts = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
         private static readonly ParsingPackage<CustomFood, CustomFoodList> CustomFoods = new ParsingPackage<CustomFood, CustomFoodList>(CustomFoodList.ListKey);
 
         internal static readonly IEnumerable<IParsingPackage> OrderedPackages = new List<IParsingPackage>(10)
         {
-            CustomFabricatorParser,
+            CustomFabricators,
             CustomTabs,
             AddedRecipes,
             AliasRecipes,
-            ModifiedRecipeParser,
+            ModifiedRecipes,
             CustomFoods,
             MovedRecipes,
-            CustomFragCountParser,
-            CustomSizeParser,
-            CustomBioFuelParser,
+            CustomFragCounts,
+            CustomSizes,
+            CustomBioFuels,
         };
 
         private static IDictionary<string, IParsingPackage> PackagesLookup = new Dictionary<string, IParsingPackage>(10);
@@ -130,7 +130,7 @@
             var allAlias = new HashSet<string>(AliasRecipes.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
             var allFoods = new HashSet<string>(CustomFoods.UniqueEntries.Keys, StringComparer.InvariantCultureIgnoreCase);
 
-            foreach (IFabricatorEntries entries in CustomFabricatorParser.UniqueEntries.Values)
+            foreach (IFabricatorEntries entries in CustomFabricators.UniqueEntries.Values)
             {
                 QuickLogger.Debug("Checking uniqueness of CustomFabricator TabIDs");
                 ValidateSets(allTabs, entries.CustomTabIDs, entries.DuplicateCustomTabDiscovered);
