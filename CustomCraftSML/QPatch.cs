@@ -18,6 +18,12 @@
         {
             QuickLogger.Info($"Setting up logging. Version {version}");
 
+            if (!Directory.Exists(FileLocations.AssetsFolder))
+                Directory.CreateDirectory(FileLocations.AssetsFolder);
+
+            if (!Directory.Exists(FileLocations.WorkingFolder))
+                Directory.CreateDirectory(FileLocations.WorkingFolder);
+
             CustomCraft2Config.CheckLogLevel();
         }
 

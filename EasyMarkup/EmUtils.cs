@@ -9,29 +9,31 @@
     {
         public static bool Deserialize<T>(this T emProperty, string serializedData) where T : EmProperty
         {
+            // Accounting for CurrentCultureInfo became necessary with the jump to Unity2019 and/or .NET 4
+            CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
+            bool success = false;
             try
             {
-                // Accounting for CurrentCultureInfo became necessary with the jump to Unity2019 and/or .NET 4
-                CultureInfo originalCulture = Thread.CurrentThread.CurrentCulture;
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
-                bool result = emProperty.FromString(serializedData);
-
-                // To avoid any unexpected side-effect, we'll change this back once we're done writing the file.
-                Thread.CurrentThread.CurrentCulture = originalCulture;
-
-                return result;
+                success = emProperty.FromString(serializedData);
             }
             catch (EmException emEx)
             {
-                QuickLogger.Error($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}{emEx.ToString()}");
-                return false;
+                success = false;
+                QuickLogger.Error($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}{emEx}");
             }
             catch (Exception ex)
             {
+                success = false;
                 QuickLogger.Error($"[EasyMarkup] Deserialize halted unexpectedly for {emProperty.Key}{Environment.NewLine}Error reported: {ex}");
-                return false;
             }
+            finally
+            {
+                // To avoid any unexpected side-effect, we'll change this back once we're done reading the file.
+                Thread.CurrentThread.CurrentCulture = originalCulture;
+            }
+
+            return success;
         }
 
         public static string Serialize<T>(this T emProperty, bool prettyPrint = true) where T : EmProperty
@@ -95,8 +97,8 @@
             for (int i = 0; i < textArray.Length; i++)
             {
                 int totalPadding = maxSize - textArray[i].Length;
-                int leftPad = 0;
-                int rightPad = 0;
+                int leftPad;
+                int rightPad;
 
                 if (totalPadding % 2 == 0)
                 {
