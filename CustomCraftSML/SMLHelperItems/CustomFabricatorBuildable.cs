@@ -51,12 +51,7 @@
                     yield return request;
                     request.TryGetPrefab(out GameObject prefab);
                     obj = GameObject.Instantiate(prefab);
-#elif BELOWZERO
-                    // Fetch MoonPool style fabricator from SeaTruck
-                    CoroutineTask<GameObject> task = AddressablesUtility.InstantiateAsync("78e50618d7ceca84ea66559f5165611a");
-                    yield return task;
-                    obj = task.GetResult();
-#endif
+
                     // Add prefab ID - this prefab normaly doesn't have one
                     PrefabIdentifier prefabId = obj.EnsureComponent<PrefabIdentifier>();
                     prefabId.ClassId = FabricatorDetails.ItemID;
@@ -81,6 +76,24 @@
                     constructible.model = fabModel;
 
                     crafter = obj.GetComponent<Fabricator>();
+#elif BELOWZERO
+                    /* Disabled until the bugs can be solved
+                    // Fetch MoonPool style fabricator from SeaTruck
+                    CoroutineTask<GameObject> task = AddressablesUtility.InstantiateAsync("78e50618d7ceca84ea66559f5165611a");
+                    yield return task;
+                    obj = task.GetResult();
+                    */
+                    var task = CraftData.GetPrefabForTechTypeAsync(TechType.Fabricator);
+                    yield return task;
+                    var prefab = task.GetResult();
+                    obj = GameObject.Instantiate(prefab);
+                    crafter = obj.GetComponent<Fabricator>();
+
+                    // for now, just make a smaller, default fabricator
+                    Vector3 scale = obj.transform.localScale;
+                    const float factor = 0.80f;
+                    obj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
+#endif
                 }
                 break;
                 default:

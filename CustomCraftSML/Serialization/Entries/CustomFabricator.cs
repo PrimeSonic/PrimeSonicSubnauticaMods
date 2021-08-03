@@ -318,8 +318,12 @@
                         sprite = SpriteManager.Get(TechType.Workbench);
                         break;
                     case ModelTypes.MoonPool:
+#if SUBNAUTICA
                         imagePath = IOPath.Combine(FileLocations.AssetsFolder, $"MoonPool.png");
                         sprite = ImageUtils.LoadSpriteFromFile(imagePath);
+#elif BELOWZERO
+                        sprite = SpriteManager.Get(TechType.Fabricator); // temporary until bug can be resolved
+#endif
                         break;
                     default:
                         throw new InvalidOperationException("Invalid ModelType encountered in HandleCustomSprite");
