@@ -17,7 +17,7 @@
 
         public const int MaxBoosters = 3;
         private const float MaxPowerBaseline = 200;
-        private const float TextDelayInterval = 1.5f;
+        private const float DelayInterval = 1.5f;
 
         private const float baselineChargeRate = 0.765f;
 
@@ -59,7 +59,8 @@
         }
 
         private string prefabId;
-        private float textDelay = TextDelayInterval;
+        private float textDelay = DelayInterval;
+        private float displayDelay = DelayInterval;
         private bool isLoadingSaveData = false;
         private bool isDrainingEnergy = false;
         private CyBioReactorSaveData _saveData;
@@ -279,6 +280,11 @@
             if (this.AnimationHandler == null || displayHandler == null)
                 return;
 
+            if (Time.time < displayDelay)
+                return; // Slow down the display updates
+
+            displayDelay = Time.time + DelayInterval;
+
             if (this.ProducingPower)
                 displayHandler.SetActive(Mathf.RoundToInt(this.Charge), Mathf.CeilToInt(this.Capacity), isDrainingEnergy);
             else if (this.HasPower)
@@ -414,7 +420,7 @@
             if (Time.time < textDelay)
                 return; // Slow down the text update
 
-            textDelay = Time.time + TextDelayInterval;
+            textDelay = Time.time + DelayInterval;
 
             for (int m = 0; m < bioMaterialsProcessing.Count; m++)
                 bioMaterialsProcessing[m].UpdateInventoryText();
