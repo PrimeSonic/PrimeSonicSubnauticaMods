@@ -317,9 +317,10 @@
                     break;
 #endif
             }
-
 #if SUBNAUTICA
             return 1f + // Base 100%
+            speedBoosterCount * speedBoosterRatio + // Bonus from Speed Boosters
+                   this.DepthIndex * bonusSpeedRatio; // Bonus from Depth Modules
 #elif BELOWZERO
             if (SeaTruckSpeedManager != null)
             {
@@ -339,10 +340,9 @@
             }
 
             return SennaSpeedMultiplier +
-#endif
             speedBoosterCount * speedBoosterRatio + // Bonus from Speed Boosters
                    this.DepthIndex * bonusSpeedRatio; // Bonus from Depth Modules
-        }
+#endif
 
         /// <summary>
         /// Calculates the engine efficiency penalty based off the number of speed modules and the current depth index.
