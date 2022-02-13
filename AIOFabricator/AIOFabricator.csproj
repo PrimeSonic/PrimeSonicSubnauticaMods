@@ -2,8 +2,9 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(SolutionDir)\GameDir.targets" />
+  <Import Project="$(SolutionDir)\References.targets" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">BelowZero</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3050EBA0-18CD-4EF7-B556-36A489221B0D}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -11,59 +12,40 @@
     <RootNamespace>AIOFabricator</RootNamespace>
     <AssemblyName>AIOFabricator</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <OutputPath>$(SolutionDir)..\Qmods\$(Configuration)\$(AssemblyName)\</OutputPath>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'BelowZero|AnyCPU'">
-    <DefineConstants>TRACE;BELOWZERO</DefineConstants>
+    <DefineConstants>BZ;BELOWZERO</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <GameDir>$(BelowZeroDir)</GameDir>
+    <OutputPath>$(GameDir)\Qmods\$(Configuration)\$(AssemblyName)\</OutputPath>
     <DataFolder>SubnauticaZero_Data</DataFolder>
+    <SMLHelperFolder>SMLHelper_BZ</SMLHelperFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Subnautica|AnyCPU'">
-    <DefineConstants>TRACE;SUBNAUTICA</DefineConstants>
+    <DefineConstants>SN1;SUBNAUTICA_STABLE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <GameDir>$(SubnauticaDir)</GameDir>
+    <OutputPath>$(GameDir)\Qmods\$(Configuration)\$(AssemblyName)\</OutputPath>
     <DataFolder>Subnautica_Data</DataFolder>
+    <SMLHelperFolder>Modding Helper</SMLHelperFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(GameDir)\BepInEx\core\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="QModInstaller">
-      <HintPath>$(GameDir)\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SMLHelper">
-      <HintPath Condition="'$(Configuration)' == 'Subnautica'">$(GameDir)\QMods\Modding Helper\SMLHelper.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'BelowZero'">$(GameDir)\QMods\SMLHelper_BZ\SMLHelper.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
+  <PropertyGroup>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <LangVersion>latest</LangVersion>
+    <ReferencePath>
+      $(GameDir)\BepInEx\core;$(GameDir)\BepInEx\plugins\QModManager;$(GameDir)\Qmods\$(SMLHelperFolder);$(GameDir)\$(DataFolder)\Managed\publicized_assemblies;$(GameDir)\$(DataFolder)\Managed;$(SolutionDir)\Libs\$(Configuration)
+    </ReferencePath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="AiOFab.cs" />
     <Compile Include="Main.cs" />
@@ -83,6 +65,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)mod_$(ConfigurationName).json" "$(OutDir)mod.json" /y</PostBuildEvent>
+    <PostBuildEvent>echo copy "$(ProjectDir)mod_$(ConfigurationName).json" "$(OutDir)mod.json" /y
+copy "$(ProjectDir)mod_$(ConfigurationName).json" "$(OutDir)mod.json" /y</PostBuildEvent>
   </PropertyGroup>
 </Project>

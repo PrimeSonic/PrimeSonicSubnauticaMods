@@ -21,8 +21,9 @@
     <Optimize>true</Optimize>
     <GameDir>$(BelowZeroDir)</GameDir>
     <DataFolder>SubnauticaZero_Data</DataFolder>
+    <SMLHelper>SMLHelper_BZ</SMLHelper>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Subnautica|AnyCPU'">
@@ -31,8 +32,9 @@
     <Optimize>true</Optimize>
     <GameDir>$(SubnauticaDir)</GameDir>
     <DataFolder>Subnautica_Data</DataFolder>
+    <SMLHelper>Modding Helper</SMLHelper>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
@@ -109,5 +111,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(ProjectDir)mod_$(ConfigurationName).json" "$(OutDir)mod.json" /y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>echo GameDir: $(GameDir)</PreBuildEvent>
   </PropertyGroup>
 </Project>

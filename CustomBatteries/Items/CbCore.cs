@@ -137,7 +137,7 @@
 
             this.EnhanceGameObject?.Invoke(obj);
 
-            gameObject.Set(obj);
+            return obj;
         }
 
 #if SUBNAUTICA

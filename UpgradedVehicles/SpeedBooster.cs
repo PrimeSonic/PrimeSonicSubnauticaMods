@@ -16,8 +16,7 @@
         {
             OnFinishedPatching += () =>
             {
-                VehicleUpgrader.CommonUpgradeModules.Add(this.TechType);
-                VehicleUpgrader.SpeedBoostingModule = this.TechType;
+                VehicleUpgrader.AddSpeedModifier(this.TechType, 1f);
             };
         }
 

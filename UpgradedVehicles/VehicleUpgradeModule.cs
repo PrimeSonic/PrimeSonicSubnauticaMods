@@ -17,7 +17,7 @@ namespace UpgradedVehicles
 
         public sealed override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
         public sealed override TechCategory CategoryForPDA => TechCategory.VehicleUpgrades;
-        protected virtual TechType PrefabTemplate { get; } = TechType.SeamothSonarModule;
+        protected virtual TechType PrefabTemplate { get; } = TechType.VehicleArmorPlating;
         public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
         public override CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
         public override string[] StepsToFabricatorTab => new[] { "CommonModules" };
@@ -25,7 +25,7 @@ namespace UpgradedVehicles
 
         public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(TechType.Fabricator);
+            CoroutineTask<GameObject> task = CraftData.GetPrefabForTechTypeAsync(PrefabTemplate);
             yield return task;
             GameObject prefab = task.GetResult();
             GameObject obj = Object.Instantiate(prefab);

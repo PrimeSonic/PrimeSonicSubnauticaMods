@@ -1,6 +1,7 @@
 ﻿namespace AIOFabricator
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
@@ -9,6 +10,7 @@
     using SMLHelper.V2.Handlers;
     using SMLHelper.V2.Utility;
     using UnityEngine;
+    using UWE;
 #if SUBNAUTICA
     using Sprite = Atlas.Sprite;
     using RecipeData = SMLHelper.V2.Crafting.TechData;
@@ -40,6 +42,7 @@
                    "Multi-fuction fabricator capable of synthesizing most blueprints.")
         {
             OnStartedPatching += LoadImageFiles;
+            OnFinishedPatching += LoadImageFiles;
             OnFinishedPatching += RegisterCraftTreeBasics;
         }
 
@@ -70,7 +73,8 @@
 #if SUBNAUTICA
             RegisterTopLevelVanillaTab(CyclopsFabScheme, "Cyclops Upgrades", TechType.Cyclops);
 #elif BELOWZERO
-            RegisterTopLevelVanillaTab(SeaTruckFabScheme, "SeaTruck Fabricator", TechType.SeaTruck);
+            // The Seatruck Fab is basically a copy of the basic fab, so let's just ignore it.
+            //RegisterTopLevelVanillaTab(SeaTruckFabScheme, "SeaTruck Fabricator", TechType.SeaTruck);
 #endif
 
             this.Root.CraftTreeCreation = CreateCraftingTree;
@@ -110,9 +114,9 @@
                 CloneTabDetails(CyclopsFabScheme, cy, ref langLines, ref group);
                 craftNodes.Add(cy);
 #elif BELOWZERO
-                CraftNode st = CraftTree.SeaTruckFabricatorScheme();
-                CloneTabDetails(SeaTruckFabScheme, st, ref langLines, ref group);
-                craftNodes.Add(st);
+                //CraftNode st = CraftTree.SeaTruckFabricatorScheme();
+                //CloneTabDetails(SeaTruckFabScheme, st, ref langLines, ref group);
+                //craftNodes.Add(st);
 #endif
 
                 CraftNode aioRoot = new CraftNode("Root").AddNode(craftNodes.ToArray());
@@ -161,6 +165,30 @@
             gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
 
             return gObj;
+        }
+
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
+        {
+            TaskResult<GameObject> task = new TaskResult<GameObject>();
+            yield return base.GetGameObjectAsync(task);
+
+            GameObject gObj = task.Get();
+
+            if (texture != null)
+            {
+                // Set the custom texture
+                SkinnedMeshRenderer skinnedMeshRenderer = gObj.GetComponentInChildren<SkinnedMeshRenderer>();
+                skinnedMeshRenderer.material.mainTexture = texture;
+            }
+
+            // Change size
+            Vector3 scale = gObj.transform.localScale;
+            const float factor = 1.25f;
+            gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
+
+            gameObject.Set(gObj);
+            yield break;
+
         }
 
         public override Models Model => Models.Fabricator;
