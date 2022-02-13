@@ -22,7 +22,7 @@
         {
             this.Key = key;
             Definitions = definitions;
-            Properties = new Dictionary<string, EmProperty>(definitions.Count);
+            Properties = new Dictionary<string, EmProperty>(definitions.Count, StringComparer.InvariantCultureIgnoreCase);
 
             foreach (EmProperty property in definitions)
                 Properties[property.Key] = property;
@@ -77,12 +77,12 @@
                         goto default;
                     case SpChar_ValueDelimiter when openParens == 1 && subKey != null: // End of a nested property belonging to this collection
                         buffer.PushToEnd(fullString.PopFromStart());
-                        if (!Properties.ContainsKey(subKey))
-                            Console.WriteLine($"Key Not Found: {subKey} - Current Buffer:{buffer}");
+                        if (!Properties.TryGetValue(subKey, out var property))
+                            throw new EmException($"Unknown key value: '{subKey}'", buffer);
 
-                        Properties[subKey].FromString(buffer.ToString());
+                        property.FromString(buffer.ToString());
                         buffer.Clear();
-                        serialValues += Properties[subKey].ToString();
+                        serialValues += property.ToString();
                         subKey = null;
                         goto default;
                     case SpChar_KeyDelimiter when openParens == 1: // Key to a nested property belonging to this collection
@@ -134,10 +134,10 @@
 
                 foreach (KeyValuePair<string, EmProperty> property in Properties)
                 {
-                    if (!otherTyped.Properties.ContainsKey(property.Key))
+                    if (!otherTyped.Properties.TryGetValue(property.Key, out var otherValue))
                         return false;
 
-                    if (!property.Value.Equals(otherTyped[property.Key]))
+                    if (!property.Value.Equals(otherValue))
                         return false;
                 }
 
