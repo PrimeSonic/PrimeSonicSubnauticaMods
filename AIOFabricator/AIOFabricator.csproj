@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <Import Project="$(SolutionDir)\GameDir.targets" />
     <Import Project="$(SolutionDir)\References.targets" />
 	<PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,9 +15,6 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
-    <CommonDir>C:\Steam\steamapps\common\</CommonDir>
-	<SubnauticaDir>$(CommonDir)\Subnautica\</SubnauticaDir>
-	<BelowZeroDir>$(CommonDir)\SubnauticaZero\</BelowZeroDir>
     <OutputPath>$(SolutionDir)\Qmods\$(Configuration)\$(AssemblyName)\</OutputPath>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
