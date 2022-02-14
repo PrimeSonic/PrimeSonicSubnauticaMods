@@ -16,8 +16,7 @@ namespace UpgradedVehicles
         {
             OnFinishedPatching += () =>
             {
-                VehicleUpgrader.CommonUpgradeModules.Add(this.TechType);
-                VehicleUpgrader.ArmorPlatingModules.Add(this.TechType, ArmorCount);
+                VehicleUpgrader.AddArmourModule(this.TechType, ArmorCount);
             };
         }
 
