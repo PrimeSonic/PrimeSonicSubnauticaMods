@@ -30,7 +30,6 @@
     [HarmonyPatch]
     internal class VehiclePatches
     {
-#if SUBNAUTICA
         [HarmonyPatch(typeof(SeaMoth))]
         [HarmonyPatch(nameof(SeaMoth.Awake))]
         [HarmonyPrefix]
@@ -41,7 +40,7 @@
             vehicleUpgrader.Initialize(ref __instance);
         }
 
-#elif BELOWZERO
+#if BELOWZERO
         [HarmonyPatch(typeof(SeaTruckMotor))]
         [HarmonyPatch(nameof(SeaTruckMotor.Start))]
         [HarmonyPostfix]
@@ -63,7 +62,6 @@
             vehicleUpgrader.Initialize(ref __instance);
         }
 
-#if SUBNAUTICA
         [HarmonyPatch(typeof(SeaMoth))]
         [HarmonyPatch(nameof(SeaMoth.OnUpgradeModuleChange))]
         [HarmonyPriority(Priority.Last)]
@@ -75,7 +73,7 @@
             CoroutineHost.StartCoroutine(DeferUpgrade(__instance, techType));
         }
 
-#elif BELOWZERO
+#if BELOWZERO
         [HarmonyPatch(typeof(SeaTruckUpgrades))]
         [HarmonyPatch(nameof(SeaTruckUpgrades.OnUpgradeModuleChange))]
         [HarmonyPriority(Priority.Last)]

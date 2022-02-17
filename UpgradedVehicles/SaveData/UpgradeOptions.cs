@@ -10,7 +10,6 @@
 
         public bool DebugLogsEnabled => SaveData.DebugLogsEnabled;
 
-#if SUBNAUTICA
         public float SeamothBonusSpeedMultiplier
         {
             get
@@ -30,7 +29,8 @@
                 }
             }
         }
-#elif BELOWZERO
+
+#if BELOWZERO
         public float SeatruckBonusSpeedMultiplier
         {
             get
@@ -72,13 +72,12 @@
             }
         }
 
-#if SUBNAUTICA
         internal int SeamothBonusSpeedIndex
         {
             get => (int)SaveData.SeamothBonusSpeedSetting;
             set => SaveData.SeamothBonusSpeedSetting = (BonusSpeedStyles)value;
         }
-#elif BELOWZERO
+#if BELOWZERO
         internal int SeaTruckBonusSpeedIndex
         {
             get => (int)SaveData.SeaTruckBonusSpeedSetting;
@@ -106,9 +105,8 @@
 
         public override void BuildModOptions()
         {
-#if SUBNAUTICA
             AddChoiceOption(ConfigSaveData.SeamothBonusSpeedID, "Seamoth Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.SeamothBonusSpeedIndex);
-#elif BELOWZERO
+#if BELOWZERO
             AddChoiceOption(ConfigSaveData.SeamothBonusSpeedID, "SeaTruck Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.SeaTruckBonusSpeedIndex);
 #endif
             AddChoiceOption(ConfigSaveData.ExosuitBonusSpeedID, "Prawn Suit Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.ExosuitBonusSpeedIndex);
@@ -118,12 +116,11 @@
         {
             switch (args.Id)
             {
-#if SUBNAUTICA
                 case ConfigSaveData.SeamothBonusSpeedID:
                     this.SeamothBonusSpeedIndex = args.Index;
                     break;
 
-#elif BELOWZERO
+#if BELOWZERO
                 case ConfigSaveData.SeaTruckBonusSpeedID:
                     this.SeaTruckBonusSpeedIndex = args.Index;
                     break;

@@ -120,9 +120,8 @@
 
         internal static void SetBonusSpeedMultipliers(IUpgradeOptions upgradeOptions)
         {
-#if SUBNAUTICA
             _seamothBonusSpeedMultiplier = upgradeOptions.SeamothBonusSpeedMultiplier;
-#elif BELOWZERO
+#if BELOWZERO
             _seatruckBonusSpeedMultiplier = upgradeOptions.SeatruckBonusSpeedMultiplier;
 #endif
             _exosuitBonusSpeedMultiplier = upgradeOptions.ExosuitBonusSpeedMultiplier;
@@ -200,7 +199,7 @@
         public int DepthIndex { get; private set; } = -1;
         public float SpeedMultiplier { get; private set; } = 1f;
         public float EfficiencyPenalty { get; private set; } = 1f;
-        public float EfficientyBonus { get; private set; } = 1f;
+        public float EfficiencyBonus { get; private set; } = 1f;
         public float GeneralArmorFraction { get; private set; } = 1f;
         public float ImpactArmorFraction { get; private set; } = 1f;
         public float PowerRating { get; private set; } = 1f;
@@ -384,7 +383,7 @@
             //        8       900%    915%    930%    945%    960%    975%
             //        9       1000%   1015%   1030%   1045%   1060%   1075%
 
-            return this.EfficientyBonus = 1f + powerModuleCount + this.DepthIndex * 0.15f;
+            return this.EfficiencyBonus = 1f + powerModuleCount + this.DepthIndex * 0.15f;
         }
 
         /// <summary>
@@ -590,18 +589,20 @@
             {
                 float speedBoosterCount = 0f;
                 float powerModuleValue = 0f;
+                float powerPenaltyValue = 0f;
 
                 foreach (var kvp in VehicleEfficiencyBonuses)
                 {
                     powerModuleValue += this.UpgradeModules.GetCount(kvp.Key) * kvp.Value;
                 }
 
-                foreach (var kvp in VehicleEfficiencyPenalties)
+                foreach (var kvp in SpeedBoostingModules)
                 {
                     speedBoosterCount += this.UpgradeModules.GetCount(kvp.Key) * kvp.Value;
+                    powerPenaltyValue += VehicleEfficiencyPenalties.GetOrDefault(kvp.Key, 0f);
                 }
 
-                UpdatePowerRating(speedBoosterCount, powerModuleValue);
+                UpdatePowerRating(powerPenaltyValue, powerModuleValue);
 
                 if (updateSpeed) // Speed
                 {

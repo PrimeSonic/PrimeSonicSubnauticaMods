@@ -61,7 +61,6 @@
 
         public static void CrossModUpdates()
         {
-#if SUBNAUTICA
             QuickLogger.Info("Checking if MoreSeamothDepth mod is present");
 
             IQMod moreSeamothDepth = QModServices.Main.FindModById("MoreSeamothDepth");
@@ -74,19 +73,20 @@
                 VehicleUpgrader.AddDepthModule(vehicleHullModule4, 4, VehicleUpgrader.EVehicleType.Seamoth);
                 VehicleUpgrader.AddDepthModule(vehicleHullModule5, 5, VehicleUpgrader.EVehicleType.Seamoth);
             }
-#elif BELOWZERO
+
+#if BELOWZERO
             QuickLogger.Info("Checking if SeaTruckDepthUpgrades mod is present");
 
-            IQMod moreSeamothDepth = QModServices.Main.FindModById("SeaTruckDepthUpgrades");
-            if (moreSeamothDepth != null &&
-                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK4", out TechType vehicleHullModule4) &&
-                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK5", out TechType vehicleHullModule5) &&
-                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK6", out TechType vehicleHullModule6))
+            IQMod moreSeatruckDepth = QModServices.Main.FindModById("SeaTruckDepthUpgrades");
+            if (moreSeatruckDepth != null &&
+                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK4", out TechType seaTruckHull4) &&
+                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK5", out TechType seaTruckHull5) &&
+                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK6", out TechType seaTruckHull6))
             {
                 QuickLogger.Info("Detected SeaTruck Depth Modules Mk4, Mk5 and Mk6");
-                VehicleUpgrader.AddDepthModule(vehicleHullModule4, 4, VehicleUpgrader.EVehicleType.Seatruck);
-                VehicleUpgrader.AddDepthModule(vehicleHullModule5, 5, VehicleUpgrader.EVehicleType.Seatruck);
-                VehicleUpgrader.AddDepthModule(vehicleHullModule6, 6, VehicleUpgrader.EVehicleType.Seatruck);
+                VehicleUpgrader.AddDepthModule(seaTruckHull4, 4, VehicleUpgrader.EVehicleType.Seatruck);
+                VehicleUpgrader.AddDepthModule(seaTruckHull5, 5, VehicleUpgrader.EVehicleType.Seatruck);
+                VehicleUpgrader.AddDepthModule(seaTruckHull6, 6, VehicleUpgrader.EVehicleType.Seatruck);
             }
 
             IQMod seatruckSpeed = QModServices.Main.FindModById("SeaTruckSpeedUpgrades");

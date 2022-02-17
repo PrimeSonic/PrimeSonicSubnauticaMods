@@ -29,14 +29,13 @@
 
         internal bool ValidDataRead = true;
 
-#if SUBNAUTICA
         internal BonusSpeedStyles SeamothBonusSpeedSetting
         {
             get => EmSeamothBonus.HasValue ? EmSeamothBonus.Value : BonusSpeedStyles.Normal;
             set => EmSeamothBonus.Value = value;
         }
 
-#elif BELOWZERO
+#if BELOWZERO
         internal BonusSpeedStyles SeaTruckBonusSpeedSetting
         {
             get => EmSeaTruckBonus.HasValue ? EmSeaTruckBonus.Value : BonusSpeedStyles.Normal;
@@ -56,9 +55,8 @@
             set => EmDebugLogs.Value = value;
         }
 
-#if SUBNAUTICA
         private readonly EmProperty<BonusSpeedStyles> EmSeamothBonus;
-#elif BELOWZERO
+#if BELOWZERO
         private readonly EmProperty<BonusSpeedStyles> EmSeaTruckBonus;
 #endif
         private readonly EmProperty<BonusSpeedStyles> EmExosuitBonus;
@@ -66,9 +64,8 @@
 
         private static ICollection<EmProperty> SaveDataDefinitions => new List<EmProperty>()
         {
-#if SUBNAUTICA
             new EmProperty<BonusSpeedStyles>(SeamothBonusSpeedID, BonusSpeedStyles.Normal),
-#elif BELOWZERO
+#if BELOWZERO
             new EmProperty<BonusSpeedStyles>(SeaTruckBonusSpeedID, BonusSpeedStyles.Normal),
 #endif
             new EmProperty<BonusSpeedStyles>(ExosuitBonusSpeedID, BonusSpeedStyles.Normal),
@@ -77,9 +74,8 @@
 
         public ConfigSaveData() : base(ConfigKey, SaveDataDefinitions)
         {
-#if SUBNAUTICA
             EmSeamothBonus = (EmProperty<BonusSpeedStyles>)Properties[SeamothBonusSpeedID];
-#elif BELOWZERO
+#if BELOWZERO
             EmSeaTruckBonus = (EmProperty<BonusSpeedStyles>)Properties[SeaTruckBonusSpeedID];
 #endif
             EmExosuitBonus = (EmProperty<BonusSpeedStyles>)Properties[ExosuitBonusSpeedID];
@@ -93,8 +89,9 @@
         {
             this.SeamothBonusSpeedSetting = seamothSpeed;
 #elif BELOWZERO
-        public ConfigSaveData(BonusSpeedStyles seaTruckSpeed, BonusSpeedStyles exosuitSpeed) : this()
+        public ConfigSaveData(BonusSpeedStyles seamothSpeed, BonusSpeedStyles seaTruckSpeed, BonusSpeedStyles exosuitSpeed) : this()
         {
+            this.SeamothBonusSpeedSetting = seamothSpeed;
             this.SeaTruckBonusSpeedSetting = seaTruckSpeed;
 #endif
             this.ExosuitBonusSpeedSetting = exosuitSpeed;
@@ -103,7 +100,6 @@
         private void IsReadDataValid()
         {
             ValidDataRead = true;
-#if SUBNAUTICA
             switch (this.SeamothBonusSpeedSetting)
             {
                 case BonusSpeedStyles.Disabled:
@@ -116,7 +112,7 @@
                     break;
             }
 
-#elif BELOWZERO
+#if BELOWZERO
             switch (this.SeaTruckBonusSpeedSetting)
             {
                 case BonusSpeedStyles.Disabled:
@@ -147,9 +143,8 @@
         internal override EmProperty Copy()
         {
             return new ConfigSaveData(
-#if SUBNAUTICA
             this.SeamothBonusSpeedSetting,
-#elif BELOWZERO
+#if BELOWZERO
             this.SeaTruckBonusSpeedSetting,
 #endif
             this.ExosuitBonusSpeedSetting);
