@@ -41,7 +41,6 @@
                    "All-In-One Fabricator",
                    "Multi-fuction fabricator capable of synthesizing most blueprints.")
         {
-            OnStartedPatching += LoadImageFiles;
             OnFinishedPatching += LoadImageFiles;
             OnFinishedPatching += RegisterCraftTreeBasics;
         }

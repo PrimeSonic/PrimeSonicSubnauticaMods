@@ -78,7 +78,7 @@
         // Added during patching
         public static readonly Dictionary<TechType, float> SpeedBoostingModules = new();
 
-        private static readonly IDictionary<TechType, int> SeamothDepthModules = new Dictionary<TechType, int>()
+        private static readonly Dictionary<TechType, int> SeamothDepthModules = new Dictionary<TechType, int>()
         {
             { TechType.VehicleHullModule3, 3 },
             { TechType.VehicleHullModule2, 2 },
@@ -86,7 +86,7 @@
             // Depth Modules Mk4 and Mk5 optionaly added during patching
         };
 
-        private static readonly IDictionary<TechType, int> SeaTruckDepthModules = new Dictionary<TechType, int>()
+        private static readonly Dictionary<TechType, int> SeaTruckDepthModules = new Dictionary<TechType, int>()
         {
 #if BELOWZERO
             { TechType.SeaTruckUpgradeHull3, 3 },
@@ -237,7 +237,7 @@
         /// <summary>
         /// Add the specified TechType as a speed booster, with the specified strength
         /// </summary>
-        public static bool AddSpeedModifier(TechType module, float value, float efficiencyValue = 0f, bool bForce = false)
+        public static bool AddSpeedModifier(TechType module, float value, float efficiencyValue, bool bForce = false)
         {
             if (SpeedBoostingModules.ContainsKey(module) && !bForce)
                 return false;
@@ -324,8 +324,6 @@
 #elif BELOWZERO
             if (SeaTruckSpeedManager != null)
             {
-                SennaSpeedMultiplier = 1f;
-
                 foreach (KeyValuePair<TechType, float> armorModule in SpeedManagerAccelerations)
                 {
                     TechType techType = armorModule.Key;
@@ -348,7 +346,7 @@
         /// <summary>
         /// Calculates the engine efficiency penalty based off the number of speed modules and the current depth index.
         /// </summary>
-        private float GetEfficiencyPentalty(float speedBoosterCount)
+        private float GetEfficiencyPenalty(float speedBoosterCount)
         {
             //  Speed Modules
             //    0    100%
@@ -503,17 +501,21 @@
                 return -1; // Missing UpgradeModules, cannot calculate
 
             int max = 0;
+            IDictionary<TechType, int> moduleCollection = null;
             switch (this.currentVehicleType)
             {
                 case EVehicleType.Exosuit:
-                    if (this.UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
+                    moduleCollection = ExosuitDepthModules;
+                    // Commenting out, rather than deleting, while this change is tested
+                    /*if (this.UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
                         max = 2;
                     else if (this.UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
-                        max = 1;
+                        max = 1;*/
                     break;
 
                 case EVehicleType.Seamoth:
-                    foreach (KeyValuePair<TechType, int> seamothDepth in SeamothDepthModules)
+                    moduleCollection = SeamothDepthModules;
+                    /*foreach (KeyValuePair<TechType, int> seamothDepth in SeamothDepthModules)
                     {
                         TechType techType = seamothDepth.Key;
                         if (this.UpgradeModules.GetCount(techType) > 0)
@@ -521,12 +523,13 @@
                             int depthIndex = seamothDepth.Value;
                             max = Math.Max(max, depthIndex);
                         }
-                    }
+                    }*/
                     break;
 
 #if BELOWZERO
                 case EVehicleType.Seatruck:
-                    foreach (KeyValuePair<TechType, int> seaTruckDepth in SeaTruckDepthModules)
+                    moduleCollection = SeaTruckDepthModules;
+                    /*foreach (KeyValuePair<TechType, int> seaTruckDepth in SeaTruckDepthModules)
                     {
                         TechType tt = seaTruckDepth.Key;
                         if (this.UpgradeModules.GetCount(tt) > 0)
@@ -534,10 +537,21 @@
                             int depthIndex = seaTruckDepth.Value;
                             max = Math.Max(max, depthIndex);
                         }
-                    }
+                    }*/
                     break;
 #endif
             }
+
+            foreach (KeyValuePair<TechType, int> depth in moduleCollection)
+            {
+                TechType tt = depth.Key;
+                if (this.UpgradeModules.GetCount(tt) > 0)
+                {
+                    int depthIndex = depth.Value;
+                    max = Math.Max(max, depthIndex);
+                }
+            }
+
 
             return max;
         }
@@ -598,8 +612,9 @@
 
                 foreach (var kvp in SpeedBoostingModules)
                 {
-                    speedBoosterCount += this.UpgradeModules.GetCount(kvp.Key) * kvp.Value;
-                    powerPenaltyValue += VehicleEfficiencyPenalties.GetOrDefault(kvp.Key, 0f);
+                    int count = this.UpgradeModules.GetCount(kvp.Key);
+                    speedBoosterCount += count * kvp.Value;
+                    powerPenaltyValue += count * VehicleEfficiencyPenalties.GetOrDefault(kvp.Key, 0f);
                 }
 
                 UpdatePowerRating(powerPenaltyValue, powerModuleValue);
@@ -642,7 +657,7 @@
 
         private void UpdatePowerRating(float speedBoosterCount, float powerModuleValue)
         {
-            this.PowerRating = GetEfficiencyBonus(powerModuleValue) / GetEfficiencyPentalty(speedBoosterCount);
+            this.PowerRating = GetEfficiencyBonus(powerModuleValue) / GetEfficiencyPenalty(speedBoosterCount);
 
             if (ParentVehicle is Vehicle v)
             {

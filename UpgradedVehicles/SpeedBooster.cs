@@ -16,7 +16,7 @@
         {
             OnFinishedPatching += () =>
             {
-                VehicleUpgrader.AddSpeedModifier(this.TechType, 1f);
+                VehicleUpgrader.AddSpeedModifier(this.TechType, 1f, 1f);
             };
         }
 

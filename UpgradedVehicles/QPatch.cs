@@ -96,9 +96,9 @@
                 && TechTypeHandler.TryGetModdedTechType("SeaTruckSpeedMK3", out TechType speedMk3))
             {
                 QuickLogger.Info("Detected Seatruck Speed Modules Mk1, Mk2 and Mk3");
-                VehicleUpgrader.AddSpeedModifier(speedMk1, 1f);
-                VehicleUpgrader.AddSpeedModifier(speedMk2, 2f);
-                VehicleUpgrader.AddSpeedModifier(speedMk3, 3f);
+                VehicleUpgrader.AddSpeedModifier(speedMk1, 1f, 0f);
+                VehicleUpgrader.AddSpeedModifier(speedMk2, 2f, 0f);
+                VehicleUpgrader.AddSpeedModifier(speedMk3, 3f, 0f);
             }
 
             IQMod seatruckArmour = QModServices.Main.FindModById("SeaTruckArmorUpgrades");
