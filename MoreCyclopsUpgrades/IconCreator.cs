@@ -49,7 +49,7 @@
             return canvas;
         }
 
-        internal static PowerIndicatorIcon CreatePowerIndicatorIcon(Canvas canvas, float xoffset, float yoffset, float zoffset, float scale)
+        internal static IndicatorIcon CreatePowerIndicatorIcon(Canvas canvas, float xoffset, float yoffset, float zoffset, float scale)
         {
             var iconGo = new GameObject("IconGo", typeof(RectTransform));
             iconGo.transform.SetParent(canvas.transform, false);
@@ -78,7 +78,7 @@
             rectTransform.localScale = Vector3.one;
             rectTransform.anchoredPosition3D = Vector3.zero;
             rectTransform.anchoredPosition += new Vector2(0f, -15f);
-            return new PowerIndicatorIcon(icon, text);
+            return new IndicatorIcon(icon, text);
         }
     }
 }

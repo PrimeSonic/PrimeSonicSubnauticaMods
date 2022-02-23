@@ -85,6 +85,7 @@
 
         internal void InitializeChargers()
         {
+            TooLateToRegister = true;
             QuickLogger.Debug("ChargeManager Initializing CyclopsChargers from external mods");
 
             // First, register chargers from other mods.
@@ -101,6 +102,7 @@
                 else if (!KnownChargers.ContainsKey(chargerTemplate.ChargerName))
                 {
                     KnownChargers.Add(chargerTemplate.ChargerName, charger);
+                    CyclopsHUDManager.StatusIcons.Add(charger);
                     QuickLogger.Debug($"Created CyclopsCharger '{chargerTemplate.ChargerName}'");
                 }
                 else
@@ -115,7 +117,9 @@
             if (requiresVanillaCharging)
             {
                 QuickLogger.Debug("Vanilla thermal reactor charging handled internally");
-                KnownChargers.Add(nameof(VanillaThermalChargeManager), new VanillaThermalChargeManager(Cyclops));
+                var vanillaThermalCharger = new VanillaThermalChargeManager(Cyclops);
+                KnownChargers.Add(nameof(VanillaThermalChargeManager), vanillaThermalCharger);
+                CyclopsHUDManager.StatusIcons.Add(vanillaThermalCharger);
                 MCUServices.Register.PdaIconOverlay(TechType.CyclopsThermalReactorModule,
                     (uGUI_ItemIcon icon, InventoryItem upgradeModule) => new VanillaThermalPdaOverlay(icon, upgradeModule));
             }
@@ -127,7 +131,6 @@
                 this.Chargers[c++] = charger;
 
             initialized = true;
-            TooLateToRegister = true;
         }
 
         /// <summary>

@@ -9,6 +9,7 @@
     using MoreCyclopsUpgrades.API.Charging;
     using MoreCyclopsUpgrades.API.General;
     using MoreCyclopsUpgrades.API.PDA;
+    using MoreCyclopsUpgrades.API.StatusIcons;
     using MoreCyclopsUpgrades.API.Upgrades;
     using MoreCyclopsUpgrades.Managers;
 
@@ -193,7 +194,7 @@
         /// Registers a <see cref="CreateUpgradeHandler" /> method that creates a new <see cref="UpgradeHandler" /> on demand.<para />
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
-        /// <param name="createEvent">A method that takes no parameters a returns a new instance of an <see cref="UpgradeHandler" />.</param>
+        /// <param name="createEvent">A method that takes a <see cref="SubRoot"/> parameter a returns a new instance of an <see cref="UpgradeHandler" />.</param>
         public void CyclopsUpgradeHandler(CreateUpgradeHandler createEvent)
         {
             if (UpgradeManager.TooLateToRegister)
@@ -203,7 +204,7 @@
         }
 
         /// <summary>
-        /// Registers a <see cref="CreateUpgradeHandler" /> class can create a new <see cref="UpgradeHandler" /> on demand.<para />
+        /// Registers a <see cref="IUpgradeHandlerCreator" /> class can create a new <see cref="UpgradeHandler" /> on demand.<para />
         /// This method will be invoked only once for each Cyclops sub in the game world.
         /// </summary>
         /// <param name="handlerCreator">A class that implements this <see cref="IUpgradeHandlerCreator.CreateUpgradeHandler(SubRoot)" /> method.</param>
@@ -213,6 +214,32 @@
                 QuickLogger.Error("UpgradeHandlerCreators have already been invoked. This method should only be called during patch time.");
             else
                 UpgradeManager.RegisterHandlerCreator(handlerCreator.CreateUpgradeHandler, Assembly.GetCallingAssembly().GetName().Name);
+        }
+
+        /// <summary>
+        /// Registers a <see cref="CyclopsStatusIconCreator"/> method that creates a new <see cref="StatusIcons.CyclopsStatusIcon"/> on demand.<para/>
+        /// This method will be invoked only once for each Cyclops sub in the game world.
+        /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="StatusIcons.CyclopsStatusIcon"/>.</typeparam>
+        /// <param name="createEvent">A method that takes a <see cref="SubRoot"/> parameter a returns a new instance of <see langword="abstract"/><see cref="StatusIcons.CyclopsStatusIcon"/>.</param>
+        public void CyclopsStatusIcon<T>(CyclopsStatusIconCreator createEvent)
+            where T : CyclopsStatusIcon
+        {
+            if (CyclopsHUDManager.TooLateToRegister)
+                QuickLogger.Error("CyclopsStatusIconCreator have already been invoked. This method should only be called during patch time.");
+            else
+                CyclopsHUDManager.RegisterStatusIconCreator(createEvent, typeof(T).Name);
+        }
+
+        /// <summary>
+        /// Registers a <see cref="ICyclopsStatusIconCreator"/> class that creates a new <see cref="StatusIcons.CyclopsStatusIcon"/> on demand.<para/>
+        /// This method will be invoked only once for each Cyclops sub in the game world.
+        /// </summary>
+        /// <typeparam name="T">Your class that implements <see cref="StatusIcons.CyclopsStatusIcon"/>.</typeparam>
+        public void CyclopsStatusIcon<T>(ICyclopsStatusIconCreator statusIconCreator)
+            where T : CyclopsStatusIcon
+        {
+            CyclopsStatusIcon<T>(statusIconCreator.CreateCyclopsStatusIcon);
         }
 
         /// <summary>
