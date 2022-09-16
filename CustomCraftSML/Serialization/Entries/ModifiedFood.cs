@@ -17,7 +17,7 @@
         internal static readonly string[] ModifiedFoodTutorial = new[]
         {
             $"{ModifiedFoodList.ListKey}: Modify the food and water values of an existing food item.",
-            $"    For use with existing recipies or recipies added by other mods.",
+            $"    For use with existing food items or ones added by other mods.",
             $"        {FoodKey}: Defines how much food the user will gain on consumption.",
             $"            Must be between {MinValue} and {MaxValue}.",
             $"        {WaterKey}: Defines how much water the user will gain on consumption.",
