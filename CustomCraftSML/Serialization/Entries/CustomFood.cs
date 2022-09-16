@@ -250,7 +250,7 @@
 
             if (this.WaterValue == 0 & this.FoodValue == 0)
             {
-                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' must have at least one non-zero value for either {FoodKey} or {WaterKey}. Entry will be discarded.");
+                QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} must have at least one non-zero value for either {FoodKey} or {WaterKey}. Entry will be discarded.");
                 return false;
             }
 

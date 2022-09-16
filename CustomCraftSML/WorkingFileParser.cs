@@ -19,6 +19,7 @@
         private static readonly ParsingPackage<AliasRecipe, AliasRecipeList> AliasRecipes = new ParsingPackage<AliasRecipe, AliasRecipeList>(AliasRecipeList.ListKey);
         private static readonly ParsingPackage<CustomFabricator, CustomFabricatorList> CustomFabricators = new ParsingPackage<CustomFabricator, CustomFabricatorList>(CustomFabricatorList.ListKey);
         private static readonly ParsingPackage<ModifiedRecipe, ModifiedRecipeList> ModifiedRecipes = new ParsingPackage<ModifiedRecipe, ModifiedRecipeList>(ModifiedRecipeList.ListKey);
+        private static readonly ParsingPackage<ModifiedFood, ModifiedFoodList> ModifiedFoods = new ParsingPackage<ModifiedFood, ModifiedFoodList>(ModifiedFoodList.ListKey);
         private static readonly ParsingPackage<CustomSize, CustomSizeList> CustomSizes = new ParsingPackage<CustomSize, CustomSizeList>(CustomSizeList.ListKey);
         private static readonly ParsingPackage<CustomBioFuel, CustomBioFuelList> CustomBioFuels = new ParsingPackage<CustomBioFuel, CustomBioFuelList>(CustomBioFuelList.ListKey);
         private static readonly ParsingPackage<CustomFragmentCount, CustomFragmentCountList> CustomFragCounts = new ParsingPackage<CustomFragmentCount, CustomFragmentCountList>(CustomFragmentCountList.ListKey);
@@ -31,6 +32,7 @@
             AddedRecipes,
             AliasRecipes,
             ModifiedRecipes,
+            ModifiedFoods,
             CustomFoods,
             MovedRecipes,
             CustomFragCounts,
