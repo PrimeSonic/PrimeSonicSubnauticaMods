@@ -306,7 +306,7 @@
             tutorialLines.Add(HorizontalLine);
             tutorialLines.Add("As of version 1.2, file names no longer matter. All files in the WorkingFiles folder will be read and parsed into the game. So name them however you want.");
             tutorialLines.Add("If you want to be able to easily sahre your custom crafts with others, make sure to chose unique names for your files.");
-            tutorialLines.Add("Remember: For now, each file can only contain one type of entry. The valid entry types are: MovedRecipes, CustomSizes, CustomBioFuels, CustomCraftingTabs, ModifiedRecipes, AddedRecipes, AliasRecipe.");
+            tutorialLines.Add("Remember: For now, each file can only contain one type of entry. The valid entry types are: MovedRecipes, CustomSizes, CustomBioFuels, CustomFoods, CustomFabricators, CustomCraftingTabs, ModifiedRecipes, ModifiedFoods, AddedRecipes, AliasRecipe.");
             tutorialLines.Add(Environment.NewLine);
         }
 

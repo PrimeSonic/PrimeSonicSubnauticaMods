@@ -72,13 +72,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\ICustomFood.cs" />
+    <Compile Include="Interfaces\IModifiedFood.cs" />
     <Compile Include="Serialization\Components\EmColor.cs" />
     <Compile Include="Serialization\CraftTreePath.cs" />
     <Compile Include="Serialization\CustomCraft2Config.cs" />
     <Compile Include="Serialization\Entries\CfCustomFood.cs" />
     <Compile Include="Serialization\Entries\CustomFood.cs" />
     <Compile Include="FoodModel.cs" />
+    <Compile Include="Serialization\Entries\ModifiedFood.cs" />
     <Compile Include="Serialization\Lists\CustomFoodList.cs" />
+    <Compile Include="Serialization\Lists\ModifiedFoodList.cs" />
     <Compile Include="SMLHelperItems\CustomFabricatorBuildable.cs" />
     <Compile Include="FileLocations.cs" />
     <Compile Include="SMLHelperItems\CustomFoodPrefab.cs" />
@@ -137,6 +140,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="SampleFiles\AddedRecipes_Samples.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SampleFiles\ModifiedFoods_Samplefile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SampleFiles\CustomSizes_Samples.txt">

@@ -1,0 +1,10 @@
+ModifiedFoods:
+(
+    ItemID: Peeper;
+    FoodValue:20;
+    WaterValue:-5;
+),
+(
+    ItemID: FilteredWater;
+    WaterValue:50;
+);
