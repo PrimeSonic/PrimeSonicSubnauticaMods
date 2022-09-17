@@ -22,5 +22,4 @@ CustomFoods:
     FoodValue:20;
     WaterValue:11;
     ForceUnlockAtStart: YES;
-),
-
+);
