@@ -12,7 +12,7 @@
 
     internal class ModifiedFood : EmTechTyped, IModifiedFood, ICustomCraft
     {
-        public string[] TutorialText { get; }
+        public string[] TutorialText => ModifiedFoodTutorial;
 
         internal static readonly string[] ModifiedFoodTutorial = new[]
         {
@@ -47,7 +47,7 @@
             set => waterValue.Value = value;
         }
 
-        protected static List<EmProperty> ModifiedFoodProperties => new List<EmProperty>
+        protected static List<EmProperty> ModifiedFoodProperties => new List<EmProperty>(TechTypedProperties)
         {
             new EmProperty<short>(FoodKey, 0) { Optional = true },
             new EmProperty<short>(WaterKey, 0) { Optional = true },
