@@ -75,7 +75,7 @@
                 return false;
             }
 
-            if (this.WaterValue < MinValue || this.FoodValue > MaxValue)
+            if (this.WaterValue < MinValue || this.WaterValue > MaxValue)
             {
                 QuickLogger.Warning($"{this.Key} entry '{this.ItemID}' from {this.Origin} has {WaterKey} values out of range. Must be between {MinValue} and {MaxValue}. Entry will be discarded.");
                 return false;
