@@ -2,13 +2,47 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using Common;
+    using SMLHelper.V2.Handlers;
     using UnityEngine;
     using UpgradedVehicles.SaveData;
 
     public class VehicleUpgrader : MonoBehaviour
     {
-        internal static readonly ICollection<TechType> CommonUpgradeModules = new List<TechType>()
+#if BELOWZERO
+        private static Type SeaTruckSpeedManager => Type.GetType("SeaTruckSpeedUpgrades.SeaTruckSpeedManager,SeaTruckSpeedUpgrades", false, false);
+        
+        // Going for the private field rather than the public property, because the private field is static and the public property isn't
+        private static FieldInfo SpeedManagerAccelerationsInfo => SeaTruckSpeedManager?.GetField("accelerations", BindingFlags.NonPublic | BindingFlags.Static);
+        private static Dictionary<TechType, float> _speedManagerAccelerations;
+
+        private static Dictionary<TechType, float> SpeedManagerAccelerations
+        {
+            get
+            {
+                if (_speedManagerAccelerations == null)
+                {
+                    if (SeaTruckSpeedManager != null)
+                        _speedManagerAccelerations = (Dictionary<TechType, float>)(SpeedManagerAccelerationsInfo.GetValue(null));
+                }
+
+                return _speedManagerAccelerations;
+            }
+        }
+#endif
+
+        private static readonly Dictionary<TechType, float> VehicleEfficiencyBonuses = new Dictionary<TechType, float>()
+        {
+#if BELOWZERO
+            { TechType.SeaTruckUpgradeEnergyEfficiency, 1f },
+#endif
+            { TechType.VehiclePowerUpgradeModule, 1f }
+        };
+
+        private static readonly Dictionary<TechType, float> VehicleEfficiencyPenalties = new Dictionary<TechType, float>();
+
+        private static readonly HashSet<TechType> CommonUpgradeModules = new HashSet<TechType>()
         {
             TechType.ExoHullModule2,
             TechType.ExoHullModule1,
@@ -17,21 +51,34 @@
             TechType.VehicleHullModule1,
             TechType.VehiclePowerUpgradeModule,
             TechType.VehicleArmorPlating,
+
+
             // SpeedBooster added during patching
             // HullArmorUpgrades added during patching
             // Mk4 and Mk5 Seamoth depth modules optionally added during patching
+#if BELOWZERO
+            TechType.SeaTruckUpgradeHull3,
+            TechType.SeaTruckUpgradeHull2,
+            TechType.SeaTruckUpgradeHull1,
+#endif
         };
 
-        internal static readonly IDictionary<TechType, int> ArmorPlatingModules = new Dictionary<TechType, int>()
+        //internal static readonly IDictionary<TechType, int> ArmorPlatingModules = new Dictionary<TechType, int>()
+        private static readonly IDictionary<TechType, int> ArmorPlatingModules = new Dictionary<TechType, int>()
         {
             { TechType.VehicleArmorPlating, 1 }
             // HullArmorUpgrades added during patching
         };
 
-        // Added during patching
-        internal static TechType SpeedBoostingModule;
+#if BELOWZERO
+        // These are only used for calculating impact damage, as Senna's mod already accounts for non-impact damage.
+        private static readonly IDictionary<TechType, int> SeatruckArmourModules = new Dictionary<TechType, int>();
+#endif
 
-        internal static IDictionary<TechType, int> SeamothDepthModules = new Dictionary<TechType, int>()
+        // Added during patching
+        public static readonly Dictionary<TechType, float> SpeedBoostingModules = new();
+
+        private static readonly Dictionary<TechType, int> SeamothDepthModules = new Dictionary<TechType, int>()
         {
             { TechType.VehicleHullModule3, 3 },
             { TechType.VehicleHullModule2, 2 },
@@ -39,48 +86,205 @@
             // Depth Modules Mk4 and Mk5 optionaly added during patching
         };
 
-        internal static ICollection<TechType> DepthUpgradeModules = new List<TechType>
+        private static readonly Dictionary<TechType, int> SeaTruckDepthModules = new Dictionary<TechType, int>()
+        {
+#if BELOWZERO
+            { TechType.SeaTruckUpgradeHull3, 3 },
+            { TechType.SeaTruckUpgradeHull2, 2 },
+            { TechType.SeaTruckUpgradeHull1, 1 },
+            // As with the Seamoth, Mk4, Mk5 and Mk6 are added during patching if necessary
+#endif
+        };
+
+        // This isn't used for much right now, but it opens the way for expanded Exosuit hull modules
+        private static readonly Dictionary<TechType, int> ExosuitDepthModules = new()
+        {
+            { TechType.ExoHullModule2, 2 },
+            { TechType.ExoHullModule1, 1 },
+        };
+
+        private static readonly HashSet<TechType> DepthUpgradeModules = new HashSet<TechType>
         {
             TechType.ExoHullModule2,
             TechType.ExoHullModule1,
             TechType.VehicleHullModule3,
             TechType.VehicleHullModule2,
-            TechType.VehicleHullModule1
+            TechType.VehicleHullModule1,
             // Depth Modules Mk4 and Mk5 optionaly added during patching
+#if BELOWZERO
+            TechType.SeaTruckUpgradeHull3,
+            TechType.SeaTruckUpgradeHull2,
+            TechType.SeaTruckUpgradeHull1,
+#endif
         };
 
         internal static void SetBonusSpeedMultipliers(IUpgradeOptions upgradeOptions)
         {
             _seamothBonusSpeedMultiplier = upgradeOptions.SeamothBonusSpeedMultiplier;
+#if BELOWZERO
+            _seatruckBonusSpeedMultiplier = upgradeOptions.SeatruckBonusSpeedMultiplier;
+#endif
             _exosuitBonusSpeedMultiplier = upgradeOptions.ExosuitBonusSpeedMultiplier;
         }
 
         // Original values from the Vehicle class
         private const float BaseSeamothSpeed = 11.5f;
+#if SUBNAUTICA
         private const float BaseExosuitSwimSpeed = 6f;
+#elif BELOWZERO
+        private const float BaseExosuitSwimSpeed = 8.2f;
+#endif
         private const float BaseExosuitWalkSpeed = 4f;
+        private const float BaseSeaTruckAcceleration = 17.5f;
 
-        private Vehicle ParentVehicle = null;
-        private Equipment UpgradeModules => ParentVehicle.modules;
+        private MonoBehaviour _vehicle = null;
+        public MonoBehaviour ParentVehicle
+        {
+            get
+            {
+                return _vehicle;
+            }
+            set
+            {
+                if (value is Vehicle)
+                    _vehicle = value;
+#if BELOWZERO
+                else if (value is SeaTruckMotor stm && stm.truckSegment != null && stm.truckSegment.isMainCab)
+                    _vehicle = value;
+#endif
+            }
+        }
+        private Equipment _modules = null;
+        public Equipment UpgradeModules
+        {
+            get
+            {
+                if (_modules == null)
+                {
+                    if (_vehicle is Vehicle v)
+                        _modules = v.modules;
+#if BELOWZERO
+                    else if (_vehicle is SeaTruckMotor stm)
+                        _modules = stm.upgrades?.modules;
+#endif
+                }
+
+                return _modules;
+            }
+        }
 
         private DealDamageOnImpact _dmgOnImpact;
         private DealDamageOnImpact DmgOnImpact => _dmgOnImpact ?? (_dmgOnImpact = ParentVehicle.GetComponent<DealDamageOnImpact>());
 
-        private bool IsSeamoth = false;
-        private bool IsExosuit = false;
-        internal float GeneralDamageReduction { get; private set; } = 1f;
+        public enum EVehicleType
+        {
+            None,
+            Seamoth,
+            Exosuit,
+            Seatruck
+        }
+
+        protected EVehicleType currentVehicleType;
+
+        //private bool IsSeamoth = false;
+        //private bool IsExosuit = false;
+        public float GeneralDamageReduction { get; protected set; } = 1f;
 
         private static float _seamothBonusSpeedMultiplier = 0.15f;
+#if BELOWZERO
+        private static float _seatruckBonusSpeedMultiplier = 0.15f;
+#endif
         private static float _exosuitBonusSpeedMultiplier = 0.20f;
 
         public int DepthIndex { get; private set; } = -1;
         public float SpeedMultiplier { get; private set; } = 1f;
         public float EfficiencyPenalty { get; private set; } = 1f;
-        public float EfficientyBonus { get; private set; } = 1f;
+        public float EfficiencyBonus { get; private set; } = 1f;
         public float GeneralArmorFraction { get; private set; } = 1f;
         public float ImpactArmorFraction { get; private set; } = 1f;
         public float PowerRating { get; private set; } = 1f;
-        public LiveMixin LifeMix => ParentVehicle.liveMixin;
+        
+        private LiveMixin _lifemix = null;
+        public LiveMixin LifeMix {
+            get
+            {
+                if (_lifemix == null)
+                {
+                    if (ParentVehicle is Vehicle v)
+                        _lifemix = v.liveMixin;
+#if BELOWZERO
+                    else if (ParentVehicle is SeaTruckMotor stm)
+                        _lifemix = stm.liveMixin;
+#endif
+                }
+
+                return _lifemix;
+            }
+        }
+
+        /// <summary>
+        /// Add the specified TechType to the dictionary of efficiency-improving modules with the specified value
+        /// </summary>
+        public static bool AddEfficiencyBonus(TechType module, float value, bool bForce = false)
+        {
+            if (VehicleEfficiencyBonuses.ContainsKey(module) && !bForce)
+                return false;
+
+            VehicleEfficiencyBonuses[module] = value;
+            return CommonUpgradeModules.Add(module);
+        }
+
+        /// <summary>
+        /// Add the specified TechType as a speed booster, with the specified strength
+        /// </summary>
+        public static bool AddSpeedModifier(TechType module, float value, float efficiencyValue, bool bForce = false)
+        {
+            if (SpeedBoostingModules.ContainsKey(module) && !bForce)
+                return false;
+
+            SpeedBoostingModules[module] = value;
+            if (efficiencyValue > 0f)
+                VehicleEfficiencyPenalties[module] = efficiencyValue;
+            return CommonUpgradeModules.Add(module);
+        }
+
+        /// <summary>
+        /// Add the specified TechType as an armour module, with the specified strength
+        /// </summary>
+        public static bool AddArmourModule(TechType module, int value, bool bForce = false)
+        {
+            if (ArmorPlatingModules.ContainsKey(module) && !bForce)
+                return false;
+
+            ArmorPlatingModules[module] = value;
+            return CommonUpgradeModules.Add(module);
+        }
+
+        /// <summary>
+        /// Add the specified TechType as a depth module, adding it to the common set, the depth upgrades set, and one of the vehicle-specific set based on the value of the vehicleType
+        /// </summary>
+        public static bool AddDepthModule(TechType module, int value, EVehicleType vehicleType, bool bForce = false)
+        {
+            if (!bForce && DepthUpgradeModules.Contains(module))
+                return false;
+
+            switch (vehicleType)
+            {
+                case EVehicleType.Exosuit:
+                    ExosuitDepthModules.Add(module, value);
+                    break;
+
+                case EVehicleType.Seamoth:
+                    SeamothDepthModules.Add(module, value);
+                    break;
+#if BELOWZERO
+                case EVehicleType.Seatruck:
+                    SeaTruckDepthModules.Add(module, value);
+                    break;
+#endif
+            }
+            return (CommonUpgradeModules.Add(module) && DepthUpgradeModules.Add(module));
+        }
 
         /// <summary>
         /// Calculates the speed multiplier based on the number of speed modules and current depth index.
@@ -89,28 +293,60 @@
         {
             float speedBoosterRatio = 0f;
             float bonusSpeedRatio = 0f;
+#if BELOWZERO
+            float SennaSpeedMultiplier = 1f;
+#endif
 
-            if (IsExosuit)
+            switch (currentVehicleType)
             {
-                bonusSpeedRatio = _exosuitBonusSpeedMultiplier;
-                speedBoosterRatio = 0.45f;
+                case EVehicleType.Exosuit:
+                    bonusSpeedRatio = _exosuitBonusSpeedMultiplier;
+                    speedBoosterRatio = 0.45f;
+                    break;
+
+                case EVehicleType.Seamoth:
+                    bonusSpeedRatio = _seamothBonusSpeedMultiplier;
+                    speedBoosterRatio = 0.35f;
+                    break;
+
+#if BELOWZERO
+                case EVehicleType.Seatruck:
+                    bonusSpeedRatio = _seatruckBonusSpeedMultiplier;
+                    speedBoosterRatio = 0.35f;
+                    break;
+#endif
             }
 
-            if (IsSeamoth)
-            {
-                bonusSpeedRatio = _seamothBonusSpeedMultiplier;
-                speedBoosterRatio = 0.35f;
-            }
-
+#if SUBNAUTICA
             return 1f + // Base 100%
-                   speedBoosterCount * speedBoosterRatio + // Bonus from Speed Boosters
+            speedBoosterCount * speedBoosterRatio + // Bonus from Speed Boosters
                    this.DepthIndex * bonusSpeedRatio; // Bonus from Depth Modules
+#elif BELOWZERO
+            if (SeaTruckSpeedManager != null)
+            {
+                foreach (KeyValuePair<TechType, float> armorModule in SpeedManagerAccelerations)
+                {
+                    TechType techType = armorModule.Key;
+                    if (this.UpgradeModules.GetCount(techType) > 0)
+                    {
+                        float multiplier = armorModule.Value;
+                        SennaSpeedMultiplier = Math.Max(SennaSpeedMultiplier, multiplier);
+                    }
+                }
+
+                //ErrorMessage.AddMessage($"GetImpactArmorFraction: armorModuleCount = {armorModuleCount}");
+            }
+
+            return SennaSpeedMultiplier +
+            speedBoosterCount * speedBoosterRatio + // Bonus from Speed Boosters
+                   this.DepthIndex * bonusSpeedRatio; // Bonus from Depth Modules
+#endif
         }
 
         /// <summary>
         /// Calculates the engine efficiency penalty based off the number of speed modules and the current depth index.
         /// </summary>
-        private float GetEfficiencyPentalty(float speedBoosterCount)
+        private float GetEfficiencyPenalty(float speedBoosterCount)
         {
             //  Speed Modules
             //    0    100%
@@ -145,7 +381,7 @@
             //        8       900%    915%    930%    945%    960%    975%
             //        9       1000%   1015%   1030%   1045%   1060%   1075%
 
-            return this.EfficientyBonus = 1f + powerModuleCount + this.DepthIndex * 0.15f;
+            return this.EfficiencyBonus = 1f + powerModuleCount + this.DepthIndex * 0.15f;
         }
 
         /// <summary>
@@ -191,17 +427,37 @@
             //        7      00.78%    00.68%    00.59%    00.52%    00.45%    00.39%
             //        8      00.39%    00.34%    00.30%    00.26%    00.22%    00.20%
             //        9      00.20%    00.17%    00.15%    00.13%    00.11%    00.10%
+#if BELOWZERO
+            int max = 0;
 
+            foreach (KeyValuePair<TechType, int> armorModule in SeatruckArmourModules)
+            {
+                TechType techType = armorModule.Key;
+                if (this.UpgradeModules.GetCount(techType) > 0)
+                {
+                    int multiplier = armorModule.Value;
+                    max = Math.Max(max, multiplier);
+                }
+            }
+
+            armorModuleCount += (float)max;
+#endif
             return this.ImpactArmorFraction = Mathf.Pow(0.5f, armorModuleCount + (this.DepthIndex * 0.2f));
         }
 
-        internal void Initialize<TVehicle>(ref TVehicle vehicle) where TVehicle : Vehicle
+        internal void Initialize<TVehicle>(ref TVehicle vehicle) where TVehicle : MonoBehaviour
         {
             QuickLogger.Debug("Initialized vehicle");
             ParentVehicle = vehicle;
 
-            IsSeamoth = vehicle is SeaMoth;
-            IsExosuit = vehicle is Exosuit;
+            if (vehicle is Exosuit)
+                currentVehicleType = EVehicleType.Exosuit;
+#if BELOWZERO
+            else if (vehicle is SeaTruckMotor)
+                currentVehicleType = EVehicleType.Seatruck;
+#endif
+            else if (vehicle is SeaMoth)
+                currentVehicleType = EVehicleType.Seamoth;
 
             if (this.UpgradeModules == null)
             {
@@ -241,39 +497,75 @@
 
         private int CalculateDepthModuleIndex()
         {
-            if (this.UpgradeModules == null)            
+            if (this.UpgradeModules == null)
                 return -1; // Missing UpgradeModules, cannot calculate
 
-            if (IsExosuit)
+            int max = 0;
+            IDictionary<TechType, int> moduleCollection = null;
+            switch (this.currentVehicleType)
             {
-                if (this.UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
-                    return 2;
+                case EVehicleType.Exosuit:
+                    moduleCollection = ExosuitDepthModules;
+                    // Commenting out, rather than deleting, while this change is tested
+                    /*if (this.UpgradeModules.GetCount(TechType.ExoHullModule2) > 0)
+                        max = 2;
+                    else if (this.UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
+                        max = 1;*/
+                    break;
 
-                if (this.UpgradeModules.GetCount(TechType.ExoHullModule1) > 0)
-                    return 1;
-            }
-            else if (IsSeamoth)
-            {
-                int max = 0;
-                foreach (KeyValuePair<TechType, int> seamothDepth in SeamothDepthModules)
-                {
-                    TechType techType = seamothDepth.Key;
-                    if (this.UpgradeModules.GetCount(techType) > 0)
+                case EVehicleType.Seamoth:
+                    moduleCollection = SeamothDepthModules;
+                    /*foreach (KeyValuePair<TechType, int> seamothDepth in SeamothDepthModules)
                     {
-                        int depthIndex = seamothDepth.Value;
-                        max = Math.Max(max, depthIndex);
-                    }
-                }
+                        TechType techType = seamothDepth.Key;
+                        if (this.UpgradeModules.GetCount(techType) > 0)
+                        {
+                            int depthIndex = seamothDepth.Value;
+                            max = Math.Max(max, depthIndex);
+                        }
+                    }*/
+                    break;
 
-                return max;
+#if BELOWZERO
+                case EVehicleType.Seatruck:
+                    moduleCollection = SeaTruckDepthModules;
+                    /*foreach (KeyValuePair<TechType, int> seaTruckDepth in SeaTruckDepthModules)
+                    {
+                        TechType tt = seaTruckDepth.Key;
+                        if (this.UpgradeModules.GetCount(tt) > 0)
+                        {
+                            int depthIndex = seaTruckDepth.Value;
+                            max = Math.Max(max, depthIndex);
+                        }
+                    }*/
+                    break;
+#endif
             }
 
-            return 0;
+            foreach (KeyValuePair<TechType, int> depth in moduleCollection)
+            {
+                TechType tt = depth.Key;
+                if (this.UpgradeModules.GetCount(tt) > 0)
+                {
+                    int depthIndex = depth.Value;
+                    max = Math.Max(max, depthIndex);
+                }
+            }
+
+
+            return max;
         }
 
         internal void UpgradeVehicle<TVehicle>(TechType upgradeModule, ref TVehicle vehicle)
-            where TVehicle : Vehicle
+            where TVehicle : MonoBehaviour
         {
+            if (vehicle is not Vehicle
+#if BELOWZERO
+                && vehicle is not SeaTruckMotor
+#endif
+                )
+                return;
+
             if (ParentVehicle != vehicle)
                 Initialize(ref vehicle);
 
@@ -283,11 +575,12 @@
                 return;
             }
 
+            //TechType speedBooster;
+            //TechTypeHandler.TryGetModdedTechType("SpeedModule", out speedBooster);
             bool updateAll = DepthUpgradeModules.Contains(upgradeModule);
             bool updateArmor = updateAll || ArmorPlatingModules.ContainsKey(upgradeModule);
-            bool updateSpeed = updateAll || upgradeModule == SpeedBoostingModule;
-            bool updateEfficiency = updateAll || updateSpeed || upgradeModule == TechType.VehiclePowerUpgradeModule;
-            QuickLogger.Debug($"updateAll:{updateAll} updateArmor:{updateArmor} updateSpeed:{updateSpeed} updateEfficiency:{updateEfficiency}");
+            bool updateSpeed = updateAll || SpeedBoostingModules.ContainsKey(upgradeModule);
+            bool updateEfficiency = updateAll || updateSpeed || VehicleEfficiencyBonuses.ContainsKey(upgradeModule);
 
             int newIndex = CalculateDepthModuleIndex();
 
@@ -308,10 +601,23 @@
 
             if (updateEfficiency) // Efficiency
             {
-                int speedBoosterCount = this.UpgradeModules.GetCount(SpeedBoostingModule);
-                int powerModuleCount = this.UpgradeModules.GetCount(TechType.VehiclePowerUpgradeModule);
+                float speedBoosterCount = 0f;
+                float powerModuleValue = 0f;
+                float powerPenaltyValue = 0f;
 
-                UpdatePowerRating(speedBoosterCount, powerModuleCount);
+                foreach (var kvp in VehicleEfficiencyBonuses)
+                {
+                    powerModuleValue += this.UpgradeModules.GetCount(kvp.Key) * kvp.Value;
+                }
+
+                foreach (var kvp in SpeedBoostingModules)
+                {
+                    int count = this.UpgradeModules.GetCount(kvp.Key);
+                    speedBoosterCount += count * kvp.Value;
+                    powerPenaltyValue += count * VehicleEfficiencyPenalties.GetOrDefault(kvp.Key, 0f);
+                }
+
+                UpdatePowerRating(powerPenaltyValue, powerModuleValue);
 
                 if (updateSpeed) // Speed
                 {
@@ -324,26 +630,47 @@
         {
             this.SpeedMultiplier = GetSpeedMultiplierBonus(speedBoosterCount);
 
-            if (this.IsSeamoth)
+            if (ParentVehicle is Vehicle v)
             {
-                ParentVehicle.forwardForce = this.SpeedMultiplier * BaseSeamothSpeed;
-                ErrorMessage.AddMessage($"Seamoth Speed: {ParentVehicle.forwardForce}m/s ({this.SpeedMultiplier * 100f:00}%)");
-            }
-            else if (this.IsExosuit)
-            {
-                ParentVehicle.forwardForce = this.SpeedMultiplier * BaseExosuitSwimSpeed;
-                ErrorMessage.AddMessage($"Prawn Suit Water Speed: {ParentVehicle.forwardForce}m/s ({this.SpeedMultiplier * 100f:00}%)");
-                ParentVehicle.onGroundForceMultiplier = this.SpeedMultiplier * BaseExosuitWalkSpeed;
-                ErrorMessage.AddMessage($"Prawn Suit Land Speed: {ParentVehicle.onGroundForceMultiplier}m/s ({this.SpeedMultiplier * 100f:00}%)");
+                if (v is SeaMoth)
+                {
+                    v.forwardForce = this.SpeedMultiplier * BaseSeamothSpeed;
+                    ErrorMessage.AddMessage($"Seamoth Speed: {v.forwardForce}m/s ({this.SpeedMultiplier * 100f:00}%)");
+                }
+                else if (v is Exosuit)
+                {
+                    v.forwardForce = this.SpeedMultiplier * BaseExosuitSwimSpeed;
+                    ErrorMessage.AddMessage($"Prawn Suit Water Speed: {v.forwardForce}m/s ({this.SpeedMultiplier * 100f:00}%)");
+                    v.onGroundForceMultiplier = this.SpeedMultiplier * BaseExosuitWalkSpeed;
+                    ErrorMessage.AddMessage($"Prawn Suit Land Speed: {v.onGroundForceMultiplier}m/s ({this.SpeedMultiplier * 100f:00}%)");
 
+                }
             }
+#if BELOWZERO
+            else if (ParentVehicle is SeaTruckMotor stm)
+            {
+                stm.acceleration = this.SpeedMultiplier * BaseSeaTruckAcceleration;
+                ErrorMessage.AddMessage($"SeaTruck engine acceleration: {stm.acceleration}m/s ({this.SpeedMultiplier * 100f:00}%)");
+            }
+#endif
         }
 
-        private void UpdatePowerRating(int speedBoosterCount, int powerModuleCount)
+        private void UpdatePowerRating(float speedBoosterCount, float powerModuleValue)
         {
-            this.PowerRating = GetEfficiencyBonus(powerModuleCount) / GetEfficiencyPentalty(speedBoosterCount);
+            this.PowerRating = GetEfficiencyBonus(powerModuleValue) / GetEfficiencyPenalty(speedBoosterCount);
 
-            ParentVehicle.enginePowerRating = this.PowerRating;
+            if (ParentVehicle is Vehicle v)
+            {
+                v.enginePowerRating = this.PowerRating;
+            }
+#if BELOWZERO
+            else if (ParentVehicle is SeaTruckMotor stm)
+            {
+                float baseEfficiency = (powerModuleValue > 0 ? Constants.kSeaTruckPowerEfficiencyFactor : 1f);
+
+                stm.powerEfficiencyFactor = baseEfficiency * (1 / this.PowerRating);
+            }
+#endif
 
             ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", this.PowerRating));
         }

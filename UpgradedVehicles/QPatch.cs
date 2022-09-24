@@ -69,13 +69,50 @@
                 TechTypeHandler.TryGetModdedTechType("SeamothHullModule5", out TechType vehicleHullModule5))
             {
                 QuickLogger.Info("Detected Seamoth Depth Modules Mk4 & Mk5");
-                VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule4, 4);
-                VehicleUpgrader.SeamothDepthModules.Add(vehicleHullModule5, 5);
-                VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule4);
-                VehicleUpgrader.CommonUpgradeModules.Add(vehicleHullModule5);
-                VehicleUpgrader.DepthUpgradeModules.Add(vehicleHullModule4);
-                VehicleUpgrader.DepthUpgradeModules.Add(vehicleHullModule5);
+                // the AddDepthModule will add the module to the common upgrades set, the common depth modules set, and the vehicle-specific set
+                VehicleUpgrader.AddDepthModule(vehicleHullModule4, 4, VehicleUpgrader.EVehicleType.Seamoth);
+                VehicleUpgrader.AddDepthModule(vehicleHullModule5, 5, VehicleUpgrader.EVehicleType.Seamoth);
             }
+
+#if BELOWZERO
+            QuickLogger.Info("Checking if SeaTruckDepthUpgrades mod is present");
+
+            IQMod moreSeatruckDepth = QModServices.Main.FindModById("SeaTruckDepthUpgrades");
+            if (moreSeatruckDepth != null &&
+                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK4", out TechType seaTruckHull4) &&
+                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK5", out TechType seaTruckHull5) &&
+                TechTypeHandler.TryGetModdedTechType("SeaTruckDepthMK6", out TechType seaTruckHull6))
+            {
+                QuickLogger.Info("Detected SeaTruck Depth Modules Mk4, Mk5 and Mk6");
+                VehicleUpgrader.AddDepthModule(seaTruckHull4, 4, VehicleUpgrader.EVehicleType.Seatruck);
+                VehicleUpgrader.AddDepthModule(seaTruckHull5, 5, VehicleUpgrader.EVehicleType.Seatruck);
+                VehicleUpgrader.AddDepthModule(seaTruckHull6, 6, VehicleUpgrader.EVehicleType.Seatruck);
+            }
+
+            IQMod seatruckSpeed = QModServices.Main.FindModById("SeaTruckSpeedUpgrades");
+            if (seatruckSpeed != null
+                && TechTypeHandler.TryGetModdedTechType("SeaTruckSpeedMK1", out TechType speedMk1)
+                && TechTypeHandler.TryGetModdedTechType("SeaTruckSpeedMK2", out TechType speedMk2)
+                && TechTypeHandler.TryGetModdedTechType("SeaTruckSpeedMK3", out TechType speedMk3))
+            {
+                QuickLogger.Info("Detected Seatruck Speed Modules Mk1, Mk2 and Mk3");
+                VehicleUpgrader.AddSpeedModifier(speedMk1, 1f, 0f);
+                VehicleUpgrader.AddSpeedModifier(speedMk2, 2f, 0f);
+                VehicleUpgrader.AddSpeedModifier(speedMk3, 3f, 0f);
+            }
+
+            IQMod seatruckArmour = QModServices.Main.FindModById("SeaTruckArmorUpgrades");
+            if (seatruckSpeed != null
+                && TechTypeHandler.TryGetModdedTechType("SeaTruckArmorMK1", out TechType armour1)
+                && TechTypeHandler.TryGetModdedTechType("SeaTruckArmorMK2", out TechType armour2)
+                && TechTypeHandler.TryGetModdedTechType("SeaTruckArmorMK3", out TechType armour3))
+            {
+                QuickLogger.Info("Detected Seatruck Armour Modules Mk1, Mk2 and Mk3");
+                VehicleUpgrader.AddArmourModule(armour1, 1);
+                VehicleUpgrader.AddArmourModule(armour2, 2);
+                VehicleUpgrader.AddArmourModule(armour3, 3);
+            }
+#endif
         }
     }
 }

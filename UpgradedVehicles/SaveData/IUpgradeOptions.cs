@@ -5,5 +5,8 @@
         bool DebugLogsEnabled { get; }
         float ExosuitBonusSpeedMultiplier { get; }
         float SeamothBonusSpeedMultiplier { get; }
+#if BELOWZERO
+        float SeatruckBonusSpeedMultiplier { get; }
+#endif
     }
 }

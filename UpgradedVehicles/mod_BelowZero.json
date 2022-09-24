@@ -7,6 +7,10 @@
   "AssemblyName": "UpgradedVehicles.dll",
   "Game": "BelowZero",
   "Dependencies": [ "SMLHelper" ],
-  "LoadAfter": [ "SeaTruckDepthUpgrades" ],
+  "LoadAfter": [
+    "SeaTruckDepthUpgrades",
+    "SeaTruckArmorUpgrades",
+    "SeaTruckSpeedUpgrades"
+  ],
   "VersionChecker": { "LatestVersionURL": "https://raw.githubusercontent.com/PrimeSonic/PrimeSonicSubnauticaMods/master/UpgradedVehicles/mod_BelowZero.json" }
 }

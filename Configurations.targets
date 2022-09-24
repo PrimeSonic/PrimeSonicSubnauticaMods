@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Condition="'$(Configuration)' == 'BelowZero'">
+    <DefineConstants>BZ;BELOWZERO</DefineConstants>
+    <GameDir>$(CommonDir)SubnauticaZero.Stable</GameDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Subnautica'">
+    <DefineConstants>SN1;SUBNAUTICA_STABLE</DefineConstants>
+    <GameDir>$(CommonDir)Subnautica.Stable</GameDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(Configuration.StartsWith('BelowZero'))">
+    <GameName>BelowZero</GameName>
+    <DataFolder>SubnauticaZero_Data</DataFolder>
+    <SMLHelperFolder>SMLHelper_BZ</SMLHelperFolder>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(Configuration.StartsWith('Subnautica'))">
+    <GameName>Subnautica</GameName>
+    <DataFolder>Subnautica_Data</DataFolder>
+    <SMLHelperFolder>Modding Helper</SMLHelperFolder>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>$(SolutionDir)\Qmods\$(Configuration)\$(AssemblyName)\</OutputPath>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <LangVersion>latest</LangVersion>
+    <ReferencePath>
+      $(GameDir)\BepInEx\core;$(GameDir)\BepInEx\plugins\QModManager;$(GameDir)\Qmods\$(SMLHelperFolder);$(GameDir)\$(DataFolder)\Managed\publicized_assemblies;$(GameDir)\$(DataFolder)\Managed;$(SolutionDir)\Libs\$(Configuration)
+    </ReferencePath>
+  </PropertyGroup>
+</Project>

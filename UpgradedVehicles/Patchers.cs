@@ -1,8 +1,10 @@
 ﻿namespace UpgradedVehicles
 {
+    using System.Collections;
     using Common;
     using HarmonyLib;
     using UnityEngine;
+    using UWE;
 
     [HarmonyPatch(typeof(DamageSystem))]
     [HarmonyPatch(nameof(DamageSystem.CalculateDamage))]
@@ -11,8 +13,11 @@
         [HarmonyPostfix]
         internal static void Postfix(ref float __result, GameObject target)
         {
-            Vehicle vehicle = target.GetComponent<Vehicle>();
-
+            MonoBehaviour vehicle = target.GetComponent<Vehicle>();
+#if BELOWZERO
+            if (vehicle == null)
+                vehicle = target.GetComponent<SeaTruckMotor>();
+#endif
             if (vehicle != null) // Target is vehicle
             {
                 VehicleUpgrader vehicleUpgrader = vehicle.gameObject.EnsureComponent<VehicleUpgrader>();
@@ -22,53 +27,84 @@
         }
     }
 
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch(nameof(SeaMoth.Awake))]
-    internal class SeaMoth_Awake_Patcher
+    [HarmonyPatch]
+    internal class VehiclePatches
     {
+        [HarmonyPatch(typeof(SeaMoth))]
+        [HarmonyPatch(nameof(SeaMoth.Awake))]
         [HarmonyPrefix]
-        internal static void Prefix(ref SeaMoth __instance)
+        internal static void PreSeamothAwake(ref SeaMoth __instance)
         {
-            QuickLogger.Debug(nameof(SeaMoth_Awake_Patcher));
+            QuickLogger.Debug(nameof(PreSeamothAwake));
             VehicleUpgrader vehicleUpgrader = __instance.gameObject.EnsureComponent<VehicleUpgrader>();
             vehicleUpgrader.Initialize(ref __instance);
         }
-    }
 
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch(nameof(Exosuit.Awake))]
-    internal class Exosuit_Awake_Patcher
-    {
-        [HarmonyPrefix]
-        internal static void Prefix(ref Exosuit __instance)
+#if BELOWZERO
+        [HarmonyPatch(typeof(SeaTruckMotor))]
+        [HarmonyPatch(nameof(SeaTruckMotor.Start))]
+        [HarmonyPostfix]
+        internal static void PostSeatruckStart(ref SeaTruckMotor __instance)
         {
-            QuickLogger.Debug(nameof(Exosuit_Awake_Patcher));
+            QuickLogger.Debug(nameof(PostSeatruckStart));
             VehicleUpgrader vehicleUpgrader = __instance.gameObject.EnsureComponent<VehicleUpgrader>();
             vehicleUpgrader.Initialize(ref __instance);
         }
-    }
+#endif
 
-    [HarmonyPatch(typeof(SeaMoth))]
-    [HarmonyPatch(nameof(SeaMoth.OnUpgradeModuleChange))]
-    internal class SeaMoth_OnUpgradeModuleChange_Patcher
-    {
-        [HarmonyPostfix]
-        internal static void Postfix(ref SeaMoth __instance, TechType techType)
+        [HarmonyPatch(typeof(Exosuit))]
+        [HarmonyPatch(nameof(Exosuit.Awake))]
+        [HarmonyPrefix]
+        internal static void PreExosuitAwake(ref Exosuit __instance)
         {
-            QuickLogger.Debug($"{nameof(SeaMoth_OnUpgradeModuleChange_Patcher)} {techType.AsString()}");
-            __instance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref __instance);
+            QuickLogger.Debug(nameof(PreExosuitAwake));
+            VehicleUpgrader vehicleUpgrader = __instance.gameObject.EnsureComponent<VehicleUpgrader>();
+            vehicleUpgrader.Initialize(ref __instance);
         }
-    }
 
-    [HarmonyPatch(typeof(Exosuit))]
-    [HarmonyPatch(nameof(Exosuit.OnUpgradeModuleChange))]
-    internal class Exosuit_OnUpgradeModuleChange_Patcher
-    {
+        [HarmonyPatch(typeof(SeaMoth))]
+        [HarmonyPatch(nameof(SeaMoth.OnUpgradeModuleChange))]
+        [HarmonyPriority(Priority.Last)]
         [HarmonyPostfix]
-        internal static void Postfix(ref Exosuit __instance, TechType techType)
+        internal static void PostSeamothUpgradeChange(ref SeaMoth __instance, TechType techType)
         {
-            QuickLogger.Debug($"{nameof(Exosuit_OnUpgradeModuleChange_Patcher)} {techType.AsString()}");
-            __instance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref __instance);
+            QuickLogger.Debug($"{nameof(PostSeamothUpgradeChange)} {techType.AsString()}");
+            //__instance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref __instance);
+            CoroutineHost.StartCoroutine(DeferUpgrade(__instance, techType));
+        }
+
+#if BELOWZERO
+        [HarmonyPatch(typeof(SeaTruckUpgrades))]
+        [HarmonyPatch(nameof(SeaTruckUpgrades.OnUpgradeModuleChange))]
+        [HarmonyPriority(Priority.Last)]
+        [HarmonyPostfix]
+        internal static void PostSeaTruckUpgradesModuleChange(ref SeaTruckUpgrades __instance, TechType techType)
+        {
+            QuickLogger.Debug($"{nameof(PostSeaTruckUpgradesModuleChange)} {techType.AsString()}", true);
+            SeaTruckMotor cab = __instance.motor;
+            //cab.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref cab);
+            CoroutineHost.StartCoroutine(DeferUpgrade(cab, techType));
+        }
+
+#endif
+
+        [HarmonyPatch(typeof(Exosuit))]
+        [HarmonyPatch(nameof(Exosuit.OnUpgradeModuleChange))]
+        [HarmonyPriority(Priority.Last)]
+        [HarmonyPostfix]
+        internal static void PostExosuitOnUpgradeModuleChange(ref Exosuit __instance, TechType techType)
+        {
+            QuickLogger.Debug($"{nameof(PostExosuitOnUpgradeModuleChange)} {techType.AsString()}", true);
+            //__instance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref __instance);
+            CoroutineHost.StartCoroutine(DeferUpgrade(__instance, techType));
+        }
+
+        private static IEnumerator DeferUpgrade(MonoBehaviour vehicleInstance, TechType techType)
+        {
+            yield return new WaitForSecondsRealtime(0.1f);
+
+            vehicleInstance.gameObject.EnsureComponent<VehicleUpgrader>().UpgradeVehicle(techType, ref vehicleInstance);
+            yield break;
         }
     }
 }

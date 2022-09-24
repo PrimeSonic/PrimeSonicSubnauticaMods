@@ -30,6 +30,28 @@
             }
         }
 
+#if BELOWZERO
+        public float SeatruckBonusSpeedMultiplier
+        {
+            get
+            {
+                switch (SaveData.SeaTruckBonusSpeedSetting)
+                {
+                    case BonusSpeedStyles.Disabled:
+                        return 0f;
+                    case BonusSpeedStyles.Slower:
+                        return 0.05f;
+                    case BonusSpeedStyles.Normal:
+                        return 0.15f;
+                    case BonusSpeedStyles.Faster:
+                        return 0.25f;
+                    default: // Error
+                        return 0.125f;
+                }
+            }
+        }
+#endif
+
         public float ExosuitBonusSpeedMultiplier
         {
             get
@@ -55,6 +77,13 @@
             get => (int)SaveData.SeamothBonusSpeedSetting;
             set => SaveData.SeamothBonusSpeedSetting = (BonusSpeedStyles)value;
         }
+#if BELOWZERO
+        internal int SeaTruckBonusSpeedIndex
+        {
+            get => (int)SaveData.SeaTruckBonusSpeedSetting;
+            set => SaveData.SeaTruckBonusSpeedSetting = (BonusSpeedStyles)value;
+        }
+#endif
 
         internal int ExosuitBonusSpeedIndex
         {
@@ -77,6 +106,9 @@
         public override void BuildModOptions()
         {
             AddChoiceOption(ConfigSaveData.SeamothBonusSpeedID, "Seamoth Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.SeamothBonusSpeedIndex);
+#if BELOWZERO
+            AddChoiceOption(ConfigSaveData.SeamothBonusSpeedID, "SeaTruck Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.SeaTruckBonusSpeedIndex);
+#endif
             AddChoiceOption(ConfigSaveData.ExosuitBonusSpeedID, "Prawn Suit Bonus Speed", ConfigSaveData.SpeedSettingLabels, this.ExosuitBonusSpeedIndex);
         }
 
@@ -87,6 +119,12 @@
                 case ConfigSaveData.SeamothBonusSpeedID:
                     this.SeamothBonusSpeedIndex = args.Index;
                     break;
+
+#if BELOWZERO
+                case ConfigSaveData.SeaTruckBonusSpeedID:
+                    this.SeaTruckBonusSpeedIndex = args.Index;
+                    break;
+#endif
 
                 case ConfigSaveData.ExosuitBonusSpeedID:
                     this.ExosuitBonusSpeedIndex = args.Index;
