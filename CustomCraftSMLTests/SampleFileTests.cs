@@ -14,7 +14,7 @@
             get
             {
                 string path = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-                return Directory.GetParent(path).FullName + "/CustomCraft2SML/SampleFiles/";
+                return Directory.GetParent(path).FullName + "/CustomCraftSMLTests/SampleFiles/";
             }
         }
 

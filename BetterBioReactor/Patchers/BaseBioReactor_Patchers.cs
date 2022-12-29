@@ -41,7 +41,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch("Update")]
+    [HarmonyPatch(nameof(BaseBioReactor.Update))]
     internal class Update_Patcher
     {
         [HarmonyPostfix]
@@ -78,7 +78,7 @@
     }
 
     [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch(nameof(BaseBioReactor.OnProtoDeserialize))]
+    [HarmonyPatch(nameof(BaseBioReactor.OnProtoDeserializeAsync))]
     internal class OnProtoDeserialize_Patcher
     {
         [HarmonyPrefix]
@@ -99,18 +99,6 @@
         {
             QuickLogger.Debug("OnProtoSerializeObjectTree");
             CyBioReactorMini.GetMiniReactor(ref __instance).OnProtoSerializeObjectTree(serializer);
-        }
-    }
-
-    [HarmonyPatch(typeof(BaseBioReactor))]
-    [HarmonyPatch(nameof(BaseBioReactor.OnProtoSerialize))]
-    internal class OnProtoSerialize_Patcher
-    {
-        [HarmonyPostfix]
-        internal static void Postfix(BaseBioReactor __instance, ProtobufSerializer serializer)
-        {
-            QuickLogger.Debug("OnProtoSerialize");
-            CyBioReactorMini.GetMiniReactor(ref __instance).OnProtoSerialize(serializer);
         }
     }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Condition="!$(Configuration.EndsWith('EXP'))">
+    <PostBuildEvent>
+      IF NOT EXIST "$(SolutionDir)..\mods\_Zips" mkdir "$(SolutionDir)..\mods\_Zips"
+      IF EXIST "$(SolutionDir)..\mods\_Zips\$(Configuration)\$(TargetName).zip" DEL /F "$(SolutionDir)..\mods\_Zips\$(Configuration)\$(TargetName).zip"
+      $(SolutionDir)packages\7-Zip.CommandLine.18.1.0\tools\7za.exe a "$(SolutionDir)..\mods\_Zips\$(Configuration)\$(TargetName).zip" "$(SolutionDir)..\mods\$(AssemblyName)\$(Configuration)\*" > nul
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

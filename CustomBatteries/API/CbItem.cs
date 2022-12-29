@@ -5,7 +5,6 @@
     using Common;
     using CustomBatteries.Items;
     using UnityEngine;
-    using Logger = QModManager.Utility.Logger;
 #if SUBNAUTICA
     using Sprite = Atlas.Sprite;
 #endif
@@ -94,7 +93,7 @@
         internal void Patch(ItemTypes itemType)
         {
             string name = this.GetType().Assembly.GetName().Name;
-            Logger.Log(Logger.Level.Info, $"Received Custom {itemType} pack from '{name}'");
+            Plugin.logSource.LogInfo($"Received Custom {itemType} pack from '{name}'");
 
             // Check for required data
             string errors = string.Empty;
@@ -114,7 +113,7 @@
             if (!string.IsNullOrEmpty(errors))
             {
                 string msg = "Unable to patch:" + Environment.NewLine + errors;
-                Logger.Log(Logger.Level.Error, msg);
+                Plugin.logSource.LogError(msg);
                 throw new InvalidOperationException(msg);
             }
 

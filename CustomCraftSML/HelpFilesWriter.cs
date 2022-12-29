@@ -39,7 +39,7 @@
                 {
                     string buildablesFile = $"{group}_{category}.txt";
 
-                    if (File.Exists(FileLocations.OriginalsFolder + buildablesFile))
+                    if (File.Exists(Path.Combine(FileLocations.OriginalsFolder, buildablesFile)))
                         continue;
 
                     List<TechType> buildablesList = groupCategories[category];

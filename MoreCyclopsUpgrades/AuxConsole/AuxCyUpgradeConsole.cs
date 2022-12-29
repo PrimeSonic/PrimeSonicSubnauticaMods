@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.AuxConsole
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
@@ -43,15 +44,22 @@
             };
         }
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
             // We'll use this for the actual model
-            var consolePrefab = GameObject.Instantiate(Resources.Load<GameObject>("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide"));
+
+            var task1 = AddressablesUtility.InstantiateAsync("WorldEntities/Doodads/Debris/Wrecks/Decoration/submarine_engine_console_01_wide.prefab");
+            yield return task1;
+
+            var consolePrefab = task1.GetResult();
             GameObject consoleWide = consolePrefab.FindChild("submarine_engine_console_01_wide");
             GameObject consoleModel = consoleWide.FindChild("console");
 
+            var task2 = CraftData.GetPrefabForTechTypeAsync(TechType.LabTrashcan);
+            yield return task2;
+
             // The LabTrashcan prefab was chosen because it is very similar in size, shape, and collision model to the upgrade console model
-            var prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.LabTrashcan));
+            var prefab = GameObject.Instantiate(task2.GetResult());
 
             prefab.FindChild("discovery_trashcan_01_d").SetActive(false); // Turn off this model
             GameObject.DestroyImmediate(prefab.GetComponent<Trashcan>()); // Don't need this
@@ -87,7 +95,7 @@
             constructible.techType = this.TechType;
             constructible.model = consoleModel;
 
-            return prefab;
+            gameObject.Set(prefab);
         }
     }
 }

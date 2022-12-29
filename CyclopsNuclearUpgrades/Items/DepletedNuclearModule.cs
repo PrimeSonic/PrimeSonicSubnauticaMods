@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
+    using System.Collections;
     using System.IO;
     using System.Reflection;
     using SMLHelper.V2.Assets;
@@ -25,9 +26,11 @@
             };
         }
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            return GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.DepletedReactorRod));
+            TaskResult<GameObject> result = new TaskResult<GameObject>();
+            yield return CraftData.InstantiateFromPrefabAsync(TechType.DepletedReactorRod, result);
+            gameObject.Set(result.Get());
         }
     }
 }

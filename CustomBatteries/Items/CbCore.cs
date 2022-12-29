@@ -1,6 +1,7 @@
 ﻿namespace CustomBatteries.Items
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using Common;
@@ -90,10 +91,11 @@
             this.AddToFabricator = packItem.AddToFabricator;
         }
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabType);
-            var obj = GameObject.Instantiate(prefab);
+            TaskResult<GameObject> result = new TaskResult<GameObject>();
+            yield return CraftData.InstantiateFromPrefabAsync(this.PrefabType, result);
+            var obj = result.Get();
 
             Battery battery = obj.GetComponent<Battery>();
             battery._capacity = this.PowerCapacity;
@@ -138,7 +140,7 @@
 
             this.EnhanceGameObject?.Invoke(obj);
 
-            return obj;
+            gameObject.Set(obj);
         }
 
         protected void CreateIngredients(IEnumerable<TechType> parts, List<Ingredient> partsList)
@@ -234,28 +236,10 @@
             {
                 if (this.ChargerType == EquipmentType.BatteryCharger)
                 {
-                    GameObject battery = CbDatabase.Battery();
-                    Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
-
-                    Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                    Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
-                    Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
-                    Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
-                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
-
                     CbDatabase.BatteryModels.Add(this.TechType, this.CustomModelData);
                 }
                 else if (this.ChargerType == EquipmentType.PowerCellCharger)
                 {
-                    GameObject battery = CbDatabase.PowerCell();
-                    Material material = battery?.GetComponentInChildren<MeshRenderer>()?.material;
-
-                    Texture2D texture = material?.GetTexture(ShaderPropertyID._MainTex) as Texture2D;
-                    Texture2D bumpmap = material?.GetTexture(ShaderPropertyID._BumpMap) as Texture2D;
-                    Texture2D spec = material?.GetTexture(ShaderPropertyID._SpecTex) as Texture2D;
-                    Texture2D illum = material?.GetTexture(ShaderPropertyID._Illum) as Texture2D;
-                    float illumStrength = material.GetFloat(ShaderPropertyID._GlowStrength);
-
                     CbDatabase.PowerCellModels.Add(this.TechType, this.CustomModelData);
                 }
             }

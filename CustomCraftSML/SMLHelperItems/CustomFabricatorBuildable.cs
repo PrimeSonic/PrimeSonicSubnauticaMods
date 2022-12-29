@@ -3,6 +3,7 @@
     using CustomCraft2SML.Serialization.Entries;
     using SMLHelper.V2.Assets;
     using System;
+    using System.Collections;
     using UnityEngine;
     using CustomFabricator = Serialization.Entries.CustomFabricator;
 
@@ -16,7 +17,7 @@
             FabricatorDetails = customFabricator;
         }
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
             GameObject prefab;
             Constructable constructible = null;
@@ -24,17 +25,22 @@
             switch (FabricatorDetails.Model)
             {
                 case ModelTypes.Fabricator:
-                    prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Fabricator));
+                    TaskResult<GameObject> fabricatorTaskResult = new TaskResult<GameObject>();
+                    yield return CraftData.InstantiateFromPrefabAsync(TechType.Fabricator, fabricatorTaskResult);
+                    prefab = fabricatorTaskResult.Get();
                     crafter = prefab.GetComponent<Fabricator>();
                     break;
                 case ModelTypes.Workbench:
-                    prefab = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Workbench));
+                    TaskResult<GameObject> workbenchTaskResult = new TaskResult<GameObject>();
+                    yield return CraftData.InstantiateFromPrefabAsync(TechType.Workbench, workbenchTaskResult);
+                    prefab = workbenchTaskResult.Get();
                     crafter = prefab.GetComponent<Workbench>();
                     break;
                 case ModelTypes.MoonPool:
-                    prefab = GameObject.Instantiate(Resources.Load<GameObject>("Submarine/Build/CyclopsFabricator"));
+                    var task = AddressablesUtility.InstantiateAsync("Submarine/Build/CyclopsFabricator.prefab");
+                    yield return task;
+                    prefab = task.GetResult();
                     crafter = prefab.GetComponent<Fabricator>();
-
                     // Add prefab ID because CyclopsFabricator normaly doesn't have one
                     PrefabIdentifier prefabId = prefab.AddComponent<PrefabIdentifier>();
                     prefabId.ClassId = FabricatorDetails.ItemID;
@@ -85,7 +91,7 @@
 
             if (FabricatorDetails.HasColorValue)
             {
-                SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();             
+                SkinnedMeshRenderer skinnedMeshRenderer = prefab.GetComponentInChildren<SkinnedMeshRenderer>();
                 skinnedMeshRenderer.material.color = FabricatorDetails.ColorTint; // Tint option available
             }
 
@@ -98,7 +104,7 @@
             // But the parent components are coming up null.
             crafter.powerRelay = powerRelay;
 
-            return prefab;
+            gameObject.Set(prefab);
         }
     }
 }

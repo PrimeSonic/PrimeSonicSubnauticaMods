@@ -2,15 +2,23 @@
 {
     using System;
     using System.Reflection;
-    using QModManager.API.ModLoading;
+    using BepInEx;
 
-    [QModCore]
-    public static class Main
+    [BepInPlugin(GUID, MODNAME, VERSION)]
+    [BepInDependency("com.ahk1221.smlhelper", BepInDependency.DependencyFlags.HardDependency)]
+    public class Plugin : BaseUnityPlugin
     {
+        #region[Declarations]
+        private const string
+            MODNAME = "AIOFabricator",
+            AUTHOR = "PrimeSonic",
+            GUID = "com.aiofabricator.psmod",
+            VERSION = "1.0.0.0";
+        #endregion
+
         private static AiOFab aioFab;
 
-        [QModPatch]
-        public static void Start()
+        public void Awake()
         {
             Console.WriteLine("[AIOFabricator] Started patching v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(3));         
 

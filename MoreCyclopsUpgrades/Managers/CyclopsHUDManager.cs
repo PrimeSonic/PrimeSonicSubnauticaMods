@@ -151,6 +151,16 @@
 
         private void AddStatusIcons(CyclopsHelmHUDManager cyclopsHelmHUD)
         {
+            Canvas pilotingCanvas = cyclopsHelmHUD.powerText.canvas;
+            if (pilotingCanvas == null)
+                return;
+
+            holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
+
+            Canvas holoCanvas = holographicHUD.healthBar.canvas;
+            if (holoCanvas == null) 
+                return;
+
             TooLateToRegister = true;
             for (int i = 0; i < StatusIconCreators.Count; i++)
             {
@@ -171,13 +181,9 @@
             }
 
             int totalPowerInfoIcons = Math.Max(StatusIcons.Count, 1); // Include a minimum of 1 for the vanilla thermal charger
-            cyclopsHelmHUD.powerText.resizeTextForBestFit = true;
+            cyclopsHelmHUD.powerText.enableAutoSizing = true;
 
             QuickLogger.Debug($"CyclopsHUDManager Adding '{totalPowerInfoIcons}' Status Info Icons");
-            holographicHUD = cyclopsHelmHUD.subRoot.GetComponentInChildren<CyclopsHolographicHUD>();
-
-            Canvas pilotingCanvas = cyclopsHelmHUD.powerText.canvas;
-            Canvas holoCanvas = holographicHUD.healthBar.canvas;
 
             const float spacingUnit = 35;
             const float helmzoffset = 0.05f;

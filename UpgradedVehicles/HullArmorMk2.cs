@@ -22,7 +22,7 @@ namespace UpgradedVehicles
         }
 
         public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
-        public override string[] StepsToFabricatorTab => new[] { QPatch.WorkBenchTab };
+        public override string[] StepsToFabricatorTab => new[] { Plugin.WorkBenchTab };
 
         protected override RecipeData GetBlueprintRecipe()
         {

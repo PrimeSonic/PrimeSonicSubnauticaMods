@@ -3,6 +3,7 @@
     using BetterBioReactor.SaveData;
     using Common;
     using ProtoBuf;
+    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
@@ -61,7 +62,7 @@
             SaveData = new CyBioReactorSaveData(id);
         }
 
-        public void Start()
+        public IEnumerator Start()
         {
             QuickLogger.Debug("CyBioReactorMini starting");
 
@@ -73,7 +74,7 @@
             int totalContainerSpaces = BioReactor.container.sizeX * BioReactor.container.sizeY;
             numberOfContainerSlots = totalContainerSpaces;
 
-            RestoreItemsFromSaveData();
+            yield return RestoreItemsFromSaveData();
 
             QuickLogger.Debug("CyBioReactorMini started");
         }
@@ -86,13 +87,8 @@
             HandReticle main = HandReticle.main;
 
             string text1 = Language.main.GetFormat("UseBaseBioReactor", this.CurrentPower, this.MaxPowerText);
-#if SUBNAUTICA
-            main.SetInteractText(text1, "Tooltip_UseBaseBioReactor", false, true, HandReticle.Hand.Right);
-#elif BELOWZERO
             main.SetText(HandReticle.TextType.Hand, text1, false, GameInput.Button.LeftHand);
             main.SetText(HandReticle.TextType.HandSubscript, "Tooltip_UseBaseBioReactor", true);
-            
-#endif
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -106,11 +102,7 @@
 
             PDA pda = Player.main.GetPDA();
             Inventory.main.SetUsedStorage(BioReactor.container, false);
-#if SUBNAUTICA
-            pda.Open(PDATab.Inventory, model.storagePivot, new PDA.OnClose(OnPdaClose), 4f);
-#elif BELOWZERO
             pda.Open(PDATab.Inventory, model.storagePivot, new PDA.OnClose(OnPdaClose));
-#endif
         }
 
         internal void OnPdaClose(PDA pda)
@@ -212,11 +204,7 @@
 
             if (MaterialsProcessing.Count > 0 || this.CurrentPower > 0)
             {
-#if SUBNAUTICA
-                Text displayText = (BioReactor.GetModel() ?? fallbackGeometry)?.text;
-#elif BELOWZERO
                 TMPro.TextMeshProUGUI displayText = (BioReactor.GetModel() ?? fallbackGeometry)?.text;
-#endif
                 if (displayText != null)
                 {
                     string maxPowerText = this.MaxPowerText;
@@ -234,11 +222,6 @@
 
         #region Save data handling
 
-        public void OnProtoSerialize(ProtobufSerializer serializer)
-        {
-            SaveData.SaveMaterialsProcessing(MaterialsProcessing);
-        }
-
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
             QuickLogger.Debug("Preventing original RestoreItems call");
@@ -246,6 +229,7 @@
 
         public void OnProtoSerializeObjectTree(ProtobufSerializer serializer)
         {
+            SaveData.SaveMaterialsProcessing(MaterialsProcessing);
         }
 
         public void OnProtoDeserializeObjectTree(ProtobufSerializer serializer)
@@ -261,12 +245,15 @@
             }
         }
 
-        private void RestoreItemsFromSaveData()
+        private IEnumerator RestoreItemsFromSaveData()
         {
             if (!isLoadingSaveData || SaveData is null)
-                return;
+                yield break;
 
-            foreach (BioEnergy material in SaveData.GetMaterialsInProcessing())
+            TaskResult<List<BioEnergy>> result = new TaskResult<List<BioEnergy>>();
+            yield return SaveData.GetMaterialsInProcessing(result);
+
+            foreach (BioEnergy material in result.Get())
             {
                 InventoryItem inventoryItem = BioReactor.container.AddItem(material.Pickupable);
                 MaterialsProcessing.Add(material);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using CustomBatteries.API;
 using UnityEngine;
@@ -35,10 +36,15 @@ namespace CustomBatteries.Items
             {
                 if (_placeBatteriesFeatureEnabled == null || !_placeBatteriesFeatureEnabled.HasValue)
                 {
-                    QModManager.API.IQMod decorationsMod = QModManager.API.QModServices.Main.FindModById("DecorationsMod");
-                    if (decorationsMod != null && decorationsMod.Enable && decorationsMod.LoadedAssembly != null)
+                    var decorationsMod = BepInEx.Bootstrap.Chainloader.PluginInfos.Values.Where((x) => x.Metadata.Name == "DecorationsMod" && x.Instance.enabled).FirstOrFallback(null);
+                    Assembly decorationsModAssembly = null;
+                    if (decorationsMod != null)
                     {
-                        Type decorationsModConfig = decorationsMod.LoadedAssembly.GetType("DecorationsMod.ConfigSwitcher", false);
+                        decorationsModAssembly = AppDomain.CurrentDomain.GetAssemblies().Where(x=> x.Location == decorationsMod.Location).FirstOrFallback(decorationsModAssembly);
+                    }
+                    if (decorationsModAssembly != null)
+                    {
+                        Type decorationsModConfig = decorationsModAssembly.GetType("DecorationsMod.ConfigSwitcher", false);
                         if (decorationsModConfig != null)
                         {
                             FieldInfo enablePlaceBatteriesField = decorationsModConfig.GetField("EnablePlaceBatteries", BindingFlags.Public | BindingFlags.Static);
@@ -49,31 +55,6 @@ namespace CustomBatteries.Items
                 }
                 return _placeBatteriesFeatureEnabled != null && _placeBatteriesFeatureEnabled.Value;
             }
-        }
-
-        private static GameObject _precursorionbattery;
-        private static GameObject _precursorionpowercell;
-        private static GameObject _battery;
-        private static GameObject _powercell;
-
-        public static GameObject IonBattery()
-        {
-            return _precursorionbattery ??= Resources.Load<GameObject>("worldentities/tools/precursorionbattery");
-        }
-
-        public static GameObject IonPowerCell()
-        {
-            return _precursorionpowercell ??= Resources.Load<GameObject>("worldentities/tools/precursorionpowercell");
-        }
-
-        public static GameObject Battery()
-        {
-            return _battery ??= Resources.Load<GameObject>("worldentities/tools/battery");
-        }
-
-        public static GameObject PowerCell()
-        {
-            return _powercell ??= Resources.Load<GameObject>("worldentities/tools/powercell");
         }
     }
 }

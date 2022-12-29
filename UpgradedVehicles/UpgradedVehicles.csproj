@@ -11,63 +11,89 @@
     <RootNamespace>UpgradedVehicles</RootNamespace>
     <AssemblyName>UpgradedVehicles</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <OutputPath>$(SolutionDir)..\Qmods\$(Configuration)\$(AssemblyName)\</OutputPath>
+    <OutputPath>$(SolutionDir)..\mods\$(AssemblyName)\$(Configuration)\plugins\$(AssemblyName)\</OutputPath>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'BelowZero|AnyCPU'">
     <DefineConstants>TRACE;BELOWZERO</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <GameDir>$(BelowZeroDir)</GameDir>
+    <GameDir>$(CommonDir)SubnauticaZero\</GameDir>
     <DataFolder>SubnauticaZero_Data</DataFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Subnautica|AnyCPU'">
     <DefineConstants>TRACE;SUBNAUTICA</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <GameDir>$(SubnauticaDir)</GameDir>
+    <GameDir>$(CommonDir)Subnautica\</GameDir>
     <DataFolder>Subnautica_Data</DataFolder>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(GameDir)\BepInEx\core\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HarmonyX.2.7.0\lib\net45\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+      <HintPath>$(SolutionDir)\Dependencies\$(Configuration)\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+      <HintPath>$(SolutionDir)\Dependencies\$(Configuration)\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="QModInstaller">
-      <HintPath>$(GameDir)\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
+    <Reference Include="BepInEx, Version=5.4.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BepInEx.BaseLib.5.4.20\lib\net35\BepInEx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour, Version=21.12.13.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.21.12.13.1\lib\net452\MonoMod.RuntimeDetour.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoMod.Utils, Version=21.12.13.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.Utils.21.12.13.1\lib\net452\MonoMod.Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SMLHelper">
-      <HintPath Condition="'$(Configuration)' == 'Subnautica'">$(GameDir)\QMods\Modding Helper\SMLHelper.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'BelowZero'">$(GameDir)\QMods\SMLHelper_BZ\SMLHelper.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'Subnautica'">$(GameDir)\Bepinex\plugins\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath Condition="'$(Configuration)' == 'BelowZero'">$(GameDir)\Bepinex\plugins\SMLHelper_BZ\SMLHelper.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(SolutionDir)\Dependencies\$(Configuration)\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(SolutionDir)\Dependencies\$(Configuration)\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>$(GameDir)\$(DataFolder)\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(SolutionDir)\Dependencies\$(Configuration)\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -80,15 +106,15 @@
     <Compile Include="SpeedBooster.cs" />
     <Compile Include="Patchers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QPatch.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="SaveData\BonusSpeedStyles.cs" />
     <Compile Include="SaveData\ConfigSaveData.cs" />
     <Compile Include="SaveData\UpgradeOptions.cs" />
     <Compile Include="VehicleUpgrader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="mod_Subnautica.json" />
-    <None Include="mod_BelowZero.json" />
+    <AdditionalFiles Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\HullArmorMk2.png">
@@ -107,7 +133,12 @@
   <Import Project="..\Utilities\Utilities.projitems" Label="Shared" />
   <Import Project="..\EasyMarkup\EasyMarkup.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)mod_$(ConfigurationName).json" "$(OutDir)mod.json" /y</PostBuildEvent>
-  </PropertyGroup>
+  <Import Project="..\PostBuildEvents.targets" />
+  <Import Project="..\packages\BepInEx.Core.5.4.21\build\BepInEx.Core.targets" Condition="Exists('..\packages\BepInEx.Core.5.4.21\build\BepInEx.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\BepInEx.Core.5.4.21\build\BepInEx.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BepInEx.Core.5.4.21\build\BepInEx.Core.targets'))" />
+  </Target>
 </Project>

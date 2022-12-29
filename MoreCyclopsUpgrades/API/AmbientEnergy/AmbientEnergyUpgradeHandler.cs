@@ -44,7 +44,7 @@
                 {
                     totalBatteryCapacity = 0f;
                     for (int i = 0; i < batteries.Count; i++)
-                        totalBatteryCapacity += batteries[i].BatteryRef._capacity;
+                        totalBatteryCapacity += batteries[i]?.BatteryRef?._capacity ?? 0;
                 }
 
                 return totalBatteryCapacity;

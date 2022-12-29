@@ -2,29 +2,8 @@ bin
 .vs
 obj
 packages
-/Dependencies/Assembly-CSharp-firstpass.dll
-/Dependencies/Assembly-CSharp-firstpass_publicized.dll
-/Dependencies/Assembly-CSharp.dll
-/Dependencies/Assembly-CSharp_publicized.dll
-/Dependencies/SMLHelper.dll
-/Dependencies/SMLHelper.xml
 
 *.user
 
-/DependenciesUnity5/Assembly-CSharp.dll
-/DependenciesUnity5/Assembly-CSharp_publicized.dll
-/DependenciesUnity5/Assembly-CSharp-firstpass.dll
-/DependenciesUnity5/Assembly-CSharp-firstpass_publicized.dll
-/DependenciesUnity2018/Assembly-CSharp.dll
-/DependenciesUnity2018/Assembly-CSharp-firstpass.dll
-/DependenciesUnity2018/Assembly-CSharp-firstpass_publicized.dll
-/DependenciesUnity2018/Assembly-CSharp_publicized.dll
-/DependenciesBelowZero/Assembly-CSharp-firstpass.dll
-/DependenciesBelowZero/Assembly-CSharp-firstpass_publicized.dll
-/DependenciesBelowZero/Assembly-CSharp.dll
-/DependenciesBelowZero/Assembly-CSharp_publicized.dll
-/DependenciesSubnautica/Assembly-CSharp-firstpass.dll
-/DependenciesSubnautica/Assembly-CSharp-firstpass_publicized.dll
-/DependenciesSubnautica/Assembly-CSharp.dll
-/DependenciesSubnautica/Assembly-CSharp_publicized.dll
+/[Dd]ependencies/**/**.dll
 /GameDir.targets

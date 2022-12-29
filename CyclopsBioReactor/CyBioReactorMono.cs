@@ -1,5 +1,6 @@
 ﻿namespace CyclopsBioReactor
 {
+    using System.Collections;
     using System.Collections.Generic;
     using CyclopsBioReactor.Items;
     using CyclopsBioReactor.Management;
@@ -10,7 +11,7 @@
     using UnityEngine;
 
     [ProtoContract]
-    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, ICyclopsBuildable
+    internal class CyBioReactorMono : HandTarget, IHandTarget, IProtoEventListener, IProtoEventListenerAsync, ICyclopsBuildable
     {
         internal static bool PdaIsOpen = false;
         internal static CyBioReactorMono OpenInPda = null;
@@ -303,7 +304,7 @@
 
             HandReticle main = HandReticle.main;
 
-            main.SetInteractText($"{Language.main.GetFormat("UseBaseBioReactor", Mathf.RoundToInt(this.Charge), Mathf.RoundToInt(this.Capacity))}{(bioMaterialsProcessing.Count > 0 ? "+" : "")}");
+            main.SetTextRaw(HandReticle.TextType.Use, $"{Language.main.GetFormat("UseBaseBioReactor", Mathf.RoundToInt(this.Charge), Mathf.RoundToInt(this.Capacity))}{(bioMaterialsProcessing.Count > 0 ? "+" : "")}");
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -317,7 +318,7 @@
 
             PDA pda = Player.main.GetPDA();
             Inventory.main.SetUsedStorage(container);
-            pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
+            pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose));
         }
 
         internal void CyOnPdaClose(PDA pda)
@@ -436,16 +437,19 @@
 
         public void OnProtoDeserialize(ProtobufSerializer serializer)
         {
+
+        }
+
+        public IEnumerator OnProtoDeserializeAsync(ProtobufSerializer serializer)
+        {
             if (_saveData == null)
                 ReadySaveData();
 
             InitializeStorageRoot();
-
             InitializeContainer();
 
-            MCUServices.Logger.Debug("Checking save data");
-
             isLoadingSaveData = true;
+            MCUServices.Logger.Debug("Checking save data");
 
             if (_saveData != null && _saveData.Load())
             {
@@ -460,7 +464,9 @@
                 MCUServices.Logger.Debug($"Restoring {_saveData.ReactorBatterCharge} energy from save data");
                 this.Charge = Mathf.Min(this.Capacity, _saveData.ReactorBatterCharge);
 
-                List<BioEnergy> savedMaterials = _saveData.GetMaterialsInProcessing();
+                TaskResult<List<BioEnergy>> results = new TaskResult<List<BioEnergy>>();
+                yield return _saveData.GetMaterialsInProcessing(results);
+                List<BioEnergy> savedMaterials = results.Get();
                 MCUServices.Logger.Debug($"Found {savedMaterials.Count} materials in save data");
 
                 for (int i = 0; i < savedMaterials.Count; i++)

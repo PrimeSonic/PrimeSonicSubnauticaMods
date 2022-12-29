@@ -1,5 +1,6 @@
 ﻿namespace CyclopsBioReactor.SaveData
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using EasyMarkup;
@@ -51,7 +52,7 @@
             }
         }
 
-        public List<BioEnergy> GetMaterialsInProcessing()
+        public IEnumerator GetMaterialsInProcessing(IOut<List<BioEnergy>> results)
         {
             var list = new List<BioEnergy>();
 
@@ -62,7 +63,9 @@
                 if (savedItem.ItemID <= 0)
                     continue;
 
-                GameObject prefab = CraftData.GetPrefabForTechType((TechType)savedItem.ItemID);
+                var task = CraftData.GetPrefabForTechTypeAsync((TechType)savedItem.ItemID);
+                yield return task;
+                GameObject prefab = task.GetResult();
 
                 if (prefab == null)
                     continue;
@@ -82,7 +85,7 @@
                 list.Add(new BioEnergy(pickupable, savedItem.RemainingCharge));
             }
 
-            return list;
+            results.Set(list);
         }
 
         public float ReactorBatterCharge

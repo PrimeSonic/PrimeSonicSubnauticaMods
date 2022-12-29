@@ -3,13 +3,19 @@ namespace CustomBatteries.Packs
 {
     using System.Collections.Generic;
     using CustomBatteries.API;
-    using QModManager.API.ModLoading;
+    using BepInEx;
 
-    [QModCore]
-    public static class ExampleCbItemMod
+    [BepInPlugin(GUID, MODNAME, VERSION)]
+    [BepInDependency("com.custombatteries.psmod", BepInDependency.DependencyFlags.HardDependency)]
+    public class Plugin : BaseUnityPlugin
     {
-        [QModPatch]
-        public static void MainPatch()
+        private const string
+            MODNAME = "Example CBItem Battery Mod",
+            AUTHOR = "PrimeSonic|MrPurple6411",
+            GUID = "com.examplecbitembatterymod.psmod",
+            VERSION = "1.0.0.0";
+
+        public void Awake()
         {
             var myBattery = new CbBattery
             {
