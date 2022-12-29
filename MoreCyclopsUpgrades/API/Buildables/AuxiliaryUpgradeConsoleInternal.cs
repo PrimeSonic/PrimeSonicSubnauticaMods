@@ -1,6 +1,7 @@
 ﻿namespace MoreCyclopsUpgrades.API.Buildables
 {
     using System;
+    using System.Collections;
     using System.Reflection;
     using Common;
     using MoreCyclopsUpgrades.API.Upgrades;
@@ -8,6 +9,7 @@
     using MoreCyclopsUpgrades.Managers;
     using ProtoBuf;
     using UnityEngine;
+    using UWE;
 
     // This partial class file contains all members of AuxiliaryUpgradeConsole intended for internal use only
     [ProtoContract]
@@ -241,47 +243,55 @@
 
             if (saveData != null && saveData.Load())
             {
-                // Because the items here aren't being serialized with everything else normally,
-                // I've used custom save data to handle whatever gets left in these slots.
-
-                QuickLogger.Debug("Loading save data");
-                // The following is a recreation of the essential parts of the Equipment.ResponseEquipment method.
-                for (int s = 0; s < TotalSlots; s++)
-                {
-                    string slot = UpgradeSlotArray[s].slotName;
-                    // These slots need to be added before we can add items to them
-                    this.Modules.AddSlot(slot);
-
-                    EmModuleSaveData savedModule = saveData.GetModuleInSlot(slot);
-
-                    if (savedModule.ItemID == 0) // (int)TechType.None
-                        continue; // Nothing here
-
-                    var techtype = (TechType)savedModule.ItemID;
-                    string itemName = techtype.AsString();
-
-                    QuickLogger.Debug($"Spawning '{itemName}' from save data");
-                    InventoryItem spanwedItem = CyclopsUpgrade.SpawnCyclopsModule(techtype);
-
-                    if (spanwedItem == null)
-                    {
-                        QuickLogger.Warning($"Unknown upgrade module '{itemName}' could not be spamned in from save data");
-                        continue;
-                    }
-
-                    QuickLogger.Debug($"Spawned in {itemName} from save data");
-
-                    if (savedModule.RemainingCharge > 0f) // Modules without batteries are stored with a -1 value for charge
-                        spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;
-
-                    this.Modules.AddItem(slot, spanwedItem, true);
-                    OnSlotEquipped(slot, spanwedItem);
-                }
+                CoroutineHost.StartCoroutine(RestoreSavedModulesAsync());
             }
             else
             {
                 QuickLogger.Debug("No save data found.");
                 this.Modules.AddSlots(SlotNames);
+            }
+        }
+
+        private IEnumerator RestoreSavedModulesAsync()
+        {
+
+            // Because the items here aren't being serialized with everything else normally,
+            // I've used custom save data to handle whatever gets left in these slots.
+
+            QuickLogger.Debug("Loading save data");
+            // The following is a recreation of the essential parts of the Equipment.ResponseEquipment method.
+            for (int s = 0; s < TotalSlots; s++)
+            {
+                string slot = UpgradeSlotArray[s].slotName;
+                // These slots need to be added before we can add items to them
+                this.Modules.AddSlot(slot);
+
+                EmModuleSaveData savedModule = saveData.GetModuleInSlot(slot);
+
+                if (savedModule.ItemID == 0) // (int)TechType.None
+                    continue; // Nothing here
+
+                var techtype = (TechType)savedModule.ItemID;
+                string itemName = techtype.AsString();
+
+                QuickLogger.Debug($"Spawning '{itemName}' from save data");
+                TaskResult<InventoryItem> result = new TaskResult<InventoryItem>();
+                yield return CyclopsUpgrade.SpawnCyclopsModuleAsync(techtype, result);
+                InventoryItem spanwedItem = result.Get();
+
+                if (spanwedItem == null)
+                {
+                    QuickLogger.Warning($"Unknown upgrade module '{itemName}' could not be spamned in from save data");
+                    continue;
+                }
+
+                QuickLogger.Debug($"Spawned in {itemName} from save data");
+
+                if (savedModule.RemainingCharge > 0f) // Modules without batteries are stored with a -1 value for charge
+                    spanwedItem.item.GetComponent<Battery>().charge = savedModule.RemainingCharge;
+
+                this.Modules.AddItem(slot, spanwedItem, true);
+                OnSlotEquipped(slot, spanwedItem);
             }
         }
 

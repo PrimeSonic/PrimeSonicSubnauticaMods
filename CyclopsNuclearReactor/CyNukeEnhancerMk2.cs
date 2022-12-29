@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearReactor
 {
+    using System.Collections;
     using System.IO;
     using System.Reflection;
     using SMLHelper.V2.Assets;
@@ -31,11 +32,11 @@
             main.Patch();
         }
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsShieldModule);
-
-            return GameObject.Instantiate(prefab);
+            TaskResult<GameObject> result = new TaskResult<GameObject>();
+            yield return CraftData.InstantiateFromPrefabAsync(TechType.CyclopsShieldModule, result);
+            gameObject.Set(result.Get());
         }
 
         protected override TechData GetBlueprintRecipe()

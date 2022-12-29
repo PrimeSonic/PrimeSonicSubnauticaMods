@@ -90,7 +90,7 @@
                 return;
 
             HandReticle main = HandReticle.main;
-            main.SetInteractText(this.OnHoverText);
+            main.SetTextRaw(HandReticle.TextType.Use,this.OnHoverText);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -118,7 +118,7 @@
             Player main = Player.main;
             global::PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(this.Modules, false);
-            pda.Open(PDATab.Inventory, null, new global::PDA.OnClose((closingPdaEvent) => PdaOverlayManager.DisconnectFromPda()), -1f);
+            pda.Open(PDATab.Inventory, null, new global::PDA.OnClose((closingPdaEvent) => PdaOverlayManager.DisconnectFromPda()));
         }
     }
 }

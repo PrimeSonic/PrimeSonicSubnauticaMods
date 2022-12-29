@@ -1,5 +1,6 @@
 ﻿namespace MoreCyclopsUpgrades.API.Upgrades
 {
+    using System.Collections;
     using SMLHelper.V2.Assets;
     using SMLHelper.V2.Handlers;
     using UnityEngine;
@@ -71,36 +72,44 @@
         /// <returns>
         /// The game object to be instantiated into a new in-game entity.
         /// </returns>
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(this.PrefabTemplate);
-            var obj = GameObject.Instantiate(prefab);
+            TaskResult<GameObject> task = new TaskResult<GameObject>();
+            yield return CraftData.InstantiateFromPrefabAsync(this.PrefabTemplate, task);
 
-            return obj;
+            gameObject.Set(task.Get());
         }
+
+
 
         /// <summary>
         /// A utility method that spawns a cyclops upgrade module by TechType ID.
         /// </summary>
         /// <param name="techTypeID">The tech type ID.</param>
+        /// <param name="outItem"></param>
         /// <returns>A new <see cref="InventoryItem"/> that wraps up a <see cref="Pickupable"/> game object.</returns>
-        public static InventoryItem SpawnCyclopsModule(TechType techTypeID)
+        public static IEnumerator SpawnCyclopsModuleAsync(TechType techTypeID, IOut<InventoryItem> outItem)
         {
+            TaskResult<GameObject> task = new TaskResult<GameObject>();
+            yield return CraftData.InstantiateFromPrefabAsync(techTypeID, task);
+
+            var gameObject = task.Get();
+
             try
             {
-                GameObject prefab = CraftData.GetPrefabForTechType(techTypeID);
+                if (gameObject == null)
+                    outItem.Set(null);
 
-                if (prefab == null)
-                    return null;
 
-                var gameObject = GameObject.Instantiate(prefab);
-
-                Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
-                return new InventoryItem(pickupable);
+                Pickupable pickupable = gameObject.GetComponent<Pickupable>();
+                pickupable.Pickup(false);
+                outItem.Set(new InventoryItem(pickupable));
             }
             catch
             {
-                return null;
+                if(gameObject != null)
+                    GameObject.Destroy(gameObject);
+                outItem.Set(null);
             }
         }
     }

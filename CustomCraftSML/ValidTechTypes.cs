@@ -129,7 +129,7 @@
                         TechType.Fins,
                         TechType.RadiationSuit,
                         TechType.ReinforcedDiveSuit,
-                        TechType.Stillsuit,
+                        TechType.WaterFiltrationSuit,
                         TechType.FirstAidKit,
                         TechType.FireExtinguisher,
                         TechType.Rebreather,

@@ -1,12 +1,13 @@
 ﻿namespace CyclopsAutoZapper.Managers
 {
+    using System;
+    using System.Collections;
     using UnityEngine;
 
     internal abstract class Zapper : CooldownManager
     {
         private GameObject seamothElectricalDefensePrefab = null;
-        protected GameObject ElectricalDefensePrefab => seamothElectricalDefensePrefab ??
-            (seamothElectricalDefensePrefab = CraftData.GetPrefabForTechType(TechType.Seamoth).GetComponent<SeaMoth>().seamothElectricalDefensePrefab);
+        protected GameObject ElectricalDefensePrefab => seamothElectricalDefensePrefab;
 
         private class CreatureTarget
         {
@@ -44,6 +45,14 @@
         protected Zapper(TechType upgradeTechType, SubRoot cyclops)
             : base(upgradeTechType, cyclops)
         {
+            UWE.CoroutineHost.StartCoroutine(GetDefencePrefab());
+        }
+
+        private IEnumerator GetDefencePrefab()
+        {
+            var task = CraftData.GetPrefabForTechTypeAsync(TechType.Seamoth);
+            yield return task;
+            seamothElectricalDefensePrefab = task.GetResult().GetComponent<SeaMoth>().seamothElectricalDefensePrefab;
         }
 
         protected virtual bool AbleToZap()
@@ -88,15 +97,22 @@
 
         private void ZapRadius()
         {
-            GameObject gameObject = Utils.SpawnZeroedAt(this.ElectricalDefensePrefab, Cyclops.transform, false);
-            ElectricalDefense defenseComponent = gameObject.GetComponent<ElectricalDefense>();
-            defenseComponent.charge = ZapPower;
-            defenseComponent.chargeScalar = ZapPower;
-            defenseComponent.radius *= ZapPower;
-            defenseComponent.chargeRadius *= ZapPower;
+            if(this.ElectricalDefensePrefab != null)
+            {
+                GameObject gameObject = Utils.SpawnZeroedAt(this.ElectricalDefensePrefab, Cyclops.transform, false);
+                ElectricalDefense defenseComponent = gameObject.GetComponent<ElectricalDefense>();
+                defenseComponent.charge = ZapPower;
+                defenseComponent.chargeScalar = ZapPower;
+                defenseComponent.radius *= ZapPower;
+                defenseComponent.chargeRadius *= ZapPower;
 
-            if (GameModeUtils.RequiresPower())
-                Cyclops.powerRelay.ConsumeEnergy(EnergyCostPerRadiusZap, out float amountConsumed);
+                if (GameModeUtils.RequiresPower())
+                    Cyclops.powerRelay.ConsumeEnergy(EnergyCostPerRadiusZap, out float amountConsumed);
+            }
+            else
+            {
+                Plugin.logSource.LogError("Failed to ZapRadius as ElectricalDefensePrefab was null");
+            }
         }
 
         private void ZapCreature()

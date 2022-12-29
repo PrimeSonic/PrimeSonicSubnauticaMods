@@ -1,6 +1,7 @@
 ﻿namespace CyclopsEnhancedSonar
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -14,8 +15,6 @@
                 yield return null;
             }
         }
-
-        private readonly GameObject template = CraftData.GetPrefabForTechType(TechType.Seaglide);
 
         public void SetMapState(bool state)
         {
@@ -31,22 +30,25 @@
         private readonly Vector3 position = new Vector3(-0.9762846f, 2, -10.6917f);
         private readonly Vector3 shipPosition = new Vector3(0, 0, 0);
 
-        private VehicleInterface_Terrain script;
+        private MiniWorld script;
         private Material material;
         private GameObject ship;
 
-        private void Start()
+        private IEnumerator Start()
         {
             Transform root = this.gameObject.transform.Find("SonarMap_Small");
             var holder = new GameObject("NearFieldSonar");
             holder.transform.SetParent(root, false);
             holder.transform.localScale = Vector3.one * 0.1f;
 
+            var task = CraftData.GetPrefabForTechTypeAsync(TechType.Seaglide);
+            yield return task;
+            var template = task.GetResult();
             GameObject prefab = template.GetComponent<VehicleInterface_MapController>().interfacePrefab;
             var hologram = GameObject.Instantiate(prefab);
             hologram.transform.SetParent(holder.transform, false);
 
-            script = hologram.GetComponentInChildren<VehicleInterface_Terrain>();
+            script = hologram.GetComponentInChildren<MiniWorld>();
             script.active = true;
             script.EnableMap();
 
@@ -56,7 +58,7 @@
                 return UpdateParameters();
             }));
 
-            ship = GameObject.Instantiate(this.gameObject.transform.Find("HolographicDisplay/CyclopsMini_Mid").gameObject);
+            ship = GameObject.Instantiate(this.gameObject.transform.Find("HolographicDisplay/HolographicDisplayVisuals/CyclopsMini_Mid").gameObject);
             ship.transform.SetParent(root, false);
 
             MeshRenderer[] cyclopsMeshRenderers = ship.transform.GetComponentsInChildren<MeshRenderer>();

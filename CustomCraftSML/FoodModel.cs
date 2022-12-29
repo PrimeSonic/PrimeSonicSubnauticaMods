@@ -6,7 +6,7 @@
         BigFilteredWater = TechType.BigFilteredWater,
         DisinfectedWater = TechType.DisinfectedWater,
         FilteredWater = TechType.FilteredWater,
-        StillsuitWater = TechType.StillsuitWater,
+        StillsuitWater = TechType.WaterFiltrationSuitWater,
         BulboTreePiece = TechType.BulboTreePiece,
         PurpleVegetable = TechType.PurpleVegetable,
         CreepvinePiece = TechType.CreepvinePiece,

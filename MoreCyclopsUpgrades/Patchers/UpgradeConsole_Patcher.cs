@@ -19,7 +19,7 @@
         public static void Postfix(UpgradeConsole __instance)
         {
             PDA pda = Player.main.GetPDA();
-            pda.onClose = new PDA.OnClose((PDA closingPda) => PdaOverlayManager.DisconnectFromPda());
+            pda.onCloseCallback = new PDA.OnClose((PDA closingPda) => PdaOverlayManager.DisconnectFromPda());
         }
     }
 

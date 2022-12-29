@@ -1,5 +1,6 @@
 ﻿namespace CyclopsNuclearUpgrades
 {
+    using System.Collections;
     using System.IO;
     using System.Reflection;
     using SMLHelper.V2.Assets;
@@ -46,10 +47,12 @@
             };
         }
 
-        protected override GameObject GetCustomCrafterPreFab()
+        protected override IEnumerator GetCustomCrafterPreFabAsync(IOut<GameObject> gameObject)
         {
+            TaskResult<GameObject> result = new TaskResult<GameObject>();
             // Instantiate Fabricator object
-            var gObj = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.Fabricator));
+            yield return CraftData.InstantiateFromPrefabAsync(TechType.Fabricator, result);
+            var gObj = result.Get();
 
             // Set the custom texture
             if (customTexture != null)
@@ -63,7 +66,7 @@
             const float factor = 0.90f;
             gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
 
-            return gObj;
+            gameObject.Set(gObj);
         }
 
         protected override Atlas.Sprite GetItemSprite()

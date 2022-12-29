@@ -4,6 +4,7 @@ namespace CustomBatteries.Packs
     // You will need to include these namespaces to use the API classes and interfaces
     using System.Collections.Generic;
     using CustomBatteries.API;
+    using BepInEx;
 
     // Step 0 - You will need to make your own class that implements the IModPluginPack interface.
     // It can be as simple as this example right here.
@@ -25,9 +26,17 @@ namespace CustomBatteries.Packs
         public IList<TechType> PowerCellAdditionalParts => new List<TechType> { TechType.Lithium };
     }
 
-    internal static class MyQPatch
+    [BepInPlugin(GUID, MODNAME, VERSION)]
+    [BepInDependency("com.custombatteries.psmod", BepInDependency.DependencyFlags.HardDependency)]
+    public class Plugin : BaseUnityPlugin
     {
-        public static void Patch()
+        private const string
+            MODNAME = "Example External Battery Mod",
+            AUTHOR = "PrimeSonic|MrPurple6411",
+            GUID = "com.exampleexternalbatterymod.psmod",
+            VERSION = "1.0.0.0";
+
+        public void Awake()
         {
             // Step 1 - Instantiate the service class
             var cbService = new CustomBatteriesService();

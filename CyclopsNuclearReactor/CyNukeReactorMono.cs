@@ -1,10 +1,12 @@
 ﻿namespace CyclopsNuclearReactor
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Reflection;
     using Common;
     using CyclopsNuclearReactor.Helpers;
+    using HarmonyLib;
     using MoreCyclopsUpgrades.API;
     using MoreCyclopsUpgrades.API.Buildables;
     using ProtoBuf;
@@ -334,22 +336,33 @@
                 {
                     SlotData slotData = reactorRodData[i];
 
-                    if (slotData.TechTypeID == TechType.DepletedReactorRod || slotData.HasPower())
+                    if (isDepletingRod || slotData.TechTypeID == TechType.DepletedReactorRod || slotData.HasPower())
                         continue;
 
-                    isDepletingRod = true;
-
-                    SlotData depletedRod = slotData;
-                    container.RemoveItem(depletedRod.Item, true);
-                    GameObject.Destroy(depletedRod.Item.gameObject);
-                    container.AddItem(SpawnItem(TechType.DepletedReactorRod).item);
-
-                    ErrorMessage.AddMessage(CyNukReactorBuildable.DepletedMessage());
-
-                    isDepletingRod = false;
+                    StartCoroutine(DepleteRodAsync(slotData));
                     break;
                 }
             }
+        }
+
+        private IEnumerator DepleteRodAsync(SlotData slotData)
+        {
+            isDepletingRod = true;
+
+            TaskResult<InventoryItem> result = new TaskResult<InventoryItem>();
+            yield return SpawnItem(TechType.DepletedReactorRod, result);
+            var item = result.Get();
+
+            if(item != null)
+            {
+                SlotData depletedRod = slotData;
+                container.RemoveItem(depletedRod.Item, true);
+                GameObject.Destroy(depletedRod.Item.gameObject);
+                container.AddItem(item.item);
+                ErrorMessage.AddMessage(CyNukReactorBuildable.DepletedMessage());
+            }
+
+            isDepletingRod = false;
         }
 
         #region Save Data
@@ -367,32 +380,7 @@
 
             if (_saveData != null && _saveData.LoadData())
             {
-                MCUServices.Logger.Debug("Save data found");
-
-                container.Clear(false);
-                reactorRodData.Clear();
-
-                int nonEmptySlots = 0;
-                for (int r = 0; r < _saveData.SlotData.Count; r++)
-                {
-                    CyNukeRodSaveData rodData = _saveData.SlotData[r];
-                    TechType techTypeID = rodData.TechTypeID;
-
-                    if (techTypeID != TechType.None)
-                    {
-                        InventoryItem spanwedItem = SpawnItem(techTypeID);
-
-                        if (spanwedItem != null)
-                        {
-                            MCUServices.Logger.Debug($"Adding {techTypeID.AsString()} with {rodData.RemainingCharge} charge from save data");
-                            InventoryItem rod = container.AddItem(spanwedItem.item);
-                            AddNewRod(rodData.RemainingCharge, rod.item);
-                            nonEmptySlots++;
-                        }
-                    }
-                }
-
-                MCUServices.Logger.Debug($"Added {nonEmptySlots} items from save data");
+                StartCoroutine(RestoreSavedContentsAsync());
             }
             else
             {
@@ -400,6 +388,38 @@
             }
 
             isLoadingSaveData = false;
+        }
+
+        private IEnumerator RestoreSavedContentsAsync()
+        {
+            MCUServices.Logger.Debug("Save data found");
+
+            container.Clear(false);
+            reactorRodData.Clear();
+
+            int nonEmptySlots = 0;
+            for (int r = 0; r < _saveData.SlotData.Count; r++)
+            {
+                CyNukeRodSaveData rodData = _saveData.SlotData[r];
+                TechType techTypeID = rodData.TechTypeID;
+
+                if (techTypeID != TechType.None)
+                {
+                    TaskResult<InventoryItem> result = new TaskResult<InventoryItem>();
+                    yield return SpawnItem(techTypeID, result);
+                    InventoryItem spanwedItem = result.Get();
+
+                    if (spanwedItem != null)
+                    {
+                        MCUServices.Logger.Debug($"Adding {techTypeID.AsString()} with {rodData.RemainingCharge} charge from save data");
+                        InventoryItem rod = container.AddItem(spanwedItem.item);
+                        AddNewRod(rodData.RemainingCharge, rod.item);
+                        nonEmptySlots++;
+                    }
+                }
+            }
+
+            MCUServices.Logger.Debug($"Added {nonEmptySlots} items from save data");
         }
 
         public void OnProtoSerialize(ProtobufSerializer serializer)
@@ -427,7 +447,7 @@
 
             PDA pda = Player.main.GetPDA();
             Inventory.main.SetUsedStorage(container, false);
-            pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose), 4f);
+            pda.Open(PDATab.Inventory, null, new PDA.OnClose(CyOnPdaClose));
         }
 
         public void OnHandHover(GUIHand hand)
@@ -443,7 +463,7 @@
                 ? CyNukReactorBuildable.OnHoverPoweredText(NumberFormatter.FormatValue(currentPower), this.ActiveRodCount, this.MaxActiveSlots)
                 : CyNukReactorBuildable.OnHoverNoPowerText();
 
-            main.SetInteractText(text);
+            main.SetTextRaw(HandReticle.TextType.Use, text);
             main.SetIcon(HandReticle.IconType.Hand, 1f);
         }
 
@@ -632,12 +652,19 @@
             this.Manager = null;
         }
 
-        private static InventoryItem SpawnItem(TechType techTypeID)
+        private static IEnumerator SpawnItem(TechType techTypeID, IOut<InventoryItem> outItem)
         {
-            var gameObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(techTypeID));
-
-            Pickupable pickupable = gameObject.GetComponent<Pickupable>().Pickup(false);
-            return new InventoryItem(pickupable);
+            TaskResult<GameObject> result = new TaskResult<GameObject>();
+            yield return CraftData.InstantiateFromPrefabAsync(techTypeID, result);
+            var gameObject = result.Get();
+            if(gameObject == null)
+            {
+                outItem.Set(null);
+                yield break;
+            }
+            Pickupable pickupable = gameObject.EnsureComponent<Pickupable>();
+            pickupable.Pickup(false);
+            outItem.Set(new InventoryItem(pickupable));
         }
     }
 }

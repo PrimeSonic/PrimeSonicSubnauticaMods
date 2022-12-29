@@ -1,5 +1,6 @@
 ﻿namespace CyclopsSimpleSolar
 {
+    using System.Collections;
     using System.IO;
     using System.Reflection;
     using MoreCyclopsUpgrades.API;
@@ -43,12 +44,11 @@
 
         public override TechType RequiredForUnlock => TechType.SeamothSolarCharge;
 
-        public override GameObject GetGameObject()
+        public override IEnumerator GetGameObjectAsync(IOut<GameObject> gameObject)
         {
-            GameObject prefab = CraftData.GetPrefabForTechType(TechType.CyclopsShieldModule);
-            var obj = GameObject.Instantiate(prefab);
-
-            return obj;
+            TaskResult<GameObject> result = new TaskResult<GameObject>();
+            yield return CraftData.InstantiateFromPrefabAsync(TechType.CyclopsShieldModule, result);
+            gameObject.Set(result.Get());
         }
 
         protected override TechData GetBlueprintRecipe()

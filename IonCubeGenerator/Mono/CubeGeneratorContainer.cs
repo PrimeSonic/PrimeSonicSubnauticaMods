@@ -4,8 +4,10 @@
     using IonCubeGenerator.Buildable;
     using IonCubeGenerator.Interfaces;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
+    using UWE;
 
     internal class CubeGeneratorContainer : ICubeContainer
     {
@@ -14,8 +16,6 @@
 #elif BELOWZERO
         private static readonly Vector2int CubeSize = TechData.GetItemSize(TechType.PrecursorIonCrystal);
 #endif
-        internal static readonly GameObject CubePrefab = CraftData.GetPrefabForTechType(TechType.PrecursorIonCrystal);
-
         private const int ContainerHeight = 2;
         private const int ContainerWidth = 2;
 
@@ -46,10 +46,7 @@
                 }
                 else if (value > _cubeContainer.count)
                 {
-                    do
-                    {
-                        SpawnCube();
-                    } while (value > _cubeContainer.count);
+                    SpawnCubes(value - _cubeContainer.count);
                 }
             }
         }
@@ -101,29 +98,34 @@
             Player main = Player.main;
             PDA pda = main.GetPDA();
             Inventory.main.SetUsedStorage(_cubeContainer, false);
-#if SUBNAUTICA
-            pda.Open(PDATab.Inventory, null, null, 4f);
-#elif BELOWZERO
             pda.Open(PDATab.Inventory, null, null);
-#endif
 
         }
 
-        internal bool SpawnCube()
+        internal void SpawnCubes(int number)
         {
-            if (this.IsFull)
-                return false;
+            CoroutineHost.StartCoroutine(SpawnCubesAsync(number));
+        }
 
-            var gameObject = GameObject.Instantiate<GameObject>(CubePrefab);
-            CubePrefab.SetActive(false);
-            gameObject.SetActive(true);
+        private IEnumerator SpawnCubesAsync(int number)
+        {
+            for(int i = 0; i < number; i++)
+            {
+                if (this.IsFull)
+                    yield break;
 
-            Pickupable pickupable = gameObject.GetComponent<Pickupable>();
-            pickupable.Pickup(false);
-            var item = new InventoryItem(pickupable);
-
-            _cubeContainer.UnsafeAdd(item);
-            return true;
+                TaskResult<GameObject> result = new TaskResult<GameObject>();
+                yield return CraftData.InstantiateFromPrefabAsync(TechType.PrecursorIonCrystal, result);
+                var gameObject = result.Get();
+                if (gameObject != null)
+                {
+                    gameObject.SetActive(true);
+                    Pickupable pickupable = gameObject.GetComponent<Pickupable>();
+                    pickupable.Pickup(false);
+                    var item = new InventoryItem(pickupable);
+                    _cubeContainer.UnsafeAdd(item);
+                }
+            }
         }
 
         private void RemoveSingleCube()

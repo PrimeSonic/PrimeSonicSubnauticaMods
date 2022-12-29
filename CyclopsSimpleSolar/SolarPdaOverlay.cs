@@ -14,7 +14,7 @@
             : base(icon, upgradeModule)
         {
             cySolarChargeManager = MCUServices.Find.CyclopsCharger<CySolarChargeManager>(base.Cyclops);
-            crossModText = Language.main.Get(MainPatcher.CrossModKey);
+            crossModText = Language.main.Get(Plugin.CrossModKey);
         }
 
         public override void UpdateText()
