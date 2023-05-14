@@ -4,17 +4,20 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
-    using SMLHelper.V2.Assets;
-    using SMLHelper.V2.Crafting;
-    using SMLHelper.V2.Handlers;
-    using SMLHelper.V2.Utility;
+    using Nautilus;
+    using Nautilus.Handlers;
+    using Nautilus.Crafting;
+    using Nautilus.Utility;
     using UnityEngine;
+    using static CraftData;
 #if SUBNAUTICA
     using Sprite = Atlas.Sprite;
-    using RecipeData = SMLHelper.V2.Crafting.TechData;
+    using Nautilus.Assets;
+    using Nautilus.Assets.Gadgets;
+    using Nautilus.Assets.PrefabTemplates;
 #endif
 
-    internal class AiOFab : CustomFabricator
+    internal class AiOFab
     {
         private const string DisplayNameFormat = "{0}Menu_{1}";
         private const string TabSpriteFormat = "{0}_{1}";
@@ -34,13 +37,33 @@
         private static Texture2D texture;
         private static Sprite sprite;
 
-        public AiOFab()
-            : base(AioFabScheme,
-                   "All-In-One Fabricator",
-                   "Multi-fuction fabricator capable of synthesizing most blueprints.")
+        private static CraftTree.Type AIOTreeType;
+
+        private FabricatorGadget fabGadget;
+
+        internal void Patch()
         {
-            OnStartedPatching += LoadImageFiles;
-            OnFinishedPatching += RegisterCraftTreeBasics;
+            var fab = new AiOFab();
+
+            fab.LoadImageFiles();
+
+            var prefab = new CustomPrefab(AioFabScheme, "All-In-One Fabricator",
+                   "Multi-fuction fabricator capable of synthesizing most blueprints.", sprite);
+
+            fabGadget = prefab.CreateFabricator(out AIOTreeType);
+
+            var template = new FabricatorTemplate(prefab.Info, AIOTreeType);
+            template.FabricatorModel = FabricatorTemplate.Model.Fabricator;
+            template.ModifyPrefab = ModifyGameObject;
+            prefab.SetGameObject(template);
+
+            prefab.SetRecipe(GetBlueprintRecipe());
+
+            prefab.SetUnlock(TechType.Fabricator).WithPdaGroupCategory(TechGroup.InteriorModules, TechCategory.InteriorModule);
+
+            prefab.Register();
+
+            RegisterCraftTreeBasics();
         }
 
         private void LoadImageFiles()
@@ -73,7 +96,7 @@
             RegisterTopLevelVanillaTab(SeaTruckFabScheme, "SeaTruck Fabricator", TechType.SeaTruck);
 #endif
 
-            this.Root.CraftTreeCreation = CreateCraftingTree;
+            fabGadget.Root.CraftTreeCreation = CreateCraftingTree;
         }
 
         private CraftTree CreateCraftingTree()
@@ -117,11 +140,17 @@
 
                 CraftNode aioRoot = new CraftNode("Root").AddNode(craftNodes.ToArray());
 
-                Type smlCTPatcher = typeof(CraftTreeHandler).Assembly.GetType("SMLHelper.V2.Patchers.CraftTreePatcher");
-                var customTrees = (Dictionary<CraftTree.Type, ModCraftTreeRoot>)smlCTPatcher.GetField("CustomTrees", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+
+                //change these after major smlhelper/nautilus update
+                const string craftTreePatcherType = "Nautilus.Patchers.CraftTreePatcher";
+                const string customTreesField = "CustomTrees";
+
+
+                Type smlCTPatcher = typeof(CraftTreeHandler).Assembly.GetType(craftTreePatcherType);
+                var customTrees = (Dictionary<CraftTree.Type, ModCraftTreeRoot>)smlCTPatcher.GetField(customTreesField, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
                 foreach (KeyValuePair<CraftTree.Type, ModCraftTreeRoot> entry in customTrees)
                 {
-                    if (entry.Key == this.TreeTypeID)
+                    if (entry.Key == AIOTreeType)
                         continue;
 
                     CraftTree tree = entry.Value.CraftTreeCreation.Invoke();
@@ -139,15 +168,8 @@
             return craftTree;
         }
 
-        protected override Sprite GetItemSprite()
+        public void ModifyGameObject(GameObject gObj)
         {
-            return sprite;
-        }
-
-        public override GameObject GetGameObject()
-        {
-            GameObject gObj = base.GetGameObject();
-
             if (texture != null)
             {
                 // Set the custom texture
@@ -159,13 +181,9 @@
             Vector3 scale = gObj.transform.localScale;
             const float factor = 1.25f;
             gObj.transform.localScale = new Vector3(scale.x * factor, scale.y * factor, scale.z * factor);
-
-            return gObj;
         }
 
-        public override Models Model => Models.Fabricator;
-
-        protected override RecipeData GetBlueprintRecipe()
+        private RecipeData GetBlueprintRecipe()
         {
             return new RecipeData
             {
@@ -188,7 +206,7 @@
             LanguageHandler.SetLanguageLine(string.Format(DisplayNameFormat, AioFabScheme, scheme), tabDisplayName);
         }
 
-        private void CloneTopLevelModTab(string scheme, ref Dictionary<string, string> languageLines, ref Dictionary<string, Sprite> group)
+        private void CloneTopLevelModTab(string scheme, ref Dictionary<string, string> languageLines, ref Dictionary<string, Atlas.Sprite> group)
         {
             string clonedLangKey = string.Format(DisplayNameFormat, AioFabScheme, scheme);
 

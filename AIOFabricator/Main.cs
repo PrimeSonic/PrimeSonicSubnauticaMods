@@ -2,15 +2,14 @@
 {
     using System;
     using System.Reflection;
-    using QModManager.API.ModLoading;
+    using BepInEx;
 
-    [QModCore]
-    public static class Main
+    [BepInPlugin("com.Primesonic.AIOFab", "AIOFabricator", "0.0.1")]
+    public class Main : BaseUnityPlugin
     {
         private static AiOFab aioFab;
 
-        [QModPatch]
-        public static void Start()
+        public void Awake()
         {
             Console.WriteLine("[AIOFabricator] Started patching v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(3));         
 
